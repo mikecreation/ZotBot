@@ -35,5 +35,6 @@ jobs:
           git add research/navier-stokes-spc/paper/Navier_Stokes_Representation_Induced_Complexity.pdf
           if ! git diff --cached --quiet; then
             git commit -m "Build Navier-Stokes SPC PDF"
+            git pull --rebase origin main
             git push
           fi
