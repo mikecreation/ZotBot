@@ -352,7 +352,15 @@ At fixed grade the principal ordering is
 \]
 There are shortcut arrows, but every same-grade dependency moves forward. The reverse arrows are higher-order returns.
 
-The one-pass compiler $P_0$ is the finite forward substitution through this graph. Let
+The one-pass compiler $P_0$ is the finite forward substitution through this graph, using exactly the primitive operations admitted by Proposition~9.3: pulse inverse and curl, signed-stress correction, zero-average mean inverse, compatibility correction, with pressure reconstructed from the complete updated velocity after each update. No new inverse family is introduced.
+
+The loss parameter is not chosen by the present manuscript. The source fixes
+\[
+\kappa_s=10^{-5}
+\]
+in equation~(6.2) and repeats this convention at the beginning of Section~9 \cite[pp.~63,100]{OpenAI2026NS}.
+
+Let
 \[
 K:=I+L_{\mathrm{ret}}P_0.
 \]
@@ -362,27 +370,102 @@ K\Fadm^s\subseteq \Fadm^{s+\delta_L},
 \qquad
 \delta_L=\frac12-4\kappa_s.
 \end{equation}
-For $\kappa_s=10^{-5}$,
+
+\begin{lemma}[Source-addressed linear return]\label{lem:linear-trace}
+For the filtration \eqref{eq:filtration}, every linear return produced by one legal pass has strictly positive relative degree. The smallest degree is
 \[
-\delta_L=0.49996.
+\delta_L=\frac12-4\kappa_s=0.49996.
 \]
-The bottleneck is the return
+\end{lemma}
+
+\begin{proof}
+Write $B=\frac12+s$. For a supported wave source in $W_B$, Proposition~9.1 leaves supported linear residual in
 \[
-\bar M\longrightarrow \text{signed-stress wave}\longrightarrow W,
+W_{B+\frac12-3\kappa_s},
 \]
-whose exponent is already visible in the closing inequalities of Proposition~9.6 \cite[p.~111]{OpenAI2026NS}.
+so the $W\to W$ return gains $\frac12-3\kappa_s$ \cite[pp.~101--102]{OpenAI2026NS}.
+
+For the averaged-mean sector, admissibility and Corollary~8.5 prepare the auxiliary-independent compact stress target. Proposition~7.6 maps a stress in $M^\alpha$ to the typed signed-wave image $W^{\alpha-1/2}$ and gives the exact covariance identity $B(W_0,L\Sigma)=\Sigma$ \cite[pp.~84--85]{OpenAI2026NS}. With input threshold
+\[
+\bar M_{1+s-\kappa_s},
+\]
+the resulting signed correction has the conservative wave exponent $B-\kappa_s$. Proposition~9.1 then gives its linear residual at
+\[
+W_{B+\frac12-4\kappa_s}
+=
+W_{1+s-4\kappa_s}.
+\]
+This is exactly the $W$ component of $\F^{s+\frac12-4\kappa_s}$. The same exponent appears explicitly in Step~2 of Proposition~9.6, where the signed correction lies in $W_{B-\kappa_s}$ and its linear error has exponent $B+\frac12-4\kappa_s$ \cite[pp.~109--110]{OpenAI2026NS}. This is the bottleneck return.
+
+For $M^\circ$, put $H=1+s-2\kappa_s$. Lemma~8.6 and Step~3 of Proposition~9.6 produce the zero-average mean correction in $M_H$; its interaction with the fixed wave field returns a wave in $W_H$, while the remaining mean residual gains to $M_{H+1-2\kappa_s}$ \cite[pp.~96,110]{OpenAI2026NS}. The wave return therefore has relative degree $\frac12-2\kappa_s>\delta_L$.
+
+For the compatibility sector $S_H$, Lemmas~8.7--8.8 and Step~4 of Proposition~9.6 cancel the linear defect and leave the compatibility remainder in
+\[
+S_{H+0.9-2\kappa_s},
+\]
+which has relative degree $0.9-2\kappa_s>\delta_L$ \cite[pp.~97--99,111]{OpenAI2026NS}. Pressure reconstruction is the fixed exact map of Section~8 and the source recomputes it after every update. Thus no linear return has degree below $\delta_L$.
+\end{proof}
 
 % =====================================================================
-\section{The two estimates}
-The second load-bearing estimate concerns the physical quadratic map. The compiler uses typed provenance internally -- in particular, the exact identity $B(W_0,L\Sigma)=\Sigma$ belongs only to waves in the image of Proposition~7.6, not to arbitrary members of the same norm class -- but $\Qret$ acts on the realized physical correction fields.
+\section{Source-addressed quadratic return}
+The second load-bearing estimate concerns the physical quadratic map. The compiler keeps typed provenance internally. In particular, the exact identity $B(W_0,L\Sigma)=\Sigma$ belongs only to the signed-stress image of Proposition~7.6, not to an arbitrary wave that happens to satisfy the same norm bound.
 
-Let the conservative correction envelope be denoted by $\X^s$. Then the proposed quadratic estimate is
+For a correction generated from grade $s$, use the conservative source envelopes
+\[
+\X^s:\qquad
+w\in W_{\frac12+s-\kappa_s},
+\qquad
+m_{\mathrm{tan}}\in M_{1+s-2\kappa_s},
+\]
+with the radial mean one order better, as in the source mean classes. These envelopes contain the actual one-pass corrections; the $-\kappa_s$ in the wave exponent accounts for the signed-stress branch, which is the lowest wave correction produced by the pass.
+
+\begin{lemma}[Source-addressed quadratic return]\label{lem:quadratic-trace}
+For realized corrections in the preceding typed envelopes,
 \begin{equation}\label{eq:quadratic}
 \Qret(\X^s,\X^t)\subseteq \Fadm^{s+t-2\kappa_s}.
 \end{equation}
-The worst channel is wave--wave interaction into the zero angular harmonic. Lemma~9.2 states that two waves of exponents $\alpha,\alpha'$ produce a zero harmonic in $M_{\alpha+\alpha'-\kappa_s}$ \cite[pp.~102--103]{OpenAI2026NS}. With correction waves at the signed-stress envelope, this exactly saturates the averaged-mean threshold in \eqref{eq:quadratic}.
+The equality case in the filtration bookkeeping is the same-label wave--wave zero harmonic.
+\end{lemma}
 
-Since the seed grade is $\sigma_0=1/5$, the nonlinear difference gain is
+\begin{proof}
+Let
+\[
+\alpha=\frac12+s-\kappa_s,
+\qquad
+\alpha'=\frac12+t-\kappa_s.
+\]
+Lemma~9.2 gives the zero angular harmonic of two same-label curl-generated waves in
+\[
+M_{\alpha+\alpha'-\kappa_s}
+=
+M_{1+s+t-3\kappa_s}.
+\]
+The $\bar M$ component of the target filtration is
+\[
+\bar M_{1+(s+t-2\kappa_s)-\kappa_s}
+=
+\bar M_{1+s+t-3\kappa_s},
+\]
+so this channel exactly saturates \eqref{eq:quadratic}. The nonzero wave--wave harmonic has the same source exponent $1+s+t-3\kappa_s$, which lies strictly above the required wave threshold
+\[
+W_{\frac12+s+t-2\kappa_s}.
+\]
+These statements are precisely the two wave--wave conclusions of Lemma~9.2 \cite[pp.~102--103]{OpenAI2026NS}.
+
+For a wave of exponent $\alpha$ and a tangential mean of exponent
+\[
+\mu=1+t-2\kappa_s,
+\]
+Lemma~9.2 gives the nonzero harmonic in
+\[
+W_{\alpha+\mu-1/2}
+=
+W_{1+s+t-3\kappa_s},
+\]
+again strictly above the required wave threshold by $\frac12-\kappa_s$. Distinct labels have zero products on their closed supports by the final statement of Lemma~9.2. The remaining mean--mean and compatibility products are higher order in the exact Section~8 equations; the same ordering is recorded explicitly in Steps~3--4 of Proposition~9.6, where the uncancelled mean and defect products gain at least the displayed positive margins \cite[pp.~110--111]{OpenAI2026NS}. Proposition~9.3 preserves the exact compatibility identities and retained/flat decomposition after every finite legal sequence, so the output remains in the admissible subspace.
+\end{proof}
+
+Since the initialized source state has $\sigma_0=1/5$, the nonlinear difference gain is
 \[
 \eta=\sigma_0-2\kappa_s=0.19998>0.
 \]
@@ -393,16 +476,16 @@ The resulting architecture is summarized by two positive return margins:
 
 \begin{table}[h]
 \centering
-\caption{Critical channels in the compressed architecture.}
+\caption{Critical channels and their source addresses.}
 \label{tab:criticalchannels}
-\begin{tabularx}{0.9\textwidth}{@{}lXcc@{}}
+\begin{tabularx}{\textwidth}{@{}p{0.12\textwidth}p{0.29\textwidth}Xp{0.16\textwidth}@{}}
 \toprule
-Type & Channel & Output role & Margin \\
+Type & Channel & Source inheritance & Margin \\
 \midrule
-Linear & $\bar M\to$ signed-stress wave $\to W$ & bottleneck backward return & $\frac12-4\kappa_s$ \\
-Quadratic & $W\times W\to\bar M$ & bottleneck zero harmonic & seed gain $\frac15-2\kappa_s$ \\
-Linear & $M^\circ\to W$ & higher-order backward return & $>\delta_L$ \\
-Linear & $S\to S$ after defect solve & higher-order defect remainder & $>\delta_L$ \\
+Linear & $\bar M\to$ signed-stress wave $\to W$ & Proposition~7.6 + Proposition~9.1; Proposition~9.6 Step~2 displays $B+1/2-4\kappa_s$ & $\frac12-4\kappa_s$ \\
+Quadratic & $W\times W\to\bar M$ & Lemma~9.2 gives $M_{\alpha+\alpha'-\kappa_s}$ & seed gain $\frac15-2\kappa_s$ \\
+Linear & $M^\circ\to W$ & Lemma~8.6 + Proposition~9.6 Step~3 & $\frac12-2\kappa_s$ \\
+Linear & $S\to S$ after defect solve & Lemmas~8.7--8.8 + Proposition~9.6 Step~4 & $0.9-2\kappa_s$ \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -422,6 +505,30 @@ Because $L_{\mathrm{ret}}P_0=K-I$,
 L_{\mathrm{ret}}P_A=K^{N_A}-I.
 \]
 Thus $P_A$ is an inverse to the required finite resolution; no infinite Neumann series or new completion is required.
+
+\subsection{A literal source-legal compiler expansion}
+The abstract polynomial can be expanded into the primitive operations permitted by Proposition~9.3. For a concrete target, take $A=1$. Since
+\[
+\sigma_0+\delta_L=0.69996<1,
+\qquad
+\sigma_0+2\delta_L=1.19992>1,
+\]
+we have $N_1=2$ and therefore
+\[
+P_1e=P_0e+P_0Ke.
+\]
+The first term $P_0e$ is executed as the following finite block:
+\begin{enumerate}
+  \item apply Proposition~7.2 and the curl construction to the current supported $W$ source;
+  \item reconstruct pressure from the complete updated velocity by the Section~8 pressure map;
+  \item use Corollary~8.5 to prepare the compact averaged stress and Proposition~7.6 for the typed signed-stress correction;
+  \item reconstruct pressure;
+  \item apply Lemma~8.6 to the zero-auxiliary-average mean source;
+  \item reconstruct pressure;
+  \item apply the fixed compatibility correction of Lemmas~8.7--8.8;
+  \item reconstruct pressure and form the retained plus flat decomposition of Proposition~9.3.
+\end{enumerate}
+The retained linear error after this block is $Ke$. The second term $P_0Ke$ is obtained by applying the same eight-step block to that higher-grade retained source. Proposition~9.3 explicitly permits arbitrary finite sequences of these named primitives around the fixed slow base and primary waves, provided pressure is recomputed and products use the complete current fields \cite[pp.~103--105]{OpenAI2026NS}. Hence $P_1$ introduces no new inverse and no operation outside the source-legal primitive family. The same argument expands every finite $P_A$, and every call to $P_A$ inside the finite nonlinear iteration expands into the same finite primitive block.
 
 The nonlinear correction is computed by finite filtered Picard substitution:
 \[
@@ -461,6 +568,25 @@ What disappears is the need to use the particular repeated schedule
 \sigma_j=\frac15+\frac{j}{10}
 \]
 as the primitive explanation of residual improvement.
+
+\begin{table}[h]
+\centering
+\caption{Scope ledger: what is retained, replaced, and removed.}
+\label{tab:scopeledger}
+\begin{tabularx}{\textwidth}{@{}p{0.34\textwidth}p{0.17\textwidth}X@{}}
+\toprule
+Source architecture & SPC treatment & Reason \\
+\midrule
+Sections~7--8 local pulse, stress, mean, compatibility, and pressure machinery & retained & These are the primitive operators compiled by $P_0$. \\
+Proposition~9.3 finite-sequence legality & retained & It is the execution/type interface for finite compiler outputs. \\
+Proposition~9.6 chronological $+0.1$ stage clock & replaced & Return channels are indexed by their actual filtration gains rather than a common synchronization increment. \\
+Stage genealogy $j\mapsto j+1$ as the driver of accuracy & replaced & Target accuracy $A$ determines the finite polynomial depth $N_A$. \\
+Lemmas~9.7--9.8 common-domain and derivative-loss interface & retained & They provide the stage-independent analytic interface consumed by final realization. \\
+Proposition~9.9 and Lemma~5.4 realization & retained & The downstream theorem interface is unchanged. \\
+Flat pulse/cutoff remainder & retained separately & It remains outside the finite-order compiler state. \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \begin{keybox}
 \textbf{Structural compression is measured by deleted obligations, not deleted pages.}
@@ -520,19 +646,19 @@ The mathematically cheapest way to kill the proposed compression is to exhibit o
 The manuscript is designed for independent checking at three levels.
 
 \subsection{Source fidelity audit}
-Every primitive operator invoked by the compiler should be cross-checked against the exact proposition or lemma in \cite{OpenAI2026NS}. Appendix~\ref{app:crosswalk} provides the initial map.
+Every primitive operator invoked by the compiler is tied to its exact source proposition or lemma in \cite{OpenAI2026NS}. Appendix~\ref{app:crosswalk} records the source statement, the typed role, and the exponent inherited by the compiler. In particular, \cref{lem:linear-trace,lem:quadratic-trace} give the two master-inclusion traces in the body of the paper.
 
 \subsection{Channel audit}
-Every arrow entering or leaving $W,\bar M,M^\circ,S$ should be assigned a filtration degree. Appendix~\ref{app:channels} records the presently load-bearing channels and the claim each supports.
+Every arrow entering or leaving $W,\bar M,M^\circ,S$ is assigned a filtration degree. Appendix~\ref{app:channels} records the source address and inherited exponent for the load-bearing channels.
 
 \subsection{Execution audit}
-For several target grades $A$, expand $P_A$ and the finite Picard expression into a literal sequence of source-legal primitive operations, then verify pressure reconstruction, support, admissibility, and the predicted shell order. This turns the abstract compiler into a reproducible proof object.
+The $A=1$ expansion in Section~6 exhibits $P_1=P_0(I+K)$ as two literal source-legal one-pass blocks. Larger $P_A$ and the finite Picard expression expand by finite repetition of the same block. Independent checking should verify pressure reconstruction, support, admissibility, and the predicted shell order after each block.
 
 % =====================================================================
 \section{Conclusion}
 The source Navier--Stokes construction gives a successful residual-improvement path. The present paper asks whether the repeated path is the smallest known explanation of its success.
 
-The proposed answer is a filtered generator. Same-grade dependence is solved finitely. The strongest linear return appears to gain $0.49996$ in filtration. The strongest nonlinear feedback yields a positive difference gain of $0.19998$. Finite algebra then reaches any requested residual order, while the source proof's existing physical realization machinery handles the final infinite assembly.
+The proposed answer is a filtered generator. Same-grade dependence is solved finitely. The source-addressed bottleneck linear return gains $0.49996$ in filtration, and the source-addressed wave--wave bottleneck gives a positive nonlinear difference gain of $0.19998$. Finite algebra then reaches any requested residual order, while the source proof's existing physical realization machinery handles the final infinite assembly.
 
 The larger principle is deliberately compact:
 \begin{keybox}
@@ -582,15 +708,15 @@ Source item & Printed page(s) & Role in the compressed manuscript \\
 \midrule
 \endhead
 Proposition 7.2 & 77 onward & Supported nonzero-harmonic inverse and oscillatory pressure coefficient. \\
-Proposition 7.6 & 84 onward & Signed covariance realization $B(W_0,L\Sigma)=\Sigma$; fixed denominator; no sign/relative-size restriction on $\Sigma$. \\
+Proposition 7.6, (7.32), (7.34) & 84--85 & $\Sigma\in M^\alpha\mapsto L\Sigma\in W^{\alpha-1/2}$ and exact typed covariance identity $B(W_0,L\Sigma)=\Sigma$. \\
 Proposition 8.4 / Corollary 8.5 & 94--95 & Exact integrated compatibility identities and preparation of the compact stress target. \\
 Lemma 8.6 & 96 & Zero-auxiliary-average mean correction. \\
 Lemmas 8.7--8.8 & 97--99 & Fixed five-equation compatibility map and higher-order defect remainder. \\
-Proposition 9.1 & 101--102 & Supported wave residual gain after pulse inversion. \\
-Lemma 9.2 & 102--103 & Wave--mean and wave--wave product rules; quadratic bottleneck. \\
-Proposition 9.3 & 103--105 & Legality of arbitrary finite primitive sequences; pressure reconstruction; retained/flat separation. \\
+Proposition 9.1 & 101--102 & $W^\alpha$ source $\mapsto W^{\alpha+1/2-3\kappa_s}$ supported linear residual, modulo flat pulse/cutoff tails. \\
+Lemma 9.2 & 102--103 & $W^\alpha\times M^\mu\to W^{\alpha+\mu-1/2}$; same-label $W^\alpha\times W^{\alpha'}\to W,M$ at exponent $\alpha+\alpha'-\kappa_s$; distinct labels have zero products. \\
+Proposition 9.3 & 103--105 & Legality of arbitrary finite primitive sequences around the fixed base/primary waves; complete-field products, exact pressure reconstruction, retained/flat separation. \\
 Definition 9.4 / Proposition 9.5 & 106 onward & Stage state and initialized seed state. \\
-Proposition 9.6 & 107--111 & Repeated four-part $+0.1$ correction cycle; source of the stage architecture being replaced. \\
+Proposition 9.6 & 107--111 & Step~1: $B+1/2-3\kappa_s$ wave return. Step~2: signed correction $W_{B-\kappa_s}$ and bottleneck linear error $B+1/2-4\kappa_s$. Step~3: $H=C^*-2\kappa_s$ mean correction and $W_H$ return. Step~4: defect remainder $H+0.9-2\kappa_s$. The final $+0.1$ is the common synchronization increment being replaced. \\
 Lemma 9.7 & 111--113 & One common domain for every finite construction. \\
 Lemma 9.8 & 113--114 & Physical derivative conversion with losses independent of stage. \\
 Proposition 9.9 & 114--115 & Final realization from finite corrections. \\
@@ -599,25 +725,25 @@ Lemma 5.4 & Section 5, esp. 56--61 & General shrinking-cutoff summation interfac
 \end{longtable}
 
 \section{Channel audit matrix}\label{app:channels}
-\begin{longtable}{@{}p{0.18\textwidth}p{0.20\textwidth}p{0.18\textwidth}p{0.32\textwidth}@{}}
+\begin{longtable}{@{}p{0.15\textwidth}p{0.22\textwidth}p{0.18\textwidth}p{0.35\textwidth}@{}}
 \toprule
-Input & Mechanism & Output & Audit question \\
+Input & Source mechanism & Output & Inherited exponent / role \\
 \midrule
 \endfirsthead
 \toprule
-Input & Mechanism & Output & Audit question \\
+Input & Source mechanism & Output & Inherited exponent / role \\
 \midrule
 \endhead
-$W$ & Proposition 7.2 + Proposition 9.1 & $W$ & Does the uncanceled supported residual always land above the target linear grade? \\
-$W$ & covariance interaction & $\bar M$ & Forward same-grade arrow; is every component passed to stress preparation before the pass ends? \\
-$\bar M$ & Corollary 8.5 + Proposition 7.6 & $W$ & Bottleneck linear return; verify exact typed covariance identity and exponent $1/2-4\kappa_s$. \\
-$M^\circ$ & Lemma 8.6 & $W,S$ & Verify all backward outputs gain strictly more than $\delta_L$. \\
-$S$ & Lemmas 8.7--8.8 & $S$ & Verify exact linear cancellation and higher-order remainder. \\
-$W\times W$ & Lemma 9.2 & $\bar M$ & Bottleneck quadratic channel; verify it saturates but does not violate $s+t-2\kappa_s$. \\
-$W\times M$ & Lemma 9.2 & $W$ & Verify positive slack. \\
-$M\times M$ & exact mean equations & $M,S$ & Verify these terms are strictly higher order. \\
-pressure reconstruction & Section 8 exact map & $P,\bar M,M^\circ$ & Verify no cubic term is introduced around $U_0$. \\
-flat tails & finite allowed operations & flat tails & Verify no allowed finite operator turns flat input into fixed finite order. \\
+$W_B$ & Proposition~7.2 + Proposition~9.1 & $W$ & Supported linear residual $W_{B+1/2-3\kappa_s}$; relative gain $1/2-3\kappa_s$. \\
+$W$ & covariance interaction + exact mean readout & $\bar M$ & Forward same-grade dependency inside $P_0$; consumed before the pass ends. \\
+$\bar M_{1+s-\kappa_s}$ & Corollary~8.5 + Proposition~7.6 + Proposition~9.1 & $W$ & Signed correction $W_{B-\kappa_s}$; residual $W_{B+1/2-4\kappa_s}$; bottleneck gain $\delta_L$. \\
+$M^\circ_H$ & Lemma~8.6 + Proposition~9.6 Step~3 & $W,M,S$ & Wave return $W_H$; mean remainder at least $M_{H+1-2\kappa_s}$; strictly above $\delta_L$. \\
+$S_H$ & Lemmas~8.7--8.8 + Proposition~9.6 Step~4 & $S$ & Defect remainder $S_{H+0.9-2\kappa_s}$; strictly above $\delta_L$. \\
+$W^\alpha\times W^{\alpha'}$ & Lemma~9.2 & $W,\bar M$ & Both harmonics have exponent $\alpha+\alpha'-\kappa_s$; zero harmonic saturates \eqref{eq:quadratic}. \\
+$W^\alpha\times M^\mu$ & Lemma~9.2 & $W$ & $W_{\alpha+\mu-1/2}$; positive slack relative to \eqref{eq:quadratic}. \\
+distinct wave labels & Lemma~9.2 / Lemma~6.1 & $0$ & Products vanish on closed supports. \\
+pressure reconstruction & Section~8 exact map / Proposition~9.3 & $P,\bar M,M^\circ$ & Recomputed from the complete current fields after every update; no new primitive family. \\
+flat tails & Proposition~9.1 / Proposition~9.3 & flat tails & Kept in the additive flat remainder; every fixed derivative is $O(q^N)$ for every $N$. \\
 \bottomrule
 \end{longtable}
 
