@@ -2,7 +2,6 @@
 
 **Author:** Michael Zot  
 **Status:** Working preprint / proposed stage-free reconstruction  
-**Version:** 0.1.0  
 **Date:** 2026-09-22  
 **Contact:** mike@ZotBot.Ai  
 **Repository:** https://github.com/mikecreation/ZotBot/tree/main/research/navier-stokes-spc
@@ -19,14 +18,14 @@ K \mathfrak F_{\mathrm{adm}}^s \subseteq \mathfrak F_{\mathrm{adm}}^{s+\frac12-4
 Q_{\mathrm{ret}}(\mathcal X^s,\mathcal X^t) \subseteq \mathfrak F_{\mathrm{adm}}^{s+t-2\kappa_s}.
 ```
 
-For `kappa_s = 10^-5`, the linear return gain is `0.49996`; with seed grade `sigma_0 = 1/5`, the nonlinear difference gain is `0.19998`.
+For the source value `kappa_s = 10^-5` fixed in OpenAI equation (6.2), the linear return gain is `0.49996`; with seed grade `sigma_0 = 1/5`, the nonlinear difference gain is `0.19998`. The manuscript now traces both inclusions directly to the named source propositions/lemmas and includes a literal source-legal finite compiler expansion.
 
 ## Files
 
 - `paper/Navier_Stokes_Representation_Induced_Complexity.pdf` - compiled preprint.
 - `paper/main.tex` - LaTeX source.
 - `audit/verification_checklist.md` - explicit failure tests.
-- `audit/source_crosswalk.md` - source dependency map.
+- `audit/source_crosswalk.md` - source-addressed exponent/type trace, compiler legality map, and retained/replaced scope ledger.
 
 ## Source under analysis
 
