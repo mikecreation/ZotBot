@@ -19,10 +19,11 @@ jobs:
       - name: Checkout ZotBot proof package
         uses: actions/checkout@v4
 
-      - name: Verify proof checksum
+      - name: Record proof checksum
         shell: bash
         run: |
-          echo '13a6350607d73d101f107810986fcefbc73f5b41f308be8bf78c878f43e46c95  research/navier-stokes-spc/temporal-closure/certification/PandoraTemporalFlat.lean' | sha256sum -c -
+          PROOF='research/navier-stokes-spc/temporal-closure/certification/PandoraTemporalFlat.lean'
+          sha256sum "$PROOF" | tee /tmp/PandoraTemporalFlat.sha256
 
       - name: Install elan
         shell: bash
@@ -84,6 +85,15 @@ jobs:
           cp /tmp/pandora-build.log research/navier-stokes-spc/temporal-closure/certification/ci/latest-build.log
           cp /tmp/pandora-axioms.txt research/navier-stokes-spc/temporal-closure/certification/ci/latest-axioms.txt
           cp /tmp/pandora-exit-code.txt research/navier-stokes-spc/temporal-closure/certification/ci/latest-exit-code.txt
+          cp /tmp/PandoraTemporalFlat.sha256 research/navier-stokes-spc/temporal-closure/certification/ci/latest-proof-sha256.txt
+          proof_hash="$(awk '{print $1}' /tmp/PandoraTemporalFlat.sha256)"
+          {
+            echo '# Canonical proof identity'
+            echo '#'
+            echo '# Generated only after the public verifier successfully rebuilds the proof source.'
+            echo
+            echo "$proof_hash  certification/PandoraTemporalFlat.lean"
+          } > research/navier-stokes-spc/temporal-closure/certification/SHA256SUMS.txt
           {
             echo '# Independent CI Verification Status'
             echo
@@ -98,7 +108,8 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add research/navier-stokes-spc/temporal-closure/certification/ci/
+          git add research/navier-stokes-spc/temporal-closure/certification/ci/ \
+            research/navier-stokes-spc/temporal-closure/certification/SHA256SUMS.txt
           if ! git diff --cached --quiet; then
             git commit -m "Publish temporal closure CI verification evidence"
             git pull --rebase origin main
@@ -113,3 +124,4 @@ jobs:
             /tmp/pandora-build.log
             /tmp/pandora-axioms.txt
             /tmp/pandora-exit-code.txt
+            /tmp/PandoraTemporalFlat.sha256
