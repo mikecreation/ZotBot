@@ -1,0 +1,24 @@
+RECORDED CERTIFICATION BUILD RESULT
+Date: 2026-09-26
+Baseline: openai/NavierStokesAndEuler
+Commit: f9e8bc5b38b6e212696e8a30e3e91517af887bbd
+Lean: 4.34.0-rc2
+Target: NavierStokes.PandoraTemporalFlat
+
+Canonical command used in the successful certification run:
+
+set -o pipefail
+lake build NavierStokes.PandoraTemporalFlat 2>&1 | tee /tmp/pandora-build.log
+status=${PIPESTATUS[0]}
+echo "TRUE_LAKE_EXIT_CODE=$status"
+
+Recorded terminal result:
+
+Build completed successfully (3243 jobs).
+TRUE_LAKE_EXIT_CODE=0
+
+Interpretation:
+- The exit code shown is the exit code of lake build, captured from PIPESTATUS[0], not tee.
+- Remaining compiler output consisted of non-fatal deprecation/linter warnings.
+- 3243 is the Lake job count of the targeted build. It is not the number of source files in the full OpenAI repository.
+- A fresh independent run may report a different job/cache count while still reproducing the theorem, provided the pinned source/toolchain are used and the target build exits 0.
