@@ -3,7 +3,7 @@ set -euo pipefail
 
 BASELINE_REPO="https://github.com/openai/NavierStokesAndEuler.git"
 BASELINE_COMMIT="f9e8bc5b38b6e212696e8a30e3e91517af887bbd"
-EXPECTED_SHA="13a6350607d73d101f107810986fcefbc73f5b41f308be8bf78c878f43e46c95"
+EXPECTED_SHA="2f95f5c391cc0c062d92ae681afea195e44b1698ef09f003b2fed62f900b965b"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PACKAGE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 PROOF="$PACKAGE_DIR/certification/PandoraTemporalFlat.lean"
