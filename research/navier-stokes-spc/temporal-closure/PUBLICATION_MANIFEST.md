@@ -33,7 +33,7 @@ Certified declarations:
 - SHA-256 manifest;
 - recorded certification command/result;
 - recorded axiom/proof-hole audit;
-- full verification-session transcript;
+- recorded verification-session evidence;
 - source map to the baseline OpenAI declarations;
 - theorem-delta note distinguishing the existing one-state estimate from the new congruence/all-order result;
 - independent reproduction instructions;
