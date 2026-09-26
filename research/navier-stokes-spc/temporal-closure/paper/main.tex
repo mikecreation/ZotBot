@@ -428,7 +428,21 @@ F(\Iinf)\subseteq\Iinf,
 \]
 which would permit a well-defined induced evolution on the corresponding quotient. That statement remains open in this note.
 
-\section{Reproducibility map}
+\section{Conclusion}
+\begin{eurekabox}
+\textbf{Core insight.} The most useful thing a compression theorem can prove is not that a path is shorter. It is that the future has lost the ability to tell which path you took.
+\end{eurekabox}
+\noindent\textbf{Formal content.}
+The OpenAI formalization already supplied the analytic temporal reconstruction estimate. This work adds the two-state congruence and all-order closure required by the emerging SPC quotient program and checks both declarations in Lean against a pinned public baseline. The theorem is deliberately local, but its role is structural: temporal reconstruction cannot turn an all-order-invisible residual-source difference into a finite-order-visible temporal increment under the certified hypotheses.
+
+That is one closed arrow. The larger quotient theorem remains to be earned arrow by arrow.
+
+\appendix
+\section*{Appendices}
+\addcontentsline{toc}{section}{Appendices}
+\noindent Exact file names, theorem identifiers, hashes, and commands are collected below by design. They are essential for reproducibility, but they are implementation metadata rather than the mathematical narrative.
+
+\section{Exact reproducibility record}
 \begin{eurekabox}
 \textbf{Core insight.} Reproducibility is strongest when every sentence of the form ``we checked X'' has a file or command sitting next to it. The public package is organized around that rule.
 \end{eurekabox}
@@ -451,15 +465,6 @@ The public package exposes the following artifacts directly:
 
 \section{AI assistance disclosure}
 AI systems were used as research tools for source retrieval, proof-dependency analysis, formal-proof drafting and debugging, adversarial checking, literature/prior-art search, and editorial drafting. The research direction, conceptual framework, selection and interpretation of claims, acceptance or rejection of proposed arguments, and publication decisions were determined by the author. The final theorem status reported here is tied to the public Lean artifact and reproducible build procedure, not to an AI-generated prose assessment.
-
-\section{Conclusion}
-\begin{eurekabox}
-\textbf{Core insight.} The most useful thing a compression theorem can prove is not that a path is shorter. It is that the future has lost the ability to tell which path you took.
-\end{eurekabox}
-\noindent\textbf{Formal content.}
-The OpenAI formalization already supplied the analytic temporal reconstruction estimate. This work adds the two-state congruence and all-order closure required by the emerging SPC quotient program and checks both declarations in Lean against a pinned public baseline. The theorem is deliberately local, but its role is structural: temporal reconstruction cannot turn an all-order-invisible residual-source difference into a finite-order-visible temporal increment under the certified hypotheses.
-
-That is one closed arrow. The larger quotient theorem remains to be earned arrow by arrow.
 
 \begin{thebibliography}{9}
 \bibitem{OpenAI2026NS}
