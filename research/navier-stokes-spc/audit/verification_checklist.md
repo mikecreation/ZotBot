@@ -18,3 +18,5 @@ The proposed compression should be regarded as broken if a valid audit establish
 14. **Growing primitive family.** Higher target accuracy requires genuinely new inverse operators or compatibility conditions.
 
 The strongest positive check is a complete arrow-by-arrow audit of every return exponent entering or leaving `W`, `Mbar`, `Mcirc`, and `S`.
+
+15. **Flatness-interface conflation.** A cross-paper argument identifies Paper 1's flat pulse/cutoff remainder ideal with Paper 2's all-order `MeanClass` relation without a typed translation theorem for the relevant remainder family.
