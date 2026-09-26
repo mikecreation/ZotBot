@@ -48,6 +48,19 @@ Build completed successfully (3243 jobs).
 TRUE_LAKE_EXIT_CODE=0
 ```
 
+## Fresh public CI reproduction
+
+The published GitHub Actions verifier subsequently performed a fresh rebuild from the public artifacts against the same pinned OpenAI commit.
+
+Result:
+
+```text
+Status: PASS
+TRUE_LAKE_EXIT_CODE=0
+```
+
+The CI-generated build log again ends with `Build completed successfully (3243 jobs).` Its generated axiom output reports only `propext`, `Classical.choice`, and `Quot.sound` for both target declarations. These generated files are committed under `certification/ci/`.
+
 ## Proof-hole and axiom audit
 
 Final compiled file:
