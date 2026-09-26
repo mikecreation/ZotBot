@@ -1,0 +1,26 @@
+RECORDED AXIOM AUDIT
+Date: 2026-09-26
+
+Target declarations:
+
+NavierStokes.VariableGaugeMean.temporalIncrementState_difference_classes
+NavierStokes.VariableGaugeMean.temporalIncrementState_flat_classes
+
+The certification run imported NavierStokes.PandoraTemporalFlat and executed #print axioms for both targets.
+
+Recorded axiom set for both target declarations:
+
+[propext, Classical.choice, Quot.sound]
+
+No custom axiom introduced by PandoraTemporalFlat.lean was reported.
+
+Source-hole audit on the final compiled file:
+
+grep -nE '\bsorry\b|\badmit\b' NavierStokes/PandoraTemporalFlat.lean
+Result: no output; grep exit code 1 (no matches).
+
+grep -nE '^[[:space:]]*axiom\b' NavierStokes/PandoraTemporalFlat.lean
+Result: no output; grep exit code 1 (no matches).
+
+IMPORTANT REPRODUCIBILITY NOTE
+This file is the recorded result from the original certification session. The public GitHub Actions verifier reruns #print axioms and #check independently and, after a successful run, commits the raw machine output under certification/ci/latest-axioms.txt.
