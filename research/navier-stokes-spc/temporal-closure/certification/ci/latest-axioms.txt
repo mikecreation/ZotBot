@@ -1,0 +1,115 @@
+'NavierStokes.VariableGaugeMean.temporalIncrementState_difference_classes' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'NavierStokes.VariableGaugeMean.temporalIncrementState_flat_classes' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+NavierStokes.VariableGaugeMean.temporalIncrementState_difference_classes {coord cL cR : ℝ}
+  (U : NavierStokes.LocalSignedRequest.SlowRegion coord)
+  (g : NavierStokes.VariableGaugeMean.GaugeData NavierStokes.PressureStream.Plane) (ha : 0 < g.radial.inner)
+  (hd : 0 < g.radial.exponent) (hcL : 0 < cL) (hcR : 0 < cR) (ε L : ℕ → ℝ) (hε : ∀ (n : ℕ), 0 < ε n)
+  (hεone : ∀ (n : ℕ), ε n ≤ 1) (hL : ∀ (n : ℕ), 1 ≤ L n)
+  (hell : ∀ (n : ℕ), g.length n = NavierStokes.VariableGaugeMean.qLength coord) {h α : ℝ} (hh : 0 ≤ h)
+  (hscale : ∀ (n : ℕ), NavierStokes.ChartScales.S n ≤ L n) (index : ℕ → ℕ) (D : ℕ)
+  (hgap : ∀ (n : ℕ), NavierStokes.ChartScales.nativeIndex h n ≤ index n + D)
+  (axial : NavierStokes.PressureStream.Plane × NavierStokes.PressureStream.Plane)
+  (c : NavierStokes.CorrectionState.Context NavierStokes.LocalSignedRequest.Point)
+  (u₁ u₂ : NavierStokes.CorrectionState.State NavierStokes.LocalSignedRequest.Point) (heps : c.operators.epsilon = ε)
+  (hθ₁ : ∀ (n : ℕ), ContDiffOn ℝ (↑⊤) (u₁.thetaResidual c n) (NavierStokes.PhysicalMeanDomain.slowDomain U.carrier))
+  (hθ₂ : ∀ (n : ℕ), ContDiffOn ℝ (↑⊤) (u₂.thetaResidual c n) (NavierStokes.PhysicalMeanDomain.slowDomain U.carrier))
+  (hz₁ : ∀ (n : ℕ), ContDiffOn ℝ (↑⊤) (u₁.axialResidual c n) (NavierStokes.PhysicalMeanDomain.slowDomain U.carrier))
+  (hz₂ : ∀ (n : ℕ), ContDiffOn ℝ (↑⊤) (u₂.axialResidual c n) (NavierStokes.PhysicalMeanDomain.slowDomain U.carrier))
+  (hpθ₁ : ∀ (n : ℕ), NavierStokes.PhysicalMeanDomain.PeriodicOn U.carrier (u₁.thetaResidual c n))
+  (hpθ₂ : ∀ (n : ℕ), NavierStokes.PhysicalMeanDomain.PeriodicOn U.carrier (u₂.thetaResidual c n))
+  (hpz₁ : ∀ (n : ℕ), NavierStokes.PhysicalMeanDomain.PeriodicOn U.carrier (u₁.axialResidual c n))
+  (hpz₂ : ∀ (n : ℕ), NavierStokes.PhysicalMeanDomain.PeriodicOn U.carrier (u₂.axialResidual c n))
+  (hsz₁ :
+    ∀ (n : ℕ),
+      NavierStokes.VariableGaugeMean.SupportedGauge g.radial.inner g.radial.outer
+        (NavierStokes.VariableGaugeMean.qLength coord) U.carrier (u₁.axialResidual c n))
+  (hsz₂ :
+    ∀ (n : ℕ),
+      NavierStokes.VariableGaugeMean.SupportedGauge g.radial.inner g.radial.outer
+        (NavierStokes.VariableGaugeMean.qLength coord) U.carrier (u₂.axialResidual c n))
+  (hcθ :
+    NavierStokes.WeightedClasses.MeanClass
+      (NavierStokes.LocalSignedRequest.movingStripData U g.radial.inner g.radial.outer cL cR ha hcL hcR ε L hε hεone hL)
+      α fun n z => u₁.thetaResidual c n z - u₂.thetaResidual c n z)
+  (hcz :
+    NavierStokes.WeightedClasses.MeanClass
+      (NavierStokes.LocalSignedRequest.movingStripData U g.radial.inner g.radial.outer cL cR ha hcL hcR ε L hε hεone hL)
+      α fun n z => u₁.axialResidual c n z - u₂.axialResidual c n z) :
+  NavierStokes.WeightedClasses.MeanClass
+      (NavierStokes.LocalSignedRequest.movingStripData U g.radial.inner g.radial.outer cL cR ha hcL hcR ε L hε hεone hL)
+      (α + 1)
+      ((NavierStokes.VariableGaugeMean.temporalIncrementState g h index axial c u₁).radial -
+        (NavierStokes.VariableGaugeMean.temporalIncrementState g h index axial c u₂).radial) ∧
+    NavierStokes.WeightedClasses.MeanClass
+        (NavierStokes.LocalSignedRequest.movingStripData U g.radial.inner g.radial.outer cL cR ha hcL hcR ε L hε hεone
+          hL)
+        α
+        ((NavierStokes.VariableGaugeMean.temporalIncrementState g h index axial c u₁).angular -
+          (NavierStokes.VariableGaugeMean.temporalIncrementState g h index axial c u₂).angular) ∧
+      NavierStokes.WeightedClasses.MeanClass
+        (NavierStokes.LocalSignedRequest.movingStripData U g.radial.inner g.radial.outer cL cR ha hcL hcR ε L hε hεone
+          hL)
+        α
+        ((NavierStokes.VariableGaugeMean.temporalIncrementState g h index axial c u₁).axial -
+          (NavierStokes.VariableGaugeMean.temporalIncrementState g h index axial c u₂).axial)
+NavierStokes.VariableGaugeMean.temporalIncrementState_flat_classes {coord cL cR : ℝ}
+  (U : NavierStokes.LocalSignedRequest.SlowRegion coord)
+  (g : NavierStokes.VariableGaugeMean.GaugeData NavierStokes.PressureStream.Plane) (ha : 0 < g.radial.inner)
+  (hd : 0 < g.radial.exponent) (hcL : 0 < cL) (hcR : 0 < cR) (ε L : ℕ → ℝ) (hε : ∀ (n : ℕ), 0 < ε n)
+  (hεone : ∀ (n : ℕ), ε n ≤ 1) (hL : ∀ (n : ℕ), 1 ≤ L n)
+  (hell : ∀ (n : ℕ), g.length n = NavierStokes.VariableGaugeMean.qLength coord) {h : ℝ} (hh : 0 ≤ h)
+  (hscale : ∀ (n : ℕ), NavierStokes.ChartScales.S n ≤ L n) (index : ℕ → ℕ) (D : ℕ)
+  (hgap : ∀ (n : ℕ), NavierStokes.ChartScales.nativeIndex h n ≤ index n + D)
+  (axial : NavierStokes.PressureStream.Plane × NavierStokes.PressureStream.Plane)
+  (c : NavierStokes.CorrectionState.Context NavierStokes.LocalSignedRequest.Point)
+  (u₁ u₂ : NavierStokes.CorrectionState.State NavierStokes.LocalSignedRequest.Point) (heps : c.operators.epsilon = ε)
+  (hθ₁ : ∀ (n : ℕ), ContDiffOn ℝ (↑⊤) (u₁.thetaResidual c n) (NavierStokes.PhysicalMeanDomain.slowDomain U.carrier))
+  (hθ₂ : ∀ (n : ℕ), ContDiffOn ℝ (↑⊤) (u₂.thetaResidual c n) (NavierStokes.PhysicalMeanDomain.slowDomain U.carrier))
+  (hz₁ : ∀ (n : ℕ), ContDiffOn ℝ (↑⊤) (u₁.axialResidual c n) (NavierStokes.PhysicalMeanDomain.slowDomain U.carrier))
+  (hz₂ : ∀ (n : ℕ), ContDiffOn ℝ (↑⊤) (u₂.axialResidual c n) (NavierStokes.PhysicalMeanDomain.slowDomain U.carrier))
+  (hpθ₁ : ∀ (n : ℕ), NavierStokes.PhysicalMeanDomain.PeriodicOn U.carrier (u₁.thetaResidual c n))
+  (hpθ₂ : ∀ (n : ℕ), NavierStokes.PhysicalMeanDomain.PeriodicOn U.carrier (u₂.thetaResidual c n))
+  (hpz₁ : ∀ (n : ℕ), NavierStokes.PhysicalMeanDomain.PeriodicOn U.carrier (u₁.axialResidual c n))
+  (hpz₂ : ∀ (n : ℕ), NavierStokes.PhysicalMeanDomain.PeriodicOn U.carrier (u₂.axialResidual c n))
+  (hsz₁ :
+    ∀ (n : ℕ),
+      NavierStokes.VariableGaugeMean.SupportedGauge g.radial.inner g.radial.outer
+        (NavierStokes.VariableGaugeMean.qLength coord) U.carrier (u₁.axialResidual c n))
+  (hsz₂ :
+    ∀ (n : ℕ),
+      NavierStokes.VariableGaugeMean.SupportedGauge g.radial.inner g.radial.outer
+        (NavierStokes.VariableGaugeMean.qLength coord) U.carrier (u₂.axialResidual c n))
+  (hθflat :
+    ∀ (A : ℝ),
+      NavierStokes.WeightedClasses.MeanClass
+        (NavierStokes.LocalSignedRequest.movingStripData U g.radial.inner g.radial.outer cL cR ha hcL hcR ε L hε hεone
+          hL)
+        A fun n z => u₁.thetaResidual c n z - u₂.thetaResidual c n z)
+  (hzflat :
+    ∀ (A : ℝ),
+      NavierStokes.WeightedClasses.MeanClass
+        (NavierStokes.LocalSignedRequest.movingStripData U g.radial.inner g.radial.outer cL cR ha hcL hcR ε L hε hεone
+          hL)
+        A fun n z => u₁.axialResidual c n z - u₂.axialResidual c n z)
+  (A : ℝ) :
+  NavierStokes.WeightedClasses.MeanClass
+      (NavierStokes.LocalSignedRequest.movingStripData U g.radial.inner g.radial.outer cL cR ha hcL hcR ε L hε hεone hL)
+      A
+      ((NavierStokes.VariableGaugeMean.temporalIncrementState g h index axial c u₁).radial -
+        (NavierStokes.VariableGaugeMean.temporalIncrementState g h index axial c u₂).radial) ∧
+    NavierStokes.WeightedClasses.MeanClass
+        (NavierStokes.LocalSignedRequest.movingStripData U g.radial.inner g.radial.outer cL cR ha hcL hcR ε L hε hεone
+          hL)
+        A
+        ((NavierStokes.VariableGaugeMean.temporalIncrementState g h index axial c u₁).angular -
+          (NavierStokes.VariableGaugeMean.temporalIncrementState g h index axial c u₂).angular) ∧
+      NavierStokes.WeightedClasses.MeanClass
+        (NavierStokes.LocalSignedRequest.movingStripData U g.radial.inner g.radial.outer cL cR ha hcL hcR ε L hε hεone
+          hL)
+        A
+        ((NavierStokes.VariableGaugeMean.temporalIncrementState g h index axial c u₁).axial -
+          (NavierStokes.VariableGaugeMean.temporalIncrementState g h index axial c u₂).axial)
