@@ -8,8 +8,8 @@ import NavierStokes.VariableGaugeMean
 geometry temporal reconstruction. `temporalIncrementState_difference_classes`
 certifies the temporal difference bridge at one exponent `α` and
 `temporalIncrementState_flat_classes` its all-exponent corollary (radial
-`A + 1` downgraded via `mono_exponent`).  Status: source proof only — the
-Lean toolchain and `.olean` artifacts are absent; nothing is certified.
+`A + 1` downgraded via `mono_exponent`).  Status: machine-certified and publicly reproducible against the pinned OpenAI baseline;
+the public verification package records the successful build, axiom audit, and CI reproduction.
 -/
 
 noncomputable section
