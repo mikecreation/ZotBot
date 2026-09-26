@@ -34,7 +34,7 @@ The finite-grade exponent transfer is inherited from the existing source theorem
 - Pinned commit: `f9e8bc5b38b6e212696e8a30e3e91517af887bbd`
 - Lean: `4.34.0-rc2`
 - Certified module: `certification/PandoraTemporalFlat.lean`
-- Module SHA-256: `13a6350607d73d101f107810986fcefbc73f5b41f308be8bf78c878f43e46c95`
+- Module SHA-256: `2f95f5c391cc0c062d92ae681afea195e44b1698ef09f003b2fed62f900b965b`
 - Recorded target build: `TRUE_LAKE_EXIT_CODE=0`
 - Recorded target build completion: `Build completed successfully (3243 jobs).`
 - Fresh public CI rerun: **PASS**, with `TRUE_LAKE_EXIT_CODE=0` and the same standard axiom set.
@@ -71,6 +71,7 @@ The 3243 count is the Lake job count for the targeted build. The project-side im
 - `scripts/reproduce.sh` - shell script implementing the same procedure.
 - `PUBLICATION_MANIFEST.md` - skeptical-reader checklist of every proof/publication artifact.
 - `CLAIM_BOUNDARY.md` - explicit statement of what is and is not certified.
+- `FLATNESS_INTERFACE.md` - exact boundary between Paper 1's flat pulse/cutoff tails and Paper 2's all-order `MeanClass` relation.
 - `.github/workflows/verify-navier-stokes-temporal.yml` - public CI verifier.
 
 ## Claim boundary
@@ -85,7 +86,7 @@ This package certifies the temporal-reconstruction congruence only. It does **no
 - a new Navier-Stokes blowup theorem;
 - absolute worldwide priority for the underlying functional-analytic fact.
 
-The next live formal target is the debt bridge.
+The next live formal target inside the `MeanClass` quotient program is the debt bridge. A separate typed translation theorem would be required before identifying Paper 1's flat pulse/cutoff remainder ideal with this package's `I_infinity`; no such identification is claimed here.
 
 ## Relation to the first SPC paper
 
@@ -93,7 +94,7 @@ The first paper asks whether a successful staged proof trajectory contains repre
 
 > **A deletion is safe only when future operators cannot make the deleted distinction visible again.**
 
-Temporal reconstruction is now one machine-certified instance of that principle.
+Temporal reconstruction is now one machine-certified instance of that principle. Paper 1's flat pulse/cutoff tails remain a distinct interface handled by the source construction's flat-remainder machinery; see `FLATNESS_INTERFACE.md`.
 
 ## AI assistance disclosure
 
