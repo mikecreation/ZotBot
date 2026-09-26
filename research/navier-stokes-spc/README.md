@@ -41,12 +41,15 @@ For the source value `kappa_s = 10^-5`, the linear return gain is `0.49996`; wit
 - [Exact proof source](temporal-closure/certification/PandoraTemporalFlat.lean)
 - [Canonical proof checksum](temporal-closure/certification/SHA256SUMS.txt)
 - [Claim boundary](temporal-closure/CLAIM_BOUNDARY.md)
+- [Flatness interface boundary](temporal-closure/FLATNESS_INTERFACE.md)
 
 This follow-on result is intentionally narrower than Paper 1. It does not claim a new temporal gain estimate. The OpenAI baseline already has the one-state estimate. The new Lean module proves the two-state congruence needed by the emerging quotient program and its genuine all-order corollary.
 
 The exact 598-line proof, canonical SHA-256, recorded build/axiom evidence, verification-session evidence, reproduction script, public CI verifier, source crosswalk, reviewer-response crosswalk, revised paper source, and compiled PDF are published under `temporal-closure/`.
 
 The public verifier is configured to rebuild against the pinned OpenAI commit and publish its machine-generated build/axiom logs under `temporal-closure/certification/ci/` after a successful independent GitHub Actions run.
+
+Paper 1's flat pulse/cutoff remainder ideal and Paper 2's all-order `MeanClass` relation are intentionally kept distinct. Paper 2 does not claim an equality or automatic translation between them; any future cross-paper use requiring such a translation must prove it for the relevant typed remainder family.
 
 ## Source under analysis
 
