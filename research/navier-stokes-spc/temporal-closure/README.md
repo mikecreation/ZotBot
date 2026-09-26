@@ -34,6 +34,8 @@ The finite-grade exponent transfer is inherited from the existing source theorem
 - Module SHA-256: `13a6350607d73d101f107810986fcefbc73f5b41f308be8bf78c878f43e46c95`
 - Recorded target build: `TRUE_LAKE_EXIT_CODE=0`
 - Recorded target build completion: `Build completed successfully (3243 jobs).`
+- Fresh public CI rerun: **PASS**, with `TRUE_LAKE_EXIT_CODE=0` and the same standard axiom set.
+- CI evidence: [`certification/ci/STATUS.md`](certification/ci/STATUS.md)
 - Proof-hole audit: zero `sorry`, zero `admit`, zero custom `axiom`
 - `#print axioms`: only `propext`, `Classical.choice`, `Quot.sound`
 
@@ -57,7 +59,7 @@ The 3243 count is the Lake job count for the targeted build. The project-side im
 - `certification/THEOREM_DELTA.md` - exact distinction between the existing theorem and the new theorems.
 - `certification/REVIEW_RESPONSE.md` - reviewer concern -> public artifact/fix crosswalk.
 - `certification/VERIFICATION_SESSION_TRANSCRIPT.txt` - recorded verification-session evidence containing the load-bearing successful build and audit output.
-- `certification/ci/` - machine-generated public CI logs after successful independent reruns.
+- `certification/ci/` - machine-generated public CI evidence from the fresh GitHub Actions rerun. Current status: **PASS**.
 
 ### Independent reproduction
 
