@@ -43,7 +43,7 @@ sha256sum NavierStokes/PandoraTemporalFlat.lean
 Expected:
 
 ```text
-13a6350607d73d101f107810986fcefbc73f5b41f308be8bf78c878f43e46c95  NavierStokes/PandoraTemporalFlat.lean
+2f95f5c391cc0c062d92ae681afea195e44b1698ef09f003b2fed62f900b965b  NavierStokes/PandoraTemporalFlat.lean
 ```
 
 ## 4. Fetch the published Mathlib cache
