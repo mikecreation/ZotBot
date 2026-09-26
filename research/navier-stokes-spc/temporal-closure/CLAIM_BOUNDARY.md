@@ -38,9 +38,10 @@ This package does **not** by itself certify:
 - full-cycle preservation of the all-order class;
 - a complete quotient evolution on `C / I_infinity`;
 - the full stage-free SPC theorem;
+- an identification of Paper 1's flat pulse/cutoff remainder ideal `I_flat` with Paper 2's all-order `MeanClass` relation `I_infinity`;
 - a new Navier-Stokes blowup theorem;
 - absolute worldwide priority for the underlying functional-analytic fact.
 
 ## Why this boundary matters
 
-The result is useful because quotient/compression arguments require congruence, not merely one-state estimates. It is deliberately presented as one certified arrow in a larger closure program, not as completion of that program.
+The result is useful because quotient/compression arguments require congruence, not merely one-state estimates. It is deliberately presented as one certified arrow in a larger closure program, not as completion of that program. Paper 1's `I_flat` and this package's `I_infinity` are separate typed interfaces; this package does not silently identify them.
