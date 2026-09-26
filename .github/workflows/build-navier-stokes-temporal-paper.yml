@@ -1,0 +1,40 @@
+name: Build Navier-Stokes temporal closure paper
+
+on:
+  push:
+    paths:
+      - 'research/navier-stokes-spc/temporal-closure/paper/main.tex'
+      - '.github/workflows/build-navier-stokes-temporal-paper.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Compile LaTeX
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: main.tex
+          working_directory: research/navier-stokes-spc/temporal-closure/paper
+
+      - name: Publish compiled PDF
+        shell: bash
+        run: |
+          cd research/navier-stokes-spc/temporal-closure/paper
+          cp main.pdf When_Invisible_Differences_Stay_Invisible.pdf
+          rm -f main.pdf
+          cd ../../../..
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/navier-stokes-spc/temporal-closure/paper/When_Invisible_Differences_Stay_Invisible.pdf
+          if ! git diff --cached --quiet; then
+            git commit -m "Build temporal closure paper PDF"
+            git pull --rebase origin main
+            git push
+          fi
