@@ -413,7 +413,7 @@ The first is primarily architectural. The second is a machine-checked local pres
 
 \section{Next live theorem: debt closure}
 \begin{eurekabox}
-\textbf{Core insight.} Once one return tunnel is sealed, the frontier moves. The next question is not whether temporal reconstruction is safe; Lean has answered that. The next possible leak is debt.
+\textbf{Core insight.} Once one return tunnel is sealed, the frontier moves. Temporal reconstruction is now certified closed. The next live obstruction is debt, where an all-order-invisible difference could still re-enter the dynamics.
 \end{eurekabox}
 \noindent\textbf{Formal content.}
 The next targeted implication in the all-order program is schematically
@@ -430,12 +430,31 @@ which would permit a well-defined induced evolution on the corresponding quotien
 
 \section{Conclusion}
 \begin{eurekabox}
-\textbf{Core insight.} The most useful thing a compression theorem can prove is not that a path is shorter. It is that the future has lost the ability to tell which path you took.
+\textbf{Core insight.} Compression reaches its strongest form when a discarded distinction can no longer influence anything that comes after it. At that point, the information has not merely been ignored; the future dynamics have become unable to recover it.
 \end{eurekabox}
-\noindent\textbf{Formal content.}
-The OpenAI formalization already supplied the analytic temporal reconstruction estimate. This work adds the two-state congruence and all-order closure required by the emerging SPC quotient program and checks both declarations in Lean against a pinned public baseline. The theorem is deliberately local, but its role is structural: temporal reconstruction cannot turn an all-order-invisible residual-source difference into a finite-order-visible temporal increment under the certified hypotheses.
 
-That is one closed arrow. The larger quotient theorem remains to be earned arrow by arrow.
+\noindent\textbf{Formal content.}
+The OpenAI formalization already provides the one-state analytic estimate governing temporal reconstruction. The result proved here lifts that control to pairs of states. If two residual sources differ only by an all-order invisible perturbation, then the corresponding temporal increments remain all-order indistinguishable:
+\[
+\Delta R \in I_\infty
+\quad\Longrightarrow\quad
+\Delta M_T \in I_\infty.
+\]
+Both declarations have been checked in Lean against the pinned public OpenAI baseline and reproduced through the published verification pipeline.
+
+This matters because any proposed quotient can fail wherever discarded information is allowed to re-enter the dynamics. Temporal reconstruction was one such possible return path. The certified congruence closes it: no finite-order distinction can be regenerated here from an all-order invisible residual-source difference.
+
+The broader SPC program now has a precise mathematical target. Every remaining operation capable of carrying hidden distinctions forward must satisfy the same kind of closure. Once those local congruence results compose across the full dependency structure, the compressed representation ceases to be merely a shorter description of the original evolution. It becomes sufficient for the evolution itself.
+
+Two histories may still differ in the larger formal state space while becoming indistinguishable to every future operation admitted by the quotient.
+
+\[
+\boxed{
+\text{Compression is complete when the future has no remaining operation capable of recovering what was discarded.}
+}
+\]
+
+The temporal reconstruction bridge establishes one certified part of that statement. The remaining quotient must be completed across the operators that still expose a route for hidden distinctions to survive.
 
 \appendix
 \section*{Appendices}
