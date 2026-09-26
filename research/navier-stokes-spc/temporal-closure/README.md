@@ -1,5 +1,8 @@
 # Temporal Closure Certificate for Structural Path Compression
 
+[![Verify temporal closure](https://github.com/mikecreation/ZotBot/actions/workflows/verify-navier-stokes-temporal.yml/badge.svg)](https://github.com/mikecreation/ZotBot/actions/workflows/verify-navier-stokes-temporal.yml)
+[![Build paper](https://github.com/mikecreation/ZotBot/actions/workflows/build-navier-stokes-temporal-paper.yml/badge.svg)](https://github.com/mikecreation/ZotBot/actions/workflows/build-navier-stokes-temporal-paper.yml)
+
 **Paper:** *When Invisible Differences Stay Invisible: Machine-Certified All-Order Congruence for Temporal Reconstruction in a Formal Navier-Stokes Architecture*  
 **Author:** Michael Zot  
 **Affiliation:** Independent Researcher  
@@ -51,6 +54,7 @@ The 3243 count is the Lake job count for the targeted build. The project-side im
 ### Exact proof and certification evidence
 
 - `certification/PandoraTemporalFlat.lean` - exact 598-line source compiled in the certification run.
+- `certification/BASELINE.lock` - pinned baseline repository, commit, Lean toolchain, proof hash, and target declarations.
 - `certification/SHA256SUMS.txt` - byte-level checksums for the certification package.
 - `certification/CERTIFICATION_RECORD.md` - human-readable certification record.
 - `certification/BUILD_RESULT.txt` - recorded build command/result.
