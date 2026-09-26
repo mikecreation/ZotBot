@@ -56,7 +56,7 @@ The 3243 count is the Lake job count for the targeted build. The project-side im
 - `certification/SOURCE_MAP.md` - baseline source objects reused from the pinned OpenAI tree.
 - `certification/THEOREM_DELTA.md` - exact distinction between the existing theorem and the new theorems.
 - `certification/REVIEW_RESPONSE.md` - reviewer concern -> public artifact/fix crosswalk.
-- `certification/VERIFICATION_SESSION_TRANSCRIPT.txt` - raw verification-session transcript containing the successful build record and final compiled patch.
+- `certification/VERIFICATION_SESSION_TRANSCRIPT.txt` - recorded verification-session evidence containing the load-bearing successful build and audit output.
 - `certification/ci/` - machine-generated public CI logs after successful independent reruns.
 
 ### Independent reproduction
