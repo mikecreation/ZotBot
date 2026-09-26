@@ -1,0 +1,115 @@
+name: Verify Navier-Stokes temporal closure
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'research/navier-stokes-spc/temporal-closure/certification/PandoraTemporalFlat.lean'
+      - 'research/navier-stokes-spc/temporal-closure/scripts/reproduce.sh'
+      - '.github/workflows/verify-navier-stokes-temporal.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - name: Checkout ZotBot proof package
+        uses: actions/checkout@v4
+
+      - name: Verify proof checksum
+        shell: bash
+        run: |
+          echo '13a6350607d73d101f107810986fcefbc73f5b41f308be8bf78c878f43e46c95  research/navier-stokes-spc/temporal-closure/certification/PandoraTemporalFlat.lean' | sha256sum -c -
+
+      - name: Install elan
+        shell: bash
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Restore pinned OpenAI baseline
+        shell: bash
+        run: |
+          git clone https://github.com/openai/NavierStokesAndEuler.git /tmp/NavierStokesAndEuler
+          cd /tmp/NavierStokesAndEuler
+          git checkout f9e8bc5b38b6e212696e8a30e3e91517af887bbd
+          cp "$GITHUB_WORKSPACE/research/navier-stokes-spc/temporal-closure/certification/PandoraTemporalFlat.lean" NavierStokes/PandoraTemporalFlat.lean
+
+      - name: Fetch Mathlib cache
+        shell: bash
+        working-directory: /tmp/NavierStokesAndEuler
+        run: lake exe cache get
+
+      - name: Build certified target
+        shell: bash
+        working-directory: /tmp/NavierStokesAndEuler
+        run: |
+          set -o pipefail
+          lake build NavierStokes.PandoraTemporalFlat 2>&1 | tee /tmp/pandora-build.log
+          status=${PIPESTATUS[0]}
+          echo "TRUE_LAKE_EXIT_CODE=$status" | tee /tmp/pandora-exit-code.txt
+          test "$status" -eq 0
+
+      - name: Audit proof holes and all-order statement
+        shell: bash
+        working-directory: /tmp/NavierStokesAndEuler
+        run: |
+          ! grep -nE '\bsorry\b|\badmit\b' NavierStokes/PandoraTemporalFlat.lean
+          ! grep -nE '^[[:space:]]*axiom\b' NavierStokes/PandoraTemporalFlat.lean
+          grep -n 'hθflat : ∀ A : ℝ' NavierStokes/PandoraTemporalFlat.lean
+          grep -n 'hzflat : ∀ A : ℝ' NavierStokes/PandoraTemporalFlat.lean
+          grep -n 'hR.mono_exponent (by linarith)' NavierStokes/PandoraTemporalFlat.lean
+
+      - name: Print target axioms and theorem types
+        shell: bash
+        working-directory: /tmp/NavierStokesAndEuler
+        run: |
+          cat > /tmp/PandoraAxioms.lean <<'LEAN'
+          import NavierStokes.PandoraTemporalFlat
+          #print axioms NavierStokes.VariableGaugeMean.temporalIncrementState_difference_classes
+          #print axioms NavierStokes.VariableGaugeMean.temporalIncrementState_flat_classes
+          #check NavierStokes.VariableGaugeMean.temporalIncrementState_difference_classes
+          #check NavierStokes.VariableGaugeMean.temporalIncrementState_flat_classes
+          LEAN
+          lake env lean /tmp/PandoraAxioms.lean | tee /tmp/pandora-axioms.txt
+
+      - name: Publish independent CI evidence
+        if: success()
+        shell: bash
+        run: |
+          mkdir -p research/navier-stokes-spc/temporal-closure/certification/ci
+          cp /tmp/pandora-build.log research/navier-stokes-spc/temporal-closure/certification/ci/latest-build.log
+          cp /tmp/pandora-axioms.txt research/navier-stokes-spc/temporal-closure/certification/ci/latest-axioms.txt
+          cp /tmp/pandora-exit-code.txt research/navier-stokes-spc/temporal-closure/certification/ci/latest-exit-code.txt
+          {
+            echo '# Independent CI Verification Status'
+            echo
+            echo '**Status:** PASS'
+            echo
+            echo '**Baseline:** `openai/NavierStokesAndEuler`'
+            echo '**Commit:** `f9e8bc5b38b6e212696e8a30e3e91517af887bbd`'
+            echo '**Target:** `NavierStokes.PandoraTemporalFlat`'
+            echo
+            echo 'Generated only after the public GitHub Actions job successfully rebuilds the target, audits proof-hole markers, and runs `#print axioms` / `#check` on both certified declarations.'
+          } > research/navier-stokes-spc/temporal-closure/certification/ci/STATUS.md
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/navier-stokes-spc/temporal-closure/certification/ci/
+          if ! git diff --cached --quiet; then
+            git commit -m "Publish temporal closure CI verification evidence"
+            git pull --rebase origin main
+            git push
+          fi
+
+      - name: Upload verification logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: temporal-closure-verification
+          path: |
+            /tmp/pandora-build.log
+            /tmp/pandora-axioms.txt
+            /tmp/pandora-exit-code.txt
