@@ -16,7 +16,6 @@ The proposed compression should be regarded as broken if a valid audit establish
 12. **Non-nested accuracy family.** For some `B > A`, the difference `X_B - X_A` contains terms below the claimed shell order `A`.
 13. **Wrong fixed background.** A coefficient placed in the fixed linear operator must actually depend on later corrections at the same filtration grade.
 14. **Growing primitive family.** Higher target accuracy requires genuinely new inverse operators or compatibility conditions.
+15. **Flatness-interface conflation.** A cross-paper argument identifies Paper 1's flat pulse/cutoff remainder ideal with Paper 2's all-order `MeanClass` relation without a typed translation theorem for the relevant remainder family.
 
 The strongest positive check is a complete arrow-by-arrow audit of every return exponent entering or leaving `W`, `Mbar`, `Mcirc`, and `S`.
-
-15. **Flatness-interface conflation.** A cross-paper argument identifies Paper 1's flat pulse/cutoff remainder ideal with Paper 2's all-order `MeanClass` relation without a typed translation theorem for the relevant remainder family.
