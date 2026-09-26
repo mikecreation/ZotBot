@@ -1,5 +1,5 @@
 \documentclass[11pt]{article}
-\usepackage[letterpaper,top=0.72in,bottom=0.82in,left=0.86in,right=0.86in]{geometry}
+\usepackage[letterpaper,top=0.78in,bottom=0.84in,left=0.92in,right=0.92in]{geometry}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{amsthm}
@@ -9,7 +9,7 @@
 \setstretch{1.035}
 \usepackage{parskip}
 \setlength{\parindent}{1.12em}
-\setlength{\parskip}{0.16em}
+\setlength{\parskip}{0.16em}\n\setlength{\emergencystretch}{2.2em}
 \usepackage{amsmath,mathtools,bm}
 \usepackage{booktabs,tabularx,array,longtable}
 \usepackage{xcolor}
@@ -36,7 +36,7 @@
 \newmdenv[linewidth=0.55pt,linecolor=black!55,backgroundcolor=softgray,roundcorner=1pt,
   skipabove=0.6em,skipbelow=0.65em,innerleftmargin=10pt,innerrightmargin=10pt,
   innertopmargin=7pt,innerbottommargin=7pt]{formalbox}
-\usepackage{hyperref}
+\usepackage{xurl}\n\usepackage{hyperref}
 \hypersetup{
   colorlinks=true,
   linkcolor=inkblue,
@@ -77,49 +77,48 @@
 \begin{document}
 \thispagestyle{empty}
 \begin{center}
-  \vspace*{0.30in}
+  \vspace*{0.18in}
   {\small\scshape Working Preprint \quad | \quad September 2026}\par
-  \vspace{0.10in}
-  {\fontsize{21}{25}\selectfont\bfseries
-  When Invisible Differences Stay Invisible:\\[0.12em]
-  Machine-Certified All-Order Congruence for\\
-  Temporal Reconstruction in a Formal Navier--Stokes Architecture\par}
+  \vspace{0.13in}
+  {\fontsize{23}{27}\selectfont\bfseries When Invisible Differences Stay Invisible\par}
+  \vspace{0.08in}
+  {\fontsize{16.2}{20}\selectfont\bfseries
+  A Machine-Certified Congruence Theorem\\
+  for Temporal Reconstruction\par}
+  \vspace{0.06in}
+  {\large in OpenAI's Formal Navier--Stokes Architecture\par}
   \vspace{0.20in}
   {\large Michael Zot}\par
-  \vspace{0.06in}
+  \vspace{0.055in}
   {\small Independent Researcher}\par
-  \vspace{0.045in}
+  \vspace{0.038in}
   {\small Corresponding author: \href{mailto:mike@ZotBot.Ai}{mike@ZotBot.Ai}}\par
-  \vspace{0.045in}
-  {\footnotesize Public proof package: \proofrepo}\par
+  \vspace{0.038in}
+  {\small Proof, source, and public rebuild: \href{https://github.com/mikecreation/ZotBot/tree/main/research/navier-stokes-spc/temporal-closure}{reproducibility package}}\par
   \vspace{0.11in}
-  \rule{0.74\textwidth}{0.45pt}\par
-  \vspace{0.16in}
+  \rule{0.72\textwidth}{0.45pt}\par
+  \vspace{0.14in}
 \end{center}
 
 \begin{abstract}
-Structural Path Compression (SPC) asks whether a proof can carry distinctions that are necessary for one representation of the argument but unnecessary for the future mathematics the proof must preserve. This note machine-certifies one precise test of that idea inside the 2026 OpenAI Navier--Stokes formalization.
+A long proof can preserve distinctions that were useful for constructing the proof but irrelevant to everything that happens afterward. Structural Path Compression (SPC) turns that suspicion into a mathematical test: if two admissible states differ only by information that is invisible at every finite filtration order, can a later operator make that difference visible again?
 
-The baseline library already proves a one-state filtration estimate for the temporal mean reconstruction: residual inputs in \(\MeanClass\,\alpha\) produce a radial increment in \(\MeanClass\,(\alpha+1)\) and angular/axial increments in \(\MeanClass\,\alpha\). The new contribution is not a stronger analytic estimate. It is the two-state congruence needed for compression: if two admissible states share the same reconstruction geometry and their relevant residual-source differences lie in \(\MeanClass\,\alpha\), then the differences of their temporal reconstructions obey the same grade transfer. Quantifying this statement over every real order \(A\) yields an all-order theorem: inputs invisible at every finite mean-filtration order remain invisible after temporal reconstruction.
+This paper machine-certifies one nontrivial instance of that test in OpenAI's 2026 formal Navier--Stokes development. The existing library proves how the temporal mean reconstruction propagates a single residual source through the filtration. The new result proves the corresponding \emph{two-state congruence}: under shared reconstruction geometry, residual-source differences of order \(\alpha\) produce temporal-reconstruction differences of orders \((\alpha+1,\alpha,\alpha)\). Quantifying over every real order gives the all-order statement: a residual-source difference invisible to every finite mean-filtration order remains invisible after temporal reconstruction.
 
-The exact 598-line Lean module compiles against \repo\ at commit \commit\ using Lean 4.34.0-rc2. The certification run returned \texttt{TRUE\_LAKE\_EXIT\_CODE=0}; the source contains no \texttt{sorry}, \texttt{admit}, or custom \texttt{axiom}; and \texttt{\#print axioms} for both target declarations reports only \texttt{propext}, \texttt{Classical.choice}, and \texttt{Quot.sound}. A fresh public GitHub Actions rerun has also rebuilt the published source against the same pinned baseline and returned \texttt{TRUE\_LAKE\_EXIT\_CODE=0}; its machine-generated build log and axiom output are committed under \path{certification/ci/}. The complete source, checksum, reproduction script, source crosswalk, and certification evidence are published with this note.
-
-The result closes one operator-level obligation in a larger proposed quotient-by-all-order-invisible-differences program. It does not establish full-cycle quotient closure, debt or rank closure, the full stage-free SPC theorem, or a new Navier--Stokes blowup theorem.
+The proof is compiled in Lean 4 against a pinned public OpenAI baseline, contains no proof holes or custom axioms, and has been independently rebuilt by the public GitHub Actions verifier distributed with this paper. Exact source, checksums, logs, axiom output, and reproduction commands are provided in the companion proof package. The theorem is deliberately local: it closes the temporal-reconstruction arrow of a larger proposed quotient construction, not the full Navier--Stokes correction cycle and not a new blowup theorem.
 \end{abstract}
 
 \noindent\textbf{Keywords.} Navier--Stokes; Structural Path Compression; Lean; formal verification; congruence; filtration; quotient dynamics; proof architecture.\\
-\textbf{MSC 2020.} 35Q30; 03B35; 68V15; 68T15.\\
-\textbf{Baseline formalization.} \repo, commit \commit.\\
-\textbf{Public artifacts.} \proofrepo.
+\textbf{MSC 2020.} 35Q30; 03B35; 68V15; 68T15.
 
 \clearpage
 \section*{The result in one page}
 \addcontentsline{toc}{section}{The result in one page}
 
 \begin{eurekabox}
-\textbf{Eureka.} Compression is not proved by deleting information. It is proved by showing that the future stays blind to what was deleted. If two states differ only by something no finite accuracy level can see, then every operator used after the compression must fail to resurrect that difference.
+\textbf{Core insight.} Compression is not proved by deleting information. It is proved by showing that the future stays blind to what was deleted. If two states differ only by something no finite accuracy level can see, then every operator used after the compression must fail to resurrect that difference.
 \end{eurekabox}
-\noindent\textbf{Science underneath.}
+\noindent\textbf{Formal content.}
 For a fixed moving-strip datum \(s\), define all-order flatness by
 \[
 \Flat_s(f) \iff \forall A\in\mathbb R,\ \MeanClass_s^A(f).
@@ -139,23 +138,23 @@ Therefore
 The radial component is obtained one order better and then lowered from \(A+1\) to \(A\) using the baseline monotonicity theorem \texttt{mono\_exponent}.
 
 \begin{eurekabox}
-\textbf{Eureka.} The baseline theorem says, ``one input of grade \(A\) produces one output of grade \(A\).'' Compression needs a different statement: ``two inputs that are indistinguishable to grade \(A\) remain indistinguishable after the operator.'' That change from a one-state estimate to a two-state congruence is the bridge from ordinary bounds to quotient mathematics.
+\textbf{Core insight.} The baseline theorem says, ``one input of grade \(A\) produces one output of grade \(A\).'' Compression needs a different statement: ``two inputs that are indistinguishable to grade \(A\) remain indistinguishable after the operator.'' That change from a one-state estimate to a two-state congruence is the bridge from ordinary bounds to quotient mathematics.
 \end{eurekabox}
-\noindent\textbf{Science underneath.}
+\noindent\textbf{Formal content.}
 The OpenAI source already contains \texttt{temporalIncrementState\_classes}. This note adds and certifies
 \begin{center}
-\nolinkurl{NavierStokes.VariableGaugeMean.temporalIncrementState_difference_classes}
+\texttt{temporalIncrementState\_difference\_classes}
 \end{center}
 and its all-order corollary
 \begin{center}
-\nolinkurl{NavierStokes.VariableGaugeMean.temporalIncrementState_flat_classes}.
+\texttt{temporalIncrementState\_flat\_classes}.
 \end{center}
 No claim is made that the \(\alpha\mapsto(\alpha+1,\alpha,\alpha)\) analytic gain is new. The formal increment is the congruence theorem and its all-order closure statement.
 
 \begin{eurekabox}
-\textbf{Eureka.} A quotient becomes real one operator at a time. Every certified congruence removes one place where ``discarded'' information could have leaked back into the future.
+\textbf{Core insight.} A quotient becomes real one operator at a time. Every certified congruence removes one place where ``discarded'' information could have leaked back into the future.
 \end{eurekabox}
-\noindent\textbf{Science underneath.}
+\noindent\textbf{Formal content.}
 This paper closes only the temporal-reconstruction arrow. The larger target remains
 \[
 F(\Iinf)\subseteq \Iinf,
@@ -167,9 +166,9 @@ for the complete reduced correction cycle. Debt and later cycle components remai
 
 \section{The compression question becomes a congruence question}
 \begin{eurekabox}
-\textbf{Eureka.} A long proof can confuse ``how we got here'' with ``what the future still needs.'' SPC turns that philosophical suspicion into a falsifiable condition: erase a distinction, then ask every future consumer whether it notices.
+\textbf{Core insight.} A long proof can confuse ``how we got here'' with ``what the future still needs.'' SPC turns that philosophical suspicion into a falsifiable condition: erase a distinction, then ask every future consumer whether it notices.
 \end{eurekabox}
-\noindent\textbf{Science underneath.}
+\noindent\textbf{Formal content.}
 Let \(C_1,C_2\) be two admissible states and let \(Q\) retain only a proposed compressed representation. To make \(Q\) a valid state reduction for an update map \(F\), one needs a congruence implication
 \[
 Q(C_1)=Q(C_2)\quad\Longrightarrow\quad Q(F(C_1))=Q(F(C_2)),
@@ -180,9 +179,9 @@ The temporal mean reconstruction is one such operator. It consumes the residual 
 
 \section{What the OpenAI formalization already proves}
 \begin{eurekabox}
-\textbf{Eureka.} The new theorem did not need a new estimate. The estimate was already there. What was missing was the right question.
+\textbf{Core insight.} The new theorem did not need a new estimate. The estimate was already there. What was missing was the right question.
 \end{eurekabox}
-\noindent\textbf{Science underneath.}
+\noindent\textbf{Formal content.}
 At the pinned commit, \texttt{NavierStokes/WeightedClasses.lean} defines
 \[
 \MeanClass(s,\alpha,f):=\mathrm{MemClass}\bigl(s,(n,x)\mapsto s.\zeta(x),\alpha,f\bigr),
@@ -214,9 +213,9 @@ That theorem is the analytic engine reused here.
 
 \section{The new machine-certified statements}
 \begin{eurekabox}
-\textbf{Eureka.} ``Small'' is not enough for a quotient. You need ``small at every order,'' and then you need the operator to preserve that invisibility forever. The all-order theorem is the first half of that sentence made executable.
+\textbf{Core insight.} ``Small'' is not enough for a quotient. You need ``small at every order,'' and then you need the operator to preserve that invisibility forever. The all-order theorem is the first half of that sentence made executable.
 \end{eurekabox}
-\noindent\textbf{Science underneath.}
+\noindent\textbf{Formal content.}
 Fix the same slow region, radial geometry, moving-strip parameters, temporal index map, axial direction, context, and admissibility data for two states \(u_1,u_2\). Write
 \[
 \Delta\theta_n(z)=u_1.\mathrm{thetaResidual}(c,n,z)-u_2.\mathrm{thetaResidual}(c,n,z),
@@ -237,7 +236,7 @@ then the componentwise temporal-increment differences satisfy
 \MeanClass_s^\alpha(\Delta M_{T,z}).
 \]
 This is the compiled Lean declaration
-\nolinkurl{NavierStokes.VariableGaugeMean.temporalIncrementState_difference_classes}.
+\texttt{temporalIncrementState\_difference\_classes}.
 \end{theorem}
 
 \begin{corollary}[Certified all-order temporal closure]\label{cor:flat}
@@ -254,7 +253,7 @@ then
 \MeanClass_s^A(\Delta M_{T,z}).
 \]
 This is the compiled Lean declaration
-\nolinkurl{NavierStokes.VariableGaugeMean.temporalIncrementState_flat_classes}.
+\texttt{temporalIncrementState\_flat\_classes}.
 \end{corollary}
 
 \noindent The corollary applies \cref{thm:finite} at the arbitrary requested order \(A\). Angular and axial outputs are already in order \(A\). The radial output is in order \(A+1\), and the proof concludes with
@@ -265,9 +264,9 @@ to downgrade \(A+1\) to \(A\). This is why the theorem is genuinely all-order an
 
 \section{Why the formal proof is more than writing ``linearity''}
 \begin{eurekabox}
-\textbf{Eureka.} The algebra is simple; the geometry is where a false shortcut could hide. ``Subtract the two formulas'' only works if both formulas really live on the same moving domain with the same support and reconstruction parameters.
+\textbf{Core insight.} The algebra is simple; the geometry is where a false shortcut could hide. ``Subtract the two formulas'' only works if both formulas really live on the same moving domain with the same support and reconstruction parameters.
 \end{eurekabox}
-\noindent\textbf{Science underneath.}
+\noindent\textbf{Formal content.}
 The proof is intentionally conservative. It does not invent a new temporal inverse or new class estimate. It transports subtraction through the exact machinery already used by the baseline theorem. The formal proof has five layers.
 
 \subsection{Fourier inverse commutes with subtraction}
@@ -293,9 +292,9 @@ on the difference source. The new theorem therefore inherits the source library'
 
 \section{The structural meaning: a local quotient certificate}
 \begin{eurekabox}
-\textbf{Eureka.} A compression is safe when erased information has nowhere to come back from. This theorem closes one return tunnel.
+\textbf{Core insight.} A compression is safe when erased information has nowhere to come back from. This theorem closes one return tunnel.
 \end{eurekabox}
-\noindent\textbf{Science underneath.}
+\noindent\textbf{Formal content.}
 Let
 \[
 \Iinf(s)=\{f:\forall A\in\mathbb R,\ \MeanClass_s^A(f)\}.
@@ -333,41 +332,29 @@ It does \emph{not} follow from this theorem alone that the full correction map r
 
 \section{Machine certification and public reproducibility}
 \begin{eurekabox}
-\textbf{Eureka.} ``Lean proved it'' should not be a sentence readers are asked to trust. The proof object, the exact baseline, the checksum, and the commands should be public enough that the sentence can be replaced by a rebuild.
+\textbf{Core insight.} A machine-checked claim should be replaceable by a rebuild. Readers should not have to trust the phrase "Lean accepted it" when they can reproduce the acceptance themselves.
 \end{eurekabox}
-\noindent\textbf{Science underneath.}
-The certification target is \texttt{NavierStokes/PandoraTemporalFlat.lean}, 598 lines. Its SHA-256 is
-\begin{center}
-\small\nolinkurl{13a6350607d73d101f107810986fcefbc73f5b41f308be8bf78c878f43e46c95}.
-\end{center}
-It was checked against \repo\ at the pinned commit
-\begin{center}
-\small\commitfull
-\end{center}
-with Lean 4.34.0-rc2. The recorded successful command was
-\begin{verbatim}
-set -o pipefail
-lake build NavierStokes.PandoraTemporalFlat 2>&1 | tee /tmp/pandora-build.log
-status=${PIPESTATUS[0]}
-echo "TRUE_LAKE_EXIT_CODE=$status"
-\end{verbatim}
-and the recorded result was
-\begin{verbatim}
-Build completed successfully (3243 jobs).
-TRUE_LAKE_EXIT_CODE=0
-\end{verbatim}
-The 3243 figure is the Lake job count of the targeted build; the project-side import closure of the target module comprised 157 NavierStokes modules. It is not the number of files in the full repository.
+\noindent\textbf{Formal content.}
+The exact proof source, pinned baseline, checksums, compiler output, axiom audit, and public CI workflow are published in the companion repository. The original certification run and the fresh public CI reproduction both completed successfully against the same OpenAI baseline.
 
-The final source audit found no \texttt{sorry}, \texttt{admit}, or custom \texttt{axiom}. \texttt{\#print axioms} for both target declarations reported only
-\[
-\{\texttt{propext},\ \texttt{Classical.choice},\ \texttt{Quot.sound}\}.
-\]
+\begin{table}[h]
+\centering
+\small
+\begin{tabularx}{0.96\textwidth}{@{}>{\bfseries}p{0.25\textwidth}X@{}}
+\toprule
+Baseline & OpenAI's public Navier--Stokes Lean repository, pinned to one commit.\\
+Lean toolchain & Lean 4.34.0-rc2.\\
+Target & One 598-line temporal-congruence module.\\
+Build & Successful targeted Lake build; true process exit code 0.\\
+Proof-hole audit & No \texttt{sorry} or \texttt{admit}; no custom \texttt{axiom}.\\
+Axiom audit & Only \texttt{propext}, \texttt{Classical.choice}, and \texttt{Quot.sound}.\\
+Independent rerun & Public GitHub Actions rebuild completed successfully and published its generated logs.\\
+\bottomrule
+\end{tabularx}
+\caption{Certification summary. Exact hashes, declaration names, commands, and paths are collected in the reproducibility section.}
+\end{table}
 
-The fresh public CI reproduction independently rebuilt this same published module against the same pinned OpenAI commit and also exited successfully. Its machine-generated build log, axiom output, exit-code record, and PASS status are committed under \path{certification/ci/}.
-
-\begin{formalbox}
-\textbf{Public package.} The companion repository contains the exact Lean source, SHA-256 manifest, recorded certification output, axiom audit, source crosswalk, theorem-delta note, recorded verification-session evidence, reproduction script, CI verifier, LaTeX source, and compiled PDF. The public CI verifier has now completed a fresh successful rerun and committed its own build log, axiom output, exit code, and PASS status back into the repository, so the reproducibility layer no longer stops at a prose record.
-\end{formalbox}
+This separation is deliberate: the mathematical argument stays readable as mathematics, while code identifiers and byte-level provenance remain available to skeptical readers where they belong.
 
 \section{What changed during compilation}
 The successful proof required four compiler-driven repairs to the supplied source. None weakened a theorem statement or changed the mathematical argument.
@@ -381,9 +368,9 @@ The remaining compiler messages were non-fatal deprecation/linter warnings.
 
 \section{What this proves, and what it does not}
 \begin{eurekabox}
-\textbf{Eureka.} The exciting statement is not ``we shortened Navier--Stokes.'' It is smaller and sharper: one piece of the proof can now be shown, mechanically, to forget an entire class of distinctions without letting them leak back into the future.
+\textbf{Core insight.} The exciting statement is not ``we shortened Navier--Stokes.'' It is smaller and sharper: one piece of the proof can now be shown, mechanically, to forget an entire class of distinctions without letting them leak back into the future.
 \end{eurekabox}
-\noindent\textbf{Science underneath.}
+\noindent\textbf{Formal content.}
 The certified claim is exactly the finite-grade difference theorem plus the all-order temporal closure corollary. It establishes a local congruence property for temporal reconstruction under shared geometry and the stated admissibility hypotheses.
 
 The following are \emph{not} established by this note:
@@ -399,18 +386,18 @@ These boundaries are part of the claim, not caveats added after the fact.
 
 \section{Why this is useful even though the estimate already existed}
 \begin{eurekabox}
-\textbf{Eureka.} A bound tells you an object survives a calculation. A congruence tells you a distinction can be erased before the calculation. Those are different currencies of understanding.
+\textbf{Core insight.} A bound tells you an object survives a calculation. A congruence tells you a distinction can be erased before the calculation. Those are different currencies of understanding.
 \end{eurekabox}
-\noindent\textbf{Science underneath.}
+\noindent\textbf{Formal content.}
 The source theorem \texttt{temporalIncrementState\_classes} answers a one-state question: given a source with a class bound, what class bound does its reconstruction satisfy? The new theorem answers a representation question: if two states differ only inside a specified negligible class, does the reconstruction distinguish them? Quotient constructions require the second form.
 
 This distinction matters for proof architecture. If every consumer of a coordinate respects an equivalence relation, that coordinate need not remain independently represented merely because it appeared during one successful derivation. The mathematics can then be reorganized around equivalence classes or smaller interfaces. Conversely, failure of any one congruence theorem produces a precise witness that the proposed deletion was invalid. The same test therefore supports both compression and falsification.
 
 \section{Relation to Structural Path Compression}
 \begin{eurekabox}
-\textbf{Eureka.} SPC began with a suspicious staircase: repeated stages looked fundamental because the proof walked them one by one. The deeper question is now sharper. Which distinctions are allowed to survive from one floor to the next?
+\textbf{Core insight.} SPC began with a suspicious staircase: repeated stages looked fundamental because the proof walked them one by one. The deeper question is now sharper. Which distinctions are allowed to survive from one floor to the next?
 \end{eurekabox}
-\noindent\textbf{Science underneath.}
+\noindent\textbf{Formal content.}
 The companion SPC manuscript proposes replacing part of the repeated Section 9 chronology by an accuracy-indexed compiler once positive return estimates and source legality are established. The present theorem addresses a different but complementary issue that emerged from the later causal-state audit: whether candidate equivalence classes are invariant under the actual correction operators.
 
 Thus Paper 1 and the present note should be read as two layers:
@@ -424,9 +411,9 @@ The first is primarily architectural. The second is a machine-checked local pres
 
 \section{Next live theorem: debt closure}
 \begin{eurekabox}
-\textbf{Eureka.} Once one return tunnel is sealed, the frontier moves. The next question is not whether temporal reconstruction is safe; Lean has answered that. The next possible leak is debt.
+\textbf{Core insight.} Once one return tunnel is sealed, the frontier moves. The next question is not whether temporal reconstruction is safe; Lean has answered that. The next possible leak is debt.
 \end{eurekabox}
-\noindent\textbf{Science underneath.}
+\noindent\textbf{Formal content.}
 The next targeted implication in the all-order program is schematically
 \[
 \Flat(\Delta M)\wedge \Flat(\Delta \mathrm{Cov})\wedge \Flat(\Delta M_T)
@@ -441,9 +428,9 @@ which would permit a well-defined induced evolution on the corresponding quotien
 
 \section{Reproducibility map}
 \begin{eurekabox}
-\textbf{Eureka.} Reproducibility is strongest when every sentence of the form ``we checked X'' has a file or command sitting next to it. The public package is organized around that rule.
+\textbf{Core insight.} Reproducibility is strongest when every sentence of the form ``we checked X'' has a file or command sitting next to it. The public package is organized around that rule.
 \end{eurekabox}
-\noindent\textbf{Science underneath.}
+\noindent\textbf{Formal content.}
 The public package exposes the following artifacts directly:
 \begin{itemize}
   \item \path{certification/PandoraTemporalFlat.lean}: exact 598-line source compiled in the certification run.
@@ -465,9 +452,9 @@ AI systems were used as research tools for source retrieval, proof-dependency an
 
 \section{Conclusion}
 \begin{eurekabox}
-\textbf{Eureka.} The most useful thing a compression theorem can prove is not that a path is shorter. It is that the future has lost the ability to tell which path you took.
+\textbf{Core insight.} The most useful thing a compression theorem can prove is not that a path is shorter. It is that the future has lost the ability to tell which path you took.
 \end{eurekabox}
-\noindent\textbf{Science underneath.}
+\noindent\textbf{Formal content.}
 The OpenAI formalization already supplied the analytic temporal reconstruction estimate. This work adds the two-state congruence and all-order closure required by the emerging SPC quotient program and checks both declarations in Lean against a pinned public baseline. The theorem is deliberately local, but its role is structural: temporal reconstruction cannot turn an all-order-invisible residual-source difference into a finite-order-visible temporal increment under the certified hypotheses.
 
 That is one closed arrow. The larger quotient theorem remains to be earned arrow by arrow.
