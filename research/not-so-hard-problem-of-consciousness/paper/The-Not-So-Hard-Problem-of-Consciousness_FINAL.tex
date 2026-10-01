@@ -6,58 +6,101 @@
 \usepackage{microtype}
 \usepackage{array,tabularx,booktabs}
 \usepackage{xcolor}
+\usepackage{tikz}
+\usepackage[most]{tcolorbox}
 \usepackage{titlesec,fancyhdr}
 \usepackage{hyperref}
-\definecolor{ink}{HTML}{182327}
-\definecolor{linkgray}{HTML}{414B50}
+\definecolor{ink}{HTML}{172126}
+\definecolor{navy}{HTML}{17324D}
+\definecolor{teal}{HTML}{1A7F86}
+\definecolor{tealdeep}{HTML}{155E63}
+\definecolor{mist}{HTML}{F3F8F8}
+\definecolor{linegray}{HTML}{CFDADB}
+\definecolor{linkgray}{HTML}{315C66}
 \hypersetup{colorlinks=true,urlcolor=linkgray,linkcolor=ink,citecolor=ink,
 pdftitle={The Not-So-Hard Problem of Consciousness},pdfauthor={Michael Zot},
-pdfsubject={Empirically grounded theoretical and methodological paper}}
+pdfsubject={Empirically constrained theoretical and methodological paper}}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.48em}
 \setlength{\emergencystretch}{1.8em}
 \linespread{1.06}
 \clubpenalty=10000
 \widowpenalty=10000
-\titleformat{\section}{\sffamily\large\bfseries\color{ink}}{\thesection.}{0.55em}{}
-\titleformat{\subsection}{\sffamily\normalsize\bfseries\color{ink}}{}{0pt}{}
+\titleformat{\section}{\sffamily\large\bfseries\color{navy}}{\thesection.}{0.55em}{}
+\titleformat{\subsection}{\sffamily\normalsize\bfseries\color{tealdeep}}{}{0pt}{}
 \titlespacing*{\section}{0pt}{1.15em}{0.4em}
 \titlespacing*{\subsection}{0pt}{0.7em}{0.2em}
 \pagestyle{fancy}\fancyhf{}
 \fancyhead[L]{\scriptsize\sffamily Michael Zot / The Not-So-Hard Problem of Consciousness}
-\fancyfoot[L]{\scriptsize\sffamily Empirically grounded theory / 1 October 2026}
+\fancyfoot[L]{\scriptsize\sffamily SCTC | Theoretical \& Methodological Paper | 1 October 2026}
 \fancyfoot[R]{\scriptsize\sffamily\thepage}
 \renewcommand{\headrulewidth}{0.25pt}
 \fancypagestyle{firstpage}{\fancyhf{}
-\fancyfoot[L]{\scriptsize\sffamily Empirically grounded theory / 1 October 2026}
+\fancyfoot[L]{\scriptsize\sffamily SCTC | Theoretical \& Methodological Paper | 1 October 2026}
 \fancyfoot[R]{\scriptsize\sffamily\thepage}
 \renewcommand{\headrulewidth}{0pt}}
 \newcommand{\Csys}{C_{\mathrm{sys},B}(t)}
 \newcommand{\Lsys}{L_B(t)}
 \newcommand{\repoURL}{https://github.com/mikecreation/ZotBot/tree/main/research/not-so-hard-problem-of-consciousness}
+\newtcolorbox{abstractcard}{
+  enhanced, breakable, colback=white, colframe=linegray,
+  boxrule=0.8pt, arc=2.5mm, left=4mm, right=4mm, top=3mm, bottom=3mm,
+  borderline west={2.2pt}{0pt}{teal},
+  title={\sffamily\bfseries\color{white} Abstract},
+  colbacktitle=navy, coltitle=white,
+  fonttitle=\normalsize, attach boxed title to top left={xshift=2mm,yshift=-2mm},
+  boxed title style={arc=1.5mm,boxrule=0pt,left=2.7mm,right=2.7mm,top=1.1mm,bottom=1.1mm}
+}
+\newtcolorbox{keybox}[1]{
+  enhanced, breakable, colback=mist, colframe=linegray,
+  boxrule=0.6pt, arc=2mm, left=3.5mm, right=3.5mm, top=2.7mm, bottom=2.7mm,
+  borderline west={2pt}{0pt}{teal},
+  title={\sffamily\bfseries #1}, colbacktitle=mist, coltitle=navy,
+  boxed title style={boxrule=0pt,colback=mist,left=0pt,right=0pt,top=0pt,bottom=0pt},
+  attach title to upper={\par\smallskip}
+}
 \begin{document}
 \thispagestyle{firstpage}
-\begin{center}
-{\fontsize{27}{31}\selectfont\bfseries The Not-So-Hard Problem\par of Consciousness\par}
-\vspace{0.65em}
-{\normalsize\bfseries Michael Zot\par}
-{\small Independent Researcher, Illinois, USA\par
-\href{mailto:mike@ZotBot.Ai}{mike@ZotBot.Ai}\par}
-\end{center}
-\vspace{0.25em}
 
-\noindent\textbf{Abstract.}
-A biological individual can continue while its responsiveness, memory, wakefulness, and access to the environment change. The persistence of that individual, the occurrence of an experience, and our ability to detect the experience therefore require separate scientific descriptions. This paper develops the \textbf{Systemic Continuity Theory of Consciousness (SCTC)}: a definition of minimal system-level consciousness as the viable existence of an integrated biological individual, tracked through its organismal continuity. Phenomenal experience is represented separately as $E$.
+\begin{tcolorbox}[
+  enhanced, boxrule=0pt, arc=3mm,
+  interior style={left color=navy,right color=teal},
+  left=6mm,right=6mm,top=5mm,bottom=5mm
+]
+{\scriptsize\sffamily\bfseries\color{white!88} THEORETICAL \& METHODOLOGICAL PAPER \hfill 1 OCTOBER 2026\par}
+\vspace{1.0em}
+{\fontsize{30}{33}\selectfont\bfseries\color{white} The Not-So-Hard Problem\par of Consciousness\par}
+\vspace{0.8em}
+{\large\sffamily\color{white!94} Defining the conscious system before explaining its changing states\par}
+\end{tcolorbox}
+
+\vspace{0.65em}
+{\normalsize\textbf{Michael Zot} \quad \textcolor{linegray}{|} \quad Independent Researcher, Illinois, USA\par}
+{\small \href{mailto:mike@ZotBot.Ai}{mike@ZotBot.Ai}\par}
+{\small\sffamily\textbf{Research repository:} \href{\repoURL}{github.com/mikecreation/ZotBot/tree/main/research/not-so-hard-problem-of-consciousness}\par}
+\vspace{0.55em}
+
+\begin{abstractcard}
+\small
+\textbf{A biological individual can continue while its responsiveness, memory, wakefulness, and access to the environment change.} The persistence of that individual, the occurrence of an experience, and our ability to detect the experience therefore require separate scientific descriptions. This paper develops the \textbf{Systemic Continuity Theory of Consciousness (SCTC)}: a definition of minimal system-level consciousness as the viable existence of an integrated biological individual, tracked through its organismal continuity. Phenomenal experience is represented separately as $E$.
 
 SCTC is evaluated against existing empirical dissociations. Neural command following without an observable command response, dreaming during sleep, and severe memory impairment with other abilities preserved constrain the properties that can define the continuing biological system. SCTC makes its system-level assignment explicitly; the empirical literature independently supports the separations on which the framework operates.
 
 The argument distinguishes a persistence condition from a changing faculty and an observed signal from the state inferred through it. A faculty that can fail while the individual continues cannot be a necessary condition of that individual's persistence. This excludes several familiar measures as definitions of the system-level target. Biological continuity supplies a minimal account of that target without making experience, memory, or report interchangeable with it. Rival definitions are compared by empirical fit, minimality, boundary consistency, and whether they address the same object.
 
 The result is a definition grounded in an explicit target and constrained by published evidence. No new experiment is required to establish dissociations already observed. The further claim that this definition uniquely captures every legitimate meaning of consciousness does not follow from those dissociations. The hard question of why experience occurs remains, but it concerns $E$; it does not settle whether the biological individual persists.
+\end{abstractcard}
 
+\begin{keybox}{What this paper separates}
+\small
+\textbf{The continuing biological individual} is tracked separately from \textbf{experience, memory, wakefulness, responsiveness, cognitive access, report, and the evidence used to infer those states}. Evidence for one variable cannot automatically stand in for evidence for another.
+\end{keybox}
+
+{\small\textbf{Article type:} Empirically constrained theoretical and methodological paper. Published studies provide the empirical basis; no new experimental dataset is reported.\par}
 {\small\textbf{Keywords:} consciousness; biological continuity; phenomenal experience; definition; neurological dissociation; scientific inference.\par}
-{\small\textbf{Article type:} Empirically grounded theoretical and methodological paper. Published studies supply the empirical evidence; no new experimental dataset is reported.\par}
-{\small\textbf{Materials:} \href{\repoURL}{Research paper and supporting repository}.\par}
+\vspace{0.25em}
+\noindent\textcolor{linegray}{\rule{\linewidth}{0.45pt}}
+\vspace{0.25em}
 
 \section{Define the object before explaining its states}
 Imagine waking after a procedure and remembering nothing. Did the biological individual continue? Did any experience occur? Was any experience retained so it could later be recalled? These are three questions. An answer to the last does not automatically answer the other two.
@@ -212,14 +255,20 @@ The empirical result used here is that several commonly associated variables do 
 
 SCTC is therefore an empirically grounded account of a declared system-level target. It is already constrained by published dissociations and explicit logical requirements. Comparative claims about its superiority must be made against rivals addressing that same target. Experience remains a legitimate scientific target in its own right.
 
+\begin{keybox}{Core conclusion}
 \textbf{The individual continues. Its states change. Our evidence can fail. A definition must keep those claims distinct.}
+\end{keybox}
 
 The practical reporting rule is equally direct: identify the biological unit, name the state or capacity, state the observed signal, and specify what the evidence warrants. For example, ``No bedside command response was observed; neural command-following evidence was detected; the contents of experience remain unresolved.'' This preserves the finding without turning one measurement into a verdict about every variable.
 
-{\small\textbf{Method and materials.} This paper synthesizes selected published empirical studies and develops a definition and analytic arguments. No new experimental dataset or quantitative reanalysis is reported. The \href{\repoURL}{research repository} provides the original manuscript and supporting materials. Numbered citations refer to bibliography entries, not page numbers.\par}
+{\small\textbf{Method and materials.} This paper synthesizes selected published empirical studies and develops a definition and analytic arguments. No new experimental dataset or quantitative reanalysis is reported. The \href{\repoURL}{research repository} contains the current manuscript, LaTeX source, and supporting materials. Numbered citations refer to bibliography entries, not page numbers.\par}
+
+{\small\textbf{AI assistance.} Generative AI tools and coding assistants were used during manuscript preparation for formatting, language editing, LaTeX preparation, layout iteration, literature organization, and adversarial stress-testing of the manuscript. The research questions, theoretical claims, interpretation of the literature, and final manuscript decisions are the author's.\par}
 
 \begin{thebibliography}{99}
-\small
+\scriptsize
+\setlength{\itemsep}{0em}
+\setlength{\parsep}{0pt}
 \bibitem{Chalmers1995} Chalmers, D. J. (1995). Facing up to the problem of consciousness. Journal of Consciousness Studies, 2(3), 200-219.\newline \href{https://consc.net/papers/facing.html}{https://consc.net/papers/facing.html}
 
 \bibitem{Block1995} Block, N. (1995). On a confusion about a function of consciousness. Behavioral and Brain Sciences, 18, 227-247.\newline \href{https://doi.org/10.1017/S0140525X00038188}{https://doi.org/10.1017/S0140525X00038188}
