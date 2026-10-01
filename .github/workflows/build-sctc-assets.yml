@@ -1,10 +1,12 @@
-name: Build SCTC paper and explainer
+name: Build SCTC final paper
 
 on:
   push:
     branches: [main]
     paths:
-      - 'research/not-so-hard-problem-of-consciousness/**'
+      - 'research/not-so-hard-problem-of-consciousness/paper/**'
+      - 'research/not-so-hard-problem-of-consciousness/README.md'
+      - 'research/not-so-hard-problem-of-consciousness/CITATION.cff'
       - '.github/workflows/build-sctc-assets.yml'
   workflow_dispatch:
 
@@ -17,38 +19,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Install LaTeX
         run: |
           sudo apt-get update
           sudo apt-get install -y \
             texlive-latex-base texlive-latex-recommended texlive-latex-extra \
-            texlive-fonts-recommended texlive-fonts-extra texlive-pictures \
-            texlive-science ffmpeg python3-pip
-          python3 -m pip install --break-system-packages pillow
+            texlive-fonts-recommended texlive-science
 
       - name: Build paper
         working-directory: research/not-so-hard-problem-of-consciousness/paper
         run: |
-          pdflatex -interaction=nonstopmode -halt-on-error SCTC-v4.tex
-          pdflatex -interaction=nonstopmode -halt-on-error SCTC-v4.tex
-          mv -f SCTC-v4.pdf The-Not-So-Hard-Problem-of-Consciousness_SCTC-v4.pdf
-          rm -f SCTC-v4.aux SCTC-v4.log SCTC-v4.out
+          pdflatex -interaction=nonstopmode -halt-on-error The-Not-So-Hard-Problem-of-Consciousness_FINAL.tex
+          pdflatex -interaction=nonstopmode -halt-on-error The-Not-So-Hard-Problem-of-Consciousness_FINAL.tex
+          rm -f *.aux *.log *.out
 
-      - name: Build explainer video
-        working-directory: research/not-so-hard-problem-of-consciousness/video
-        run: |
-          python3 build_video.py
-          rm -rf _slides
-
-      - name: Commit generated assets
+      - name: Commit generated PDF
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add research/not-so-hard-problem-of-consciousness/paper/The-Not-So-Hard-Problem-of-Consciousness_SCTC-v4.pdf
-          git add research/not-so-hard-problem-of-consciousness/video/SCTC-explainer.mp4
+          git add research/not-so-hard-problem-of-consciousness/paper/The-Not-So-Hard-Problem-of-Consciousness_FINAL.pdf
           if git diff --cached --quiet; then
-            echo "Generated assets already current."
+            echo "PDF already current."
           else
-            git commit -m "Build SCTC paper and explainer [skip ci]"
+            git commit -m "Build final SCTC paper [skip ci]"
             git push
           fi
