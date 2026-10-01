@@ -1,0 +1,54 @@
+name: Build SCTC paper and explainer
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'research/not-so-hard-problem-of-consciousness/**'
+      - '.github/workflows/build-sctc-assets.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            texlive-latex-base texlive-latex-recommended texlive-latex-extra \
+            texlive-fonts-recommended texlive-fonts-extra texlive-pictures \
+            texlive-science ffmpeg python3-pip
+          python3 -m pip install --break-system-packages pillow
+
+      - name: Build paper
+        working-directory: research/not-so-hard-problem-of-consciousness/paper
+        run: |
+          pdflatex -interaction=nonstopmode -halt-on-error SCTC-v4.tex
+          pdflatex -interaction=nonstopmode -halt-on-error SCTC-v4.tex
+          mv -f SCTC-v4.pdf The-Not-So-Hard-Problem-of-Consciousness_SCTC-v4.pdf
+          rm -f SCTC-v4.aux SCTC-v4.log SCTC-v4.out
+
+      - name: Build explainer video
+        working-directory: research/not-so-hard-problem-of-consciousness/video
+        run: |
+          python3 build_video.py
+          rm -rf _slides
+
+      - name: Commit generated assets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/not-so-hard-problem-of-consciousness/paper/The-Not-So-Hard-Problem-of-Consciousness_SCTC-v4.pdf
+          git add research/not-so-hard-problem-of-consciousness/video/SCTC-explainer.mp4
+          if git diff --cached --quiet; then
+            echo "Generated assets already current."
+          else
+            git commit -m "Build SCTC paper and explainer [skip ci]"
+            git push
+          fi
