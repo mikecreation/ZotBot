@@ -37,7 +37,7 @@ for _, world, regime in groups:
     vals = [float(x["delta_bic_latent_minus_simple"]) for x in r if x["world"] == world and x["regime"] == regime]
     data.append(vals)
 fig, ax = plt.subplots(figsize=(8.4,4.8))
-ax.boxplot(data, labels=[g[0] for g in groups], showfliers=False)
+ax.boxplot(data, tick_labels=[g[0] for g in groups], showfliers=False)
 ax.axhline(0, lw=1)
 ax.set_ylabel("Delta BIC: latent minus simple")
 ax.set_title("Same discovery engine, different evidence")
