@@ -12,6 +12,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: representation-escape-build
+  cancel-in-progress: true
+
 jobs:
   build:
     if: github.actor != 'github-actions[bot]'
@@ -44,4 +48,5 @@ jobs:
           git add figures Representation_Escape_Narrative_2026-10-02_v31.pdf Representation_Escape_Narrative_2026-10-02_v31_source_bundle.zip
           git diff --cached --quiet && exit 0
           git commit -m "Build Representation Escape artifacts [skip ci]"
+          git pull --rebase origin main
           git push
