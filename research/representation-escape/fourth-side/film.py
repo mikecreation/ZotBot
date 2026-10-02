@@ -31,12 +31,14 @@ E1 = np.array([1, 0, -1]) / math.sqrt(2)
 E2 = np.array([-1, 2, -1]) / math.sqrt(6)
 UW = np.array([0.0, 0.0, 0.0, 1.0])
 
+# --------------------------------------------------------------------------- scene facts
 def load_facts():
     f = {}
     f['census'] = json.load(open(os.path.join(OUT, 'scan_census.json')))
     f['scan4d'] = json.load(open(os.path.join(OUT, 'scan_4d.json')))
     f['sculpt'] = json.load(open(os.path.join(OUT, 'sculpture_lp.json')))
     return f
+
 
 def room_frame(alpha_deg, beta_deg=0.0):
     """the observer's room frame at this orientation.
@@ -57,47 +59,63 @@ def room_frame(alpha_deg, beta_deg=0.0):
     U = U / np.linalg.norm(U)
     return R, U, T
 
+
+# --------------------------------------------------------------------------- easing
 def ease(t):
     t = max(0.0, min(1.0, t))
     return t * t * (3 - 2 * t)
+
 
 def ease_io(t):
     t = max(0.0, min(1.0, t))
     return t * t * t * (t * (t * 6 - 15) + 10)
 
+
+# --------------------------------------------------------------------------- shots
 def build_shots():
+    """the shot list: (frame, mode, flags, alpha_deg, beta_deg, dist, scale, expo)"""
     S = []
     NF = int(16.3 * FPS)
+
     def add(frame, mode, flags, alpha, beta, dist, scale, expo=1.0):
         S.append((frame, mode, flags, alpha, beta, dist, scale, expo))
+
     for f in range(NF):
         s = f / FPS
-        if s < 3.70:
+        if s < 3.70:                                   # I : the claim (2D ink)
             u = s / 3.70
             add(f, 0, 0, 0.0, 0.0, 3.6, 1.80 - 0.22 * ease_io(u))
-        elif s < 8.20:
+        elif s < 8.20:                                 # II : the object (3D)
             v = (s - 3.70) / 4.50
-            if v < 0.46: beta = 0.0
-            elif v < 0.64: beta = 14.0 * ease_io((v - 0.46) / 0.18)
-            elif v < 0.82: beta = 14.0
-            elif v < 0.99: beta = 14.0 * (1.0 - ease_io((v - 0.82) / 0.17))
-            else: beta = 0.0
+            if v < 0.46:
+                beta = 0.0
+            elif v < 0.64:
+                beta = 14.0 * ease_io((v - 0.46) / 0.18)
+            elif v < 0.82:
+                beta = 14.0
+            elif v < 0.99:
+                beta = 14.0 * (1.0 - ease_io((v - 0.82) / 0.17))
+            else:
+                beta = 0.0
             add(f, 1, 7, 0.0, beta, 3.6 - 0.3 * ease_io(v), 1.78 - 0.18 * ease_io(v))
-        elif s < 12.60:
+        elif s < 12.60:                                # III : out into the 4th
             v = (s - 8.20) / 4.40
             a = 88.0 * ease_io(min(1.0, v))
             sc = 1.72 + 0.28 * math.sin(math.radians(a))
             add(f, 1, 7, a, 0.0, 3.6 + 0.5 * ease_io(v), sc)
-        elif s < 14.00:
+        elif s < 14.00:                                # IIIb : the return
             v = (s - 12.60) / 1.40
             a = 88.0 * (1.0 - ease_io(v))
             sc = 1.72 + 0.28 * math.sin(math.radians(a)) + 0.05 * v
             add(f, 1, 7, a, 0.0, 4.1 - 0.4 * ease_io(v), sc)
-        else:
+        else:                                          # finale : the figure again
             v = (s - 14.00) / 2.10
             add(f, 1, 7, 0.0, 0.0, 3.7 - 0.25 * ease_io(v),
                 1.70 - 0.14 * ease_io(v), max(0.62, 1.0 - 0.38 * v))
     return S, NF
+
+    return S, NF
+
 
 def write_timeline(path, shots):
     lines = ['# frame mode flags alpha beta dist scale exposure stroke']
@@ -108,23 +126,27 @@ def write_timeline(path, shots):
     open(path, 'w').write('\n'.join(lines) + '\n')
     return len(lines) - 1
 
+
+# --------------------------------------------------------------------------- typography
 TEXT = [
     (0.40, 3.55, 'kicker', 'I.  The claim'),
     (1.35, 3.55, 'body', 'a drawing that cannot exist as a drawing:\nno assignment of depth to its parts fits'),
     (3.85, 8.05, 'kicker', 'II.  The object'),
-    (4.35, 8.05, 'body', 'three real bars — no two touching (0.283 apart)\nthis picture is exactly what they cast'),
-    (6.35, 8.05, 'body2', 'walk 14° off the axis: it reads as floating bars\n— and it does so from 97% of all viewpoints'),
+    (4.35, 8.05, 'body', 'three real bars \u2014 no two touching (0.283 apart)\nthis picture is exactly what they cast'),
+    (6.35, 8.05, 'body2', 'walk 14\u00b0 off the axis: it reads as floating bars\n\u2014 and it does so from 97% of all viewpoints'),
     (8.40, 12.50, 'kicker', 'III.  The fourth side'),
     (8.75, 12.50, 'body', 'roll the observer into the fourth dimension'),
-    (10.10, 12.50, 'body2', 'the figure only foreshortens — 100% identical\nonce the cos α flattening is undone'),
+    (10.10, 12.50, 'body2', 'the figure only foreshortens \u2014 100% identical\nonce the cos \u03b1 flattening is undone'),
     (10.80, 12.50, 'body', 'the fourth bar casts no shadow in our space\nit only grows along the line of sight'),
     (12.70, 13.95, 'body2', 'come back'),
     (14.15, 16.05, 'title', 'THE FOURTH SIDE'),
     (14.60, 16.05, 'sub', 'a four-dimensional object whose shadow is impossible'),
-    (15.05, 16.05, 'foot', 'coded from scratch  ·  C ray tracer, no engine  ·  geometry solved by linear programming'),
+    (15.05, 16.05, 'foot', 'coded from scratch  \u00b7  C ray tracer, no engine  \u00b7  geometry solved by linear programming'),
 ]
 
+
 def inkify(arr):
+    """draw ink outlines on a frame: darken steep luminance edges (act I look)"""
     g = arr.astype(np.float32).mean(axis=2)
     gy, gx = np.gradient(g)
     m = np.hypot(gx, gy)
@@ -132,14 +154,19 @@ def inkify(arr):
     out = arr.astype(np.float32)*(1.0 - 0.82*m) + np.array([22.0, 22.0, 27.0])*(0.82*m)
     return out.clip(0, 255).astype(np.uint8)
 
+
 def plate(d, box, alpha):
-    if alpha <= 0.02: return
+    """a soft white plate so type stays legible over any frame"""
+    if alpha <= 0.02:
+        return
     x0, y0, x1, y1 = box
     a = int(150*alpha)
     d.rounded_rectangle([x0, y0, x1, y1], radius=10, fill=(255, 255, 255, a))
     d.rounded_rectangle([x0, y0, x1, y1], radius=10, outline=(210, 210, 214, int(120*alpha)), width=1)
 
+
 def draw_text(img, spec, frame=None):
+    """composite the typography for time t onto a PIL image"""
     from PIL import Image, ImageDraw, ImageFont
     t = (frame if frame is not None else 0) / FPS
     d = ImageDraw.Draw(img, 'RGBA')
@@ -151,16 +178,20 @@ def draw_text(img, spec, frame=None):
         f_foot = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 16)
     except Exception:
         f_title = f_sub = f_kick = f_body = f_foot = ImageFont.load_default()
+
     def alpha_of(t0, t1):
         a = 1.0
         if t < t0: a = 0.0
         if t > t1: a = 0.0
         a = min(a, (t - t0) / 0.45, (t1 - t) / 0.45, 1.0)
         return max(0.0, a)
+
     for (t0, t1, kind, text) in spec:
         a = alpha_of(t0, t1)
-        if a <= 0.01: continue
-        ink = (18, 18, 20, int(232 * a)); dim = (70, 70, 78, int(210 * a))
+        if a <= 0.01:
+            continue
+        ink = (18, 18, 20, int(232 * a))
+        dim = (70, 70, 78, int(210 * a))
         if kind == 'kicker':
             w = d.textlength(text.upper(), font=f_kick)
             plate(d, (52, 34, 52 + w + 24, 86), a)
@@ -183,73 +214,114 @@ def draw_text(img, spec, frame=None):
         elif kind == 'foot':
             w = d.textlength(text, font=f_foot)
             d.text(((W - w) / 2, H - 74), text, font=f_foot, fill=(120, 120, 128, int(215 * a)))
+
+    # live alpha readout during act III
     if 8.20 <= t <= 13.95:
         from PIL import ImageFont
-        try: f_n = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf', 22)
-        except Exception: f_n = ImageFont.load_default()
+        try:
+            f_n = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf', 22)
+        except Exception:
+            f_n = ImageFont.load_default()
         if t < 12.60:
-            v = (t - 8.20) / 4.40; a_deg = 88.0 * ease_io(min(1.0, v))
+            v = (t - 8.20) / 4.40
+            a_deg = 88.0 * ease_io(min(1.0, v))
         elif t < 14.00:
-            v = (t - 12.60) / 1.40; a_deg = 88.0 * (1.0 - ease_io(v))
-        else: a_deg = 0.0
-        s = 'α = %5.1f°' % a_deg
+            v = (t - 12.60) / 1.40
+            a_deg = 88.0 * (1.0 - ease_io(v))
+        else:
+            a_deg = 0.0
+        s = '\u03b1 = %5.1f\u00b0' % a_deg
         d.text((W - 190, 46), s, font=f_n, fill=(90, 90, 100, 225))
         d.line([(W - 190, 78), (W - 60, 78)], fill=(150, 150, 158, 180), width=2)
 
+
+# --------------------------------------------------------------------------- encode
 def encode(frames_dir, out_path, nframes):
     import imageio_ffmpeg
     ff = imageio_ffmpeg.get_ffmpeg_exe()
     from PIL import Image
     cmd = [ff, '-y', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', f'{W}x{H}',
-           '-r', str(FPS), '-i', '-', '-c:v', 'libx264', '-preset', 'slow', '-crf', '17',
-           '-pix_fmt', 'yuv420p', '-movflags', '+faststart', out_path]
+           '-r', str(FPS), '-i', '-',
+           '-c:v', 'libx264', '-preset', 'slow', '-crf', '17', '-pix_fmt', 'yuv420p',
+           '-movflags', '+faststart', out_path]
     p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stderr=subprocess.DEVNULL)
     for i in range(nframes):
         fn = os.path.join(frames_dir, 'f%05d.rgb' % i)
-        if not os.path.exists(fn): continue
+        if not os.path.exists(fn):
+            continue
         a = np.fromfile(fn, dtype=np.uint8).reshape(H, W, 3)
-        if i < 148: a = inkify(a)
-        img = Image.fromarray(a); draw_text(img, TEXT, i)
+        if i < 148:                      # act I: ink on paper
+            a = inkify(a)
+        img = Image.fromarray(a)
+        draw_text(img, TEXT, i)
         p.stdin.write(np.asarray(img, dtype=np.uint8).tobytes())
-    p.stdin.close(); p.wait(); return p.returncode
+        if i % 40 == 0:
+            print('  encode %d/%d' % (i, nframes), flush=True)
+    p.stdin.close()
+    p.wait()
+    return p.returncode
+
 
 def pipe(nframes=None, out_path='THE_FOURTH_SIDE.mp4', src=None):
+    """stream raw RGB frames from stdin (e.g. `fourd --stdout`) straight into
+    the encoder: no scratch frames on disk, constant memory, resumable chunks."""
     import imageio_ffmpeg
     ff = imageio_ffmpeg.get_ffmpeg_exe()
     from PIL import Image
     if nframes is None: nframes = NF
     if src is None: src = sys.stdin
     cmd = [ff, '-y', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', f'{W}x{H}',
-           '-r', str(FPS), '-i', '-', '-c:v', 'libx264', '-preset', 'slow', '-crf', '17',
-           '-pix_fmt', 'yuv420p', '-movflags', '+faststart', out_path]
+           '-r', str(FPS), '-i', '-',
+           '-c:v', 'libx264', '-preset', 'slow', '-crf', '17', '-pix_fmt', 'yuv420p',
+           '-movflags', '+faststart', out_path]
     p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stderr=subprocess.DEVNULL)
     need = W*H*3
     for i in range(nframes):
         buf = src.buffer.read(need) if hasattr(src, 'buffer') else src.read(need)
-        if not buf or len(buf) < need: break
+        if not buf or len(buf) < need:
+            print('  stream ended early at frame %d' % i, flush=True)
+            break
         a = np.frombuffer(buf, dtype=np.uint8).reshape(H, W, 3).copy()
-        if i < 148: a = inkify(a)
-        img = Image.fromarray(a); draw_text(img, TEXT, i)
+        if i < 148:                      # act I: ink on paper
+            a = inkify(a)
+        img = Image.fromarray(a)
+        draw_text(img, TEXT, i)
         p.stdin.write(np.asarray(img, dtype=np.uint8).tobytes())
-    p.stdin.close(); p.wait(); return p.returncode
+        if i % 40 == 0:
+            print('  pipe %d/%d' % (i, nframes), flush=True)
+    p.stdin.close()
+    p.wait()
+    return p.returncode
 
+
+# --------------------------------------------------------------------------- main
 if __name__ == '__main__':
     cmd = sys.argv[1] if len(sys.argv) > 1 else 'facts'
     if cmd == 'pipe':
         n = int(sys.argv[2]) if len(sys.argv) > 2 else NF
         out = sys.argv[3] if len(sys.argv) > 3 else 'THE_FOURTH_SIDE.mp4'
-        sys.exit(pipe(n, out))
+        rc = pipe(n, out)
+        print('pipe rc', rc, '->', out)
+        sys.exit(rc)
     if cmd == 'facts':
-        f = load_facts(); c = f['census']
+        f = load_facts()
+        c = f['census']
         print('=== THE FACTS THIS FILM IS BUILT ON (all measured, not asserted) ===')
-        print(f"  the LP-solved sculpture       : 3 bars, min gap {c['gap']:.3f}, no contacts")
-        print(f"  census of view directions     : {c['impossible']}/{c['n']} = {100*c['frac']:.1f}% give the impossible figure")
+        print(f"  the LP-solved sculpture       : 3 bars, min gap {c['gap']:.3f}, "
+              f"no contacts")
+        print(f"  its picture at the magic axis : IMPOSSIBLE "
+              f"(no depth order of its own parts reproduces it)")
+        print(f"  census of view directions     : {c['impossible']}/{c['n']} = "
+              f"{100*c['frac']:.1f}% give the impossible figure -> 98% show floating bars")
+        print(f"  the 4D turn (alpha sweep)     :")
         for row in f['scan4d']:
-            print(f"      alpha {row['q']:4.1f} : 4th bar screen length {row['screen_len']:5.2f}   picture impossible = {row['impossible']}")
+            print(f"      alpha {row['q']:4.1f} : 4th bar screen length "
+                  f"{row['screen_len']:5.2f}   picture impossible = {row['impossible']}")
     elif cmd == 'timeline':
         shots, NF = build_shots()
         n = write_timeline(os.path.join(HERE, 'timeline.txt'), shots)
         print(f'wrote timeline.txt with {n} frames ({n/FPS:.1f}s at {FPS}fps)')
     elif cmd == 'encode':
         nf = int(sys.argv[2]) if len(sys.argv) > 2 else int(15.6 * FPS)
-        sys.exit(encode(os.path.join(HERE, 'frames'), os.path.join(HERE, 'THE_FOURTH_SIDE.mkv'), nf))
+        rc = encode(os.path.join(HERE, 'frames'), os.path.join(HERE, 'THE_FOURTH_SIDE.mkv'), nf)
+        print('ffmpeg rc =', rc)
