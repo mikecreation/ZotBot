@@ -1,0 +1,47 @@
+name: Build Representation Escape
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'research/representation-escape/**'
+      - '!research/representation-escape/Representation_Escape_Narrative_2026-10-02_v31.pdf'
+      - '!research/representation-escape/Representation_Escape_Narrative_2026-10-02_v31_source_bundle.zip'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: research/representation-escape
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-extra texlive-fonts-recommended lmodern zip
+          python3 -m pip install --upgrade pip
+          python3 -m pip install numpy matplotlib
+      - name: Generate figures
+        run: python3 make_figures.py
+      - name: Build PDF
+        run: |
+          pdflatex -interaction=nonstopmode -halt-on-error Representation_Escape_Narrative_2026-10-02_v31.tex
+          pdflatex -interaction=nonstopmode -halt-on-error Representation_Escape_Narrative_2026-10-02_v31.tex
+      - name: Build source bundle
+        run: |
+          rm -f Representation_Escape_Narrative_2026-10-02_v31_source_bundle.zip
+          zip -r Representation_Escape_Narrative_2026-10-02_v31_source_bundle.zip README.md Representation_Escape_Narrative_2026-10-02_v31.tex make_figures.py figures repro fourth-side
+      - name: Commit generated artifacts
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add figures Representation_Escape_Narrative_2026-10-02_v31.pdf Representation_Escape_Narrative_2026-10-02_v31_source_bundle.zip
+          git diff --cached --quiet && exit 0
+          git commit -m "Build Representation Escape artifacts [skip ci]"
+          git push
