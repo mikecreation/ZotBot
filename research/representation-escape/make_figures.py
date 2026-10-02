@@ -11,8 +11,13 @@ REPRO = ROOT / "repro"
 FIG.mkdir(exist_ok=True)
 
 def rows(path):
-    with open(path, newline="", encoding="utf-8") as f:
-        return list(csv.DictReader(f))
+    # Some exported CSV snapshots can carry one provenance banner line.
+    # Ignore it so the checked-in data remains human-readable and machine-usable.
+    with open(path, encoding="utf-8") as f:
+        lines = f.readlines()
+    if lines and lines[0].startswith("<PARSED TEXT FOR SHEET:"):
+        lines = lines[1:]
+    return list(csv.DictReader(lines))
 
 def save(fig, name):
     fig.tight_layout()
