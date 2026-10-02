@@ -12,7 +12,9 @@ Deliverables:
 |---|---|
 | `THE_FOURTH_SIDE.mp4` | the film (960×540, 40 fps, 16.3 s, silent) |
 | `THE_FOURTH_SIDE.mkv` | same, lossless-ish container copy |
-| `poster.png` | hero still |
+| `THE_FOURTH_SIDE_ref.mp4` | the first-generation render of the same film (superseded) |
+| `poster.png` | hero still (frame 603) |
+| `compare_ref_vs_new.png` | old pipeline vs new pipeline, three beats |
 | `timeline.txt` | the shot list the renderer consumed |
 
 ---
@@ -94,13 +96,22 @@ film.py                       shot list, typography, encode (ffmpeg)
 
 Pipeline:
 
+The whole film regenerates in one streaming pass — the renderer writes raw
+frames straight down a pipe into the encoder, so **no scratch frames ever touch
+the disk** and memory stays at a few megabytes:
+
 ```bash
 cd research && python3 solve_lp.py && python3 facts.py && python3 export_scene.py
-cd .. && cp research/scene_vals.h . && gcc -O2 -march=native -o fourd fourd.c -lm -lpthread
-mkdir -p frames && python3 film.py timeline
-./fourd --timeline timeline.txt --out frames --w 960 --h 540 --threads 2   # ~2.5 min
-python3 film.py encode 652                                                # ~20 s
+cd .. && cp research/scene_vals.h . && gcc -O3 -march=native -o fourd fourd.c -lm -lpthread
+python3 film.py timeline
+./fourd --timeline timeline.txt --stdout --w 960 --h 540 --threads 2 \
+  | python3 film.py pipe 652 THE_FOURTH_SIDE.mp4          # 652 frames: ~24 s total
 ```
+
+Every stage is incremental and resumable: `--from/--to` re-render any frame
+range, `--out DIR` writes a single frame, and `film.py pipe N out.mp4` is happy
+to receive a chunk. Nothing is staged, nothing is quadratic, nothing dies at
+frame 74.
 
 ### The renderer
 
@@ -108,7 +119,9 @@ python3 film.py encode 652                                                # ~20 
 the generator basis (each bar is a box `{ c + Σ sᵢgᵢ , |sᵢ| ≤ 1 }`), a room
 frame rebuilt per shot from `(α, β)`, soft shadows by 5-tap light sampling,
 a 4D-generalised cross product for face normals, and a Reinhard-like tone map.
-Two threads, ~0.22 s/frame at 960×540.
+Two threads, **0.024 s/frame** at 960×540 — the full 652-frame film plus its
+H.264 encode takes about **24 seconds** wall-clock on this 2-core machine, with
+a constant ~2 MB footprint.
 
 ---
 
@@ -121,5 +134,13 @@ Two threads, ~0.22 s/frame at 960×540.
 * Act I is the same 3D scene rendered with flat ink shading rather than a
   separate 2D drawing engine — the geometry is identical, and the reading test
   is the same one used everywhere else.
-* 4K would take roughly 9× longer per frame; 960×540 was chosen to keep the
-  whole film re-renderable in ~2.5 minutes on this 2-core machine.
+* The new streaming renderer is geometrically identical to the first-generation
+  one (same silhouettes, same framing — a shift search over ±14 px finds zero
+  offset) but not bit-identical in shading: about 2–4% mean channel error,
+  concentrated in the darkest faces. Fixing two real bugs did that: shadow rays
+  from a bar's own surface no longer count as occluded, and a facet's shading
+  normal is now taken from the *active* supporting plane instead of an
+  arbitrary sign rule (the old sign rule striped the bars with false facets).
+  `THE_FOURTH_SIDE_ref.mp4` is kept for side-by-side.
+* 4K would take roughly 9× longer per frame; 960×540 keeps the whole film
+  re-renderable in ~24 seconds on this 2-core machine.
