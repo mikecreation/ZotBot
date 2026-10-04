@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Fog of Knowledge Graph",
+  "type": "object",
+  "required": [
+    "meta",
+    "eras",
+    "domains",
+    "nodes",
+    "edges",
+    "reviews"
+  ],
+  "properties": {
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "kind",
+          "domain",
+          "era",
+          "status"
+        ]
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source",
+          "target",
+          "type"
+        ]
+      }
+    },
+    "reviews": {
+      "type": "array"
+    }
+  }
+}
