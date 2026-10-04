@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fog of Knowledge</title>
+<meta name="description" content="A living map of human knowledge, dependencies, disputes, and the frontier of the unknown.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <div><small>OPEN KNOWLEDGE GRAPH</small><h1>FOG OF KNOWLEDGE</h1><p>What humanity knows, how it got there, what broke, and where the fog begins.</p></div>
+  <a href="https://github.com/mikecreation/ZotBot/tree/main/research/fog-of-knowledge" target="_blank" rel="noreferrer">Contribute on GitHub ↗</a>
+</header>
+<section class="controls">
+  <input id="search" type="search" placeholder="Search knowledge…">
+  <select id="domain"><option value="all">All domains</option></select>
+  <select id="status"><option value="all">All states</option></select>
+  <label><input id="frontierOnly" type="checkbox"> frontier only</label>
+  <button id="reset">Reset view</button>
+  <span id="stats"></span>
+</section>
+<main>
+  <aside class="legend">
+    <h2>STATE</h2>
+    <div id="legend"></div>
+    <hr>
+    <p>Scroll to zoom. Drag empty space to pan. Click a node for provenance, ancestry, peer review, and dependency impact.</p>
+  </aside>
+  <section id="mapShell">
+    <div class="fogTitle"><b>THE FOG</b><span>unknown / unresolved / not yet imagined</span></div>
+    <svg id="graph" viewBox="0 0 2200 1250">
+      <defs>
+        <linearGradient id="fogGradient"><stop offset="0" stop-color="#dfe8ff" stop-opacity="0"/><stop offset=".55" stop-color="#dfe8ff" stop-opacity=".1"/><stop offset="1" stop-color="#dfe8ff" stop-opacity=".42"/></linearGradient>
+        <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <g id="viewport"><g id="eras"></g><g id="edges"></g><g id="nodes"></g><g id="fog"></g></g>
+    </svg>
+  </section>
+  <aside id="detail" class="detail"><div class="empty"><b>◎</b><h2>Select a node</h2><p>Its ancestry, sources, reviews, and downstream consequences appear here.</p></div></aside>
+</main>
+<script type="module" src="app.js"></script>
+</body>
+</html>
