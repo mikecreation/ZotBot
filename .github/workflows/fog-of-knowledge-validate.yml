@@ -1,0 +1,22 @@
+name: Fog of Knowledge integrity
+
+on:
+  pull_request:
+    paths:
+      - "research/fog-of-knowledge/**"
+  push:
+    branches: [main]
+    paths:
+      - "research/fog-of-knowledge/**"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate knowledge graph
+        working-directory: research/fog-of-knowledge
+        run: python scripts/validate.py
