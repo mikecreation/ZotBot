@@ -20,9 +20,30 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Validate knowledge graph
+
+      - name: Validate canonical knowledge graph
         working-directory: research/fog-of-knowledge
         run: python scripts/validate.py
+
       - name: Check atlas renderer syntax
         working-directory: research/fog-of-knowledge
         run: node --check app.js
+
+      - name: Generate Nemesis context packet
+        working-directory: research/fog-of-knowledge
+        run: |
+          python scripts/nemesis_context.py --max-items 5 --compact > /tmp/nemesis-context.json
+          python -m json.tool /tmp/nemesis-context.json > /dev/null
+
+      - name: Check Nemesis example batch
+        working-directory: research/fog-of-knowledge
+        run: python scripts/nemesis_apply.py nemesis/example-batch --check
+
+      - name: Prove Nemesis batch idempotency
+        working-directory: research/fog-of-knowledge
+        run: |
+          python scripts/nemesis_apply.py nemesis/example-batch --apply
+          python scripts/validate.py
+          sha256sum data/knowledge.json > /tmp/fog-first.sha
+          python scripts/nemesis_apply.py nemesis/example-batch --apply
+          sha256sum -c /tmp/fog-first.sha
