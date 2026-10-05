@@ -1,45 +1,228 @@
-const svg=document.querySelector("#graph"),viewport=document.querySelector("#viewport"),edgesG=document.querySelector("#edges"),nodesG=document.querySelector("#nodes"),erasG=document.querySelector("#eras"),fogG=document.querySelector("#fog"),detail=document.querySelector("#detail"),search=document.querySelector("#search"),domain=document.querySelector("#domain"),status=document.querySelector("#status"),frontierOnly=document.querySelector("#frontierOnly"),stats=document.querySelector("#stats"),shell=document.querySelector("#mapShell");
-const STATUS={foundational:["Foundational","#ffbf57"],established:["Strongly established","#65f5b0"],active:["Active field","#66bfff"],disputed:["Disputed","#ffc857"],frontier:["Frontier / unresolved","#c497ff"],invalidated:["Invalidated / falsified","#ff4d67"],historical:["Historical / superseded","#8e96a8"],"dependency-broken":["Broken dependency","#ff4d67"],"review-required":["Review required","#ffc857"]};
-const NS="http://www.w3.org/2000/svg";const mk=(n,a={})=>{const x=document.createElementNS(NS,n);Object.entries(a).forEach(([k,v])=>x.setAttribute(k,v));return x};
-let model,nodeById=new Map(),pos=new Map(),view={scale:1,x:0,y:0,drag:false,sx:0,sy:0,px:0,py:0};
+const svg=document.querySelector("#graph");
+const scene=document.querySelector("#scene");
+const detail=document.querySelector("#detail");
+const search=document.querySelector("#search");
+const results=document.querySelector("#searchResults");
+const atlasBtn=document.querySelector("#atlasBtn");
+const backBtn=document.querySelector("#backBtn");
+const crumb=document.querySelector("#crumb");
+const mapCaption=document.querySelector("#mapCaption");
+const NS="http://www.w3.org/2000/svg";
+
+const STATUS={
+ foundational:["Foundational","#ffbf57"],established:["Strongly established","#65f5b0"],active:["Active field","#66bfff"],
+ disputed:["Disputed","#ffc857"],frontier:["Frontier / unresolved","#c497ff"],invalidated:["Invalidated / falsified","#ff4d67"],
+ historical:["Historical / superseded","#8e96a8"],"dependency-broken":["Broken dependency","#ff4d67"],"review-required":["Review required","#ffc857"]
+};
+
+const FAMILIES=[
+ {id:"roots",title:"FOUNDATIONS OF KNOWING",short:"Foundations",color:"#ffbd57",icon:"✦",tagline:"Observation · memory · causality · measurement",major:["Self / other","Cause / effect","More / less / number","Oral tradition","Writing & records","Experimental scientific method"]},
+ {id:"formal",title:"MATHEMATICS & LOGIC",short:"Mathematics & Logic",color:"#b67cff",icon:"∑",tagline:"Proof · quantity · structure · abstraction",major:["Logic","Algebra","Geometry","Statistics","Topology","Number theory"]},
+ {id:"physical",title:"PHYSICAL SCIENCES",short:"Physical Sciences",color:"#55a8ff",icon:"⚛",tagline:"Matter · energy · space · time",major:["Physics","Chemistry","Astronomy","Thermodynamics","Electromagnetism","Cosmology"]},
+ {id:"earth",title:"EARTH & ENVIRONMENT",short:"Earth & Environment",color:"#40d5c6",icon:"◉",tagline:"Planet · climate · oceans · deep time",major:["Geology","Climatology","Meteorology","Hydrology","Oceanology","Paleoclimatology"]},
+ {id:"life",title:"LIFE SCIENCES",short:"Life Sciences",color:"#64e886",icon:"⌬",tagline:"Life · heredity · evolution · ecosystems",major:["Biology","Genetics","Evolution by natural selection","Ecology","Microbiology","Molecular biology","Systems biology"]},
+ {id:"health",title:"MEDICINE & HEALTH",short:"Medicine & Health",color:"#ff637d",icon:"✚",tagline:"Health · disease · intervention · population",major:["Early medicine","Anatomy","Epidemiology","Pathology","Pharmacology","Immunology","Oncology","Neurology"]},
+ {id:"engineering",title:"ENGINEERING & TECHNOLOGY",short:"Engineering & Technology",color:"#45e5ff",icon:"⌁",tagline:"Design · machines · infrastructure · invention",major:["Engineering science","Biotechnology","Nanotechnology","Mechatronics","Geotechnology","Metrology"]},
+ {id:"information",title:"INFORMATION & COGNITION",short:"Information & Cognition",color:"#8278ff",icon:"◇",tagline:"Computation · intelligence · mind · language",major:["Computer science","Artificial intelligence","Information theory","Cognitive science","Neuroscience","Psycholinguistics"]},
+ {id:"social",title:"SOCIAL SCIENCES",short:"Social Sciences",color:"#ff8a58",icon:"◎",tagline:"People · institutions · incentives · societies",major:["Sociology","Psychology","Anthropology","Economics","Criminology","Demography","Social psychology"]},
+ {id:"humanities",title:"HUMANITIES & PHILOSOPHY",short:"Humanities & Philosophy",color:"#ffd35f",icon:"◈",tagline:"Meaning · history · language · value · culture",major:["Philosophy","Archaeology","Epistemology","Philology","Theology","Musicology","Etymology"]}
+];
+
+let model,nodeById=new Map(),familyById=new Map(FAMILIES.map(f=>[f.id,f])),currentMode="atlas",currentFamily=null;
+
+const mk=(name,attrs={})=>{const el=document.createElementNS(NS,name);for(const [k,v] of Object.entries(attrs))el.setAttribute(k,v);return el};
+const textNode=(x,y,txt,cls)=>{const t=mk("text",{x,y,class:cls});t.textContent=txt;return t};
+const polar=(cx,cy,rx,ry,a)=>({x:cx+Math.cos(a)*rx,y:cy+Math.sin(a)*ry});
+const esc=(s="")=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
 async function boot(){
- const r=await fetch("./data/knowledge.json");model=await r.json();await addOlogies();nodeById=new Map(model.nodes.map(n=>[n.id,n]));derive();controls();layout();draw();bind();
+  model=await (await fetch("./data/knowledge.json")).json();
+  await addOlogies();
+  nodeById=new Map(model.nodes.map(n=>[n.id,n]));
+  deriveStatuses();
+  document.querySelector("#nodeCount").textContent=model.nodes.length.toLocaleString();
+  document.querySelector("#frontierCount").textContent=model.nodes.filter(n=>n.frontier).length.toLocaleString();
+  bind();
+  renderAtlas();
 }
+
 async function addOlogies(){
- const t=await (await fetch("./data/ologies.tsv")).text();
- const parent={earth:"field.geology",life:"field.biology",health:"practice.medicine",social:"field.sociology",humanities:"field.philosophy",physical:"field.physics",information:"field.cognitive-science",engineering:"field.engineering",formal:"field.logic"};
- const existing=new Map(model.nodes.map(n=>[n.label.toLowerCase(),n]));
- for(const line of t.split(/\r?\n/).slice(1)){if(!line.trim())continue;const [label,d,e]=line.split("\t");const old=existing.get(label.toLowerCase());if(old){if(label.toLowerCase().endsWith("ology")&&!old.tags?.includes("ology"))(old.tags??=[]).push("ology");continue}const slug=label.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""),id="ology."+slug,n={id,label,kind:"field",domain:d,era:e,status:"active",summary:"Curated seed entry in the expandable -ology registry: "+label+".",tags:["ology","registry-seed"],sources:[],frontier:false,aliases:[]};model.nodes.push(n);existing.set(label.toLowerCase(),n);if(parent[d])model.edges.push({source:parent[d],target:id,type:"derived_from",dependency:"soft"})}
+  const t=await (await fetch("./data/ologies.tsv")).text();
+  const existing=new Map(model.nodes.map(n=>[n.label.toLowerCase(),n]));
+  for(const line of t.split(/\r?\n/).slice(1)){
+    if(!line.trim()) continue;
+    const [label,domain,era]=line.split("\t");
+    const old=existing.get(label.toLowerCase());
+    if(old){if(label.toLowerCase().endsWith("ology")&&!old.tags?.includes("ology"))(old.tags??=[]).push("ology");continue}
+    const slug=label.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+    const n={id:"ology."+slug,label,kind:"field",domain,era,status:"active",summary:"Curated seed entry in the expandable -ology registry: "+label+".",tags:["ology","registry-seed"],sources:[],frontier:false,aliases:[]};
+    model.nodes.push(n); existing.set(label.toLowerCase(),n);
+  }
 }
-function derive(){
- model.nodes.forEach(n=>n._status=n.status);const hard=new Map(),soft=new Map();for(const e of model.edges){if(!["depends_on","enabled","derived_from"].includes(e.type))continue;const m=e.dependency==="hard"?hard:soft;if(!m.has(e.source))m.set(e.source,[]);m.get(e.source).push(e.target)}
- const invalid=model.nodes.filter(n=>n.status==="invalidated").map(n=>n.id),broken=new Set(),q=[...invalid];while(q.length){const id=q.shift();for(const c of hard.get(id)||[]){if(!broken.has(c)&&!invalid.includes(c)){broken.add(c);q.push(c)}}}
- broken.forEach(id=>{const n=nodeById.get(id)||model.nodes.find(x=>x.id===id);if(n&&n.status!=="invalidated")n._status="dependency-broken"});
- const review=new Set(),q2=[...invalid,...broken];while(q2.length){const id=q2.shift();for(const c of soft.get(id)||[]){if(!review.has(c)){review.add(c);q2.push(c)}}}
- review.forEach(id=>{const n=model.nodes.find(x=>x.id===id);if(n&&!["invalidated","dependency-broken"].includes(n._status))n._status="review-required"});
+
+function deriveStatuses(){
+  model.nodes.forEach(n=>n._status=n.status);
+  const hard=new Map(),soft=new Map();
+  for(const e of model.edges){
+    if(!["depends_on","enabled","derived_from"].includes(e.type)) continue;
+    const m=e.dependency==="hard"?hard:soft;
+    if(!m.has(e.source))m.set(e.source,[]);
+    m.get(e.source).push(e.target);
+  }
+  const invalid=model.nodes.filter(n=>n.status==="invalidated").map(n=>n.id);
+  const broken=new Set(),q=[...invalid];
+  while(q.length){const id=q.shift();for(const c of hard.get(id)||[]){if(!broken.has(c)&&!invalid.includes(c)){broken.add(c);q.push(c)}}}
+  broken.forEach(id=>{const n=nodeById.get(id)||model.nodes.find(x=>x.id===id);if(n&&n.status!=="invalidated")n._status="dependency-broken"});
+  const review=new Set(),q2=[...invalid,...broken];
+  while(q2.length){const id=q2.shift();for(const c of soft.get(id)||[]){if(!review.has(c)){review.add(c);q2.push(c)}}}
+  review.forEach(id=>{const n=model.nodes.find(x=>x.id===id);if(n&& !["invalidated","dependency-broken"].includes(n._status))n._status="review-required"});
 }
-function controls(){
- model.domains.forEach(d=>domain.add(new Option(d.label,d.id)));Object.entries(STATUS).forEach(([k,v])=>status.add(new Option(v[0],k)));
- const box=document.querySelector("#legend");["foundational","established","active","frontier","invalidated","dependency-broken","review-required","historical"].forEach(k=>{const [label,color]=STATUS[k],r=document.createElement("div");r.className="legendRow";r.innerHTML='<i class="dot" style="background:'+color+';color:'+color+'"></i>'+label;box.append(r)});
+
+function familyNodes(id){return model.nodes.filter(n=>n.domain===id)}
+function familyFrontiers(id){return familyNodes(id).filter(n=>n.frontier)}
+function clearScene(){scene.replaceChildren()}
+
+function renderAtlas(){
+  currentMode="atlas";currentFamily=null;clearScene();
+  backBtn.hidden=true;atlasBtn.classList.add("active");crumb.textContent="Human Knowledge";
+  mapCaption.innerHTML="<b>THE ATLAS</b><span>Ten great knowledge families. Click one to open its internal branches. Dependency is shown deeper, where it can remain evidence-driven.</span>";
+  detail.innerHTML='<div class="detailHero"><div class="eyebrow">HUMAN KNOWLEDGE</div><h2>The first ring</h2><p>The map now begins with orientation. Every mapped item belongs to a great knowledge family before the interface asks you to understand its details.</p></div><section class="detailSection"><h3>THE TEN FAMILIES</h3><p>These are navigational super-fields, chosen to cover the current graph without pretending they are mutually exclusive. Cross-field research can belong to several deeper branches later.</p></section><section class="detailSection"><h3>MOVE THROUGH IT</h3><p>Choose a glowing field. The next view exposes its major branches first and pushes the long tail of specialties to the perimeter.</p></section>';
+
+  const cx=800,cy=490;
+  scene.append(mk("circle",{cx,cy,r:405,class:"atlasOrbit"}));
+  scene.append(mk("circle",{cx,cy,r:300,class:"atlasOrbit dashed"}));
+  scene.append(mk("circle",{cx,cy,r:468,class:"fogRing"}));
+  scene.append(textNode(cx,45,"THE UNMAPPED FOG BEYOND THE CURRENT ATLAS","fogText"));
+
+  FAMILIES.forEach((f,i)=>{
+    const a=-Math.PI/2+i*(Math.PI*2/FAMILIES.length);
+    const p=polar(cx,cy,415,330,a);
+    const start=polar(cx,cy,112,90,a),end=polar(cx,cy,338,270,a);
+    const trunk=mk("path",{d:`M ${start.x} ${start.y} Q ${(start.x+end.x)/2} ${(start.y+end.y)/2} ${end.x} ${end.y}`,class:"atlasTrunk",stroke:f.color});
+    const core=mk("path",{d:trunk.getAttribute("d"),class:"atlasTrunkCore",stroke:f.color});
+    scene.append(trunk,core);
+  });
+
+  const core=mk("g",{class:"knowledgeCore"});
+  core.append(mk("circle",{cx,cy,r:154,class:"halo"}));
+  core.append(mk("circle",{cx,cy,r:104,class:"ring"}));
+  core.append(mk("circle",{cx,cy,r:124,class:"ring2"}));
+  core.append(textNode(cx,cy-18,"HUMAN","coreTitle"));
+  core.append(textNode(cx,cy+9,"KNOWLEDGE","coreTitle"));
+  core.append(textNode(cx,cy+37,"THE SHARED PROJECT OF KNOWING","coreSub"));
+  core.append(textNode(cx,cy+58,model.nodes.length.toLocaleString()+" MAPPED NODES","coreCount"));
+  scene.append(core);
+
+  FAMILIES.forEach((f,i)=>{
+    const a=-Math.PI/2+i*(Math.PI*2/FAMILIES.length);
+    const p=polar(cx,cy,415,330,a),count=familyNodes(f.id).length,front=familyFrontiers(f.id).length;
+    const g=mk("g",{class:"domainGroup",transform:`translate(${p.x} ${p.y})`,"data-domain":f.id});
+    g.append(mk("circle",{r:94,fill:f.color,class:"halo"}));
+    g.append(mk("circle",{r:69,class:"disc",stroke:f.color}));
+    g.append(mk("circle",{r:79,class:"ring",stroke:f.color}));
+    g.append(textNode(0,-18,f.icon,"domainIcon"));
+    const words=f.title.split(" ");
+    const split=words.length>2?Math.ceil(words.length/2):words.length;
+    const l1=words.slice(0,split).join(" "),l2=words.slice(split).join(" ");
+    g.append(textNode(0,13,l1,"domainTitle"));
+    if(l2)g.append(textNode(0,28,l2,"domainTitle"));
+    g.append(textNode(0,l2?47:34,count.toLocaleString()+" mapped"+(front?" · "+front+" frontier":"") ,"domainCount"));
+    g.append(textNode(0,l2?61:49,"OPEN FIELD →","domainHint"));
+    g.addEventListener("click",()=>renderFamily(f.id));
+    g.addEventListener("mouseenter",()=>showFamilyPreview(f.id));
+    scene.append(g);
+  });
 }
-function layout(){
- const eras=new Map(model.eras.map((e,i)=>[e.id,i])),domains=new Map(model.domains.map((d,i)=>[d.id,i])),groups=new Map();
- model.nodes.forEach(n=>{const k=n.era+"|"+n.domain;if(!groups.has(k))groups.set(k,[]);groups.get(k).push(n)});
- for(const [k,list] of groups){const [e,d]=k.split("|"),ei=eras.get(e)||0,di=domains.get(d)||0;list.sort((a,b)=>a.label.localeCompare(b.label));const cols=Math.max(1,Math.ceil(list.length/5));list.forEach((n,i)=>{const col=i%cols,row=Math.floor(i/cols);pos.set(n.id,{x:120+ei*285+(col-(cols-1)/2)*42,y:78+di*116+(row-2)*22})})}
+
+function renderFamily(id){
+  const f=familyById.get(id);if(!f)return;
+  currentMode="family";currentFamily=id;clearScene();
+  backBtn.hidden=false;atlasBtn.classList.remove("active");crumb.textContent="Human Knowledge / "+f.short;
+  mapCaption.innerHTML="<b>"+esc(f.title)+"</b><span>Major branches are named. The outer constellation contains the rest of the mapped specialties. Click any node for evidence and dependency detail.</span>";
+
+  const all=familyNodes(id),major=[];
+  for(const label of f.major){const n=all.find(x=>x.label.toLowerCase()===label.toLowerCase());if(n&&!major.includes(n))major.push(n)}
+  const majorIds=new Set(major.map(n=>n.id)),minor=all.filter(n=>!majorIds.has(n.id));
+  const cx=800,cy=495;
+
+  scene.append(mk("circle",{cx,cy,r:425,class:"atlasOrbit"}));
+  scene.append(mk("circle",{cx,cy,r:305,class:"atlasOrbit dashed"}));
+  scene.append(mk("circle",{cx,cy,r:470,class:"fogRing"}));
+  scene.append(textNode(cx,44,"SPECIALTIES → CLAIMS → EVIDENCE → FRONTIER","fogText"));
+
+  major.forEach((n,i)=>{
+    const a=-Math.PI/2+i*(Math.PI*2/Math.max(major.length,1)),p=polar(cx,cy,310,235,a);
+    scene.append(mk("path",{d:`M ${cx} ${cy} Q ${(cx+p.x)/2} ${(cy+p.y)/2} ${p.x} ${p.y}`,class:"branchLine",stroke:f.color}));
+  });
+
+  const fc=mk("g",{class:"fieldCore"});
+  fc.append(mk("circle",{cx,cy,r:145,fill:f.color,opacity:.12,filter:"url(#bigGlow)"}));
+  fc.append(mk("circle",{cx,cy,r:96,class:"disc",stroke:f.color}));
+  fc.append(textNode(cx,cy-19,f.icon,"domainIcon"));
+  fc.append(textNode(cx,cy+14,f.short.toUpperCase(),"title"));
+  fc.append(textNode(cx,cy+38,all.length.toLocaleString()+" MAPPED ITEMS · "+familyFrontiers(id).length+" FRONTIERS","sub"));
+  scene.append(fc);
+
+  major.forEach((n,i)=>{
+    const a=-Math.PI/2+i*(Math.PI*2/Math.max(major.length,1)),p=polar(cx,cy,310,235,a);
+    const [_,statusColor]=STATUS[n._status]||STATUS.active;
+    const g=mk("g",{class:"majorNode",transform:`translate(${p.x} ${p.y})`});
+    g.append(mk("circle",{r:74,fill:f.color,class:"halo"}));
+    g.append(mk("circle",{r:52,class:"disc",stroke:f.color}));
+    g.append(mk("circle",{r:5,cy:-20,fill:statusColor}));
+    const words=n.label.split(" ");const split=words.length>2?Math.ceil(words.length/2):words.length;
+    g.append(textNode(0,3,words.slice(0,split).join(" "),"title"));
+    if(words.slice(split).length)g.append(textNode(0,17,words.slice(split).join(" "),"title"));
+    g.append(textNode(0,35,n.kind.toUpperCase(),"meta"));
+    g.addEventListener("click",ev=>{ev.stopPropagation();showNode(n.id)});
+    scene.append(g);
+  });
+
+  const rings=[{rx:505,ry:355},{rx:555,ry:400}];
+  minor.forEach((n,i)=>{
+    const ring=rings[i%rings.length],idx=Math.floor(i/rings.length),slots=Math.ceil(minor.length/rings.length),a=-Math.PI/2+idx*(Math.PI*2/Math.max(slots,1))+(i%2)*0.025;
+    const p=polar(cx,cy,ring.rx,ring.ry,a),[_,c]=STATUS[n._status]||STATUS.active;
+    const g=mk("g",{class:"minorDot",transform:`translate(${p.x} ${p.y})`});
+    g.append(mk("circle",{r:n.frontier?5.5:3.2,fill:n.frontier?"#c497ff":f.color}));
+    g.append(textNode(7,2,n.label,"minorLabel"));
+    g.addEventListener("click",ev=>{ev.stopPropagation();showNode(n.id)});
+    scene.append(g);
+  });
+
+  showFamilyPreview(id,true);
 }
-function draw(){drawEras();drawEdges();drawNodes();drawFog();filter();transform()}
-function drawEras(){erasG.replaceChildren();model.eras.forEach((e,i)=>{const x=25+i*285;erasG.append(mk("rect",{x,y:18,width:260,height:1170,rx:18,class:"eraBand"}));const t=mk("text",{x:x+12,y:42,class:"eraLabel"});t.textContent=e.label;erasG.append(t)})}
-function curve(a,b){const dx=Math.max(45,(b.x-a.x)*.48);return "M "+a.x+" "+a.y+" C "+(a.x+dx)+" "+a.y+", "+(b.x-dx)+" "+b.y+", "+b.x+" "+b.y}
-function drawEdges(){edgesG.replaceChildren();model.edges.forEach(e=>{const a=pos.get(e.source),b=pos.get(e.target);if(!a||!b)return;edgesG.append(mk("path",{d:curve(a,b),class:"edge "+e.type,"data-s":e.source,"data-t":e.target}))})}
-function radius(n){return n.kind==="origin"?10:n.kind==="question"?8:n.tags?.includes("ology")?5.4:6.5}
-function drawNodes(){nodesG.replaceChildren();for(const n of model.nodes){const p=pos.get(n.id);if(!p)continue;const [_,color]=STATUS[n._status]||STATUS.active,r=radius(n),g=mk("g",{transform:"translate("+p.x+" "+p.y+")",class:"node "+(n.frontier?"frontier ":"")+(n._status==="invalidated"?"invalidated ":"")+(n._status==="dependency-broken"?"broken ":"")+(n._status==="review-required"?"review ":""),"data-id":n.id});g.append(mk("circle",{r:r+7,fill:color,opacity:.05}));g.append(mk("circle",{class:"ring",r:r+5}));g.append(mk("circle",{class:"core",r,fill:color,opacity:.94}));if(n._status==="invalidated")g.append(mk("line",{class:"strike",x1:-r-8,y1:r+4,x2:r+8,y2:-r-4}));const tx=mk("text",{x:r+7,y:3});tx.textContent=n.label;g.append(tx);if(n.tags?.includes("ology")){const s=mk("text",{x:r+7,y:13,class:"sub"});s.textContent="-ology";g.append(s)}g.addEventListener("click",ev=>{ev.stopPropagation();select(n.id)});nodesG.append(g)}}
-function drawFog(){const x=25+(model.eras.length-1)*285;fogG.replaceChildren(mk("path",{class:"fog",d:"M "+(x+115)+" 0 C "+(x+35)+" 210 "+(x+180)+" 410 "+(x+70)+" 650 C "+(x+5)+" 820 "+(x+190)+" 1030 "+(x+80)+" 1250 L 2200 1250 L 2200 0 Z"}),mk("path",{class:"fogEdge",d:"M "+(x+100)+" 20 C "+(x+5)+" 260 "+(x+205)+" 470 "+(x+65)+" 710 C "+(x+5)+" 900 "+(x+200)+" 1090 "+(x+95)+" 1230"}))}
-function match(n){const q=search.value.trim().toLowerCase();if(domain.value!=="all"&&n.domain!==domain.value)return false;if(status.value!=="all"&&n._status!==status.value)return false;if(frontierOnly.checked&&!n.frontier)return false;if(q&&!([n.label,n.summary,n.kind,...(n.tags||[]),...(n.aliases||[])].join(" ").toLowerCase().includes(q)))return false;return true}
-function filter(){const visible=new Set(model.nodes.filter(match).map(n=>n.id));nodesG.querySelectorAll(".node").forEach(g=>g.classList.toggle("muted",!visible.has(g.dataset.id)));edgesG.querySelectorAll(".edge").forEach(p=>p.classList.toggle("muted",!(visible.has(p.dataset.s)&&visible.has(p.dataset.t))));const f=model.nodes.filter(n=>visible.has(n.id)&&n.frontier).length,b=model.nodes.filter(n=>visible.has(n.id)&&["invalidated","dependency-broken","review-required"].includes(n._status)).length;stats.textContent=visible.size+" nodes · "+model.edges.length+" links · "+f+" frontier · "+b+" challenged"}
-function downstream(id){const seen=new Set(),q=[id];while(q.length){const x=q.shift();for(const e of model.edges){if(e.source!==x||e.dependency!=="hard"||!["depends_on","enabled","derived_from"].includes(e.type))continue;if(!seen.has(e.target)){seen.add(e.target);q.push(e.target)}}}seen.delete(id);return [...seen]}
-function esc(s=""){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
-function select(id){nodesG.querySelectorAll(".node").forEach(g=>g.classList.toggle("focused",g.dataset.id===id));edgesG.querySelectorAll(".edge").forEach(p=>p.classList.toggle("hot",p.dataset.s===id||p.dataset.t===id));const n=nodeById.get(id),[label,color]=STATUS[n._status]||STATUS.active,inc=model.edges.filter(e=>e.target===id).map(e=>({e,n:nodeById.get(e.source)})).filter(x=>x.n),out=model.edges.filter(e=>e.source===id).map(e=>({e,n:nodeById.get(e.target)})).filter(x=>x.n),impact=downstream(id),reviews=(model.reviews||[]).filter(r=>r.target===id),sources=(n.sources||[]);detail.innerHTML='<div class="kind">'+esc(n.kind)+' · '+esc(model.domains.find(d=>d.id===n.domain)?.label||n.domain)+'</div><h2>'+esc(n.label)+'</h2><span class="badge"><i style="background:'+color+'"></i>'+esc(label)+'</span>'+(n.frontier?'<span class="badge">fog boundary</span>':'')+'<p>'+esc(n.summary||"")+'</p><section><h3>Provenance</h3><ul>'+(sources.length?sources.map(s=>'<li><a href="'+esc(s.url)+'" target="_blank" rel="noreferrer">'+esc(s.title||s.id)+'</a></li>').join(""):"<li>No source attached yet.</li>")+'</ul></section><section><h3>Inherited from</h3><ul>'+(inc.length?inc.map(x=>'<li>'+esc(x.n.label)+' <small>('+esc(x.e.type)+(x.e.dependency?", "+esc(x.e.dependency):"")+')</small></li>').join(""):"<li>Root / no mapped prerequisite.</li>")+'</ul></section><section><h3>Leads to</h3><ul>'+(out.length?out.slice(0,25).map(x=>'<li>'+esc(x.n.label)+' <small>('+esc(x.e.type)+')</small></li>').join(""):"<li>No mapped descendants yet.</li>")+'</ul></section><section><h3>If this node fails</h3><p class="impact">'+(impact.length?impact.length+" mapped hard-dependent node"+(impact.length===1?"":"s")+" require automatic dependency invalidation/review.":"No hard-dependent descendants are currently mapped.")+'</p></section><section><h3>Peer review record</h3>'+(reviews.length?reviews.map(r=>'<div class="reviewCard"><b>'+esc(r.kind)+" · "+esc(r.result)+'</b><p>'+esc(r.summary)+'</p></div>').join(""):"<p>No graph-native reviews yet.</p>")+'</section><section><h3>Node ID</h3><code>'+esc(n.id)+'</code></section>'}
-function transform(){viewport.setAttribute("transform","translate("+view.x+" "+view.y+") scale("+view.scale+")")}
-function bind(){[search,frontierOnly].forEach(x=>x.addEventListener("input",filter));[domain,status].forEach(x=>x.addEventListener("change",filter));document.querySelector("#reset").onclick=()=>{view={...view,scale:1,x:0,y:0};transform()};svg.addEventListener("wheel",e=>{e.preventDefault();view.scale=Math.max(.35,Math.min(3.5,view.scale*(e.deltaY>0?.9:1.1)));transform()},{passive:false});svg.addEventListener("pointerdown",e=>{if(e.target.closest(".node"))return;view.drag=true;view.sx=e.clientX;view.sy=e.clientY;view.px=view.x;view.py=view.y;shell.classList.add("drag");svg.setPointerCapture(e.pointerId)});svg.addEventListener("pointermove",e=>{if(!view.drag)return;view.x=view.px+e.clientX-view.sx;view.y=view.py+e.clientY-view.sy;transform()});svg.addEventListener("pointerup",()=>{view.drag=false;shell.classList.remove("drag")})}
-boot().catch(e=>{console.error(e);detail.innerHTML="<h2>Map failed to load</h2><p>"+esc(e.message)+"</p>"});
+
+function showFamilyPreview(id,inFamily=false){
+  const f=familyById.get(id),nodes=familyNodes(id),front=nodes.filter(n=>n.frontier).length,challenged=nodes.filter(n=>["invalidated","dependency-broken","review-required","disputed"].includes(n._status)).length;
+  const actual=f.major.map(label=>nodes.find(n=>n.label.toLowerCase()===label.toLowerCase())).filter(Boolean);
+  detail.innerHTML='<div class="detailHero"><div class="eyebrow">'+(inFamily?"OPEN FIELD":"KNOWLEDGE FAMILY")+'</div><h2>'+esc(f.short)+'</h2><p>'+esc(f.tagline)+'.</p><div class="numberGrid"><div class="numberBox"><b>'+nodes.length.toLocaleString()+'</b><span>mapped items</span></div><div class="numberBox"><b>'+front.toLocaleString()+'</b><span>frontier nodes</span></div><div class="numberBox"><b>'+actual.length+'</b><span>major branches shown</span></div><div class="numberBox"><b>'+challenged+'</b><span>challenged</span></div></div></div><section class="detailSection"><h3>MAJOR BRANCHES</h3>'+(actual.length?actual.map(n=>'<button class="nodeLink" data-node="'+esc(n.id)+'"><span>'+esc(n.label)+'</span><small>'+esc(n.kind)+'</small></button>').join(""):'<p>Major branches are not yet classified in this family.</p>')+'</section><section class="detailSection"><h3>ROLE IN THE ATLAS</h3><p>This is a top-level navigational family. Deeper views carry the actual support, contradiction, supersession, and dependency relationships.</p></section>';
+  detail.querySelectorAll("[data-node]").forEach(b=>b.addEventListener("click",()=>showNode(b.dataset.node)));
+}
+
+function showNode(id){
+  const n=nodeById.get(id);if(!n)return;
+  const f=familyById.get(n.domain),[statusLabel,statusColor]=STATUS[n._status]||STATUS.active;
+  const incoming=model.edges.filter(e=>e.target===id).map(e=>({e,n:nodeById.get(e.source)})).filter(x=>x.n);
+  const outgoing=model.edges.filter(e=>e.source===id).map(e=>({e,n:nodeById.get(e.target)})).filter(x=>x.n);
+  const reviews=(model.reviews||[]).filter(r=>r.target===id),sources=n.sources||[];
+  detail.innerHTML='<div class="detailHero"><div class="eyebrow">'+esc(f?.short||n.domain)+' · '+esc(n.kind)+'</div><h2>'+esc(n.label)+'</h2><span class="pill"><i style="background:'+statusColor+'"></i>'+esc(statusLabel)+'</span>'+(n.frontier?'<span class="pill">frontier</span>':'')+'<p>'+esc(n.summary||"No summary attached yet.")+'</p></div><section class="detailSection"><h3>PROVENANCE</h3>'+(sources.length?sources.map(s=>'<p><a href="'+esc(s.url)+'" target="_blank" rel="noreferrer">'+esc(s.title||s.id)+'</a></p>').join(""):'<p>No source attached yet.</p>')+'</section><section class="detailSection"><h3>INHERITED / SUPPORTED BY</h3>'+(incoming.length?incoming.slice(0,20).map(x=>'<button class="nodeLink" data-node="'+esc(x.n.id)+'"><span>'+esc(x.n.label)+'</span><small>'+esc(x.e.type)+'</small></button>').join(""):'<p>No mapped incoming relations yet.</p>')+'</section><section class="detailSection"><h3>LEADS TO / AFFECTS</h3>'+(outgoing.length?outgoing.slice(0,20).map(x=>'<button class="nodeLink" data-node="'+esc(x.n.id)+'"><span>'+esc(x.n.label)+'</span><small>'+esc(x.e.type)+'</small></button>').join(""):'<p>No mapped outgoing relations yet.</p>')+'</section><section class="detailSection"><h3>PEER REVIEW RECORD</h3>'+(reviews.length?reviews.map(r=>'<p class="'+(r.result==="failed"?"dangerText":"")+'"><b>'+esc(r.kind)+' · '+esc(r.result)+'</b><br>'+esc(r.summary)+'</p>').join(""):'<p>No graph-native reviews yet.</p>')+'</section>';
+  detail.querySelectorAll("[data-node]").forEach(b=>b.addEventListener("click",()=>showNode(b.dataset.node)));
+}
+
+function showSearch(){
+  const q=search.value.trim().toLowerCase();
+  if(!q){results.hidden=true;results.innerHTML="";return}
+  const hits=model.nodes.filter(n=>[n.label,n.summary,n.kind,...(n.tags||[]),...(n.aliases||[])].join(" ").toLowerCase().includes(q)).slice(0,18);
+  results.innerHTML=hits.length?hits.map(n=>'<button class="searchHit" data-node="'+esc(n.id)+'"><b>'+esc(n.label)+'</b><span>'+esc(familyById.get(n.domain)?.short||n.domain)+' · '+esc(n.kind)+'</span></button>').join(""):'<div class="searchHit"><b>No mapped match</b><span>This can become a Nemesis coverage target.</span></div>';
+  results.hidden=false;
+  results.querySelectorAll("[data-node]").forEach(b=>b.addEventListener("click",()=>{const n=nodeById.get(b.dataset.node);results.hidden=true;search.value="";if(n&&currentFamily!==n.domain)renderFamily(n.domain);showNode(b.dataset.node)}));
+}
+
+function bind(){
+  atlasBtn.addEventListener("click",renderAtlas);
+  backBtn.addEventListener("click",renderAtlas);
+  search.addEventListener("input",showSearch);
+  document.addEventListener("click",e=>{if(!results.contains(e.target)&&e.target!==search)results.hidden=true});
+}
+
+boot().catch(err=>{console.error(err);detail.innerHTML='<div class="detailHero"><div class="eyebrow">ERROR</div><h2>Map failed to load</h2><p>'+esc(err.message)+'</p></div>'});
