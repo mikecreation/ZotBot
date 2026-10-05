@@ -1,0 +1,51 @@
+{
+  "protocol": "nemesis-repo/1",
+  "project_id": "fog-of-knowledge",
+  "project_version": "0.4.0",
+  "purpose": "Continuously map, source, challenge, and expand human knowledge while preserving provenance and historical invalidations.",
+  "read_first": [
+    "AGENTS.md",
+    "NEMESIS.md",
+    ".nemesis.json"
+  ],
+  "canonical": {
+    "graph": "data/knowledge.json",
+    "ology_registry": "data/ologies.tsv",
+    "graph_schema": "schema/knowledge.schema.json"
+  },
+  "exchange": {
+    "batch_protocol": "fog-nemesis-batch/1",
+    "batch_root": "nemesis/batches",
+    "batch_schema": "nemesis/schema/batch.schema.json",
+    "example_batch": "nemesis/example-batch"
+  },
+  "commands": {
+    "context": "python scripts/nemesis_context.py",
+    "check_batch": "python scripts/nemesis_apply.py <batch_dir> --check",
+    "apply_batch": "python scripts/nemesis_apply.py <batch_dir> --apply",
+    "validate": "python scripts/validate.py"
+  },
+  "update_policy": {
+    "preferred_transport": "git-branch-pull-request",
+    "branch_prefix": "nemesis/",
+    "delete_knowledge": false,
+    "preserve_invalidated_history": true,
+    "idempotent_batches": true,
+    "source_claims": true,
+    "source_methods": true,
+    "invalidation_requires_review": true
+  },
+  "scale": {
+    "preferred_records_per_batch": 5000,
+    "acceptable_records_per_batch": 50000,
+    "ui_rule": "The atlas renders bounded local views; batch/storage size must never determine visible node count."
+  },
+  "priorities": [
+    "source_completion",
+    "frontier_expansion",
+    "replication_and_contradiction_mapping",
+    "dependency_mapping",
+    "historical_priority_and_supersession",
+    "taxonomy_resolution"
+  ]
+}
