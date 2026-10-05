@@ -1,3 +1,5 @@
+const graph=document.querySelector("#graph");
+const mapShell=document.querySelector("#mapShell");
 const scene=document.querySelector("#scene");
 const detail=document.querySelector("#detail");
 const search=document.querySelector("#search");
@@ -274,15 +276,100 @@ function layoutChildren(token,items){
 }
 
 function cameraCenter(){
-  const token=currentToken();
-  if(!token)return{x:800,y:500};
+  return{x:800,y:500};
+}
 
-  const excess=Math.max(0,token.r-475);
-  const shift=clamp(excess*.72,0,430);
-  return{
-    x:800-Math.cos(token.angle)*shift,
-    y:500-Math.sin(token.angle)*shift
-  };
+function visibleFocusPoints(center){
+  if(!activePath.length)return[];
+
+  const token=currentToken();
+  const points=[];
+
+  // At shallow depth keep Human Knowledge in frame. Deeper down, follow the
+  // living end of the branch so labels never become microscope-sized.
+  if(activePath.length<=2){
+    points.push({x:center.x,y:center.y,pad:135});
+  }
+
+  const start=Math.max(0,activePath.length-4);
+  for(let i=start;i<activePath.length;i++){
+    const t=activePath[i];
+    points.push({...tokenPosition(t,center),pad:t.kind==="family"?115:82});
+  }
+
+  const {items}=pageChildren(token);
+  for(const layout of layoutChildren(token,items)){
+    points.push({...polar(center.x,center.y,layout.r,layout.angle),pad:80});
+  }
+
+  if(!items.length&&token.kind==="node"){
+    points.push({...polar(center.x,center.y,token.r+170,token.angle),pad:72});
+  }
+
+  return points;
+}
+
+function fitViewToActiveBranch(center){
+  if(!activePath.length){
+    graph.setAttribute("viewBox","0 0 1600 1000");
+    return;
+  }
+
+  const points=visibleFocusPoints(center);
+  if(!points.length)return;
+
+  let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+  for(const p of points){
+    const pad=p.pad||70;
+    minX=Math.min(minX,p.x-pad);
+    maxX=Math.max(maxX,p.x+pad);
+    minY=Math.min(minY,p.y-pad);
+    maxY=Math.max(maxY,p.y+pad);
+  }
+
+  const shellW=Math.max(1,mapShell.clientWidth||1200);
+  const shellH=Math.max(1,mapShell.clientHeight||760);
+  const aspect=shellW/shellH;
+
+  let width=Math.max(760,maxX-minX+110);
+  let height=Math.max(540,maxY-minY+110);
+
+  // Do not zoom farther out forever as the path gets deeper.
+  width=Math.min(width,1320);
+  height=Math.min(height,860);
+
+  if(width/height<aspect)width=height*aspect;
+  else height=width/aspect;
+
+  width=Math.min(width,1400);
+  height=Math.min(height,900);
+
+  const token=currentToken();
+  const {items}=pageChildren(token);
+  const layouts=layoutChildren(token,items);
+  const currentPos=tokenPosition(token,center);
+
+  // Bias the viewport toward the newly opened children so the click visibly
+  // opens forward instead of pinning the expansion against an edge.
+  let targetX=currentPos.x,targetY=currentPos.y;
+  if(layouts.length){
+    const childPoints=layouts.map(x=>polar(center.x,center.y,x.r,x.angle));
+    const avgX=childPoints.reduce((s,p)=>s+p.x,0)/childPoints.length;
+    const avgY=childPoints.reduce((s,p)=>s+p.y,0)/childPoints.length;
+    targetX=currentPos.x*.42+avgX*.58;
+    targetY=currentPos.y*.42+avgY*.58;
+  }
+
+  const bboxCX=(minX+maxX)/2,bboxCY=(minY+maxY)/2;
+  const cx=bboxCX*.35+targetX*.65;
+  const cy=bboxCY*.35+targetY*.65;
+
+  graph.setAttribute("viewBox",[
+    (cx-width/2).toFixed(2),
+    (cy-height/2).toFixed(2),
+    width.toFixed(2),
+    height.toFixed(2)
+  ].join(" "));
 }
 
 function tokenPosition(token,camera){
@@ -312,6 +399,7 @@ function render(){
   drawCurrentChildren(frag,center);
 
   scene.replaceChildren(frag);
+  fitViewToActiveBranch(center);
   renderBreadcrumb();
   renderDetail();
   renderCaption();
