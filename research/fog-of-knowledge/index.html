@@ -4,41 +4,84 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Fog of Knowledge</title>
-<meta name="description" content="A living map of human knowledge, dependencies, disputes, and the frontier of the unknown.">
+<meta name="description" content="A living atlas of human knowledge, its branches, evidence, failures, and frontiers.">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<header>
-  <div><small>OPEN KNOWLEDGE GRAPH</small><h1>FOG OF KNOWLEDGE</h1><p>What humanity knows, how it got there, what broke, and where the fog begins.</p></div>
-  <a href="https://github.com/mikecreation/ZotBot/tree/main/research/fog-of-knowledge" target="_blank" rel="noreferrer">Contribute on GitHub ↗</a>
+<header class="topbar">
+  <div class="brand">
+    <small>OPEN KNOWLEDGE ATLAS</small>
+    <h1>FOG OF KNOWLEDGE</h1>
+    <p>Humanity's knowledge, branching from one center toward the frontier.</p>
+  </div>
+  <nav class="viewnav" aria-label="Map views">
+    <button id="atlasBtn" class="viewBtn active">ATLAS</button>
+    <button id="backBtn" class="viewBtn" hidden>← ALL KNOWLEDGE</button>
+    <span id="crumb">Human Knowledge</span>
+  </nav>
+  <a class="github" href="https://github.com/mikecreation/ZotBot/tree/main/research/fog-of-knowledge" target="_blank" rel="noreferrer">Contribute ↗</a>
 </header>
-<section class="controls">
-  <input id="search" type="search" placeholder="Search knowledge…">
-  <select id="domain"><option value="all">All domains</option></select>
-  <select id="status"><option value="all">All states</option></select>
-  <label><input id="frontierOnly" type="checkbox"> frontier only</label>
-  <button id="reset">Reset view</button>
-  <span id="stats"></span>
+
+<section class="toolbar">
+  <div class="searchWrap">
+    <span>⌕</span>
+    <input id="search" type="search" autocomplete="off" placeholder="Search every mapped field, claim, theory, question…">
+  </div>
+  <div class="metric"><b id="nodeCount">0</b><span>mapped nodes</span></div>
+  <div class="metric"><b id="fieldCount">10</b><span>knowledge families</span></div>
+  <div class="metric frontierMetric"><b id="frontierCount">0</b><span>frontiers</span></div>
 </section>
+
 <main>
-  <aside class="legend">
-    <h2>STATE</h2>
-    <div id="legend"></div>
-    <hr>
-    <p>Scroll to zoom. Drag empty space to pan. Click a node for provenance, ancestry, peer review, and dependency impact.</p>
-  </aside>
   <section id="mapShell">
-    <div class="fogTitle"><b>THE FOG</b><span>unknown / unresolved / not yet imagined</span></div>
-    <svg id="graph" viewBox="0 0 2200 1250">
+    <div class="stars starsA"></div>
+    <div class="stars starsB"></div>
+    <svg id="graph" viewBox="0 0 1600 1000" role="img" aria-label="Fog of Knowledge radial atlas">
       <defs>
-        <linearGradient id="fogGradient"><stop offset="0" stop-color="#dfe8ff" stop-opacity="0"/><stop offset=".55" stop-color="#dfe8ff" stop-opacity=".1"/><stop offset="1" stop-color="#dfe8ff" stop-opacity=".42"/></linearGradient>
-        <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="softGlow" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="8" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="bigGlow" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="20" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <radialGradient id="coreFill">
+          <stop offset="0" stop-color="#ffffff" stop-opacity=".95"/>
+          <stop offset=".12" stop-color="#b9f6ff" stop-opacity=".95"/>
+          <stop offset=".48" stop-color="#61dfff" stop-opacity=".35"/>
+          <stop offset="1" stop-color="#61dfff" stop-opacity="0"/>
+        </radialGradient>
       </defs>
-      <g id="viewport"><g id="eras"></g><g id="edges"></g><g id="nodes"></g><g id="fog"></g></g>
+      <g id="scene"></g>
     </svg>
+    <div id="mapCaption" class="mapCaption">
+      <b>THE ATLAS</b>
+      <span>Each great branch is a navigational family. Scientific dependency appears deeper inside the map.</span>
+    </div>
   </section>
-  <aside id="detail" class="detail"><div class="empty"><b>◎</b><h2>Select a node</h2><p>Its ancestry, sources, reviews, and downstream consequences appear here.</p></div></aside>
+
+  <aside id="detail" class="detail">
+    <div class="detailHero">
+      <div class="eyebrow">HUMAN KNOWLEDGE</div>
+      <h2>Choose a field</h2>
+      <p>This first view is intentionally simple. Pick one of humanity's major knowledge families to open its internal branches.</p>
+    </div>
+    <section class="detailSection">
+      <h3>HOW TO READ IT</h3>
+      <p><b>Center:</b> the shared human project of knowing.</p>
+      <p><b>First ring:</b> the ten major families used to orient the atlas.</p>
+      <p><b>Inside a field:</b> major branches first, then mapped specialties, claims, evidence, and frontier questions.</p>
+    </section>
+    <section class="detailSection">
+      <h3>IMPORTANT</h3>
+      <p>The first ring is classification, not a claim that every field literally depends on the center by one causal edge. Actual dependency links stay evidence-driven.</p>
+    </section>
+  </aside>
 </main>
+
+<div id="searchResults" class="searchResults" hidden></div>
+
 <script type="module" src="app.js"></script>
 </body>
 </html>
