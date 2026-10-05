@@ -2,28 +2,67 @@
 
 **Fog of Knowledge** is an open, living atlas of human knowledge: where ideas came from, what they depend on, what evidence supports them, what has been overturned, and where the validated map ends and the unresolved frontier begins.
 
-The underlying data is a **temporal dependency graph**. The interface is deliberately hierarchical so millions of records can remain understandable.
+The underlying data is a **temporal dependency graph**. The interface is deliberately layered so millions of records can remain understandable.
 
-## v0.2 interface
+## v0.5 — Nemesis-native
 
-The home screen is now a radial atlas centered on **Human Knowledge**.
+Fog of Knowledge now exposes a machine interface for autonomous research.
 
-Its first ring contains ten major navigational families:
+Nemesis should start by reading:
 
-1. Foundations of Knowing
-2. Mathematics & Logic
-3. Physical Sciences
-4. Earth & Environment
-5. Life Sciences
-6. Medicine & Health
-7. Engineering & Technology
-8. Information & Cognition
-9. Social Sciences
-10. Humanities & Philosophy
+```text
+AGENTS.md
+NEMESIS.md
+.nemesis.json
+```
 
-Clicking a family opens a second radial view containing its major branches plus an outer constellation of mapped specialties. Actual support, contradiction, supersession, and dependency relationships remain attached to the underlying nodes and appear when drilling into them.
+Then:
 
-The top-level family ring is a navigation taxonomy, not a fabricated causal dependency graph.
+```bash
+python scripts/nemesis_context.py
+```
+
+That returns current coverage, source gaps, challenged nodes, frontier nodes, and suggested next domains.
+
+A research run writes an immutable batch:
+
+```text
+nemesis/batches/<batch_id>/
+  manifest.json
+  nodes.jsonl
+  edges.jsonl
+  reviews.jsonl
+```
+
+Validate and compile it with:
+
+```bash
+python scripts/nemesis_apply.py nemesis/batches/<batch_id> --check
+python scripts/nemesis_apply.py nemesis/batches/<batch_id> --apply
+python scripts/validate.py
+```
+
+The batch contract is intentionally independent of the UI and storage engine. Nemesis can keep using the same protocol if canonical storage later moves from JSON to SQLite, a graph database, or tiled research indexes.
+
+## Atlas structure
+
+The home screen is centered on **Human Knowledge**.
+
+The inner ring contains foundational human ways of knowing. Outside that are nine great fields:
+
+1. Mathematics & Logic
+2. Physical Sciences
+3. Earth & Environment
+4. Life Sciences
+5. Medicine & Health
+6. Engineering & Technology
+7. Information & Cognition
+8. Social Sciences
+9. Humanities & Philosophy
+
+Clicking a great field expands its next categories in place. Clicking a category opens a bounded **field lens** showing prerequisites/support, descendants/effects, frontier questions, nearby specialties, and challenged knowledge.
+
+The navigation hierarchy is not treated as causal evidence. Actual dependency, support, contradiction, replication, and supersession relations live in the graph.
 
 ## Core behavior
 
@@ -37,9 +76,9 @@ The top-level family ring is a navigation taxonomy, not a fabricated causal depe
 - Marks softer descendants for review instead of automatically calling them false.
 - Stores provenance, peer reviews, replications, failed replications, counterexamples, and supersession records.
 - Includes an expandable `-ology` registry.
-- Is designed for forks and pull requests.
+- Is designed for forks, autonomous research batches, and pull requests.
 
-## Run it
+## Run the atlas
 
 ```bash
 cd research/fog-of-knowledge
@@ -50,7 +89,7 @@ Open `http://localhost:8080`.
 
 ## Data
 
-`data/knowledge.json` is the canonical core graph. `data/ologies.tsv` is the compact curated registry loaded at runtime.
+`data/knowledge.json` is the current canonical core graph. `data/ologies.tsv` is the compact curated registry loaded at runtime.
 
 A node contains identity, era, domain, epistemic state, summary, tags, and sources.
 
@@ -73,6 +112,8 @@ The `-ology` registry is open-ended. `scripts/import_wiktionary_ologies.py` stag
 
 ## Current seed
 
-Version 0.2 contains the radial atlas shell, the evolutionary seed graph, historical invalidation examples, current frontier nodes, and hundreds of field/specialty entries. It is still a seed, not a claim of completed human knowledge.
+Version 0.5 contains the layered atlas, field lens, Nemesis machine contract, batch compiler, graph validator, historical invalidation examples, frontier nodes, and hundreds of field/specialty entries.
+
+It is still a seed, not a claim of completed human knowledge.
 
 **Never erase a wrong turn. Mark it, preserve it, and show exactly what depended on it.**
