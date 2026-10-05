@@ -8,14 +8,14 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<link rel="stylesheet" href="styles.css?v=0.3.0">
+<link rel="stylesheet" href="styles.css?v=0.4.0">
 </head>
 <body>
 <header class="topbar">
   <div class="brand">
     <small>OPEN KNOWLEDGE ATLAS</small>
     <h1>FOG OF KNOWLEDGE</h1>
-    <p>Humanity's knowledge, branching from one center toward the frontier.</p>
+    <p>From the human act of knowing to the edge of the unresolved.</p>
   </div>
   <nav class="viewnav" aria-label="Map views">
     <button id="atlasBtn" class="viewBtn active">ATLAS</button>
@@ -28,10 +28,11 @@
 <section class="toolbar">
   <div class="searchWrap">
     <span>⌕</span>
-    <input id="search" type="search" autocomplete="off" placeholder="Search every mapped field, claim, theory, question…">
+    <input id="search" type="search" autocomplete="off" placeholder="Search fields, claims, theories, questions…">
+    <kbd>/</kbd>
   </div>
   <div class="metric"><b id="nodeCount">0</b><span>mapped nodes</span></div>
-  <div class="metric"><b id="fieldCount">10</b><span>knowledge families</span></div>
+  <div class="metric"><b id="fieldCount">9</b><span>great fields</span></div>
   <div class="metric frontierMetric"><b id="frontierCount">0</b><span>frontiers</span></div>
 </section>
 
@@ -39,63 +40,82 @@
   <section id="mapShell">
     <div class="stars starsA"></div>
     <div class="stars starsB"></div>
+    <div class="vignette"></div>
 
     <svg id="graph" viewBox="0 0 1600 1000" role="img" aria-label="Fog of Knowledge radial atlas">
       <defs>
-        <filter id="softGlow" x="-80%" y="-80%" width="260%" height="260%">
-          <feGaussianBlur stdDeviation="5" result="blur"/>
+        <filter id="softGlow" x="-70%" y="-70%" width="240%" height="240%">
+          <feGaussianBlur stdDeviation="4.5" result="blur"/>
           <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
-        <filter id="selectedGlow" x="-100%" y="-100%" width="300%" height="300%">
-          <feGaussianBlur stdDeviation="10" result="blur"/>
+        <filter id="selectedGlow" x="-90%" y="-90%" width="280%" height="280%">
+          <feGaussianBlur stdDeviation="8" result="blur"/>
           <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
         <radialGradient id="coreFill">
-          <stop offset="0" stop-color="#ffffff" stop-opacity=".95"/>
-          <stop offset=".1" stop-color="#c9f8ff" stop-opacity=".9"/>
-          <stop offset=".44" stop-color="#67dcff" stop-opacity=".26"/>
+          <stop offset="0" stop-color="#ffffff" stop-opacity=".97"/>
+          <stop offset=".08" stop-color="#d9fbff" stop-opacity=".92"/>
+          <stop offset=".42" stop-color="#67dcff" stop-opacity=".23"/>
           <stop offset="1" stop-color="#67dcff" stop-opacity="0"/>
         </radialGradient>
+        <linearGradient id="fogFade" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#c8b7ff" stop-opacity=".12"/>
+          <stop offset="1" stop-color="#c8b7ff" stop-opacity="0"/>
+        </linearGradient>
       </defs>
       <g id="scene"></g>
     </svg>
 
     <section id="focusOverlay" class="focusOverlay" hidden>
       <header class="focusHeader">
-        <div>
-          <div id="focusEyebrow" class="focusEyebrow">FIELD CHART</div>
+        <div class="focusIdentity">
+          <div id="focusEyebrow" class="focusEyebrow">FIELD LENS</div>
           <h2 id="focusTitle">Field</h2>
           <p id="focusSubtitle">Mapped structure for this field.</p>
+          <div id="focusStats" class="focusStats"></div>
         </div>
-        <button id="focusClose" class="focusClose">← BACK TO ATLAS</button>
+        <div class="focusActions">
+          <button id="focusPrev" class="focusAction" disabled>← PREVIOUS</button>
+          <button id="focusClose" class="focusAction primary">ATLAS</button>
+        </div>
       </header>
+
       <svg id="focusGraph" viewBox="0 0 1600 850" role="img" aria-label="Focused field knowledge chart">
+        <defs>
+          <linearGradient id="focusFog" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#b99cff" stop-opacity=".18"/>
+            <stop offset=".7" stop-color="#b99cff" stop-opacity=".02"/>
+            <stop offset="1" stop-color="#b99cff" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
         <g id="focusScene"></g>
       </svg>
+
       <div class="focusLegend">
-        <span><i class="legendLine prerequisite"></i> inherited / supporting</span>
-        <span><i class="legendLine descendant"></i> leads to / affects</span>
+        <span><i class="legendLine prerequisite"></i> prerequisite / support</span>
+        <span><i class="legendLine descendant"></i> descendants</span>
         <span><i class="legendDot frontier"></i> frontier</span>
+        <span><i class="legendDot challenged"></i> challenged</span>
         <span><i class="legendDot neighbor"></i> nearby specialty</span>
       </div>
     </section>
 
     <div id="mapCaption" class="mapCaption">
       <b>THE ATLAS</b>
-      <span>Click a great field. Its next branches grow outward without taking you away from the whole.</span>
+      <span>Human foundations sit closest to the center. Great fields emerge outside them. Click a field to grow its next branches in place.</span>
     </div>
   </section>
 
   <aside id="detail" class="detail">
     <div class="detailHero">
       <div class="eyebrow">HUMAN KNOWLEDGE</div>
-      <h2>Choose a great field</h2>
-      <p>The atlas stays visible while one branch opens at a time.</p>
+      <h2>Start at the center</h2>
+      <p>The atlas preserves orientation while you drill from humanity's basic ways of knowing into disciplines, claims, evidence, and frontiers.</p>
     </div>
   </aside>
 </main>
 
 <div id="searchResults" class="searchResults" hidden></div>
-<script type="module" src="app.js?v=0.3.0"></script>
+<script type="module" src="app.js?v=0.4.0"></script>
 </body>
 </html>
