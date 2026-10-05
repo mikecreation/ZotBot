@@ -6,14 +6,6 @@ const atlasBtn=document.querySelector("#atlasBtn");
 const backBtn=document.querySelector("#backBtn");
 const crumb=document.querySelector("#crumb");
 const mapCaption=document.querySelector("#mapCaption");
-const focusOverlay=document.querySelector("#focusOverlay");
-const focusScene=document.querySelector("#focusScene");
-const focusClose=document.querySelector("#focusClose");
-const focusPrev=document.querySelector("#focusPrev");
-const focusTitle=document.querySelector("#focusTitle");
-const focusSubtitle=document.querySelector("#focusSubtitle");
-const focusEyebrow=document.querySelector("#focusEyebrow");
-const focusStats=document.querySelector("#focusStats");
 const NS="http://www.w3.org/2000/svg";
 
 const STATUS={
@@ -28,13 +20,8 @@ const STATUS={
   "review-required":["Review required","#ffc857"]
 };
 
-const FOUNDATION={
-  id:"roots",title:"FOUNDATIONS OF KNOWING",short:"Foundations",color:"#ffbd57",icon:"✦",
-  tagline:"Observation · memory · causality · language · measurement · experiment",
-  major:["Self / other","Cause / effect","More / less / number","Oral tradition","Writing & records","Experimental scientific method"]
-};
-
-const GREAT_FIELDS=[
+const FAMILIES=[
+  {id:"roots",title:"FOUNDATIONS OF KNOWING",short:"Foundations",color:"#ffbd57",icon:"✦",tagline:"Observation · memory · causality · language · measurement · experiment",major:["Self / other","Cause / effect","More / less / number","Oral tradition","Writing & records","Experimental scientific method"]},
   {id:"formal",title:"MATHEMATICS & LOGIC",short:"Mathematics & Logic",color:"#b67cff",icon:"∑",tagline:"Proof · quantity · structure · abstraction",major:["Logic","Algebra","Geometry","Statistics","Topology","Number theory"]},
   {id:"physical",title:"PHYSICAL SCIENCES",short:"Physical Sciences",color:"#55a8ff",icon:"⚛",tagline:"Matter · energy · space · time",major:["Physics","Chemistry","Astronomy","Thermodynamics","Electromagnetism","Cosmology"]},
   {id:"earth",title:"EARTH & ENVIRONMENT",short:"Earth & Environment",color:"#40d5c6",icon:"◉",tagline:"Planet · climate · oceans · deep time",major:["Geology","Climatology","Meteorology","Hydrology","Oceanology","Paleoclimatology"]},
@@ -46,20 +33,23 @@ const GREAT_FIELDS=[
   {id:"humanities",title:"HUMANITIES & PHILOSOPHY",short:"Humanities & Philosophy",color:"#ffd35f",icon:"◈",tagline:"Meaning · history · language · value · culture",major:["Philosophy","Archaeology","Epistemology","Philology","Theology","Musicology","Etymology"]}
 ];
 
-const ALL_FAMILIES=[FOUNDATION,...GREAT_FIELDS];
-const familyById=new Map(ALL_FAMILIES.map(f=>[f.id,f]));
+const familyById=new Map(FAMILIES.map(f=>[f.id,f]));
+const RELATION_PRIORITY={
+  derived_from:1,enabled:2,refines:3,supports:4,depends_on:5,tests:6,
+  replicates:7,failed_replication:8,related:9,supersedes:10,contradicts:11,cites:12
+};
+const PAGE_SIZE=12;
 
 let model;
 let nodeById=new Map();
 let nodesByDomain=new Map();
-let incomingById=new Map();
 let outgoingById=new Map();
+let incomingById=new Map();
 let reviewsByTarget=new Map();
 let searchRows=[];
-let expandedFamily=null;
-let focusedNode=null;
-let focusHistory=[];
-const positionByFamily=new Map();
+let activePath=[];
+let familyAngles=new Map();
+let childPageByKey=new Map();
 
 const mk=(name,attrs={})=>{
   const el=document.createElementNS(NS,name);
@@ -73,8 +63,8 @@ const textNode=(x,y,txt,cls)=>{
 };
 const polar=(cx,cy,r,a)=>({x:cx+Math.cos(a)*r,y:cy+Math.sin(a)*r});
 const esc=(s="")=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const curve=(a,b,bend=.5)=>`M ${a.x} ${a.y} Q ${a.x+(b.x-a.x)*bend} ${a.y+(b.y-a.y)*bend} ${b.x} ${b.y}`;
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+const curve=(a,b)=>`M ${a.x} ${a.y} Q ${(a.x+b.x)/2} ${(a.y+b.y)/2} ${b.x} ${b.y}`;
 
 async function boot(){
   model=await (await fetch("./data/knowledge.json",{cache:"no-store"})).json();
@@ -85,7 +75,7 @@ async function boot(){
   document.querySelector("#nodeCount").textContent=model.nodes.length.toLocaleString();
   document.querySelector("#frontierCount").textContent=model.nodes.filter(n=>n.frontier).length.toLocaleString();
   bind();
-  renderAtlas();
+  render();
 }
 
 async function addOlogies(){
@@ -112,8 +102,8 @@ async function addOlogies(){
 
 function buildIndexes(){
   nodesByDomain=new Map();
-  incomingById=new Map();
   outgoingById=new Map();
+  incomingById=new Map();
   reviewsByTarget=new Map();
 
   for(const n of model.nodes){
@@ -136,28 +126,29 @@ function buildIndexes(){
   searchRows=model.nodes.map(n=>({
     id:n.id,
     label:n.label.toLowerCase(),
-    text:[n.label,n.kind,n.domain,n.summary,...(n.tags||[]),...(n.aliases||[])].join(" ").toLowerCase()
+    text:[n.label,n.summary,n.kind,n.domain,...(n.tags||[]),...(n.aliases||[])].join(" ").toLowerCase()
   }));
 }
 
 function deriveStatuses(){
   model.nodes.forEach(n=>n._status=n.status);
-  const hardChildren=new Map(),softChildren=new Map();
+  const hard=new Map(),soft=new Map();
 
   for(const e of model.edges){
     if(!["depends_on","enabled","derived_from"].includes(e.type))continue;
-    const m=e.dependency==="hard"?hardChildren:softChildren;
-    if(!m.has(e.source))m.set(e.source,[]);
-    m.get(e.source).push(e.target);
+    const target=e.dependency==="hard"?hard:soft;
+    if(!target.has(e.source))target.set(e.source,[]);
+    target.get(e.source).push(e.target);
   }
 
-  const invalid=model.nodes.filter(n=>n.status==="invalidated").map(n=>n.id);
-  const broken=new Set(),q=[...invalid];
+  const invalid=new Set(model.nodes.filter(n=>n.status==="invalidated").map(n=>n.id));
+  const broken=new Set();
+  const q=[...invalid];
 
   while(q.length){
     const id=q.shift();
-    for(const child of hardChildren.get(id)||[]){
-      if(!broken.has(child)&&!invalid.includes(child)){
+    for(const child of hard.get(id)||[]){
+      if(!invalid.has(child)&&!broken.has(child)){
         broken.add(child);
         q.push(child);
       }
@@ -166,14 +157,19 @@ function deriveStatuses(){
 
   for(const id of broken){
     const n=nodeById.get(id);
-    if(n&&n.status!=="invalidated")n._status="dependency-broken";
+    if(n)n._status="dependency-broken";
   }
 
-  const review=new Set(),q2=[...invalid,...broken];
+  const review=new Set();
+  const q2=[...invalid,...broken];
+
   while(q2.length){
     const id=q2.shift();
-    for(const child of softChildren.get(id)||[]){
-      if(!review.has(child)){review.add(child);q2.push(child)}
+    for(const child of soft.get(id)||[]){
+      if(!review.has(child)){
+        review.add(child);
+        q2.push(child);
+      }
     }
   }
 
@@ -184,367 +180,468 @@ function deriveStatuses(){
 }
 
 function familyNodes(id){return nodesByDomain.get(id)||[]}
-function familyFrontiers(id){return familyNodes(id).filter(n=>n.frontier)}
+
 function majorNodes(f){
-  const all=familyNodes(f.id),out=[];
+  const all=familyNodes(f.id);
+  const out=[];
   for(const label of f.major){
     const n=all.find(x=>x.label.toLowerCase()===label.toLowerCase());
     if(n&&!out.includes(n))out.push(n);
   }
-  return out.slice(0,8);
-}
-function foundationNodes(){return majorNodes(FOUNDATION)}
-
-function annularSector(cx,cy,r1,r2,a0,a1){
-  const p0=polar(cx,cy,r2,a0),p1=polar(cx,cy,r2,a1),q1=polar(cx,cy,r1,a1),q0=polar(cx,cy,r1,a0);
-  const large=(a1-a0)>Math.PI?1:0;
-  return `M ${p0.x} ${p0.y} A ${r2} ${r2} 0 ${large} 1 ${p1.x} ${p1.y} L ${q1.x} ${q1.y} A ${r1} ${r1} 0 ${large} 0 ${q0.x} ${q0.y} Z`;
+  return out;
 }
 
-function renderAtlas(nextExpanded=expandedFamily){
-  expandedFamily=nextExpanded;
-  focusedNode=null;
-  focusOverlay.hidden=true;
-  focusHistory=[];
-  focusPrev.disabled=true;
+function tokenKey(token){
+  return token.kind==="family"?"family:"+token.id:"node:"+token.id;
+}
 
+function familyToken(id){
+  return {kind:"family",id,angle:familyAngles.get(id),r:330};
+}
+
+function nodeToken(node,layout){
+  return {kind:"node",id:node.id,angle:layout.angle,r:layout.r,relation:layout.relation||"category"};
+}
+
+function currentToken(){
+  return activePath[activePath.length-1]||null;
+}
+
+function pathNodeIds(){
+  return new Set(activePath.filter(t=>t.kind==="node").map(t=>t.id));
+}
+
+function childrenFor(token){
+  if(!token)return[];
+
+  if(token.kind==="family"){
+    return majorNodes(familyById.get(token.id)).map(node=>({node,relation:"category"}));
+  }
+
+  const used=pathNodeIds();
+  const unique=new Map();
+
+  for(const edge of outgoingById.get(token.id)||[]){
+    const node=nodeById.get(edge.target);
+    if(!node||used.has(node.id))continue;
+    const old=unique.get(node.id);
+    if(!old||(RELATION_PRIORITY[edge.type]||99)<(RELATION_PRIORITY[old.relation]||99)){
+      unique.set(node.id,{node,relation:edge.type});
+    }
+  }
+
+  return [...unique.values()].sort((a,b)=>{
+    const af=a.node.frontier?1:0,bf=b.node.frontier?1:0;
+    if(af!==bf)return af-bf;
+    const ar=RELATION_PRIORITY[a.relation]||99,br=RELATION_PRIORITY[b.relation]||99;
+    if(ar!==br)return ar-br;
+    return a.node.label.localeCompare(b.node.label);
+  });
+}
+
+function pageChildren(token){
+  const all=childrenFor(token);
+  const key=tokenKey(token);
+  const pages=Math.max(1,Math.ceil(all.length/PAGE_SIZE));
+  const rawPage=childPageByKey.get(key)||0;
+  const page=rawPage%pages;
+  const start=page*PAGE_SIZE;
+  return {all,page,pages,items:all.slice(start,start+PAGE_SIZE)};
+}
+
+function layoutChildren(token,items){
+  if(!items.length)return[];
+
+  const rows=[];
+  for(let i=0;i<items.length;i+=4)rows.push(items.slice(i,i+4));
+
+  const output=[];
+  rows.forEach((row,rowIndex)=>{
+    const r=token.r+175+rowIndex*118;
+    const count=row.length;
+    const span=count===1?0:clamp(.34+(count-1)*.18,.34,.9);
+    row.forEach((item,i)=>{
+      const offset=count===1?0:-span/2+i*(span/(count-1));
+      output.push({
+        ...item,
+        angle:token.angle+offset,
+        r
+      });
+    });
+  });
+
+  return output;
+}
+
+function cameraCenter(){
+  const token=currentToken();
+  if(!token)return{x:800,y:500};
+
+  const excess=Math.max(0,token.r-475);
+  const shift=clamp(excess*.72,0,430);
+  return{
+    x:800-Math.cos(token.angle)*shift,
+    y:500-Math.sin(token.angle)*shift
+  };
+}
+
+function tokenPosition(token,camera){
+  return polar(camera.x,camera.y,token.r,token.angle);
+}
+
+function render(){
   const frag=document.createDocumentFragment();
-  const cx=800,cy=500,fieldRadius=392;
-  const sectorStep=Math.PI*2/GREAT_FIELDS.length;
+  const camera=cameraCenter();
+  const center={x:camera.x,y:camera.y};
+  const ringR=330;
+  const step=Math.PI*2/FAMILIES.length;
 
-  frag.append(mk("circle",{cx,cy,r:468,class:"fogRing"}));
-  frag.append(textNode(cx,38,"THE FOG · THE EDGE OF WHAT IS CURRENTLY MAPPED","fogText"));
+  familyAngles=new Map();
+  FAMILIES.forEach((f,i)=>familyAngles.set(f.id,-Math.PI/2+i*step));
 
-  GREAT_FIELDS.forEach((f,i)=>{
-    const a=-Math.PI/2+i*sectorStep;
-    const sector=mk("path",{
-      d:annularSector(cx,cy,240,472,a-sectorStep*.43,a+sectorStep*.43),
-      fill:f.color,
-      "fill-opacity":".055",
-      class:"realmSector"+(expandedFamily&&expandedFamily!==f.id?" dim":"")
-    });
-    frag.append(sector);
-    frag.append(mk("path",{
-      d:`M ${polar(cx,cy,455,a-sectorStep*.38).x} ${polar(cx,cy,455,a-sectorStep*.38).y} A 455 455 0 0 1 ${polar(cx,cy,455,a+sectorStep*.38).x} ${polar(cx,cy,455,a+sectorStep*.38).y}`,
-      stroke:f.color,class:"realmArc"
-    }));
-  });
+  if(activePath[0]?.kind==="family"){
+    activePath[0].angle=familyAngles.get(activePath[0].id);
+    activePath[0].r=ringR;
+  }
 
-  frag.append(mk("circle",{cx,cy,r:392,class:"atlasOrbit"}));
-  frag.append(mk("circle",{cx,cy,r:236,class:"atlasOrbit dashed"}));
-  frag.append(mk("circle",{cx,cy,r:171,class:"foundationOrbit"}));
-  frag.append(textNode(cx,cy-180,"FOUNDATIONS OF KNOWING","foundationLabel"));
+  drawFogAndOrbits(frag,center);
+  drawBaseBranches(frag,center,ringR);
+  drawCore(frag,center);
+  drawFamilies(frag,center,ringR);
+  drawActivePath(frag,center);
+  drawCurrentChildren(frag,center);
 
-  GREAT_FIELDS.forEach((f,i)=>{
-    const a=-Math.PI/2+i*sectorStep;
-    const p=polar(cx,cy,fieldRadius,a);
-    positionByFamily.set(f.id,{...p,a});
-    const start=polar(cx,cy,222,a),end=polar(cx,cy,324,a);
-    const branch=mk("g",{class:"atlasBranch"+(expandedFamily&&expandedFamily!==f.id?" dim":"")});
-    const d=curve(start,end,.5);
-    branch.append(mk("path",{d,class:"atlasTrunk",stroke:f.color}));
-    branch.append(mk("path",{d,class:"atlasTrunkCore",stroke:f.color}));
-    for(const t of [.25,.52,.78]){
-      const sp={x:start.x+(end.x-start.x)*t,y:start.y+(end.y-start.y)*t};
-      branch.append(mk("circle",{cx:sp.x,cy:sp.y,r:t>.7?2.2:1.4,fill:f.color,class:"trunkSpark"}));
-    }
-    frag.append(branch);
-  });
-
-  const core=mk("g",{class:"knowledgeCore"});
-  core.append(mk("circle",{cx,cy,r:142,class:"halo"}));
-  core.append(mk("circle",{cx,cy,r:92,class:"ring"}));
-  core.append(mk("circle",{cx,cy,r:112,class:"ring2"}));
-  core.append(textNode(cx,cy-17,"HUMAN","coreTitle"));
-  core.append(textNode(cx,cy+10,"KNOWLEDGE","coreTitle"));
-  core.append(textNode(cx,cy+37,"OBSERVE · REMEMBER · TEST · SHARE","coreSub"));
-  core.append(textNode(cx,cy+57,model.nodes.length.toLocaleString()+" MAPPED NODES","coreCount"));
-  frag.append(core);
-
-  const foundations=foundationNodes();
-  foundations.forEach((n,i)=>{
-    const a=-Math.PI/2+i*(Math.PI*2/Math.max(foundations.length,1));
-    const p=polar(cx,cy,166,a);
-    const g=mk("g",{class:"foundationNode",transform:`translate(${p.x} ${p.y})`});
-    g.append(mk("circle",{r:24}));
-    const words=n.label.split(" "),cut=words.length>2?Math.ceil(words.length/2):words.length;
-    g.append(textNode(0,-1,words.slice(0,cut).join(" "),"title"));
-    if(words.slice(cut).length)g.append(textNode(0,9,words.slice(cut).join(" "),"title"));
-    g.addEventListener("click",ev=>{ev.stopPropagation();openFieldChart(n.id)});
-    frag.append(g);
-  });
-
-  GREAT_FIELDS.forEach((f,i)=>{
-    const p=positionByFamily.get(f.id);
-    const count=familyNodes(f.id).length,front=familyFrontiers(f.id).length;
-    const g=mk("g",{
-      class:"domainGroup"+(expandedFamily===f.id?" selected":"")+(expandedFamily&&expandedFamily!==f.id?" dim":""),
-      transform:`translate(${p.x} ${p.y})`
-    });
-    g.append(mk("circle",{r:91,fill:f.color,class:"halo"}));
-    g.append(mk("circle",{r:66,class:"disc",stroke:f.color}));
-    g.append(mk("circle",{r:76,class:"ring",stroke:f.color}));
-    for(let j=0;j<8;j++){
-      const a=j*Math.PI*2/8,p1=polar(0,0,80,a),p2=polar(0,0,85,a);
-      g.append(mk("line",{x1:p1.x,y1:p1.y,x2:p2.x,y2:p2.y,stroke:f.color,class:"orbitTick"}));
-    }
-    g.append(textNode(0,-18,f.icon,"domainIcon"));
-    const words=f.title.split(" "),split=words.length>2?Math.ceil(words.length/2):words.length;
-    const l1=words.slice(0,split).join(" "),l2=words.slice(split).join(" ");
-    g.append(textNode(0,13,l1,"domainTitle"));
-    if(l2)g.append(textNode(0,27,l2,"domainTitle"));
-    g.append(textNode(0,l2?45:33,count.toLocaleString()+" mapped"+(front?" · "+front+" frontier":""),"domainCount"));
-    g.append(textNode(0,l2?58:47,expandedFamily===f.id?"BRANCH OPEN":"EXPAND →","domainHint"));
-    g.addEventListener("click",()=>expandFamily(f.id));
-    g.addEventListener("mouseenter",()=>showFamilyPreview(f.id));
-    frag.append(g);
-  });
-
-  if(expandedFamily)drawExpansion(expandedFamily,frag);
   scene.replaceChildren(frag);
+  renderBreadcrumb();
+  renderDetail();
+  renderCaption();
 
-  atlasBtn.classList.add("active");
-  backBtn.hidden=!expandedFamily;
-  backBtn.textContent="← COLLAPSE";
-  crumb.textContent=expandedFamily?"Human Knowledge / "+familyById.get(expandedFamily).short:"Human Knowledge";
-  mapCaption.innerHTML=expandedFamily
-    ?"<b>BRANCH OPEN</b><span>The atlas stays intact. Pick a revealed category to open its field lens, or choose another great field to move the branch.</span>"
-    :"<b>THE ATLAS</b><span>Human foundations sit closest to the center. Great fields emerge outside them. Click a field to grow its next branches in place.</span>";
-
-  if(expandedFamily)showFamilyPreview(expandedFamily,true);
-  else showAtlasIntro();
+  backBtn.hidden=!activePath.length;
+  backBtn.textContent=activePath.length>1?"← ONE LEVEL":"← ALL KNOWLEDGE";
 }
 
-function expandFamily(id){
-  if(expandedFamily===id){showFamilyPreview(id,true);return}
-  renderAtlas(id);
+function drawFogAndOrbits(parent,center){
+  parent.append(mk("circle",{cx:center.x,cy:center.y,r:443,class:"fogRing"}));
+  parent.append(mk("circle",{cx:center.x,cy:center.y,r:330,class:"atlasOrbit"}));
+  parent.append(mk("circle",{cx:center.x,cy:center.y,r:217,class:"atlasOrbit dashed"}));
+
+  const fogLabel=polar(center.x,center.y,455,-Math.PI/2);
+  parent.append(textNode(fogLabel.x,fogLabel.y-10,"THE MAPPED EDGE CONTINUES OUTWARD","fogText"));
 }
 
-function drawExpansion(id,parent){
-  const f=familyById.get(id),anchor=positionByFamily.get(id),nodes=majorNodes(f);
-  if(!anchor||!nodes.length)return;
+function drawBaseBranches(parent,center,ringR){
+  const selected=activePath[0]?.id||null;
 
-  const span=clamp(.38+nodes.length*.105,.72,1.18);
-  const startAngle=anchor.a-span/2;
-  const radius=148;
-  const labelP=polar(anchor.x,anchor.y,104,anchor.a);
-  parent.append(textNode(labelP.x,labelP.y-3,"NEXT BRANCHES","branchLabel"));
-
-  nodes.forEach((n,i)=>{
-    const a=nodes.length===1?anchor.a:startAngle+i*(span/(nodes.length-1));
-    const p=polar(anchor.x,anchor.y,radius,a);
-    const d=curve({x:anchor.x,y:anchor.y},p,.56);
-    parent.append(mk("path",{d,class:"expansionGlow",stroke:f.color}));
-    parent.append(mk("path",{d,class:"expansionPath",stroke:f.color}));
-
-    const [,statusColor]=STATUS[n._status]||STATUS.active;
-    const g=mk("g",{class:"expansionNode",transform:`translate(${p.x} ${p.y})`});
-    g.append(mk("circle",{r:43,fill:f.color,class:"halo"}));
-    g.append(mk("circle",{r:30,class:"disc",stroke:f.color}));
-    g.append(mk("circle",{cx:0,cy:-27,r:4.3,fill:statusColor,class:"status"}));
-
-    const words=n.label.split(" "),cut=words.length>2?Math.ceil(words.length/2):words.length;
-    g.append(textNode(0,-1,words.slice(0,cut).join(" "),"title"));
-    if(words.slice(cut).length)g.append(textNode(0,10,words.slice(cut).join(" "),"title"));
-    g.append(textNode(0,23,n.kind.toUpperCase(),"meta"));
-    const title=mk("title");title.textContent="Open "+n.label+" field lens";g.append(title);
-    g.addEventListener("click",ev=>{ev.stopPropagation();openFieldChart(n.id)});
+  FAMILIES.forEach(f=>{
+    const a=familyAngles.get(f.id);
+    const start=polar(center.x,center.y,112,a);
+    const end=polar(center.x,center.y,ringR-82,a);
+    const g=mk("g",{class:"atlasBranch"+(selected&&selected!==f.id?" dim":"")});
+    g.append(mk("path",{d:curve(start,end),class:"atlasTrunk",stroke:f.color}));
+    g.append(mk("path",{d:curve(start,end),class:"atlasTrunkCore",stroke:f.color}));
     parent.append(g);
   });
 }
 
-function showAtlasIntro(){
-  detail.innerHTML='<div class="detailHero"><div class="eyebrow">HUMAN KNOWLEDGE</div><h2>Knowledge now has depth.</h2><p>The center contains the human foundations of knowing. The outer ring contains nine great knowledge families. One branch opens at a time so the whole remains readable.</p></div><section class="detailSection"><h3>READ OUTWARD</h3><p><b>Center:</b> the human knowledge project.</p><p><b>Inner ring:</b> foundational distinctions and methods.</p><p><b>Outer ring:</b> great disciplines.</p><p><b>Bloom:</b> next-level categories.</p><p><b>Field lens:</b> evidence, prerequisites, consequences, nearby specialties, and frontier.</p></section><section class="detailSection"><h3>PERFORMANCE</h3><p>The browser only draws the visible layer and one local field lens at a time. The database can keep growing without turning the atlas into a million-node hairball.</p></section>';
-}
-
-function showFamilyPreview(id,open=false){
-  const f=familyById.get(id),nodes=familyNodes(id);
-  const front=nodes.filter(n=>n.frontier).length;
-  const challenged=nodes.filter(n=>["invalidated","dependency-broken","review-required","disputed"].includes(n._status)).length;
-  const maj=majorNodes(f);
-
-  detail.innerHTML='<div class="detailHero"><div class="eyebrow">'+(open?"BRANCH OPEN":"GREAT FIELD")+'</div><h2>'+esc(f.short)+'</h2><p>'+esc(f.tagline)+'.</p><div class="numberGrid"><div class="numberBox"><b>'+nodes.length.toLocaleString()+'</b><span>mapped items</span></div><div class="numberBox"><b>'+front+'</b><span>frontiers</span></div><div class="numberBox"><b>'+maj.length+'</b><span>next branches</span></div><div class="numberBox"><b>'+challenged+'</b><span>challenged</span></div></div></div><section class="detailSection"><h3>NEXT CATEGORIES</h3>'+maj.map(n=>'<button class="nodeLink" data-open="'+esc(n.id)+'"><span>'+esc(n.label)+'</span><small>open lens ↗</small></button>').join("")+'</section><section class="detailSection"><h3>WHY THIS LAYER EXISTS</h3><p>The great-field ring is navigation. Evidence-driven dependency begins inside the field lens, where support, contradiction, and supersession can be shown without pretending taxonomy is causality.</p></section>';
-
-  detail.querySelectorAll("[data-open]").forEach(b=>b.addEventListener("click",()=>openFieldChart(b.dataset.open)));
-}
-
-function openFieldChart(id,{push=true}={}){
-  const n=nodeById.get(id);if(!n)return;
-
-  if(push&&focusedNode&&focusedNode!==id)focusHistory.push(focusedNode);
-  focusedNode=id;
-
-  const f=familyById.get(n.domain)||FOUNDATION;
-  focusOverlay.hidden=false;
-  focusPrev.disabled=!focusHistory.length;
-  focusEyebrow.textContent=(f.short||n.domain).toUpperCase()+" · FIELD LENS";
-  focusTitle.textContent=n.label;
-
-  const incoming=getIncoming(id),outgoing=getOutgoing(id),front=familyFrontiers(n.domain).filter(x=>x.id!==id);
-  const sources=n.sources||[],reviews=reviewsByTarget.get(id)||[];
-
-  focusSubtitle.textContent="A bounded local view: what feeds this, what follows from it, where the frontier sits, and what nearby knowledge exists.";
-  focusStats.innerHTML=[
-    ["IN",incoming.length],["OUT",outgoing.length],["FRONTIER",front.length],["SOURCES",sources.length],["REVIEWS",reviews.length]
-  ].map(([k,v])=>'<span class="focusStat"><b>'+v+'</b> '+k+'</span>').join("");
-
-  crumb.textContent="Human Knowledge / "+(f.short||n.domain)+" / "+n.label;
-  drawFocusChart(n,f);
-  showNodeDetail(n.id);
-}
-
-function previousFocus(){
-  if(!focusHistory.length)return;
-  const id=focusHistory.pop();
-  openFieldChart(id,{push:false});
-}
-
-function closeFieldChart(){
-  focusOverlay.hidden=true;
-  focusedNode=null;
-  focusHistory=[];
-  focusPrev.disabled=true;
-  crumb.textContent=expandedFamily?"Human Knowledge / "+familyById.get(expandedFamily).short:"Human Knowledge";
-  if(expandedFamily)showFamilyPreview(expandedFamily,true);
-  else showAtlasIntro();
-}
-
-function getIncoming(id){
-  return (incomingById.get(id)||[]).map(e=>({edge:e,node:nodeById.get(e.source)})).filter(x=>x.node);
-}
-function getOutgoing(id){
-  return (outgoingById.get(id)||[]).map(e=>({edge:e,node:nodeById.get(e.target)})).filter(x=>x.node);
-}
-
-function relationClass(type){
-  if(type==="contradicts")return"contradicts";
-  if(type==="supersedes")return"supersedes";
-  return"";
-}
-
-function drawFocusChart(n,f){
-  const frag=document.createDocumentFragment();
-  const cx=800,cy=448;
-  const incoming=getIncoming(n.id).slice(0,8);
-  const outgoing=getOutgoing(n.id).slice(0,8);
-  const frontiers=familyFrontiers(n.domain).filter(x=>x.id!==n.id).slice(0,6);
-  const linked=new Set([n.id,...incoming.map(x=>x.node.id),...outgoing.map(x=>x.node.id),...frontiers.map(x=>x.id)]);
-  const neighbors=familyNodes(n.domain).filter(x=>!linked.has(x.id)&&x.kind==="field").slice(0,12);
-
-  frag.append(mk("path",{d:"M 405 0 H 1195 L 1125 190 Q 800 255 475 190 Z",class:"focusFog"}));
-  frag.append(mk("path",{d:"M 480 187 Q 800 252 1120 187",class:"focusFogEdge"}));
-  frag.append(mk("circle",{cx,cy,r:290,class:"focusOrbit"}));
-  frag.append(mk("circle",{cx,cy,r:398,class:"focusOrbit"}));
-
-  frag.append(textNode(325,118,"PREREQUISITES / SUPPORT","zoneTitle"));
-  frag.append(textNode(1275,118,"DESCENDANTS / EFFECTS","zoneTitle"));
-  frag.append(textNode(800,95,"CURRENT FRONTIER","zoneTitle"));
-  frag.append(textNode(800,817,"NEARBY SPECIALTIES","zoneTitle"));
-
-  const inPos=verticalPositions(300,285,235,incoming.length);
-  const outPos=verticalPositions(1300,285,235,outgoing.length);
-  const frontPos=horizontalPositions(560,1040,208,frontiers.length);
-  const neighPos=horizontalPositions(360,1240,710,neighbors.length);
-
-  incoming.forEach((x,i)=>{
-    const p=inPos[i],to={x:cx-87,y:cy};
-    const cls="focusLink in "+relationClass(x.edge.type);
-    frag.append(mk("path",{d:curve(p,to,.58),class:cls}));
-    drawRelationBadge(frag,x.edge.type,{x:(p.x+to.x)/2,y:(p.y+to.y)/2});
-    drawFocusNode(frag,x.node,p,f,"in");
-  });
-
-  outgoing.forEach((x,i)=>{
-    const p=outPos[i],from={x:cx+87,y:cy};
-    const cls="focusLink out "+relationClass(x.edge.type);
-    frag.append(mk("path",{d:curve(from,p,.58),class:cls}));
-    drawRelationBadge(frag,x.edge.type,{x:(p.x+from.x)/2,y:(p.y+from.y)/2});
-    drawFocusNode(frag,x.node,p,f,"out");
-  });
-
-  frontiers.forEach((node,i)=>{
-    const p=frontPos[i],from={x:cx,y:cy-86};
-    frag.append(mk("path",{d:curve(from,p,.52),class:"focusLink related"}));
-    drawFocusNode(frag,node,p,f,"frontier");
-  });
-
-  neighbors.forEach((node,i)=>{
-    const p=neighPos[i],from={x:cx,y:cy+86};
-    frag.append(mk("path",{d:curve(from,p,.5),class:"focusLink related"}));
-    drawFocusNode(frag,node,p,f,"neighbor");
-  });
-
-  const [statusLabel,statusColor]=STATUS[n._status]||STATUS.active;
-  const center=mk("g",{class:"focusCenter"});
-  center.append(mk("circle",{cx,cy,r:138,fill:f.color,class:"halo"}));
-  center.append(mk("circle",{cx,cy,r:82,class:"disc",stroke:f.color}));
-  center.append(mk("circle",{cx,cy:cy-68,r:5,fill:statusColor}));
-
-  const words=n.label.split(" "),cut=words.length>3?Math.ceil(words.length/2):words.length;
-  center.append(textNode(cx,cy-7,words.slice(0,cut).join(" "),"title"));
-  if(words.slice(cut).length)center.append(textNode(cx,cy+17,words.slice(cut).join(" "),"title"));
-  center.append(textNode(cx,cy+43,statusLabel.toUpperCase(),"meta"));
-  frag.append(center);
-
-  if(!incoming.length)frag.append(textNode(300,448,"No mapped prerequisites yet","zoneTitle"));
-  if(!outgoing.length)frag.append(textNode(1300,448,"No mapped descendants yet","zoneTitle"));
-  if(!frontiers.length)frag.append(textNode(800,188,"No mapped frontier here yet","zoneTitle"));
-
-  focusScene.replaceChildren(frag);
-}
-
-function verticalPositions(x,startY,span,count){
-  if(!count)return[];
-  if(count===1)return[{x,y:startY+span/2}];
-  return Array.from({length:count},(_,i)=>({x,y:startY+i*(span/(count-1))}));
-}
-
-function horizontalPositions(startX,endX,y,count){
-  if(!count)return[];
-  if(count===1)return[{x:(startX+endX)/2,y}];
-  return Array.from({length:count},(_,i)=>({x:startX+i*((endX-startX)/(count-1)),y}));
-}
-
-function drawRelationBadge(parent,label,p){
-  const clean=String(label||"related").replaceAll("_"," ");
-  const width=clamp(clean.length*4.5+12,34,76);
-  parent.append(mk("rect",{x:p.x-width/2,y:p.y-7,width,height:13,rx:6,class:"relationBadge"}));
-  parent.append(textNode(p.x,p.y+1.5,clean,"relationText"));
-}
-
-function drawFocusNode(parent,n,p,f,zone){
-  const [,statusColor]=STATUS[n._status]||STATUS.active;
-  const challenged=["invalidated","dependency-broken"].includes(n._status);
-  const review=n._status==="review-required"||n._status==="disputed";
-  const classes="focusNode "+(zone==="frontier"?"frontierNode ":"")+(zone==="neighbor"?"neighborNode ":"")+(challenged?"invalidated ":"")+(review?"review ":"");
-  const g=mk("g",{class:classes,transform:`translate(${p.x} ${p.y})`});
-
-  g.append(mk("circle",{r:33,class:"disc",stroke:zone==="frontier"?"#c497ff":f.color}));
-  g.append(mk("circle",{cx:0,cy:-29,r:4,fill:statusColor}));
-
-  if(challenged)g.append(mk("line",{x1:-24,y1:23,x2:24,y2:-23,class:"strike"}));
-
-  const words=n.label.split(" "),cut=words.length>2?Math.ceil(words.length/2):words.length;
-  g.append(textNode(0,-1,words.slice(0,cut).join(" "),"title"));
-  if(words.slice(cut).length)g.append(textNode(0,10,words.slice(cut).join(" "),"title"));
-  g.append(textNode(0,23,(zone==="neighbor"?"SPECIALTY":n.kind).toUpperCase(),"meta"));
-
-  const title=mk("title");title.textContent=n.label;g.append(title);
-  g.addEventListener("click",()=>openFieldChart(n.id));
+function drawCore(parent,center){
+  const g=mk("g",{class:"knowledgeCore"});
+  g.append(mk("circle",{cx:center.x,cy:center.y,r:148,class:"halo"}));
+  g.append(mk("circle",{cx:center.x,cy:center.y,r:96,class:"ring"}));
+  g.append(mk("circle",{cx:center.x,cy:center.y,r:116,class:"ring2"}));
+  g.append(textNode(center.x,center.y-20,"HUMAN","coreTitle"));
+  g.append(textNode(center.x,center.y+12,"KNOWLEDGE","coreTitle"));
+  g.append(textNode(center.x,center.y+43,"THE SHARED PROJECT OF KNOWING","coreSub"));
+  g.append(textNode(center.x,center.y+65,model.nodes.length.toLocaleString()+" MAPPED NODES","coreCount"));
+  g.addEventListener("click",()=>{activePath=[];render()});
   parent.append(g);
 }
 
-function showNodeDetail(id){
-  const n=nodeById.get(id);if(!n)return;
-  const f=familyById.get(n.domain)||FOUNDATION;
+function drawFamilies(parent,center,ringR){
+  const selected=activePath[0]?.id||null;
+
+  FAMILIES.forEach(f=>{
+    const angle=familyAngles.get(f.id);
+    const p=polar(center.x,center.y,ringR,angle);
+    const nodes=familyNodes(f.id);
+    const front=nodes.filter(n=>n.frontier).length;
+    const active=selected===f.id;
+
+    const g=mk("g",{
+      class:"domainGroup"+(active?" selected":"")+(selected&&!active?" dim":""),
+      transform:`translate(${p.x} ${p.y})`
+    });
+
+    g.append(mk("circle",{r:104,fill:f.color,class:"halo"}));
+    g.append(mk("circle",{r:78,class:"disc",stroke:f.color}));
+    g.append(mk("circle",{r:89,class:"ring",stroke:f.color}));
+
+    for(let j=0;j<10;j++){
+      const a=j*Math.PI*2/10;
+      const p1=polar(0,0,94,a),p2=polar(0,0,101,a);
+      g.append(mk("line",{x1:p1.x,y1:p1.y,x2:p2.x,y2:p2.y,stroke:f.color,class:"orbitTick"}));
+    }
+
+    g.append(textNode(0,-24,f.icon,"domainIcon"));
+    const lines=labelLines(f.title,18);
+    lines.slice(0,2).forEach((line,i)=>g.append(textNode(0,10+i*17,line,"domainTitle")));
+    g.append(textNode(0,lines.length>1?49:34,nodes.length.toLocaleString()+" mapped"+(front?" · "+front+" frontier":""),"domainCount"));
+    g.append(textNode(0,lines.length>1?64:50,active?"OPEN":"EXPAND →","domainHint"));
+
+    g.addEventListener("click",()=>{
+      if(activePath[0]?.id===f.id){
+        activePath=[familyToken(f.id)];
+      }else{
+        activePath=[familyToken(f.id)];
+      }
+      render();
+    });
+
+    parent.append(g);
+  });
+}
+
+function drawActivePath(parent,center){
+  if(activePath.length<2)return;
+
+  for(let i=1;i<activePath.length;i++){
+    const prev=activePath[i-1];
+    const current=activePath[i];
+    const a=tokenPosition(prev,center);
+    const b=tokenPosition(current,center);
+    const f=familyById.get(activePath[0].id);
+    parent.append(mk("path",{d:curve(a,b),class:"pathGlow",stroke:f.color}));
+    parent.append(mk("path",{d:curve(a,b),class:"pathCore",stroke:f.color}));
+  }
+
+  for(let i=1;i<activePath.length;i++){
+    const token=activePath[i];
+    const node=nodeById.get(token.id);
+    if(!node)continue;
+    const p=tokenPosition(token,center);
+    drawKnowledgeNode(parent,node,p,token,token===currentToken(),"path",()=>truncateTo(i));
+  }
+}
+
+function drawCurrentChildren(parent,center){
+  const token=currentToken();
+  if(!token)return;
+
+  const {all,page,pages,items}=pageChildren(token);
+  const layouts=layoutChildren(token,items);
+  const f=familyById.get(activePath[0]?.id||token.id)||FAMILIES[0];
+  const parentPos=token.kind==="family"
+    ?polar(center.x,center.y,token.r,token.angle)
+    :tokenPosition(token,center);
+
+  layouts.forEach(layout=>{
+    const childPos=polar(center.x,center.y,layout.r,layout.angle);
+    parent.append(mk("path",{d:curve(parentPos,childPos),class:"childGlow",stroke:f.color}));
+    parent.append(mk("path",{d:curve(parentPos,childPos),class:"childCore",stroke:f.color}));
+
+    const childToken=nodeToken(layout.node,layout);
+    drawKnowledgeNode(parent,layout.node,childPos,childToken,false,"child",()=>{
+      activePath.push(childToken);
+      render();
+    },layout.relation);
+  });
+
+  if(pages>1){
+    const navR=token.r+175+(Math.ceil(items.length/4))*118;
+    const navPos=polar(center.x,center.y,navR,token.angle);
+    const remaining=Math.max(0,all.length-(page+1)*PAGE_SIZE);
+    const nextCount=remaining||Math.min(PAGE_SIZE,all.length);
+    const g=mk("g",{class:"moreNode",transform:`translate(${navPos.x} ${navPos.y})`});
+    g.append(mk("circle",{r:38}));
+    g.append(textNode(0,-4,"MORE","moreTitle"));
+    g.append(textNode(0,12,"+"+nextCount+" branches","moreMeta"));
+    g.addEventListener("click",()=>{
+      childPageByKey.set(tokenKey(token),(page+1)%pages);
+      render();
+    });
+    parent.append(g);
+  }
+
+  if(!all.length&&token.kind==="node"){
+    const node=nodeById.get(token.id);
+    if(node?.frontier){
+      const p=polar(center.x,center.y,token.r+170,token.angle);
+      drawFrontierMarker(parent,p,"KNOWN FRONTIER");
+    }else{
+      const p=polar(center.x,center.y,token.r+155,token.angle);
+      drawFrontierMarker(parent,p,"UNMAPPED NEXT LAYER");
+    }
+  }
+}
+
+function drawKnowledgeNode(parent,node,p,token,isCurrent,role,onClick,relation=""){
+  const f=familyById.get(activePath[0]?.id||node.domain)||FAMILIES[0];
+  const [,statusColor]=STATUS[node._status]||STATUS.active;
+  const challenged=["invalidated","dependency-broken"].includes(node._status);
+  const review=["review-required","disputed"].includes(node._status);
+  const cls=[
+    "knowledgeNode",role,
+    isCurrent?"current":"",
+    node.frontier?"frontier":"",
+    challenged?"invalidated":"",
+    review?"review":""
+  ].filter(Boolean).join(" ");
+
+  const g=mk("g",{class:cls,transform:`translate(${p.x} ${p.y})`});
+  const radius=isCurrent?62:54;
+
+  g.append(mk("circle",{r:radius+16,fill:f.color,class:"halo"}));
+  g.append(mk("circle",{r:radius,class:"disc",stroke:node.frontier?"#c497ff":f.color}));
+  g.append(mk("circle",{cx:0,cy:-radius+4,r:5,fill:statusColor,class:"status"}));
+
+  const lines=labelLines(node.label,19);
+  const start=lines.length>1?-8:1;
+  lines.slice(0,2).forEach((line,i)=>g.append(textNode(0,start+i*15,line,"nodeTitle")));
+
+  const childCount=childrenFor(token).length;
+  const meta=node.frontier?"FRONTIER":childCount?childCount+" NEXT":node.kind.toUpperCase();
+  g.append(textNode(0,lines.length>1?28:22,meta,"nodeMeta"));
+
+  if(relation&&relation!=="category"){
+    const badge=mk("g",{class:"nodeRelation",transform:`translate(0 ${radius+18})`});
+    badge.append(mk("rect",{x:-37,y:-8,width:74,height:16,rx:8}));
+    badge.append(textNode(0,3,String(relation).replaceAll("_"," "),"nodeRelationText"));
+    g.append(badge);
+  }
+
+  if(challenged)g.append(mk("line",{x1:-radius*.7,y1:radius*.65,x2:radius*.7,y2:-radius*.65,class:"strike"}));
+
+  const title=mk("title");
+  title.textContent=node.label;
+  g.append(title);
+  g.addEventListener("click",ev=>{ev.stopPropagation();onClick()});
+  parent.append(g);
+}
+
+function drawFrontierMarker(parent,p,label){
+  const g=mk("g",{class:"frontierMarker",transform:`translate(${p.x} ${p.y})`});
+  g.append(mk("circle",{r:52,class:"fogDisc"}));
+  g.append(mk("circle",{r:38,class:"fogRingSmall"}));
+  g.append(textNode(0,-2,label,"frontierTitle"));
+  g.append(textNode(0,13,"Nemesis can extend here","frontierSub"));
+  parent.append(g);
+}
+
+function labelLines(label,maxChars){
+  const words=String(label).split(/\s+/);
+  if(label.length<=maxChars)return[label];
+
+  const lines=[""];
+  for(const word of words){
+    const current=lines[lines.length-1];
+    if((current+" "+word).trim().length<=maxChars||!current){
+      lines[lines.length-1]=(current+" "+word).trim();
+    }else if(lines.length<2){
+      lines.push(word);
+    }else{
+      lines[1]=(lines[1]+" "+word).trim();
+    }
+  }
+
+  if(lines[1]?.length>maxChars+5)lines[1]=lines[1].slice(0,maxChars+2).trim()+"…";
+  return lines;
+}
+
+function truncateTo(index){
+  activePath=activePath.slice(0,index+1);
+  render();
+}
+
+function stepBack(){
+  if(!activePath.length)return;
+  activePath.pop();
+  render();
+}
+
+function renderBreadcrumb(){
+  const parts=[{label:"Human Knowledge",depth:-1},...activePath.map((t,i)=>({
+    label:t.kind==="family"?familyById.get(t.id)?.short||t.id:nodeById.get(t.id)?.label||t.id,
+    depth:i
+  }))];
+
+  crumb.innerHTML=parts.map((p,i)=>{
+    const last=i===parts.length-1;
+    return '<button class="crumbBtn'+(last?' current':'')+'" data-depth="'+p.depth+'">'+esc(p.label)+'</button>'+(last?'':'<span class="crumbSep">/</span>');
+  }).join("");
+
+  crumb.querySelectorAll("[data-depth]").forEach(btn=>btn.addEventListener("click",()=>{
+    const depth=Number(btn.dataset.depth);
+    if(depth<0)activePath=[];
+    else activePath=activePath.slice(0,depth+1);
+    render();
+  }));
+}
+
+function renderCaption(){
+  if(!activePath.length){
+    mapCaption.innerHTML="<b>THE ATLAS</b><span>Ten great fields surround Human Knowledge. Pick one. The selected branch keeps unfolding outward for as many mapped layers as exist.</span>";
+    return;
+  }
+
+  const token=currentToken();
+  const {all,page,pages}=pageChildren(token);
+  const name=token.kind==="family"?familyById.get(token.id)?.short:nodeById.get(token.id)?.label;
+
+  mapCaption.innerHTML="<b>"+esc(String(name||"BRANCH").toUpperCase())+"</b><span>"+
+    (all.length
+      ?all.length+" mapped next branch"+(all.length===1?"":"es")+" · click one to continue outward"+(pages>1?" · sibling page "+(page+1)+" of "+pages:"")
+      :"No deeper mapped child yet. This point is now visible as a Nemesis coverage target.")+
+    "</span>";
+}
+
+function renderDetail(){
+  const token=currentToken();
+
+  if(!token){
+    detail.innerHTML='<div class="detailHero"><div class="eyebrow">HUMAN KNOWLEDGE</div><h2>Choose a great field</h2><p>The first screen is deliberately spacious. Pick a field and its immediate categories expand outward. Pick one of those and the next layer expands again.</p></div><section class="detailSection"><h3>THE RULE</h3><p>The atlas never switches to a second chart anymore. The branch itself is the chart.</p></section>';
+    return;
+  }
+
+  if(token.kind==="family"){
+    const f=familyById.get(token.id);
+    const nodes=familyNodes(f.id);
+    const children=childrenFor(token);
+    detail.innerHTML='<div class="detailHero"><div class="eyebrow">GREAT FIELD</div><h2>'+esc(f.short)+'</h2><p>'+esc(f.tagline)+'.</p><div class="numberGrid"><div class="numberBox"><b>'+nodes.length+'</b><span>mapped items</span></div><div class="numberBox"><b>'+nodes.filter(n=>n.frontier).length+'</b><span>frontiers</span></div><div class="numberBox"><b>'+children.length+'</b><span>next categories</span></div><div class="numberBox"><b>'+activePath.length+'</b><span>path depth</span></div></div></div><section class="detailSection"><h3>NEXT CATEGORIES</h3>'+children.map(({node})=>'<button class="nodeLink" data-child="'+esc(node.id)+'"><span>'+esc(node.label)+'</span><small>expand →</small></button>').join("")+'</section>';
+    bindDetailChildren();
+    return;
+  }
+
+  const n=nodeById.get(token.id);
+  const f=familyById.get(activePath[0]?.id)||familyById.get(n.domain);
   const [statusLabel,statusColor]=STATUS[n._status]||STATUS.active;
-  const incoming=getIncoming(id),outgoing=getOutgoing(id);
-  const reviews=reviewsByTarget.get(id)||[],sources=n.sources||[];
-  const sourceWarning=!sources.length?'<p class="warningBox">No provenance source is attached to this node yet. Treat it as structurally mapped, not source-complete.</p>':"";
+  const children=childrenFor(token);
+  const incoming=(incomingById.get(n.id)||[]);
+  const outgoing=(outgoingById.get(n.id)||[]);
+  const sources=n.sources||[];
+  const reviews=reviewsByTarget.get(n.id)||[];
 
-  detail.innerHTML='<div class="detailHero"><div class="eyebrow">'+esc(f.short||n.domain)+' · '+esc(n.kind)+'</div><h2>'+esc(n.label)+'</h2><span class="pill"><i style="background:'+statusColor+'"></i>'+esc(statusLabel)+'</span>'+(n.frontier?'<span class="pill">frontier</span>':'')+'<p>'+esc(n.summary||"No summary attached yet.")+'</p><div class="numberGrid"><div class="numberBox"><b>'+incoming.length+'</b><span>incoming</span></div><div class="numberBox"><b>'+outgoing.length+'</b><span>outgoing</span></div><div class="numberBox"><b>'+sources.length+'</b><span>sources</span></div><div class="numberBox"><b>'+reviews.length+'</b><span>reviews</span></div></div></div>'+sourceWarning+'<section class="detailSection"><h3>PROVENANCE</h3>'+(sources.length?sources.map(s=>'<p><a href="'+esc(s.url)+'" target="_blank" rel="noreferrer">'+esc(s.title||s.id)+'</a></p>').join(""):'<p>No source attached yet.</p>')+'</section><section class="detailSection"><h3>INHERITED / SUPPORTED BY</h3>'+(incoming.length?incoming.slice(0,16).map(x=>'<button class="nodeLink" data-open="'+esc(x.node.id)+'"><span>'+esc(x.node.label)+'</span><small>'+esc(x.edge.type)+'</small></button>').join(""):'<p>No mapped incoming relations yet.</p>')+'</section><section class="detailSection"><h3>LEADS TO / AFFECTS</h3>'+(outgoing.length?outgoing.slice(0,16).map(x=>'<button class="nodeLink" data-open="'+esc(x.node.id)+'"><span>'+esc(x.node.label)+'</span><small>'+esc(x.edge.type)+'</small></button>').join(""):'<p>No mapped outgoing relations yet.</p>')+'</section><section class="detailSection"><h3>PEER REVIEW RECORD</h3>'+(reviews.length?reviews.map(r=>'<p class="'+(r.result==="failed"?"dangerText":"")+'"><b>'+esc(r.kind)+' · '+esc(r.result)+'</b><br>'+esc(r.summary)+'</p>').join(""):'<p>No graph-native reviews yet.</p>')+'</section>';
+  detail.innerHTML='<div class="detailHero"><div class="eyebrow">'+esc(f?.short||n.domain)+' · DEPTH '+Math.max(1,activePath.length-1)+'</div><h2>'+esc(n.label)+'</h2><span class="pill"><i style="background:'+statusColor+'"></i>'+esc(statusLabel)+'</span>'+(n.frontier?'<span class="pill">frontier</span>':'')+'<p>'+esc(n.summary||"No summary attached yet.")+'</p><div class="numberGrid"><div class="numberBox"><b>'+children.length+'</b><span>next branches</span></div><div class="numberBox"><b>'+incoming.length+'</b><span>incoming</span></div><div class="numberBox"><b>'+sources.length+'</b><span>sources</span></div><div class="numberBox"><b>'+reviews.length+'</b><span>reviews</span></div></div></div><section class="detailSection"><h3>NEXT MAPPED LAYER</h3>'+(children.length?children.map(({node,relation})=>'<button class="nodeLink" data-child="'+esc(node.id)+'"><span>'+esc(node.label)+'</span><small>'+esc(relation)+' →</small></button>').join(""):'<p class="coverageGap">'+(n.frontier?"This node is already a mapped frontier.":"The hierarchy currently ends here. Nemesis can fill the next layer without changing this renderer.")+'</p>')+'</section><section class="detailSection"><h3>PROVENANCE</h3>'+(sources.length?sources.slice(0,6).map(s=>'<p><a href="'+esc(s.url)+'" target="_blank" rel="noreferrer">'+esc(s.title||s.id)+'</a></p>').join(""):'<p>No source attached yet.</p>')+'</section>';
 
-  detail.querySelectorAll("[data-open]").forEach(b=>b.addEventListener("click",()=>openFieldChart(b.dataset.open)));
+  bindDetailChildren();
+}
+
+function bindDetailChildren(){
+  const token=currentToken();
+  const {all}=pageChildren(token);
+  detail.querySelectorAll("[data-child]").forEach(btn=>btn.addEventListener("click",()=>{
+    const id=btn.dataset.child;
+    const allChildren=childrenFor(token);
+    const index=allChildren.findIndex(x=>x.node.id===id);
+    if(index<0)return;
+
+    childPageByKey.set(tokenKey(token),Math.floor(index/PAGE_SIZE));
+    const page=pageChildren(token);
+    const layouts=layoutChildren(token,page.items);
+    const layout=layouts.find(x=>x.node.id===id);
+    if(!layout)return;
+
+    activePath.push(nodeToken(layout.node,layout));
+    render();
+  }));
 }
 
 function searchScore(row,q){
@@ -555,9 +652,67 @@ function searchScore(row,q){
   return 0;
 }
 
+function findPathTo(domain,targetId){
+  const f=familyById.get(domain);
+  if(!f)return null;
+  const roots=majorNodes(f);
+
+  for(const root of roots){
+    if(root.id===targetId)return[root.id];
+  }
+
+  const queue=roots.map(root=>[root.id]);
+  const seen=new Set(roots.map(r=>r.id));
+
+  while(queue.length){
+    const path=queue.shift();
+    if(path.length>7)continue;
+    const last=path[path.length-1];
+
+    for(const edge of outgoingById.get(last)||[]){
+      if(seen.has(edge.target))continue;
+      const node=nodeById.get(edge.target);
+      if(!node)continue;
+      const next=[...path,node.id];
+      if(node.id===targetId)return next;
+      seen.add(node.id);
+      queue.push(next);
+    }
+  }
+  return null;
+}
+
+function activateSearchResult(node){
+  const family=familyById.get(node.domain);
+  if(!family)return;
+
+  activePath=[familyToken(node.domain)];
+  const ids=findPathTo(node.domain,node.id);
+
+  if(ids){
+    for(const id of ids){
+      const parent=currentToken();
+      const children=childrenFor(parent);
+      const index=children.findIndex(x=>x.node.id===id);
+      if(index<0)break;
+      childPageByKey.set(tokenKey(parent),Math.floor(index/PAGE_SIZE));
+      const page=pageChildren(parent);
+      const layout=layoutChildren(parent,page.items).find(x=>x.node.id===id);
+      if(!layout)break;
+      activePath.push(nodeToken(layout.node,layout));
+    }
+  }
+
+  render();
+}
+
 function showSearch(){
   const q=search.value.trim().toLowerCase();
-  if(!q){results.hidden=true;results.innerHTML="";return}
+  if(!q){
+    results.hidden=true;
+    results.innerHTML="";
+    return;
+  }
 
   const hits=[];
   for(const row of searchRows){
@@ -568,39 +723,25 @@ function showSearch(){
   const top=hits.slice(0,18);
 
   results.innerHTML=top.length
-    ?top.map(({node:n})=>'<button class="searchHit" data-node="'+esc(n.id)+'"><b>'+esc(n.label)+'</b><span>'+esc((familyById.get(n.domain)||FOUNDATION).short||n.domain)+' · '+esc(n.kind)+'</span></button>').join("")
+    ?top.map(({node:n})=>'<button class="searchHit" data-node="'+esc(n.id)+'"><b>'+esc(n.label)+'</b><span>'+esc(familyById.get(n.domain)?.short||n.domain)+' · '+esc(n.kind)+'</span></button>').join("")
     :'<div class="searchHit"><b>No mapped match</b><span>This can become a Nemesis coverage target.</span></div>';
 
   results.hidden=false;
-  results.querySelectorAll("[data-node]").forEach(b=>b.addEventListener("click",()=>{
-    const n=nodeById.get(b.dataset.node);
+  results.querySelectorAll("[data-node]").forEach(btn=>btn.addEventListener("click",()=>{
+    const n=nodeById.get(btn.dataset.node);
     results.hidden=true;
     search.value="";
-    if(!n)return;
-    if(n.domain!=="roots"){
-      renderAtlas(n.domain);
-    }else{
-      expandedFamily=null;
-      renderAtlas(null);
-    }
-    openFieldChart(n.id);
+    if(n)activateSearchResult(n);
   }));
 }
 
 function bind(){
   atlasBtn.addEventListener("click",()=>{
-    closeFieldChart();
-    expandedFamily=null;
-    renderAtlas(null);
+    activePath=[];
+    render();
   });
 
-  backBtn.addEventListener("click",()=>{
-    if(!focusOverlay.hidden)closeFieldChart();
-    else renderAtlas(null);
-  });
-
-  focusClose.addEventListener("click",closeFieldChart);
-  focusPrev.addEventListener("click",previousFocus);
+  backBtn.addEventListener("click",stepBack);
   search.addEventListener("input",showSearch);
 
   document.addEventListener("click",e=>{
@@ -613,10 +754,13 @@ function bind(){
       search.focus();
       search.select();
     }
+
     if(e.key==="Escape"){
-      if(!results.hidden){results.hidden=true;return}
-      if(!focusOverlay.hidden){closeFieldChart();return}
-      if(expandedFamily)renderAtlas(null);
+      if(!results.hidden){
+        results.hidden=true;
+        return;
+      }
+      if(activePath.length)stepBack();
     }
   });
 }
