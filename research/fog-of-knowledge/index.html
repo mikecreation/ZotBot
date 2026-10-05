@@ -4,24 +4,26 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Fog of Knowledge</title>
-<meta name="description" content="A living atlas of human knowledge, its branches, evidence, failures, and frontiers.">
+<meta name="description" content="A recursively expanding atlas of human knowledge, evidence, failures, and frontiers.">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<link rel="stylesheet" href="styles.css?v=0.4.0">
+<link rel="stylesheet" href="styles.css?v=0.6.0">
 </head>
 <body>
 <header class="topbar">
   <div class="brand">
     <small>OPEN KNOWLEDGE ATLAS</small>
     <h1>FOG OF KNOWLEDGE</h1>
-    <p>From the human act of knowing to the edge of the unresolved.</p>
+    <p>Follow any branch from Human Knowledge to the mapped frontier.</p>
   </div>
-  <nav class="viewnav" aria-label="Map views">
+
+  <nav class="viewnav" aria-label="Map navigation">
     <button id="atlasBtn" class="viewBtn active">ATLAS</button>
-    <button id="backBtn" class="viewBtn" hidden>← COLLAPSE</button>
-    <span id="crumb">Human Knowledge</span>
+    <button id="backBtn" class="viewBtn" hidden>← ONE LEVEL</button>
+    <div id="crumb" class="crumb" aria-label="Current knowledge path"></div>
   </nav>
+
   <a class="github" href="https://github.com/mikecreation/ZotBot/tree/main/research/fog-of-knowledge" target="_blank" rel="noreferrer">Contribute ↗</a>
 </header>
 
@@ -32,7 +34,7 @@
     <kbd>/</kbd>
   </div>
   <div class="metric"><b id="nodeCount">0</b><span>mapped nodes</span></div>
-  <div class="metric"><b id="fieldCount">9</b><span>great fields</span></div>
+  <div class="metric"><b id="fieldCount">10</b><span>great fields</span></div>
   <div class="metric frontierMetric"><b id="frontierCount">0</b><span>frontiers</span></div>
 </section>
 
@@ -42,7 +44,7 @@
     <div class="stars starsB"></div>
     <div class="vignette"></div>
 
-    <svg id="graph" viewBox="0 0 1600 1000" role="img" aria-label="Fog of Knowledge radial atlas">
+    <svg id="graph" viewBox="0 0 1600 1000" role="img" aria-label="Fog of Knowledge recursive radial atlas">
       <defs>
         <filter id="softGlow" x="-70%" y="-70%" width="240%" height="240%">
           <feGaussianBlur stdDeviation="4.5" result="blur"/>
@@ -58,64 +60,26 @@
           <stop offset=".42" stop-color="#67dcff" stop-opacity=".23"/>
           <stop offset="1" stop-color="#67dcff" stop-opacity="0"/>
         </radialGradient>
-        <linearGradient id="fogFade" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#c8b7ff" stop-opacity=".12"/>
-          <stop offset="1" stop-color="#c8b7ff" stop-opacity="0"/>
-        </linearGradient>
       </defs>
       <g id="scene"></g>
     </svg>
 
-    <section id="focusOverlay" class="focusOverlay" hidden>
-      <header class="focusHeader">
-        <div class="focusIdentity">
-          <div id="focusEyebrow" class="focusEyebrow">FIELD LENS</div>
-          <h2 id="focusTitle">Field</h2>
-          <p id="focusSubtitle">Mapped structure for this field.</p>
-          <div id="focusStats" class="focusStats"></div>
-        </div>
-        <div class="focusActions">
-          <button id="focusPrev" class="focusAction" disabled>← PREVIOUS</button>
-          <button id="focusClose" class="focusAction primary">ATLAS</button>
-        </div>
-      </header>
-
-      <svg id="focusGraph" viewBox="0 0 1600 850" role="img" aria-label="Focused field knowledge chart">
-        <defs>
-          <linearGradient id="focusFog" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#b99cff" stop-opacity=".18"/>
-            <stop offset=".7" stop-color="#b99cff" stop-opacity=".02"/>
-            <stop offset="1" stop-color="#b99cff" stop-opacity="0"/>
-          </linearGradient>
-        </defs>
-        <g id="focusScene"></g>
-      </svg>
-
-      <div class="focusLegend">
-        <span><i class="legendLine prerequisite"></i> prerequisite / support</span>
-        <span><i class="legendLine descendant"></i> descendants</span>
-        <span><i class="legendDot frontier"></i> frontier</span>
-        <span><i class="legendDot challenged"></i> challenged</span>
-        <span><i class="legendDot neighbor"></i> nearby specialty</span>
-      </div>
-    </section>
-
     <div id="mapCaption" class="mapCaption">
       <b>THE ATLAS</b>
-      <span>Human foundations sit closest to the center. Great fields emerge outside them. Click a field to grow its next branches in place.</span>
+      <span>Choose a great field. Every click reveals the next mapped layer without leaving this canvas.</span>
     </div>
   </section>
 
   <aside id="detail" class="detail">
     <div class="detailHero">
       <div class="eyebrow">HUMAN KNOWLEDGE</div>
-      <h2>Start at the center</h2>
-      <p>The atlas preserves orientation while you drill from humanity's basic ways of knowing into disciplines, claims, evidence, and frontiers.</p>
+      <h2>Choose a great field</h2>
+      <p>Each branch can keep unfolding until the current map reaches a frontier or an unmapped gap.</p>
     </div>
   </aside>
 </main>
 
 <div id="searchResults" class="searchResults" hidden></div>
-<script type="module" src="app.js?v=0.4.0"></script>
+<script type="module" src="app.js?v=0.6.0"></script>
 </body>
 </html>
