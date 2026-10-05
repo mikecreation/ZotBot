@@ -17,6 +17,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
       - name: Validate knowledge graph
         working-directory: research/fog-of-knowledge
         run: python scripts/validate.py
+      - name: Check atlas renderer syntax
+        working-directory: research/fog-of-knowledge
+        run: node --check app.js
