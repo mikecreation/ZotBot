@@ -5,7 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Fog of Knowledge</title>
 <meta name="description" content="A living atlas of human knowledge, its branches, evidence, failures, and frontiers.">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">\n<meta http-equiv="Pragma" content="no-cache">\n<meta http-equiv="Expires" content="0">\n<link rel="stylesheet" href="styles.css?v=0.2.1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<link rel="stylesheet" href="styles.css?v=0.3.0">
 </head>
 <body>
 <header class="topbar">
@@ -16,7 +19,7 @@
   </div>
   <nav class="viewnav" aria-label="Map views">
     <button id="atlasBtn" class="viewBtn active">ATLAS</button>
-    <button id="backBtn" class="viewBtn" hidden>← ALL KNOWLEDGE</button>
+    <button id="backBtn" class="viewBtn" hidden>← COLLAPSE</button>
     <span id="crumb">Human Knowledge</span>
   </nav>
   <a class="github" href="https://github.com/mikecreation/ZotBot/tree/main/research/fog-of-knowledge" target="_blank" rel="noreferrer">Contribute ↗</a>
@@ -36,52 +39,63 @@
   <section id="mapShell">
     <div class="stars starsA"></div>
     <div class="stars starsB"></div>
+
     <svg id="graph" viewBox="0 0 1600 1000" role="img" aria-label="Fog of Knowledge radial atlas">
       <defs>
-        <filter id="softGlow" x="-100%" y="-100%" width="300%" height="300%">
-          <feGaussianBlur stdDeviation="8" result="blur"/>
+        <filter id="softGlow" x="-80%" y="-80%" width="260%" height="260%">
+          <feGaussianBlur stdDeviation="5" result="blur"/>
           <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
-        <filter id="bigGlow" x="-100%" y="-100%" width="300%" height="300%">
-          <feGaussianBlur stdDeviation="20" result="blur"/>
+        <filter id="selectedGlow" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="10" result="blur"/>
           <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
         <radialGradient id="coreFill">
           <stop offset="0" stop-color="#ffffff" stop-opacity=".95"/>
-          <stop offset=".12" stop-color="#b9f6ff" stop-opacity=".95"/>
-          <stop offset=".48" stop-color="#61dfff" stop-opacity=".35"/>
-          <stop offset="1" stop-color="#61dfff" stop-opacity="0"/>
+          <stop offset=".1" stop-color="#c9f8ff" stop-opacity=".9"/>
+          <stop offset=".44" stop-color="#67dcff" stop-opacity=".26"/>
+          <stop offset="1" stop-color="#67dcff" stop-opacity="0"/>
         </radialGradient>
       </defs>
       <g id="scene"></g>
     </svg>
+
+    <section id="focusOverlay" class="focusOverlay" hidden>
+      <header class="focusHeader">
+        <div>
+          <div id="focusEyebrow" class="focusEyebrow">FIELD CHART</div>
+          <h2 id="focusTitle">Field</h2>
+          <p id="focusSubtitle">Mapped structure for this field.</p>
+        </div>
+        <button id="focusClose" class="focusClose">← BACK TO ATLAS</button>
+      </header>
+      <svg id="focusGraph" viewBox="0 0 1600 850" role="img" aria-label="Focused field knowledge chart">
+        <g id="focusScene"></g>
+      </svg>
+      <div class="focusLegend">
+        <span><i class="legendLine prerequisite"></i> inherited / supporting</span>
+        <span><i class="legendLine descendant"></i> leads to / affects</span>
+        <span><i class="legendDot frontier"></i> frontier</span>
+        <span><i class="legendDot neighbor"></i> nearby specialty</span>
+      </div>
+    </section>
+
     <div id="mapCaption" class="mapCaption">
       <b>THE ATLAS</b>
-      <span>Each great branch is a navigational family. Scientific dependency appears deeper inside the map.</span>
+      <span>Click a great field. Its next branches grow outward without taking you away from the whole.</span>
     </div>
   </section>
 
   <aside id="detail" class="detail">
     <div class="detailHero">
       <div class="eyebrow">HUMAN KNOWLEDGE</div>
-      <h2>Choose a field</h2>
-      <p>This first view is intentionally simple. Pick one of humanity's major knowledge families to open its internal branches.</p>
+      <h2>Choose a great field</h2>
+      <p>The atlas stays visible while one branch opens at a time.</p>
     </div>
-    <section class="detailSection">
-      <h3>HOW TO READ IT</h3>
-      <p><b>Center:</b> the shared human project of knowing.</p>
-      <p><b>First ring:</b> the ten major families used to orient the atlas.</p>
-      <p><b>Inside a field:</b> major branches first, then mapped specialties, claims, evidence, and frontier questions.</p>
-    </section>
-    <section class="detailSection">
-      <h3>IMPORTANT</h3>
-      <p>The first ring is classification, not a claim that every field literally depends on the center by one causal edge. Actual dependency links stay evidence-driven.</p>
-    </section>
   </aside>
 </main>
 
 <div id="searchResults" class="searchResults" hidden></div>
-
-<script type="module" src="app.js?v=0.2.1"></script>
+<script type="module" src="app.js?v=0.3.0"></script>
 </body>
 </html>
