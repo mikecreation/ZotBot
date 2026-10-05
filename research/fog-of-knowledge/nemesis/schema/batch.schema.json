@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Fog of Knowledge Nemesis batch manifest",
+  "type": "object",
+  "required": [
+    "protocol",
+    "batch_id",
+    "created_at",
+    "agent",
+    "mission",
+    "scope"
+  ],
+  "properties": {
+    "protocol": {
+      "const": "fog-nemesis-batch/1"
+    },
+    "batch_id": {
+      "type": "string",
+      "minLength": 3
+    },
+    "created_at": {
+      "type": "string",
+      "minLength": 8
+    },
+    "agent": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mission": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scope": {
+      "type": "object",
+      "required": [
+        "domains"
+      ],
+      "properties": {
+        "domains": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "topics": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "date_range": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "source_policy": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}
