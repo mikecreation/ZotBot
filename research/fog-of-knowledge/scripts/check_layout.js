@@ -168,22 +168,34 @@ function familySectorBounds(index){
 }
 function pack(entries,start,end,startRow,gap){
   const sorted=[...entries].sort((a,b)=>a.tree.angle-b.tree.angle||a.tree.key.localeCompare(b.tree.key));
-  let cursor=0,row=startRow;
+  const n=sorted.length;
+  if(!n)return startRow;
   const sweep=Math.max(.08,end-start);
-  while(cursor<sorted.length){
-    const r=330+row*gap;
-    const rem=sorted.slice(cursor);
-    const maxR=Math.max(...rem.map(vr));
-    const minCenter=maxR*2+CLEAR;
-    const capacity=Math.max(1,Math.floor(Math.max(minCenter,r*sweep)/minCenter));
-    const chunk=rem.slice(0,capacity),count=chunk.length;
-    chunk.forEach((e,i)=>{
-      e.rowIndex=row;e.r=r;
-      e.tree.angle=count===1?(start+end)/2:start+(i+.5)*(sweep/count);
-    });
-    cursor+=count;row++;
+  const maxR=Math.max(...sorted.map(vr));
+  const minCenter=maxR*2+CLEAR;
+
+  let rows=1;
+  for(;rows<=n;rows++){
+    let ok=true;
+    for(let row=0;row<rows;row++){
+      const count=Math.ceil((n-row)/rows);
+      if(count<=1)continue;
+      const r=330+(startRow+row)*gap;
+      const slotGap=rows*sweep/n;
+      const chord=2*r*Math.sin(slotGap/2);
+      if(chord<minCenter){ok=false;break}
+    }
+    if(ok)break;
   }
-  return row;
+  rows=Math.min(rows,n);
+
+  sorted.forEach((e,i)=>{
+    const row=i%rows;
+    e.rowIndex=startRow+row;
+    e.r=330+e.rowIndex*gap;
+    e.tree.angle=start+(i+.5)*(sweep/n);
+  });
+  return startRow+rows;
 }
 
 function build(){
