@@ -595,13 +595,10 @@ function visualRadiusFor(entry,mode){
 
 function labelFootprintFor(entry,mode){
   const radius=visualRadiusFor(entry,mode);
-  const label=entry.tree.kind==="family"
-    ? entry.tree.family.short
-    : entry.tree.node.label;
-  const labelHalf=Math.min(mode==="all"?64:84,Math.max(24,String(label).length*(mode==="all"?2.7:3.4)));
-  return Math.max(radius+10,labelHalf+8);
+  // Deep labels are clipped inside the circles. Collision geometry therefore
+  // follows the visible orb plus a fixed breathing margin, not title length.
+  return radius+(mode==="all"?12:16);
 }
-
 function angleDistance(a,b){
   let d=Math.abs(a-b)%(Math.PI*2);
   return d>Math.PI?Math.PI*2-d:d;
@@ -641,63 +638,110 @@ function computeUniformGap(flat,baseRadius,mode,wrap=false){
   return Math.ceil(Math.max(gap,mode==="all"?170:DEPTH_GAP)/10)*10;
 }
 
+
+function packEntriesIntoRows(entries,start,end,baseRadius,rowGap,startRow,mode){
+  const sorted=[...entries].sort((a,b)=>a.tree.angle-b.tree.angle||a.tree.key.localeCompare(b.tree.key));
+  let cursor=0,row=startRow;
+  const sweep=Math.max(.08,end-start);
+
+  while(cursor<sorted.length){
+    const r=baseRadius+row*rowGap;
+    const remaining=sorted.slice(cursor);
+    const maxR=Math.max(...remaining.map(e=>visualRadiusFor(e,mode)));
+    const minCenter=maxR*2+NODE_CLEARANCE;
+    const arc=Math.max(minCenter,r*sweep);
+    const capacity=Math.max(1,Math.floor(arc/minCenter));
+    const chunk=remaining.slice(0,capacity);
+    const count=chunk.length;
+
+    chunk.forEach((entry,i)=>{
+      entry.rowIndex=row;
+      entry.r=r;
+      entry.tree.angle=count===1
+        ?(start+end)/2
+        :start+(i+.5)*(sweep/count);
+    });
+
+    cursor+=count;
+    row++;
+  }
+  return row;
+}
+
+function familySectorBounds(index){
+  const sector=Math.PI*2/FAMILIES.length;
+  const mid=-Math.PI/2+index*sector;
+  const margin=.14;
+  return {start:mid-sector/2+margin,end:mid+sector/2-margin,mid};
+}
+
 function computeTreeLayout(mode){
   const center={x:800,y:500};
   const items=[];
   const edges=[];
+  const rowGap=mode==="all"?150:175;
 
   if(mode==="all"){
-    const sector=Math.PI*2/FAMILIES.length;
-    const margin=.045;
     const assigned=new Set();
 
     FAMILIES.forEach((f,i)=>{
       const tree=buildFamilyTree(f,assigned);
-      const mid=-Math.PI/2+i*sector;
-      assignTreeAngles(tree,mid-sector/2+margin,mid+sector/2-margin);
+      const sector=familySectorBounds(i);
+      // First assign subtree order, then pack each logical depth into as many
+      // physical rings as necessary. Every physical ring uses the same gap.
+      assignTreeAngles(tree,sector.start,sector.end);
       const flat=flattenTree(tree);
+      const root=flat[0];
+      root.rowIndex=0;
+      root.r=330;
+      root.tree.angle=sector.mid;
+
+      let row=1;
+      const maxDepth=Math.max(...flat.map(x=>x.depth));
+      for(let depth=1;depth<=maxDepth;depth++){
+        const level=flat.filter(x=>x.depth===depth);
+        if(!level.length)continue;
+        row=packEntriesIntoRows(level,sector.start,sector.end,330,rowGap,row,"all");
+      }
       items.push(...flat);
     });
-
-    const gap=computeUniformGap(items,330,"all",true);
-    for(const entry of items){
-      entry.r=330+entry.depth*gap;
-      entry.radius=visualRadiusFor(entry,"all");
-      entry.footprint=labelFootprintFor(entry,"all");
-      const p=polar(center.x,center.y,entry.r,entry.tree.angle);
-      entry.x=p.x; entry.y=p.y;
-    }
   }else{
     const tree=buildSelectedTree();
-    if(!tree)return {mode,center,items:[],edges:[],positions:new Map(),circles:[],bounds:null,gap:DEPTH_GAP};
+    if(!tree)return {mode,center,items:[],edges:[],positions:new Map(),circles:[],bounds:null,gap:rowGap};
     const root=currentToken();
     const rootAngle=root.angle;
-    const sweep=root.kind==="family"?2.35:2.5;
-    assignTreeAngles(tree,rootAngle-sweep/2,rootAngle+sweep/2);
+    const sweep=root.kind==="family"?2.25:2.45;
+    const start=rootAngle-sweep/2,end=rootAngle+sweep/2;
+    assignTreeAngles(tree,start,end);
     const flat=flattenTree(tree);
-    const baseR=root.r;
-    const gap=computeUniformGap(flat,baseR,"field",false);
-    for(const entry of flat){
-      entry.r=baseR+entry.depth*gap;
-      entry.radius=entry.depth===0
-        ? (root.kind==="family"?74:(root.visualRadius||58))
-        : visualRadiusFor(entry,"field");
-      entry.footprint=entry.depth===0?entry.radius+16:labelFootprintFor(entry,"field");
-      const p=polar(center.x,center.y,entry.r,entry.tree.angle);
-      entry.x=p.x; entry.y=p.y;
+    flat[0].rowIndex=0;
+    flat[0].r=root.r;
+    flat[0].tree.angle=rootAngle;
+
+    let row=1;
+    const maxDepth=Math.max(...flat.map(x=>x.depth));
+    for(let depth=1;depth<=maxDepth;depth++){
+      const level=flat.filter(x=>x.depth===depth);
+      if(!level.length)continue;
+      row=packEntriesIntoRows(level,start,end,root.r,rowGap,row,"field");
     }
+    items.push(...flat);
+  }
+
+  for(const entry of items){
+    entry.radius=entry.depth===0
+      ? (entry.tree.kind==="family"?74:(currentToken()?.visualRadius||58))
+      : visualRadiusFor(entry,mode);
+    entry.footprint=entry.depth===0?entry.radius+16:labelFootprintFor(entry,mode);
+    const p=polar(center.x,center.y,entry.r,entry.tree.angle);
+    entry.x=p.x;entry.y=p.y;
   }
 
   const keyMap=new Map(items.map(x=>[x.tree.key,x]));
   for(const entry of items){
     if(!entry.parent)continue;
     const from=keyMap.get(entry.parent.key);
-    if(from)edges.push({
-      from,
-      to:entry,
-      relation:entry.tree.relation,
-      familyId:entry.tree.familyId
-    });
+    if(from)edges.push({from,to:entry,relation:entry.tree.relation,familyId:entry.tree.familyId});
   }
 
   const positions=new Map();
@@ -708,12 +752,11 @@ function computeTreeLayout(mode){
   }
   circles.push({x:center.x,y:center.y,r:104,key:"core"});
 
-  const layout={mode,center,items,edges,positions,circles,gap};
+  const layout={mode,center,items,edges,positions,circles,gap:rowGap};
   relaxLayout(layout);
   layout.bounds=layoutBounds(layout);
   return layout;
 }
-
 function circlesOverlap(a,b,pad=NODE_CLEARANCE){
   const dx=a.x-b.x,dy=a.y-b.y;
   const min=a.r+b.r+pad;
@@ -736,9 +779,9 @@ function layoutOverlapCount(layout){
 
 function rebuildLayoutGeometry(layout,multiplier){
   const baseR=layout.mode==="all"?330:(currentToken()?.r||330);
-  layout.gap=Math.ceil(layout.gap*multiplier/10)*10;
+  layout.gap=Math.ceil(layout.gap*multiplier/5)*5;
   for(const entry of layout.items){
-    entry.r=baseR+entry.depth*layout.gap;
+    entry.r=baseR+(entry.rowIndex||0)*layout.gap;
     const p=polar(layout.center.x,layout.center.y,entry.r,entry.tree.angle);
     entry.x=p.x;entry.y=p.y;
   }
@@ -752,7 +795,6 @@ function rebuildLayoutGeometry(layout,multiplier){
   layout.positions=positions;
   layout.circles=circles;
 }
-
 function relaxLayout(layout){
   // Hard invariant: no circle overlap. Increase ONE uniform ring gap for the
   // whole view, preserving equal depth spacing and deterministic positions.
