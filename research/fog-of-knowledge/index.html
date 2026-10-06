@@ -9,7 +9,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <style>html,body{background:#02040a}</style>
-<link rel="stylesheet" href="styles.css?v=0.8.0">
+<link rel="stylesheet" href="styles.css?v=0.9.0">
 </head>
 <body>
 <header class="topbar">
@@ -104,10 +104,10 @@
 <script>
 (() => {
   try {
-    const raw = localStorage.getItem("fog-of-knowledge:atlas-snapshot:v1");
+    const raw = localStorage.getItem("fog-of-knowledge:atlas-snapshot:v2");
     if (!raw) return;
     const s = JSON.parse(raw);
-    if (!s || s.version !== 1) return;
+    if (!s || s.version !== 2) return;
 
     const scene = document.querySelector("#scene");
     const detail = document.querySelector("#detail");
@@ -133,6 +133,6 @@
   } catch (_) {}
 })();
 </script>
-<script type="module" src="app.js?v=0.8.0"></script>
+<script type="module" src="app.js?v=0.9.0"></script>
 </body>
 </html>
