@@ -1256,7 +1256,17 @@ function drawCurrentChildren(parent,center){
   const parentRadius=token.kind==="family"?74:(token.visualRadius||58);
 
   const obstacles=[
+    {x:center.x,y:center.y,r:104,key:"core"},
+    ...FAMILIES.map(fam=>{
+      const a=familyAngles.get(fam.id);
+      const p=polar(center.x,center.y,330,a);
+      return {x:p.x,y:p.y,r:74,key:"family:"+fam.id};
+    }),
     {x:parentPos.x,y:parentPos.y,r:parentRadius,key:token.kind+":"+token.id},
+    ...activePath.filter(t=>t.kind==="node"&&t.id!==token.id).map(t=>{
+      const p=tokenPosition(t,center);
+      return {x:p.x,y:p.y,r:t.visualRadius||58,key:"node:"+t.id};
+    }),
     ...layouts.map(x=>{
       const p=polar(center.x,center.y,x.r,x.angle);
       return {x:p.x,y:p.y,r:x.visualRadius||48,key:"node:"+x.node.id};
