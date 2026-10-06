@@ -241,6 +241,7 @@ function build(){
     const end={x:to.x-ux*(to.radius+4),y:to.y-uy*(to.radius+4)};
     const ignore=new Set([from.tree.key,to.tree.key]);
     if(clear(start,end,ignore))return true;
+
     const px=-dy/len,py=dx/len;
     const signs=seed%2?[1,-1]:[-1,1];
     for(const off0 of [70,110,160,220,300,420,560,760]){
@@ -249,7 +250,55 @@ function build(){
         if(clear(start,p1,ignore)&&clear(p1,p2,ignore)&&clear(p2,end,ignore))return true;
       }
     }
-    return false;
+
+    // Same deterministic obstacle-grid fallback used by the browser renderer.
+    const obs=circles.filter(o=>!ignore.has(o.key));
+    let minX=Math.min(start.x,end.x),maxX=Math.max(start.x,end.x),minY=Math.min(start.y,end.y),maxY=Math.max(start.y,end.y);
+    for(const o of obs){minX=Math.min(minX,o.x-o.r);maxX=Math.max(maxX,o.x+o.r);minY=Math.min(minY,o.y-o.r);maxY=Math.max(maxY,o.y+o.r)}
+    const margin=220;minX-=margin;minY-=margin;maxX+=margin;maxY+=margin;
+    const spanX=maxX-minX,spanY=maxY-minY;
+    const cell=Math.max(24,Math.ceil(Math.max(spanX,spanY)/170));
+    const cols=Math.max(3,Math.ceil(spanX/cell)+1),rows=Math.max(3,Math.ceil(spanY/cell)+1);
+    if(cols*rows>42000)return false;
+
+    const lead=Math.max(cell*1.5,40);
+    const rs={x:start.x+ux*lead,y:start.y+uy*lead},re={x:end.x-ux*lead,y:end.y-uy*lead};
+    if(!clear(start,rs,ignore)||!clear(re,end,ignore))return false;
+
+    const idx=(x,y)=>y*cols+x;
+    const point=(x,y)=>({x:minX+x*cell,y:minY+y*cell});
+    const cellOf=p=>({x:Math.max(0,Math.min(cols-1,Math.round((p.x-minX)/cell))),y:Math.max(0,Math.min(rows-1,Math.round((p.y-minY)/cell)))});
+    const blocked=new Uint8Array(cols*rows);
+    for(const o of obs){
+      const rr=o.r+cell*.78;
+      const x0=Math.max(0,Math.floor((o.x-rr-minX)/cell)),x1=Math.min(cols-1,Math.ceil((o.x+rr-minX)/cell));
+      const y0=Math.max(0,Math.floor((o.y-rr-minY)/cell)),y1=Math.min(rows-1,Math.ceil((o.y+rr-minY)/cell));
+      for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){
+        const p=point(x,y),ddx=p.x-o.x,ddy=p.y-o.y;
+        if(ddx*ddx+ddy*ddy<rr*rr)blocked[idx(x,y)]=1;
+      }
+    }
+    const s=cellOf(rs),g=cellOf(re),si=idx(s.x,s.y),gi=idx(g.x,g.y);
+    blocked[si]=0;blocked[gi]=0;
+    const prev=new Int32Array(cols*rows);prev.fill(-1);
+    const q=new Int32Array(cols*rows);let h=0,t=0;q[t++]=si;prev[si]=si;
+    const dirs=[[1,0],[-1,0],[0,1],[0,-1]];
+    while(h<t&&prev[gi]===-1){
+      const cur=q[h++],cx=cur%cols,cy=Math.floor(cur/cols);
+      for(const [sx,sy] of dirs){
+        const nx=cx+sx,ny=cy+sy;if(nx<0||ny<0||nx>=cols||ny>=rows)continue;
+        const ni=idx(nx,ny);if(blocked[ni]||prev[ni]!==-1)continue;
+        prev[ni]=cur;q[t++]=ni;if(ni===gi)break;
+      }
+    }
+    if(prev[gi]===-1)return false;
+
+    const pts=[];let cur=gi;
+    while(cur!==si){pts.push(point(cur%cols,Math.floor(cur/cols)));cur=prev[cur]}
+    pts.push(point(s.x,s.y));pts.reverse();
+    const path=[start,rs,...pts,re,end];
+    for(let i=1;i<path.length;i++)if(!clear(path[i-1],path[i],ignore))return false;
+    return true;
   }
 
   let edgeCount=0;
