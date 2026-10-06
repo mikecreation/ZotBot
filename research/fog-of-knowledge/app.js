@@ -1207,21 +1207,46 @@ function renderCompactList(){
   }
   compactList.hidden=false;
   const selected=activePath[0]?.id||null;
-  compactList.innerHTML=FAMILIES.map(f=>{
+  let html=FAMILIES.map(f=>{
     const nodes=familyNodes(f.id);
     const front=nodes.filter(n=>n.frontier).length;
     const falseN=nodes.filter(n=>FALSE_STATUSES.has(n._status||n.status)).length;
-    return '<button class="fieldCard'+(selected===f.id?' active':'')+'" data-family="'+esc(f.id)+'" style="--fc:'+esc(f.color)+'">'+
-      '<span class="swatch" aria-hidden="true">'+esc(f.icon)+'</span>'+
-      '<span class="meta"><b>'+esc(f.short)+'</b><span>'+esc(f.tagline)+(falseN?' · '+falseN+' falsified/historical':'')+'</span></span>'+
-      '<span class="counts"><b>'+nodes.length+'</b>'+front+' frontier</span></button>';
+    const majors=majorNodes(f);
+    let next="";
+    if(expandAll||(expandFieldDeep&&selected===f.id)||selected===f.id){
+      const show=expandFieldDeep&&selected===f.id
+        ? majors.flatMap(m=>{
+            const kids=childrenFor(nodeToken(m,{angle:0,r:0})).slice(0,3);
+            return [{node:m,relation:"category"},...kids];
+          }).slice(0,12)
+        : majors.map(node=>({node,relation:"category"}));
+      if(show.length){
+        next='<div class="compactNext">'+show.map(({node,relation})=>{
+          const st=node._status||node.status;
+          const tag=node.frontier?"frontier":(FALSE_STATUSES.has(st)?st:relation);
+          return '<button type="button" class="compactNode'+(FALSE_STATUSES.has(st)?" false":"")+(node.frontier?" frontier":"")+'" data-node="'+esc(node.id)+'"><b>'+esc(node.label)+'</b><small>'+esc(String(tag).replaceAll("_"," "))+'</small></button>';
+        }).join("")+'</div>';
+      }
+    }
+    return '<div class="fieldBlock">'
+      +'<button class="fieldCard'+(selected===f.id?' active':'')+'" data-family="'+esc(f.id)+'" style="--fc:'+esc(f.color)+'">'
+      +'<span class="swatch" aria-hidden="true">'+esc(f.icon)+'</span>'
+      +'<span class="meta"><b>'+esc(f.short)+'</b><span>'+esc(f.tagline)+(falseN?' · '+falseN+' falsified/historical':'')+'</span></span>'
+      +'<span class="counts"><b>'+nodes.length+'</b>'+front+' frontier</span></button>'
+      +next+'</div>';
   }).join("");
+  compactList.innerHTML=html;
   compactList.querySelectorAll("[data-family]").forEach(btn=>btn.addEventListener("click",()=>{
     expandAll=false;
     expandFieldDeep=true;
     activePath=[familyToken(btn.dataset.family)];
     syncExpandButtons();
     render();
+  }));
+  compactList.querySelectorAll("[data-node]").forEach(btn=>btn.addEventListener("click",ev=>{
+    ev.stopPropagation();
+    const n=nodeById.get(btn.dataset.node);
+    if(n)activateSearchResult(n);
   }));
 }
 
