@@ -493,9 +493,7 @@ function hierarchyChildren(nodeId,familyId,assigned,ancestors,reservedRoots=new 
     if(score<oldScore)unique.set(item.node.id,item);
   }
 
-  const all=[...unique.values()];
-  const preferred=all.filter(x=>x.edge.type!=="related");
-  const chosen=preferred.length?preferred:all;
+  const chosen=[...unique.values()];
   chosen.sort((a,b)=>{
     const ar=RELATION_PRIORITY[a.edge.type]||99;
     const br=RELATION_PRIORITY[b.edge.type]||99;
