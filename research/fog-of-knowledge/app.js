@@ -865,6 +865,117 @@ function segmentClear(a,b,obstacles,ignoreKeys=new Set()){
   return true;
 }
 
+function simplifyPolyline(points){
+  if(points.length<=2)return points;
+  const out=[points[0]];
+  for(let i=1;i<points.length-1;i++){
+    const a=out[out.length-1],b=points[i],d=points[i+1];
+    const abx=b.x-a.x,aby=b.y-a.y,bdx=d.x-b.x,bdy=d.y-b.y;
+    if(Math.abs(abx*bdy-aby*bdx)<1e-6)continue;
+    out.push(b);
+  }
+  out.push(points[points.length-1]);
+  return out;
+}
+
+function gridRoute(start,end,from,to,obstacles,ignoreKeys){
+  const dx=end.x-start.x,dy=end.y-start.y;
+  const len=Math.hypot(dx,dy)||1;
+  const ux=dx/len,uy=dy/len;
+
+  const all=obstacles.filter(o=>!ignoreKeys.has(o.key));
+  let minX=Math.min(start.x,end.x),maxX=Math.max(start.x,end.x);
+  let minY=Math.min(start.y,end.y),maxY=Math.max(start.y,end.y);
+  for(const o of all){
+    minX=Math.min(minX,o.x-o.r);maxX=Math.max(maxX,o.x+o.r);
+    minY=Math.min(minY,o.y-o.r);maxY=Math.max(maxY,o.y+o.r);
+  }
+
+  const margin=220;
+  minX-=margin;minY-=margin;maxX+=margin;maxY+=margin;
+  const spanX=maxX-minX,spanY=maxY-minY;
+  const cell=Math.max(24,Math.ceil(Math.max(spanX,spanY)/170));
+  const cols=Math.max(3,Math.ceil(spanX/cell)+1);
+  const rows=Math.max(3,Math.ceil(spanY/cell)+1);
+  if(cols*rows>42000)return null;
+
+  const lead=Math.max(cell*1.5,40);
+  const routeStart={x:start.x+ux*lead,y:start.y+uy*lead};
+  const routeEnd={x:end.x-ux*lead,y:end.y-uy*lead};
+
+  // The lead-in / lead-out must already be clean.
+  if(!segmentClear(start,routeStart,obstacles,ignoreKeys)
+    ||!segmentClear(routeEnd,end,obstacles,ignoreKeys))return null;
+
+  const idxOf=(ix,iy)=>iy*cols+ix;
+  const pointOf=(ix,iy)=>({x:minX+ix*cell,y:minY+iy*cell});
+  const cellOf=p=>({
+    ix:clamp(Math.round((p.x-minX)/cell),0,cols-1),
+    iy:clamp(Math.round((p.y-minY)/cell),0,rows-1)
+  });
+
+  const blocked=new Uint8Array(cols*rows);
+  for(const o of all){
+    const rr=o.r+cell*.78;
+    const ix0=clamp(Math.floor((o.x-rr-minX)/cell),0,cols-1);
+    const ix1=clamp(Math.ceil((o.x+rr-minX)/cell),0,cols-1);
+    const iy0=clamp(Math.floor((o.y-rr-minY)/cell),0,rows-1);
+    const iy1=clamp(Math.ceil((o.y+rr-minY)/cell),0,rows-1);
+    for(let iy=iy0;iy<=iy1;iy++)for(let ix=ix0;ix<=ix1;ix++){
+      const p=pointOf(ix,iy),ddx=p.x-o.x,ddy=p.y-o.y;
+      if(ddx*ddx+ddy*ddy<rr*rr)blocked[idxOf(ix,iy)]=1;
+    }
+  }
+
+  const s=cellOf(routeStart),g=cellOf(routeEnd);
+  const si=idxOf(s.ix,s.iy),gi=idxOf(g.ix,g.iy);
+  blocked[si]=0;blocked[gi]=0;
+
+  const prev=new Int32Array(cols*rows);
+  prev.fill(-1);
+  const queue=new Int32Array(cols*rows);
+  let qh=0,qt=0;
+  queue[qt++]=si;
+  prev[si]=si;
+  const dirs=[[1,0],[-1,0],[0,1],[0,-1]];
+
+  while(qh<qt&&prev[gi]===-1){
+    const cur=queue[qh++],cx=cur%cols,cy=Math.floor(cur/cols);
+    for(const [sx,sy] of dirs){
+      const nx=cx+sx,ny=cy+sy;
+      if(nx<0||ny<0||nx>=cols||ny>=rows)continue;
+      const ni=idxOf(nx,ny);
+      if(blocked[ni]||prev[ni]!==-1)continue;
+      prev[ni]=cur;
+      queue[qt++]=ni;
+      if(ni===gi)break;
+    }
+  }
+  if(prev[gi]===-1)return null;
+
+  const cells=[];
+  let cur=gi;
+  while(cur!==si){
+    const ix=cur%cols,iy=Math.floor(cur/cols);
+    cells.push(pointOf(ix,iy));
+    cur=prev[cur];
+  }
+  cells.push(pointOf(s.ix,s.iy));
+  cells.reverse();
+
+  let points=[start,routeStart,...cells,routeEnd,end];
+  points=simplifyPolyline(points);
+
+  for(let i=1;i<points.length;i++){
+    if(!segmentClear(points[i-1],points[i],obstacles,ignoreKeys))return null;
+  }
+
+  return {
+    d:"M "+points.map((p,i)=>(i?"L ":"")+p.x+" "+p.y).join(" "),
+    points
+  };
+}
+
 function clippedEndpoints(from,to){
   const dx=to.x-from.x,dy=to.y-from.y;
   const len=Math.hypot(dx,dy)||1;
@@ -886,9 +997,8 @@ function routeEdge(from,to,obstacles,laneSeed=0){
   const len=Math.hypot(dx,dy)||1;
   const px=-dy/len,py=dx/len;
   const signs=laneSeed%2?[1,-1]:[-1,1];
-  const offsets=[70,110,160,220,300,420,560,760];
 
-  for(const offset of offsets){
+  for(const offset of [70,110,160,220,300,420,560,760]){
     for(const sign of signs){
       const off=offset*sign;
       const p1={x:start.x+px*off,y:start.y+py*off};
@@ -903,9 +1013,9 @@ function routeEdge(from,to,obstacles,laneSeed=0){
       }
     }
   }
-  return null;
-}
 
+  return gridRoute(start,end,from,to,obstacles,ignore);
+}
 function drawUniformEdge(parent,from,to,color,obstacles,relation="category",laneSeed=0,extraClass=""){
   const route=routeEdge(from,to,obstacles,laneSeed);
   if(!route)return false;
