@@ -71,8 +71,8 @@ const TREE_EXCLUDED_RELATIONS=new Set(["cites","contradicts","supersedes","faile
 const EDGE_WIDTH=2.25;
 const DEPTH_GAP=190;
 const NODE_CLEARANCE=22;
-const ATLAS_STATE_KEY="fog-of-knowledge:atlas-state:v1";
-const ATLAS_SNAPSHOT_KEY="fog-of-knowledge:atlas-snapshot:v1";
+const ATLAS_STATE_KEY="fog-of-knowledge:atlas-state:v2";
+const ATLAS_SNAPSHOT_KEY="fog-of-knowledge:atlas-snapshot:v2";
 
 const mk=(name,attrs={})=>{
   const el=document.createElementNS(NS,name);
@@ -227,7 +227,7 @@ async function addOlogies(){
 function persistAtlasState(){
   try{
     const payload={
-      version:1,
+      version:2,
       path:activePath.map(t=>({
         kind:t.kind,
         id:t.id,
@@ -248,7 +248,7 @@ function restoreAtlasState(){
     const raw=localStorage.getItem(ATLAS_STATE_KEY);
     if(!raw)return false;
     const saved=JSON.parse(raw);
-    if(saved?.version!==1||!Array.isArray(saved.path))return false;
+    if(saved?.version!==2||!Array.isArray(saved.path))return false;
 
     const restored=[];
     for(const token of saved.path){
@@ -291,7 +291,7 @@ function restoreAtlasState(){
 function persistVisualSnapshot(){
   try{
     const snapshot={
-      version:1,
+      version:2,
       scene:scene.innerHTML,
       detail:detail.innerHTML,
       crumb:crumb.innerHTML,
