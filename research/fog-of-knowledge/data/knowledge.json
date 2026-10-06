@@ -1348,6 +1348,28 @@
       "sources": [],
       "frontier": true,
       "aliases": []
+    },
+    {
+      "id": "smoke.nemesis-write-path",
+      "label": "Nemesis write-path smoke node",
+      "kind": "concept",
+      "domain": "physical",
+      "era": "twentieth",
+      "status": "active",
+      "summary": "Temporary concept used only to verify sandboxed Fog batch check/apply and nemesis/ branch PR.",
+      "tags": [
+        "smoke",
+        "nemesis"
+      ],
+      "sources": [
+        {
+          "title": "Nemesis Fog write-path smoke",
+          "url": "https://github.com/mikecreation/ZotBot",
+          "kind": "primary"
+        }
+      ],
+      "aliases": [],
+      "frontier": false
     }
   ],
   "edges": [
@@ -1800,6 +1822,12 @@
       "target": "field.genetics",
       "type": "related",
       "dependency": "soft"
+    },
+    {
+      "source": "field.physics",
+      "target": "smoke.nemesis-write-path",
+      "type": "related",
+      "dependency": "soft"
     }
   ],
   "reviews": [
@@ -1820,6 +1848,16 @@
       "kind": "counterevidence + replacement",
       "result": "failed",
       "summary": "Transmission evidence and identification of pathogens overturned miasma as a general infectious-disease cause."
+    },
+    {
+      "id": "review.smoke.write-path.001",
+      "target": "smoke.nemesis-write-path",
+      "author": "nemesis-smoke",
+      "date": "2026-10-06",
+      "kind": "format_check",
+      "result": "neutral",
+      "summary": "Smoke review for write-path verification.",
+      "sources": []
     }
   ]
 }
