@@ -174,7 +174,7 @@ async function boot(){
   document.querySelector("#frontierCount").textContent=model.nodes.filter(n=>n.frontier).length.toLocaleString();
   bind();
   render();
-  requestAnimationFrame(()=>document.body.classList.remove("atlasStateRestored"));
+  requestAnimationFrame(()=>document.body.classList.remove("atlasStateRestored","atlasPrehydrated"));
 }
 
 async function addOlogies(){
