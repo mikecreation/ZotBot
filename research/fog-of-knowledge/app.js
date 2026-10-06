@@ -68,6 +68,97 @@ const esc=(s="")=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 const curve=(a,b)=>`M ${a.x} ${a.y} Q ${(a.x+b.x)/2} ${(a.y+b.y)/2} ${b.x} ${b.y}`;
 
+function drawFamilyMotif(g,f){
+  const motif=mk("g",{class:"familyMotif familyMotif-"+f.id});
+  const stroke=f.color;
+
+  if(f.id==="formal"){
+    motif.append(mk("polygon",{points:"0,-46 40,23 -40,23",fill:"none",stroke}));
+    motif.append(mk("circle",{r:32,fill:"none",stroke}));
+    motif.append(mk("line",{x1:-45,y1:0,x2:45,y2:0,stroke}));
+  }else if(f.id==="physical"){
+    motif.append(mk("ellipse",{rx:45,ry:18,fill:"none",stroke,transform:"rotate(-22)"}));
+    motif.append(mk("ellipse",{rx:45,ry:18,fill:"none",stroke,transform:"rotate(38)"}));
+    motif.append(mk("circle",{r:5,fill:stroke}));
+  }else if(f.id==="earth"){
+    motif.append(mk("path",{d:"M -44 14 Q 0 -34 44 14",fill:"none",stroke}));
+    motif.append(mk("path",{d:"M -37 28 Q 0 -10 37 28",fill:"none",stroke}));
+    motif.append(mk("path",{d:"M -28 -12 Q 0 -34 28 -12",fill:"none",stroke}));
+  }else if(f.id==="life"){
+    for(const [x,y,r] of [[-18,-12,14],[14,-4,18],[-4,20,12],[24,23,8]]){
+      motif.append(mk("circle",{cx:x,cy:y,r,fill:"none",stroke}));
+    }
+  }else if(f.id==="health"){
+    motif.append(mk("line",{x1:-32,y1:0,x2:32,y2:0,stroke}));
+    motif.append(mk("line",{x1:0,y1:-32,x2:0,y2:32,stroke}));
+    motif.append(mk("circle",{r:39,fill:"none",stroke}));
+  }else if(f.id==="engineering"){
+    motif.append(mk("circle",{r:28,fill:"none",stroke}));
+    for(let i=0;i<8;i++){
+      const a=i*Math.PI/4,p1=polar(0,0,34,a),p2=polar(0,0,44,a);
+      motif.append(mk("line",{x1:p1.x,y1:p1.y,x2:p2.x,y2:p2.y,stroke}));
+    }
+    motif.append(mk("circle",{r:9,fill:"none",stroke}));
+  }else if(f.id==="information"){
+    const pts=[[-34,-22],[-9,-34],[22,-20],[34,8],[8,31],[-25,20]];
+    for(let i=0;i<pts.length;i++){
+      const [x,y]=pts[i], [nx,ny]=pts[(i+1)%pts.length];
+      motif.append(mk("line",{x1:x,y1:y,x2:nx,y2:ny,stroke}));
+      motif.append(mk("circle",{cx:x,cy:y,r:4,fill:stroke}));
+    }
+    motif.append(mk("circle",{r:5,fill:stroke}));
+  }else if(f.id==="social"){
+    motif.append(mk("circle",{cx:0,cy:-15,r:10,fill:"none",stroke}));
+    motif.append(mk("circle",{cx:-24,cy:18,r:9,fill:"none",stroke}));
+    motif.append(mk("circle",{cx:24,cy:18,r:9,fill:"none",stroke}));
+    motif.append(mk("path",{d:"M 0 -5 L -18 10 M 0 -5 L 18 10 M -15 18 L 15 18",stroke,fill:"none"}));
+  }else if(f.id==="humanities"){
+    motif.append(mk("path",{d:"M -34 -30 L -4 -22 L -4 32 L -34 24 Z",fill:"none",stroke}));
+    motif.append(mk("path",{d:"M 34 -30 L 4 -22 L 4 32 L 34 24 Z",fill:"none",stroke}));
+    motif.append(mk("line",{x1:0,y1:-23,x2:0,y2:32,stroke}));
+  }else{
+    for(let i=0;i<8;i++){
+      const a=i*Math.PI/4,p1=polar(0,0,24,a),p2=polar(0,0,43,a);
+      motif.append(mk("line",{x1:p1.x,y1:p1.y,x2:p2.x,y2:p2.y,stroke}));
+    }
+    motif.append(mk("circle",{r:17,fill:"none",stroke}));
+  }
+
+  g.append(motif);
+}
+
+function drawCoreMonument(g,center){
+  for(let i=0;i<24;i++){
+    const a=i*Math.PI*2/24;
+    const p1=polar(center.x,center.y,123,a);
+    const p2=polar(center.x,center.y,i%3===0?138:132,a);
+    g.append(mk("line",{x1:p1.x,y1:p1.y,x2:p2.x,y2:p2.y,class:"coreRay"}));
+  }
+  g.append(mk("circle",{cx:center.x,cy:center.y,r:132,class:"coreCrown"}));
+  g.append(mk("circle",{cx:center.x,cy:center.y,r:106,class:"coreInner"}));
+}
+
+function drawScar(g,radius){
+  const pts=[
+    [-radius*.72,-radius*.22],
+    [-radius*.34,-radius*.08],
+    [-radius*.17,-radius*.28],
+    [radius*.02,radius*.04],
+    [radius*.24,-radius*.08],
+    [radius*.44,radius*.26],
+    [radius*.72,radius*.15]
+  ].map(([x,y])=>x+","+y).join(" ");
+  g.append(mk("polyline",{points:pts,class:"scarMain"}));
+  g.append(mk("line",{x1:-radius*.03,y1:radius*.02,x2:-radius*.22,y2:radius*.35,class:"scarBranch"}));
+  g.append(mk("line",{x1:radius*.25,y1:-radius*.06,x2:radius*.39,y2:-radius*.36,class:"scarBranch"}));
+}
+
+function drawJunction(parent,a,b,color){
+  const x=(a.x+b.x)/2,y=(a.y+b.y)/2;
+  parent.append(mk("circle",{cx:x,cy:y,r:5,fill:color,class:"arteryJunction"}));
+  parent.append(mk("circle",{cx:x,cy:y,r:11,fill:"none",stroke:color,class:"arteryJunctionRing"}));
+}
+
 async function boot(){
   model=await (await fetch("./data/knowledge.json",{cache:"no-store"})).json();
   await addOlogies();
@@ -393,6 +484,7 @@ function render(){
 
   drawFogAndOrbits(frag,center);
   drawBaseBranches(frag,center,ringR);
+  drawActiveRealm(frag,center);
   drawCore(frag,center);
   drawFamilies(frag,center,ringR);
   drawActivePath(frag,center);
@@ -431,9 +523,24 @@ function drawBaseBranches(parent,center,ringR){
   });
 }
 
+function drawActiveRealm(parent,center){
+  const token=activePath[0];
+  if(!token)return;
+  const f=familyById.get(token.id);
+  if(!f)return;
+
+  const a=familyAngles.get(f.id);
+  const left=polar(center.x,center.y,455,a-.28);
+  const right=polar(center.x,center.y,455,a+.28);
+  const tip=polar(center.x,center.y,175,a);
+  const d=`M ${tip.x} ${tip.y} L ${left.x} ${left.y} A 455 455 0 0 1 ${right.x} ${right.y} Z`;
+  parent.append(mk("path",{d,fill:f.color,class:"activeRealm"}));
+}
+
 function drawCore(parent,center){
   const g=mk("g",{class:"knowledgeCore"});
-  g.append(mk("circle",{cx:center.x,cy:center.y,r:148,class:"halo"}));
+  g.append(mk("circle",{cx:center.x,cy:center.y,r:164,class:"halo"}));
+  drawCoreMonument(g,center);
   g.append(mk("circle",{cx:center.x,cy:center.y,r:96,class:"ring"}));
   g.append(mk("circle",{cx:center.x,cy:center.y,r:116,class:"ring2"}));
   g.append(textNode(center.x,center.y-20,"HUMAN","coreTitle"));
@@ -469,6 +576,7 @@ function drawFamilies(parent,center,ringR){
       g.append(mk("line",{x1:p1.x,y1:p1.y,x2:p2.x,y2:p2.y,stroke:f.color,class:"orbitTick"}));
     }
 
+    drawFamilyMotif(g,f);
     g.append(textNode(0,-24,f.icon,"domainIcon"));
     const lines=labelLines(f.title,18);
     lines.slice(0,2).forEach((line,i)=>g.append(textNode(0,10+i*17,line,"domainTitle")));
@@ -497,8 +605,11 @@ function drawActivePath(parent,center){
     const a=tokenPosition(prev,center);
     const b=tokenPosition(current,center);
     const f=familyById.get(activePath[0].id);
-    parent.append(mk("path",{d:curve(a,b),class:"pathGlow",stroke:f.color}));
-    parent.append(mk("path",{d:curve(a,b),class:"pathCore",stroke:f.color}));
+    const age=Math.max(0,activePath.length-1-i);
+    parent.append(mk("path",{d:curve(a,b),class:"pathAura pathAge"+Math.min(age,3),stroke:f.color}));
+    parent.append(mk("path",{d:curve(a,b),class:"pathGlow pathAge"+Math.min(age,3),stroke:f.color}));
+    parent.append(mk("path",{d:curve(a,b),class:"pathCore pathAge"+Math.min(age,3),stroke:f.color}));
+    drawJunction(parent,a,b,f.color);
   }
 
   for(let i=1;i<activePath.length;i++){
@@ -506,7 +617,8 @@ function drawActivePath(parent,center){
     const node=nodeById.get(token.id);
     if(!node)continue;
     const p=tokenPosition(token,center);
-    drawKnowledgeNode(parent,node,p,token,token===currentToken(),"path",()=>truncateTo(i));
+    const age=Math.max(0,activePath.length-1-i);
+    drawKnowledgeNode(parent,node,p,token,token===currentToken(),"path ancestorAge"+Math.min(age,3),()=>truncateTo(i));
   }
 }
 
@@ -523,8 +635,10 @@ function drawCurrentChildren(parent,center){
 
   layouts.forEach(layout=>{
     const childPos=polar(center.x,center.y,layout.r,layout.angle);
-    parent.append(mk("path",{d:curve(parentPos,childPos),class:"childGlow",stroke:f.color}));
-    parent.append(mk("path",{d:curve(parentPos,childPos),class:"childCore",stroke:f.color}));
+    parent.append(mk("path",{d:curve(parentPos,childPos),class:"childAura reveal",stroke:f.color}));
+    parent.append(mk("path",{d:curve(parentPos,childPos),class:"childGlow reveal",stroke:f.color}));
+    parent.append(mk("path",{d:curve(parentPos,childPos),class:"childCore reveal",stroke:f.color}));
+    drawJunction(parent,parentPos,childPos,f.color);
 
     const childToken=nodeToken(layout.node,layout);
     drawKnowledgeNode(parent,layout.node,childPos,childToken,false,"child",()=>{
@@ -567,7 +681,7 @@ function drawKnowledgeNode(parent,node,p,token,isCurrent,role,onClick,relation="
   const challenged=["invalidated","dependency-broken"].includes(node._status);
   const review=["review-required","disputed"].includes(node._status);
   const cls=[
-    "knowledgeNode",role,
+    "knowledgeNode",role,"reveal",
     isCurrent?"current":"",
     node.frontier?"frontier":"",
     challenged?"invalidated":"",
@@ -596,7 +710,7 @@ function drawKnowledgeNode(parent,node,p,token,isCurrent,role,onClick,relation="
     g.append(badge);
   }
 
-  if(challenged)g.append(mk("line",{x1:-radius*.7,y1:radius*.65,x2:radius*.7,y2:-radius*.65,class:"strike"}));
+  if(challenged)drawScar(g,radius);
 
   const title=mk("title");
   title.textContent=node.label;
@@ -606,11 +720,23 @@ function drawKnowledgeNode(parent,node,p,token,isCurrent,role,onClick,relation="
 }
 
 function drawFrontierMarker(parent,p,label){
-  const g=mk("g",{class:"frontierMarker",transform:`translate(${p.x} ${p.y})`});
-  g.append(mk("circle",{r:52,class:"fogDisc"}));
-  g.append(mk("circle",{r:38,class:"fogRingSmall"}));
-  g.append(textNode(0,-2,label,"frontierTitle"));
-  g.append(textNode(0,13,"Nemesis can extend here","frontierSub"));
+  const g=mk("g",{class:"frontierMarker reveal",transform:`translate(${p.x} ${p.y})`});
+  g.append(mk("ellipse",{rx:94,ry:54,class:"fogBloom"}));
+  g.append(mk("ellipse",{rx:74,ry:41,class:"fogBloomInner"}));
+
+  for(let i=0;i<18;i++){
+    const a=i*Math.PI*2/18;
+    const r=48+(i%4)*9;
+    const q=polar(0,0,r,a);
+    g.append(mk("circle",{cx:q.x,cy:q.y,r:i%3===0?2.2:1.2,class:"fogParticle"}));
+  }
+
+  g.append(mk("circle",{r:49,class:"fogDisc"}));
+  g.append(mk("circle",{r:37,class:"fogRingSmall"}));
+  g.append(mk("path",{d:"M -70 8 Q -36 -18 0 3 Q 34 25 72 -7",class:"fogWisp"}));
+  g.append(mk("path",{d:"M -62 26 Q -25 4 12 24 Q 42 38 68 19",class:"fogWisp secondary"}));
+  g.append(textNode(0,-4,label,"frontierTitle"));
+  g.append(textNode(0,14,label==="KNOWN FRONTIER"?"Evidence ends here":"Nemesis can map what comes next","frontierSub"));
   parent.append(g);
 }
 
