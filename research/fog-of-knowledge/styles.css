@@ -1518,3 +1518,94 @@ body.frontier-lens .falsePath{
 .compactNode.frontier{border-color:#c497ff66;border-style:dashed}
 .compactNode.false{border-color:#ff4d6755;color:#ffc9d0}
 .compactNode small{color:#8090aa;font-size:11px;white-space:nowrap}
+
+
+/* =========================================================
+   v0.9 GEOMETRY CONTRACT
+   One connector primitive, one visual thickness, every zoom.
+   ========================================================= */
+
+.knowledgeEdge,
+.atlasTrunkCore,
+.pathCore,
+.childCore,
+.falseTrail{
+  fill:none!important;
+  stroke-width:2.25!important;
+  vector-effect:non-scaling-stroke;
+  stroke-linecap:round!important;
+  stroke-linejoin:round!important;
+}
+
+.knowledgeEdge{
+  opacity:.78;
+  filter:none!important;
+}
+
+.knowledgeEdge.hubEdge{opacity:.72}
+.knowledgeEdge.activeEdge{opacity:.96}
+.knowledgeEdge.falseTrail,
+.falseTrail{
+  stroke-width:2.25!important;
+  stroke-dasharray:7 6;
+  opacity:.82;
+}
+
+/* Old multi-width connector effects are intentionally retired. */
+.pathAura,
+.childAura,
+.pathGlow,
+.childGlow,
+.atlasTrunk,
+.falseTrailAura,
+.arteryJunction,
+.arteryJunctionRing{
+  display:none!important;
+}
+
+/* Deep recursive views deliberately shrink nodes, never edge thickness. */
+.knowledgeNode.deepAll .nodeTitle{
+  font-size:8px;
+  stroke-width:1.8px;
+}
+.knowledgeNode.deepAll .nodeMeta{
+  font-size:5.8px;
+  letter-spacing:.045em;
+}
+.knowledgeNode.deepAll .status{
+  r:3px;
+}
+.knowledgeNode.deepAll .halo{
+  opacity:.06;
+}
+.knowledgeNode.deepField .nodeTitle{
+  font-size:11px;
+  stroke-width:2.2px;
+}
+.knowledgeNode.deepField .nodeMeta{
+  font-size:7px;
+}
+
+/* Keep expanded trees crisp when the auto-fit zooms very far out. */
+.knowledgeNode .disc,
+.domainGroup .disc,
+.knowledgeCore .ring,
+.knowledgeCore .ring2,
+.domainGroup .ring,
+.domainGroup .orbitTick,
+.coreRay,
+.coreCrown,
+.coreInner{
+  vector-effect:non-scaling-stroke;
+}
+
+/* Route-hit area can be generous without changing what the user sees. */
+.falseTrailHit{
+  stroke-width:16!important;
+  vector-effect:non-scaling-stroke;
+}
+
+/* Expanded modes should read as a single geometric system, not stacked effects. */
+body .atlasBranch{
+  transition:opacity .08s ease;
+}
