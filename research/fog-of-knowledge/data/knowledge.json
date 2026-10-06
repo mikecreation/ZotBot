@@ -1348,6 +1348,27 @@
       "sources": [],
       "frontier": true,
       "aliases": []
+    },
+    {
+      "id": "smoke.automate-merge",
+      "label": "Automate merge smoke",
+      "kind": "concept",
+      "domain": "physical",
+      "era": "twentieth",
+      "status": "active",
+      "summary": "Proves Brain auto-merge after Open PR when Automate is on.",
+      "tags": [
+        "smoke"
+      ],
+      "sources": [
+        {
+          "title": "Nemesis",
+          "url": "https://github.com/mikecreation/ZotBot",
+          "kind": "primary"
+        }
+      ],
+      "aliases": [],
+      "frontier": false
     }
   ],
   "edges": [
@@ -1800,6 +1821,12 @@
       "target": "field.genetics",
       "type": "related",
       "dependency": "soft"
+    },
+    {
+      "source": "field.physics",
+      "target": "smoke.automate-merge",
+      "type": "related",
+      "dependency": "soft"
     }
   ],
   "reviews": [
@@ -1820,6 +1847,16 @@
       "kind": "counterevidence + replacement",
       "result": "failed",
       "summary": "Transmission evidence and identification of pathogens overturned miasma as a general infectious-disease cause."
+    },
+    {
+      "id": "review.smoke.automate.001",
+      "target": "smoke.automate-merge",
+      "author": "nemesis-smoke",
+      "date": "2026-10-06",
+      "kind": "format_check",
+      "result": "neutral",
+      "summary": "ok",
+      "sources": []
     }
   ]
 }
