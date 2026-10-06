@@ -65,9 +65,7 @@ function children(nodeId,domain,assigned,ancestors,reserved){
     const prevScore=prev?((PRIORITY[prev.edge.type]||99)*2+prev.dir):Infinity;
     if(score<prevScore)uniq.set(x.node.id,x);
   }
-  const all=[...uniq.values()];
-  const preferred=all.filter(x=>x.edge.type!=="related");
-  const chosen=preferred.length?preferred:all;
+  const chosen=[...uniq.values()];
   chosen.sort((a,b)=>(PRIORITY[a.edge.type]||99)-(PRIORITY[b.edge.type]||99)||a.dir-b.dir||a.node.label.localeCompare(b.node.label)||a.node.id.localeCompare(b.node.id));
   return chosen;
 }
