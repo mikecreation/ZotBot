@@ -1148,3 +1148,10 @@ main{
 .crumbBtn.current{
   text-shadow:0 0 10px rgba(115,232,255,.24);
 }
+
+
+/* Nemesis may remount the embedded atlas while polling GitHub state.
+   Restored navigation should appear immediately, not replay reveal motion. */
+.atlasStateRestored .reveal{
+  animation:none!important;
+}
