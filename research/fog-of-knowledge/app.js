@@ -675,7 +675,7 @@ function drawCore(parent,center){
   g.append(textNode(center.x,center.y+12,"KNOWLEDGE","coreTitle"));
   g.append(textNode(center.x,center.y+43,"THE SHARED PROJECT OF KNOWING","coreSub"));
   g.append(textNode(center.x,center.y+65,model.nodes.length.toLocaleString()+" MAPPED NODES","coreCount"));
-  g.addEventListener("click",()=>{clearAtlasState();render()});
+  g.addEventListener("click",()=>{goHub()});
   parent.append(g);
 }
 
