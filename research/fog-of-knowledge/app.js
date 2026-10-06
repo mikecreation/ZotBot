@@ -54,6 +54,7 @@ let familyAngles=new Map();
 let childPageByKey=new Map();
 let restoredAtlasState=false;
 const ATLAS_STATE_KEY="fog-of-knowledge:atlas-state:v1";
+const ATLAS_SNAPSHOT_KEY="fog-of-knowledge:atlas-snapshot:v1";
 
 const mk=(name,attrs={})=>{
   const el=document.createElementNS(NS,name);
@@ -259,6 +260,26 @@ function restoreAtlasState(){
   }catch(err){
     console.warn("Fog atlas state could not be restored",err);
     return false;
+  }
+}
+
+function persistVisualSnapshot(){
+  try{
+    const snapshot={
+      version:1,
+      scene:scene.innerHTML,
+      detail:detail.innerHTML,
+      crumb:crumb.innerHTML,
+      caption:mapCaption.innerHTML,
+      viewBox:graph.getAttribute("viewBox")||"0 0 1600 1000",
+      nodeCount:document.querySelector("#nodeCount")?.textContent||"",
+      frontierCount:document.querySelector("#frontierCount")?.textContent||"",
+      backHidden:backBtn.hidden,
+      backText:backBtn.textContent||""
+    };
+    localStorage.setItem(ATLAS_SNAPSHOT_KEY,JSON.stringify(snapshot));
+  }catch(err){
+    console.warn("Fog visual snapshot could not be saved",err);
   }
 }
 
@@ -574,6 +595,7 @@ function render(){
   backBtn.hidden=!activePath.length;
   backBtn.textContent=activePath.length>1?"← ONE LEVEL":"← ALL KNOWLEDGE";
   persistAtlasState();
+  persistVisualSnapshot();
 }
 
 function drawFogAndOrbits(parent,center){
