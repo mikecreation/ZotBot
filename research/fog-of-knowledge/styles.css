@@ -1155,3 +1155,13 @@ main{
 .atlasStateRestored .reveal{
   animation:none!important;
 }
+
+
+/* During an embedded remount the previous rendered frame is painted first.
+   Keep that handoff visually frozen until the live renderer has hydrated. */
+.atlasPrehydrated .domainGroup,
+.atlasPrehydrated .atlasBranch,
+.atlasPrehydrated .knowledgeNode{
+  transition:none!important;
+  animation:none!important;
+}
