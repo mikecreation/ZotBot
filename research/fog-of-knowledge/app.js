@@ -465,25 +465,48 @@ function pageChildren(token){
 }
 
 
-function hierarchyChildren(nodeId,familyId,assigned,ancestors){
-  const edges=(outgoingById.get(nodeId)||[])
-    .filter(e=>!TREE_EXCLUDED_RELATIONS.has(e.type))
-    .filter(e=>STRUCTURAL_RELATIONS.has(e.type))
-    .map(e=>({edge:e,node:nodeById.get(e.target)}))
-    .filter(x=>x.node&&x.node.domain===familyId&&!ancestors.has(x.node.id)&&!assigned.has(x.node.id));
+function hierarchyChildren(nodeId,familyId,assigned,ancestors,reservedRoots=new Set()){
+  const candidates=[];
 
-  const preferred=edges.filter(x=>x.edge.type!=="related");
-  const chosen=preferred.length?preferred:edges;
+  for(const edge of outgoingById.get(nodeId)||[]){
+    if(TREE_EXCLUDED_RELATIONS.has(edge.type)||!STRUCTURAL_RELATIONS.has(edge.type))continue;
+    const node=nodeById.get(edge.target);
+    if(!node||node.domain!==familyId||ancestors.has(node.id)||assigned.has(node.id)||reservedRoots.has(node.id))continue;
+    candidates.push({edge,node,direction:"out"});
+  }
 
+  // Crew-added research may encode the same conceptual connection in the
+  // opposite edge direction. For layout discovery we traverse either side;
+  // the actual edge type remains attached for provenance/detail.
+  for(const edge of incomingById.get(nodeId)||[]){
+    if(TREE_EXCLUDED_RELATIONS.has(edge.type)||!STRUCTURAL_RELATIONS.has(edge.type))continue;
+    const node=nodeById.get(edge.source);
+    if(!node||node.domain!==familyId||ancestors.has(node.id)||assigned.has(node.id)||reservedRoots.has(node.id))continue;
+    candidates.push({edge,node,direction:"in"});
+  }
+
+  const unique=new Map();
+  for(const item of candidates){
+    const old=unique.get(item.node.id);
+    const score=(RELATION_PRIORITY[item.edge.type]||99)*2+(item.direction==="out"?0:1);
+    const oldScore=old?((RELATION_PRIORITY[old.edge.type]||99)*2+(old.direction==="out"?0:1)):Infinity;
+    if(score<oldScore)unique.set(item.node.id,item);
+  }
+
+  const all=[...unique.values()];
+  const preferred=all.filter(x=>x.edge.type!=="related");
+  const chosen=preferred.length?preferred:all;
   chosen.sort((a,b)=>{
     const ar=RELATION_PRIORITY[a.edge.type]||99;
     const br=RELATION_PRIORITY[b.edge.type]||99;
-    return ar-br||a.node.label.localeCompare(b.node.label)||a.node.id.localeCompare(b.node.id);
+    return ar-br
+      ||(a.direction==="out"?-1:1)-(b.direction==="out"?-1:1)
+      ||a.node.label.localeCompare(b.node.label)
+      ||a.node.id.localeCompare(b.node.id);
   });
   return chosen;
 }
-
-function buildNodeTree(node,familyId,assigned,ancestors,relation="category",pathIds=[]){
+function buildNodeTree(node,familyId,assigned,ancestors,relation="category",pathIds=[],reservedRoots=new Set()){
   if(!node||assigned.has(node.id)||ancestors.has(node.id))return null;
   assigned.add(node.id);
   const nextAnc=new Set(ancestors);
@@ -499,15 +522,16 @@ function buildNodeTree(node,familyId,assigned,ancestors,relation="category",path
     weight:1,
     pathIds:[...pathIds,node.id]
   };
-  for(const item of hierarchyChildren(node.id,familyId,assigned,nextAnc)){
-    const child=buildNodeTree(item.node,familyId,assigned,nextAnc,item.edge.type,tree.pathIds);
+  for(const item of hierarchyChildren(node.id,familyId,assigned,nextAnc,reservedRoots)){
+    const child=buildNodeTree(item.node,familyId,assigned,nextAnc,item.edge.type,tree.pathIds,reservedRoots);
     if(child)tree.children.push(child);
   }
   tree.weight=tree.children.length?tree.children.reduce((s,x)=>s+x.weight,0):1;
   return tree;
 }
-
 function buildFamilyTree(f,assigned=new Set()){
+  const majors=majorNodes(f);
+  const reservedRoots=new Set(majors.map(n=>n.id));
   const tree={
     key:"family:"+f.id,
     kind:"family",
@@ -519,14 +543,15 @@ function buildFamilyTree(f,assigned=new Set()){
     weight:1,
     pathIds:[]
   };
-  for(const node of majorNodes(f)){
-    const child=buildNodeTree(node,f.id,assigned,new Set(),"category",[]);
+  for(const node of majors){
+    reservedRoots.delete(node.id);
+    const child=buildNodeTree(node,f.id,assigned,new Set(),"category",[],reservedRoots);
+    reservedRoots.add(node.id);
     if(child)tree.children.push(child);
   }
   tree.weight=tree.children.length?tree.children.reduce((s,x)=>s+x.weight,0):1;
   return tree;
 }
-
 function buildSelectedTree(){
   const root=currentToken();
   if(!root)return null;
@@ -538,9 +563,14 @@ function buildSelectedTree(){
   const node=nodeById.get(root.id);
   if(!node)return null;
   const assigned=new Set();
-  return buildNodeTree(node,f.id,assigned,new Set(),root.relation||"category",[]);
+  const knownAncestors=new Set(
+    activePath
+      .filter(t=>t.kind==="node"&&t.id!==root.id)
+      .map(t=>t.id)
+  );
+  const reservedRoots=new Set(majorNodes(f).map(n=>n.id).filter(id=>id!==root.id));
+  return buildNodeTree(node,f.id,assigned,knownAncestors,root.relation||"category",[],reservedRoots);
 }
-
 function assignTreeAngles(tree,start,end){
   tree.angle=(start+end)/2;
   if(!tree.children.length)return;
@@ -728,12 +758,13 @@ function rebuildLayoutGeometry(layout,multiplier){
 function relaxLayout(layout){
   // Hard invariant: no circle overlap. Increase ONE uniform ring gap for the
   // whole view, preserving equal depth spacing and deterministic positions.
-  for(let i=0;i<10;i++){
+  for(let i=0;i<28;i++){
     if(layoutOverlapCount(layout)===0)return;
-    rebuildLayoutGeometry(layout,1.14);
+    rebuildLayoutGeometry(layout,1.12);
   }
+  const remaining=layoutOverlapCount(layout);
+  if(remaining)console.error("Fog layout invariant failed: "+remaining+" circle overlaps remain");
 }
-
 function layoutBounds(layout){
   if(!layout.items.length)return null;
   let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
