@@ -8,7 +8,8 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<link rel="stylesheet" href="styles.css?v=0.7.1">
+<style>html,body{background:#02040a}</style>
+<link rel="stylesheet" href="styles.css?v=0.7.2">
 </head>
 <body>
 <header class="topbar">
@@ -80,6 +81,38 @@
 </main>
 
 <div id="searchResults" class="searchResults" hidden></div>
-<script type="module" src="app.js?v=0.7.1"></script>
+<script>
+(() => {
+  try {
+    const raw = localStorage.getItem("fog-of-knowledge:atlas-snapshot:v1");
+    if (!raw) return;
+    const s = JSON.parse(raw);
+    if (!s || s.version !== 1) return;
+
+    const scene = document.querySelector("#scene");
+    const detail = document.querySelector("#detail");
+    const crumb = document.querySelector("#crumb");
+    const caption = document.querySelector("#mapCaption");
+    const graph = document.querySelector("#graph");
+    const nodeCount = document.querySelector("#nodeCount");
+    const frontierCount = document.querySelector("#frontierCount");
+    const backBtn = document.querySelector("#backBtn");
+
+    document.body.classList.add("atlasStateRestored","atlasPrehydrated");
+    if (scene && s.scene) scene.innerHTML = s.scene;
+    if (detail && s.detail) detail.innerHTML = s.detail;
+    if (crumb && s.crumb) crumb.innerHTML = s.crumb;
+    if (caption && s.caption) caption.innerHTML = s.caption;
+    if (graph && s.viewBox) graph.setAttribute("viewBox", s.viewBox);
+    if (nodeCount && s.nodeCount) nodeCount.textContent = s.nodeCount;
+    if (frontierCount && s.frontierCount) frontierCount.textContent = s.frontierCount;
+    if (backBtn) {
+      backBtn.hidden = !!s.backHidden;
+      if (s.backText) backBtn.textContent = s.backText;
+    }
+  } catch (_) {}
+})();
+</script>
+<script type="module" src="app.js?v=0.7.2"></script>
 </body>
 </html>
