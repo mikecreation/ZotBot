@@ -1369,6 +1369,169 @@
       ],
       "aliases": [],
       "frontier": false
+    },
+    {
+      "id": "physical.dark-energy",
+      "label": "Dark energy",
+      "kind": "field",
+      "domain": "physical",
+      "era": "frontier",
+      "status": "active",
+      "summary": "Research program on the cause of late-time cosmic acceleration.",
+      "sources": [],
+      "tags": [],
+      "aliases": [],
+      "frontier": false
+    },
+    {
+      "id": "physical.cosmic-acceleration",
+      "label": "Late-time cosmic acceleration",
+      "kind": "concept",
+      "domain": "physical",
+      "era": "frontier",
+      "status": "established",
+      "summary": "Observed accelerated expansion whose physical cause remains unresolved.",
+      "sources": [],
+      "tags": [],
+      "aliases": [],
+      "frontier": false
+    },
+    {
+      "id": "physical.lambda-cdm",
+      "label": "LambdaCDM",
+      "kind": "theory",
+      "domain": "physical",
+      "era": "frontier",
+      "status": "active",
+      "summary": "Standard cosmological model with cold dark matter and a cosmological constant.",
+      "sources": [],
+      "tags": [],
+      "aliases": [],
+      "frontier": false
+    },
+    {
+      "id": "physical.cosmological-constant-de",
+      "label": "Cosmological constant as dark energy",
+      "kind": "theory",
+      "domain": "physical",
+      "era": "frontier",
+      "status": "disputed",
+      "summary": "Constant vacuum-energy explanation of acceleration; current datasets test departures from it.",
+      "sources": [],
+      "tags": [],
+      "aliases": [],
+      "frontier": false
+    },
+    {
+      "id": "physical.wcdm",
+      "label": "wCDM",
+      "kind": "theory",
+      "domain": "physical",
+      "era": "frontier",
+      "status": "active",
+      "summary": "Extension allowing a constant dark-energy equation-of-state parameter w.",
+      "sources": [],
+      "tags": [],
+      "aliases": [],
+      "frontier": false
+    },
+    {
+      "id": "physical.w0wa-cdm",
+      "label": "w0waCDM",
+      "kind": "theory",
+      "domain": "physical",
+      "era": "frontier",
+      "status": "frontier",
+      "summary": "Extension allowing dark energy to evolve with scale factor.",
+      "sources": [],
+      "tags": [],
+      "aliases": [],
+      "frontier": true
+    },
+    {
+      "id": "physical.evolving-dark-energy",
+      "label": "Evolving dark energy",
+      "kind": "concept",
+      "domain": "physical",
+      "era": "frontier",
+      "status": "frontier",
+      "summary": "Hypothesis that dark-energy density or equation of state changes over cosmic time.",
+      "sources": [],
+      "tags": [],
+      "aliases": [],
+      "frontier": true
+    },
+    {
+      "id": "physical.bao",
+      "label": "Baryon acoustic oscillations",
+      "kind": "method",
+      "domain": "physical",
+      "era": "frontier",
+      "status": "active",
+      "summary": "Standard-ruler method for constraining cosmic expansion.",
+      "sources": [
+        {
+          "id": "desi-dr2-guide",
+          "url": "https://www.desi.lbl.gov/2025/03/19/desi-dr2-results-march-19-guide/"
+        }
+      ],
+      "tags": [],
+      "aliases": [],
+      "frontier": false
+    },
+    {
+      "id": "physical.desi-dr2-bao",
+      "label": "DESI DR2 BAO cosmology",
+      "kind": "dataset",
+      "domain": "physical",
+      "era": "frontier",
+      "status": "active",
+      "summary": "DESI first-three-year BAO cosmology results released in 2025.",
+      "sources": [
+        {
+          "id": "desi-dr2",
+          "url": "https://data.desi.lbl.gov/doc/papers/dr2/"
+        }
+      ],
+      "tags": [],
+      "aliases": [],
+      "frontier": false
+    },
+    {
+      "id": "physical.desi-dr2-lya-fullshape",
+      "label": "DESI DR2 Lyman-alpha full-shape",
+      "kind": "dataset",
+      "domain": "physical",
+      "era": "frontier",
+      "status": "active",
+      "summary": "2026 Lyman-alpha full-shape constraints whose central value shifts toward LambdaCDM.",
+      "sources": [
+        {
+          "id": "desi-lya-2026",
+          "url": "https://www.desi.lbl.gov/2026/07/30/new-desi-dr2-lyman-alpha-results-shed-light-on-dark-energy/"
+        }
+      ],
+      "tags": [],
+      "aliases": [],
+      "frontier": false
+    },
+    {
+      "id": "physical.des-y6-dark-energy",
+      "label": "DES Year 6 dark-energy constraints",
+      "kind": "dataset",
+      "domain": "physical",
+      "era": "frontier",
+      "status": "active",
+      "summary": "Full DES multi-probe constraints testing constant and evolving dark-energy models.",
+      "sources": [
+        {
+          "id": "des-y6",
+          "url": "https://www.darkenergysurvey.org/des-y6-cosmology-results-papers/"
+        }
+      ],
+      "tags": [],
+      "aliases": [],
+      "frontier": false
     }
   ],
   "edges": [
@@ -1827,6 +1990,67 @@
       "target": "smoke.automate-merge",
       "type": "related",
       "dependency": "soft"
+    },
+    {
+      "source": "physical.dark-energy",
+      "target": "physical.cosmic-acceleration",
+      "type": "related"
+    },
+    {
+      "source": "physical.lambda-cdm",
+      "target": "physical.cosmological-constant-de",
+      "type": "depends_on",
+      "dependency": "hard"
+    },
+    {
+      "source": "physical.wcdm",
+      "target": "physical.lambda-cdm",
+      "type": "refines"
+    },
+    {
+      "source": "physical.w0wa-cdm",
+      "target": "physical.wcdm",
+      "type": "refines"
+    },
+    {
+      "source": "physical.evolving-dark-energy",
+      "target": "physical.w0wa-cdm",
+      "type": "related"
+    },
+    {
+      "source": "physical.desi-dr2-bao",
+      "target": "physical.lambda-cdm",
+      "type": "tests"
+    },
+    {
+      "source": "physical.desi-dr2-bao",
+      "target": "physical.w0wa-cdm",
+      "type": "tests"
+    },
+    {
+      "source": "physical.desi-dr2-lya-fullshape",
+      "target": "physical.lambda-cdm",
+      "type": "tests"
+    },
+    {
+      "source": "physical.desi-dr2-lya-fullshape",
+      "target": "physical.w0wa-cdm",
+      "type": "tests"
+    },
+    {
+      "source": "physical.des-y6-dark-energy",
+      "target": "physical.lambda-cdm",
+      "type": "tests"
+    },
+    {
+      "source": "physical.des-y6-dark-energy",
+      "target": "physical.w0wa-cdm",
+      "type": "tests"
+    },
+    {
+      "source": "physical.desi-dr2-bao",
+      "target": "physical.bao",
+      "type": "derived_from"
     }
   ],
   "reviews": [
@@ -1857,6 +2081,24 @@
       "result": "neutral",
       "summary": "ok",
       "sources": []
+    },
+    {
+      "id": "review.lambda-cdm.dark-energy.20261006",
+      "target": "physical.lambda-cdm",
+      "author": "worker-3",
+      "date": "2026-10-06",
+      "kind": "evidence_review",
+      "result": "challenged-not-invalidated",
+      "summary": "DESI DR2 BAO combinations strengthened hints of evolving dark energy, while 2026 DESI Lyman-alpha full-shape results shift toward LambdaCDM; the collaboration says the hints may fade or a more complex model may be required. ([desi.lbl.gov](https://www.desi.lbl.gov/2025/03/19/more-than-a-hint-of-evolving-dark-energy-new-results-and-data-from-desi/?utm_source=chatgpt.com))"
+    },
+    {
+      "id": "review.w0wa.dark-energy.20261006",
+      "target": "physical.w0wa-cdm",
+      "author": "worker-3",
+      "date": "2026-10-06",
+      "kind": "evidence_review",
+      "result": "mixed-support-frontier",
+      "summary": "DES Y6 reports a 2.2 sigma deviation from a cosmological constant internally, rising to 3.0 sigma with primary CMB information, while its constant-w fit shows no significant preference over LambdaCDM. ([darkenergysurvey.org](https://www.darkenergysurvey.org/des-y6-cosmology-results-papers/?utm_source=chatgpt.com))"
     }
   ]
 }
