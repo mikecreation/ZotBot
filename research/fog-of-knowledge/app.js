@@ -52,6 +52,8 @@ let searchRows=[];
 let activePath=[];
 let familyAngles=new Map();
 let childPageByKey=new Map();
+let restoredAtlasState=false;
+const ATLAS_STATE_KEY="fog-of-knowledge:atlas-state:v1";
 
 const mk=(name,attrs={})=>{
   const el=document.createElementNS(NS,name);
@@ -165,10 +167,13 @@ async function boot(){
   nodeById=new Map(model.nodes.map(n=>[n.id,n]));
   buildIndexes();
   deriveStatuses();
+  restoredAtlasState=restoreAtlasState();
+  if(restoredAtlasState)document.body.classList.add("atlasStateRestored");
   document.querySelector("#nodeCount").textContent=model.nodes.length.toLocaleString();
   document.querySelector("#frontierCount").textContent=model.nodes.filter(n=>n.frontier).length.toLocaleString();
   bind();
   render();
+  requestAnimationFrame(()=>document.body.classList.remove("atlasStateRestored"));
 }
 
 async function addOlogies(){
@@ -191,6 +196,76 @@ async function addOlogies(){
     model.nodes.push(n);
     existing.set(label.toLowerCase(),n);
   }
+}
+
+function persistAtlasState(){
+  try{
+    const payload={
+      version:1,
+      path:activePath.map(t=>({
+        kind:t.kind,
+        id:t.id,
+        angle:Number.isFinite(t.angle)?t.angle:null,
+        r:Number.isFinite(t.r)?t.r:null,
+        relation:t.relation||null
+      })),
+      pages:Object.fromEntries(childPageByKey)
+    };
+    localStorage.setItem(ATLAS_STATE_KEY,JSON.stringify(payload));
+  }catch(err){
+    console.warn("Fog atlas state could not be saved",err);
+  }
+}
+
+function restoreAtlasState(){
+  try{
+    const raw=localStorage.getItem(ATLAS_STATE_KEY);
+    if(!raw)return false;
+    const saved=JSON.parse(raw);
+    if(saved?.version!==1||!Array.isArray(saved.path))return false;
+
+    const restored=[];
+    for(const token of saved.path){
+      if(token?.kind==="family"){
+        if(!familyById.has(token.id))break;
+        restored.push({
+          kind:"family",
+          id:token.id,
+          angle:Number.isFinite(token.angle)?token.angle:0,
+          r:Number.isFinite(token.r)?token.r:330
+        });
+        continue;
+      }
+
+      if(token?.kind==="node"){
+        if(!nodeById.has(token.id))break;
+        restored.push({
+          kind:"node",
+          id:token.id,
+          angle:Number.isFinite(token.angle)?token.angle:0,
+          r:Number.isFinite(token.r)?token.r:505,
+          relation:token.relation||"category"
+        });
+        continue;
+      }
+
+      break;
+    }
+
+    if(restored.length&&restored[0].kind!=="family")return false;
+    activePath=restored;
+    childPageByKey=new Map(Object.entries(saved.pages||{}).map(([k,v])=>[k,Number(v)||0]));
+    return activePath.length>0;
+  }catch(err){
+    console.warn("Fog atlas state could not be restored",err);
+    return false;
+  }
+}
+
+function clearAtlasState(){
+  activePath=[];
+  childPageByKey.clear();
+  try{localStorage.removeItem(ATLAS_STATE_KEY)}catch{}
 }
 
 function buildIndexes(){
@@ -498,6 +573,7 @@ function render(){
 
   backBtn.hidden=!activePath.length;
   backBtn.textContent=activePath.length>1?"← ONE LEVEL":"← ALL KNOWLEDGE";
+  persistAtlasState();
 }
 
 function drawFogAndOrbits(parent,center){
@@ -547,7 +623,7 @@ function drawCore(parent,center){
   g.append(textNode(center.x,center.y+12,"KNOWLEDGE","coreTitle"));
   g.append(textNode(center.x,center.y+43,"THE SHARED PROJECT OF KNOWING","coreSub"));
   g.append(textNode(center.x,center.y+65,model.nodes.length.toLocaleString()+" MAPPED NODES","coreCount"));
-  g.addEventListener("click",()=>{activePath=[];render()});
+  g.addEventListener("click",()=>{clearAtlasState();render()});
   parent.append(g);
 }
 
@@ -951,7 +1027,7 @@ function showSearch(){
 
 function bind(){
   atlasBtn.addEventListener("click",()=>{
-    activePath=[];
+    clearAtlasState();
     render();
   });
 
