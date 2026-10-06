@@ -4,11 +4,17 @@ const scene=document.querySelector("#scene");
 const detail=document.querySelector("#detail");
 const search=document.querySelector("#search");
 const results=document.querySelector("#searchResults");
-const atlasBtn=document.querySelector("#atlasBtn");
+const hubBtn=document.querySelector("#hubBtn")||document.querySelector("#atlasBtn");
+const expandFieldBtn=document.querySelector("#expandFieldBtn");
+const expandAllBtn=document.querySelector("#expandAllBtn");
+const frontierLensBtn=document.querySelector("#frontierLensBtn");
 const backBtn=document.querySelector("#backBtn");
 const crumb=document.querySelector("#crumb");
 const mapCaption=document.querySelector("#mapCaption");
+const compactList=document.querySelector("#compactList");
 const NS="http://www.w3.org/2000/svg";
+const FALSE_EDGE_TYPES=new Set(["contradicts","supersedes","failed_replication"]);
+const FALSE_STATUSES=new Set(["invalidated","historical","dependency-broken"]);
 
 const STATUS={
   foundational:["Foundational","#ffbf57"],
@@ -53,6 +59,11 @@ let activePath=[];
 let familyAngles=new Map();
 let childPageByKey=new Map();
 let restoredAtlasState=false;
+let expandAll=false;
+let expandFieldDeep=false;
+let frontierLens=false;
+let layoutCompact=false;
+let selectedFalseEdge=null;
 const ATLAS_STATE_KEY="fog-of-knowledge:atlas-state:v1";
 const ATLAS_SNAPSHOT_KEY="fog-of-knowledge:atlas-snapshot:v1";
 
@@ -172,7 +183,14 @@ async function boot(){
   if(restoredAtlasState)document.body.classList.add("atlasStateRestored");
   document.querySelector("#nodeCount").textContent=model.nodes.length.toLocaleString();
   document.querySelector("#frontierCount").textContent=model.nodes.filter(n=>n.frontier).length.toLocaleString();
+  const falseEl=document.querySelector("#falseCount");
+  if(falseEl){
+    const falseN=model.nodes.filter(n=>FALSE_STATUSES.has(n.status)||n.status==="disputed").length
+      + model.edges.filter(e=>FALSE_EDGE_TYPES.has(e.type)).length;
+    falseEl.textContent=falseN.toLocaleString();
+  }
   bind();
+  observeLayout();
   render();
   requestAnimationFrame(()=>document.body.classList.remove("atlasStateRestored","atlasPrehydrated"));
 }
@@ -286,6 +304,7 @@ function persistVisualSnapshot(){
 function clearAtlasState(){
   activePath=[];
   childPageByKey.clear();
+  selectedFalseEdge=null;
   try{localStorage.removeItem(ATLAS_STATE_KEY)}catch{}
 }
 
@@ -584,13 +603,24 @@ function render(){
   drawCore(frag,center);
   drawFamilies(frag,center,ringR);
   drawActivePath(frag,center);
-  drawCurrentChildren(frag,center);
+  if(expandFieldDeep&&activePath[0]?.kind==="family"){
+    drawDeepFieldExpansion(frag,center);
+  }else if(!expandAll){
+    drawCurrentChildren(frag,center);
+  }
+  drawFalsePathOverlays(frag,center);
 
   scene.replaceChildren(frag);
-  fitViewToActiveBranch(center);
+  if(expandAll){
+    graph.setAttribute("viewBox","0 0 1600 1000");
+  }else{
+    fitViewToActiveBranch(center);
+  }
   renderBreadcrumb();
   renderDetail();
   renderCaption();
+  renderCompactList();
+  syncExpandButtons();
 
   backBtn.hidden=!activePath.length;
   backBtn.textContent=activePath.length>1?"← ONE LEVEL":"← ALL KNOWLEDGE";
@@ -657,40 +687,87 @@ function drawFamilies(parent,center,ringR){
     const p=polar(center.x,center.y,ringR,angle);
     const nodes=familyNodes(f.id);
     const front=nodes.filter(n=>n.frontier).length;
+    const falseN=nodes.filter(n=>FALSE_STATUSES.has(n._status||n.status)).length;
     const active=selected===f.id;
+    const frontierish=front>0||falseN>0;
 
     const g=mk("g",{
-      class:"domainGroup"+(active?" selected":"")+(selected&&!active?" dim":""),
+      class:"domainGroup"+(active?" selected":"")+(selected&&!active&&!expandAll?" dim":"")+(frontierish?" frontierish":""),
       transform:`translate(${p.x} ${p.y})`
     });
 
-    g.append(mk("circle",{r:104,fill:f.color,class:"halo"}));
-    g.append(mk("circle",{r:78,class:"disc",stroke:f.color}));
-    g.append(mk("circle",{r:89,class:"ring",stroke:f.color}));
+    const discR=74;
+    g.append(mk("circle",{r:98,fill:f.color,class:"halo"}));
+    g.append(mk("circle",{r:discR,class:"disc",stroke:f.color}));
+    g.append(mk("circle",{r:84,class:"ring",stroke:f.color}));
 
     for(let j=0;j<10;j++){
       const a=j*Math.PI*2/10;
-      const p1=polar(0,0,94,a),p2=polar(0,0,101,a);
+      const p1=polar(0,0,88,a),p2=polar(0,0,94,a);
       g.append(mk("line",{x1:p1.x,y1:p1.y,x2:p2.x,y2:p2.y,stroke:f.color,class:"orbitTick"}));
     }
 
-    drawFamilyMotif(g,f);
-    g.append(textNode(0,-24,f.icon,"domainIcon"));
-    const lines=labelLines(f.title,18);
-    lines.slice(0,2).forEach((line,i)=>g.append(textNode(0,10+i*17,line,"domainTitle")));
-    g.append(textNode(0,lines.length>1?49:34,nodes.length.toLocaleString()+" mapped"+(front?" · "+front+" frontier":""),"domainCount"));
-    g.append(textNode(0,lines.length>1?64:50,active?"OPEN":"EXPAND →","domainHint"));
+    // Clip motif + in-orb text so nothing bleeds onto the border.
+    const clipped=mk("g",{});
+    const cp=mk("clipPath",{id:"clip-"+f.id});
+    cp.append(mk("circle",{r:discR-8}));
+    g.append(cp);
+    clipped.setAttribute("clip-path","url(#clip-"+f.id+")");
+    drawFamilyMotif(clipped,f);
+    clipped.append(textNode(0,-18,f.icon,"domainIcon"));
+    const shortLines=labelLines(f.short.toUpperCase(),14);
+    shortLines.slice(0,2).forEach((line,i)=>clipped.append(textNode(0,6+i*14,line,"domainTitle")));
+    clipped.append(textNode(0,shortLines.length>1?38:28,nodes.length.toLocaleString()+" · "+front+"F","domainCount"));
+    g.append(clipped);
+
+    // External chip with full title — never clips the orb chrome.
+    const chipY=discR+18;
+    const chip=mk("g",{class:"externalLabel",transform:`translate(0 ${chipY})`});
+    const chipText=f.title;
+    const chipW=Math.min(168,Math.max(88,chipText.length*6.2));
+    chip.append(mk("rect",{x:-chipW/2,y:-10,width:chipW,height:20,rx:10}));
+    chip.append(textNode(0,4,chipText.length>22?chipText.slice(0,20)+"…":chipText,""));
+    g.append(chip);
+    g.append(textNode(0,discR+36,active?(expandFieldDeep?"FIELD OPEN":"OPEN"):"EXPAND →","domainHint"));
 
     g.addEventListener("click",()=>{
-      if(activePath[0]?.id===f.id){
-        activePath=[familyToken(f.id)];
-      }else{
-        activePath=[familyToken(f.id)];
-      }
+      expandAll=false;
+      expandFieldDeep=false;
+      selectedFalseEdge=null;
+      activePath=[familyToken(f.id)];
+      syncExpandButtons();
       render();
     });
 
     parent.append(g);
+
+    if(expandAll){
+      drawExpandedFieldRing(parent,center,f,angle,ringR);
+    }
+  });
+}
+
+function drawExpandedFieldRing(parent,center,f,angle,ringR){
+  const majors=majorNodes(f);
+  if(!majors.length)return;
+  const span=Math.min(.55,.12*majors.length);
+  majors.forEach((node,i)=>{
+    const t=majors.length===1?0:-span/2+i*(span/Math.max(1,majors.length-1));
+    const a=angle+t;
+    const r=ringR+128;
+    const p=polar(center.x,center.y,r,a);
+    const parentPos=polar(center.x,center.y,ringR,angle);
+    const isFalse=FALSE_STATUSES.has(node._status||node.status);
+    parent.append(mk("path",{d:curve(parentPos,p),class:"childAura"+(isFalse?" falseTrailAura":""),stroke:isFalse?"#ff4d67":f.color}));
+    parent.append(mk("path",{d:curve(parentPos,p),class:"childCore"+(isFalse?" falseTrail":""),stroke:isFalse?"#ff4d67":f.color}));
+    const token=nodeToken(node,{angle:a,r,relation:"category"});
+    drawKnowledgeNode(parent,node,p,token,false,"child expandAllChild",()=>{
+      expandAll=false;
+      expandFieldDeep=false;
+      activePath=[familyToken(f.id),token];
+      syncExpandButtons();
+      render();
+    },"category");
   });
 }
 
@@ -777,33 +854,50 @@ function drawKnowledgeNode(parent,node,p,token,isCurrent,role,onClick,relation="
   const f=familyById.get(activePath[0]?.id||node.domain)||FAMILIES[0];
   const [,statusColor]=STATUS[node._status]||STATUS.active;
   const challenged=["invalidated","dependency-broken"].includes(node._status);
+  const historical=node._status==="historical";
   const review=["review-required","disputed"].includes(node._status);
   const cls=[
     "knowledgeNode",role,"reveal",
     isCurrent?"current":"",
     node.frontier?"frontier":"",
     challenged?"invalidated":"",
-    review?"review":""
+    historical?"historical":"",
+    review?"review":"",
+    (challenged||historical)?"falsePath":""
   ].filter(Boolean).join(" ");
 
   const g=mk("g",{class:cls,transform:`translate(${p.x} ${p.y})`});
-  const radius=isCurrent?62:54;
+  const radius=isCurrent?58:48;
 
-  g.append(mk("circle",{r:radius+16,fill:f.color,class:"halo"}));
-  g.append(mk("circle",{r:radius,class:"disc",stroke:node.frontier?"#c497ff":f.color}));
+  g.append(mk("circle",{r:radius+14,fill:challenged||historical?"#ff4d67":f.color,class:"halo"}));
+  g.append(mk("circle",{r:radius,class:"disc",stroke:node.frontier?"#c497ff":(challenged||historical?"#ff4d67":f.color)}));
   g.append(mk("circle",{cx:0,cy:-radius+4,r:5,fill:statusColor,class:"status"}));
 
-  const lines=labelLines(node.label,19);
-  const start=lines.length>1?-8:1;
-  lines.slice(0,2).forEach((line,i)=>g.append(textNode(0,start+i*15,line,"nodeTitle")));
+  // Clip label text inside the disc so long titles never bleed onto the ring.
+  const clipId="nclip-"+String(node.id).replace(/[^a-z0-9_-]/gi,"_");
+  const cp=mk("clipPath",{id:clipId});
+  cp.append(mk("circle",{r:radius-7}));
+  g.append(cp);
+  const labelG=mk("g",{});
+  labelG.setAttribute("clip-path","url(#"+clipId+")");
+  const maxChars=isCurrent?16:14;
+  const lines=labelLines(node.label,maxChars);
+  const start=lines.length>1?-7:1;
+  lines.slice(0,2).forEach((line,i)=>labelG.append(textNode(0,start+i*13,line,"nodeTitle")));
+  g.append(labelG);
 
   const childCount=childrenFor(token).length;
-  const meta=node.frontier?"FRONTIER":childCount?childCount+" NEXT":node.kind.toUpperCase();
-  g.append(textNode(0,lines.length>1?28:22,meta,"nodeMeta"));
+  const meta=challenged?"FALSIFIED":historical?"SUPERSEDED":node.frontier?"FRONTIER":childCount?childCount+" NEXT":node.kind.toUpperCase();
+  g.append(textNode(0,lines.length>1?24:18,meta,"nodeMeta"));
 
-  if(relation&&relation!=="category"){
-    const badge=mk("g",{class:"nodeRelation",transform:`translate(0 ${radius+18})`});
+  if(relation&&relation!=="category"&&!FALSE_EDGE_TYPES.has(relation)){
+    const badge=mk("g",{class:"nodeRelation",transform:`translate(0 ${radius+16})`});
     badge.append(mk("rect",{x:-37,y:-8,width:74,height:16,rx:8}));
+    badge.append(textNode(0,3,String(relation).replaceAll("_"," "),"nodeRelationText"));
+    g.append(badge);
+  }else if(FALSE_EDGE_TYPES.has(relation)){
+    const badge=mk("g",{class:"nodeRelation",transform:`translate(0 ${radius+16})`});
+    badge.append(mk("rect",{x:-42,y:-8,width:84,height:16,rx:8}));
     badge.append(textNode(0,3,String(relation).replaceAll("_"," "),"nodeRelationText"));
     g.append(badge);
   }
@@ -811,9 +905,13 @@ function drawKnowledgeNode(parent,node,p,token,isCurrent,role,onClick,relation="
   if(challenged)drawScar(g,radius);
 
   const title=mk("title");
-  title.textContent=node.label;
+  title.textContent=node.label+(challenged||historical?" — open for false-path story":"");
   g.append(title);
-  g.addEventListener("click",ev=>{ev.stopPropagation();onClick()});
+  g.addEventListener("click",ev=>{
+    ev.stopPropagation();
+    if(challenged||historical)selectedFalseEdge=null;
+    onClick();
+  });
   parent.append(g);
 }
 
@@ -890,7 +988,9 @@ function renderBreadcrumb(){
 
 function renderCaption(){
   if(!activePath.length){
-    mapCaption.innerHTML="<b>THE ATLAS</b><span>Ten great fields surround Human Knowledge. Pick one. The selected branch keeps unfolding outward for as many mapped layers as exist.</span>";
+    mapCaption.innerHTML=expandAll
+      ?"<b>EXPAND ALL</b><span>Next ring of every great field — frontiers glow purple; false paths trail amber→red.</span>"
+      :"<b>THE ATLAS</b><span>Ten great fields surround Human Knowledge. Use Expand All to see the mapped edge at once, or open a field and Expand Field.</span>";
     return;
   }
 
@@ -909,7 +1009,9 @@ function renderDetail(){
   const token=currentToken();
 
   if(!token){
-    detail.innerHTML='<div class="detailHero"><div class="eyebrow">HUMAN KNOWLEDGE</div><h2>Choose a great field</h2><p>The first screen is deliberately spacious. Pick a field and its immediate categories expand outward. Pick one of those and the next layer expands again.</p></div><section class="detailSection"><h3>THE RULE</h3><p>The atlas never switches to a second chart anymore. The branch itself is the chart.</p></section>';
+    detail.innerHTML='<div class="detailHero"><div class="eyebrow">HUMAN KNOWLEDGE</div><h2>'+(expandAll?'Frontier overview':'Choose a great field')+'</h2><p>'+(expandAll?'Every great field shows its next mapped ring. Purple dashed nodes are frontiers; amber→red ghost trails mark falsified or superseded routes.':'Pick a field, or use Expand All to see the edge of the current map at once.')+'</p><div class="detailActionRow"><button type="button" id="detailExpandAll">EXPAND ALL</button><button type="button" id="detailLens">'+(frontierLens?'LENS ON':'FRONTIER LENS')+'</button></div></div><section class="detailSection"><h3>HOW TO READ THE EDGE</h3><p><b>Solid</b> = mapped knowledge. <b>Dashed purple glow</b> = frontier. <b>Muted red / scarred</b> = falsified or historical. Click a false node for the story of why that path was tried.</p></section>';
+    detail.querySelector("#detailExpandAll")?.addEventListener("click",doExpandAll);
+    detail.querySelector("#detailLens")?.addEventListener("click",()=>{frontierLens=!frontierLens;syncExpandButtons();render();});
     return;
   }
 
@@ -917,8 +1019,15 @@ function renderDetail(){
     const f=familyById.get(token.id);
     const nodes=familyNodes(f.id);
     const children=childrenFor(token);
-    detail.innerHTML='<div class="detailHero"><div class="eyebrow">GREAT FIELD</div><h2>'+esc(f.short)+'</h2><p>'+esc(f.tagline)+'.</p><div class="numberGrid"><div class="numberBox"><b>'+nodes.length+'</b><span>mapped items</span></div><div class="numberBox"><b>'+nodes.filter(n=>n.frontier).length+'</b><span>frontiers</span></div><div class="numberBox"><b>'+children.length+'</b><span>next categories</span></div><div class="numberBox"><b>'+activePath.length+'</b><span>path depth</span></div></div></div><section class="detailSection"><h3>NEXT CATEGORIES</h3>'+children.map(({node})=>'<button class="nodeLink" data-child="'+esc(node.id)+'"><span>'+esc(node.label)+'</span><small>expand →</small></button>').join("")+'</section>';
+    const falseNodes=nodes.filter(n=>FALSE_STATUSES.has(n._status||n.status));
+    detail.innerHTML='<div class="detailHero"><div class="eyebrow">GREAT FIELD</div><h2>'+esc(f.short)+'</h2><p>'+esc(f.tagline)+'.</p><div class="numberGrid"><div class="numberBox"><b>'+nodes.length+'</b><span>mapped items</span></div><div class="numberBox"><b>'+nodes.filter(n=>n.frontier).length+'</b><span>frontiers</span></div><div class="numberBox"><b>'+children.length+'</b><span>next categories</span></div><div class="numberBox"><b>'+falseNodes.length+'</b><span>false paths</span></div></div><div class="detailActionRow"><button type="button" id="detailExpandField">EXPAND THIS FIELD</button><button type="button" id="detailHub">HUB</button></div></div><section class="detailSection"><h3>NEXT CATEGORIES</h3>'+children.map(({node})=>'<button class="nodeLink" data-child="'+esc(node.id)+'"><span>'+esc(node.label)+'</span><small>expand →</small></button>').join("")+'</section>'+(falseNodes.length?'<section class="detailSection"><h3>FALSE / SUPERSEDED IN THIS FIELD</h3>'+falseNodes.map(n=>'<button class="nodeLink" data-jump="'+esc(n.id)+'"><span>'+esc(n.label)+'</span><small>'+esc(n._status||n.status)+'</small></button>').join("")+'</section>':'');
     bindDetailChildren();
+    detail.querySelector("#detailExpandField")?.addEventListener("click",doExpandField);
+    detail.querySelector("#detailHub")?.addEventListener("click",goHub);
+    detail.querySelectorAll("[data-jump]").forEach(btn=>btn.addEventListener("click",()=>{
+      const n=nodeById.get(btn.dataset.jump);
+      if(n)activateSearchResult(n);
+    }));
     return;
   }
 
@@ -931,7 +1040,7 @@ function renderDetail(){
   const sources=n.sources||[];
   const reviews=reviewsByTarget.get(n.id)||[];
 
-  detail.innerHTML='<div class="detailHero"><div class="eyebrow">'+esc(f?.short||n.domain)+' · DEPTH '+Math.max(1,activePath.length-1)+'</div><h2>'+esc(n.label)+'</h2><span class="pill"><i style="background:'+statusColor+'"></i>'+esc(statusLabel)+'</span>'+(n.frontier?'<span class="pill">frontier</span>':'')+'<p>'+esc(n.summary||"No summary attached yet.")+'</p><div class="numberGrid"><div class="numberBox"><b>'+children.length+'</b><span>next branches</span></div><div class="numberBox"><b>'+incoming.length+'</b><span>incoming</span></div><div class="numberBox"><b>'+sources.length+'</b><span>sources</span></div><div class="numberBox"><b>'+reviews.length+'</b><span>reviews</span></div></div></div><section class="detailSection"><h3>NEXT MAPPED LAYER</h3>'+(children.length?children.map(({node,relation})=>'<button class="nodeLink" data-child="'+esc(node.id)+'"><span>'+esc(node.label)+'</span><small>'+esc(relation)+' →</small></button>').join(""):'<p class="coverageGap">'+(n.frontier?"This node is already a mapped frontier.":"The hierarchy currently ends here. Nemesis can fill the next layer without changing this renderer.")+'</p>')+'</section><section class="detailSection"><h3>PROVENANCE</h3>'+(sources.length?sources.slice(0,6).map(s=>'<p><a href="'+esc(s.url)+'" target="_blank" rel="noreferrer">'+esc(s.title||s.id)+'</a></p>').join(""):'<p>No source attached yet.</p>')+'</section>';
+  detail.innerHTML='<div class="detailHero"><div class="eyebrow">'+esc(f?.short||n.domain)+' · DEPTH '+Math.max(1,activePath.length-1)+'</div><h2>'+esc(n.label)+'</h2><span class="pill"><i style="background:'+statusColor+'"></i>'+esc(statusLabel)+'</span>'+(n.frontier?'<span class="pill">frontier</span>':'')+'<p>'+esc(n.summary||"No summary attached yet.")+'</p><div class="numberGrid"><div class="numberBox"><b>'+children.length+'</b><span>next branches</span></div><div class="numberBox"><b>'+incoming.length+'</b><span>incoming</span></div><div class="numberBox"><b>'+sources.length+'</b><span>sources</span></div><div class="numberBox"><b>'+reviews.length+'</b><span>reviews</span></div></div>'+falsePathStory(n)+'</div><section class="detailSection"><h3>NEXT MAPPED LAYER</h3>'+(children.length?children.map(({node,relation})=>'<button class="nodeLink" data-child="'+esc(node.id)+'"><span>'+esc(node.label)+'</span><small>'+esc(relation)+' →</small></button>').join(""):'<p class="coverageGap">'+(n.frontier?"This node is already a mapped frontier.":"The hierarchy currently ends here. Nemesis can fill the next layer without changing this renderer.")+'</p>')+'</section><section class="detailSection"><h3>PROVENANCE</h3>'+(sources.length?sources.slice(0,6).map(s=>'<p><a href="'+esc(s.url)+'" target="_blank" rel="noreferrer">'+esc(s.title||s.id)+'</a></p>').join(""):'<p>No source attached yet.</p>')+'</section>';
 
   bindDetailChildren();
 }
@@ -1047,13 +1156,363 @@ function showSearch(){
   }));
 }
 
-function bind(){
-  atlasBtn.addEventListener("click",()=>{
-    clearAtlasState();
+function syncExpandButtons(){
+  if(hubBtn){
+    hubBtn.classList.toggle("active",!activePath.length&&!expandAll);
+    hubBtn.classList.toggle("on",!activePath.length&&!expandAll);
+  }
+  if(expandAllBtn){
+    expandAllBtn.classList.toggle("on",expandAll);
+    expandAllBtn.setAttribute("aria-pressed",expandAll?"true":"false");
+  }
+  if(expandFieldBtn){
+    const can=!!(activePath[0]?.kind==="family");
+    expandFieldBtn.disabled=!can&&!expandFieldDeep;
+    expandFieldBtn.classList.toggle("on",expandFieldDeep);
+    expandFieldBtn.setAttribute("aria-pressed",expandFieldDeep?"true":"false");
+  }
+  if(frontierLensBtn){
+    frontierLensBtn.classList.toggle("on",frontierLens);
+    frontierLensBtn.setAttribute("aria-pressed",frontierLens?"true":"false");
+  }
+  document.body.classList.toggle("frontier-lens",frontierLens);
+}
+
+function observeLayout(){
+  const apply=()=>{
+    const w=mapShell?.clientWidth||window.innerWidth;
+    const h=mapShell?.clientHeight||window.innerHeight;
+    const next=w<820||h<560||window.innerWidth<900;
+    if(next===layoutCompact)return;
+    layoutCompact=next;
+    document.body.classList.toggle("layout-compact",layoutCompact);
+    if(compactList)compactList.hidden=!layoutCompact;
+    renderCompactList();
+  };
+  apply();
+  if(window.ResizeObserver&&mapShell){
+    const ro=new ResizeObserver(()=>apply());
+    ro.observe(mapShell);
+  }else{
+    window.addEventListener("resize",apply);
+  }
+}
+
+function renderCompactList(){
+  if(!compactList)return;
+  if(!layoutCompact){
+    compactList.hidden=true;
+    compactList.innerHTML="";
+    return;
+  }
+  compactList.hidden=false;
+  const selected=activePath[0]?.id||null;
+  compactList.innerHTML=FAMILIES.map(f=>{
+    const nodes=familyNodes(f.id);
+    const front=nodes.filter(n=>n.frontier).length;
+    const falseN=nodes.filter(n=>FALSE_STATUSES.has(n._status||n.status)).length;
+    return '<button class="fieldCard'+(selected===f.id?' active':'')+'" data-family="'+esc(f.id)+'" style="--fc:'+esc(f.color)+'">'+
+      '<span class="swatch" aria-hidden="true">'+esc(f.icon)+'</span>'+
+      '<span class="meta"><b>'+esc(f.short)+'</b><span>'+esc(f.tagline)+(falseN?' · '+falseN+' falsified/historical':'')+'</span></span>'+
+      '<span class="counts"><b>'+nodes.length+'</b>'+front+' frontier</span></button>';
+  }).join("");
+  compactList.querySelectorAll("[data-family]").forEach(btn=>btn.addEventListener("click",()=>{
+    expandAll=false;
+    expandFieldDeep=true;
+    activePath=[familyToken(btn.dataset.family)];
+    syncExpandButtons();
     render();
+  }));
+}
+
+function drawDeepFieldExpansion(parent,center){
+  const famToken=activePath[0];
+  if(!famToken||famToken.kind!=="family")return;
+  const f=familyById.get(famToken.id);
+  if(!f)return;
+  const majors=majorNodes(f);
+  const layouts=layoutChildren(famToken,majors.map(node=>({node,relation:"category"})));
+  const parentPos=polar(center.x,center.y,famToken.r,famToken.angle);
+
+  layouts.forEach(layout=>{
+    const childPos=polar(center.x,center.y,layout.r,layout.angle);
+    parent.append(mk("path",{d:curve(parentPos,childPos),class:"childAura reveal",stroke:f.color}));
+    parent.append(mk("path",{d:curve(parentPos,childPos),class:"childCore reveal",stroke:f.color}));
+    const childToken=nodeToken(layout.node,layout);
+    drawKnowledgeNode(parent,layout.node,childPos,childToken,false,"child",()=>{
+      expandFieldDeep=false;
+      activePath=[famToken,childToken];
+      syncExpandButtons();
+      render();
+    },"category");
+
+    // One more ring: up to 3 grandchildren per major so the field frontier pops.
+    const grand=childrenFor(childToken).slice(0,3);
+    grand.forEach((item,gi)=>{
+      const gspan=grand.length===1?0:.22;
+      const ga=layout.angle+(grand.length===1?0:-gspan/2+gi*(gspan/Math.max(1,grand.length-1)));
+      const gr=layout.r+110;
+      const gp=polar(center.x,center.y,gr,ga);
+      const isFalse=FALSE_STATUSES.has(item.node._status||item.node.status)||FALSE_EDGE_TYPES.has(item.relation);
+      parent.append(mk("path",{d:curve(childPos,gp),class:"childCore"+(isFalse?" falseTrail":""),stroke:isFalse?"#ff4d67":f.color}));
+      const gToken=nodeToken(item.node,{angle:ga,r:gr,relation:item.relation});
+      drawKnowledgeNode(parent,item.node,gp,gToken,false,"child",()=>{
+        expandFieldDeep=false;
+        activePath=[famToken,childToken,gToken];
+        syncExpandButtons();
+        render();
+      },item.relation);
+    });
+  });
+}
+
+function visibleNodeIds(center){
+  const ids=new Set();
+  if(activePath[0]?.kind==="family")ids.add("family:"+activePath[0].id);
+  for(const t of activePath){
+    if(t.kind==="node")ids.add(t.id);
+  }
+  const token=currentToken();
+  if(token&&!expandAll&&!expandFieldDeep){
+    for(const item of pageChildren(token).items)ids.add(item.node.id);
+  }
+  if(expandAll){
+    for(const f of FAMILIES){
+      for(const n of majorNodes(f))ids.add(n.id);
+    }
+  }
+  if(expandFieldDeep&&activePath[0]?.kind==="family"){
+    const f=familyById.get(activePath[0].id);
+    for(const n of majorNodes(f)){
+      ids.add(n.id);
+      for(const c of childrenFor(nodeToken(n,{angle:0,r:0})))ids.add(c.node.id);
+    }
+  }
+  // Always include falsified/historical in selected family so trails can attach.
+  const fam=activePath[0]?.id;
+  if(fam){
+    for(const n of familyNodes(fam)){
+      if(FALSE_STATUSES.has(n._status||n.status))ids.add(n.id);
+    }
+  }
+  return ids;
+}
+
+function nodePosOnMap(id,center){
+  for(const t of activePath){
+    if(t.kind==="node"&&t.id===id)return tokenPosition(t,center);
+  }
+  // Search expanded layouts
+  if(expandAll){
+    for(const f of FAMILIES){
+      const angle=familyAngles.get(f.id);
+      const majors=majorNodes(f);
+      const span=Math.min(.55,.12*majors.length);
+      majors.forEach((node,i)=>{
+        // handled below
+      });
+      for(let i=0;i<majors.length;i++){
+        if(majors[i].id!==id)continue;
+        const t=majors.length===1?0:-span/2+i*(span/Math.max(1,majors.length-1));
+        return polar(center.x,center.y,330+128,angle+t);
+      }
+    }
+  }
+  const token=currentToken();
+  if(token){
+    const layouts=layoutChildren(token,pageChildren(token).items);
+    for(const layout of layouts){
+      if(layout.node.id===id)return polar(center.x,center.y,layout.r,layout.angle);
+    }
+  }
+  if(expandFieldDeep&&activePath[0]?.kind==="family"){
+    const famToken=activePath[0];
+    const majors=majorNodes(familyById.get(famToken.id));
+    const layouts=layoutChildren(famToken,majors.map(node=>({node,relation:"category"})));
+    for(const layout of layouts){
+      if(layout.node.id===id)return polar(center.x,center.y,layout.r,layout.angle);
+      const childToken=nodeToken(layout.node,layout);
+      const grand=childrenFor(childToken).slice(0,3);
+      for(let gi=0;gi<grand.length;gi++){
+        if(grand[gi].node.id!==id)continue;
+        const gspan=grand.length===1?0:.22;
+        const ga=layout.angle+(grand.length===1?0:-gspan/2+gi*(gspan/Math.max(1,grand.length-1)));
+        return polar(center.x,center.y,layout.r+110,ga);
+      }
+    }
+  }
+  // Fallback: place false nodes on a ghost arc of their family
+  const node=nodeById.get(id);
+  if(!node)return null;
+  const f=familyById.get(node.domain);
+  if(!f)return null;
+  const a=familyAngles.get(f.id)||0;
+  return polar(center.x,center.y,455,a+0.18);
+}
+
+function drawFalsePathOverlays(parent,center){
+  const visible=visibleNodeIds(center);
+  const trails=[];
+
+  for(const e of model.edges){
+    if(!FALSE_EDGE_TYPES.has(e.type))continue;
+    // Show if either end is visible or either end is falsified in current family context
+    const s=nodeById.get(e.source),t=nodeById.get(e.target);
+    if(!s||!t)continue;
+    const relevant=visible.has(e.source)||visible.has(e.target)
+      ||FALSE_STATUSES.has(s._status||s.status)||FALSE_STATUSES.has(t._status||t.status);
+    if(!relevant)continue;
+    if(activePath[0]?.kind==="family"){
+      const fam=activePath[0].id;
+      if(s.domain!==fam&&t.domain!==fam&&!expandAll)continue;
+    }else if(!expandAll&&activePath.length){
+      continue;
+    }
+    trails.push(e);
+  }
+
+  // Also synthesize soft trails from invalidated → dependents via depends_on reverse
+  for(const n of model.nodes){
+    if(!FALSE_STATUSES.has(n._status||n.status))continue;
+    if(activePath[0]?.kind==="family"&&n.domain!==activePath[0].id&&!expandAll)continue;
+    for(const e of outgoingById.get(n.id)||[]){
+      if(!["depends_on","enabled","derived_from"].includes(e.type))continue;
+      trails.push({source:n.id,target:e.target,type:"depends_on",_ghostFromFalse:true});
+    }
+  }
+
+  const seen=new Set();
+  for(const e of trails){
+    const key=e.source+"|"+e.target+"|"+e.type;
+    if(seen.has(key))continue;
+    seen.add(key);
+    const a=nodePosOnMap(e.source,center);
+    const b=nodePosOnMap(e.target,center);
+    if(!a||!b)continue;
+    parent.append(mk("path",{d:curve(a,b),class:"falseTrailAura"}));
+    const path=mk("path",{d:curve(a,b),class:"falseTrail"});
+    parent.append(path);
+    const hit=mk("path",{d:curve(a,b),class:"falseTrailHit"});
+    hit.addEventListener("click",ev=>{
+      ev.stopPropagation();
+      selectedFalseEdge=e;
+      const focus=nodeById.get(FALSE_STATUSES.has((nodeById.get(e.target)?._status||""))?e.target:e.source)
+        ||nodeById.get(e.target)||nodeById.get(e.source);
+      if(focus)activateSearchResult(focus);
+      else renderDetail();
+    });
+    parent.append(hit);
+  }
+}
+
+function falsePathStory(node){
+  if(!node)return"";
+  const status=node._status||node.status;
+  if(!FALSE_STATUSES.has(status)&&status!=="disputed"&&!selectedFalseEdge)return"";
+
+  const why=node.summary||"No premise summary is attached yet.";
+  const dependents=[];
+  for(const e of outgoingById.get(node.id)||[]){
+    if(["depends_on","enabled","derived_from","supports"].includes(e.type)){
+      const d=nodeById.get(e.target);
+      if(d)dependents.push({node:d,relation:e.type});
+    }
+  }
+  // Also nodes that depend on this one (incoming depends_on where this is target)
+  for(const e of incomingById.get(node.id)||[]){
+    if(e.type==="depends_on"){
+      const d=nodeById.get(e.source);
+      if(d)dependents.push({node:d,relation:"built_on"});
+    }
+  }
+
+  const supersededBy=[];
+  for(const e of incomingById.get(node.id)||[]){
+    if(e.type==="supersedes"||e.type==="contradicts"){
+      const d=nodeById.get(e.source);
+      if(d)supersededBy.push({node:d,relation:e.type});
+    }
+  }
+  for(const e of outgoingById.get(node.id)||[]){
+    if(e.type==="supersedes"||e.type==="contradicts"){
+      const d=nodeById.get(e.target);
+      if(d)supersededBy.push({node:d,relation:e.type+" →"});
+    }
+  }
+
+  let html='<div class="storyCard"><h4>FALSE PATH STORY</h4>';
+  html+='<p class="storyWhy"><b>Why this route was tried:</b> '+esc(why)+'</p>';
+  if(dependents.length){
+    html+='<p><b>What was built on it:</b></p><ul>'+dependents.slice(0,8).map(d=>'<li>'+esc(d.node.label)+' <small>('+esc(d.relation.replaceAll("_"," "))+')</small></li>').join("")+'</ul>';
+  }else{
+    html+='<p><b>What was built on it:</b> No dependent nodes are linked yet in this map.</p>';
+  }
+  if(supersededBy.length){
+    html+='<p><b>What replaced or contradicted it:</b></p><ul>'+supersededBy.slice(0,8).map(d=>'<li>'+esc(d.node.label)+' <small>('+esc(d.relation.replaceAll("_"," "))+')</small></li>').join("")+'</ul>';
+  }else if(status==="invalidated"||status==="historical"){
+    html+='<p><b>What replaced or contradicted it:</b> Marked '+esc(status)+' in the atlas; no supersedes/contradicts edge is attached yet.</p>';
+  }
+  if(selectedFalseEdge){
+    html+='<p><small>Trail: '+esc(selectedFalseEdge.type.replaceAll("_"," "))+' · '+esc(selectedFalseEdge.source)+' → '+esc(selectedFalseEdge.target)+'</small></p>';
+  }
+  html+='</div>';
+  return html;
+}
+
+function goHub(){
+  expandAll=false;
+  expandFieldDeep=false;
+  frontierLens=false;
+  selectedFalseEdge=null;
+  clearAtlasState();
+  syncExpandButtons();
+  render();
+}
+
+function doExpandAll(){
+  expandAll=true;
+  expandFieldDeep=false;
+  selectedFalseEdge=null;
+  activePath=[];
+  syncExpandButtons();
+  render();
+}
+
+function doExpandField(){
+  if(!activePath.length){
+    // Expand the first field if none selected — better: require selection
+    // Keep hub but flash — choose Foundations as no-op message via caption
+  }
+  if(activePath[0]?.kind!=="family"){
+    if(activePath.length){
+      // truncate to family
+      activePath=activePath.slice(0,1);
+    }else{
+      mapCaption.innerHTML="<b>EXPAND FIELD</b><span>Select a great field first, then Expand Field unfolds its mapped branch.</span>";
+      return;
+    }
+  }
+  expandAll=false;
+  expandFieldDeep=true;
+  selectedFalseEdge=null;
+  syncExpandButtons();
+  render();
+}
+
+function bind(){
+  if(hubBtn)hubBtn.addEventListener("click",goHub);
+  if(expandAllBtn)expandAllBtn.addEventListener("click",doExpandAll);
+  if(expandFieldBtn)expandFieldBtn.addEventListener("click",doExpandField);
+  if(frontierLensBtn)frontierLensBtn.addEventListener("click",()=>{
+    frontierLens=!frontierLens;
+    syncExpandButtons();
   });
 
-  backBtn.addEventListener("click",stepBack);
+  backBtn.addEventListener("click",()=>{
+    if(expandAll){expandAll=false;syncExpandButtons();render();return;}
+    if(expandFieldDeep){expandFieldDeep=false;syncExpandButtons();render();return;}
+    stepBack();
+  });
   search.addEventListener("input",showSearch);
 
   document.addEventListener("click",e=>{
@@ -1072,6 +1531,8 @@ function bind(){
         results.hidden=true;
         return;
       }
+      if(frontierLens){frontierLens=false;syncExpandButtons();return;}
+      if(expandAll){expandAll=false;syncExpandButtons();render();return;}
       if(activePath.length)stepBack();
     }
   });

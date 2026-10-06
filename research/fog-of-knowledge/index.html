@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-<head>
+<head><script id="nemesis-atlas-shell-bounce">(function(){if(window.top!==window)return;var o="mikecreation",r="ZotBot",p="research/fog-of-knowledge";location.replace("/#github/atlas/"+encodeURIComponent(o)+"/"+encodeURIComponent(r)+"?path="+encodeURIComponent(p));})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Fog of Knowledge</title>
@@ -9,18 +9,21 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <style>html,body{background:#02040a}</style>
-<link rel="stylesheet" href="styles.css?v=0.7.2">
+<link rel="stylesheet" href="styles.css?v=0.8.0">
 </head>
 <body>
 <header class="topbar">
   <div class="brand">
     <small>OPEN KNOWLEDGE ATLAS</small>
     <h1>FOG OF KNOWLEDGE</h1>
-    <p>Follow any branch from Human Knowledge to the mapped frontier.</p>
+    <p>See the mapped edge of human knowledge — and the paths that failed.</p>
   </div>
 
   <nav class="viewnav" aria-label="Map navigation">
-    <button id="atlasBtn" class="viewBtn active">ATLAS</button>
+    <button id="hubBtn" class="viewBtn active" title="Return to Human Knowledge hub">HUB</button>
+    <button id="expandFieldBtn" class="viewBtn" title="Unfold the selected great field">EXPAND FIELD</button>
+    <button id="expandAllBtn" class="viewBtn" title="Unfold every great field's next ring">EXPAND ALL</button>
+    <button id="frontierLensBtn" class="viewBtn" title="Dim everything except frontiers and false paths" aria-pressed="false">FRONTIER LENS</button>
     <button id="backBtn" class="viewBtn" hidden>← ONE LEVEL</button>
     <div id="crumb" class="crumb" aria-label="Current knowledge path"></div>
   </nav>
@@ -37,6 +40,12 @@
   <div class="metric"><b id="nodeCount">0</b><span>mapped nodes</span></div>
   <div class="metric"><b id="fieldCount">10</b><span>great fields</span></div>
   <div class="metric frontierMetric"><b id="frontierCount">0</b><span>frontiers</span></div>
+  <div class="metric falseMetric"><b id="falseCount">0</b><span>false paths</span></div>
+  <div class="legendStrip" aria-hidden="true">
+    <span class="leg mapped">mapped</span>
+    <span class="leg frontier">frontier</span>
+    <span class="leg false">falsified</span>
+  </div>
 </section>
 
 <main>
@@ -55,19 +64,30 @@
           <feGaussianBlur stdDeviation="8" result="blur"/>
           <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
+        <filter id="falseGlow" x="-80%" y="-80%" width="260%" height="260%">
+          <feGaussianBlur stdDeviation="3.2" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
         <radialGradient id="coreFill">
-          <stop offset="0" stop-color="#ffffff" stop-opacity=".97"/>
-          <stop offset=".08" stop-color="#d9fbff" stop-opacity=".92"/>
-          <stop offset=".42" stop-color="#67dcff" stop-opacity=".23"/>
+          <stop offset="0" stop-color="#ffffff" stop-opacity=".98"/>
+          <stop offset=".1" stop-color="#d9fbff" stop-opacity=".9"/>
+          <stop offset=".45" stop-color="#67dcff" stop-opacity=".22"/>
           <stop offset="1" stop-color="#67dcff" stop-opacity="0"/>
         </radialGradient>
+        <linearGradient id="falseGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0" stop-color="#ffc857" stop-opacity=".85"/>
+          <stop offset="1" stop-color="#ff4d67" stop-opacity=".95"/>
+        </linearGradient>
+        <clipPath id="orbClip"><circle r="70"/></clipPath>
       </defs>
       <g id="scene"></g>
     </svg>
 
+    <div id="compactList" class="compactList" hidden aria-label="Great fields list"></div>
+
     <div id="mapCaption" class="mapCaption">
       <b>THE ATLAS</b>
-      <span>Choose a great field. Every click reveals the next mapped layer without leaving this canvas.</span>
+      <span>Choose a great field. Expand Field / Expand All reveals the mapped frontier at a glance.</span>
     </div>
   </section>
 
@@ -113,6 +133,6 @@
   } catch (_) {}
 })();
 </script>
-<script type="module" src="app.js?v=0.7.2"></script>
+<script type="module" src="app.js?v=0.8.0"></script>
 </body>
 </html>

@@ -1165,3 +1165,338 @@ main{
   transition:none!important;
   animation:none!important;
 }
+
+
+/* =========================================================
+   v0.8 VISUAL OVERHAUL — readability, expand modes, false paths
+   ========================================================= */
+
+:root{
+  --min-readable:13px;
+  --orb-pad:14px;
+}
+
+body.layout-compact{
+  overflow:auto;
+}
+
+body.layout-compact main{
+  height:auto;
+  min-height:calc(100vh - 170px);
+  grid-template-columns:1fr;
+  overflow:auto;
+}
+
+body.layout-compact #graph{
+  display:none;
+}
+
+body.layout-compact #compactList{
+  display:flex;
+  position:relative;
+  z-index:6;
+  flex-direction:column;
+  gap:10px;
+  padding:16px 18px 88px;
+  overflow:auto;
+  height:auto;
+  min-height:calc(100vh - 280px);
+}
+
+body.layout-compact #mapShell{
+  height:auto;
+  min-height:0;
+  overflow:auto;
+}
+
+body.layout-compact .detail{
+  border-left:0;
+  border-top:1px solid var(--line);
+  min-height:280px;
+  font-size:var(--min-readable);
+}
+
+body.layout-compact .mapCaption{
+  position:static;
+  margin:0 16px 16px;
+  max-width:none;
+}
+
+body.layout-compact .topbar{
+  height:auto;
+  grid-template-columns:1fr;
+  gap:10px;
+  padding:14px 16px;
+}
+
+body.layout-compact .viewnav{
+  flex-wrap:wrap;
+  justify-content:flex-start;
+  max-width:100%;
+}
+
+body.layout-compact .brand h1{font-size:22px}
+body.layout-compact .brand p{font-size:12px}
+body.layout-compact .metric span{font-size:10px}
+body.layout-compact .viewBtn{font-size:11px;padding:8px 10px}
+
+#compactList[hidden]{display:none!important}
+
+.compactList{
+  display:none;
+}
+
+.fieldCard{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:12px;
+  align-items:center;
+  border:1px solid #ffffff16;
+  border-radius:14px;
+  background:linear-gradient(135deg,rgba(12,20,34,.94),rgba(7,12,22,.92));
+  padding:14px 16px;
+  cursor:pointer;
+  text-align:left;
+  color:inherit;
+  width:100%;
+  box-shadow:inset 0 1px rgba(255,255,255,.04);
+  min-height:72px;
+}
+
+.fieldCard:hover{
+  border-color:#73e8ff55;
+  background:linear-gradient(135deg,rgba(18,32,52,.96),rgba(8,14,26,.94));
+}
+
+.fieldCard.active{
+  border-color:#73e8ff77;
+  box-shadow:0 0 0 1px #73e8ff33, inset 0 1px rgba(255,255,255,.06);
+}
+
+.fieldCard .swatch{
+  width:42px;height:42px;border-radius:50%;
+  display:grid;place-items:center;
+  font-size:18px;color:#fff;
+  border:2px solid rgba(255,255,255,.2);
+  box-shadow:0 0 18px color-mix(in srgb, var(--fc, #73e8ff) 35%, transparent);
+  background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.35),transparent 55%), color-mix(in srgb, var(--fc,#73e8ff) 28%, #0a1422);
+}
+
+.fieldCard .meta b{
+  display:block;
+  font-size:15px;
+  letter-spacing:.02em;
+  margin-bottom:2px;
+}
+
+.fieldCard .meta span{
+  font-size:12px;
+  color:#93a0b8;
+  line-height:1.4;
+}
+
+.fieldCard .counts{
+  text-align:right;
+  font-size:12px;
+  color:#a9b6ce;
+  white-space:nowrap;
+}
+
+.fieldCard .counts b{display:block;font-size:16px;color:#e8f4ff}
+
+.viewBtn[aria-pressed="true"],
+.viewBtn.on{
+  border-color:#73e8ff66;
+  background:#73e8ff18;
+  color:#bdf4ff;
+}
+
+.falseMetric b{color:#ff8fa0}
+.legendStrip{
+  display:flex;gap:10px;align-items:center;margin-left:auto;
+}
+.legendStrip .leg{
+  font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#8391ab;
+  display:inline-flex;align-items:center;gap:5px;
+}
+.legendStrip .leg::before{
+  content:"";width:10px;height:10px;border-radius:50%;border:1.5px solid currentColor;
+}
+.legendStrip .leg.mapped::before{border-color:#65f5b0;background:#65f5b033}
+.legendStrip .leg.frontier::before{border-color:#c497ff;border-style:dashed;background:#c497ff22;box-shadow:0 0 8px #c497ff55}
+.legendStrip .leg.false::before{border-color:#ff4d67;background:#ff4d6733}
+
+/* Softer orb chrome — labels stay clipped inside the disc */
+.domainGroup .disc{
+  fill:url(#orbDiscFill);
+  fill:rgba(6,14,26,.97);
+  stroke-width:2.4;
+  filter:drop-shadow(0 4px 14px rgba(0,0,0,.35));
+}
+
+.domainGroup .halo{
+  opacity:.16;
+}
+
+.domainTitle{
+  font-size:13.5px;
+  font-weight:850;
+  letter-spacing:.04em;
+  stroke-width:3.5px;
+}
+
+.domainIcon{
+  font-size:22px;
+  opacity:.95;
+}
+
+.domainCount,.domainHint{
+  font-size:9px;
+}
+
+.externalLabel{
+  pointer-events:none;
+}
+.externalLabel rect{
+  fill:rgba(5,10,18,.88);
+  stroke:rgba(255,255,255,.12);
+  stroke-width:1;
+}
+.externalLabel text{
+  fill:#e8f0ff;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.06em;
+  text-anchor:middle;
+}
+
+.knowledgeNode .disc{
+  fill:rgba(6,14,26,.97);
+  stroke-width:2.2;
+}
+
+.nodeTitle{
+  font-size:12.5px;
+  stroke-width:3.2px;
+}
+
+/* Frontier / false / mapped distinction */
+.knowledgeNode.frontier .disc{
+  stroke:#c497ff;
+  stroke-width:2.8;
+  stroke-dasharray:5 4;
+  filter:url(#softGlow);
+}
+
+body.frontier-lens .domainGroup:not(.frontierish),
+body.frontier-lens .atlasBranch:not(.frontierish),
+body.frontier-lens .knowledgeNode:not(.frontier):not(.invalidated):not(.historical):not(.falsePath),
+body.frontier-lens .pathCore:not(.falseTrail),
+body.frontier-lens .childCore:not(.falseTrail){
+  opacity:.14!important;
+}
+
+body.frontier-lens .knowledgeNode.frontier,
+body.frontier-lens .knowledgeNode.invalidated,
+body.frontier-lens .knowledgeNode.historical,
+body.frontier-lens .falseTrail,
+body.frontier-lens .falsePath{
+  opacity:1!important;
+}
+
+.falseTrail{
+  fill:none;
+  stroke:url(#falseGrad);
+  stroke-width:2.6;
+  stroke-dasharray:7 6;
+  opacity:.78;
+  filter:url(#falseGlow);
+  stroke-linecap:round;
+}
+.falseTrailAura{
+  fill:none;
+  stroke:#ff4d67;
+  stroke-width:12;
+  opacity:.07;
+  stroke-linecap:round;
+}
+.falseTrailHit{
+  fill:none;
+  stroke:transparent;
+  stroke-width:18;
+  cursor:pointer;
+}
+
+.knowledgeNode.historical .disc,
+.knowledgeNode.invalidated .disc{
+  stroke:#ff4d67!important;
+  opacity:.92;
+}
+.knowledgeNode.historical{
+  opacity:.72;
+}
+.knowledgeNode.historical .disc{
+  stroke-dasharray:3 4;
+}
+
+.storyCard{
+  border:1px solid #ff4d6744;
+  border-radius:12px;
+  background:linear-gradient(180deg,rgba(255,77,103,.08),rgba(255,200,87,.04));
+  padding:12px 13px;
+  margin-top:10px;
+}
+.storyCard h4{
+  margin:0 0 6px;
+  font-size:11px;
+  letter-spacing:.14em;
+  color:#ff9aa8;
+}
+.storyCard p,.storyCard li{
+  font-size:12.5px;
+  line-height:1.55;
+  color:#d5dceb;
+}
+.storyCard ul{margin:6px 0 0;padding-left:16px}
+.storyCard .storyWhy{color:#ffd59a}
+
+.detailActionRow{
+  display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;
+}
+.detailActionRow button{
+  appearance:none;
+  border:1px solid #ffffff1c;
+  background:#ffffff08;
+  color:#d7e6ff;
+  border-radius:9px;
+  padding:8px 10px;
+  font-size:11px;
+  letter-spacing:.06em;
+  cursor:pointer;
+}
+.detailActionRow button:hover{border-color:#73e8ff55;color:#bdf4ff}
+
+/* Fullscreen: fill useful space, no giant empty bands */
+#mapShell{
+  min-height:0;
+}
+#graph{
+  width:100%;
+  height:100%;
+}
+
+@media(max-width:1150px){
+  .legendStrip{display:none}
+  .metric{display:flex}
+  .metric span{font-size:10px}
+}
+
+@media(max-width:900px),(max-height:640px){
+  /* JS toggles layout-compact; CSS reinforces readable type */
+  .detail p,.detail li,.fieldCard .meta span{font-size:var(--min-readable)}
+  .detail h2{font-size:22px}
+}
+
+/* Hub fills canvas — reduce dead padding feel */
+.fogRing{stroke-width:18}
+.knowledgeCore .ring{stroke-width:2.2}
