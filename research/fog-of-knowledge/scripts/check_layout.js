@@ -115,10 +115,7 @@ function flatten(t,depth=0,parent=null,out=[]){
   return out;
 }
 function vr(e){return e.tree.kind==="family"?74:(e.depth<=1?34:30)}
-function footprint(e){
-  const label=e.tree.kind==="family"?e.tree.id:e.tree.node.label;
-  return Math.max(vr(e)+10,Math.min(64,Math.max(24,String(label).length*2.7))+8);
-}
+function footprint(e){return vr(e)+12}
 function ad(a,b){let d=Math.abs(a-b)%TAU;return d>Math.PI?TAU-d:d}
 function reqRadius(entries,wrap){
   if(entries.length<2)return 0;
@@ -165,23 +162,54 @@ function expectedReachable(domain,rootNodes){
   return seen;
 }
 
+function familySectorBounds(index){
+  const sector=TAU/FAMILIES.length,mid=-Math.PI/2+index*sector,margin=.14;
+  return {start:mid-sector/2+margin,end:mid+sector/2-margin,mid};
+}
+function pack(entries,start,end,startRow,gap){
+  const sorted=[...entries].sort((a,b)=>a.tree.angle-b.tree.angle||a.tree.key.localeCompare(b.tree.key));
+  let cursor=0,row=startRow;
+  const sweep=Math.max(.08,end-start);
+  while(cursor<sorted.length){
+    const r=330+row*gap;
+    const rem=sorted.slice(cursor);
+    const maxR=Math.max(...rem.map(vr));
+    const minCenter=maxR*2+CLEAR;
+    const capacity=Math.max(1,Math.floor(Math.max(minCenter,r*sweep)/minCenter));
+    const chunk=rem.slice(0,capacity),count=chunk.length;
+    chunk.forEach((e,i)=>{
+      e.rowIndex=row;e.r=r;
+      e.tree.angle=count===1?(start+end)/2:start+(i+.5)*(sweep/count);
+    });
+    cursor+=count;row++;
+  }
+  return row;
+}
+
 function build(){
   const items=[];
   const familyTrees=[];
-  const sector=TAU/FAMILIES.length,margin=.045;
+  let gap=150;
+
   FAMILIES.forEach(([domain,labels],i)=>{
     const built=buildFamily(domain,labels);
-    const mid=-Math.PI/2+i*sector;
-    assignAngles(built.tree,mid-sector/2+margin,mid+sector/2-margin);
+    const sector=familySectorBounds(i);
+    assignAngles(built.tree,sector.start,sector.end);
     const flat=flatten(built.tree);
+    flat[0].rowIndex=0;flat[0].r=330;flat[0].tree.angle=sector.mid;
+    let row=1;
+    const maxDepth=Math.max(...flat.map(x=>x.depth));
+    for(let depth=1;depth<=maxDepth;depth++){
+      const level=flat.filter(x=>x.depth===depth);
+      if(level.length)row=pack(level,sector.start,sector.end,row,gap);
+    }
     items.push(...flat);
     familyTrees.push({domain,labels,tree:built.tree,flat});
   });
-  let gap=gapFor(items);
 
   function place(){
     for(const e of items){
-      e.r=330+e.depth*gap;e.radius=vr(e);e.fp=footprint(e);
+      e.r=330+(e.rowIndex||0)*gap;e.radius=vr(e);e.fp=footprint(e);
       Object.assign(e,polar(e.r,e.tree.angle));
     }
   }
@@ -193,7 +221,7 @@ function build(){
     for(let i=0;i<cs.length;i++)for(let j=i+1;j<cs.length;j++)if(overlap(cs[i],cs[j]))n++;
     return n;
   }
-  for(let i=0;i<28&&overlapCount();i++){gap=Math.ceil(gap*1.12/10)*10;place()}
+  for(let i=0;i<28&&overlapCount();i++){gap=Math.ceil(gap*1.12/5)*5;place()}
   if(overlapCount())throw new Error("circle-overlap invariant failed");
 
   const circles=items.map(e=>({x:e.x,y:e.y,r:e.radius+7,key:e.tree.key})).concat([{x:800,y:500,r:104,key:"core"}]);
