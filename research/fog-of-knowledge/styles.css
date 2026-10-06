@@ -782,3 +782,369 @@ main{
   #mapShell{height:68vh;min-height:560px}
   .crumb{max-width:70vw}
 }
+
+
+/* =========================================================
+   v0.7 MAJESTY PASS
+   Static visual depth only. No perpetual animation.
+   ========================================================= */
+
+#mapShell{
+  background:
+    radial-gradient(circle at 50% 48%,rgba(33,79,116,.23) 0,rgba(8,19,34,.12) 26%,transparent 55%),
+    radial-gradient(circle at 20% 12%,rgba(111,74,171,.11) 0,transparent 27%),
+    radial-gradient(circle at 82% 82%,rgba(35,128,114,.09) 0,transparent 25%),
+    linear-gradient(180deg,#02050b 0%,#030711 48%,#02040a 100%);
+}
+
+#mapShell::before{
+  content:"";
+  position:absolute;
+  inset:-10%;
+  pointer-events:none;
+  z-index:1;
+  opacity:.18;
+  background:
+    repeating-radial-gradient(circle at 50% 50%,transparent 0 79px,rgba(159,222,255,.08) 80px,transparent 81px 158px),
+    repeating-conic-gradient(from 0deg at 50% 50%,rgba(174,226,255,.09) 0 .18deg,transparent .18deg 10deg);
+  -webkit-mask-image:radial-gradient(circle at 50% 50%,black 0 58%,transparent 88%);
+  mask-image:radial-gradient(circle at 50% 50%,black 0 58%,transparent 88%);
+}
+
+#mapShell::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:2;
+  background:
+    linear-gradient(90deg,transparent 49.93%,rgba(126,216,255,.025) 50%,transparent 50.07%),
+    linear-gradient(0deg,transparent 49.93%,rgba(126,216,255,.02) 50%,transparent 50.07%),
+    radial-gradient(circle at 50% 50%,transparent 0 64%,rgba(1,3,9,.50) 92%,rgba(0,0,0,.76) 100%);
+}
+
+.stars{
+  opacity:.5;
+  filter:drop-shadow(0 0 2px rgba(164,230,255,.16));
+}
+
+.starsB{opacity:.12}
+
+.detail{
+  background:
+    linear-gradient(180deg,rgba(9,16,29,.97),rgba(5,10,19,.96)),
+    radial-gradient(circle at 50% 0,rgba(115,232,255,.06),transparent 32%);
+  box-shadow:inset 1px 0 rgba(255,255,255,.025);
+}
+
+.mapCaption{
+  border-color:rgba(149,225,255,.12);
+  background:linear-gradient(180deg,rgba(6,13,24,.9),rgba(4,8,16,.86));
+  box-shadow:
+    0 18px 44px rgba(0,0,0,.34),
+    inset 0 1px rgba(255,255,255,.035);
+}
+
+/* Human Knowledge becomes the visual monument. */
+.knowledgeCore .halo{
+  opacity:.92;
+}
+
+.coreCrown{
+  fill:none;
+  stroke:rgba(159,237,255,.23);
+  stroke-width:1.3;
+  stroke-dasharray:2 8;
+}
+
+.coreInner{
+  fill:none;
+  stroke:rgba(255,255,255,.08);
+  stroke-width:1;
+}
+
+.coreRay{
+  stroke:rgba(168,235,255,.28);
+  stroke-width:1.2;
+}
+
+.knowledgeCore .ring{
+  fill:rgba(4,14,26,.95);
+  stroke:rgba(164,239,255,.66);
+  stroke-width:2;
+  filter:url(#softGlow);
+}
+
+.knowledgeCore .ring2{
+  stroke:rgba(210,249,255,.24);
+  stroke-width:1.4;
+  stroke-dasharray:2 9;
+}
+
+.coreTitle{
+  font-size:29px;
+  letter-spacing:.095em;
+  text-shadow:0 0 16px rgba(157,238,255,.24);
+}
+
+.coreSub{
+  fill:#98b8cd;
+  letter-spacing:.18em;
+}
+
+.coreCount{
+  fill:#b0f3ff;
+}
+
+/* Every great field gets a different engraved visual language. */
+.familyMotif{
+  opacity:.19;
+  pointer-events:none;
+}
+
+.familyMotif *{
+  stroke-width:1.3;
+  vector-effect:non-scaling-stroke;
+}
+
+.familyMotif circle[fill]:not([fill="none"]){
+  opacity:.6;
+}
+
+.domainGroup .halo{
+  opacity:.12;
+}
+
+.domainGroup .disc{
+  fill:
+    rgba(7,15,27,.96);
+  stroke-width:2.15;
+}
+
+.domainGroup .ring{
+  opacity:.66;
+  stroke-dasharray:2 6;
+}
+
+.domainGroup.selected .halo{
+  opacity:.34;
+}
+
+.domainGroup.selected .ring{
+  opacity:.92;
+}
+
+.domainGroup.selected .familyMotif{
+  opacity:.34;
+}
+
+.domainGroup.dim{
+  opacity:.095;
+}
+
+.domainTitle{
+  font-size:18px;
+  letter-spacing:.012em;
+  stroke-width:2.8px;
+}
+
+.domainIcon{
+  opacity:.92;
+  filter:drop-shadow(0 0 5px rgba(255,255,255,.15));
+}
+
+/* The selected field owns a faint illuminated realm. */
+.activeRealm{
+  opacity:.038;
+  filter:url(#softGlow);
+}
+
+/* Knowledge arteries: layered, luminous, quieter with age. */
+.pathAura,
+.childAura{
+  fill:none;
+  stroke-width:22;
+  opacity:.04;
+  stroke-linecap:round;
+}
+
+.pathGlow,
+.childGlow{
+  stroke-linecap:round;
+}
+
+.pathCore,
+.childCore{
+  stroke-linecap:round;
+}
+
+.pathCore{
+  stroke-width:3.8;
+}
+
+.childCore{
+  stroke-width:2.15;
+}
+
+.pathAge1{opacity:.7}
+.pathAge2{opacity:.43}
+.pathAge3{opacity:.24}
+
+.arteryJunction{
+  opacity:.85;
+  filter:url(#softGlow);
+}
+
+.arteryJunctionRing{
+  opacity:.22;
+  stroke-width:1.1;
+}
+
+.knowledgeNode.ancestorAge1{opacity:.78}
+.knowledgeNode.ancestorAge2{opacity:.56}
+.knowledgeNode.ancestorAge3{opacity:.36}
+
+.knowledgeNode.current{
+  opacity:1!important;
+}
+
+.knowledgeNode.current .halo{
+  opacity:.38;
+}
+
+.knowledgeNode.current .disc{
+  stroke-width:4.1;
+}
+
+.knowledgeNode.current::after{
+  content:"";
+}
+
+.nodeTitle{
+  font-size:15.5px;
+  letter-spacing:.006em;
+  stroke-width:3px;
+}
+
+.nodeMeta{
+  fill:#9daac0;
+}
+
+/* Invalidated knowledge looks scarred rather than merely crossed out. */
+.scarMain{
+  fill:none;
+  stroke:#ff4d67;
+  stroke-width:4;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  filter:drop-shadow(0 0 5px rgba(255,77,103,.35));
+}
+
+.scarBranch{
+  stroke:#ff4d67;
+  stroke-width:2.2;
+  stroke-linecap:round;
+  opacity:.82;
+}
+
+.knowledgeNode.invalidated .halo{
+  fill:#ff4d67!important;
+  opacity:.09;
+}
+
+.knowledgeNode.review .halo{
+  fill:#ffc857!important;
+  opacity:.06;
+}
+
+/* Frontier should feel like knowledge dissolving into the unmapped. */
+.frontierMarker{
+  pointer-events:none;
+}
+
+.fogBloom{
+  fill:rgba(165,126,255,.035);
+  stroke:rgba(197,166,255,.10);
+  stroke-width:18;
+  stroke-dasharray:1 13;
+}
+
+.fogBloomInner{
+  fill:rgba(167,132,255,.045);
+  stroke:rgba(205,183,255,.13);
+  stroke-width:9;
+  stroke-dasharray:2 9;
+}
+
+.fogParticle{
+  fill:#cab6ff;
+  opacity:.3;
+}
+
+.frontierMarker .fogDisc{
+  fill:rgba(16,12,30,.70);
+  stroke:rgba(199,166,255,.30);
+  stroke-width:13;
+  stroke-dasharray:1 9;
+}
+
+.frontierMarker .fogRingSmall{
+  fill:rgba(6,7,16,.92);
+  stroke:rgba(208,184,255,.65);
+  stroke-width:1.7;
+  stroke-dasharray:3 5;
+}
+
+.fogWisp{
+  fill:none;
+  stroke:rgba(205,184,255,.34);
+  stroke-width:1.4;
+  stroke-linecap:round;
+}
+
+.fogWisp.secondary{
+  opacity:.45;
+}
+
+.frontierTitle{
+  font-size:10px;
+  letter-spacing:.11em;
+}
+
+.frontierSub{
+  fill:#a491bf;
+  font-size:7.5px;
+}
+
+/* Subtle reveal only when a new layer is rendered. */
+.knowledgeNode.reveal,
+.frontierMarker.reveal{
+  animation:fogReveal .22s ease-out;
+  transform-box:fill-box;
+  transform-origin:center;
+}
+
+@keyframes fogReveal{
+  from{opacity:0}
+  to{opacity:1}
+}
+
+@media (prefers-reduced-motion: reduce){
+  .knowledgeNode.reveal,
+  .frontierMarker.reveal{
+    animation:none;
+  }
+}
+
+/* Polished controls */
+.viewBtn,.github,.searchWrap input{
+  box-shadow:inset 0 1px rgba(255,255,255,.025);
+}
+
+.viewBtn:hover,.github:hover{
+  background:rgba(115,232,255,.075);
+}
+
+.crumbBtn.current{
+  text-shadow:0 0 10px rgba(115,232,255,.24);
+}
