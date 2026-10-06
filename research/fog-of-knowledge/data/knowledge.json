@@ -1417,6 +1417,12 @@
           "title": "New DESI DR2 Lyman-alpha Results Shed Light on Dark Energy",
           "url": "https://www.desi.lbl.gov/2026/07/30/new-desi-dr2-lyman-alpha-results-shed-light-on-dark-energy/",
           "kind": "collaboration"
+        },
+        {
+          "id": "lvk-o4b-cosmology",
+          "title": "Latest constraints on cosmic expansion and general relativity with gravitational waves",
+          "url": "https://ligo.org/science-summaries/o4b_cosmology/",
+          "kind": "collaboration"
         }
       ],
       "tags": [],
@@ -1489,7 +1495,7 @@
       "domain": "physical",
       "era": "frontier",
       "status": "active",
-      "summary": "Standard-ruler technique using the characteristic clustering scale left by early-universe acoustic waves to constrain cosmic expansion.",
+      "summary": "Standard-ruler technique using the characteristic clustering scale inherited from early-universe acoustic waves to constrain cosmic expansion.",
       "sources": [
         {
           "id": "desi-dr2-guide",
@@ -1513,7 +1519,7 @@
       "domain": "physical",
       "era": "frontier",
       "status": "active",
-      "summary": "Cosmological BAO measurements and constraints derived from DESI's first three survey years.",
+      "summary": "Cosmological baryon-acoustic-oscillation measurements and constraints derived from DESI's first three survey years.",
       "sources": [
         {
           "id": "desi-dr2",
@@ -1625,7 +1631,7 @@
       "domain": "physical",
       "era": "frontier",
       "status": "active",
-      "summary": "The September 14, 2015 gravitational-wave event associated with a binary black-hole merger and detected by the two Advanced LIGO observatories.",
+      "summary": "First directly detected gravitational-wave event, associated with a binary black-hole merger.",
       "sources": [
         {
           "id": "ligo-gw150914",
@@ -1672,6 +1678,12 @@
           "title": "Fundamental Physical Constants",
           "url": "https://www.nist.gov/pml/fundamental-physical-constants",
           "kind": "standards-body"
+        },
+        {
+          "id": "nist-codata-2022",
+          "title": "CODATA Recommended Values of the Fundamental Physical Constants: 2022",
+          "url": "https://www.nist.gov/publications/codata-recommended-values-fundamental-physical-constants-2022",
+          "kind": "standards-body"
         }
       ],
       "tags": [],
@@ -1685,13 +1697,73 @@
       "domain": "physical",
       "era": "frontier",
       "status": "active",
-      "summary": "High-precision measurement science linking experimental quantities to stable standards and fundamental constants.",
+      "summary": "High-precision measurement science linking physical quantities to stable standards and fundamental constants.",
       "sources": [
         {
           "id": "nist-si-units",
           "title": "SI Units",
           "url": "https://www.nist.gov/pml/owm/metric-si/si-units",
           "kind": "standards-body"
+        }
+      ],
+      "tags": [],
+      "aliases": [],
+      "frontier": false
+    },
+    {
+      "id": "physical.general-relativity",
+      "label": "General relativity",
+      "kind": "theory",
+      "domain": "physical",
+      "era": "twentieth",
+      "status": "active",
+      "summary": "Einsteinian theory in which gravitation is described through dynamical spacetime geometry.",
+      "sources": [
+        {
+          "id": "lvk-o4b-tgr-2026",
+          "title": "Testing general relativity with the latest and loudest compact binary merger observations",
+          "url": "https://ligo.org/science-summaries/o4b_tgr/",
+          "kind": "collaboration"
+        }
+      ],
+      "tags": [],
+      "aliases": [],
+      "frontier": false
+    },
+    {
+      "id": "physical.gw250114",
+      "label": "GW250114",
+      "kind": "dataset",
+      "domain": "physical",
+      "era": "frontier",
+      "status": "active",
+      "summary": "Exceptionally loud 2025 binary-black-hole gravitational-wave signal used for stringent strong-field tests of general relativity.",
+      "sources": [
+        {
+          "id": "ligo-gw250114-gr",
+          "title": "Exceptional tests of general relativity with GW250114",
+          "url": "https://ligo.org/exceptional-tests-of-general-relativity-with-gw250114/",
+          "kind": "collaboration"
+        }
+      ],
+      "tags": [],
+      "aliases": [],
+      "frontier": false
+    },
+    {
+      "id": "physical.gwtc5-cosmology-gr",
+      "label": "GWTC-5 cosmology and gravity constraints",
+      "kind": "dataset",
+      "domain": "physical",
+      "era": "frontier",
+      "status": "active",
+      "summary": "Gravitational-wave catalog analysis using 236 detections to constrain cosmic expansion and test gravitational-wave propagation under general relativity.",
+      "sources": [
+        {
+          "id": "lvk-o4b-cosmology",
+          "title": "Latest constraints on cosmic expansion and general relativity with gravitational waves",
+          "url": "https://ligo.org/science-summaries/o4b_cosmology/",
+          "kind": "collaboration"
         }
       ],
       "tags": [],
@@ -2271,6 +2343,36 @@
       "source": "physical.des-y6-dark-energy",
       "target": "physical.dark-energy",
       "type": "supports"
+    },
+    {
+      "source": "physical.general-relativity",
+      "target": "field.physics",
+      "type": "related"
+    },
+    {
+      "source": "physical.gravitational-wave-interferometry",
+      "target": "physical.general-relativity",
+      "type": "tests"
+    },
+    {
+      "source": "physical.gw150914",
+      "target": "physical.general-relativity",
+      "type": "supports"
+    },
+    {
+      "source": "physical.gw250114",
+      "target": "physical.general-relativity",
+      "type": "tests"
+    },
+    {
+      "source": "physical.gwtc5-cosmology-gr",
+      "target": "physical.general-relativity",
+      "type": "tests"
+    },
+    {
+      "source": "physical.gwtc5-cosmology-gr",
+      "target": "field.cosmology",
+      "type": "related"
     }
   ],
   "reviews": [
