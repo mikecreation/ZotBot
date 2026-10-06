@@ -29,6 +29,10 @@ jobs:
         working-directory: research/fog-of-knowledge
         run: node --check app.js
 
+      - name: Enforce atlas geometry invariants
+        working-directory: research/fog-of-knowledge
+        run: node scripts/check_layout.js
+
       - name: Generate Nemesis context packet
         working-directory: research/fog-of-knowledge
         run: |
