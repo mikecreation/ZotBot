@@ -1023,7 +1023,6 @@ function render(){
 
   fittedViewport=readViewport();
   if(viewportOverride)writeViewport(viewportOverride);
-  updateLabelVisibility();
   renderBreadcrumb();
   renderDetail();
   augmentEvidenceDetails();
@@ -1125,16 +1124,14 @@ function drawFamilies(parent,center,ringR){
     // Clip motif + in-orb text so nothing bleeds onto the border.
     const clipped=mk("g",{});
     const cp=mk("clipPath",{id:"clip-"+f.id});
-    cp.append(mk("circle",{r:discR-8}));
+    cp.append(mk("circle",{r:discR-1}));
     g.append(cp);
     clipped.setAttribute("clip-path","url(#clip-"+f.id+")");
     drawFamilyMotif(clipped,f);
-    clipped.append(textNode(0,-50,f.icon,"domainIcon"));
     const familyLabel=mk("g",{class:"insideFamilyLabel"});
     familyLabel.dataset.label=f.title;
-    setInsideCircleLabel(familyLabel,f.title,discR*.74);
+    setInsideCircleLabel(familyLabel,f.title,discR);
     clipped.append(familyLabel);
-    clipped.append(textNode(0,56,nodes.length.toLocaleString()+" · "+front+"F","domainCount"));
     g.append(clipped);
 
     g.append(textNode(0,discR+36,active?(expandFieldDeep?"FIELD OPEN":"OPEN"):"EXPAND →","domainHint"));
@@ -1286,9 +1283,9 @@ function drawKnowledgeNode(parent,node,p,token,isCurrent,role,onClick,relation="
   g.append(mk("circle",{r:radius,class:"disc",stroke:node.frontier?"#c497ff":(challenged||historical?"#ff4d67":f.color)}));
   g.append(mk("circle",{cx:0,cy:-radius+4,r:5,fill:statusColor,class:"status"}));
 
-  // Full names stay centered inside the orb; metadata has its own lower slot.
+  // The name fills the orb. Status and branch counts remain in the detail panel.
   const labelG=mk("g",{class:"fullNodeLabel"});
-  setInsideCircleLabel(labelG,node.label,radius*.78);
+  setInsideCircleLabel(labelG,node.label,radius);
   g.append(labelG);
   g.setAttribute("aria-label",node.label);
   g.setAttribute("tabindex","0");
@@ -1301,11 +1298,6 @@ function drawKnowledgeNode(parent,node,p,token,isCurrent,role,onClick,relation="
   g.addEventListener("pointerenter",()=>showNodeHover(node,p));
   g.addEventListener("pointerleave",()=>{document.querySelector("#nodeHover").hidden=true;});
   g.addEventListener("keydown",ev=>{if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();onClick();}});
-
-  const childCount=childrenFor(token).length;
-  const meta=challenged?"FALSIFIED":historical?"SUPERSEDED":node.frontier?"FRONTIER":childCount?childCount+" NEXT":node.kind.toUpperCase();
-  g.append(textNode(0,radius*.76,meta,"nodeMeta"));
-
 
   if(challenged)drawScar(g,radius);
 
@@ -1351,16 +1343,6 @@ function labelLines(label,maxChars){
   }
   if(line)lines.push(line);
   return lines;
-}
-
-function updateLabelVisibility(){
-  const matrix=graph.getScreenCTM();
-  if(!matrix)return;
-  const scale=Math.hypot(matrix.a,matrix.b);
-  for(const g of scene.querySelectorAll(".knowledgeNode")){
-    setInsideCircleLabel(g.querySelector(".fullNodeLabel"),g.dataset.fullLabel,Number(g.dataset.visualRadius)*.78,scale);
-  }
-  for(const label of scene.querySelectorAll(".insideFamilyLabel"))setInsideCircleLabel(label,label.dataset.label,74*.74,scale);
 }
 
 function navigationRelationLabel(relation){

@@ -7,7 +7,7 @@
       this.nodes=new Map(data.nodes.map(n=>[n.id,n]));this.families=new Map(data.families.map(f=>[f.id,f]));this.pending=new Set(data.navigation.placement_pending_ids);
       this.stats={nodes:data.nodes.length,drawMs:0,draws:0};
       this.progress=document.querySelector('#circuitProgress');
-      this.worker=new Worker('./circuit-worker.js?v=0.11.2');
+      this.worker=new Worker('./circuit-worker.js?v=0.11.3');
       this.worker.onmessage=({data:message})=>{
         if(message.type==='overview'){
           this.installOverview(message.overview);this.schedule();
