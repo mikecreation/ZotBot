@@ -67,6 +67,12 @@ Reviews live outside worker candidates under `nemesis/adjudications/`. Failed ev
 
 The live worker contract now describes the evidence files and strict gate. `nemesis_context.py` reports review coverage, unresolved identities and navigation coverage, and uses the same registry compiler as the browser.
 
+The complete crew adapter is retained in [EVIDENCE_CREW.md](nemesis/integration/EVIDENCE_CREW.md).
+It performs capture before authoring, retains two revision-bound review roles,
+stages original response bytes and decisions into publication sandboxes, and
+waits for CI before merging the exact PR head. The standalone review desk remains
+available for explicit revisions and manual inspection.
+
 The local Nemesis transport adapter was patched to retain all four evidence files when saving, loading and ingesting worker packets. The portable patch is `nemesis/integration/github_batches-evidence.patch`. The running Nemesis process needs its normal restart to load this adapter change; active research was not interrupted. The standalone atlas/review server already runs the new workflow.
 
 The atlas API `/api/graph/nodes` returns bounded, deterministic pages of canonical and registry records, with a graph revision and a 409 response when that revision changes. It supports `domain`, `q`, `offset`, and `limit` (maximum 200). The client currently loads the complete graph. Full and field expansion use worker geometry, worker-built spatial indexes, an OffscreenCanvas overview and viewport drawing. A synthetic 50,000-record circuit has been measured; results and limits are recorded in RENDERING.md. Large evidence packets must be split into complete, reviewable batches; the local reviewer rejects packets above 1.8 MB.
