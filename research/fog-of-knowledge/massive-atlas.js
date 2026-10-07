@@ -5,18 +5,19 @@
     constructor(canvas,graph,data){
       this.canvas=canvas;this.graph=graph;this.data=data;this.ctx=canvas.getContext('2d',{alpha:true});this.ready=false;this.active=false;this.frame=0;this.options={};
       this.nodes=new Map(data.nodes.map(n=>[n.id,n]));this.families=new Map(data.families.map(f=>[f.id,f]));this.pending=new Set(data.navigation.placement_pending_ids);
+      this.connectionRecords=FogNodeConnections.records(data);this.connectionIndex=FogNodeConnections.index(this.connectionRecords);
       this.stats={nodes:data.nodes.length,drawMs:0,draws:0};
       this.progress=document.querySelector('#circuitProgress');
-      this.worker=new Worker('./circuit-worker.js?v=0.11.3');
+      this.worker=new Worker('./circuit-worker.js?v=0.11.4');
       this.worker.onmessage=({data:message})=>{
         if(message.type==='overview'){
           this.installOverview(message.overview);this.schedule();
         }else if(message.type==='layout'){
           this.items=message.items;this.edges=message.edges;this.itemTree=message.itemTree;
-          this.edgeTree=message.edgeTree;this.byId=new Map(this.items.map(e=>[e.id,e]));this.ready=true;Object.assign(this,FogCircuitSpatial.scope(this.items,this.edges,this.options.scopeKey));
+          this.edgeTree=message.edgeTree;this.byId=new Map(this.items.map(e=>[e.id,e]));this.byKey=new Map(this.items.map(e=>[e.key,e]));this.ready=true;this.applyScope();
           this.stats.layoutMs=message.layoutMs;this.stats.edges=this.edges.length;
           this.evidence=message.evidence;this.evidenceTree=message.evidenceTree;
-          if(message.overview)this.installOverview(message.overview);if(this.active)this.fit();this.schedule();
+          if(message.overview)this.installOverview(message.overview);if(this.options.connectionKey)this.requestOverview();if(this.active)this.fit();this.schedule();
         }else if(message.type==='routes'){
           this.overviewCache=null;
           for(const route of message.routes){const edge=this.edges[route.index];edge.points=route.points;edge.box=route.box}
@@ -29,16 +30,17 @@
       };
       this.worker.onerror=()=>{this.progress.hidden=false;this.progress.textContent='Circuit worker could not load. Reload the atlas to retry.'};
       const rect=canvas.parentElement.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);
-      this.worker.postMessage({families:data.families,links:data.navigation.links,nodes:data.nodes.map(n=>({id:n.id,domain:n.domain,label:n.label,short_label:n.short_label,kind:n.kind,frontier:n.frontier,_status:n._status})),pending:data.navigation.placement_pending_ids,edges:data.edges,size:{width:Math.round(rect.width*dpr),height:Math.round(rect.height*dpr),dpr}});
+      this.worker.postMessage({families:data.families,links:data.navigation.links,nodes:data.nodes.map(n=>({id:n.id,domain:n.domain,label:n.label,short_label:n.short_label,kind:n.kind,frontier:n.frontier,_status:n._status})),pending:data.navigation.placement_pending_ids,edges:data.edges,connectionRecords:this.connectionRecords,size:{width:Math.round(rect.width*dpr),height:Math.round(rect.height*dpr),dpr}});
       this.resizeObserver=new ResizeObserver(()=>this.schedule());this.resizeObserver.observe(canvas.parentElement);
       graph.addEventListener('pointermove',ev=>{if(!this.active||!this.ready||ev.buttons)return;const item=this.hit(ev);data.onHover(item?.kind==='node'?this.nodes.get(item.id):null)});
       graph.addEventListener('pointerleave',()=>data.onHover(null));
       graph.addEventListener('click',ev=>{if(!this.active||!this.ready||cameraGesture)return;const item=this.hit(ev);if(item?.kind==='node')data.onSelect(this.nodes.get(item.id));else if(item?.kind==='family'){expandAll=false;expandFieldDeep=false;activePath=[familyToken(item.id)];render()}});
     }
-    installOverview(overview){if(["evidenceLens","frontierLens","allLabels"].some(k=>!!overview.options?.[k]!==!!this.options[k])||(overview.options?.scopeKey||null)!==(this.options.scopeKey||null)){overview.bitmap.close();return}if(this.overviewCache?.canvas.close)this.overviewCache.canvas.close();this.overviewCache={...overview,canvas:overview.bitmap};}
-    requestOverview(){const rect=this.canvas.parentElement.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);this.worker.postMessage({type:"overview",options:this.options,size:{width:Math.round(rect.width*dpr),height:Math.round(rect.height*dpr),dpr}})}
+    applyScope(){Object.assign(this,this.options.connectionKey?FogNodeConnections.scope(this.byKey,this.connectionIndex,this.options.connectionKey):{...FogCircuitSpatial.scope(this.items,this.edges,this.options.scopeKey),connectionLinks:null});}
+    installOverview(overview){if(["evidenceLens","frontierLens","allLabels"].some(k=>!!overview.options?.[k]!==!!this.options[k])||(overview.options?.scopeKey||null)!==(this.options.scopeKey||null)||(overview.options?.connectionKey||null)!==(this.options.connectionKey||null)){overview.bitmap.close();return}if(this.overviewCache?.canvas.close)this.overviewCache.canvas.close();this.pendingOverview=false;if(this.stats.workMs!==undefined)this.progress.hidden=true;this.overviewCache={...overview,canvas:overview.bitmap};}
+    requestOverview(){const rect=this.canvas.parentElement.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);this.pendingOverview=true;this.worker.postMessage({type:"overview",options:this.options,size:{width:Math.round(rect.width*dpr),height:Math.round(rect.height*dpr),dpr}})}
     setActive(active){this.active=active;this.canvas.hidden=!active;this.graph.classList.toggle('canvasOverlay',active);this.progress.hidden=!active||this.stats.workMs!==undefined;if(active&&!this.ready)this.progress.textContent='Expanding the complete knowledge circuit…';this.schedule()}
-    configure(options){const next={...this.options,...options},changed=JSON.stringify(next)!==JSON.stringify(this.options);if(changed){if(this.items?.length<=2000)this.overviewCache=null;this.options=next;if(this.ready){Object.assign(this,FogCircuitSpatial.scope(this.items,this.edges,next.scopeKey));this.requestOverview()}}this.schedule()}
+    configure(options){const next={...this.options,...options},changed=JSON.stringify(next)!==JSON.stringify(this.options);if(changed){if(this.overviewCache?.canvas.close)this.overviewCache.canvas.close();this.overviewCache=null;this.options=next;if(this.ready){this.applyScope();this.requestOverview()}}this.schedule()}
     cameraChanged(){
       this.movingUntil=performance.now()+120;this.schedule();
       clearTimeout(this.settleTimer);this.settleTimer=setTimeout(()=>this.schedule(),130);
@@ -59,6 +61,8 @@
       const c=this.ctx,v=this.viewport(),scale=Math.min(rect.width/v[2],rect.height/v[3]),ox=(rect.width-v[2]*scale)/2,oy=(rect.height-v[3]*scale)/2;
       c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,rect.width,rect.height);
       const cache=this.overviewCache;
+      // Giant neighborhoods are painted off-thread before presenting a bitmap.
+      if(this.options.connectionKey&&this.scopeKeys.size>2000&&this.pendingOverview&&!cache){this.progress.hidden=false;this.progress.textContent='Revealing '+(this.scopeKeys.size-1).toLocaleString()+' connection points…';return;}
       if(cache&&cache.width===width&&cache.height===height&&(performance.now()<this.movingUntil||scale<=cache.scale*1.05)){
         const ratio=scale/cache.scale;
         c.drawImage(cache.canvas,(cache.viewport[0]-v[0])*scale+ox-cache.ox*ratio,(cache.viewport[1]-v[1])*scale+oy-cache.oy*ratio,rect.width*ratio,rect.height*ratio);

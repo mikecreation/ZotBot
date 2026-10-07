@@ -17,6 +17,7 @@ function bindAtlasCamera(){
   document.querySelector("#zoomOutBtn").onclick=()=>zoomAtlas(1.4);
   document.querySelector("#fitMapBtn").onclick=()=>{viewportOverride=null;if(massiveAtlas.active)massiveAtlas.fit();else if(fittedViewport)writeViewport(fittedViewport)};
   document.querySelector("#evidenceLensBtn").onclick=ev=>{evidenceLens=!evidenceLens;ev.currentTarget.setAttribute("aria-pressed",String(evidenceLens));cameraGesture=true;render();cameraGesture=false};
+  document.querySelector('#nodeConnectionsBtn').onclick=toggleNodeConnections;
   document.querySelector("#reviewDeskBtn").onclick=()=>window.open("./review.html","_blank","noopener");
   graph.addEventListener("wheel",ev=>{ev.preventDefault();zoomAtlas(Math.exp(clamp(ev.deltaY,-150,150)*.0025),{x:ev.clientX,y:ev.clientY})},{passive:false});
   let drag=null;
@@ -91,6 +92,43 @@ function drawEvidenceTopology(parent,center){
   parent.prepend(group);
 }
 let evidenceContextPoints=[];
+let connectionListFocus=null,connectionListPage=0;
+function toggleNodeConnections(){
+  if(currentToken()?.kind!=='node')return;
+  const fromDetails=document.activeElement?.id==='detailNodeConnections';
+  nodeConnectionsEnabled=!nodeConnectionsEnabled;expandAll=false;expandFieldDeep=false;render();
+  if(fromDetails)detail.querySelector('#detailNodeConnections')?.focus();
+}
+function connectionTarget(id){
+  return id.startsWith('family:')?{label:familyById.get(id.slice(7)).title,family:familyById.get(id.slice(7))}:{label:nodeById.get(id.slice(5)).label,family:familyById.get(nodeById.get(id.slice(5)).domain)};
+}
+function connectionDescription(link,focus){
+  const kind={scientific:'Scientific',navigation:'Navigation',taxonomy:'Reviewed placement',identity:'Concept facet'}[link.kind];
+  const arrow=link.kind==='identity'?'':link.from==='node:'+focus?'→ ':'← ';
+  return kind+' · '+arrow+link.type.replaceAll('_',' ');
+}
+function renderNodeConnectionDetails(){
+  const token=currentToken();if(token?.kind!=='node')return;
+  const id=token.id,peers=FogNodeConnections.peers(massiveAtlas.connectionIndex,id),links=massiveAtlas.connectionIndex.get('node:'+id)||[];
+  const action=document.createElement('button');action.id='detailNodeConnections';action.type='button';action.setAttribute('aria-pressed',String(nodeConnectionsEnabled));
+  action.textContent=nodeConnectionsEnabled?'HIDE NODE CONNECTIONS':'SHOW ALL CONNECTIONS · '+peers.size;action.onclick=toggleNodeConnections;
+  detail.querySelector('.detailActionRow')?.append(action);
+  if(!nodeConnectionsEnabled)return;
+  if(connectionListFocus!==id){connectionListFocus=id;connectionListPage=0}
+  const rows=[...peers].map(([key,relations])=>({key,relations,...connectionTarget(key)})).sort((a,b)=>(a.family?.title||'').localeCompare(b.family?.title||'')||a.label.localeCompare(b.label));
+  const pageSize=36,pages=Math.max(1,Math.ceil(rows.length/pageSize));connectionListPage=Math.min(connectionListPage,pages-1);
+  const counts=new Map();for(const link of links)counts.set(link.kind,(counts.get(link.kind)||0)+1);
+  const section=document.createElement('section');section.className='detailSection nodeConnectionSection';section.setAttribute('aria-label','Node connections');
+  section.innerHTML='<h3>ALL CONNECTION POINTS · '+peers.size+'</h3><p>'+[...counts].map(([kind,count])=>count+' '+({scientific:'scientific',navigation:'navigation',taxonomy:'reviewed placement',identity:'concept facet'}[kind])).join(' · ')+'</p><p>Recorded relationships across fields. Navigation lines describe placement, not scientific support.</p><div class="connectionLegend">'+[...counts.keys()].map(kind=>'<span class="connectionKind '+kind+'">'+esc({scientific:'Scientific',navigation:'Navigation',taxonomy:'Reviewed placement',identity:'Concept facet'}[kind])+'</span>').join('')+'</div><div class="connectionPoints">'+rows.slice(connectionListPage*pageSize,(connectionListPage+1)*pageSize).map(row=>'<button class="nodeLink connectionPoint" data-connection-key="'+esc(row.key)+'" style="--connection-color:'+esc(row.family?.color||'#aebeff')+'"><span>'+esc(row.label)+'</span><small>'+esc(row.family?.short||'Field')+'</small>'+row.relations.map(link=>'<small>'+esc(connectionDescription(link,id))+'</small>').join('')+'</button>').join('')+(rows.length?'':'<p>No other connection points are recorded yet.</p>')+'</div>'+(pages>1?'<div class="connectionPages"><button id="connectionsPrev" '+(connectionListPage?'':'disabled')+'>← Previous</button><span>'+(connectionListPage+1)+' / '+pages+'</span><button id="connectionsNext" '+(connectionListPage<pages-1?'':'disabled')+'>Next →</button></div><p>The map shows every connection point; only this list is paginated.</p>':'');
+  detail.querySelector('.detailHero').after(section);
+  section.querySelectorAll('[data-connection-key]').forEach(button=>button.onclick=()=>{
+    const key=button.dataset.connectionKey;
+    if(key.startsWith('node:'))activateSearchResult(nodeById.get(key.slice(5)));
+    else{expandAll=false;expandFieldDeep=false;nodeConnectionsEnabled=false;activePath=[familyToken(key.slice(7))];render()}
+  });
+  function changePage(delta){connectionListPage+=delta;section.remove();detail.querySelector('#detailNodeConnections')?.remove();renderNodeConnectionDetails();detail.querySelector('.nodeConnectionSection').scrollIntoView({block:'start'})}
+  section.querySelector('#connectionsPrev')?.addEventListener('click',()=>changePage(-1));section.querySelector('#connectionsNext')?.addEventListener('click',()=>changePage(1));
+}
 function fitEvidenceContext(){
   if(!evidenceContextPoints.length)return;
   const v=readViewport(),box=graph.getBoundingClientRect();
@@ -108,12 +146,13 @@ function augmentEvidenceDetails(){
   const node=nodeById.get(token.id);
   const relations=[...(incomingById.get(node.id)||[]),...(outgoingById.get(node.id)||[])];
   const section=document.createElement("section");section.className="detailSection";
-  section.innerHTML='<h3>EVIDENCE RELATIONSHIPS · '+relations.length+'</h3><p>Original scientific relationships, independent of navigation placement.</p><div class="evidenceList">'+relations.map(e=>{
+  section.innerHTML='<h3>EVIDENCE RELATIONSHIPS · '+relations.length+'</h3><p>Original scientific relationships, independent of navigation placement.</p>'+(nodeConnectionsEnabled?'<p>All recorded scientific links are included in the connection list above.</p>':'<div class="evidenceList">'+relations.slice(0,36).map(e=>{
     const other=nodeById.get(e.source===node.id?e.target:e.source);
     return '<button class="nodeLink" data-evidence-node="'+esc(other.id)+'"><span>'+esc(other.label)+'</span><small>'+esc(e.source===node.id?'→ '+e.type:e.type+' → here')+'</small></button>';
-  }).join("")+'</div>';
+  }).join("")+'</div>'+(relations.length>36?'<button id="showRemainingConnections" class="nodeLink">SHOW ALL '+relations.length+' RELATIONSHIPS</button>':''));
   detail.append(section);
   section.querySelectorAll("[data-evidence-node]").forEach(button=>button.onclick=()=>activateSearchResult(nodeById.get(button.dataset.evidenceNode)));
+  section.querySelector('#showRemainingConnections')?.addEventListener('click',toggleNodeConnections);
   const placements=(navigation.taxonomy||[]).filter(p=>p.child===node.id);
   const facets=(navigation.identities||[]).filter(p=>p.left===node.id||p.right===node.id);
   if(placements.length||facets.length){
