@@ -9,7 +9,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <style>html,body{background:#02040a}</style>
-<link rel="stylesheet" href="styles.css?v=0.9.0">
+<link rel="stylesheet" href="styles.css?v=0.11.0">
 </head>
 <body>
 <header class="topbar">
@@ -19,10 +19,13 @@
     <p>See the mapped edge of human knowledge — and the paths that failed.</p>
   </div>
 
+  <div class="atlasTabs" role="tablist" aria-label="Knowledge views"><button id="atlasTab" role="tab" aria-selected="true">KNOWLEDGE CIRCUIT</button><button id="publicFrontierTab" role="tab" aria-selected="false">PUBLIC FRONTIER</button></div>
   <nav class="viewnav" aria-label="Map navigation">
     <button id="hubBtn" class="viewBtn active" title="Return to Human Knowledge hub">HUB</button>
     <button id="expandFieldBtn" class="viewBtn" title="Unfold the selected great field">EXPAND FIELD</button>
     <button id="expandAllBtn" class="viewBtn" title="Unfold every great field's next ring">EXPAND ALL</button>
+    <button id="evidenceLensBtn" class="viewBtn" aria-pressed="false">EVIDENCE LENS</button>
+    <button id="reviewDeskBtn" class="viewBtn">REVIEW DESK</button>
     <button id="frontierLensBtn" class="viewBtn" title="Dim everything except frontiers and false paths" aria-pressed="false">FRONTIER LENS</button>
     <button id="backBtn" class="viewBtn" hidden>← ONE LEVEL</button>
     <div id="crumb" class="crumb" aria-label="Current knowledge path"></div>
@@ -50,11 +53,15 @@
 
 <main>
   <section id="mapShell">
+    <div class="mapTools" aria-label="Map controls"><button id="zoomInBtn" title="Zoom in">+</button><button id="zoomOutBtn" title="Zoom out">−</button><button id="fitMapBtn">FIT</button><button id="labelsBtn" aria-pressed="false">ALL LABELS</button><span>Scroll to zoom · drag to explore</span></div>
+    <div id="nodeHover" class="nodeHover" hidden></div>
     <div class="stars starsA"></div>
     <div class="stars starsB"></div>
     <div class="vignette"></div>
 
-    <svg id="graph" viewBox="0 0 1600 1000" role="img" aria-label="Fog of Knowledge recursive radial atlas">
+    <canvas id="circuitCanvas" hidden aria-label="Complete knowledge circuit. Search any record to open its full name and evidence."></canvas>
+    <div id="circuitProgress" class="circuitProgress" role="status" hidden></div>
+    <svg id="graph" viewBox="0 0 1600 1000" role="img" aria-label="Fog of Knowledge navigation and evidence atlas">
       <defs>
         <filter id="softGlow" x="-70%" y="-70%" width="240%" height="240%">
           <feGaussianBlur stdDeviation="4.5" result="blur"/>
@@ -100,11 +107,12 @@
   </aside>
 </main>
 
+<section id="publicFrontier" hidden aria-labelledby="publicFrontierTitle"></section>
 <div id="searchResults" class="searchResults" hidden></div>
 <script>
 (() => {
   try {
-    const raw = localStorage.getItem("fog-of-knowledge:atlas-snapshot:v2");
+    const raw = localStorage.getItem("fog-of-knowledge:atlas-snapshot:v4");
     if (!raw) return;
     const s = JSON.parse(raw);
     if (!s || s.version !== 2) return;
@@ -133,6 +141,13 @@
   } catch (_) {}
 })();
 </script>
-<script type="module" src="app.js?v=0.9.0"></script>
+<script src="circuit-routing.js?v=0.11.0" defer></script>
+<script src="circuit-spatial.js?v=0.11.0" defer></script>
+<script src="circuit-painter.js?v=0.11.0" defer></script>
+<script src="massive-atlas.js?v=0.11.0" defer></script>
+<script src="public-frontier.js?v=0.11.0" defer></script>
+<script src="branch-layout.js?v=0.11.0" defer></script>
+<script src="atlas-interaction.js?v=0.11.0" defer></script>
+<script src="app.js?v=0.11.0" defer></script>
 </body>
 </html>

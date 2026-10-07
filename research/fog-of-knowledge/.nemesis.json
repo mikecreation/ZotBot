@@ -1,7 +1,7 @@
 {
   "protocol": "nemesis-repo/1",
   "project_id": "fog-of-knowledge",
-  "project_version": "0.9.0",
+  "project_version": "0.11.0",
   "purpose": "Continuously map, source, challenge, and expand human knowledge while preserving provenance and historical invalidations.",
   "read_first": [
     "AGENTS.md",
@@ -11,7 +11,12 @@
   "canonical": {
     "graph": "data/knowledge.json",
     "ology_registry": "data/ologies.tsv",
-    "graph_schema": "schema/knowledge.schema.json"
+    "graph_schema": "schema/knowledge.schema.json",
+    "atlas_navigation": "data/atlas-navigation.json",
+    "atlas_families": "data/atlas-families.json",
+    "evidence_index": "data/evidence-index.json",
+    "evidence_policy": "data/evidence-policy.json",
+    "legacy_baseline": "data/legacy-baseline.json"
   },
   "exchange": {
     "batch_protocol": "fog-nemesis-batch/1",
@@ -24,7 +29,12 @@
     "check_batch": "python scripts/nemesis_apply.py <batch_dir> --check",
     "apply_batch": "python scripts/nemesis_apply.py <batch_dir> --apply",
     "validate": "python scripts/validate.py",
-    "worker_contract": "python scripts/nemesis_worker_contract.py"
+    "worker_contract": "python scripts/nemesis_worker_contract.py",
+    "compile_navigation": "python scripts/atlas_navigation.py",
+    "evidence_audit": "python scripts/evidence_pipeline.py audit",
+    "evidence_packet": "python scripts/evidence_pipeline.py packet <batch_dir>",
+    "atlas_server": "python scripts/atlas_server.py --port 8097",
+    "capture_source": "python scripts/evidence_pipeline.py capture --url <url> --source-id <id> --title <title>"
   },
   "update_policy": {
     "preferred_transport": "git-branch-pull-request",
@@ -37,9 +47,10 @@
     "invalidation_requires_review": true
   },
   "scale": {
-    "preferred_records_per_batch": 5000,
-    "acceptable_records_per_batch": 50000,
-    "ui_rule": "Crew-added records remain data-only inputs. The atlas recursively discovers connected research in either edge direction, assigns deterministic radial sectors, enforces a single uniform depth gap with collision checks, routes visible connectors around circles, and auto-fits only after layout is complete."
+    "preferred_records_per_batch": 100,
+    "acceptable_records_per_batch": 5000,
+    "ui_rule": "Keep the full connected circuit visible. Worker layout, OffscreenCanvas overview, cached gestures and spatial viewport drawing retain every node; semantic zoom preserves complete names.",
+    "review_rule": "Split large batches into evidence-complete packets. Exchange limits are separate from measured rendering capacity."
   },
   "priorities": [
     "source_completion",
@@ -50,15 +61,19 @@
     "taxonomy_resolution"
   ],
   "layout_contract": {
-    "version": "radial-tree/1",
+    "version": "radial-circuit/2",
     "deterministic": true,
     "recursive_expand_all": true,
     "recursive_expand_field": true,
-    "bidirectional_discovery_for_layout": true,
+    "bidirectional_discovery_for_layout": false,
     "circle_overlap_allowed": false,
-    "connector_circle_intersection_allowed": false,
-    "uniform_depth_gap": true,
+    "connector_circle_intersection_allowed": true,
+    "uniform_depth_gap": false,
     "non_scaling_connector_width": true,
-    "ci_check": "node scripts/check_layout.js"
+    "ci_check": "node scripts/check_layout.js",
+    "evidence_topology_contextual": true,
+    "full_canonical_labels": true,
+    "overview_inventory_bundling": false,
+    "large_map_routing": "Deterministic circuit buses above 2000 items; exact obstacle routes below. Wire crossings never modify scientific relationships."
   }
 }

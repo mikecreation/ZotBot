@@ -20,9 +20,9 @@ For Expand/crew prompts, inject the **live** compiler contract each run (never h
 python scripts/nemesis_worker_contract.py --prompt
 ```
 
-Workers emit `source -> extracted_assertion -> entity_candidate -> relationship_candidate + confidence`. The compiler owns taxonomy placement, scientific edges (`supports` / `contradicts` / `derived_from` / ...), dependency strength, and visual parent as distinct concerns. Formatting retries must not silently rewrite sources or scientific claims.
+Workers propose `source -> extracted_assertion -> entity_candidate -> relationship_candidate`. Explicit review owns scientific interpretation; the deterministic compiler checks bindings and publishes reviewed representations. Taxonomy, evidence relations, dependency strength and visual parent remain distinct. Formatting retries must not silently rewrite sources or scientific claims.
 
-Prefer writing `nemesis/batches/<batch_id>/{manifest,nodes,edges,reviews}.jsonl` over dumping huge JSON through ChatGPT.
+Retain the manifest, record files, source snapshots and scoped assertions under `nemesis/batches/<batch_id>/`. See [SCIENTIFIC_COMPILER.md](SCIENTIFIC_COMPILER.md) for the exact evidence contract.
 
 Research a bounded mission, then create:
 
@@ -32,6 +32,10 @@ nemesis/batches/<batch_id>/
   nodes.jsonl
   edges.jsonl
   reviews.jsonl
+  sources.jsonl
+  assertions.jsonl
+  taxonomy.jsonl       # optional reviewed placements
+  identities.jsonl     # optional reviewed concept links
 ```
 
 Check it:
@@ -60,6 +64,7 @@ read manifest
 → create branch nemesis/<mission>-<batch_id>
 → research
 → write batch
+→ exact source/representation review
 → check batch
 → apply batch
 → validate
@@ -80,7 +85,7 @@ One JSON object per line. Nodes can represent fields, concepts, methods, claims,
 Minimum:
 
 ```json
-{"id":"claim.example","label":"Example claim","kind":"claim","domain":"physical","era":"twentieth","status":"active","summary":"...","sources":[{"id":"doi:...","title":"...","url":"https://..."}]}
+{"id":"claim.example","label":"Example claim","kind":"claim","domain":"physical","era":"twentieth","status":"active","frontier":false,"summary":"...","sources":[{"id":"doi:...","title":"...","url":"https://..."}]}
 ```
 
 ### edges.jsonl
@@ -153,3 +158,9 @@ Example:
 ```
 
 The machine does the volume. The human resolves the genuinely ambiguous decisions.
+
+## Navigation and strict ingestion
+
+Batch application regenerates `data/atlas-navigation.json`. After changing registry or family configuration, run `python scripts/atlas_navigation.py`; validation rejects a stale projection. Navigation routes are separate from scientific edges, and unresolved placement is explicitly pending.
+
+No semantic alias coercion is accepted. Unsupported kinds, domains, eras, statuses and missing metadata fail validation with a quarantined disposition. Correct the candidate explicitly with retained adjudication evidence; do not reinterpret it during a formatting retry. The evidence gate checks exact excerpts and requires separate entailment and adversarial reviews of the entire canonical representation. These reviews are retained provenance, not proof of scientific truth. Existing records remain legacy until reviewed. See [SCIENTIFIC_COMPILER.md](SCIENTIFIC_COMPILER.md).

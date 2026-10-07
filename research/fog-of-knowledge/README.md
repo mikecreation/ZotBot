@@ -70,6 +70,8 @@ nemesis/batches/<batch_id>/
   nodes.jsonl
   edges.jsonl
   reviews.jsonl
+  sources.jsonl
+  assertions.jsonl
 ```
 
 Validate and compile it with:
@@ -100,16 +102,17 @@ The batch contract is intentionally independent of the UI and storage engine.
 
 ```bash
 cd research/fog-of-knowledge
-python -m http.server 8080
+python -m pip install -r requirements.txt
+python scripts/atlas_server.py --port 8097
 ```
 
-Open `http://localhost:8080`.
+Open `http://127.0.0.1:8097`.
 
 ## Data
 
 `data/knowledge.json` is the current canonical core graph. `data/ologies.tsv` is the compact curated registry loaded at runtime.
 
-Navigation follows mapped graph relationships. If a node currently has no mapped descendant, the atlas exposes that location as an **unmapped next layer** rather than inventing a taxonomy relation.
+Navigation uses a separately compiled discovery projection, drawn as the full sprawling circuit. Complete expansion uses worker layout, OffscreenCanvas overview rendering and spatial viewport queries. Scientific evidence relationships appear on selection or through the evidence lens. If a node currently has no mapped descendant, the atlas exposes that location as an **unmapped next layer** rather than inventing a taxonomy relation.
 
 A dependency edge can be `hard` or `soft`.
 
@@ -122,8 +125,16 @@ Wrong turns are preserved. A challenge should attach a proof, dataset, code arti
 
 ## Current seed
 
-Version 0.6 contains the recursive atlas, Nemesis machine contract, batch compiler, graph validator, historical invalidation examples, frontier nodes, and hundreds of field/specialty entries.
+The current seed contains the recursive atlas, Nemesis machine contract, batch compiler, graph validator, historical invalidation examples, frontier nodes, and hundreds of field/specialty entries.
 
 It is still a seed, not a claim of completed human knowledge.
 
 **Never erase a wrong turn. Mark it, preserve it, and show exactly what depended on it.**
+
+## Navigation integrity repair
+
+The browser and CI now share a compiled navigation artifact. All retained records are discoverable while unreviewed placements remain marked pending. Scientific relationships remain separate. See [NAVIGATION_REPAIR.md](NAVIGATION_REPAIR.md) for the reproduced diagnosis, regression evidence. See [SCIENTIFIC_COMPILER.md](SCIENTIFIC_COMPILER.md) for the implemented source-to-assertion gate and review workflow.
+
+After changing knowledge or registry inputs outside the batch compiler, rebuild with `python scripts/atlas_navigation.py` before validation. Batch application handles this automatically.
+
+The **Public Frontier** tab shows recorded open questions and reviewed public company/tool disclosures without inventing private capabilities or unrecorded dates. See [RENDERING.md](RENDERING.md) for the 50,000-node synthetic benchmark and its limits.

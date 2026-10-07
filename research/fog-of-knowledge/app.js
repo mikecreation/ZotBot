@@ -19,7 +19,7 @@ const FALSE_STATUSES=new Set(["invalidated","historical","dependency-broken"]);
 const STATUS={
   foundational:["Foundational","#ffbf57"],
   established:["Strongly established","#65f5b0"],
-  active:["Active field","#66bfff"],
+  active:["Active","#66bfff"],
   disputed:["Disputed","#ffc857"],
   frontier:["Frontier / unresolved","#c497ff"],
   invalidated:["Invalidated / falsified","#ff4d67"],
@@ -28,20 +28,18 @@ const STATUS={
   "review-required":["Review required","#ffc857"]
 };
 
-const FAMILIES=[
-  {id:"roots",title:"FOUNDATIONS OF KNOWING",short:"Foundations",color:"#ffbd57",icon:"✦",tagline:"Observation · memory · causality · language · measurement · experiment",major:["Self / other","Cause / effect","More / less / number","Oral tradition","Writing & records","Experimental scientific method"]},
-  {id:"formal",title:"MATHEMATICS & LOGIC",short:"Mathematics & Logic",color:"#b67cff",icon:"∑",tagline:"Proof · quantity · structure · abstraction",major:["Logic","Algebra","Geometry","Statistics","Topology","Number theory"]},
-  {id:"physical",title:"PHYSICAL SCIENCES",short:"Physical Sciences",color:"#55a8ff",icon:"⚛",tagline:"Matter · energy · space · time",major:["Physics","Chemistry","Astronomy","Thermodynamics","Electromagnetism","Cosmology"]},
-  {id:"earth",title:"EARTH & ENVIRONMENT",short:"Earth & Environment",color:"#40d5c6",icon:"◉",tagline:"Planet · climate · oceans · deep time",major:["Geology","Climatology","Meteorology","Hydrology","Oceanology","Paleoclimatology"]},
-  {id:"life",title:"LIFE SCIENCES",short:"Life Sciences",color:"#64e886",icon:"⌬",tagline:"Life · heredity · evolution · ecosystems",major:["Biology","Genetics","Evolution by natural selection","Ecology","Microbiology","Molecular biology","Systems biology"]},
-  {id:"health",title:"MEDICINE & HEALTH",short:"Medicine & Health",color:"#ff637d",icon:"✚",tagline:"Health · disease · intervention · population",major:["Early medicine","Anatomy","Epidemiology","Pathology","Pharmacology","Immunology","Oncology","Neurology"]},
-  {id:"engineering",title:"ENGINEERING & TECHNOLOGY",short:"Engineering & Technology",color:"#45e5ff",icon:"⌁",tagline:"Design · machines · infrastructure · invention",major:["Engineering science","Biotechnology","Nanotechnology","Mechatronics","Geotechnology","Metrology"]},
-  {id:"information",title:"INFORMATION & COGNITION",short:"Information & Cognition",color:"#8278ff",icon:"◇",tagline:"Computation · intelligence · mind · language",major:["Computer science","Artificial intelligence","Information theory","Cognitive science","Neuroscience","Psycholinguistics"]},
-  {id:"social",title:"SOCIAL SCIENCES",short:"Social Sciences",color:"#ff8a58",icon:"◎",tagline:"People · institutions · incentives · societies",major:["Sociology","Psychology","Anthropology","Economics","Criminology","Demography","Social psychology"]},
-  {id:"humanities",title:"HUMANITIES & PHILOSOPHY",short:"Humanities & Philosophy",color:"#ffd35f",icon:"◈",tagline:"Meaning · history · language · value · culture",major:["Philosophy","Archaeology","Epistemology","Philology","Theology","Musicology","Etymology"]}
-];
+let FAMILIES=[];
+let familyById=new Map();
+let navigation;
+let evidenceIndex;
+let evidenceLens=false;
+let allLabels=false;
+let viewportOverride=null;
+let fittedViewport=null;
+let cameraGesture=false;
+let navigationByParent=new Map();
+let navigationByChild=new Map();
 
-const familyById=new Map(FAMILIES.map(f=>[f.id,f]));
 const RELATION_PRIORITY={
   derived_from:1,enabled:2,refines:3,supports:4,depends_on:5,tests:6,
   replicates:7,failed_replication:8,related:9,supersedes:10,contradicts:11,cites:12
@@ -65,14 +63,15 @@ let frontierLens=false;
 let layoutCompact=false;
 let selectedFalseEdge=null;
 let lastDeepLayout=null;
+let massiveAtlas=null;
 let lastObstacleCircles=[];
 const STRUCTURAL_RELATIONS=new Set(["enabled","derived_from","depends_on","refines","tests","supports","replicates","related"]);
 const TREE_EXCLUDED_RELATIONS=new Set(["cites","contradicts","supersedes","failed_replication"]);
 const EDGE_WIDTH=2.25;
 const DEPTH_GAP=190;
 const NODE_CLEARANCE=22;
-const ATLAS_STATE_KEY="fog-of-knowledge:atlas-state:v2";
-const ATLAS_SNAPSHOT_KEY="fog-of-knowledge:atlas-snapshot:v2";
+const ATLAS_STATE_KEY="fog-of-knowledge:atlas-state:v3";
+const ATLAS_SNAPSHOT_KEY="fog-of-knowledge:atlas-snapshot:v4";
 
 const mk=(name,attrs={})=>{
   const el=document.createElementNS(NS,name);
@@ -181,8 +180,18 @@ function drawJunction(parent,a,b,color){
 }
 
 async function boot(){
-  model=await (await fetch("./data/knowledge.json",{cache:"no-store"})).json();
-  await addOlogies();
+  [model,FAMILIES,navigation,evidenceIndex]=await Promise.all(["knowledge","atlas-families","atlas-navigation","evidence-index"].map(name=>fetch(`./data/${name}.json`,{cache:"no-store"}).then(response=>{if(!response.ok)throw Error("Atlas data unavailable: "+name);return response.json()})));
+  familyById=new Map(FAMILIES.map(f=>[f.id,f]));
+  model.nodes.push(...navigation.registry_nodes);
+  for(const id of navigation.registry_ids){
+    const n=model.nodes.find(n=>n.id===id);
+    if(n&&!(n.tags||[]).includes("ology"))(n.tags??=[]).push("ology");
+  }
+  for(const link of navigation.links){
+    if(!navigationByParent.has(link.source))navigationByParent.set(link.source,[]);
+    navigationByParent.get(link.source).push(link);
+    navigationByChild.set(link.target,link);
+  }
   nodeById=new Map(model.nodes.map(n=>[n.id,n]));
   buildIndexes();
   deriveStatuses();
@@ -197,32 +206,14 @@ async function boot(){
     falseEl.textContent=falseN.toLocaleString();
   }
   bind();
+  bindAtlasCamera();
+  bindPublicFrontier();
+  massiveAtlas=new FogMassiveAtlas(document.querySelector("#circuitCanvas"),graph,{families:FAMILIES,navigation,nodes:model.nodes,edges:model.edges,onSelect:node=>activateSearchResult(node),onHover:node=>{const h=document.querySelector("#nodeHover");h.hidden=!node;if(node)h.textContent=node.label}});
   observeLayout();
   render();
   requestAnimationFrame(()=>document.body.classList.remove("atlasStateRestored","atlasPrehydrated"));
 }
 
-async function addOlogies(){
-  const t=await (await fetch("./data/ologies.tsv",{cache:"no-store"})).text();
-  const existing=new Map(model.nodes.map(n=>[n.label.toLowerCase(),n]));
-  for(const line of t.split(/\r?\n/).slice(1)){
-    if(!line.trim())continue;
-    const [label,domain,era]=line.split("\t");
-    const old=existing.get(label.toLowerCase());
-    if(old){
-      if(label.toLowerCase().endsWith("ology")&&!old.tags?.includes("ology"))(old.tags??=[]).push("ology");
-      continue;
-    }
-    const slug=label.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
-    const n={
-      id:"ology."+slug,label,kind:"field",domain,era,status:"active",
-      summary:"Curated seed entry in the expandable -ology registry: "+label+".",
-      tags:["ology","registry-seed"],sources:[],frontier:false,aliases:[]
-    };
-    model.nodes.push(n);
-    existing.set(label.toLowerCase(),n);
-  }
-}
 
 function persistAtlasState(){
   try{
@@ -235,6 +226,7 @@ function persistAtlasState(){
         r:Number.isFinite(t.r)?t.r:null,
         relation:t.relation||null
       })),
+      expanded:expandAll,expandedField:expandFieldDeep,evidenceLens,frontierLens,allLabels,
       pages:Object.fromEntries(childPageByKey)
     };
     localStorage.setItem(ATLAS_STATE_KEY,JSON.stringify(payload));
@@ -265,6 +257,9 @@ function restoreAtlasState(){
 
       if(token?.kind==="node"){
         if(!nodeById.has(token.id))break;
+        const previous=restored[restored.length-1];
+        const expectedParent=previous?.kind==="family"?"family:"+previous.id:previous?.id;
+        if(navigationByChild.get(token.id)?.source!==expectedParent)break;
         restored.push({
           kind:"node",
           id:token.id,
@@ -280,8 +275,10 @@ function restoreAtlasState(){
 
     if(restored.length&&restored[0].kind!=="family")return false;
     activePath=restored;
+    expandAll=saved.expanded===true;expandFieldDeep=!expandAll&&saved.expandedField===true&&activePath.length>0;
+    evidenceLens=saved.evidenceLens===true;frontierLens=saved.frontierLens===true;allLabels=saved.allLabels===true;
     childPageByKey=new Map(Object.entries(saved.pages||{}).map(([k,v])=>[k,Number(v)||0]));
-    return activePath.length>0;
+    return activePath.length>0||expandAll;
   }catch(err){
     console.warn("Fog atlas state could not be restored",err);
     return false;
@@ -428,30 +425,11 @@ function pathNodeIds(){
 
 function childrenFor(token){
   if(!token)return[];
-
-  if(token.kind==="family"){
-    return majorNodes(familyById.get(token.id)).map(node=>({node,relation:"category"}));
-  }
-
+  const parent=token.kind==="family"?"family:"+token.id:token.id;
   const used=pathNodeIds();
-  const unique=new Map();
-
-  for(const edge of outgoingById.get(token.id)||[]){
-    const node=nodeById.get(edge.target);
-    if(!node||used.has(node.id))continue;
-    const old=unique.get(node.id);
-    if(!old||(RELATION_PRIORITY[edge.type]||99)<(RELATION_PRIORITY[old.relation]||99)){
-      unique.set(node.id,{node,relation:edge.type});
-    }
-  }
-
-  return [...unique.values()].sort((a,b)=>{
-    const af=a.node.frontier?1:0,bf=b.node.frontier?1:0;
-    if(af!==bf)return af-bf;
-    const ar=RELATION_PRIORITY[a.relation]||99,br=RELATION_PRIORITY[b.relation]||99;
-    if(ar!==br)return ar-br;
-    return a.node.label.localeCompare(b.node.label);
-  });
+  return (navigationByParent.get(parent)||[])
+    .map(link=>({node:nodeById.get(link.target),relation:link.type,link}))
+    .filter(item=>item.node&&!used.has(item.node.id));
 }
 
 function pageChildren(token){
@@ -466,44 +444,11 @@ function pageChildren(token){
 
 
 function hierarchyChildren(nodeId,familyId,assigned,ancestors,reservedRoots=new Set()){
-  const candidates=[];
-
-  for(const edge of outgoingById.get(nodeId)||[]){
-    if(TREE_EXCLUDED_RELATIONS.has(edge.type)||!STRUCTURAL_RELATIONS.has(edge.type))continue;
-    const node=nodeById.get(edge.target);
-    if(!node||node.domain!==familyId||ancestors.has(node.id)||assigned.has(node.id)||reservedRoots.has(node.id))continue;
-    candidates.push({edge,node,direction:"out"});
-  }
-
-  // Crew-added research may encode the same conceptual connection in the
-  // opposite edge direction. For layout discovery we traverse either side;
-  // the actual edge type remains attached for provenance/detail.
-  for(const edge of incomingById.get(nodeId)||[]){
-    if(TREE_EXCLUDED_RELATIONS.has(edge.type)||!STRUCTURAL_RELATIONS.has(edge.type))continue;
-    const node=nodeById.get(edge.source);
-    if(!node||node.domain!==familyId||ancestors.has(node.id)||assigned.has(node.id)||reservedRoots.has(node.id))continue;
-    candidates.push({edge,node,direction:"in"});
-  }
-
-  const unique=new Map();
-  for(const item of candidates){
-    const old=unique.get(item.node.id);
-    const score=(RELATION_PRIORITY[item.edge.type]||99)*2+(item.direction==="out"?0:1);
-    const oldScore=old?((RELATION_PRIORITY[old.edge.type]||99)*2+(old.direction==="out"?0:1)):Infinity;
-    if(score<oldScore)unique.set(item.node.id,item);
-  }
-
-  const chosen=[...unique.values()];
-  chosen.sort((a,b)=>{
-    const ar=RELATION_PRIORITY[a.edge.type]||99;
-    const br=RELATION_PRIORITY[b.edge.type]||99;
-    return ar-br
-      ||(a.direction==="out"?-1:1)-(b.direction==="out"?-1:1)
-      ||a.node.label.localeCompare(b.node.label)
-      ||a.node.id.localeCompare(b.node.id);
-  });
-  return chosen;
+  return (navigationByParent.get(nodeId)||[])
+    .map(edge=>({edge,node:nodeById.get(edge.target),direction:"out"}))
+    .filter(({node})=>node&&node.domain===familyId&&!ancestors.has(node.id)&&!assigned.has(node.id)&&!reservedRoots.has(node.id));
 }
+
 function buildNodeTree(node,familyId,assigned,ancestors,relation="category",pathIds=[],reservedRoots=new Set()){
   if(!node||assigned.has(node.id)||ancestors.has(node.id))return null;
   assigned.add(node.id);
@@ -528,7 +473,7 @@ function buildNodeTree(node,familyId,assigned,ancestors,relation="category",path
   return tree;
 }
 function buildFamilyTree(f,assigned=new Set()){
-  const majors=majorNodes(f);
+  const majors=childrenFor({kind:"family",id:f.id}).map(item=>item.node);
   const reservedRoots=new Set(majors.map(n=>n.id));
   const tree={
     key:"family:"+f.id,
@@ -543,7 +488,7 @@ function buildFamilyTree(f,assigned=new Set()){
   };
   for(const node of majors){
     reservedRoots.delete(node.id);
-    const child=buildNodeTree(node,f.id,assigned,new Set(),"category",[],reservedRoots);
+    const child=buildNodeTree(node,f.id,assigned,new Set(),navigationByChild.get(node.id)?.type||"category",[],reservedRoots);
     reservedRoots.add(node.id);
     if(child)tree.children.push(child);
   }
@@ -566,7 +511,7 @@ function buildSelectedTree(){
       .filter(t=>t.kind==="node"&&t.id!==root.id)
       .map(t=>t.id)
   );
-  const reservedRoots=new Set(majorNodes(f).map(n=>n.id).filter(id=>id!==root.id));
+  const reservedRoots=new Set(childrenFor({kind:"family",id:f.id}).map(item=>item.node.id).filter(id=>id!==root.id));
   return buildNodeTree(node,f.id,assigned,knownAncestors,root.relation||"category",[],reservedRoots);
 }
 function assignTreeAngles(tree,start,end){
@@ -595,7 +540,7 @@ function visualRadiusFor(entry,mode){
 
 function labelFootprintFor(entry,mode){
   const radius=visualRadiusFor(entry,mode);
-  // Deep labels are clipped inside the circles. Collision geometry therefore
+  // Canonical labels are positioned separately. Circle collision geometry therefore
   // follows the visible orb plus a fixed breathing margin, not title length.
   return radius+(mode==="all"?12:16);
 }
@@ -689,28 +634,9 @@ function computeTreeLayout(mode){
 
   if(mode==="all"){
     const assigned=new Set();
-
-    FAMILIES.forEach((f,i)=>{
-      const tree=buildFamilyTree(f,assigned);
-      const sector=familySectorBounds(i);
-      // First assign subtree order, then pack each logical depth into as many
-      // physical rings as necessary. Every physical ring uses the same gap.
-      assignTreeAngles(tree,sector.start,sector.end);
-      const flat=flattenTree(tree);
-      const root=flat[0];
-      root.rowIndex=0;
-      root.r=330;
-      root.tree.angle=sector.mid;
-
-      let row=1;
-      const maxDepth=Math.max(...flat.map(x=>x.depth));
-      for(let depth=1;depth<=maxDepth;depth++){
-        const level=flat.filter(x=>x.depth===depth);
-        if(!level.length)continue;
-        row=packEntriesIntoRows(level,sector.start,sector.end,330,rowGap,row,"all");
-      }
-      items.push(...flat);
-    });
+    const trees=FAMILIES.map(f=>flattenTree(buildFamilyTree(f,assigned)));
+    const packed=FogBranches.layout(FAMILIES,trees);
+    items.push(...packed.entries);
   }else{
     const tree=buildSelectedTree();
     if(!tree)return {mode,center,items:[],edges:[],positions:new Map(),circles:[],bounds:null,gap:rowGap};
@@ -739,8 +665,7 @@ function computeTreeLayout(mode){
       ? (entry.tree.kind==="family"?74:(currentToken()?.visualRadius||58))
       : visualRadiusFor(entry,mode);
     entry.footprint=entry.depth===0?entry.radius+16:labelFootprintFor(entry,mode);
-    const p=polar(center.x,center.y,entry.r,entry.tree.angle);
-    entry.x=p.x;entry.y=p.y;
+    if(mode!=="all"){const p=polar(center.x,center.y,entry.r,entry.tree.angle);entry.x=p.x;entry.y=p.y;}
   }
 
   const keyMap=new Map(items.map(x=>[x.tree.key,x]));
@@ -759,7 +684,7 @@ function computeTreeLayout(mode){
   circles.push({x:center.x,y:center.y,r:104,key:"core"});
 
   const layout={mode,center,items,edges,positions,circles,gap:rowGap};
-  relaxLayout(layout);
+  if(mode!=="all")relaxLayout(layout);
   layout.bounds=layoutBounds(layout);
   return layout;
 }
@@ -836,7 +761,7 @@ function fitDeepLayout(layout){
   const shellW=Math.max(1,mapShell.clientWidth||1200);
   const shellH=Math.max(1,mapShell.clientHeight||760);
   const aspect=shellW/shellH;
-  const pad=90;
+  const pad=Math.max(90,b.width/shellW*110,b.height/shellH*70);
   let width=b.width+pad*2;
   let height=b.height+pad*2;
   if(width/height<aspect)width=height*aspect;
@@ -851,183 +776,14 @@ function fitDeepLayout(layout){
   ].join(" "));
 }
 
-function pointSegmentDistanceSquared(p,a,b){
-  const vx=b.x-a.x,vy=b.y-a.y;
-  const wx=p.x-a.x,wy=p.y-a.y;
-  const len=vx*vx+vy*vy;
-  let t=len?((wx*vx+wy*vy)/len):0;
-  t=Math.max(0,Math.min(1,t));
-  const x=a.x+t*vx,y=a.y+t*vy;
-  const dx=p.x-x,dy=p.y-y;
-  return dx*dx+dy*dy;
-}
-
-function segmentClear(a,b,obstacles,ignoreKeys=new Set()){
-  for(const o of obstacles){
-    if(ignoreKeys.has(o.key))continue;
-    const rr=o.r+7;
-    if(pointSegmentDistanceSquared({x:o.x,y:o.y},a,b)<rr*rr)return false;
-  }
-  return true;
-}
-
-function simplifyPolyline(points){
-  if(points.length<=2)return points;
-  const out=[points[0]];
-  for(let i=1;i<points.length-1;i++){
-    const a=out[out.length-1],b=points[i],d=points[i+1];
-    const abx=b.x-a.x,aby=b.y-a.y,bdx=d.x-b.x,bdy=d.y-b.y;
-    if(Math.abs(abx*bdy-aby*bdx)<1e-6)continue;
-    out.push(b);
-  }
-  out.push(points[points.length-1]);
-  return out;
-}
-
-function gridRoute(start,end,from,to,obstacles,ignoreKeys){
-  const dx=end.x-start.x,dy=end.y-start.y;
-  const len=Math.hypot(dx,dy)||1;
-  const ux=dx/len,uy=dy/len;
-
-  const all=obstacles.filter(o=>!ignoreKeys.has(o.key));
-  let minX=Math.min(start.x,end.x),maxX=Math.max(start.x,end.x);
-  let minY=Math.min(start.y,end.y),maxY=Math.max(start.y,end.y);
-  for(const o of all){
-    minX=Math.min(minX,o.x-o.r);maxX=Math.max(maxX,o.x+o.r);
-    minY=Math.min(minY,o.y-o.r);maxY=Math.max(maxY,o.y+o.r);
-  }
-
-  const margin=220;
-  minX-=margin;minY-=margin;maxX+=margin;maxY+=margin;
-  const spanX=maxX-minX,spanY=maxY-minY;
-  const cell=Math.max(24,Math.ceil(Math.max(spanX,spanY)/170));
-  const cols=Math.max(3,Math.ceil(spanX/cell)+1);
-  const rows=Math.max(3,Math.ceil(spanY/cell)+1);
-  if(cols*rows>42000)return null;
-
-  const lead=Math.max(cell*1.5,40);
-  const routeStart={x:start.x+ux*lead,y:start.y+uy*lead};
-  const routeEnd={x:end.x-ux*lead,y:end.y-uy*lead};
-
-  // The lead-in / lead-out must already be clean.
-  if(!segmentClear(start,routeStart,obstacles,ignoreKeys)
-    ||!segmentClear(routeEnd,end,obstacles,ignoreKeys))return null;
-
-  const idxOf=(ix,iy)=>iy*cols+ix;
-  const pointOf=(ix,iy)=>({x:minX+ix*cell,y:minY+iy*cell});
-  const cellOf=p=>({
-    ix:clamp(Math.round((p.x-minX)/cell),0,cols-1),
-    iy:clamp(Math.round((p.y-minY)/cell),0,rows-1)
-  });
-
-  const blocked=new Uint8Array(cols*rows);
-  for(const o of all){
-    const rr=o.r+cell*.78;
-    const ix0=clamp(Math.floor((o.x-rr-minX)/cell),0,cols-1);
-    const ix1=clamp(Math.ceil((o.x+rr-minX)/cell),0,cols-1);
-    const iy0=clamp(Math.floor((o.y-rr-minY)/cell),0,rows-1);
-    const iy1=clamp(Math.ceil((o.y+rr-minY)/cell),0,rows-1);
-    for(let iy=iy0;iy<=iy1;iy++)for(let ix=ix0;ix<=ix1;ix++){
-      const p=pointOf(ix,iy),ddx=p.x-o.x,ddy=p.y-o.y;
-      if(ddx*ddx+ddy*ddy<rr*rr)blocked[idxOf(ix,iy)]=1;
-    }
-  }
-
-  const s=cellOf(routeStart),g=cellOf(routeEnd);
-  const si=idxOf(s.ix,s.iy),gi=idxOf(g.ix,g.iy);
-  blocked[si]=0;blocked[gi]=0;
-
-  const prev=new Int32Array(cols*rows);
-  prev.fill(-1);
-  const queue=new Int32Array(cols*rows);
-  let qh=0,qt=0;
-  queue[qt++]=si;
-  prev[si]=si;
-  const dirs=[[1,0],[-1,0],[0,1],[0,-1]];
-
-  while(qh<qt&&prev[gi]===-1){
-    const cur=queue[qh++],cx=cur%cols,cy=Math.floor(cur/cols);
-    for(const [sx,sy] of dirs){
-      const nx=cx+sx,ny=cy+sy;
-      if(nx<0||ny<0||nx>=cols||ny>=rows)continue;
-      const ni=idxOf(nx,ny);
-      if(blocked[ni]||prev[ni]!==-1)continue;
-      prev[ni]=cur;
-      queue[qt++]=ni;
-      if(ni===gi)break;
-    }
-  }
-  if(prev[gi]===-1)return null;
-
-  const cells=[];
-  let cur=gi;
-  while(cur!==si){
-    const ix=cur%cols,iy=Math.floor(cur/cols);
-    cells.push(pointOf(ix,iy));
-    cur=prev[cur];
-  }
-  cells.push(pointOf(s.ix,s.iy));
-  cells.reverse();
-
-  let points=[start,routeStart,...cells,routeEnd,end];
-  points=simplifyPolyline(points);
-
-  for(let i=1;i<points.length;i++){
-    if(!segmentClear(points[i-1],points[i],obstacles,ignoreKeys))return null;
-  }
-
-  return {
-    d:"M "+points.map((p,i)=>(i?"L ":"")+p.x+" "+p.y).join(" "),
-    points
-  };
-}
-
-function clippedEndpoints(from,to){
-  const dx=to.x-from.x,dy=to.y-from.y;
-  const len=Math.hypot(dx,dy)||1;
-  const ux=dx/len,uy=dy/len;
-  return {
-    start:{x:from.x+ux*(from.radius+4),y:from.y+uy*(from.radius+4)},
-    end:{x:to.x-ux*(to.radius+4),y:to.y-uy*(to.radius+4)}
-  };
-}
-
-function routeEdge(from,to,obstacles,laneSeed=0){
-  const {start,end}=clippedEndpoints(from,to);
-  const ignore=new Set([from.tree?.key||from.key,to.tree?.key||to.key]);
-  if(segmentClear(start,end,obstacles,ignore)){
-    return {d:`M ${start.x} ${start.y} L ${end.x} ${end.y}`,points:[start,end]};
-  }
-
-  const dx=end.x-start.x,dy=end.y-start.y;
-  const len=Math.hypot(dx,dy)||1;
-  const px=-dy/len,py=dx/len;
-  const signs=laneSeed%2?[1,-1]:[-1,1];
-
-  for(const offset of [70,110,160,220,300,420,560,760]){
-    for(const sign of signs){
-      const off=offset*sign;
-      const p1={x:start.x+px*off,y:start.y+py*off};
-      const p2={x:end.x+px*off,y:end.y+py*off};
-      if(segmentClear(start,p1,obstacles,ignore)
-        &&segmentClear(p1,p2,obstacles,ignore)
-        &&segmentClear(p2,end,obstacles,ignore)){
-        return {
-          d:`M ${start.x} ${start.y} L ${p1.x} ${p1.y} L ${p2.x} ${p2.y} L ${end.x} ${end.y}`,
-          points:[start,p1,p2,end]
-        };
-      }
-    }
-  }
-
-  return gridRoute(start,end,from,to,obstacles,ignore);
-}
+const {routeEdge,segmentClear}=FogCircuitRoutes;
 function drawUniformEdge(parent,from,to,color,obstacles,relation="category",laneSeed=0,extraClass=""){
   const route=routeEdge(from,to,obstacles,laneSeed);
   if(!route)return false;
   const isFalse=FALSE_EDGE_TYPES.has(relation);
-  const cls=(isFalse?"knowledgeEdge falseTrail":"knowledgeEdge")+" "+extraClass;
-  parent.append(mk("path",{d:route.d,class:cls.trim(),stroke:isFalse?"#ff4d67":color}));
+  const cls=(isFalse?"knowledgeEdge falseTrail":"knowledgeEdge navigationBranch")+" "+(relation==="placement_pending"?"inventoryBranch ":"")+extraClass;
+  parent.append(mk("path",{d:route.d,class:cls.trim(),stroke:isFalse?"#ff4d67":color,
+    "data-from":from.tree?.key||from.key,"data-to":to.tree?.key||to.key}));
   return true;
 }
 
@@ -1219,6 +975,7 @@ function tokenPosition(token,camera){
 }
 
 function render(){
+  if(!cameraGesture)viewportOverride=null;
   const frag=document.createDocumentFragment();
   const camera=cameraCenter();
   const center={x:camera.x,y:camera.y};
@@ -1227,6 +984,7 @@ function render(){
 
   lastDeepLayout=null;
   lastObstacleCircles=[];
+  evidenceContextPoints=[];
 
   familyAngles=new Map();
   FAMILIES.forEach((f,i)=>familyAngles.set(f.id,-Math.PI/2+i*step));
@@ -1236,31 +994,39 @@ function render(){
     activePath[0].r=ringR;
   }
 
+  const globalLayout=null;
+  massiveAtlas?.setActive(expandAll||expandFieldDeep);
+  massiveAtlas?.configure({evidenceLens:evidenceLens||expandFieldDeep,frontierLens,allLabels,scopeKey:expandFieldDeep&&currentToken()?tokenKey(currentToken()):null});
   drawFogAndOrbits(frag,center);
-  drawBaseBranches(frag,center,ringR);
+  drawBaseBranches(frag,center,globalLayout?globalLayout.items.find(e=>e.tree.kind==="family").r:ringR);
   drawActiveRealm(frag,center);
   drawCore(frag,center);
-  drawFamilies(frag,center,ringR);
+  drawFamilies(frag,center,globalLayout?globalLayout.items.find(e=>e.tree.kind==="family").r:ringR);
   drawActivePath(frag,center);
 
   if(expandAll){
-    const layout=computeTreeLayout("all");
-    drawDeepLayout(frag,layout);
+    massiveAtlas.configure({evidenceLens,frontierLens,allLabels});
   }else if(expandFieldDeep&&activePath.length){
-    drawDeepFieldExpansion(frag,center);
+    // The worker-backed circuit renderer handles complete branch expansion.
   }else{
     drawCurrentChildren(frag,center);
   }
 
-  drawFalsePathOverlays(frag,center);
+  if(!massiveAtlas.active&&(evidenceLens||currentToken()))drawEvidenceTopology(frag,center);
 
   scene.replaceChildren(frag);
 
-  if(lastDeepLayout)fitDeepLayout(lastDeepLayout);
+  if(massiveAtlas.active&&massiveAtlas.ready)massiveAtlas.fit();
+  else if(lastDeepLayout)fitDeepLayout(lastDeepLayout);
   else fitViewToActiveBranch(center);
+  fitEvidenceContext();
 
+  fittedViewport=readViewport();
+  if(viewportOverride)writeViewport(viewportOverride);
+  updateLabelVisibility();
   renderBreadcrumb();
   renderDetail();
+  augmentEvidenceDetails();
   renderCaption();
   renderCompactList();
   syncExpandButtons();
@@ -1268,7 +1034,7 @@ function render(){
   backBtn.hidden=!activePath.length;
   backBtn.textContent=activePath.length>1?"← ONE LEVEL":"← ALL KNOWLEDGE";
   persistAtlasState();
-  persistVisualSnapshot();
+  if(!massiveAtlas.active)persistVisualSnapshot();
 }
 function drawFogAndOrbits(parent,center){
   parent.append(mk("circle",{cx:center.x,cy:center.y,r:443,class:"fogRing"}));
@@ -1373,9 +1139,9 @@ function drawFamilies(parent,center,ringR){
     const chipY=discR+18;
     const chip=mk("g",{class:"externalLabel",transform:`translate(0 ${chipY})`});
     const chipText=f.title;
-    const chipW=Math.min(168,Math.max(88,chipText.length*6.2));
+    const chipW=Math.max(88,chipText.length*6.2);
     chip.append(mk("rect",{x:-chipW/2,y:-10,width:chipW,height:20,rx:10}));
-    chip.append(textNode(0,4,chipText.length>22?chipText.slice(0,20)+"…":chipText,""));
+    chip.append(textNode(0,4,chipText,""));
     g.append(chip);
     g.append(textNode(0,discR+36,active?(expandFieldDeep?"FIELD OPEN":"OPEN"):"EXPAND →","domainHint"));
 
@@ -1499,11 +1265,11 @@ function drawCurrentChildren(parent,center){
   if(!all.length&&token.kind==="node"){
     const node=nodeById.get(token.id);
     const p=polar(center.x,center.y,token.r+DEPTH_GAP,token.angle);
-    drawFrontierMarker(parent,p,node?.frontier?"KNOWN FRONTIER":"UNMAPPED NEXT LAYER");
+    drawFrontierMarker(parent,p,node?.frontier?"RECORDED OPEN QUESTION":"UNMAPPED NEXT LAYER");
   }
 }
 function drawKnowledgeNode(parent,node,p,token,isCurrent,role,onClick,relation=""){
-  const f=familyById.get(activePath[0]?.id||node.domain)||FAMILIES[0];
+  const f=familyById.get(node.domain)||FAMILIES[0];
   const [,statusColor]=STATUS[node._status]||STATUS.active;
   const challenged=["invalidated","dependency-broken"].includes(node._status);
   const historical=node._status==="historical";
@@ -1515,6 +1281,7 @@ function drawKnowledgeNode(parent,node,p,token,isCurrent,role,onClick,relation="
     challenged?"invalidated":"",
     historical?"historical":"",
     review?"review":"",
+    navigation.placement_pending_ids.includes(node.id)?"placementPending":"",
     (challenged||historical)?"falsePath":""
   ].filter(Boolean).join(" ");
 
@@ -1525,34 +1292,27 @@ function drawKnowledgeNode(parent,node,p,token,isCurrent,role,onClick,relation="
   g.append(mk("circle",{r:radius,class:"disc",stroke:node.frontier?"#c497ff":(challenged||historical?"#ff4d67":f.color)}));
   g.append(mk("circle",{cx:0,cy:-radius+4,r:5,fill:statusColor,class:"status"}));
 
-  // Clip label text inside the disc so long titles never bleed onto the ring.
-  const clipId="nclip-"+String(node.id).replace(/[^a-z0-9_-]/gi,"_");
-  const cp=mk("clipPath",{id:clipId});
-  cp.append(mk("circle",{r:radius-7}));
-  g.append(cp);
-  const labelG=mk("g",{});
-  labelG.setAttribute("clip-path","url(#"+clipId+")");
-  const maxChars=role.includes("deepAll")?8:(isCurrent?16:14);
-  const lines=labelLines(node.label,maxChars);
-  const start=lines.length>1?-7:1;
-  lines.slice(0,2).forEach((line,i)=>labelG.append(textNode(0,start+i*13,line,"nodeTitle")));
+  // Preserve complete canonical names. Overview labels yield to readable focus.
+  const labelG=mk("g",{class:"fullNodeLabel"});
+  const lines=labelLines(node.label,24);
+  lines.forEach((line,i)=>labelG.append(textNode(0,radius+20+i*14,line,"nodeTitle")));
   g.append(labelG);
+  g.setAttribute("aria-label",node.label);
+  g.setAttribute("tabindex","0");
+  g.setAttribute("role","button");
+  g.dataset.visualRadius=radius;
+  g.dataset.nodeId=node.id;
+  g.dataset.fullLabel=node.label;
+  g.dataset.shortLabel=node.short_label||node.label;
+  g.dataset.important=(!node.tags?.includes("registry-seed")&&(node.kind==="field"||FAMILIES.some(f=>f.major.includes(node.label))))?"true":"false";
+  g.addEventListener("pointerenter",()=>showNodeHover(node,p));
+  g.addEventListener("pointerleave",()=>{document.querySelector("#nodeHover").hidden=true;});
+  g.addEventListener("keydown",ev=>{if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();onClick();}});
 
   const childCount=childrenFor(token).length;
   const meta=challenged?"FALSIFIED":historical?"SUPERSEDED":node.frontier?"FRONTIER":childCount?childCount+" NEXT":node.kind.toUpperCase();
-  g.append(textNode(0,lines.length>1?24:18,meta,"nodeMeta"));
+  g.append(textNode(0,5,meta,"nodeMeta"));
 
-  if(relation&&relation!=="category"&&!FALSE_EDGE_TYPES.has(relation)){
-    const badge=mk("g",{class:"nodeRelation",transform:`translate(0 ${radius+16})`});
-    badge.append(mk("rect",{x:-37,y:-8,width:74,height:16,rx:8}));
-    badge.append(textNode(0,3,String(relation).replaceAll("_"," "),"nodeRelationText"));
-    g.append(badge);
-  }else if(FALSE_EDGE_TYPES.has(relation)){
-    const badge=mk("g",{class:"nodeRelation",transform:`translate(0 ${radius+16})`});
-    badge.append(mk("rect",{x:-42,y:-8,width:84,height:16,rx:8}));
-    badge.append(textNode(0,3,String(relation).replaceAll("_"," "),"nodeRelationText"));
-    g.append(badge);
-  }
 
   if(challenged)drawScar(g,radius);
 
@@ -1561,6 +1321,7 @@ function drawKnowledgeNode(parent,node,p,token,isCurrent,role,onClick,relation="
   g.append(title);
   g.addEventListener("click",ev=>{
     ev.stopPropagation();
+    if(cameraGesture)return;
     if(challenged||historical)selectedFalseEdge=null;
     onClick();
   });
@@ -1584,28 +1345,46 @@ function drawFrontierMarker(parent,p,label){
   g.append(mk("path",{d:"M -70 8 Q -36 -18 0 3 Q 34 25 72 -7",class:"fogWisp"}));
   g.append(mk("path",{d:"M -62 26 Q -25 4 12 24 Q 42 38 68 19",class:"fogWisp secondary"}));
   g.append(textNode(0,-4,label,"frontierTitle"));
-  g.append(textNode(0,14,label==="KNOWN FRONTIER"?"Evidence ends here":"Nemesis can map what comes next","frontierSub"));
+  g.append(textNode(0,14,label==="RECORDED OPEN QUESTION"?"Recorded open question":"Nemesis can map what comes next","frontierSub"));
   parent.append(g);
 }
 
 function labelLines(label,maxChars){
-  const words=String(label).split(/\s+/);
-  if(label.length<=maxChars)return[label];
-
-  const lines=[""];
-  for(const word of words){
-    const current=lines[lines.length-1];
-    if((current+" "+word).trim().length<=maxChars||!current){
-      lines[lines.length-1]=(current+" "+word).trim();
-    }else if(lines.length<2){
-      lines.push(word);
-    }else{
-      lines[1]=(lines[1]+" "+word).trim();
-    }
+  const lines=[];
+  let line="";
+  for(const word of String(label).split(/\s+/)){
+    if(line&&(line+" "+word).length>maxChars){lines.push(line);line=word;}
+    else line=(line+" "+word).trim();
   }
-
-  if(lines[1]?.length>maxChars+5)lines[1]=lines[1].slice(0,maxChars+2).trim()+"…";
+  if(line)lines.push(line);
   return lines;
+}
+
+function updateLabelVisibility(){
+  const matrix=graph.getScreenCTM();
+  if(!matrix)return;
+  const scale=Math.hypot(matrix.a,matrix.b);
+  for(const g of scene.querySelectorAll(".knowledgeNode")){
+    const diameter=Number(g.dataset.visualRadius)*2*scale;
+    const current=g.classList.contains("current");
+    const important=g.dataset.important==="true";
+    // Only the extreme global overview omits ordinary names. Important fields
+    // remain labeled; all names can be shown explicitly, without truncation.
+    const suppressed=false;
+    g.classList.toggle("labelSuppressed",suppressed);
+    const label=g.querySelector(".fullNodeLabel");
+    const text=diameter<40?g.dataset.shortLabel:g.dataset.fullLabel;
+    const lines=labelLines(text,24);
+    label.replaceChildren(...lines.map((line,i)=>textNode(0,i*13,line,"nodeTitle")));
+    const pixels=expandAll&&!allLabels?Math.max(2.5,Math.min(12,diameter*.2)):12;
+    label.setAttribute("transform",`translate(0 ${Number(g.dataset.visualRadius)+pixels/scale}) scale(${pixels/12/scale})`);
+    label.classList.toggle("overviewLabel",diameter<20);
+  }
+  if(!expandAll)arrangeReadableLabels(scale);
+}
+
+function navigationRelationLabel(relation){
+  return ({research_context:"research connection",reviewed_taxonomy:"reviewed specialty",recorded_lineage:"recorded lineage",registry_membership:"registry entry",placement_pending:"placement pending",category:"category"})[relation]||String(relation).replaceAll("_"," ");
 }
 
 function truncateTo(index){
@@ -1640,19 +1419,19 @@ function renderBreadcrumb(){
 
 function renderCaption(){
   if(expandAll){
-    const count=lastDeepLayout?.positions.size||0;
-    mapCaption.innerHTML="<b>EXPAND ALL</b><span>"+count+" recursively mapped nodes are open to their current edge. Layout is deterministic, collision-checked, and auto-fitted.</span>";
+    const count=navigation.counts.discoverable;
+    mapCaption.innerHTML="<b>EXPAND ALL</b><span>"+count+" / "+navigation.counts.discoverable+" records discoverable · "+navigation.counts.placement_pending+" placement pending. Paths show navigation context, not scientific ancestry. Click a node for its full name and evidence.</span>";
     return;
   }
   if(expandFieldDeep&&activePath.length){
     const token=currentToken();
     const name=token.kind==="family"?familyById.get(token.id)?.short:nodeById.get(token.id)?.label;
-    const count=lastDeepLayout?.positions.size||0;
+    const count=massiveAtlas?.scopeKeys?massiveAtlas.scopeKeys.size-1:0;
     mapCaption.innerHTML="<b>"+esc(String(name||"FIELD").toUpperCase())+"</b><span>"+count+" descendants opened recursively from this point to the mapped edge.</span>";
     return;
   }
   if(!activePath.length){
-    mapCaption.innerHTML="<b>THE ATLAS</b><span>Choose a great field, drill one branch at a time, or use Expand All for the full collision-free mapped tree.</span>";
+    mapCaption.innerHTML="<b>THE ATLAS</b><span>Choose a great field, drill one branch at a time, or use Expand All for the complete mapped inventory.</span>";
     return;
   }
   const token=currentToken();
@@ -1668,7 +1447,7 @@ function renderDetail(){
   const token=currentToken();
 
   if(!token){
-    detail.innerHTML='<div class="detailHero"><div class="eyebrow">HUMAN KNOWLEDGE</div><h2>'+(expandAll?'Frontier overview':'Choose a great field')+'</h2><p>'+(expandAll?'Every great field is recursively opened to its current mapped edge. Purple dashed nodes are frontiers; red dashed trails mark falsified or superseded routes.':'Pick a field, or use Expand All to recursively open the current map at once.')+'</p><div class="detailActionRow"><button type="button" id="detailExpandAll">EXPAND ALL TO EDGE</button><button type="button" id="detailLens">'+(frontierLens?'LENS ON':'FRONTIER LENS')+'</button></div></div><section class="detailSection"><h3>HOW TO READ THE EDGE</h3><p><b>Solid</b> = mapped knowledge. <b>Dashed purple glow</b> = frontier. <b>Muted red / scarred</b> = falsified or historical. Click a false node for the story of why that path was tried.</p></section>';
+    detail.innerHTML='<div class="detailHero"><div class="eyebrow">HUMAN KNOWLEDGE</div><h2>'+(expandAll?'Frontier overview':'Choose a great field')+'</h2><p>'+(expandAll?'The entire mapped circuit expands to its recorded edge. Every retained record stays in the atlas. Dashed circles mark placement pending; navigation paths alone do not establish scientific ancestry. Purple marks recorded open questions; red marks falsified or superseded records.':'Pick a field, or use Expand All to recursively open the current map at once.')+'</p><div class="detailActionRow"><button type="button" id="detailExpandAll">EXPAND ALL TO EDGE</button><button type="button" id="detailLens">'+(frontierLens?'LENS ON':'FRONTIER LENS')+'</button></div></div><section class="detailSection"><h3>HOW TO READ THE EDGE</h3><p><b>Solid</b> = recorded navigation context. <b>Dashed purple glow</b> = frontier. <b>Muted red / scarred</b> = falsified or historical. Click a false node for the story of why that path was tried.</p></section>';
     detail.querySelector("#detailExpandAll")?.addEventListener("click",doExpandAll);
     detail.querySelector("#detailLens")?.addEventListener("click",()=>{frontierLens=!frontierLens;syncExpandButtons();render();});
     return;
@@ -1699,7 +1478,7 @@ function renderDetail(){
   const sources=n.sources||[];
   const reviews=reviewsByTarget.get(n.id)||[];
 
-  detail.innerHTML='<div class="detailHero"><div class="eyebrow">'+esc(f?.short||n.domain)+' · DEPTH '+Math.max(1,activePath.length-1)+'</div><h2>'+esc(n.label)+'</h2><span class="pill"><i style="background:'+statusColor+'"></i>'+esc(statusLabel)+'</span>'+(n.frontier?'<span class="pill">frontier</span>':'')+'<p>'+esc(n.summary||"No summary attached yet.")+'</p><div class="numberGrid"><div class="numberBox"><b>'+children.length+'</b><span>next branches</span></div><div class="numberBox"><b>'+incoming.length+'</b><span>incoming</span></div><div class="numberBox"><b>'+sources.length+'</b><span>sources</span></div><div class="numberBox"><b>'+reviews.length+'</b><span>reviews</span></div></div><div class="detailActionRow"><button type="button" id="detailExpandBranch">EXPAND THIS BRANCH TO EDGE</button></div>'+falsePathStory(n)+'</div><section class="detailSection"><h3>NEXT MAPPED LAYER</h3>'+(children.length?children.map(({node,relation})=>'<button class="nodeLink" data-child="'+esc(node.id)+'"><span>'+esc(node.label)+'</span><small>'+esc(relation)+' →</small></button>').join(""):'<p class="coverageGap">'+(n.frontier?"This node is already a mapped frontier.":"The hierarchy currently ends here. Nemesis can fill the next layer without changing this renderer.")+'</p>')+'</section><section class="detailSection"><h3>PROVENANCE</h3>'+(sources.length?sources.slice(0,6).map(s=>'<p><a href="'+esc(s.url)+'" target="_blank" rel="noreferrer">'+esc(s.title||s.id)+'</a></p>').join(""):'<p>No source attached yet.</p>')+'</section>';
+  detail.innerHTML='<div class="detailHero"><div class="eyebrow">'+esc(f?.short||n.domain)+' · DEPTH '+Math.max(1,activePath.length-1)+'</div><h2>'+esc(n.label)+'</h2><span class="pill"><i style="background:'+statusColor+'"></i>'+esc(statusLabel)+'</span>'+'<span class="pill evidenceState">'+esc(evidenceIndex.states[n.id]||'registry seed')+'</span>'+(n.frontier?'<span class="pill">frontier</span>':'')+(navigation.placement_pending_ids.includes(n.id)?'<span class="pill">placement pending</span>':'')+'<p>'+esc(n.summary||"No summary attached yet.")+'</p><div class="numberGrid"><div class="numberBox"><b>'+children.length+'</b><span>next branches</span></div><div class="numberBox"><b>'+incoming.length+'</b><span>incoming</span></div><div class="numberBox"><b>'+sources.length+'</b><span>sources</span></div><div class="numberBox"><b>'+reviews.length+'</b><span>reviews</span></div></div><div class="detailActionRow"><button type="button" id="detailExpandBranch">EXPAND THIS BRANCH TO EDGE</button></div>'+falsePathStory(n)+'</div><section class="detailSection"><h3>NEXT MAPPED LAYER</h3>'+(children.length?children.map(({node,relation})=>'<button class="nodeLink" data-child="'+esc(node.id)+'"><span>'+esc(node.label)+'</span><small>'+esc(navigationRelationLabel(relation))+' →</small></button>').join(""):'<p class="coverageGap">'+(n.frontier?"This record is marked as an open question. It does not certify that all evidence has been mapped.":"No next navigation layer is recorded. This is a coverage gap, not evidence that human knowledge ends here.")+'</p>')+'</section><section class="detailSection"><h3>PROVENANCE</h3>'+(sources.length?sources.map(s=>'<p><a href="'+esc(s.url)+'" target="_blank" rel="noreferrer">'+esc(s.title||s.id)+'</a></p>').join(""):'<p>No source attached yet.</p>')+'</section>';
 
   bindDetailChildren();
   detail.querySelector("#detailExpandBranch")?.addEventListener("click",doExpandField);
@@ -1734,36 +1513,23 @@ function searchScore(row,q){
 }
 
 function findPathTo(domain,targetId){
-  const f=familyById.get(domain);
-  if(!f)return null;
-  const roots=majorNodes(f);
-
-  for(const root of roots){
-    if(root.id===targetId)return[root.id];
+  const ids=[];
+  const seen=new Set();
+  let id=targetId;
+  while(!id.startsWith("family:")){
+    if(seen.has(id))return null;
+    seen.add(id);
+    ids.push(id);
+    const parent=navigationByChild.get(id);
+    if(!parent)return null;
+    id=parent.source;
   }
-
-  const queue=roots.map(root=>[root.id]);
-  const seen=new Set(roots.map(r=>r.id));
-
-  while(queue.length){
-    const path=queue.shift();
-    if(path.length>7)continue;
-    const last=path[path.length-1];
-
-    for(const edge of outgoingById.get(last)||[]){
-      if(seen.has(edge.target))continue;
-      const node=nodeById.get(edge.target);
-      if(!node)continue;
-      const next=[...path,node.id];
-      if(node.id===targetId)return next;
-      seen.add(node.id);
-      queue.push(next);
-    }
-  }
-  return null;
+  return id==="family:"+domain?ids.reverse():null;
 }
 
 function activateSearchResult(node){
+  expandAll=false;
+  expandFieldDeep=false;
   const family=familyById.get(node.domain);
   if(!family)return;
 
@@ -1835,7 +1601,10 @@ function syncExpandButtons(){
     frontierLensBtn.classList.toggle("on",frontierLens);
     frontierLensBtn.setAttribute("aria-pressed",frontierLens?"true":"false");
   }
+  document.querySelector("#evidenceLensBtn")?.setAttribute("aria-pressed",String(evidenceLens));
+  document.querySelector("#labelsBtn")?.setAttribute("aria-pressed",String(allLabels));
   document.body.classList.toggle("frontier-lens",frontierLens);
+  massiveAtlas?.configure({frontierLens});
 }
 function observeLayout(){
   const apply=()=>{
