@@ -1,0 +1,172 @@
+--- a/sim/brain_bridge.py
++++ b/sim/brain_bridge.py
+@@ -1017,6 +1017,8 @@
+     async def enqueue(request: Request):
+         local_ui(request)
+         value = await body(request, 2_100_000)
++        if str(value.get('tag') or '').startswith('fog-crew:'):
++            raise HTTPException(409, 'This Fog page is using a retired crew workflow. Reload the Nemesis page, then use Expand map with crew. Existing replies are retained; no job was dispatched.')
+         system = value.get('system', '')
+         evidence = []
+         attachments = []
+--- a/sim/github_evidence.py
++++ b/sim/github_evidence.py
+@@ -12,6 +12,7 @@
+ from .github_batches import _validate_batch_id,_batch_dir,_load_batch_files,_stage_into_project,_update_meta,ingest_worker_batch
+ 
+ VERSION='fog-evidence-crew/1'
++CLIENT_REVISION='gh-evidence-2'
+ TERMINAL={'MERGED','PR_OPEN','READY','BLOCKED','STALE'}
+ MAX_PACKET=300_000
+ 
+@@ -121,7 +122,7 @@
+     def status(self,owner,repo,path):
+         folder=self.root/check_owner(owner)/check_repo(repo)
+         discoveries=[json.loads(f.read_text(encoding='utf-8')) for f in self.root.glob('discoveries/*.json')]
+-        return {'protocol':VERSION,'running':self.running,'last_error':self.last_error,'flows':[self.public(self.load(f.parent)) for f in sorted(folder.glob('*/flow.json')) if self.load(f.parent)['path']==path],
++        return {'protocol':VERSION,'client_revision':CLIENT_REVISION,'running':self.running,'last_error':self.last_error,'flows':[self.public(self.load(f.parent)) for f in sorted(folder.glob('*/flow.json')) if self.load(f.parent)['path']==path],
+                 'discoveries':[d for d in discoveries if (d['owner'],d['repo'],d['path'])==(owner,repo,path)]}
+     def export(self,folder,flow):
+         """Only compiler-generated receipts/raw captures and bound review decisions leave the vault."""
+--- a/static/github.js
++++ b/static/github.js
+@@ -3,6 +3,7 @@
+   'use strict';
+   const E = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+   const enc = encodeURIComponent;
++  const CREW_CLIENT_REVISION = 'gh-evidence-2';
+   const $ = s => document.querySelector(s);
+   let host = null, view = 'home', owner = '', repo = '', path = '', filePath = '', status = null, repos = null;
+   let meta = null, tree = null, projects = null, active = null, context = null, ci = null, file = null;
+@@ -210,6 +211,7 @@
+         <span class="gh-crew-mini-row">${crewMini}</span>
+         <button type="button" class="workspace-primary" data-gh="expand-crew" ${crewWorking()?'disabled':''} title="${crewWorking()?'Crew is already working':'Start Brain + 3 Fog workers'}">${crewWorking()?'Crew working…':'Expand map with crew'}</button>
+       </header>
++      <div class="gh-evidence-progress" role="status">${crewProgress()}</div>
+       <iframe class="gh-atlas-frame" src="${E(src)}" title="${E(title)}"></iframe>
+     </div>`;
+   }
+@@ -244,7 +246,8 @@
+     }).join('');
+     const detail = (crew && crew.detail) || 'Bind ChatGPT tabs in the extension to see live crew status.';
+     return `<section class="workspace-section gh-card gh-crew"><div class="gh-card-head">${eyebrow('FOG CREW')}${badge(crew && crew.connected ? 'ok' : 'warn', crew && crew.state ? crew.state : 'UNKNOWN')}</div>
+-      <p>One Brain plans. Three workers expand the atlas with sourced Fog batches. This card is the live status so you are not guessing.</p>
++      <p>Connected workers discover sources, construct exact candidates and review the evidence in separate stages.</p>
++      <div class="gh-evidence-progress" role="status">${crewProgress()}</div>
+       <div class="gh-crew-row">${pills}</div>
+       <p class="workspace-muted">${E(String(detail).slice(0,220))}</p>
+       <div class="workspace-output-actions">
+@@ -266,6 +269,24 @@
+     });
+   }
+ 
++  function crewProgress(){
++    const evidence = crew?.evidence;
++    if (!evidence) return 'Checking evidence workflow…';
++    if (evidence.client_revision && evidence.client_revision !== CREW_CLIENT_REVISION) return 'Nemesis was upgraded. <button type="button" data-gh="reload-client">Reload this page</button> before starting another crew.';
++    if (!evidence.running || evidence.last_error) return 'Evidence workflow unavailable: '+E(evidence.last_error || 'server handoff is not running');
++    const flows = evidence.flows || [], discoveries = evidence.discoveries || [];
++    const active = flows.filter(f=>!['MERGED','PR_OPEN','READY','BLOCKED','STALE'].includes(f.state));
++    const pending = discoveries.filter(d=>!['HANDED_OFF','BLOCKED'].includes(d.state));
++    const blocked = [...discoveries,...flows].filter(f=>f.state==='BLOCKED' || f.state==='STALE');
++    const parts = [];
++    if (pending.length) parts.push(pending.length+' source discovery job(s) '+pending.map(d=>d.state.toLowerCase()).join(', '));
++    if (active.length) parts.push(active.map(f=>E(f.batch_id)+': '+E(f.state.toLowerCase())).join(' · '));
++    if (blocked.length) parts.push('Blocked: '+blocked.map(f=>E(f.batch_id || f.mission || f.job_id)+': '+E(f.error || f.state)).join(' · '));
++    const done=flows.filter(f=>['MERGED','PR_OPEN','READY'].includes(f.state));
++    if (done.length) parts.push(done.map(f=>E(f.batch_id)+': '+E(f.state.toLowerCase().replace('_',' '))).join(' · '));
++    return parts.join(' | ') || 'Evidence crew ready · no expansion queued. Expand starts discovery, capture, authoring and two reviews.';
++  }
++
+   async function loadCrew(){
+     try {
+       const st = await api('/api/brain/status');
+@@ -284,7 +305,7 @@
+   let crewSig = '', batchSig = '';
+   function signatureCrew(){
+     const pool = (crew && crew.pool) || {};
+-    return [crew && crew.state, crew && crew.detail,JSON.stringify(crew?.evidence?.flows?.map(f=>[f.batch_id,f.state,f.error])||[])].concat(
++    return [crew && crew.state, crew && crew.detail,JSON.stringify(crew?.evidence||{})].concat(
+       ['primary','worker_1','worker_2','worker_3'].map(s => {
+         const i = pool[s] || {};
+         return [s, i.state, i.active_job_id || '', i.connected ? 1 : 0].join(':');
+@@ -328,6 +349,8 @@
+     crewSig = nextCrew; batchSig = nextBatch;
+     if (view === 'atlas') {
+       // Update crew pills / Expand only; do not rebuild iframe (that resets the map).
++      const progress = host.querySelector('.gh-evidence-progress');
++      if (progress) progress.innerHTML = crewProgress();
+       const btn = host.querySelector('[data-gh="expand-crew"]');
+       if (btn) {
+         const work = crewWorking();
+@@ -380,6 +403,8 @@
+   async function expandWithCrew(){
+     busy = true; paint();
+     try {
++      await loadCrew();
++      if (crew?.evidence?.client_revision && crew.evidence.client_revision !== CREW_CLIENT_REVISION) throw Error('Nemesis was upgraded. Reload this page before starting the evidence crew.');
+       await loadActive();
+       const act = active?.active || active;
+       const p = (act && act.path) || 'research/fog-of-knowledge';
+@@ -768,6 +793,7 @@
+     if (a === 'open-atlas-active') openAtlas(b.dataset.path, b.dataset.owner, b.dataset.repo);
+     if (a === 'atlas-back') closeAtlas();
+     if (a === 'expand-crew') expandWithCrew();
++    if (a === 'reload-client') location.reload();
+     if (a === 'automate-merge') { automateMerge = !!b.checked; return; }
+     if (a === 'batch-check') runBatchCheck(b.dataset.batch);
+     if (a === 'batch-propose') runBatchPropose(b.dataset.batch);
+--- a/static/github.css
++++ b/static/github.css
+@@ -1,5 +1,6 @@
+ /* GitHub workspace panel — calm, matches workspace tokens */
+ .gh-notice{margin:0 0 16px;padding:10px 14px;border-radius:10px;background:rgba(120,180,255,.12);border:1px solid rgba(120,180,255,.25)}
++.gh-evidence-progress{padding:6px 16px;font-size:12px;color:#b5d8e7;background:#0a141d;border-bottom:1px solid #203543;overflow-wrap:anywhere;max-height:100px;overflow:auto;flex-shrink:0}
+ .gh-card{margin-bottom:18px}
+ .gh-card-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+ .gh-badge{font-size:11px;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.15);opacity:.85}
+--- a/static/index.html
++++ b/static/index.html
+@@ -13,7 +13,7 @@
+ <link rel="stylesheet" href="/static/frontier.css">
+ <link rel="stylesheet" href="/static/workspace.css">
+ <link rel="stylesheet" href="/static/social.css?v=eureka1">
+-<link rel="stylesheet" href="/static/github.css?v=gh13">
++<link rel="stylesheet" href="/static/github.css?v=gh-evidence-2">
+ </head>
+ <body class="workspace-mode">
+ <div id="research-workspace">
+@@ -277,7 +277,7 @@
+ <script src="/static/brain.js?v=20261004-ready-state"></script>
+ <script src="/static/frontier.js" defer></script>
+ <script src="/static/social.js?v=eureka2" defer></script>
+-<script src="/static/github.js?v=gh-evidence-1" defer></script>
++<script src="/static/github.js?v=gh-evidence-2" defer></script>
+ <script src="/static/workspace.js?v=ws13" defer></script>
+ </body>
+ </html>
+--- a/tests/test_github_evidence.py
++++ b/tests/test_github_evidence.py
+@@ -7,6 +7,22 @@
+ from fastapi.testclient import TestClient
+ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+ from sim import github_evidence as ge,github_batches as gb,github_sandbox as gs
++
++@pytest.mark.parametrize('tag',['fog-crew:boss','fog-crew:w1','fog-crew:w2','fog-crew:w3','fog-crew:discover:1','fog-crew:evidence:author:test'])
++def test_browser_cannot_submit_untracked_fog_jobs(tag):
++    from sim.brain_bridge import install_routes
++    brain=Brain();app=FastAPI();install_routes(app,brain)
++    response=TestClient(app).post('/api/brain/jobs',json={'tag':tag,'system':'old UI','goal':'untracked batch'})
++    assert response.status_code==409
++    assert 'Reload the Nemesis page' in response.json()['detail']
++    assert not brain.rows
++
++def test_manual_non_fog_jobs_remain_available():
++    from sim.brain_bridge import install_routes
++    brain=Brain();app=FastAPI();install_routes(app,brain)
++    response=TestClient(app).post('/api/brain/jobs',json={'tag':'manual','system':'test','goal':'test'})
++    assert response.status_code==200
++    assert len(brain.rows)==1
+ 
+ FOG=Path(__file__).resolve().parents[1]/'data/fog-upgrade-backups/20261007-evidence-crew/test-project-path.txt'
+ # The portable bundle's test launcher supplies its Fog checkout; production data is never imported.

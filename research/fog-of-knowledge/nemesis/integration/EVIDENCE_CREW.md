@@ -29,6 +29,18 @@ Starting the application does not start a new Fog wave. **Expand map with crew**
 explicitly queues three bounded discovery missions. Connected Brain slots handle
 these jobs without pinning work to a disconnected worker.
 
+After the base patch, apply `crew-recovery.patch` and restart Nemesis, then reload
+the existing **Nemesis application page**. Its atlas-only Refresh button refreshes
+the embedded graph and does not reload application JavaScript. An already-open
+page can otherwise keep submitting the retired `fog-crew:boss/w1/w2/w3` workflow
+after a server upgrade: those jobs finish but have no durable evidence handoff.
+The recovery patch rejects untracked Fog jobs on `/api/brain/jobs` with an explicit
+reload message before dispatch. Existing replies remain retained in `brain_jobs`.
+The current client loads as `github.js?v=gh-evidence-2`, checks the server's client
+revision, and shows discovery, capture, author, review, completion and blocking
+reasons directly above the atlas. Idle connected slots are separate from pipeline
+progress; a blocked candidate does not masquerade as an active researcher.
+
 The durable workflow is:
 
 1. Workers discover one to four bounded public source URLs and identify existing
