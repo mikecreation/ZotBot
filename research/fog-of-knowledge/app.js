@@ -20,6 +20,7 @@ const STATUS={
   foundational:["Foundational","#ffbf57"],
   established:["Strongly established","#65f5b0"],
   active:["Active","#66bfff"],
+  reported:["Source-reported","#8faecc"],
   disputed:["Disputed","#ffc857"],
   frontier:["Frontier / unresolved","#c497ff"],
   invalidated:["Invalidated / falsified","#ff4d67"],

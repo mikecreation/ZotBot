@@ -34,6 +34,7 @@ def build_contract() -> dict:
     graph = json.loads(GRAPH.read_text(encoding="utf-8"))
     domains = [d["id"] for d in graph.get("domains", [])]
     eras = [e["id"] for e in graph.get("eras", [])]
+    review_policy = json.loads((ROOT/"data/evidence-policy.json").read_text(encoding="utf-8"))
     return {
         "protocol": "fog-nemesis-worker-contract/1",
         "generated_from": {
@@ -59,7 +60,8 @@ def build_contract() -> dict:
             "deterministic_visual_projection_separate_from_evidence",
         ],
         "evidence_files": ["sources.jsonl","assertions.jsonl","taxonomy.jsonl","identities.jsonl"],
-        "review_policy": json.loads((ROOT/"data/evidence-policy.json").read_text(encoding="utf-8")),
+        "review_policy": review_policy,
+        "representation_policy": review_policy.get("representation_policy", {}),
         "review_example": "scripts/test_evidence_compiler.py:fixture (synthetic example, not real scientific evidence)",
         "edge_kinds_distinct": sorted(ns.get("ALLOWED_RELATIONS", [])),
         "allowed_kinds": sorted(ns.get("ALLOWED_KINDS", [])),
@@ -76,6 +78,7 @@ def build_contract() -> dict:
             "Formatting retries must not rewrite sources, scientific claims, or relation semantics.",
             "Use the compiler source capture before review; keep the capture_id and retrieval metadata unchanged. Worker-written text attached to a real URL is not a retrieved source. Retain exact source text, sha256, retrieval time and source URL. Assertions require exact Unicode code-point start/end excerpts, explicit scope, target hash and the full proposed canonical record.",
             "Every node, edge, review, taxonomy and identity candidate needs its own supported assertion. Include an explicit frontier boolean and every inherited field of an updated node.",
+            "Use explicit neutral metadata when its positive interpretation is unsupported: status reported attributes a scoped result/proposal to its captured source without endorsement; era undated leaves chronology unresolved; frontier false makes no current-frontier currency claim. Do not substitute these automatically for rejected metadata: author a new complete candidate revision and obtain both reviews. Neutral metadata never excuses an unsupported assertion, kind, domain, relationship, or strengthened scope.",
             "Separate entailment and adversarial reviewers must approve the exact candidate revision. The candidate author cannot self-review. Worker confidence and citations alone never pass ingestion.",
             "Unsupported or uncertain candidates stay in quarantine. Classification, placement and identity cannot be invented by a formatting normalizer.",
             "Optional node.public_frontier metadata uses category open-question/public-result/company-tool; capability_status publicly-described/undisclosed; disclosed_at exact YYYY-MM-DD or null; source_ids identifying captured supporting sources. Company/tool names and each claimed capability must be publicly supported. Private or undisclosed capabilities remain unknown. A disclosure date never establishes world-leading currency.",
@@ -100,6 +103,7 @@ def prompt_block(contract: dict | None = None) -> str:
             "compiler_decides": c["compiler_decides"],
             "evidence_files": c["evidence_files"],
             "review_policy": c["review_policy"],
+            "representation_policy": c["representation_policy"],
             "prompt_rules": c["prompt_rules"],
         }, ensure_ascii=False, indent=2)
     )

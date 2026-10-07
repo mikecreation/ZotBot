@@ -22,7 +22,21 @@
           "domain",
           "era",
           "status"
-        ]
+        ],
+        "properties": {
+          "status": {
+            "enum": ["foundational", "established", "active", "disputed", "frontier", "invalidated", "historical", "reported"],
+            "description": "reported attributes the scoped assertion to its retained source without claiming acceptance or current consensus."
+          },
+          "era": {
+            "type": "string",
+            "description": "One of graph.eras; undated explicitly leaves chronological placement unresolved."
+          },
+          "frontier": {
+            "type": "boolean",
+            "description": "false makes no positive claim of current frontier currency; true requires explicit evidence and review."
+          }
+        }
       }
     },
     "edges": {

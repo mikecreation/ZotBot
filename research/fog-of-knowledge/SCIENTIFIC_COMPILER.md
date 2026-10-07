@@ -33,6 +33,10 @@ Scope explicitly names `population`, `time`, `assumptions`, `uncertainty`, `unit
 
 `canonical_record` is the complete proposed record. Compute its hash with `evidence_compiler.digest`, which hashes sorted compact JSON encoded as UTF-8. Node summary must equal the reviewed assertion statement. Node provenance must point to the same source ID and URL as its excerpts. A node needs an explicit `frontier` boolean. Updates must include every inherited field: the compiler rejects unreviewed fields, source unions and automatically added aliases. Empty storage arrays are the only nonsemantic defaults.
 
+Neutral scientific metadata keeps unresolved questions explicit. `status: reported` means a source-attributed result or proposal; it does not assert acceptance, validation or current consensus. `era: undated` means chronology is unresolved and provides no basis for chronological or current-frontier placement. `frontier: false` makes no affirmative claim that this is the current frontier; it does not establish that an open question is settled or a result is obsolete. A publication date alone does not establish current scientific standing.
+
+These values are author proposals, not compiler defaults or automatic downgrades. Replacing unsupported metadata requires a new candidate revision, with its complete representation bound to the source-supported assertion and reviewed by both independent roles. The compiler must not change retained source captures, summaries or assertion scopes to accommodate the revision. Neutral metadata does not waive source support, review checks or justification of other classifications and placements.
+
 For an executable example, see `fixture()` in `scripts/test_evidence_compiler.py`. It is deliberately synthetic and never inserted into the real knowledge graph.
 
 ## Review workflow

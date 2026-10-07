@@ -2,5 +2,19 @@
   "protocol": "fog-evidence-policy/1",
   "required_roles": ["entailment", "adversarial"],
   "review_roles": ["entailment", "adversarial"],
+  "representation_policy": {
+    "protocol": "fog-representation-policy/1",
+    "status": {
+      "reported": "A captured source reports this scoped result or proposal. This does not assert scientific acceptance, replication, current consensus, or truth beyond the attributed report."
+    },
+    "era": {
+      "undated": "Chronological placement is unresolved. This does not assert an origin date, contemporary relevance, or current frontier currency; any explicit date in the scientific statement still needs exact source support."
+    },
+    "frontier": {
+      "false": "No positive claim that this record identifies a current frontier or latest public capability. This does not mean settled, obsolete, or disproved.",
+      "true": "A positive frontier classification that needs explicit evidence and review; a publication date alone does not establish latest human knowledge."
+    },
+    "review_rule": "Authors must explicitly propose neutral metadata when acceptance, chronology, or currency is unresolved. Reviewers evaluate reported/undated/frontier:false by these definitions, without requiring proof of endorsement or currency that they do not assert. Exact support, scope, label, kind, domain, relationships, and every other represented claim remain subject to both full reviews. Neutral metadata cannot rescue an unsupported or strengthened statement. The compiler never changes scientific metadata to obtain approval."
+  },
   "policy": "Exact retained excerpts and scoped assertions are mandatory. Review records bind the whole canonical representation; model agreement is not independent scientific corroboration. Legacy records remain visible and unreviewed."
 }

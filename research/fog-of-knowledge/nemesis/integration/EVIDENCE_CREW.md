@@ -48,6 +48,17 @@ The atlas iframe persists during status changes. A confirmed `MERGED` revision
 refreshes the atlas automatically while preserving camera, selection, expansion
 and connection lenses; author completion and CI waiting never count as a merge.
 
+Apply `crew-poll-reliability.patch` afterward for the current neutral-field author
+contract and nonblocking Brain polling. Admission checks retain explicit pause,
+ownership and lease rules while avoiding unchanged writes and rotating bounded
+queue windows. Polling work runs outside the HTTP event loop.
+
+The shared `representation_policy` defines `reported` as source attribution,
+`undated` as unresolved chronology, and `frontier:false` as no currency assertion.
+Authors select these neutral fields explicitly; the compiler never replaces
+unsupported positive classifications with them. Both reviewers receive the same
+policy and must still justify the complete substantive representation and scope.
+
 The durable workflow is:
 
 1. Workers discover one to four bounded public source URLs and identify existing
