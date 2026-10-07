@@ -1,37 +1,66 @@
 (function(root){
 const {query}=FogCircuitSpatial;
-// Fit complete words into an inscribed square. The layout is independent of
-// camera zoom, so both worker and viewport painters can reuse the measurements.
+// Compare bounded word-wrap candidates using actual glyph corners against the
+// circular border. Cache camera-independent layouts; zoom scales the text too.
 const labelCache=new Map();
 root.FogCircleLabel={layout(c,label,radius){
   const key=radius+'|'+label;
   if(labelCache.has(key))return labelCache.get(key);
-  c.font='600 100px system-ui';
+  c.font='600 100px system-ui';c.textAlign='center';c.textBaseline='alphabetic';
   const words=String(label).trim().split(/\s+/),space=c.measureText(' ').width/100;
-  const widths=words.map(word=>c.measureText(word).width/100),side=radius*1.28;
-  const wrap=size=>{
-    const lines=[];let line='',width=0;
+  const widths=words.map(word=>c.measureText(word).width/100);
+  const narrow=Math.max(...widths),wide=widths.reduce((a,b)=>a+b,0)+space*(words.length-1);
+  const metrics=new Map(),seen=new Set();let best=null;
+  for(let candidate=0;candidate<=24;candidate++){
+    const limit=narrow+(wide-narrow)*candidate/24,lines=[];let line='',width=0;
     words.forEach((word,i)=>{
       const next=width+(line?space:0)+widths[i];
-      if(line&&next*size>side){lines.push(line);line=word;width=widths[i]}
+      if(line&&next>limit+1e-6){lines.push(line);line=word;width=widths[i]}
       else {line+=(line?' ':'')+word;width=next}
     });
     if(line)lines.push(line);
-    return lines;
-  };
-  let low=0,high=Math.min(radius*.4,side/Math.max(...widths));
-  for(let i=0;i<14;i++){
-    const size=(low+high)/2,lines=wrap(size);
-    if(lines.length*size*1.2<=side)low=size;else high=size;
+    const signature=lines.join('\n');if(seen.has(signature))continue;seen.add(signature);
+    const bounds=lines.map(text=>{
+      if(!metrics.has(text)){
+        const m=c.measureText(text);
+        metrics.set(text,{left:-m.actualBoundingBoxLeft/100,right:m.actualBoundingBoxRight/100,top:-m.actualBoundingBoxAscent/100,bottom:m.actualBoundingBoxDescent/100});
+      }
+      return metrics.get(text);
+    });
+    const ys=lines.map((_,i)=>(i-(lines.length-1)/2)*1.08);
+    const top=Math.min(...bounds.map((b,i)=>ys[i]+b.top)),bottom=Math.max(...bounds.map((b,i)=>ys[i]+b.bottom));
+    const offset=-(top+bottom)/2;let extent=0;
+    bounds.forEach((b,i)=>{
+      ys[i]+=offset;
+      for(const x of [b.left-.05,b.right+.05])for(const y of [ys[i]+b.top-.05,ys[i]+b.bottom+.05])extent=Math.max(extent,Math.hypot(x,y));
+    });
+    const size=radius*.94/extent;
+    if(!best||size>best.size)best={size,lines,ys};
   }
-  const result={size:low,lines:wrap(low)};
-  labelCache.set(key,result);return result;
-},draw(c,label,x,y,radius,scale,maxPixels=12){
-  const fitted=this.layout(c,label,radius),size=Math.min(fitted.size,maxPixels/scale);
-  c.font=`600 ${size}px system-ui`;c.textAlign='center';c.textBaseline='middle';
-  c.strokeStyle='#040a13';c.lineWidth=size*.14;c.lineJoin='round';
+  // Font hinting changes tiny glyph bounds. Check the final font size rather
+  // than assuming that measurements at 100px scale down perfectly.
+  for(let pass=0;pass<8;pass++){
+    c.font=`600 ${best.size}px system-ui`;
+    const bounds=best.lines.map(text=>c.measureText(text));
+    const ys=best.lines.map((_,i)=>(i-(best.lines.length-1)/2)*best.size*1.08);
+    const top=Math.min(...bounds.map((b,i)=>ys[i]-b.actualBoundingBoxAscent));
+    const bottom=Math.max(...bounds.map((b,i)=>ys[i]+b.actualBoundingBoxDescent));
+    const offset=-(top+bottom)/2,pad=best.size*.05;let extent=0;
+    bounds.forEach((b,i)=>{
+      ys[i]+=offset;
+      for(const x of [-b.actualBoundingBoxLeft-pad,b.actualBoundingBoxRight+pad])for(const y of [ys[i]-b.actualBoundingBoxAscent-pad,ys[i]+b.actualBoundingBoxDescent+pad])extent=Math.max(extent,Math.hypot(x,y));
+    });
+    best.ys=ys.map(y=>y/best.size);
+    if(extent<=radius*.94)break;
+    best.size*=radius*.94/extent;
+  }
+  labelCache.set(key,best);return best;
+},draw(c,label,x,y,radius){
+  const fitted=this.layout(c,label,radius),size=fitted.size;
+  c.font=`600 ${size}px system-ui`;c.textAlign='center';c.textBaseline='alphabetic';
+  c.strokeStyle='#040a13';c.lineWidth=size*.1;c.lineJoin='round';
   fitted.lines.forEach((line,i)=>{
-    const lineY=y+(i-(fitted.lines.length-1)/2)*size*1.2;
+    const lineY=y+fitted.ys[i]*size;
     c.strokeText(line,x,lineY);c.fillText(line,x,lineY);
   });
 }};
@@ -57,12 +86,12 @@ root.FogCircuitPainter={draw:function(c,v,scale,ox,oy){
       }
       c.setLineDash([]);c.globalAlpha=1;c.textAlign='center';c.textBaseline='top';
       for(const e of items){
-        if(e.kind==='family'){const family=this.families.get(e.id);c.strokeStyle=family.color;c.fillStyle='#06101b';c.lineWidth=2/scale;c.beginPath();c.arc(e.x,e.y,e.radius,0,Math.PI*2);c.fill();c.stroke();c.fillStyle='#def6ff';FogCircleLabel.draw(c,family.title||family.short,e.x,e.y,e.radius*.88,scale);continue}
+        if(e.kind==='family'){const family=this.families.get(e.id);c.strokeStyle=family.color;c.fillStyle='#06101b';c.lineWidth=2/scale;c.beginPath();c.arc(e.x,e.y,e.radius,0,Math.PI*2);c.fill();c.stroke();c.fillStyle='#def6ff';FogCircleLabel.draw(c,family.title||family.short,e.x,e.y,e.radius);continue}
         const node=this.nodes.get(e.id);
         c.globalAlpha=this.options.frontierLens&&!node.frontier ? .55 : 1;c.fillStyle='#d5e8fa';
-        FogCircleLabel.draw(c,node.label,e.x,e.y,e.radius*.88,scale,this.options.allLabels?18:12);
+        FogCircleLabel.draw(c,node.label,e.x,e.y,e.radius);
       }
-      if(!this.scopeKeys){c.globalAlpha=1;c.strokeStyle='#65e1f2';c.fillStyle='#071420';c.lineWidth=2/scale;c.beginPath();c.arc(800,500,95,0,Math.PI*2);c.fill();c.stroke();c.fillStyle='#d7f8ff';FogCircleLabel.draw(c,'HUMAN KNOWLEDGE',800,500,95*.88,scale);}
+      if(!this.scopeKeys){c.globalAlpha=1;c.strokeStyle='#65e1f2';c.fillStyle='#071420';c.lineWidth=2/scale;c.beginPath();c.arc(800,500,95,0,Math.PI*2);c.fill();c.stroke();c.fillStyle='#d7f8ff';FogCircleLabel.draw(c,'HUMAN KNOWLEDGE',800,500,95);}
 
 return {visibleNodes:items.length,visibleEdges:edges.length};
 }};

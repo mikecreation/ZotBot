@@ -1,4 +1,4 @@
-importScripts('branch-layout.js?v=0.11.2','circuit-routing.js?v=0.11.2','circuit-spatial.js?v=0.11.2','circuit-painter.js?v=0.11.2');
+importScripts('branch-layout.js?v=0.11.3','circuit-routing.js?v=0.11.3','circuit-spatial.js?v=0.11.3','circuit-painter.js?v=0.11.3');
 // One immutable geometry build per loaded graph. Camera movement never visits this worker.
 let paintContext=null;
 function makeOverview(size,options={}){

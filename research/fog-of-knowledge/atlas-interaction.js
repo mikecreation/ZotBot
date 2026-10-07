@@ -1,10 +1,8 @@
 // Full circuit navigation; scientific evidence remains a separate lens.
 function readViewport(){return graph.getAttribute("viewBox").split(/\s+/).map(Number)}
-let cameraFrame=0;
 function writeViewport(v){
   graph.setAttribute("viewBox",v.join(" "));
   massiveAtlas?.cameraChanged();
-  if(!cameraFrame)cameraFrame=requestAnimationFrame(()=>{cameraFrame=0;if(!massiveAtlas?.active)updateLabelVisibility()});
 }
 function zoomAtlas(factor,screenPoint=null){
   const v=readViewport(),box=graph.getBoundingClientRect();
@@ -18,7 +16,6 @@ function bindAtlasCamera(){
   document.querySelector("#zoomInBtn").onclick=()=>zoomAtlas(.72);
   document.querySelector("#zoomOutBtn").onclick=()=>zoomAtlas(1.4);
   document.querySelector("#fitMapBtn").onclick=()=>{viewportOverride=null;if(massiveAtlas.active)massiveAtlas.fit();else if(fittedViewport)writeViewport(fittedViewport)};
-  document.querySelector("#labelsBtn").onclick=ev=>{allLabels=!allLabels;ev.currentTarget.setAttribute("aria-pressed",String(allLabels));massiveAtlas?.configure({evidenceLens,frontierLens,allLabels});updateLabelVisibility()};
   document.querySelector("#evidenceLensBtn").onclick=ev=>{evidenceLens=!evidenceLens;ev.currentTarget.setAttribute("aria-pressed",String(evidenceLens));cameraGesture=true;render();cameraGesture=false};
   document.querySelector("#reviewDeskBtn").onclick=()=>window.open("./review.html","_blank","noopener");
   graph.addEventListener("wheel",ev=>{ev.preventDefault();zoomAtlas(Math.exp(clamp(ev.deltaY,-150,150)*.0025),{x:ev.clientX,y:ev.clientY})},{passive:false});
@@ -42,15 +39,15 @@ function showNodeHover(node,p){
   hover.hidden=false;
 }
 const circleLabelMeasure=document.createElement('canvas').getContext('2d');
-function setInsideCircleLabel(group,label,radius,scale=1){
+function setInsideCircleLabel(group,label,radius){
   const fitted=FogCircleLabel.layout(circleLabelMeasure,label,radius);
-  const size=Math.min(fitted.size,(allLabels?18:12)/scale);
+  const size=fitted.size;
   group.removeAttribute('transform');
   group.replaceChildren(...fitted.lines.map((line,i)=>{
-    const text=textNode(0,(i-(fitted.lines.length-1)/2)*size*1.2,line,'nodeTitle');
+    const text=textNode(0,fitted.ys[i]*size,line,'nodeTitle');
     text.style.font=`600 ${size}px system-ui`;
-    text.style.dominantBaseline='central';
-    text.style.strokeWidth=String(size*.14);
+    text.style.dominantBaseline='alphabetic';
+    text.style.strokeWidth=String(size*.1);
     return text;
   }));
 }
