@@ -36,10 +36,17 @@ page can otherwise keep submitting the retired `fog-crew:boss/w1/w2/w3` workflow
 after a server upgrade: those jobs finish but have no durable evidence handoff.
 The recovery patch rejects untracked Fog jobs on `/api/brain/jobs` with an explicit
 reload message before dispatch. Existing replies remain retained in `brain_jobs`.
-The current client loads as `github.js?v=gh-evidence-2`, checks the server's client
+The current client loads as `github.js?v=gh-evidence-3`, checks the server's client
 revision, and shows discovery, capture, author, review, completion and blocking
 reasons directly above the atlas. Idle connected slots are separate from pipeline
 progress; a blocked candidate does not masquerade as an active researcher.
+
+Apply `crew-reliability.patch` after those two patches and restart through the
+supervisor. It supplies the current adapter, publication checkpoints, candidate
+revision tests and client. Reload the existing Nemesis application page once.
+The atlas iframe persists during status changes. A confirmed `MERGED` revision
+refreshes the atlas automatically while preserving camera, selection, expansion
+and connection lenses; author completion and CI waiting never count as a merge.
 
 The durable workflow is:
 
@@ -47,11 +54,13 @@ The durable workflow is:
    records that need evidence. No scientific record is published at this stage.
 2. Pinned compiler capture retains HTTP bytes, extraction metadata and full text.
    Local/private source destinations and redirects are rejected by this adapter.
-3. A separate author job constructs at most twelve targets with exact source
-   excerpts, complete representations, hashes and explicit scope. Source objects
-   must exactly match the retained captures. Unsupported input blocks; it is not
-   repaired by a formatting retry.
-   An author may reference retained source IDs instead of repeating full text.
+3. A separate author job constructs one or two conservative targets with exact
+   excerpts, complete representations and explicit scope. The author references
+   retained source IDs instead of reproducing capture metadata. Nemesis owns
+   batch identity and the delivery manifest; the compiler owns exact source
+   URL/title metadata and capture bytes. Conflicting supplied metadata is rejected.
+   Kind, status, domain, relationships and scientific prose remain explicit
+   author decisions subject to both reviews.
    Missing hashes and uniquely located exact-quote offsets are bound mechanically;
    supplied incorrect values are rejected. Original author output is published
    beside the batch so this binding can be inspected.
@@ -70,10 +79,37 @@ The durable workflow is:
 Flow state and job IDs live under Nemesis `data/github_cache/evidence-crew` as
 ordinary JSON files. The server continues existing handoffs when the browser is
 closed and resumes tracked IDs after restart. It reads tracked Brain results by
-ID, avoiding the UI's twenty-most-recent-jobs limit. Errors, uncertain support,
-oversized packets (300 KB), stale representations, failed CI and changed PR heads
-stop at `BLOCKED` with the retained candidate and reason. Revise explicitly using
-a new batch; the adapter does not silently change scientific meaning.
+ID, avoiding the UI's twenty-most-recent-jobs limit. Candidate-format, preflight
+and uncertain-review failures request a new explicit author revision from the
+same captures, up to three author attempts. Prior candidates, raw replies and
+reviewer results are archived; revised targets require both reviews again.
+Capture corruption and changed publication heads block immediately. Operational
+failures retry with bounded backoff, then show the reason; CI has a 30-minute
+deadline. Malformed state files cannot stop other missions. Oversized packets
+(300 KB) require a smaller evidence-complete mission.
+
+Author/reviewer job intents are durable, so restart between queueing and
+checkpointing reuses the same job. Publication records exact draft, commit,
+branch and PR identities before continuing. A lost API response recovers the
+existing PR; an unexpected head or draft change cannot be force-pushed or merged.
+Every changed proof file is retained or publication fails visibly, including
+binary capture bytes. Candidates and reviews run in parallel; one publication
+per repository proceeds at a time, against fresh main, to prevent sibling PRs
+conflicting with each other.
+
+For deliberate upgrade recovery of older blocked Fog candidates, the local
+`POST /api/github/project/{owner}/{repo}/evidence-crew/recover` accepts
+`{"path":"research/fog-of-knowledge"}`. It stages the new pinned compiler before
+swapping projects, preserves capture bytes and prior revisions, and resumes the
+old author reply through binding/preflight. It does not approve a candidate,
+refetch its sources, resume unrelated campaigns, or reset the database. An
+interrupted swap resumes from its retained recovery checkpoint.
 
 Synthetic tests use disposable copies and fake Brain/GitHub services. They do
 not dispatch real researchers, create real PRs, or add fixture knowledge to Fog.
+
+Run the focused runtime regressions after applying all patches:
+
+```sh
+python -m pytest tests/test_github_evidence.py tests/test_fog_pipeline_reliability.py tests/test_github_workspace.py
+```
