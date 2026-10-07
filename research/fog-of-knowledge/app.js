@@ -1129,20 +1129,14 @@ function drawFamilies(parent,center,ringR){
     g.append(cp);
     clipped.setAttribute("clip-path","url(#clip-"+f.id+")");
     drawFamilyMotif(clipped,f);
-    clipped.append(textNode(0,-18,f.icon,"domainIcon"));
-    const shortLines=labelLines(f.short.toUpperCase(),14);
-    shortLines.slice(0,2).forEach((line,i)=>clipped.append(textNode(0,6+i*14,line,"domainTitle")));
-    clipped.append(textNode(0,shortLines.length>1?38:28,nodes.length.toLocaleString()+" · "+front+"F","domainCount"));
+    clipped.append(textNode(0,-50,f.icon,"domainIcon"));
+    const familyLabel=mk("g",{class:"insideFamilyLabel"});
+    familyLabel.dataset.label=f.title;
+    setInsideCircleLabel(familyLabel,f.title,discR*.74);
+    clipped.append(familyLabel);
+    clipped.append(textNode(0,56,nodes.length.toLocaleString()+" · "+front+"F","domainCount"));
     g.append(clipped);
 
-    // External chip with full title — never clips the orb chrome.
-    const chipY=discR+18;
-    const chip=mk("g",{class:"externalLabel",transform:`translate(0 ${chipY})`});
-    const chipText=f.title;
-    const chipW=Math.max(88,chipText.length*6.2);
-    chip.append(mk("rect",{x:-chipW/2,y:-10,width:chipW,height:20,rx:10}));
-    chip.append(textNode(0,4,chipText,""));
-    g.append(chip);
     g.append(textNode(0,discR+36,active?(expandFieldDeep?"FIELD OPEN":"OPEN"):"EXPAND →","domainHint"));
 
     g.addEventListener("click",()=>{
@@ -1292,10 +1286,9 @@ function drawKnowledgeNode(parent,node,p,token,isCurrent,role,onClick,relation="
   g.append(mk("circle",{r:radius,class:"disc",stroke:node.frontier?"#c497ff":(challenged||historical?"#ff4d67":f.color)}));
   g.append(mk("circle",{cx:0,cy:-radius+4,r:5,fill:statusColor,class:"status"}));
 
-  // Preserve complete canonical names. Overview labels yield to readable focus.
+  // Full names stay centered inside the orb; metadata has its own lower slot.
   const labelG=mk("g",{class:"fullNodeLabel"});
-  const lines=labelLines(node.label,24);
-  lines.forEach((line,i)=>labelG.append(textNode(0,radius+20+i*14,line,"nodeTitle")));
+  setInsideCircleLabel(labelG,node.label,radius*.78);
   g.append(labelG);
   g.setAttribute("aria-label",node.label);
   g.setAttribute("tabindex","0");
@@ -1311,7 +1304,7 @@ function drawKnowledgeNode(parent,node,p,token,isCurrent,role,onClick,relation="
 
   const childCount=childrenFor(token).length;
   const meta=challenged?"FALSIFIED":historical?"SUPERSEDED":node.frontier?"FRONTIER":childCount?childCount+" NEXT":node.kind.toUpperCase();
-  g.append(textNode(0,5,meta,"nodeMeta"));
+  g.append(textNode(0,radius*.76,meta,"nodeMeta"));
 
 
   if(challenged)drawScar(g,radius);
@@ -1365,22 +1358,9 @@ function updateLabelVisibility(){
   if(!matrix)return;
   const scale=Math.hypot(matrix.a,matrix.b);
   for(const g of scene.querySelectorAll(".knowledgeNode")){
-    const diameter=Number(g.dataset.visualRadius)*2*scale;
-    const current=g.classList.contains("current");
-    const important=g.dataset.important==="true";
-    // Only the extreme global overview omits ordinary names. Important fields
-    // remain labeled; all names can be shown explicitly, without truncation.
-    const suppressed=false;
-    g.classList.toggle("labelSuppressed",suppressed);
-    const label=g.querySelector(".fullNodeLabel");
-    const text=diameter<40?g.dataset.shortLabel:g.dataset.fullLabel;
-    const lines=labelLines(text,24);
-    label.replaceChildren(...lines.map((line,i)=>textNode(0,i*13,line,"nodeTitle")));
-    const pixels=expandAll&&!allLabels?Math.max(2.5,Math.min(12,diameter*.2)):12;
-    label.setAttribute("transform",`translate(0 ${Number(g.dataset.visualRadius)+pixels/scale}) scale(${pixels/12/scale})`);
-    label.classList.toggle("overviewLabel",diameter<20);
+    setInsideCircleLabel(g.querySelector(".fullNodeLabel"),g.dataset.fullLabel,Number(g.dataset.visualRadius)*.78,scale);
   }
-  if(!expandAll)arrangeReadableLabels(scale);
+  for(const label of scene.querySelectorAll(".insideFamilyLabel"))setInsideCircleLabel(label,label.dataset.label,74*.74,scale);
 }
 
 function navigationRelationLabel(relation){
