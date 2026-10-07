@@ -216,9 +216,8 @@ async function boot(){
 }
 
 
-function persistAtlasState(){
-  try{
-    const payload={
+function atlasStateSnapshot(){
+  return {
       version:2,
       path:activePath.map(t=>({
         kind:t.kind,
@@ -228,19 +227,24 @@ function persistAtlasState(){
         relation:t.relation||null
       })),
       expanded:expandAll,expandedField:expandFieldDeep,evidenceLens,frontierLens,allLabels,nodeConnections:nodeConnectionsEnabled,
-      pages:Object.fromEntries(childPageByKey)
-    };
+      pages:Object.fromEntries(childPageByKey),
+      viewport:readViewport()
+  };
+}
+function persistAtlasState(){
+  try{
+    const payload=atlasStateSnapshot();
     localStorage.setItem(ATLAS_STATE_KEY,JSON.stringify(payload));
   }catch(err){
     console.warn("Fog atlas state could not be saved",err);
   }
 }
 
-function restoreAtlasState(){
+function restoreAtlasState(snapshot=null){
   try{
-    const raw=localStorage.getItem(ATLAS_STATE_KEY);
-    if(!raw)return false;
-    const saved=JSON.parse(raw);
+    const raw=snapshot?null:localStorage.getItem(ATLAS_STATE_KEY);
+    if(!snapshot&&!raw)return false;
+    const saved=snapshot||JSON.parse(raw);
     if(saved?.version!==2||!Array.isArray(saved.path))return false;
 
     const restored=[];
@@ -1877,7 +1881,31 @@ function bind(){
   });
 }
 
-boot().catch(err=>{
+const atlasBoot=boot().catch(err=>{
   console.error(err);
   detail.innerHTML='<div class="detailHero"><div class="eyebrow">ERROR</div><h2>Map failed to load</h2><p>'+esc(err.message)+'</p></div>';
+  throw err;
 });
+// The Nemesis shell replaces this document only after a verified merge. Transfer
+// navigation and camera state through a narrow API; never transfer graph records.
+window.FogAtlasState={
+  snapshot:()=>model?atlasStateSnapshot():null,
+  restore:async snapshot=>{
+    await atlasBoot;
+    if(!snapshot||snapshot.version!==2||!Array.isArray(snapshot.path))return false;
+    restoreAtlasState(snapshot);
+    cameraGesture=true;
+    try{render()}finally{cameraGesture=false}
+    if(massiveAtlas.active&&!massiveAtlas.ready){
+      const until=performance.now()+15000;
+      while(!massiveAtlas.ready&&performance.now()<until)await new Promise(resolve=>setTimeout(resolve,40));
+    }
+    const viewport=snapshot.viewport;
+    if(Array.isArray(viewport)&&viewport.length===4&&viewport.every(Number.isFinite)&&viewport[2]>0&&viewport[3]>0){
+      viewportOverride=viewport.slice();writeViewport(viewportOverride);
+    }
+    persistAtlasState();
+    return true;
+  }
+};
+atlasBoot.catch(()=>{});

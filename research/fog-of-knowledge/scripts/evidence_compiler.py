@@ -132,10 +132,28 @@ def context_digest(candidate,graph):
     referenced|={e.get(k) for e in candidate['taxonomy.jsonl'] for k in ('parent','child')}
     referenced|={e.get(k) for e in candidate['identities.jsonl'] for k in ('left','right')}
     referenced|={e.get('target') for e in candidate['reviews.jsonl']}
-    future={n['id']:n for n in graph['nodes']}
+    existing={n['id']:n for n in graph['nodes']}
+    future=dict(existing)
     future.update({n['id']:storage_record(n) for n in candidate['nodes.jsonl']})
     future.update({'family:'+d['id']:d for d in graph['domains']})
-    return digest({key:future.get(key) for key in sorted(referenced)})
+    context={key:future.get(key) for key in sorted(referenced)}
+    # An update is reviewed against its original record, not just the proposed
+    # replacement. Otherwise a same-ID revision merged meanwhile can be silently
+    # overwritten even when the complete resulting representation still matches.
+    prior={n['id']:existing[n['id']] for n in candidate['nodes.jsonl'] if n['id'] in existing}
+    # Reapplying an already accepted, unchanged batch must remain idempotent.
+    # Its immutable review context records the original prior revisions (absence
+    # for a new node). Never reuse that context if a candidate node changed since.
+    unchanged=all(existing.get(n['id'])==storage_record(n) for n in candidate['nodes.jsonl'])
+    if unchanged:
+        accepted=next((b for b in graph.get('evidence_reviews',[]) if b.get('candidate_sha256')==candidate_digest(candidate)),None)
+        if accepted is not None:
+            original={n['id']:n for n in accepted.get('context_nodes',[])}
+            prior={n['id']:original[n['id']] for n in candidate['nodes.jsonl'] if n['id'] in original}
+    # Preserve previous hashes for additions with no prior revisions. The reserved
+    # key cannot collide with a canonical stable ID (IDs cannot start with '$').
+    if prior:context['$prior_candidate_nodes']=prior
+    return digest(context)
 
 
 def verify_decision(decision,policy):

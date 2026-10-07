@@ -1,10 +1,12 @@
 """Crew exchange regressions in disposable projects; no live research is dispatched."""
-import hashlib,json,shutil,subprocess,sys,tempfile,unittest
+import hashlib,io,json,shutil,subprocess,sys,tempfile,unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
 from test_evidence_compiler import fixture
-from evidence_compiler import ROOT,candidate_digest,digest
+from evidence_compiler import ROOT,candidate_digest,digest,load_candidate
 from source_capture import EvidenceError,public_url,PublicRedirects
+import nemesis_evidence_exchange as exchange_api
 
 class ExchangeTests(unittest.TestCase):
     def setUp(self):
@@ -33,6 +35,10 @@ class ExchangeTests(unittest.TestCase):
         value={'decisions':[decision],'candidate_sha256':packet['candidate_sha256'],'context_sha256':packet['context_sha256'],'role':role,'reviewer':'fixture-'+role,'model':'synthetic-fixture'}
         (self.control/'review-input.json').write_text(json.dumps(value),encoding='utf-8')
         return self.exchange('review')
+    def error(self):
+        result=self.exchange('packet');self.assertNotEqual(result.returncode,0,result.stdout+result.stderr)
+        self.assertFalse((self.control/'packet.json').exists())
+        return json.loads(result.stdout)
     def test_isolated_entry_points_and_complete_gate(self):
         self.assertEqual(self.run_cli('nemesis_context.py','--compact').returncode,0)
         self.assertEqual(self.run_cli('validate.py').returncode,0)
@@ -46,6 +52,103 @@ class ExchangeTests(unittest.TestCase):
     def test_tampered_source_never_reaches_review(self):
         self.c['sources.jsonl'][0]['text']='Invented paper passage';self.c['sources.jsonl'][0]['sha256']=hashlib.sha256(b'Invented paper passage').hexdigest();self.save()
         result=self.exchange('packet');self.assertNotEqual(result.returncode,0);self.assertIn('capture',result.stdout)
+    def test_empty_sources_has_actionable_capture_binding_error(self):
+        self.c['sources.jsonl']=[];self.save();error=self.error()
+        self.assertEqual(error['code'],'capture-binding');self.assertEqual(error['details']['missing_source_ids'],['source.test'])
+    def test_incomplete_model_capture_is_rejected_with_changed_fields(self):
+        del self.c['sources.jsonl'][0]['raw_sha256'];self.save();error=self.error()
+        self.assertEqual(error['code'],'capture-binding');self.assertIn('raw_sha256',error['details']['changed_source_fields']['source.test'])
+    def source_requests(self):
+        source=self.c['sources.jsonl'][0]
+        (self.batch/'source_requests.jsonl').write_text(json.dumps({k:source[k] for k in ('id','url','title','source_kind')})+'\n',encoding='utf-8')
+        return source
+    def test_resumed_capture_keeps_the_original_receipt_and_text(self):
+        self.source_requests();before=(self.control/'captured-sources.json').read_bytes()
+        result=self.exchange('capture');self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+        self.assertEqual((self.control/'captured-sources.json').read_bytes(),before)
+        context=json.loads((self.control/'author-context.json').read_text(encoding='utf-8'))
+        self.assertEqual(context['sources'],self.c['sources.jsonl'])
+    def test_resumed_capture_tamper_is_integrity_failure_without_refetch(self):
+        source=self.source_requests();raw=self.root/'data/evidence/raw'/(source['raw_sha256']+'.bin');raw.write_bytes(b'Tampered retained response')
+        result=self.exchange('capture');self.assertNotEqual(result.returncode,0)
+        self.assertEqual(json.loads(result.stdout)['code'],'capture-integrity')
+        self.assertEqual(raw.read_bytes(),b'Tampered retained response')
+        self.assertFalse((self.control/'author-context.json').exists())
+    def test_resumed_capture_changed_request_is_integrity_failure(self):
+        source=self.source_requests();request={k:source[k] for k in ('id','url','title','source_kind')};request['url']='https://example.org/a-different-source'
+        (self.batch/'source_requests.jsonl').write_text(json.dumps(request)+'\n',encoding='utf-8')
+        result=self.exchange('capture');self.assertNotEqual(result.returncode,0)
+        self.assertEqual(json.loads(result.stdout)['code'],'capture-integrity');self.assertIn('Source request changed',result.stdout)
+    def test_malformed_retained_receipt_is_integrity_failure(self):
+        self.source_requests();(self.control/'captured-sources.json').write_text('{incomplete',encoding='utf-8')
+        result=self.exchange('capture');self.assertNotEqual(result.returncode,0)
+        self.assertEqual(json.loads(result.stdout)['code'],'capture-integrity')
+    def test_malformed_retained_capture_field_is_integrity_failure(self):
+        self.source_requests();source={**self.c['sources.jsonl'][0],'capture_id':None}
+        (self.control/'captured-sources.json').write_text(json.dumps([source]),encoding='utf-8')
+        result=self.exchange('capture');self.assertNotEqual(result.returncode,0)
+        self.assertEqual(json.loads(result.stdout)['code'],'capture-integrity')
+    def test_review_source_tamper_is_integrity_failure_before_retention(self):
+        packet=self.packet();source=self.c['sources.jsonl'][0]
+        (self.root/'data/evidence/raw'/(source['raw_sha256']+'.bin')).write_bytes(b'Tampered after dispatch')
+        result=self.review('entailment',packet);self.assertNotEqual(result.returncode,0)
+        self.assertEqual(json.loads(result.stdout)['code'],'capture-integrity')
+        self.assertFalse((self.root/'nemesis/adjudications'/(packet['candidate_sha256']+'.json')).exists())
+    def test_write_failure_is_operational_not_scientific_reauthor_feedback(self):
+        output=io.StringIO()
+        with patch.object(exchange_api,'folder',return_value=self.batch),patch.object(exchange_api,'packet',side_effect=PermissionError('Temporary filesystem write denial')),patch.object(sys,'argv',['exchange','test-evidence','--packet']),redirect_stdout(output):
+            self.assertEqual(exchange_api.main(),2)
+        self.assertEqual(json.loads(output.getvalue())['code'],'operational-io')
+    def test_explicit_source_ids_fill_citation_metadata_before_hash_and_both_reviews(self):
+        node=self.c['nodes.jsonl'][0];node['sources']=[{'id':'source.test'}]
+        assertion=self.c['assertions.jsonl'][0];assertion.pop('target_sha256');assertion['support'][0].pop('source_sha256')
+        assertion['support'][0].pop('start');assertion['support'][0].pop('end');self.save()
+        original=json.loads(json.dumps(self.c));packet=self.packet();bound=load_candidate(self.batch)
+        citation=bound['nodes.jsonl'][0]['sources'][0]
+        self.assertEqual(citation,{'id':'source.test','url':self.c['sources.jsonl'][0]['url'],'title':self.c['sources.jsonl'][0]['title']})
+        self.assertEqual(bound['nodes.jsonl'][0],bound['assertions.jsonl'][0]['canonical_record'])
+        self.assertEqual(bound['assertions.jsonl'][0]['scope'],original['assertions.jsonl'][0]['scope'])
+        self.assertEqual(bound['assertions.jsonl'][0]['statement'],original['assertions.jsonl'][0]['statement'])
+        self.assertEqual(bound['assertions.jsonl'][0]['target_sha256'],digest(bound['nodes.jsonl'][0]))
+        self.assertEqual(packet['candidate_sha256'],candidate_digest(bound))
+        self.assertEqual(json.loads((self.control/'unbound-candidate.json').read_text(encoding='utf-8')),original)
+        self.assertEqual(self.packet()['candidate_sha256'],packet['candidate_sha256'])
+        self.assertEqual(json.loads((self.control/'unbound-candidate.json').read_text(encoding='utf-8')),original)
+        for decision in self.decisions:decision['target_sha256']=digest(bound['nodes.jsonl'][0])
+        self.assertEqual(self.review('entailment',packet).returncode,0);self.assertEqual(self.review('adversarial',packet).returncode,0)
+        self.assertEqual(self.run_cli('nemesis_apply.py','nemesis/batches/test-evidence','--apply').returncode,0)
+        self.assertEqual(self.run_cli('validate.py').returncode,0)
+    def test_string_capture_id_and_single_support_object_preserve_explicit_evidence(self):
+        self.c['nodes.jsonl'][0]['sources']=['source.test'];assertion=self.c['assertions.jsonl'][0]
+        assertion.pop('target_sha256');assertion['support']=assertion['support'][0];self.save()
+        packet=self.packet();bound=packet['records'];self.assertEqual(bound['assertions.jsonl'][0]['support'][0]['quote'],self.c['sources.jsonl'][0]['text'])
+        self.assertEqual(bound['nodes.jsonl'][0]['sources'][0]['id'],'source.test')
+    def test_wrong_supplied_citation_url_and_title_are_never_repaired(self):
+        citation=self.c['nodes.jsonl'][0]['sources'][0]
+        for field,value in (('url','[https://example.org/test-fixture](https://example.org/test-fixture)'),('title','Made-up title')):
+            with self.subTest(field=field):
+                before=dict(citation);citation[field]=value;self.save();error=self.error()
+                self.assertEqual(error['code'],'candidate-preflight');self.assertIn(field,error['error'])
+                self.assertEqual(json.loads((self.batch/'nodes.jsonl').read_text())['sources'][0][field],value)
+                citation.clear();citation.update(before)
+    def test_unknown_shorthand_source_id_is_not_inferred(self):
+        self.c['nodes.jsonl'][0]['sources']=['not-captured'];self.save()
+        self.assertEqual(self.error()['code'],'candidate-format')
+    def test_invalid_support_shape_has_structured_feedback(self):
+        self.c['assertions.jsonl'][0]['support']={'invented':'not a support span'};self.save()
+        self.assertEqual(self.error()['code'],'candidate-format')
+    def test_record_shape_and_classification_are_checked_before_reviews(self):
+        self.c['nodes.jsonl'][0]['kind']='inferred-unrecognized-kind';self.c['assertions.jsonl'][0].pop('target_sha256');self.save()
+        error=self.error();self.assertEqual(error['code'],'candidate-preflight');self.assertIn('unsupported kind',error['error'])
+        self.assertEqual(json.loads((self.batch/'nodes.jsonl').read_text())['kind'],'inferred-unrecognized-kind')
+    def test_inherited_fields_cannot_be_silently_added_before_reviews(self):
+        g=json.loads((self.root/'data/knowledge.json').read_text(encoding='utf-8'))
+        g['nodes'].append({**self.c['nodes.jsonl'][0],'aliases':['A prior canonical name'],'tags':['prior-classification']})
+        (self.root/'data/knowledge.json').write_text(json.dumps(g),encoding='utf-8')
+        error=self.error();self.assertEqual(error['code'],'candidate-preflight');self.assertIn('complete resulting node',error['error'])
+    def test_edge_alias_and_unknown_endpoint_are_not_normalized(self):
+        self.c['edges.jsonl']=[{'source':'test.signal','target':'unknown.node','relation':'tests'}];self.save()
+        error=self.error();self.assertEqual(error['code'],'candidate-preflight');self.assertIn('unsupported relation',error['error'])
     def test_exact_excerpt_missing_blocks_packet(self):
         self.c['assertions.jsonl'][0]['support'][0]['quote']='unsupported universal statement';self.save()
         self.assertNotEqual(self.exchange('packet').returncode,0)

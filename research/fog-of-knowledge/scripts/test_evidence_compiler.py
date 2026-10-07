@@ -141,6 +141,53 @@ class EvidenceCompilerTests(unittest.TestCase):
         before=context_digest(self.c,self.g)
         self.g['nodes'][0]['summary']='Strengthened endpoint'
         self.assertNotEqual(before,context_digest(self.c,self.g))
+    def existing_update(self):
+        self.c['nodes.jsonl'][0].update(tags=[],aliases=[])
+        self.c['assertions.jsonl'][0]['target_sha256']=digest(self.c['nodes.jsonl'][0])
+        original=deepcopy(self.c['nodes.jsonl'][0]);original['summary']='Prior scoped synthetic measurement; fixture only.'
+        self.g['nodes']=[original]
+        for decision in self.d:
+            decision.update(target_sha256=digest(self.c['nodes.jsonl'][0]),candidate_sha256=candidate_digest(self.c),context_sha256=context_digest(self.c,self.g))
+        return original
+    def test_same_id_update_merged_after_review_rejects_stale_replacement(self):
+        original=self.existing_update();self.assertEqual(self.check()['reviewed_targets'],1)
+        original['summary']='Newer measurement merged after the candidate review; fixture only.'
+        with self.assertRaisesRegex(EvidenceError,'context changed'):self.check()
+        self.assertEqual(self.g['nodes'][0]['summary'],original['summary'])
+    def test_candidate_overwritten_relation_endpoint_keeps_original_revision_bound(self):
+        original=self.existing_update();self.g['nodes'].append({'id':'test.other','kind':'claim','summary':'Other scoped endpoint'})
+        self.c['edges.jsonl']=[{'source':'test.signal','target':'test.other','type':'supports'}]
+        before=context_digest(self.c,self.g);original['summary']='Changed original endpoint, despite unchanged candidate replacement.'
+        self.assertNotEqual(before,context_digest(self.c,self.g))
+    def test_unrelated_sibling_addition_does_not_stale_reviewed_update(self):
+        self.existing_update();before=context_digest(self.c,self.g)
+        self.g['nodes'].append({'id':'test.unrelated','kind':'claim','summary':'Independent sibling result'})
+        self.assertEqual(before,context_digest(self.c,self.g));self.assertEqual(self.check()['reviewed_targets'],1)
+    def test_reviewed_existing_update_reapplies_idempotently_with_original_context(self):
+        original=deepcopy(self.existing_update());proof=self.check();once=compile_reviewed(self.g,self.c,proof)
+        self.assertEqual(once['evidence_reviews'][0]['context_nodes'],[original])
+        again=enforce(self.c,once,self.d,POLICY);twice=compile_reviewed(once,self.c,again)
+        self.assertEqual(once,twice)
+    def test_later_same_id_revision_cannot_reuse_old_accepted_context(self):
+        self.existing_update();once=compile_reviewed(self.g,self.c,self.check())
+        once['nodes'][0]['summary']='A separately reviewed later revision; synthetic fixture only.'
+        with self.assertRaisesRegex(EvidenceError,'context changed'):enforce(self.c,once,self.d,POLICY)
+    def test_sibling_creation_of_same_node_id_changes_addition_context(self):
+        before=context_digest(self.c,self.g)
+        sibling=deepcopy(self.c['nodes.jsonl'][0]);sibling.update(tags=[],aliases=[])
+        self.g['nodes'].append(sibling)
+        self.assertNotEqual(before,context_digest(self.c,self.g))
+        with self.assertRaisesRegex(EvidenceError,'context changed'):self.check()
+    def test_reapplying_node_batch_still_detects_changed_external_endpoint(self):
+        self.existing_update();self.g['nodes'].append({'id':'test.other','kind':'claim','summary':'Original independent endpoint'})
+        self.c['edges.jsonl']=[{'source':'test.signal','target':'test.other','type':'supports'}]
+        before=context_digest(self.c,self.g)
+        accepted={'candidate_sha256':candidate_digest(self.c),'context_nodes':deepcopy(self.g['nodes'])}
+        current=deepcopy(self.g);current['nodes'][0]=deepcopy(self.c['nodes.jsonl'][0]);current['nodes'][0].setdefault('sources',[]);current['nodes'][0].setdefault('tags',[]);current['nodes'][0].setdefault('aliases',[])
+        current['evidence_reviews']=[accepted]
+        self.assertEqual(before,context_digest(self.c,current))
+        current['nodes'][1]['summary']='Changed independent endpoint after application'
+        self.assertNotEqual(before,context_digest(self.c,current))
     def test_reviewed_compilation_and_audit_are_idempotent(self):
         proof=self.check();once=compile_reviewed(self.g,self.c,proof);twice=compile_reviewed(once,self.c,proof)
         self.assertEqual(once,twice)
