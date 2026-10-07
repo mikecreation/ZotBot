@@ -1,9 +1,9 @@
-importScripts('branch-layout.js?v=0.11.3','circuit-routing.js?v=0.11.3','circuit-spatial.js?v=0.11.3','circuit-painter.js?v=0.11.3');
+importScripts('branch-layout.js?v=0.11.4','circuit-routing.js?v=0.11.4','circuit-spatial.js?v=0.11.4','circuit-painter.js?v=0.11.4','node-connections.js?v=0.11.4');
 // One immutable geometry build per loaded graph. Camera movement never visits this worker.
 let paintContext=null;
 function makeOverview(size,options={}){
   if(!paintContext||typeof OffscreenCanvas==='undefined'||!size.width||!size.height)return null;
-  Object.assign(paintContext,FogCircuitSpatial.scope(paintContext.items,paintContext.edges,options.scopeKey));
+  Object.assign(paintContext,options.connectionKey?FogNodeConnections.scope(paintContext.byKey,paintContext.connectionIndex,options.connectionKey):{...FogCircuitSpatial.scope(paintContext.items,paintContext.edges,options.scopeKey),connectionLinks:null});
   const {width,height,dpr}=size,b=paintContext.scopeBounds||paintContext.itemTree,aspect=width/height;let w=b.right-b.left+180,h=b.bottom-b.top+180;
   if(w/h<aspect)w=h*aspect;else h=w/aspect;
   const v=[(b.left+b.right-w)/2,(b.top+b.bottom-h)/2,w,h],scale=Math.min(width/dpr/w,height/dpr/h),ox=(width/dpr-w*scale)/2,oy=(height/dpr-h*scale)/2;
@@ -53,6 +53,7 @@ onmessage=({data})=>{
     const edgeTree=edgeIndex(),byId=new Map(items.map(e=>[e.id,e]));
     const evidence=(data.edges||[]).map(e=>{const a=byId.get(e.source),b=byId.get(e.target);if(!a||!b)return null;return {points:[a,b],from:'node:'+e.source,to:'node:'+e.target,color:['contradicts','supersedes','failed_replication'].includes(e.type)?'#ff637d':'#aebeff',box:edgeBounds({points:[a,b]})}}).filter(Boolean);
     paintContext={data:{families:data.families},nodes,items,edges,itemTree,edgeTree,families:new Map(data.families.map(f=>[f.id,f])),pending:new Set(data.pending||[]),evidence,evidenceTree:FogCircuitSpatial.boundsTree(evidence.map((_,i)=>i),i=>evidence[i].box)};
+    paintContext.byKey=new Map(items.map(e=>[e.key,e]));paintContext.connectionIndex=FogNodeConnections.index(data.connectionRecords||[]);
     const layoutMs=performance.now()-started,overview=makeOverview(data.size);
     postMessage({type:'layout',items,edges,itemTree,edgeTree,evidence,evidenceTree:paintContext.evidenceTree,gap:packed.gap,layoutMs,overview},overview?[overview.bitmap]:[]);
     // Exact obstacle routing is useful at ordinary atlas sizes. At giant sizes

@@ -33,6 +33,7 @@ let familyById=new Map();
 let navigation;
 let evidenceIndex;
 let evidenceLens=false;
+let nodeConnectionsEnabled=false;
 let allLabels=false;
 let viewportOverride=null;
 let fittedViewport=null;
@@ -226,7 +227,7 @@ function persistAtlasState(){
         r:Number.isFinite(t.r)?t.r:null,
         relation:t.relation||null
       })),
-      expanded:expandAll,expandedField:expandFieldDeep,evidenceLens,frontierLens,allLabels,
+      expanded:expandAll,expandedField:expandFieldDeep,evidenceLens,frontierLens,allLabels,nodeConnections:nodeConnectionsEnabled,
       pages:Object.fromEntries(childPageByKey)
     };
     localStorage.setItem(ATLAS_STATE_KEY,JSON.stringify(payload));
@@ -277,6 +278,7 @@ function restoreAtlasState(){
     activePath=restored;
     expandAll=saved.expanded===true;expandFieldDeep=!expandAll&&saved.expandedField===true&&activePath.length>0;
     evidenceLens=saved.evidenceLens===true;frontierLens=saved.frontierLens===true;allLabels=saved.allLabels===true;
+    nodeConnectionsEnabled=saved.nodeConnections===true&&currentToken()?.kind==='node'&&!expandAll&&!expandFieldDeep;
     childPageByKey=new Map(Object.entries(saved.pages||{}).map(([k,v])=>[k,Number(v)||0]));
     return activePath.length>0||expandAll;
   }catch(err){
@@ -995,8 +997,11 @@ function render(){
   }
 
   const globalLayout=null;
-  massiveAtlas?.setActive(expandAll||expandFieldDeep);
-  massiveAtlas?.configure({evidenceLens:evidenceLens||expandFieldDeep,frontierLens,allLabels,scopeKey:expandFieldDeep&&currentToken()?tokenKey(currentToken()):null});
+  if(currentToken()?.kind!=='node')nodeConnectionsEnabled=false;
+  const connectionKey=nodeConnectionsEnabled?currentToken().id:null;
+  massiveAtlas?.setActive(expandAll||expandFieldDeep||!!connectionKey);
+  massiveAtlas?.configure({evidenceLens:evidenceLens||expandFieldDeep,frontierLens:connectionKey?false:frontierLens,allLabels,scopeKey:expandFieldDeep&&currentToken()?tokenKey(currentToken()):null,connectionKey});
+  massiveAtlas.canvas.setAttribute('aria-label',connectionKey?'All recorded connection points for '+nodeById.get(connectionKey).label:'Complete knowledge circuit. Search any record to open its full name and evidence.');
   drawFogAndOrbits(frag,center);
   drawBaseBranches(frag,center,globalLayout?globalLayout.items.find(e=>e.tree.kind==="family").r:ringR);
   drawActiveRealm(frag,center);
@@ -1012,7 +1017,7 @@ function render(){
     drawCurrentChildren(frag,center);
   }
 
-  if(!massiveAtlas.active&&(evidenceLens||currentToken()))drawEvidenceTopology(frag,center);
+  if(!massiveAtlas.active&&evidenceLens)drawEvidenceTopology(frag,center);
 
   scene.replaceChildren(frag);
 
@@ -1025,6 +1030,7 @@ function render(){
   if(viewportOverride)writeViewport(viewportOverride);
   renderBreadcrumb();
   renderDetail();
+  renderNodeConnectionDetails();
   augmentEvidenceDetails();
   renderCaption();
   renderCompactList();
@@ -1380,6 +1386,11 @@ function renderBreadcrumb(){
 }
 
 function renderCaption(){
+  if(nodeConnectionsEnabled&&currentToken()?.kind==='node'){
+    const id=currentToken().id,links=massiveAtlas.connectionIndex.get('node:'+id)||[],peers=FogNodeConnections.peers(massiveAtlas.connectionIndex,id);
+    mapCaption.innerHTML='<b>'+esc(nodeById.get(id).label.toUpperCase())+' · CONNECTIONS</b><span>'+peers.size+' connection points · '+links.length+' recorded links across fields. White ring = selected node. Click a connected circle to explore its connections.</span>';
+    return;
+  }
   if(expandAll){
     const count=navigation.counts.discoverable;
     mapCaption.innerHTML="<b>EXPAND ALL</b><span>"+count+" / "+navigation.counts.discoverable+" records discoverable · "+navigation.counts.placement_pending+" placement pending. Paths show navigation context, not scientific ancestry. Click a node for its full name and evidence.</span>";
@@ -1440,10 +1451,17 @@ function renderDetail(){
   const sources=n.sources||[];
   const reviews=reviewsByTarget.get(n.id)||[];
 
-  detail.innerHTML='<div class="detailHero"><div class="eyebrow">'+esc(f?.short||n.domain)+' · DEPTH '+Math.max(1,activePath.length-1)+'</div><h2>'+esc(n.label)+'</h2><span class="pill"><i style="background:'+statusColor+'"></i>'+esc(statusLabel)+'</span>'+'<span class="pill evidenceState">'+esc(evidenceIndex.states[n.id]||'registry seed')+'</span>'+(n.frontier?'<span class="pill">frontier</span>':'')+(navigation.placement_pending_ids.includes(n.id)?'<span class="pill">placement pending</span>':'')+'<p>'+esc(n.summary||"No summary attached yet.")+'</p><div class="numberGrid"><div class="numberBox"><b>'+children.length+'</b><span>next branches</span></div><div class="numberBox"><b>'+incoming.length+'</b><span>incoming</span></div><div class="numberBox"><b>'+sources.length+'</b><span>sources</span></div><div class="numberBox"><b>'+reviews.length+'</b><span>reviews</span></div></div><div class="detailActionRow"><button type="button" id="detailExpandBranch">EXPAND THIS BRANCH TO EDGE</button></div>'+falsePathStory(n)+'</div><section class="detailSection"><h3>NEXT MAPPED LAYER</h3>'+(children.length?children.map(({node,relation})=>'<button class="nodeLink" data-child="'+esc(node.id)+'"><span>'+esc(node.label)+'</span><small>'+esc(navigationRelationLabel(relation))+' →</small></button>').join(""):'<p class="coverageGap">'+(n.frontier?"This record is marked as an open question. It does not certify that all evidence has been mapped.":"No next navigation layer is recorded. This is a coverage gap, not evidence that human knowledge ends here.")+'</p>')+'</section><section class="detailSection"><h3>PROVENANCE</h3>'+(sources.length?sources.map(s=>'<p><a href="'+esc(s.url)+'" target="_blank" rel="noreferrer">'+esc(s.title||s.id)+'</a></p>').join(""):'<p>No source attached yet.</p>')+'</section>';
+  detail.innerHTML='<div class="detailHero"><div class="eyebrow">'+esc(f?.short||n.domain)+' · DEPTH '+Math.max(1,activePath.length-1)+'</div><h2>'+esc(n.label)+'</h2><span class="pill"><i style="background:'+statusColor+'"></i>'+esc(statusLabel)+'</span>'+'<span class="pill evidenceState">'+esc(evidenceIndex.states[n.id]||'registry seed')+'</span>'+(n.frontier?'<span class="pill">frontier</span>':'')+(navigation.placement_pending_ids.includes(n.id)?'<span class="pill">placement pending</span>':'')+'<p>'+esc(n.summary||"No summary attached yet.")+'</p><div class="numberGrid"><div class="numberBox"><b>'+children.length+'</b><span>next branches</span></div><div class="numberBox"><b>'+incoming.length+'</b><span>incoming</span></div><div class="numberBox"><b>'+sources.length+'</b><span>sources</span></div><div class="numberBox"><b>'+reviews.length+'</b><span>reviews</span></div></div><div class="detailActionRow"><button type="button" id="detailExpandBranch">EXPAND THIS BRANCH TO EDGE</button></div>'+falsePathStory(n)+'</div><section class="detailSection"><h3>NEXT MAPPED LAYER</h3>'+(children.length?pageChildren(token).items.map(({node,relation})=>'<button class="nodeLink" data-child="'+esc(node.id)+'"><span>'+esc(node.label)+'</span><small>'+esc(navigationRelationLabel(relation))+' →</small></button>').join(""):'<p class="coverageGap">'+(n.frontier?"This record is marked as an open question. It does not certify that all evidence has been mapped.":"No next navigation layer is recorded. This is a coverage gap, not evidence that human knowledge ends here.")+'</p>')+'</section><section class="detailSection"><h3>PROVENANCE</h3>'+(sources.length?sources.map(s=>'<p><a href="'+esc(s.url)+'" target="_blank" rel="noreferrer">'+esc(s.title||s.id)+'</a></p>').join(""):'<p>No source attached yet.</p>')+'</section>';
 
   bindDetailChildren();
   detail.querySelector("#detailExpandBranch")?.addEventListener("click",doExpandField);
+  const childPage=pageChildren(token);
+  if(childPage.pages>1){
+    const controls=document.createElement('div');controls.className='connectionPages';
+    controls.innerHTML='<button type="button" '+(childPage.page?'':'disabled')+'>← Previous branches</button><span>'+(childPage.page+1)+' / '+childPage.pages+'</span><button type="button" '+(childPage.page<childPage.pages-1?'':'disabled')+'>Next branches →</button>';
+    controls.querySelectorAll('button').forEach((button,index)=>button.onclick=()=>{childPageByKey.set(tokenKey(token),childPage.page+(index?1:-1));render()});
+    detail.querySelector('.detailSection')?.append(controls);
+  }
 }
 
 function bindDetailChildren(){
@@ -1564,9 +1582,11 @@ function syncExpandButtons(){
     frontierLensBtn.setAttribute("aria-pressed",frontierLens?"true":"false");
   }
   document.querySelector("#evidenceLensBtn")?.setAttribute("aria-pressed",String(evidenceLens));
+  const connectionBtn=document.querySelector('#nodeConnectionsBtn');
+  connectionBtn.disabled=currentToken()?.kind!=='node';connectionBtn.setAttribute('aria-pressed',String(nodeConnectionsEnabled));connectionBtn.classList.toggle('on',nodeConnectionsEnabled);
   document.querySelector("#labelsBtn")?.setAttribute("aria-pressed",String(allLabels));
   document.body.classList.toggle("frontier-lens",frontierLens);
-  massiveAtlas?.configure({frontierLens});
+  massiveAtlas?.configure({frontierLens:nodeConnectionsEnabled?false:frontierLens});
 }
 function observeLayout(){
   const apply=()=>{
@@ -1787,6 +1807,7 @@ function falsePathStory(node){
 }
 
 function goHub(){
+  nodeConnectionsEnabled=false;
   expandAll=false;
   expandFieldDeep=false;
   frontierLens=false;
@@ -1797,6 +1818,7 @@ function goHub(){
 }
 
 function doExpandAll(){
+  nodeConnectionsEnabled=false;
   expandAll=true;
   expandFieldDeep=false;
   selectedFalseEdge=null;
@@ -1805,6 +1827,7 @@ function doExpandAll(){
   render();
 }
 function doExpandField(){
+  nodeConnectionsEnabled=false;
   if(!activePath.length){
     mapCaption.innerHTML="<b>EXPAND FIELD</b><span>Select a great field or branch first. Expand Field will recurse from that point all the way to its mapped edge.</span>";
     return;

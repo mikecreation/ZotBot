@@ -42,6 +42,7 @@ jobs:
           node --check circuit-painter.js
           node --check circuit-routing.js
           node --check massive-atlas.js
+          node --check node-connections.js
           node --check public-frontier.js
           node --check review-desk.js
 
@@ -50,6 +51,7 @@ jobs:
         run: |
           node scripts/check_layout.js
           node scripts/test_circuit_worker.js
+          node scripts/test_node_connections.js
 
       - name: Generate Nemesis context packet
         working-directory: research/fog-of-knowledge
