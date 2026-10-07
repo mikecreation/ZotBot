@@ -41,44 +41,18 @@ function showNodeHover(node,p){
   hover.textContent=node.label;
   hover.hidden=false;
 }
-function arrangeReadableLabels(scale){
-  const occupied=[],shell=graph.getBoundingClientRect();
-  const overlaps=(a,b)=>a.left<b.right+5&&a.right+5>b.left&&a.top<b.bottom+4&&a.bottom+4>b.top;
-  const labels=[];
-  for(const g of scene.querySelectorAll('.domainGroup')){
-    const label=g.querySelector('.externalLabel');
-    label.setAttribute('transform',`translate(0 ${74+20/scale}) scale(${1/scale})`);
-    label.classList.add('semanticFamilyLabel');
-    occupied.push(label.getBoundingClientRect());
-  }
-  for(const g of scene.querySelectorAll('.knowledgeNode:not(.labelSuppressed)')){
-    const label=g.querySelector('.fullNodeLabel'),radius=Number(g.dataset.visualRadius)*scale;
-    const origin=g.getScreenCTM(),box=label.getBBox();
-    labels.push({g,label,radius,origin,box,important:g.dataset.important==='true'});
-    g.querySelector('.labelLeader')?.remove();
-  }
-  labels.sort((a,b)=>Number(b.important)-Number(a.important)||a.g.dataset.fullLabel.localeCompare(b.g.dataset.fullLabel));
-  for(const entry of labels){
-    const {g,label,radius,origin,box}=entry;
-    const candidates=[];
-    for(const distance of [radius+14,radius+35,radius+65,radius+100,radius+145]){
-      for(const angle of [Math.PI/2,-Math.PI/2,0,Math.PI,Math.PI/4,3*Math.PI/4,-Math.PI/4,-3*Math.PI/4]){
-        const x=Math.cos(angle)*distance,y=Math.sin(angle)*distance;
-        const rect={left:origin.e+x+box.x,right:origin.e+x+box.x+box.width,top:origin.f+y+box.y,bottom:origin.f+y+box.y+box.height};
-        const collisions=occupied.filter(other=>overlaps(rect,other)).length;
-        const outside=Math.max(0,shell.left+8-rect.left)+Math.max(0,rect.right-shell.right+8)+Math.max(0,shell.top+65-rect.top)+Math.max(0,rect.bottom-shell.bottom+8);
-        candidates.push({x,y,rect,score:collisions*10000+outside*100+distance});
-      }
-    }
-    candidates.sort((a,b)=>a.score-b.score);
-    const choice=candidates[0];
-    label.setAttribute('transform',`translate(${choice.x/scale} ${choice.y/scale}) scale(${1/scale})`);
-    occupied.push(choice.rect);
-    if(Math.hypot(choice.x,choice.y)>radius+25){
-      const length=Math.hypot(choice.x,choice.y),fraction=radius/length;
-      g.prepend(mk('line',{x1:choice.x*fraction/scale,y1:choice.y*fraction/scale,x2:choice.x/scale,y2:choice.y/scale,class:'labelLeader'}));
-    }
-  }
+const circleLabelMeasure=document.createElement('canvas').getContext('2d');
+function setInsideCircleLabel(group,label,radius,scale=1){
+  const fitted=FogCircleLabel.layout(circleLabelMeasure,label,radius);
+  const size=Math.min(fitted.size,(allLabels?18:12)/scale);
+  group.removeAttribute('transform');
+  group.replaceChildren(...fitted.lines.map((line,i)=>{
+    const text=textNode(0,(i-(fitted.lines.length-1)/2)*size*1.2,line,'nodeTitle');
+    text.style.font=`600 ${size}px system-ui`;
+    text.style.dominantBaseline='central';
+    text.style.strokeWidth=String(size*.14);
+    return text;
+  }));
 }
 function drawEvidenceTopology(parent,center){
   const focus=currentToken()?.kind==="node"?currentToken().id:null;
