@@ -14,6 +14,16 @@ python scripts/nemesis_context.py
 
 That returns the current machine-readable state: coverage by domain, source gaps, challenged nodes, frontier nodes, and high-value next targets.
 
+For Expand/crew prompts, inject the **live** compiler contract each run (never hard-code era/kind/relation enums):
+
+```bash
+python scripts/nemesis_worker_contract.py --prompt
+```
+
+Workers emit `source -> extracted_assertion -> entity_candidate -> relationship_candidate + confidence`. The compiler owns taxonomy placement, scientific edges (`supports` / `contradicts` / `derived_from` / ...), dependency strength, and visual parent as distinct concerns. Formatting retries must not silently rewrite sources or scientific claims.
+
+Prefer writing `nemesis/batches/<batch_id>/{manifest,nodes,edges,reviews}.jsonl` over dumping huge JSON through ChatGPT.
+
 Research a bounded mission, then create:
 
 ```text
