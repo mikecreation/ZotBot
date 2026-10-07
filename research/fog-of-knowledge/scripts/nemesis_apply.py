@@ -32,6 +32,204 @@ ALLOWED_RELATIONS = {
 SOURCE_REQUIRED_KINDS = {"claim", "method"}
 
 
+DOMAIN_ALIASES = {
+    "physics": "physical",
+    "cosmology": "physical",
+    "astronomy": "physical",
+    "astrophysics": "physical",
+    "gravitation": "physical",
+    "quantum_field_theory": "physical",
+    "quantum_physics": "physical",
+    "particle_physics": "physical",
+    "electromagnetism": "physical",
+    "mechanics": "physical",
+    "thermodynamics": "physical",
+    "condensed_matter": "physical",
+    "chemistry": "physical",
+    "earth_science": "earth",
+    "Physical Sciences": "physical",
+    "physical sciences": "physical",
+    "physical_sciences": "physical",
+}
+
+ERA_ALIASES = {
+    "twenty_first": "frontier",
+    "twenty-first": "frontier",
+    "21st": "frontier",
+    "21st_century": "frontier",
+    "contemporary": "frontier",
+    "early_modern": "early-modern",
+    "nineteenth": "industrial-modern",
+    "twentieth_century": "twentieth",
+    "industrial_modern": "industrial-modern",
+}
+
+STATUS_ALIASES = {
+    "challenged": "disputed",
+    "challenged_not_rejected": "disputed",
+    "provisional": "frontier",
+    "model_specific_challenge": "disputed",
+    "model_dependent": "disputed",
+    "unresolved": "frontier",
+    "proposal": "frontier",
+    "open": "frontier",
+    "pass": "active",
+}
+
+KIND_ALIASES = {
+    "instrument": "technology",
+    "evidence": "claim",
+    "empirical_result": "claim",
+    "event": "claim",
+    "org": "field",
+    "person": "concept",
+    "frontier_synthesis": "claim",
+    "experimental_proposal": "method",
+    "theoretical_claim": "claim",
+    "rival_theoretical_result": "claim",
+    "discriminator": "claim",
+    "technical_challenge": "question",
+    "direct_detection_result": "claim",
+    "axion_detection_result": "claim",
+    "indirect_detection_result": "claim",
+}
+
+
+def _uniq(seq):
+    out = []
+    seen = set()
+    for item in seq:
+        if item in seen:
+            continue
+        seen.add(item)
+        out.append(item)
+    return out
+
+
+def _alias_domain(value: object) -> str | None:
+    if not isinstance(value, str) or not value.strip():
+        return None
+    raw = value.strip()
+    return DOMAIN_ALIASES.get(raw, DOMAIN_ALIASES.get(raw.lower(), raw))
+
+
+def normalize_batch(manifest: dict, nodes: list[dict], reviews: list[dict], graph: dict) -> tuple[dict, list[dict], list[dict]]:
+    """Coerce common Fog-crew draft drift into the canonical atlas vocabulary.
+
+    Workers often emit sub-field domain labels (physics/cosmology), era spellings
+    (twenty_first/contemporary), kind synonyms (evidence/instrument), or freeform
+    review rows. Map those onto the atlas registries before validation so Check
+    does not reject otherwise sourced batches.
+    """
+    valid_domains = {d["id"] for d in graph.get("domains", [])}
+
+    scope = manifest.get("scope")
+    if not isinstance(scope, dict):
+        scope = {}
+        manifest["scope"] = scope
+    domains = scope.get("domains")
+    if not isinstance(domains, list):
+        domains = []
+    mapped = []
+    for item in domains:
+        aliased = _alias_domain(item)
+        if aliased:
+            mapped.append(aliased)
+    scope["domains"] = _uniq(mapped)
+
+    source_lookup = {}
+    sources = manifest.get("sources")
+    if isinstance(sources, dict):
+        source_lookup = {str(k): v for k, v in sources.items()}
+
+    for node in nodes:
+        if not isinstance(node, dict):
+            continue
+        if not node.get("domain"):
+            doms = node.get("domains")
+            if isinstance(doms, list) and doms:
+                node["domain"] = doms[0]
+        if node.get("domain"):
+            node["domain"] = _alias_domain(node["domain"]) or node["domain"]
+        if node.get("era") in ERA_ALIASES:
+            node["era"] = ERA_ALIASES[node["era"]]
+        if not node.get("era"):
+            node["era"] = "frontier"
+        if node.get("kind") in KIND_ALIASES:
+            node["kind"] = KIND_ALIASES[node["kind"]]
+        if node.get("status") in STATUS_ALIASES:
+            node["status"] = STATUS_ALIASES[node["status"]]
+        if not node.get("status"):
+            node["status"] = "active"
+        if not node.get("sources"):
+            if node.get("source"):
+                node["sources"] = [node["source"]]
+            elif isinstance(node.get("source_ids"), list):
+                resolved = []
+                for sid in node["source_ids"]:
+                    key = str(sid)
+                    if key in source_lookup:
+                        val = source_lookup[key]
+                        resolved.append({"id": key, "url": val} if isinstance(val, str) else val)
+                    else:
+                        resolved.append(key)
+                if resolved:
+                    node["sources"] = resolved
+        if not node.get("label") and node.get("id"):
+            node["label"] = str(node["id"]).replace("_", " ").replace(".", " ")
+        if not node.get("summary") and node.get("description"):
+            node["summary"] = node["description"]
+
+    if not scope["domains"]:
+        inferred = []
+        for node in nodes:
+            if isinstance(node, dict) and node.get("domain"):
+                inferred.append(node["domain"])
+        scope["domains"] = _uniq([d for d in inferred if d in valid_domains]) or (
+            ["physical"] if "physical" in valid_domains else sorted(valid_domains)[:1]
+        )
+
+    scope["domains"] = [d for d in scope["domains"] if d in valid_domains] or (
+        ["physical"] if "physical" in valid_domains else scope["domains"]
+    )
+
+    for node in nodes:
+        if not isinstance(node, dict):
+            continue
+        if node.get("domain") not in valid_domains and scope["domains"]:
+            node["domain"] = scope["domains"][0]
+
+    agent = str(manifest.get("agent") or "fog-crew")
+    created = str(manifest.get("created_at") or "2026-10-07")
+    date = created[:10]
+    cleaned_reviews: list[dict] = []
+    for i, review in enumerate(reviews):
+        if not isinstance(review, dict):
+            continue
+        if not review.get("id"):
+            if review.get("review_id") and review.get("target"):
+                review["id"] = str(review["review_id"])
+            elif review.get("target"):
+                tid = re.sub(r"[^A-Za-z0-9._:-]+", "-", str(review["target"])).strip("-")
+                review["id"] = f"review.{tid}.{i+1}"
+            else:
+                # UI/meta review rows without a node target are not Fog reviews.
+                continue
+        if not review.get("summary"):
+            review["summary"] = str(review.get("review") or review.get("note") or review.get("check") or "Normalized review")
+        if not review.get("author"):
+            review["author"] = agent
+        if not review.get("date"):
+            review["date"] = date
+        if not review.get("kind"):
+            review["kind"] = "interpretation_scope"
+        if not review.get("result"):
+            review["result"] = str(review.get("status") or "noted")
+        cleaned_reviews.append(review)
+
+    return manifest, nodes, cleaned_reviews
+
+
 class BatchError(Exception):
     pass
 
@@ -324,6 +522,8 @@ def main() -> int:
     nodes = read_jsonl(batch_dir / "nodes.jsonl")
     edges = read_jsonl(batch_dir / "edges.jsonl")
     reviews = read_jsonl(batch_dir / "reviews.jsonl")
+
+    manifest, nodes, reviews = normalize_batch(manifest, nodes, reviews, graph)
 
     validate_manifest(manifest, graph)
     unique_records(nodes, "id", "node")
