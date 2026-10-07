@@ -1,0 +1,44 @@
+--- a/sim/github_batches.py
++++ b/sim/github_batches.py
+@@ -24,6 +24,7 @@
+ MAX_BATCH_FILE = 8 * 1024 * 1024
+ MAX_BATCH_TOTAL = 32 * 1024 * 1024
+ REQUIRED_FILES = ('manifest.json', 'nodes.jsonl', 'edges.jsonl', 'reviews.jsonl')
++EVIDENCE_FILES = ('sources.jsonl', 'assertions.jsonl', 'taxonomy.jsonl', 'identities.jsonl')
+ 
+ 
+ def _batch_root(ws, owner, repo):
+@@ -48,8 +49,10 @@
+         raise PathRejected('Batch needs files: manifest.json, nodes.jsonl, edges.jsonl, reviews.jsonl')
+     out = {}
+     total = 0
+-    for name in REQUIRED_FILES:
++    for name in REQUIRED_FILES + EVIDENCE_FILES:
+         if name not in files:
++            if name in EVIDENCE_FILES:
++                continue
+             raise PathRejected('Missing batch file: ' + name)
+         raw = files[name]
+         if isinstance(raw, (dict, list)):
+@@ -139,9 +142,11 @@
+     if not dest.is_dir():
+         raise GitHubError(404, 'Unknown batch draft: ' + batch_id)
+     files = {}
+-    for name in REQUIRED_FILES:
++    for name in REQUIRED_FILES + EVIDENCE_FILES:
+         p = dest / name
+         if not p.is_file():
++            if name in EVIDENCE_FILES:
++                continue
+             raise PathRejected('Batch draft missing ' + name)
+         files[name] = p.read_text(encoding='utf-8')
+     return dest, files
+@@ -537,4 +542,8 @@
+         'edges.jsonl': packet.get('edges') or [],
+         'reviews.jsonl': packet.get('reviews') or [],
+     }
++    for name in EVIDENCE_FILES:
++        key = name.removesuffix('.jsonl')
++        if key in packet:
++            files[name] = packet[key]
+     return save_batch(ws, owner, repo, path, files, source=source)

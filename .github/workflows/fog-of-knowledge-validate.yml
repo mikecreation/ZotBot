@@ -20,18 +20,36 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - name: Install pinned PDF capture dependency
+        run: python -m pip install -r research/fog-of-knowledge/requirements.txt
 
       - name: Validate canonical knowledge graph
         working-directory: research/fog-of-knowledge
         run: python scripts/validate.py
 
+      - name: Check navigation and ingestion regressions
+        working-directory: research/fog-of-knowledge
+        run: python scripts/test_atlas_integrity.py
+
       - name: Check atlas renderer syntax
         working-directory: research/fog-of-knowledge
-        run: node --check app.js
+        run: |
+          node --check app.js
+          node --check atlas-interaction.js
+          node --check branch-layout.js
+          node --check circuit-worker.js
+          node --check circuit-spatial.js
+          node --check circuit-painter.js
+          node --check circuit-routing.js
+          node --check massive-atlas.js
+          node --check public-frontier.js
+          node --check review-desk.js
 
       - name: Enforce atlas geometry invariants
         working-directory: research/fog-of-knowledge
-        run: node scripts/check_layout.js
+        run: |
+          node scripts/check_layout.js
+          node scripts/test_circuit_worker.js
 
       - name: Generate Nemesis context packet
         working-directory: research/fog-of-knowledge
@@ -39,15 +57,6 @@ jobs:
           python scripts/nemesis_context.py --max-items 5 --compact > /tmp/nemesis-context.json
           python -m json.tool /tmp/nemesis-context.json > /dev/null
 
-      - name: Check Nemesis example batch
+      - name: Test evidence compiler and quarantined imports
         working-directory: research/fog-of-knowledge
-        run: python scripts/nemesis_apply.py nemesis/example-batch --check
-
-      - name: Prove Nemesis batch idempotency
-        working-directory: research/fog-of-knowledge
-        run: |
-          python scripts/nemesis_apply.py nemesis/example-batch --apply
-          python scripts/validate.py
-          sha256sum data/knowledge.json > /tmp/fog-first.sha
-          python scripts/nemesis_apply.py nemesis/example-batch --apply
-          sha256sum -c /tmp/fog-first.sha
+        run: python scripts/test_evidence_compiler.py

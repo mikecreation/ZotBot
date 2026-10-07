@@ -3,25 +3,16 @@
 
 const fs=require("fs");
 const crypto=require("crypto");
+const branches=require("../branch-layout.js");
 
 const graph=JSON.parse(fs.readFileSync("data/knowledge.json","utf8"));
 
-const FAMILIES=[
-  ["roots",["Self / other","Cause / effect","More / less / number","Oral tradition","Writing & records","Experimental scientific method"]],
-  ["formal",["Logic","Algebra","Geometry","Statistics","Topology","Number theory"]],
-  ["physical",["Physics","Chemistry","Astronomy","Thermodynamics","Electromagnetism","Cosmology"]],
-  ["earth",["Geology","Climatology","Meteorology","Hydrology","Oceanology","Paleoclimatology"]],
-  ["life",["Biology","Genetics","Evolution by natural selection","Ecology","Microbiology","Molecular biology","Systems biology"]],
-  ["health",["Early medicine","Anatomy","Epidemiology","Pathology","Pharmacology","Immunology","Oncology","Neurology"]],
-  ["engineering",["Engineering science","Biotechnology","Nanotechnology","Mechatronics","Geotechnology","Metrology"]],
-  ["information",["Computer science","Artificial intelligence","Information theory","Cognitive science","Neuroscience","Psycholinguistics"]],
-  ["social",["Sociology","Psychology","Anthropology","Economics","Criminology","Demography","Social psychology"]],
-  ["humanities",["Philosophy","Archaeology","Epistemology","Philology","Theology","Musicology","Etymology"]]
-];
+const navigation=JSON.parse(fs.readFileSync("data/atlas-navigation.json","utf8"));
+graph.nodes.push(...navigation.registry_nodes);
+const FAMILIES=JSON.parse(fs.readFileSync("data/atlas-families.json","utf8")).map(f=>[f.id,f.major]);
+const STRUCTURAL=new Set(["category","reviewed_taxonomy","recorded_lineage","registry_membership","placement_pending"]);
+const EXCLUDED=new Set();
 
-const STRUCTURAL=new Set(["enabled","derived_from","depends_on","refines","tests","supports","replicates","related"]);
-const EXCLUDED=new Set(["cites","contradicts","supersedes","failed_replication"]);
-const PRIORITY={derived_from:1,enabled:2,refines:3,supports:4,depends_on:5,tests:6,replicates:7,related:9};
 const CLEAR=22;
 const TAU=Math.PI*2;
 
@@ -32,7 +23,7 @@ for(const n of graph.nodes){
   byDomain.get(n.domain).push(n);
 }
 const out=new Map(),inc=new Map();
-for(const e of graph.edges){
+for(const e of navigation.links){
   if(!out.has(e.source))out.set(e.source,[]);
   if(!inc.has(e.target))inc.set(e.target,[]);
   out.get(e.source).push(e);
@@ -52,22 +43,12 @@ function children(nodeId,domain,assigned,ancestors,reserved){
     if(n&&n.domain===domain&&!assigned.has(n.id)&&!ancestors.has(n.id)&&!reserved.has(n.id))
       cand.push({edge:e,node:n,dir:0});
   }
-  for(const e of inc.get(nodeId)||[]){
-    if(EXCLUDED.has(e.type)||!STRUCTURAL.has(e.type))continue;
-    const n=nodes.get(e.source);
-    if(n&&n.domain===domain&&!assigned.has(n.id)&&!ancestors.has(n.id)&&!reserved.has(n.id))
-      cand.push({edge:e,node:n,dir:1});
-  }
+
   const uniq=new Map();
   for(const x of cand){
-    const score=(PRIORITY[x.edge.type]||99)*2+x.dir;
-    const prev=uniq.get(x.node.id);
-    const prevScore=prev?((PRIORITY[prev.edge.type]||99)*2+prev.dir):Infinity;
-    if(score<prevScore)uniq.set(x.node.id,x);
+    if(!uniq.has(x.node.id))uniq.set(x.node.id,x);
   }
-  const chosen=[...uniq.values()];
-  chosen.sort((a,b)=>(PRIORITY[a.edge.type]||99)-(PRIORITY[b.edge.type]||99)||a.dir-b.dir||a.node.label.localeCompare(b.node.label)||a.node.id.localeCompare(b.node.id));
-  return chosen;
+  return [...uniq.values()];
 }
 
 function buildNode(n,domain,assigned,ancestors,relation,reserved){
@@ -84,13 +65,14 @@ function buildNode(n,domain,assigned,ancestors,relation,reserved){
 }
 
 function buildFamily(domain,labels){
-  const roots=majors(domain,labels);
+  const roots=(out.get("family:"+domain)||[]).map(e=>nodes.get(e.target));
   const reserved=new Set(roots.map(n=>n.id));
   const assigned=new Set();
   const t={key:"family:"+domain,kind:"family",id:domain,domain,children:[],weight:1,angle:0};
   for(const n of roots){
     reserved.delete(n.id);
-    const c=buildNode(n,domain,assigned,new Set(),"category",reserved);
+    const relation=(inc.get(n.id)||[])[0]?.type||"category";
+    const c=buildNode(n,domain,assigned,new Set(),relation,reserved);
     reserved.add(n.id);
     if(c)t.children.push(c);
   }
@@ -219,10 +201,11 @@ function build(){
     familyTrees.push({domain,labels,tree:built.tree,flat});
   });
 
+  branches.layout(FAMILIES,familyTrees.map(f=>f.flat));
+
   function place(){
     for(const e of items){
-      e.r=330+(e.rowIndex||0)*gap;e.radius=vr(e);e.fp=footprint(e);
-      Object.assign(e,polar(e.r,e.tree.angle));
+      e.radius=vr(e);e.fp=footprint(e);
     }
   }
   place();
@@ -233,7 +216,6 @@ function build(){
     for(let i=0;i<cs.length;i++)for(let j=i+1;j<cs.length;j++)if(overlap(cs[i],cs[j]))n++;
     return n;
   }
-  for(let i=0;i<28&&overlapCount();i++){gap=Math.ceil(gap*1.12/5)*5;place()}
   if(overlapCount())throw new Error("circle-overlap invariant failed");
 
   const circles=items.map(e=>({x:e.x,y:e.y,r:e.radius+7,key:e.tree.key})).concat([{x:800,y:500,r:104,key:"core"}]);
@@ -266,14 +248,14 @@ function build(){
     // Same deterministic obstacle-grid fallback used by the browser renderer.
     const obs=circles.filter(o=>!ignore.has(o.key));
     let minX=Math.min(start.x,end.x),maxX=Math.max(start.x,end.x),minY=Math.min(start.y,end.y),maxY=Math.max(start.y,end.y);
-    for(const o of obs){minX=Math.min(minX,o.x-o.r);maxX=Math.max(maxX,o.x+o.r);minY=Math.min(minY,o.y-o.r);maxY=Math.max(maxY,o.y+o.r)}
-    const margin=220;minX-=margin;minY-=margin;maxX+=margin;maxY+=margin;
-    const spanX=maxX-minX,spanY=maxY-minY;
-    const cell=Math.max(24,Math.ceil(Math.max(spanX,spanY)/170));
-    const cols=Math.max(3,Math.ceil(spanX/cell)+1),rows=Math.max(3,Math.ceil(spanY/cell)+1);
-    if(cols*rows>42000)return false;
 
-    const lead=Math.max(cell*1.5,40);
+    const margin=1200;minX-=margin;minY-=margin;maxX+=margin;maxY+=margin;
+    const spanX=maxX-minX,spanY=maxY-minY;
+    const cell=Math.max(4,Math.ceil(Math.sqrt(spanX*spanY/800000)));
+    const cols=Math.max(3,Math.ceil(spanX/cell)+1),rows=Math.max(3,Math.ceil(spanY/cell)+1);
+    if(cols*rows>1000000)return false;
+
+    const lead=0;
     const rs={x:start.x+ux*lead,y:start.y+uy*lead},re={x:end.x-ux*lead,y:end.y-uy*lead};
     if(!clear(start,rs,ignore)||!clear(re,end,ignore))return false;
 
@@ -282,7 +264,7 @@ function build(){
     const cellOf=p=>({x:Math.max(0,Math.min(cols-1,Math.round((p.x-minX)/cell))),y:Math.max(0,Math.min(rows-1,Math.round((p.y-minY)/cell)))});
     const blocked=new Uint8Array(cols*rows);
     for(const o of obs){
-      const rr=o.r+cell*.78;
+      const rr=o.r+7+cell*.78;
       const x0=Math.max(0,Math.floor((o.x-rr-minX)/cell)),x1=Math.min(cols-1,Math.ceil((o.x+rr-minX)/cell));
       const y0=Math.max(0,Math.floor((o.y-rr-minY)/cell)),y1=Math.min(rows-1,Math.ceil((o.y+rr-minY)/cell));
       for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){
@@ -290,8 +272,21 @@ function build(){
         if(ddx*ddx+ddy*ddy<rr*rr)blocked[idx(x,y)]=1;
       }
     }
-    const s=cellOf(rs),g=cellOf(re),si=idx(s.x,s.y),gi=idx(g.x,g.y);
-    blocked[si]=0;blocked[gi]=0;
+    function reachableCell(p){
+      const base=cellOf(p),choices=[];
+      for(let oy=-6;oy<=6;oy++)for(let ox=-6;ox<=6;ox++){
+        const x=base.x+ox,y=base.y+oy;
+        if(x<0||y<0||x>=cols||y>=rows||blocked[idx(x,y)])continue;
+        const pt=point(x,y);
+        if(clear(p,pt,ignore))choices.push({x,y,d:(pt.x-p.x)**2+(pt.y-p.y)**2});
+      }
+      choices.sort((a,b)=>a.d-b.d||a.y-b.y||a.x-b.x);
+      return choices[0];
+    }
+    const s=reachableCell(rs),g=reachableCell(re);
+    if(!s||!g)return false;
+    const si=idx(s.x,s.y),gi=idx(g.x,g.y);
+
     const prev=new Int32Array(cols*rows);prev.fill(-1);
     const q=new Int32Array(cols*rows);let h=0,t=0;q[t++]=si;prev[si]=si;
     const dirs=[[1,0],[-1,0],[0,1],[0,-1]];
@@ -323,14 +318,13 @@ function build(){
   }
 
   for(const ft of familyTrees){
-    const roots=majors(ft.domain,ft.labels);
-    const expected=expectedReachable(ft.domain,roots);
+    const expected=new Set((byDomain.get(ft.domain)||[]).map(n=>n.id));
     const actual=new Set(ft.flat.filter(e=>e.tree.kind==="node").map(e=>e.tree.id));
     const missing=[...expected].filter(id=>!actual.has(id));
     if(missing.length)throw new Error(ft.domain+" recursive coverage missing "+missing.slice(0,8).join(", "));
   }
 
-  const signature=items.map(e=>[e.tree.key,e.depth,Number(e.tree.angle.toFixed(9)),e.r]).sort((a,b)=>a[0].localeCompare(b[0]));
+  const signature=items.map(e=>[e.tree.key,e.depth,e.x,e.y]).sort((a,b)=>a[0].localeCompare(b[0]));
   return {gap,items,edgeCount,signature,maxDepth:Math.max(...items.map(e=>e.depth))};
 }
 
@@ -345,7 +339,7 @@ console.log(JSON.stringify({
   nodes:a.items.length,
   edges:a.edgeCount,
   maxDepth:a.maxDepth,
-  uniformDepthGap:a.gap,
+  layout:"radial-circuit/1",
   deterministicHash:ha.slice(0,16),
   circleOverlaps:0,
   unroutableEdges:0

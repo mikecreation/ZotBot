@@ -54,12 +54,13 @@ def build_contract() -> dict:
             "hard_code_stale_era_or_kind_enums",
         ],
         "compiler_decides": [
-            "taxonomy_placement",
-            "historical_lineage",
-            "support_contradiction_derivation",
-            "dependency",
-            "visual_parent",
+            "reject_unsupported_or_uncertain_representation",
+            "publish_reviewed_records_without_semantic_coercion",
+            "deterministic_visual_projection_separate_from_evidence",
         ],
+        "evidence_files": ["sources.jsonl","assertions.jsonl","taxonomy.jsonl","identities.jsonl"],
+        "review_policy": json.loads((ROOT/"data/evidence-policy.json").read_text(encoding="utf-8")),
+        "review_example": "scripts/test_evidence_compiler.py:fixture (synthetic example, not real scientific evidence)",
         "edge_kinds_distinct": sorted(ns.get("ALLOWED_RELATIONS", [])),
         "allowed_kinds": sorted(ns.get("ALLOWED_KINDS", [])),
         "allowed_statuses": sorted(ns.get("ALLOWED_STATUSES", [])),
@@ -73,8 +74,13 @@ def build_contract() -> dict:
             "Read this contract each run; do not memorize old era labels like ancient/early_modern/twenty_first.",
             "Prefer writing nemesis/batches/<batch_id>/{manifest,nodes,edges,reviews}.jsonl over pasting huge JSON in chat.",
             "Formatting retries must not rewrite sources, scientific claims, or relation semantics.",
+            "Use the compiler source capture before review; keep the capture_id and retrieval metadata unchanged. Worker-written text attached to a real URL is not a retrieved source. Retain exact source text, sha256, retrieval time and source URL. Assertions require exact Unicode code-point start/end excerpts, explicit scope, target hash and the full proposed canonical record.",
+            "Every node, edge, review, taxonomy and identity candidate needs its own supported assertion. Include an explicit frontier boolean and every inherited field of an updated node.",
+            "Separate entailment and adversarial reviewers must approve the exact candidate revision. The candidate author cannot self-review. Worker confidence and citations alone never pass ingestion.",
+            "Unsupported or uncertain candidates stay in quarantine. Classification, placement and identity cannot be invented by a formatting normalizer.",
+            "Optional node.public_frontier metadata uses category open-question/public-result/company-tool; capability_status publicly-described/undisclosed; disclosed_at exact YYYY-MM-DD or null; source_ids identifying captured supporting sources. Company/tool names and each claimed capability must be publicly supported. Private or undisclosed capabilities remain unknown. A disclosure date never establishes world-leading currency.",
             "Taxonomy is not a scientific relationship; UI parent is not an epistemic edge.",
-            "Emit relationship candidates with explicit type from allowed relations when known; otherwise leave type for compiler.",
+            "Propose an explicit relation type only when justified; unknown types remain unresolved candidates, never default to related/soft.",
         ],
     }
 
@@ -92,6 +98,8 @@ def prompt_block(contract: dict | None = None) -> str:
             "worker_emits": c["worker_emits"],
             "worker_must_not": c["worker_must_not"],
             "compiler_decides": c["compiler_decides"],
+            "evidence_files": c["evidence_files"],
+            "review_policy": c["review_policy"],
             "prompt_rules": c["prompt_rules"],
         }, ensure_ascii=False, indent=2)
     )

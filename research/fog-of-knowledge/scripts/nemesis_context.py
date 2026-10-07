@@ -23,31 +23,8 @@ def load_graph() -> dict:
 
 
 def merge_runtime_ologies(graph: dict) -> None:
-    existing = {n["label"].casefold() for n in graph["nodes"]}
-    if not OLOGY_PATH.exists():
-        return
-
-    for line in OLOGY_PATH.read_text(encoding="utf-8").splitlines()[1:]:
-        if not line.strip():
-            continue
-        label, domain, era = line.split("\t")
-        if label.casefold() in existing:
-            continue
-        slug = "".join(c.lower() if c.isalnum() else "-" for c in label).strip("-")
-        graph["nodes"].append({
-            "id": f"ology.{slug}",
-            "label": label,
-            "kind": "field",
-            "domain": domain,
-            "era": era,
-            "status": "active",
-            "summary": f"Curated runtime -ology registry entry: {label}.",
-            "tags": ["ology", "registry-seed"],
-            "sources": [],
-            "frontier": False,
-            "aliases": [],
-        })
-        existing.add(label.casefold())
+    from atlas_navigation import build
+    graph["nodes"].extend(build(graph)["registry_nodes"])
 
 
 def derive_statuses(graph: dict) -> dict[str, str]:
@@ -204,8 +181,16 @@ def main() -> int:
     args = parser.parse_args()
 
     graph = load_graph()
+    from evidence_compiler import audit_index
+    from atlas_navigation import build
+    evidence=audit_index(graph)
+    navigation=build(graph)
     merge_runtime_ologies(graph)
     packet = build_context(graph, max(0, args.max_items))
+    packet['evidence_review_coverage']=evidence['counts']
+    packet['identity_candidates']=evidence['identity_candidates'][:max(0,args.max_items)]
+    packet['navigation_coverage']=navigation['counts']
+    packet['review_priority']='Exact source-to-assertion review, source gaps and justified placement precede record volume.'
 
     text = json.dumps(
         packet,

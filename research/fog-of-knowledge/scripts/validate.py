@@ -5,19 +5,20 @@ from collections import Counter, defaultdict, deque
 
 ROOT=Path(__file__).resolve().parents[1]
 g=json.loads((ROOT/"data"/"knowledge.json").read_text(encoding="utf-8"))
+from evidence_compiler import EvidenceError, audit_index, validate_evidence_history
+try:
+    validate_evidence_history(g,ROOT,json.loads((ROOT/"data/evidence-policy.json").read_text(encoding="utf-8")))
+except (EvidenceError,ValueError,KeyError,OSError) as exc:
+    raise SystemExit("VALIDATION FAILED: "+str(exc))
+if json.loads((ROOT/"data/evidence-index.json").read_text(encoding="utf-8"))!=audit_index(g):
+    raise SystemExit("VALIDATION FAILED: stale evidence index; run python scripts/evidence_pipeline.py audit")
 
-# Merge runtime -ology registry for integrity checks.
-parent={"earth":"field.geology","life":"field.biology","health":"practice.medicine","social":"field.sociology","humanities":"field.philosophy","physical":"field.physics","information":"field.cognitive-science","engineering":"field.engineering","formal":"field.logic"}
-existing={n["label"].casefold() for n in g["nodes"]}
-for line in (ROOT/"data"/"ologies.tsv").read_text(encoding="utf-8").splitlines()[1:]:
-    if not line.strip(): continue
-    label,domain,era=line.split("\t")
-    if label.casefold() in existing: continue
-    slug="".join(c.lower() if c.isalnum() else "-" for c in label).strip("-")
-    node_id="ology."+slug
-    g["nodes"].append({"id":node_id,"label":label,"kind":"field","domain":domain,"era":era,"status":"active","tags":["ology","registry-seed"]})
-    if domain in parent: g["edges"].append({"source":parent[domain],"target":node_id,"type":"derived_from","dependency":"soft"})
-    existing.add(label.casefold())
+# Browser and CI consume the exact same compiled registry/navigation artifact.
+from atlas_navigation import build, OUTPUT
+projection = build(g)
+if not OUTPUT.exists() or json.loads(OUTPUT.read_text(encoding="utf-8")) != projection:
+    raise SystemExit("VALIDATION FAILED: stale navigation; run python scripts/atlas_navigation.py")
+g["nodes"].extend(projection["registry_nodes"])
 
 errors=[]
 ids=[n["id"] for n in g["nodes"]]
@@ -50,4 +51,5 @@ if errors:
     raise SystemExit(1)
 ologies=[n for n in g["nodes"] if "ology" in n.get("tags",[])]
 frontier=[n for n in g["nodes"] if n.get("frontier")]
+print("NAVIGATION:", json.dumps(projection["counts"], sort_keys=True))
 print(f"OK: {len(g['nodes'])} nodes, {len(g['edges'])} edges, {len(ologies)} -ologies, {len(frontier)} frontier nodes")

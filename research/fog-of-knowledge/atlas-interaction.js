@@ -1,0 +1,161 @@
+// Full circuit navigation; scientific evidence remains a separate lens.
+function readViewport(){return graph.getAttribute("viewBox").split(/\s+/).map(Number)}
+let cameraFrame=0;
+function writeViewport(v){
+  graph.setAttribute("viewBox",v.join(" "));
+  massiveAtlas?.cameraChanged();
+  if(!cameraFrame)cameraFrame=requestAnimationFrame(()=>{cameraFrame=0;if(!massiveAtlas?.active)updateLabelVisibility()});
+}
+function zoomAtlas(factor,screenPoint=null){
+  const v=readViewport(),box=graph.getBoundingClientRect();
+  const px=screenPoint?(screenPoint.x-box.left)/box.width:.5;
+  const py=screenPoint?(screenPoint.y-box.top)/box.height:.5;
+  const width=clamp(v[2]*factor,250,100000),height=width*v[3]/v[2];
+  viewportOverride=[v[0]+px*(v[2]-width),v[1]+py*(v[3]-height),width,height];
+  writeViewport(viewportOverride);
+}
+function bindAtlasCamera(){
+  document.querySelector("#zoomInBtn").onclick=()=>zoomAtlas(.72);
+  document.querySelector("#zoomOutBtn").onclick=()=>zoomAtlas(1.4);
+  document.querySelector("#fitMapBtn").onclick=()=>{viewportOverride=null;if(massiveAtlas.active)massiveAtlas.fit();else if(fittedViewport)writeViewport(fittedViewport)};
+  document.querySelector("#labelsBtn").onclick=ev=>{allLabels=!allLabels;ev.currentTarget.setAttribute("aria-pressed",String(allLabels));massiveAtlas?.configure({evidenceLens,frontierLens,allLabels});updateLabelVisibility()};
+  document.querySelector("#evidenceLensBtn").onclick=ev=>{evidenceLens=!evidenceLens;ev.currentTarget.setAttribute("aria-pressed",String(evidenceLens));cameraGesture=true;render();cameraGesture=false};
+  document.querySelector("#reviewDeskBtn").onclick=()=>window.open("./review.html","_blank","noopener");
+  graph.addEventListener("wheel",ev=>{ev.preventDefault();zoomAtlas(Math.exp(clamp(ev.deltaY,-150,150)*.0025),{x:ev.clientX,y:ev.clientY})},{passive:false});
+  let drag=null;
+  graph.addEventListener("pointerdown",ev=>{if(ev.button!==0)return;drag={x:ev.clientX,y:ev.clientY,v:readViewport()};graph.setPointerCapture(ev.pointerId)});
+  graph.addEventListener("pointermove",ev=>{
+    if(!drag)return;
+    const dx=ev.clientX-drag.x,dy=ev.clientY-drag.y;
+    if(Math.hypot(dx,dy)<4&&!cameraGesture)return;
+    cameraGesture=true;
+    const box=graph.getBoundingClientRect(),v=drag.v;
+    viewportOverride=[v[0]-dx*v[2]/box.width,v[1]-dy*v[3]/box.height,v[2],v[3]];
+    writeViewport(viewportOverride);
+  });
+  graph.addEventListener("pointerup",()=>{drag=null;setTimeout(()=>{cameraGesture=false},0)});
+  graph.addEventListener("pointercancel",()=>{drag=null;cameraGesture=false});
+}
+function showNodeHover(node,p){
+  const hover=document.querySelector("#nodeHover");
+  hover.textContent=node.label;
+  hover.hidden=false;
+}
+function arrangeReadableLabels(scale){
+  const occupied=[],shell=graph.getBoundingClientRect();
+  const overlaps=(a,b)=>a.left<b.right+5&&a.right+5>b.left&&a.top<b.bottom+4&&a.bottom+4>b.top;
+  const labels=[];
+  for(const g of scene.querySelectorAll('.domainGroup')){
+    const label=g.querySelector('.externalLabel');
+    label.setAttribute('transform',`translate(0 ${74+20/scale}) scale(${1/scale})`);
+    label.classList.add('semanticFamilyLabel');
+    occupied.push(label.getBoundingClientRect());
+  }
+  for(const g of scene.querySelectorAll('.knowledgeNode:not(.labelSuppressed)')){
+    const label=g.querySelector('.fullNodeLabel'),radius=Number(g.dataset.visualRadius)*scale;
+    const origin=g.getScreenCTM(),box=label.getBBox();
+    labels.push({g,label,radius,origin,box,important:g.dataset.important==='true'});
+    g.querySelector('.labelLeader')?.remove();
+  }
+  labels.sort((a,b)=>Number(b.important)-Number(a.important)||a.g.dataset.fullLabel.localeCompare(b.g.dataset.fullLabel));
+  for(const entry of labels){
+    const {g,label,radius,origin,box}=entry;
+    const candidates=[];
+    for(const distance of [radius+14,radius+35,radius+65,radius+100,radius+145]){
+      for(const angle of [Math.PI/2,-Math.PI/2,0,Math.PI,Math.PI/4,3*Math.PI/4,-Math.PI/4,-3*Math.PI/4]){
+        const x=Math.cos(angle)*distance,y=Math.sin(angle)*distance;
+        const rect={left:origin.e+x+box.x,right:origin.e+x+box.x+box.width,top:origin.f+y+box.y,bottom:origin.f+y+box.y+box.height};
+        const collisions=occupied.filter(other=>overlaps(rect,other)).length;
+        const outside=Math.max(0,shell.left+8-rect.left)+Math.max(0,rect.right-shell.right+8)+Math.max(0,shell.top+65-rect.top)+Math.max(0,rect.bottom-shell.bottom+8);
+        candidates.push({x,y,rect,score:collisions*10000+outside*100+distance});
+      }
+    }
+    candidates.sort((a,b)=>a.score-b.score);
+    const choice=candidates[0];
+    label.setAttribute('transform',`translate(${choice.x/scale} ${choice.y/scale}) scale(${1/scale})`);
+    occupied.push(choice.rect);
+    if(Math.hypot(choice.x,choice.y)>radius+25){
+      const length=Math.hypot(choice.x,choice.y),fraction=radius/length;
+      g.prepend(mk('line',{x1:choice.x*fraction/scale,y1:choice.y*fraction/scale,x2:choice.x/scale,y2:choice.y/scale,class:'labelLeader'}));
+    }
+  }
+}
+function drawEvidenceTopology(parent,center){
+  const focus=currentToken()?.kind==="node"?currentToken().id:null;
+  const branch=currentToken()?.kind==="family"?currentToken().id:null;
+  const visible=visibleNodeIds();
+  const group=mk("g",{class:"evidenceTopology"});
+  const context=new Map();
+  evidenceContextPoints=[];
+  if(focus){
+    const origin=nodePosOnMap(focus,center);
+    const neighbors=[...new Set(model.edges.filter(e=>e.source===focus||e.target===focus).map(e=>e.source===focus?e.target:e.source))].sort();
+    const obstacles=lastObstacleCircles.length?[...lastObstacleCircles]:[...visible].map(id=>{const p=nodePosOnMap(id,center);return p?{...p,r:65}:null}).filter(Boolean);
+    neighbors.forEach((id,i)=>{
+      if(nodePosOnMap(id,center))return;
+      let position;
+      for(let attempt=0;attempt<10000;attempt++){
+        const index=i+attempt,angle=index*Math.PI*(3-Math.sqrt(5)),r=200+85*Math.sqrt(index+1);
+        position={x:origin.x+Math.cos(angle)*r,y:origin.y+Math.sin(angle)*r};
+        if(obstacles.every(o=>Math.hypot(o.x-position.x,o.y-position.y)>o.r+52))break;
+      }
+      obstacles.push({...position,r:45});context.set(id,position);evidenceContextPoints.push({...position,pad:150});
+      const node=nodeById.get(id),angle=Math.atan2(position.y-center.y,position.x-center.x),r=Math.hypot(position.x-center.x,position.y-center.y);
+      drawKnowledgeNode(parent,node,position,{kind:'node',id,angle,r,visualRadius:38,relation:'evidence_context'},false,'evidenceNeighbor',()=>activateSearchResult(node),'evidence_context');
+    });
+  }
+  let count=0;
+  for(const e of model.edges){
+    if(!evidenceLens&&e.source!==focus&&e.target!==focus&&!(branch&&(nodeById.get(e.source)?.domain===branch||nodeById.get(e.target)?.domain===branch)))continue;
+    const a=nodePosOnMap(e.source,center)||context.get(e.source),b=nodePosOnMap(e.target,center)||context.get(e.target);
+    // Offscreen relationships remain listed in details; a lens never deletes them.
+    if(!a||!b)continue;
+    const color=FALSE_EDGE_TYPES.has(e.type)?"#ff637d":e.type==="tests"?"#ffd35f":"#aebeff";
+    const dx=b.x-a.x,dy=b.y-a.y,bend=35+(count%5)*18;
+    const path=mk("path",{d:`M ${a.x} ${a.y} Q ${(a.x+b.x)/2-dy/Math.max(1,Math.hypot(dx,dy))*bend} ${(a.y+b.y)/2+dx/Math.max(1,Math.hypot(dx,dy))*bend} ${b.x} ${b.y}`,
+                          class:"evidenceWire",stroke:color,"data-relation":e.type});
+    const title=mk("title");title.textContent=`${nodeById.get(e.source).label} — ${e.type} → ${nodeById.get(e.target).label}`;path.append(title);
+    group.append(path);count++;
+  }
+  parent.prepend(group);
+}
+let evidenceContextPoints=[];
+function fitEvidenceContext(){
+  if(!evidenceContextPoints.length)return;
+  const v=readViewport(),box=graph.getBoundingClientRect();
+  let left=v[0],top=v[1],right=v[0]+v[2],bottom=v[1]+v[3];
+  for(const p of evidenceContextPoints){left=Math.min(left,p.x-p.pad);right=Math.max(right,p.x+p.pad);top=Math.min(top,p.y-p.pad);bottom=Math.max(bottom,p.y+p.pad)}
+  const aspect=box.width/box.height;
+  let width=right-left,height=bottom-top;
+  if(width/height<aspect)width=height*aspect;else height=width/aspect;
+  graph.setAttribute('viewBox',`${(left+right-width)/2} ${(top+bottom-height)/2} ${width} ${height}`);
+}
+
+function augmentEvidenceDetails(){
+  const token=currentToken();
+  if(token?.kind!=="node")return;
+  const node=nodeById.get(token.id);
+  const relations=[...(incomingById.get(node.id)||[]),...(outgoingById.get(node.id)||[])];
+  const section=document.createElement("section");section.className="detailSection";
+  section.innerHTML='<h3>EVIDENCE RELATIONSHIPS · '+relations.length+'</h3><p>Original scientific relationships, independent of navigation placement.</p><div class="evidenceList">'+relations.map(e=>{
+    const other=nodeById.get(e.source===node.id?e.target:e.source);
+    return '<button class="nodeLink" data-evidence-node="'+esc(other.id)+'"><span>'+esc(other.label)+'</span><small>'+esc(e.source===node.id?'→ '+e.type:e.type+' → here')+'</small></button>';
+  }).join("")+'</div>';
+  detail.append(section);
+  section.querySelectorAll("[data-evidence-node]").forEach(button=>button.onclick=()=>activateSearchResult(nodeById.get(button.dataset.evidenceNode)));
+  const placements=(navigation.taxonomy||[]).filter(p=>p.child===node.id);
+  const facets=(navigation.identities||[]).filter(p=>p.left===node.id||p.right===node.id);
+  if(placements.length||facets.length){
+    const links=document.createElement("section");links.className="detailSection";
+    links.innerHTML='<h3>REVIEWED PLACEMENTS & CONCEPT FACETS</h3>'+[...placements.map(p=>({id:p.parent,type:'specialty of'})),...facets.map(p=>({id:p.left===node.id?p.right:p.left,type:p.type}))].map(p=>'<button class="nodeLink" data-facet="'+esc(p.id)+'"><span>'+esc(nodeById.get(p.id)?.label||familyById.get(p.id.replace('family:',''))?.short||p.id)+'</span><small>'+esc(p.type)+'</small></button>').join('');detail.append(links);
+    links.querySelectorAll('[data-facet]').forEach(button=>button.onclick=()=>{
+      const id=button.dataset.facet;
+      if(nodeById.has(id))activateSearchResult(nodeById.get(id));
+      else{expandAll=false;expandFieldDeep=false;activePath=[familyToken(id.replace('family:',''))];render()}
+    });
+  }
+  const assertions=(model.evidence_reviews||[]).flatMap(bundle=>bundle.assertions).filter(a=>a.canonical_record?.id===node.id&&a.target_kind==='node');
+  const quotes=document.createElement("section");quotes.className="detailSection";
+  quotes.innerHTML='<h3>EXACT REVIEWED SUPPORT</h3>'+(assertions.length?assertions.map(a=>'<p>'+esc(a.statement)+'</p>'+a.support.map(span=>'<blockquote>'+esc(span.quote)+'</blockquote><small>'+esc(span.source_id)+' · retained revision '+esc(span.source_sha256.slice(0,12))+'</small>').join('')).join(''):'<p>No source-to-assertion review is retained for this legacy record yet. Citation presence alone does not establish support.</p>');
+  detail.append(quotes);
+}
