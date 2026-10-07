@@ -90,8 +90,12 @@ One JSON object per line. Nodes can represent fields, concepts, methods, claims,
 Minimum:
 
 ```json
-{"id":"claim.example","label":"Example claim","kind":"claim","domain":"physical","era":"twentieth","status":"active","frontier":false,"summary":"...","sources":[{"id":"doi:...","title":"...","url":"https://..."}]}
+{"id":"claim.example","label":"Example claim","kind":"claim","domain":"physical","era":"undated","status":"reported","frontier":false,"summary":"...","sources":[{"id":"doi:...","title":"...","url":"https://..."}]}
 ```
+
+These neutral values must be proposed explicitly by the author: `status: reported` records a source-attributed result or proposal without claiming scientific acceptance or current consensus; `era: undated` leaves chronology unresolved and makes no claim about currency; `frontier: false` makes no claim that the record represents the current frontier. It does not declare the question settled or the result obsolete.
+
+Unknown metadata remains explicit. If a candidate claims acceptance, chronology or frontier standing that its sources do not establish, the author must submit a new candidate revision with justified or neutral metadata. The compiler does not rewrite the captured source, summary or assertion scope to make a candidate pass. The complete revised representation still requires both independent review roles.
 
 ### edges.jsonl
 

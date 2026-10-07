@@ -11,6 +11,8 @@ from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 from copy import deepcopy
 from pathlib import Path
 from evidence_compiler import ROOT, EvidenceError, audit_index, candidate_digest, compile_reviewed, context_digest, digest, enforce, review_packet, validate_dag
+from nemesis_apply import normalize_batch,validate_nodes
+from nemesis_worker_contract import build_contract,prompt_block
 
 POLICY={"required_roles":["entailment","adversarial"],"review_roles":["entailment","adversarial"]}
 
@@ -43,6 +45,31 @@ class EvidenceCompilerTests(unittest.TestCase):
     def setUp(self):self.c,self.g,self.d=fixture()
     def check(self):return enforce(self.c,self.g,self.d,POLICY)
     def test_exact_bound_review_passes(self):self.assertEqual(self.check()["reviewed_targets"],1)
+    def neutral_report(self):
+        self.c['nodes.jsonl'][0].update(status='reported',era='undated',frontier=False)
+        self.g['eras'].append({'id':'undated','label':'Chronology unresolved'})
+        target_hash=digest(self.c['nodes.jsonl'][0]);self.c['assertions.jsonl'][0]['target_sha256']=target_hash
+        for decision in self.d:decision.update(candidate_sha256=candidate_digest(self.c),target_sha256=target_hash,context_sha256=context_digest(self.c,self.g))
+    def test_explicit_neutral_report_can_pass_only_with_complete_evidence_and_both_reviews(self):
+        self.neutral_report();validate_nodes(self.c['nodes.jsonl'],self.g,self.c['manifest.json'])
+        self.assertEqual(self.check()['reviewed_targets'],1)
+        self.d.pop()
+        with self.assertRaisesRegex(EvidenceError,'missing evidence review roles'):self.check()
+    def test_neutral_metadata_never_rescues_unsupported_or_strengthened_assertion(self):
+        self.neutral_report();self.d[1]['outcome']='unsupported'
+        with self.assertRaisesRegex(EvidenceError,'unsupported or uncertain'):self.check()
+        self.d[1]['outcome']='supported';self.c['assertions.jsonl'][0]['support'][0]['quote']='The result holds for every population forever.'
+        with self.assertRaisesRegex(EvidenceError,'quote does not match'):self.check()
+    def test_compiler_never_coerces_existing_metadata_to_neutral_states(self):
+        before=deepcopy(self.c)
+        normalize_batch(self.c['manifest.json'],self.c['nodes.jsonl'],self.c['reviews.jsonl'],self.g)
+        self.assertEqual(self.c,before);self.assertEqual(self.c['nodes.jsonl'][0]['status'],'active');self.assertEqual(self.c['nodes.jsonl'][0]['era'],'frontier')
+    def test_same_neutral_representation_policy_reaches_worker_and_review_packet(self):
+        contract=build_contract();packet=review_packet(self.c,self.g)
+        self.assertIn('reported',contract['allowed_statuses']);self.assertIn('undated',contract['atlas_eras'])
+        self.assertEqual(contract['representation_policy'],packet['representation_policy'])
+        self.assertEqual(contract['review_policy'],packet['review_policy'])
+        self.assertIn('fog-representation-policy/1',prompt_block(contract))
     def test_private_tool_metadata_cannot_bypass_review(self):
         self.c["nodes.jsonl"][0]["public_frontier"]={"category":"company-tool","company":"Synthetic company","tool":"Synthetic tool","capability_status":"undisclosed","disclosed_at":None,"source_ids":["source.test"]}
         with self.assertRaises(EvidenceError):self.check()

@@ -24,7 +24,7 @@ ALLOWED_KINDS = {
 }
 ALLOWED_STATUSES = {
     "foundational", "established", "active", "disputed", "frontier",
-    "invalidated", "historical",
+    "invalidated", "historical", "reported",
 }
 ALLOWED_RELATIONS = {
     "enabled", "depends_on", "derived_from", "supports", "contradicts",
