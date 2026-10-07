@@ -61,4 +61,6 @@ jobs:
 
       - name: Test evidence compiler and quarantined imports
         working-directory: research/fog-of-knowledge
-        run: python scripts/test_evidence_compiler.py
+        run: |
+          python scripts/test_evidence_compiler.py
+          python scripts/test_nemesis_exchange.py

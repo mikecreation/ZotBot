@@ -34,11 +34,28 @@ def extract_pdf(body):
     if not text.strip():raise EvidenceError('PDF has no extractable text layer; scanned evidence requires reviewed OCR and page images')
     return text,pages
 
-def capture_source(url,source_id,title,source_kind='unknown'):
+def public_url(url):
+    import ipaddress,socket
+    from urllib.parse import urlparse
+    parsed=urlparse(url)
+    if parsed.scheme not in {'http','https'} or not parsed.hostname or parsed.username or parsed.password or parsed.port not in {None,80,443}:
+        raise EvidenceError('public HTTP(S) source without credentials required')
+    try:addresses=socket.getaddrinfo(parsed.hostname,parsed.port or (443 if parsed.scheme=='https' else 80),type=socket.SOCK_STREAM)
+    except OSError as exc:raise EvidenceError('public source host unavailable') from exc
+    if not addresses or any(not ipaddress.ip_address(a[4][0]).is_global for a in addresses):raise EvidenceError('source must resolve to a public address')
+
+class PublicRedirects(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self,request,fp,code,msg,headers,newurl):
+        public_url(newurl)
+        return super().redirect_request(request,fp,code,msg,headers,newurl)
+
+def capture_source(url,source_id,title,source_kind='unknown',public_only=False):
     if not url.startswith(('https://','http://')):raise EvidenceError('HTTP(S) source URL required')
     if source_kind not in {'primary','secondary','unknown'}:raise EvidenceError('unsupported source kind')
     request=urllib.request.Request(url,headers={'User-Agent':'FogEvidenceCapture/1.0'})
-    with urllib.request.urlopen(request,timeout=30) as response:
+    if public_only:public_url(url)
+    opener=urllib.request.build_opener(urllib.request.ProxyHandler({}),PublicRedirects()).open if public_only else urllib.request.urlopen
+    with opener(request,timeout=30) as response:
         body=response.read(8_000_001)
         if len(body)>8_000_000:raise EvidenceError('source exceeds 8 MB; retain a bounded authorized extract through a supported capture adapter')
         content_type=response.headers.get_content_type();charset=response.headers.get_content_charset() or 'utf-8';final_url=response.geturl()

@@ -6,6 +6,11 @@ Nemesis should treat the repository as an **auditable knowledge compiler**, not 
 
 ## Fast path
 
+The Nemesis **Expand map with crew** integration now uses a durable discovery,
+capture, candidate, dual-review and publication handoff. See
+[EVIDENCE_CREW.md](nemesis/integration/EVIDENCE_CREW.md) for the runtime patch,
+restart check and failure states. Legacy four-file worker replies remain drafts.
+
 From `research/fog-of-knowledge`:
 
 ```bash
