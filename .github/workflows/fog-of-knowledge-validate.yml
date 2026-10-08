@@ -58,6 +58,7 @@ jobs:
         run: |
           python scripts/nemesis_context.py --max-items 5 --compact > /tmp/nemesis-context.json
           python -m json.tool /tmp/nemesis-context.json > /dev/null
+          python scripts/test_coverage_context.py
 
       - name: Test evidence compiler and quarantined imports
         working-directory: research/fog-of-knowledge
