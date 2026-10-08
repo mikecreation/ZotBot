@@ -22,6 +22,12 @@ Run `python scripts/test_response_ownership_source.py` with the locked
 `brain-transport/node_modules` dependencies installed. The complete installed
 extension also requires `node tests/validate-extension.js`.
 
+The affected-path runner executes every script in a check group separately and
+records each exit status. A timeout is a failed check and does not hide subsequent
+checks. The full portable Native suite has a separate 600-second test budget
+after a Windows run exceeded the ordinary 300-second script budget. This changes
+neither scientific job deadlines nor the expired demonstration budget.
+
 Installed bytes do not prove activation. Reload the already-installed extension,
 refresh its bound worker pages, verify the `6.2.6-response-ownership` heartbeat and
 collect the original job without resending it. A functional read-only cycle is
