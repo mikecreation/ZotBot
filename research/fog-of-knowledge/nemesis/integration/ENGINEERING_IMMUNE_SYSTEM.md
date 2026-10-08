@@ -112,7 +112,10 @@ same owner, lease and GOAL; 520 nonempty retained-file preimages matched, all 54
 prior jobs remained, and no duplicate dispatch/publication was found.
 
 The original eight-investigation admission limit was reached without another
-manual Expand or budget increase. The queue now says `BOUNDED_DEMO_COMPLETE`.
+manual Expand or budget increase. At that limit the queue recorded
+`BOUNDED_DEMO_COMPLETE`. A later observation recorded `RECOVERY_PENDING` with
+Windows access denied during queue checkpoint replacement; admission remained
+disabled and the deadline unchanged.
 The unchanged strict acceptance report remains **INCOMPLETE** solely because
 `continuation_still_enabled` is false. This documents a deliberate budget stop;
 it does not certify sustained unbounded operation. Pending work and actual upload,
@@ -126,17 +129,24 @@ extension file was changed during this audit.
 | Mixed snapshots / evidence changes | Cursors bind snapshot/query; source retrieval verifies retained capture and text hashes and exact Unicode offsets | Cursor checksum detects corruption, not a malicious actor able to recompute hashes. Capture extraction and scientific entailment still require existing compiler checks |
 | Interrupted derived index / DB transaction | Transactional staging cannot replace an existing valid snapshot; isolated child-process crash rolls back its uncommitted write | OS/storage failure and all production cross-store transitions are not exhaustively fault-injected. Existing durable-intent/restart tests and live recovery remain separate evidence |
 | False mission success | Independent observer verifies canonical reviewed records, exact publication head/CI, substantive finding use and restart identity; watchdog exposes holds, stale proof, repeats and stagnation | Observer must be invoked against fresh evidence; it is not a continuously installed service and cannot repair platform failures |
-| Recurrence / overlooked dependents | Registry computes upstream/downstream execution path; permanent 17-case corpus and ordered event ledger require assumption/dependency/prevention review after a verified repair recurs | Registry and observed ledger must be maintained. Unrecorded incidents cannot be inferred. A completed architecture review is not runtime activation |
+| Recurrence / overlooked dependents | Registry computes upstream/downstream execution path; permanent 18-case corpus and ordered event ledger require assumption/dependency/prevention review after a verified repair recurs | Registry and observed ledger must be maintained. Unrecorded incidents cannot be inferred. A completed architecture review is not runtime activation |
 | Diagnostic redaction / local tree clipping / current platform error | Three byte-exact staged changes pass isolated real-function and owned-turn DOM replay, including >400 KB stdout and a 200,001-entry tree | **Staged, inactive.** New build identities and safe activation after preserved work are still required. Unknown UI variants and upload confirmation failures remain possible |
 | Whole-atlas prompt growth / review cost | Measured capacity reports and explicit retrieval pages expose costs before scaling; no model calls in synthetic runs | Current scientific planner still sends a complete graph. Interactive retrieval adapter, author source paging and efficient complete review grouping remain future integration work |
 
-There are 27 new distinct engineering tests: 15 integrity/retrieval/capacity tests,
-four dependency/recurrence tests, four staged-boundary tests and four watchdog
+There are 28 new distinct engineering tests: 15 integrity/retrieval/capacity tests,
+four dependency/recurrence tests, four staged-boundary tests and five watchdog
 tests. The affected-path run also includes existing compiler (37), exchange (33),
 context (2), mission (8), retained Native source, five browser transport scenarios
 and canonical validation. Repeated runs are not added to test totals. Failures
 remain in local diagnostic reports. CI executes the new regressions along with
 the existing scientific and transport suites.
+
+The final live Windows checkpoint failure is retained rather than erased. The
+watchdog reports queue recovery/error independently of verified publication
+counts. It does not claim that this fixes file sharing or cross-store writes.
+An eventual persistence repair should use unique staging names, bounded retry
+only for known replace-sharing failures, durable old/new identities and crash
+tests; it must preserve the last valid checkpoint and existing delivery fences.
 
 ### Measured future capacity
 

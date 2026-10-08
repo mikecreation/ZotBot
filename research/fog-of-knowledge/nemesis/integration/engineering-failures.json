@@ -1,6 +1,7 @@
 {
   "protocol": "nemesis-failure-corpus/1",
   "cases": [
+    {"id":"windows-checkpoint-sharing-denial","category":"persistent-identity","assumption":"Atomic rename always succeeds immediately even while readers or another writer hold the destination on Windows.","boundaries":["persistence","continuation"],"proof":"real preserved queue recorded WinError 5 replacing its .json.tmp checkpoint; watchdog detects retained error/recovery state; no active-run rewrite or retry claimed"},
     {"id":"capacity-report-concurrent-input","category":"scientific-data-loss","assumption":"Re-reading a mutable input later identifies the snapshot that was actually measured.","boundaries":["retrieval","context"],"proof":"capacity baseline pins initial graph bytes; concurrent-change fault test checks report identity"},
     {"id":"machine-output-clipping","category":"scientific-data-loss","assumption":"A successful process exit implies the machine response is complete.","boundaries":["context","retrieval"],"proof":"engineering: changed/truncated payload, exact bytes/hash/counts"},
     {"id":"machine-output-redaction","category":"scientific-data-loss","assumption":"A diagnostic redactor is safe for exact source or graph content.","boundaries":["context","capture","review"],"proof":"engineering: exact public token-shaped quote fixture"},

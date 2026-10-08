@@ -24,6 +24,8 @@ def assess(acceptance,observation,*,now=None,max_age=120,stagnation_seconds=1800
         keys.append((p.get('domain'),normalize(p.get('topic','')),normalize(p.get('strategy',{}).get('question',''))))
         queries.extend(normalize(q) for q in p.get('strategy',{}).get('queries',[]))
     alerts=[]
+    runtime_problem=bool(observation.get('error')) or observation.get('state') in {'RECOVERY_PENDING','ERROR','FAILED'}
+    if runtime_problem:alerts.append({'category':'runtime-recovery','state':observation.get('state'),'detail':observation.get('error'),'reason':'Retained runtime error/recovery state requires inspection; canonical progress does not clear operational failure'})
     if stagnant:alerts.append({'category':'mission-stagnation','reason':'No newly verified canonical publication within the declared observation window','seconds_without_verified_publication':now-last_progress})
     for f in observation.get('flows',[]):
         if f['state'] in {'HELD','BLOCKED'}:alerts.append({'category':'retained-work-held','domain':f['domain'],'reason':f.get('reason')})
@@ -31,7 +33,7 @@ def assess(acceptance,observation,*,now=None,max_age=120,stagnation_seconds=1800
     for slot,worker in observation.get('workers',{}).items():
         if worker.get('connected') and worker.get('state') in {'FAILED','ERROR','TRANSPORT_BLOCKED','DELIVERY_UNCONFIRMED'}:
             alerts.append({'category':'worker-operation','slot':slot,'state':worker['state'],'detail':worker.get('detail'),'scientific_progress':False})
-    status='PASSED' if acceptance.get('status')=='PASSED' and all(v is True for v in checks.values()) else 'INCOMPLETE'
+    status='PASSED' if acceptance.get('status')=='PASSED' and all(v is True for v in checks.values()) and not runtime_problem else 'INCOMPLETE'
     return {'protocol':'nemesis-mission-watchdog/1','status':status,'observed_at':now,'observation_age_seconds':age,
         'verified_new_records':outcome['new_nodes'],'verified_growth_fields':outcome['growth_domains'],'verified_publications':outcome['merged_batches'],
         'substantive_followup':outcome.get('substantive_followup',False),'restart_recovered':outcome.get('restart_recovered',False),
