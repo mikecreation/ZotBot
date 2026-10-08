@@ -1,7 +1,7 @@
 """Durable read/plan turns: no whole atlas in Brain GOAL; no scientific approval."""
 import json,time
 from pathlib import Path
-from .fog_graph_access import GraphReaders,canonical,digest
+from .fog_graph_access import GraphReaders,canonical,digest,verify
 from .durable_json import write_json
 
 PROTOCOL='fog-paged-planning/1'
@@ -94,6 +94,45 @@ class PagedPlanning:
             if reply['data']['continuation'] is not None:raise ValueError('Exact validation exceeds one bounded read; proposal is not admitted')
             nodes=[r['record'] for r in reply['data']['records']]
         return {'domain':plan['domain'],'input':{'graph':{'nodes':nodes}}}
+
+    def discovery_context(self,state,task):
+        """Retain admitted planning identity and read only its exact canonical anchors.
+
+        A complete selected-ID query is not a complete branch or atlas. The live
+        worker contract may be newer than the pinned scientific planning input.
+        """
+        plan=state.get('decisions',{}).get(task.get('planning_id'))
+        if not plan or plan.get('paged')!=PROTOCOL or plan.get('state')!='ADMITTED':
+            raise ValueError('Discovery requires a retained admitted paged plan')
+        if (plan.get('task_key')!=task.get('key') or plan.get('domain')!=task.get('domain')
+            or plan.get('proposal')!=task.get('decision') or plan.get('job_id')!=task.get('planning_job_id')
+            or digest(plan['input'])!=task.get('planning_input_sha256')
+            or plan.get('graph_fingerprint')!=task.get('graph_fingerprint')):
+            raise ValueError('Discovery differs from its retained scientific decision/input')
+        reader=self.reader(state,plan['canonical_sha'])
+        if reader.snapshot!=plan['graph_fingerprint']:
+            raise ValueError('Pinned scientific snapshot changed')
+        decision=task['decision']
+        ids=sorted(set(decision.get('anchor_ids',[]))|{u['id'] for u in decision.get('finding_uses',[])})
+        if not set(ids)<=set(plan['seen_ids']):raise ValueError('Discovery anchors were not retrieved by the planner')
+        nodes=[];reply=None
+        if ids:
+            reply=self.exchange(state,plan,{'operation':'query','query':{'kind':'nodes','ids':ids,'limit':100}})
+            data=verify(reply,reader.snapshot)
+            scope={'kind':'nodes','domain':None,'ids':ids,'incident':None,'batch':None}
+            if (reply['manifest'].get('boundary')!='graph-query' or data['scope']!=scope
+                or data['complete_query'] is not True or data['continuation'] is not None):
+                raise ValueError('Discovery requires the complete exact selected-anchor query')
+            nodes=[r['record'] for r in data['records']]
+            if len(nodes)!=len(ids) or {n['id'] for n in nodes}!=set(ids):
+                raise ValueError('Discovery selected-anchor query has missing or duplicate records')
+        return {'counts':reader.catalog['counts'],'retrieval_catalog':reader.catalog,
+            'planning_access':{'protocol':PROTOCOL,'canonical_sha':plan['canonical_sha'],
+                'snapshot':reader.snapshot,'complete_graph_in_prompt':False},
+            'known_branch_records':nodes,'known_branch_records_page':reply,
+            'known_branch_records_scope':{'selected_ids':ids,'returned':len(nodes),
+                'complete_selected_ids':True,'complete_domain':False,'complete_graph':False,
+                'scope':'Only the admitted anchors/finding uses; omitted knowledge is not absent.'}}
 
     def resume(self,state,plan,additional_turns):
         if plan.get('paged')!=PROTOCOL or plan['state']!='RETRIEVAL_WAIT':raise ValueError('Only a retained retrieval wait can resume')

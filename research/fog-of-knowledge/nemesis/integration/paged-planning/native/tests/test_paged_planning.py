@@ -112,3 +112,79 @@ def test_restart_or_pause_does_not_retire_old_demo_budget(paged):
     p.configure('owner','repo','fog',False,True);p.tick()
     assert load(p)['live_acceptance_budget']==budget and not load(p)['enabled']
 
+
+def real_discovery(p):
+    """Exercise the production handoff, not the coverage fixture's enqueue stub."""
+    from sim.github_evidence import FogEvidenceCrew
+    ws=p.crew.ws
+    ws.project_row=lambda *a:{'key':'fixture','mode':'READ_BRANCH_PR',
+        'manifest':json.loads((ROOT/'.nemesis.json').read_text())}
+    ws.use_project=lambda *a:None
+    # The contract may advance independently of the retained planning snapshot.
+    ws.run_worker_contract=lambda *a:{'ok':True,'sha':'b'*40,'prompt_block':'synthetic live contract'}
+    def no_full_context(*a):raise AssertionError('Paged discovery must not load the whole inventory')
+    ws.run_context=no_full_context
+    p.crew.coverage=p
+    p.crew.discover=lambda *a,**k:FogEvidenceCrew.discover(p.crew,*a,**k)
+
+
+@pytest.mark.parametrize('anchors',[True,False])
+def test_real_paged_discovery_handoff_is_scoped_pinned_and_restart_safe(paged,anchors):
+    p,r=paged;plan=read(p,next(iter(load(p)['decisions'].values())))
+    node=plan['input']['current_reply']['data']['records'][0]['record'];value=proposal(plan)
+    if anchors:
+        value['anchor_ids']=[node['id']]
+        value['finding_uses']=[{'id':node['id'],'summary':node['summary'],'implication':'Test independent replication.'}]
+    real_discovery(p)
+    # Simulate enqueue succeeding before the discovery/checkpoint write commits.
+    original=p.crew.brain.enqueue
+    def crash(*a,**k):original(*a,**k);raise RuntimeError('After durable discovery enqueue')
+    p.crew.brain.enqueue=crash;p.crew.brain.complete(plan['job_id'],value);p.tick()
+    s=load(p);task=next(iter(s['tasks'].values()))
+    assert s['state']=='RECOVERY_PENDING' and s['error']=='After durable discovery enqueue'
+    count=len(p.crew.brain.rows);s['next_attempt_at']=0;p.save(p.location('owner','repo','fog'),s)
+    p.crew.brain.enqueue=original
+    restarted=ScientificCoveragePlanner(p.crew);restarted.paged.readers=p.paged.readers
+    real_discovery(restarted);restarted.tick()
+    task=load(restarted)['tasks'][task['key']]
+    assert task['state']=='QUEUED' and len(p.crew.brain.rows)==count
+    packet=json.loads(p.crew.brain.rows[task['job_id']]['goal'])['context']
+    assert packet['coverage_plan']['decision']==value
+    assert packet['planning_access']['canonical_sha']==plan['canonical_sha']
+    assert packet['retrieval_catalog']['snapshot']==r.snapshot
+    assert packet['known_branch_records']==([node] if anchors else [])
+    assert packet['known_branch_records_scope']['complete_domain'] is False
+    assert packet['known_branch_records_scope']['complete_graph'] is False
+    assert 'coverage_inventory' not in packet and len(canonical(packet))<20000
+    if anchors:
+        verify(packet['known_branch_records_page'],r.snapshot)
+        assert packet['known_branch_records_page']['data']['complete_query'] is True
+    restarted.tick();assert len(p.crew.brain.rows)==count
+
+
+@pytest.mark.parametrize('fault',['decision','input','snapshot','missing','scope','bytes'])
+def test_discovery_context_rejects_changed_plan_or_incomplete_anchor_read(paged,fault):
+    p,r=paged;plan=read(p,next(iter(load(p)['decisions'].values())))
+    node=plan['input']['current_reply']['data']['records'][0]['record'];value=proposal(plan)
+    value['anchor_ids']=[node['id']]
+    p.crew.brain.complete(plan['job_id'],value);p.tick();s=load(p);task=next(iter(s['tasks'].values()))
+    if fault=='decision':task['decision']['topic']='Silent rewrite'
+    elif fault=='input':task['planning_input_sha256']='0'*64
+    elif fault=='snapshot':r.snapshot='0'*64
+    else:
+        request=r.request
+        def changed(v):
+            reply=request(v)
+            if fault=='missing':
+                reply['data']['records']=[];reply['data']['returned']=0;reply['data']['matched']=0
+                reply['manifest']['counts']={'returned':0,'matched':0}
+            elif fault=='scope':
+                reply['data']['scope']['ids']=[];reply['manifest']['scope']=reply['data']['scope']
+            else:reply['data']['records'][0]['record']['summary']='Stronger invented finding'
+            if fault!='bytes':
+                from sim.fog_graph_access import digest
+                reply['manifest'].update(bytes=len(canonical(reply['data'])),sha256=digest(reply['data']))
+            return reply
+        r.request=changed
+    with pytest.raises(ValueError):p.paged.discovery_context(s,task)
+

@@ -338,11 +338,15 @@ class FogEvidenceCrew:
                 task=coverage_tasks[index] if coverage_tasks is not None else None
                 packet=context['packet']
                 if task:
-                    packet={k:packet.get(k) for k in ('protocol','counts','nemesis_policy','review_priority')}
+                    packet={k:packet.get(k) for k in ('protocol','counts','nemesis_policy','review_priority','retrieval_catalog')}
                     packet['coverage_plan']={k:task[k] for k in ('key','domain','label','target','source_history')}
                     for key in ('decision','planning_id','planning_job_id','planning_input_sha256','graph_fingerprint'):
                         if key in task:packet['coverage_plan'][key]=task[key]
-                    packet['known_branch_records']=[n for n in context['packet']['coverage_inventory'] if n['domain']==task['domain']]
+                    if task.get('planning_access')=='fog-paged-planning/1':
+                        state=self.coverage.load(owner,repo,path)
+                        packet.update(self.coverage.paged.discovery_context(state,task))
+                    else:
+                        packet['known_branch_records']=[n for n in context['packet']['coverage_inventory'] if n['domain']==task['domain']]
                 else:
                     packet={k:v for k,v in packet.items() if k!='coverage_inventory'}
                 goal=json.dumps({'mission':mission,'context':packet},ensure_ascii=False)

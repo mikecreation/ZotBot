@@ -26,6 +26,30 @@ and findings. Exact canonical summaries are checked again before admission.
 The source capture, independent reviews, scientific compiler and exact-head
 publication gates remain required.
 
+### Discovery handoff repair (`14.14.1-paged-handoff`)
+
+The original paged planner admitted investigations successfully, but the real
+discovery handoff still indexed `coverage_inventory`, which catalog-only inputs
+do not contain. This left admitted tasks in `RECOVERY_PENDING` before enqueue.
+Earlier coverage tests stubbed discovery and therefore did not exercise that
+production boundary.
+
+Discovery now checks the retained admitted decision, task key, planning job,
+input digest and graph fingerprint, then reads only the exact anchor/finding IDs
+from the original planning commit. The complete selected-ID page retains its
+byte/hash/snapshot/scope/count envelope. Missing records, changed decisions,
+partial pages and wrong scopes fail explicitly. The packet includes the catalog
+and clearly declares that selected anchors are not the complete domain or graph.
+Novel investigations may have no anchors; that does not imply an empty field.
+The current worker contract can advance separately from the pinned planning
+snapshot. Legacy whole-context plans keep their existing handoff.
+
+The new regression calls the actual `FogEvidenceCrew.discover` through admission
+and a simulated enqueue-before-checkpoint crash, then verifies restart reuses
+the same discovery job. It covers anchored and novel topics and rejects altered
+decision/input/snapshot, missing records, wrong scope and changed reply bytes.
+No source capture, scientific review, compiler or publication gate is relaxed.
+
 Each decision has an explicit initial allowance of 16 read turns. Reaching it
 retains the precise pending request in `RETRIEVAL_WAIT`; it does not exhaust a
 field or create another identical planning mission. A same-origin local POST to
