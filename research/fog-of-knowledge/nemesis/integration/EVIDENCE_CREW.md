@@ -228,3 +228,15 @@ This is a bounded demonstration of continuation, not a claim of scientific
 completeness or immunity to all future failures. ChatGPT chooses sources and
 assertions within the scheduled branch; the fair queue manages admission and
 continuation without deciding scientific truth or adding taxonomy.
+
+Source acquisition is independent for each requested URL. A permanent HTTP
+403/404/410 is retained in `source-capture-failures.json` while other usable
+sources are captured. The author receives those limitations and only the actual
+captures; an unavailable source ID cannot support an assertion. If none can be
+captured, no author context is constructed. Existing capture bytes and permanent
+failure identities remain stable on restart; changed requests need a new revision.
+Rate limits/server failures still use bounded operational retries, and source
+policy or capture-integrity failures are never skipped. Public JSON/XML/Atom text
+can also be retained verbatim from machine-readable publication APIs, without
+inventing or interpreting fields as scientific assertions. The compiler does not
+rewrite inaccessible publisher URLs or bypass their access restrictions.

@@ -63,7 +63,9 @@ def capture_source(url,source_id,title,source_kind='unknown',public_only=False):
     if content_type=='application/pdf' or body.startswith(b'%PDF-'):
         text,pages=extract_pdf(body);method='pypdf-layout/6.19.0';charset=None
     else:
-        if content_type not in {'text/html','application/xhtml+xml','text/plain','text/markdown'}:raise EvidenceError('source format unavailable: '+content_type)
+        if content_type not in {'text/html','application/xhtml+xml','text/plain','text/markdown',
+                                'application/json','text/json','application/xml','text/xml','application/atom+xml'}:
+            raise EvidenceError('source format unavailable: '+content_type)
         try:text=body.decode(charset)
         except (UnicodeError,LookupError) as exc:raise EvidenceError('source text could not be decoded without changes') from exc
         method='http-text/1'

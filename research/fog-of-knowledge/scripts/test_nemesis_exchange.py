@@ -3,6 +3,9 @@ import hashlib,io,json,shutil,subprocess,sys,tempfile,unittest
 from contextlib import redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
+from urllib.error import HTTPError
+from email.message import Message
+import source_capture
 from test_evidence_compiler import fixture
 from evidence_compiler import ROOT,candidate_digest,digest,load_candidate
 from source_capture import EvidenceError,public_url,PublicRedirects
@@ -68,6 +71,94 @@ class ExchangeTests(unittest.TestCase):
         self.assertEqual((self.control/'captured-sources.json').read_bytes(),before)
         context=json.loads((self.control/'author-context.json').read_text(encoding='utf-8'))
         self.assertEqual(context['sources'],self.c['sources.jsonl'])
+
+    def mixed_source_requests(self):
+        source=self.c['sources.jsonl'][0]
+        good={k:source[k] for k in ('id','url','title','source_kind')}
+        missing={'id':'source.unavailable','url':'https://example.org/unavailable','title':'Unavailable source','source_kind':'primary'}
+        (self.batch/'source_requests.jsonl').write_text(json.dumps(missing)+'\n'+json.dumps(good)+'\n',encoding='utf-8')
+        return missing,good
+
+    def capture_with_http_failure(self,status=403):
+        from source_capture import validate_captures
+        # Real retained receipt/raw-byte verification in this disposable project.
+        with patch.object(exchange_api,'validate_captures',lambda sources:validate_captures(sources,self.root)), \
+             patch.object(exchange_api,'graph',lambda:json.loads((self.root/'data/knowledge.json').read_text())), \
+             patch.object(exchange_api,'capture_source',side_effect=HTTPError('https://example.org/unavailable',status,'synthetic failure',{},None)) as fetch:
+            result=exchange_api.capture(self.batch)
+        return result,fetch.call_count
+
+    def test_unavailable_url_does_not_discard_usable_original_capture(self):
+        missing,_=self.mixed_source_requests()
+        before=(self.control/'captured-sources.json').read_bytes()
+        result,calls=self.capture_with_http_failure()
+        self.assertEqual(result,{'captured':1,'unavailable':1});self.assertEqual(calls,1)
+        self.assertEqual((self.control/'captured-sources.json').read_bytes(),before)
+        context=json.loads((self.control/'author-context.json').read_text())
+        self.assertEqual(context['sources'],self.c['sources.jsonl'])
+        self.assertEqual(context['source_capture_failures'][0]['request'],missing)
+        self.assertNotIn(missing['id'],[s['id'] for s in context['sources']])
+        resumed,calls=self.capture_with_http_failure()
+        self.assertEqual(resumed,result);self.assertEqual(calls,0)
+        self.packet()  # The original source-bound candidate still reaches review.
+
+    def test_unavailable_source_can_never_support_an_assertion(self):
+        missing,_=self.mixed_source_requests();self.capture_with_http_failure()
+        self.c['assertions.jsonl'][0]['support'][0]['source_id']=missing['id'];self.save()
+        result=self.exchange('packet');self.assertNotEqual(result.returncode,0)
+        self.assertFalse((self.control/'packet.json').exists())
+
+    def test_all_unavailable_sources_never_construct_author_context(self):
+        missing,_=self.mixed_source_requests()
+        (self.control/'captured-sources.json').unlink()
+        (self.batch/'source_requests.jsonl').write_text(json.dumps(missing)+'\n')
+        with self.assertRaises(exchange_api.ExchangeError) as caught:self.capture_with_http_failure()
+        self.assertEqual(caught.exception.code,'source-unavailable')
+        self.assertFalse((self.control/'author-context.json').exists())
+
+    def test_rate_limit_and_server_error_still_retry_without_discarding_receipts(self):
+        for status in (429,503):
+            with self.subTest(status=status):
+                self.mixed_source_requests()
+                with self.assertRaises(HTTPError):self.capture_with_http_failure(status)
+                self.assertFalse((self.control/'source-capture-failures.json').exists())
+
+    def test_capture_policy_or_integrity_error_is_never_skipped(self):
+        self.mixed_source_requests()
+        from source_capture import validate_captures
+        with patch.object(exchange_api,'validate_captures',lambda sources:validate_captures(sources,self.root)), \
+             patch.object(exchange_api,'capture_source',side_effect=EvidenceError('private address or invalid capture')):
+            with self.assertRaises(EvidenceError):exchange_api.capture(self.batch)
+        self.assertFalse((self.control/'author-context.json').exists())
+
+    def test_changed_unavailable_request_requires_new_source_revision(self):
+        missing,good=self.mixed_source_requests();self.capture_with_http_failure()
+        missing['url']='https://example.org/different-source'
+        (self.batch/'source_requests.jsonl').write_text(json.dumps(missing)+'\n'+json.dumps(good)+'\n')
+        with self.assertRaises(exchange_api.ExchangeError) as caught:self.capture_with_http_failure()
+        self.assertEqual(caught.exception.code,'capture-integrity')
+
+    def test_public_machine_readable_text_keeps_original_bytes_and_representation(self):
+        for content_type,body in [('application/json',b'{"abstract":"Synthetic source only: measured value 2."}'),
+                                  ('application/xml',b'<abstract>Synthetic source only: measured value 2.</abstract>')]:
+            with self.subTest(content_type=content_type):
+                headers=Message();headers['Content-Type']=content_type+'; charset=utf-8'
+                class Response(io.BytesIO):
+                    def geturl(self):return 'https://example.org/synthetic-api'
+                response=Response(body);response.headers=headers
+                with patch.object(source_capture,'ROOT',self.root),patch.object(source_capture.urllib.request,'urlopen',return_value=response):
+                    retained=source_capture.capture_source('https://example.org/synthetic-api','api-fixture','Synthetic API fixture')
+                self.assertEqual(retained['text'],body.decode())
+                self.assertEqual(retained['extraction_method'],'http-text/1')
+                source_capture.validate_captures({'api-fixture':retained},self.root)
+                self.assertEqual((self.root/'data/evidence/raw'/(retained['raw_sha256']+'.bin')).read_bytes(),body)
+
+    def test_malformed_source_acquisition_history_is_not_silently_replaced(self):
+        self.mixed_source_requests()
+        history=self.control/'source-capture-failures.json';history.write_text('{"fake":"history"}')
+        with self.assertRaises(exchange_api.ExchangeError) as caught:self.capture_with_http_failure()
+        self.assertEqual(caught.exception.code,'capture-integrity')
+        self.assertEqual(history.read_text(),'{"fake":"history"}')
     def test_resumed_capture_tamper_is_integrity_failure_without_refetch(self):
         source=self.source_requests();raw=self.root/'data/evidence/raw'/(source['raw_sha256']+'.bin');raw.write_bytes(b'Tampered retained response')
         result=self.exchange('capture');self.assertNotEqual(result.returncode,0)
