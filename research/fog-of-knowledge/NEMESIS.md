@@ -87,9 +87,9 @@ Engineering integrity checks, the boundary dependency registry, the independent
 mission watchdog and measured capacity results are documented in
 [ENGINEERING_IMMUNE_SYSTEM.md](nemesis/integration/ENGINEERING_IMMUNE_SYSTEM.md).
 `scripts/nemesis_retrieve.py` exposes exact snapshot-pinned graph/evidence pages
-without changing scientific authority. The current planner integration still
-uses whole-graph context; adopting interactive retrieval requires a separately
-verified adapter. Staged runtime fixes are not evidence of loaded behavior.
+without changing scientific authority. New Native decisions use the catalog and
+paged planning adapter described in [PAGED_PLANNING.md](nemesis/integration/PAGED_PLANNING.md).
+Retained source checks and loaded/live verification are separate release gates.
 
 ## What belongs in a batch?
 

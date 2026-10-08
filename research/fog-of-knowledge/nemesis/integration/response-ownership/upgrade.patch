@@ -1,0 +1,147 @@
+--- a/extension/contentScript.js
++++ b/extension/contentScript.js
+@@ -1305,7 +1305,7 @@
+     return null;
+   }
+   function nbReplyFinished(assistant) {
+-    const scope=assistant.root.closest('[data-content-search-turn-key], [data-testid^="conversation-turn-"], [data-turn-id], article') || assistant.root;
++    const scope=assistant.root.closest('[data-talvt-turn-state], [data-content-search-turn-key], [data-testid^="conversation-turn-"], [data-turn-id], article') || assistant.root;
+     return [...scope.querySelectorAll('button[data-testid="copy-turn-action-button"], button[data-testid="good-response-turn-action-button"], .turn-action-controls button')].some(button => {
+       const rect=button.getBoundingClientRect(), style=getComputedStyle(button);
+       return !button.disabled && rect.width>0 && rect.height>0 && style.display!=='none' && style.visibility!=='hidden' &&
+@@ -1359,7 +1359,7 @@
+         const result = matched;
+         const completed = nbReplyFinished(assistant);
+         const issue=result ? null : nbReadIssue(candidates,id);
+-        nbLastCapture={request_id:id,at:Date.now(),collectorVersion:'6.2.0',matched:!!result,
++        nbLastCapture={request_id:id,at:Date.now(),collectorVersion:'6.2.6',matched:!!result,
+           messageRoots:assistants.map(m=>({tag:m.root.tagName,role:m.root.getAttribute('data-conversation-role'),
+             searchUnit:m.root.getAttribute('data-content-search-unit-key')||m.root.getAttribute('data-chatgpt-search-unit-key'),
+             codeBlocks:m.node.querySelectorAll('pre').length,textChars:(m.node.textContent||'').length})),
+@@ -1381,6 +1381,36 @@
+         }
+       }
+       return {state:isGenerating()?'GENERATING':'COLLECTING', sent:true, detail:isGenerating() ? 'ChatGPT reports active generation; collecting waits for completion' : assistant ? 'Reply found; checking stable matching return' : 'Request found; no assistant reply matched on this page'};
++    }
++    // Latest-response presentation can virtualize the entire user turn. A
++    // completed, nonce-bound assistant return plus our persisted click receipt
++    // proves response ownership without pretending a user turn was observed.
++    // This path only collects: it never sends or requests format recovery.
++    if (id && !user && receipt?.id===id && receipt.clicked===true &&
++        ['SENDING','SENT'].includes(receipt.state) && !nbSending &&
++        queryRoleNodes('user').length===0 && !isGenerating()) {
++      const assistant=latestMessage('assistant');
++      const completeTurn=assistant?.root.closest('[data-talvt-turn-state="complete"]');
++      if (assistant && completeTurn && nbReplyFinished(assistant)) {
++        const candidates=[...assistant.node.querySelectorAll('pre code, pre')].map(n=>n.textContent||'')
++          .concat(assistant.node.innerText||assistant.node.textContent||'');
++        const text=candidates.join('\n');
++        if(text.length>1000000)return {state:'FAILED',error:'Brain response exceeds the 1 MB return limit. Review manually.'};
++        const result=candidates.map(t=>nbResult(t,id)).find(Boolean);
++        const issue=result ? null : nbReadIssue(candidates,id);
++        if(id!==nbStableId || text!==nbStableText){nbStableId=id;nbStableText=text;nbStableAt=Date.now();}
++        const stableMs=Date.now()-nbStableAt;
++        nbLastCapture={request_id:id,at:Date.now(),collectorVersion:'6.2.6',ownership:'clicked-receipt-and-latest-complete-return',
++          matched:!!result,completionControls:true,stableMs,issue,
++          candidates:candidates.slice(0,12).map(t=>t.slice(0,250000)),
++          captureTruncated:candidates.length>12 || candidates.some(t=>t.length>250000)};
++        if(result && stableMs>=8000){
++          nbSave({...receipt,state:'COMPLETE',result,responseOwnership:'clicked-receipt-and-latest-complete-return'});
++          nbDropOwnedAttachments(id);
++          return {state:'COMPLETE',result};
++        }
++        if(result)return {state:'COLLECTING',sent:true,detail:'Exact owned return found in latest-response view; verifying stable completed text. No resend.'};
++      }
+     }
+     if (id && receipt?.id === id) {
+       if (receipt.state === 'COMPLETE') return {state:'COMPLETE', result:receipt.result};
+@@ -1454,12 +1484,15 @@
+       const receipt=nbReceipt();
+       const delivery={requestId:id||receipt?.id||null,receiptId:receipt?.id||null,sending:nbSending,
+         userTurnConfirmed:matchingUserTurns>0,clicked:receipt?.clicked===true,
++        responseConfirmed:status.state==='COMPLETE' && receipt?.id===id &&
++          receipt.responseOwnership==='clicked-receipt-and-latest-complete-return' && receipt.clicked===true &&
++          !!nbResult(JSON.stringify(status.result),id),
+         safeUnsent:receipt?.id===id && receipt?.safeUnsent===true && !receipt?.clicked,
+         formatDeliveryConfirmed:receipt?.id===id && matchingUserTurns>Number(receipt?.priorUserCount||0)};
+-      return {...status,bridgeBuild:'6.2.5',transportRevision:NB_TRANSPORT_REVISION,fileAdapter:'site-evidence-files/1',editorGeneration:nbEditorGeneration,collectorVersion:'6.2.0',url:location.href,matchingUserTurns,assistantNodes,
++      return {...status,bridgeBuild:'6.2.6',transportRevision:NB_TRANSPORT_REVISION,fileAdapter:'site-evidence-files/1',editorGeneration:nbEditorGeneration,collectorVersion:'6.2.6',url:location.href,matchingUserTurns,assistantNodes,
+         delivery,
+-        detail:(status.detail||status.error||status.state)+' · Brain 6.2.5 · collector 6.2.0'+(id?' · matching user turns '+matchingUserTurns+' · assistant nodes '+assistantNodes:'')};
+-    } catch(e) {return {state:'ERROR',collectorVersion:'6.2.0',url:location.href,detail:'Reply collector failed: '+String(e.message||e)};}
++        detail:(status.detail||status.error||status.state)+' · Brain 6.2.6 · collector 6.2.6'+(id?' · matching user turns '+matchingUserTurns+' · assistant nodes '+assistantNodes:'')};
++    } catch(e) {return {state:'ERROR',collectorVersion:'6.2.6',url:location.href,detail:'Reply collector failed: '+String(e.message||e)};}
+   }
+   async function nbAttach(attachments, jobId) {
+     if (!attachments?.length) return {count:0,names:[]};
+--- a/extension/brain-background.js
++++ b/extension/brain-background.js
+@@ -1,4 +1,4 @@
+-/* NEMESIS Brain 6.2.5 — bounded messages and durable delivery ambiguity. */
++/* NEMESIS Brain 6.2.6 — bounded messages and durable delivery ambiguity. */
+ (() => {
+   const KEY='nb.config';
+   const STATUS_KEY='nb.status';
+@@ -41,7 +41,11 @@
+     const key=fenceKey(tabId),fence=(await chrome.storage.local.get(key))[key];
+     if(!fence)return null;
+     const d=report?.delivery;
+-    if(d?.requestId===fence.id && (d.userTurnConfirmed || (!d.sending && d.safeUnsent===true)) &&
++    const ownedResponse=report?.state==='COMPLETE' && d?.responseConfirmed===true &&
++      d.receiptId===fence.id && d.clicked===true && !d.sending &&
++      report.result?.protocol==='pandora-language/1' && report.result.request_id===fence.id &&
++      report.result.RETURN?.status==='complete' && typeof report.result.RETURN.text==='string' && report.result.RETURN.text.trim();
++    if(d?.requestId===fence.id && (d.userTurnConfirmed || ownedResponse || (!d.sending && d.safeUnsent===true)) &&
+        (fence.type!=='NB_CONTENT_REPAIR_FORMAT' || !d.sending && d.formatDeliveryConfirmed)){
+       await clearFence(tabId,fence);return null;
+     }
+@@ -90,7 +94,7 @@
+   async function config(){const raw=(await chrome.storage.local.get(KEY))[KEY]||{};return normalize(raw);}
+   async function save(c){await chrome.storage.local.set({[KEY]:normalize(c)});}
+   async function api(c,path,body){
+-    if(path==='poll')body={...body,extension_build:'6.2.5-paged-planning'};
++    if(path==='poll')body={...body,extension_build:'6.2.6-response-ownership'};
+     const r=await fetch(baseURL(c.base)+'/api/brain/'+path,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+c.token},body:JSON.stringify(body),signal:AbortSignal.timeout(15000)});
+     const data=await r.json();if(!r.ok)throw Error(data.detail||data.error||'NEMESIS HTTP '+r.status);return data;
+   }
+@@ -165,9 +169,9 @@
+       await keepBoundTabAlive(tab);
+       let content=await contentMessage(slot.tabId,{type:'NB_CONTENT_STATUS',id:slot.activeJobId});
+       const previousFence=await reconcileFence(slot.tabId,content);
+-      if(content?.collectorVersion!=='6.2.0')throw Error('ChatGPT has an old reply collector. Refresh this ChatGPT tab. Expected 6.2.0; received '+(content?.collectorVersion||'unversioned')+'.');
++      if(content?.collectorVersion!=='6.2.6')throw Error('ChatGPT has an old reply collector. Refresh this ChatGPT tab. Expected 6.2.6; received '+(content?.collectorVersion||'unversioned')+'.');
+       if(content?.transportRevision!==TRANSPORT_REVISION)throw Error('Refresh this ChatGPT tab to load transport '+TRANSPORT_REVISION+'.');
+-      if(content?.bridgeBuild!=='6.2.5')throw Error('Refresh this ChatGPT tab to load Brain 6.2.5 packet-file and rejection detection.');
++      if(content?.bridgeBuild!=='6.2.6')throw Error('Refresh this ChatGPT tab to load Brain 6.2.6 completed-response ownership and rejection detection.');
+       const response=await api(c,'poll',{client_id:c.clientId,worker_slot:slotName,role:roleFor(slotName),state:previousFence?'DELIVERY_UNCONFIRMED':content.state,detail:content.detail||'',url:tab.url,tab_id:tab.id,conversation_id:identity,tab_count:boundSlots(c).length});
+       const job=response.job;
+       if((slot.activeJobId||null)!==(job?.id||null)){slot.activeJobId=job?.id||null;c.slots[slotName]=slot;await save(c);}
+@@ -212,7 +216,7 @@
+       await api(c,'poll',{client_id:c.clientId,worker_slot:slotName,role:roleFor(slotName),state:s.state,detail:s.detail||s.error||'',request_id:job.id,url:tab.url,tab_id:tab.id,conversation_id:identity,tab_count:boundSlots(c).length});
+       await slotState(slotName,{...s,job:job.id,url:tab.url,conversation_id:identity,serverEnabled:response.enabled});
+     }catch(e){
+-      const failure={state:'ERROR',detail:'Brain pool 6.2.5: '+String(e.message||e),url:tab?.url||slot?.url||''};await slotState(slotName,failure);
++      const failure={state:'ERROR',detail:'Brain pool 6.2.6: '+String(e.message||e),url:tab?.url||slot?.url||''};await slotState(slotName,failure);
+       if(c?.enabled&&slot){try{await api(c,'poll',{...failure,client_id:c.clientId,worker_slot:slotName,role:roleFor(slotName),tab_id:slot.tabId,conversation_id:chatIdentity(slot.url),tab_count:boundSlots(c).length});}catch{}}
+     }finally{polling.delete(slotName);}
+   }
+@@ -264,7 +268,7 @@
+         for(const other of SLOT_NAMES){if(other!==name&&old.slots?.[other]?.tabId===tab.id)throw Error('That ChatGPT tab is already bound to '+other+'.');}
+         old.base=baseURL(m.base||old.base);old.token=String(m.token||old.token).trim();old.enabled=true;old.clientId=old.clientId||crypto.randomUUID();old.slots=old.slots||{};old.slots[name]={tabId:tab.id,url:tab.url,enabled:true,role:roleFor(name),activeJobId:null};
+         await chrome.scripting.executeScript({target:{tabId:tab.id},files:['contentScript.js']}).catch(()=>{});
+-        const ts=await contentMessage(tab.id,{type:'NB_CONTENT_STATUS'});if(ts?.collectorVersion!=='6.2.0')throw Error('Refresh this ChatGPT tab to load reply collector 6.2.0, then bind again.');if(!ts?.state)throw Error('ChatGPT content bridge did not respond.');
++        const ts=await contentMessage(tab.id,{type:'NB_CONTENT_STATUS'});if(ts?.collectorVersion!=='6.2.6')throw Error('Refresh this ChatGPT tab to load reply collector 6.2.6, then bind again.');if(!ts?.state)throw Error('ChatGPT content bridge did not respond.');
+         await api(old,'poll',{client_id:old.clientId,worker_slot:name,role:roleFor(name),state:'PAIRING',tab_id:tab.id,url:tab.url,conversation_id:chatIdentity(tab.url),tab_count:boundSlots(old).length});
+         if(previousTabId&&previousTabId!==tab.id)await restoreBoundTab(previousTabId);
+         await save(old);await pollSlot(name,{force:true});return {ok:true,slot:name,status:ts};
+--- a/extension/manifest.json
++++ b/extension/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "NEMESIS Brain + zotX Capture",
+-  "version": "6.2.5",
++  "version": "6.2.6",
+   "description": "Brain transport with bounded page messages, persistent delivery fences, bound-tab lifecycle recovery and verified editor commits.",
+   "permissions": [
+     "activeTab",

@@ -13,7 +13,8 @@ CHECKS={'engineering':['scripts/test_engineering_integrity.py'],'context':['scri
     'native_source':['scripts/test_native_authority_source.py'],'mission':['scripts/test_mission_acceptance.py'],
     'transport':['scripts/test_brain_transport_source.py'],'exchange':['scripts/test_nemesis_exchange.py'],
     'compiler':['scripts/test_evidence_compiler.py'],'validate':['scripts/validate.py'],'guard':['scripts/test_engineering_guard.py'],'watchdog':['scripts/test_mission_watchdog.py'],'boundary_upgrade':['scripts/test_boundary_upgrade.py'],
-    'paged_planning':['scripts/test_paged_planner_source.py','scripts/test_retrieval_service.py']}
+    'paged_planning':['scripts/test_paged_planner_source.py','scripts/test_retrieval_service.py'],
+    'response_ownership':['scripts/test_response_ownership_source.py']}
 
 def normalize(path):
     path=path.replace('\\','/')
@@ -21,7 +22,7 @@ def normalize(path):
     if path.startswith(prefix):path=path[len(prefix):]
     for retained in ('nemesis/integration/scientific-authority/','nemesis/integration/brain-transport/'):
         if path.startswith(retained):path=path[len(retained):]
-    for retained in ('nemesis/integration/paged-planning/native/','nemesis/integration/paged-planning/extension/'):
+    for retained in ('nemesis/integration/paged-planning/native/','nemesis/integration/paged-planning/extension/','nemesis/integration/response-ownership/extension/'):
         if path.startswith(retained):path=path[len(retained):]
     return path
 
