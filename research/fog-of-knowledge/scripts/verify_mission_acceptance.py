@@ -121,7 +121,14 @@ def observe(native, fog, baseline, owner, repo, path, online=False):
             proposal=plan.get('proposal',{})
             if plan.get('state')=='ADMITTED' and proposal.get('rationale') and proposal.get('strategy',{}).get('queries'):
                 scientific_direction=True
-            if plan['created_at']<=first_merge:continue
+            if plan.get('state')!='ADMITTED' or plan['created_at']<=first_merge:continue
+            planning_job=db.execute('SELECT status,packet,result FROM brain_jobs WHERE id=?',(plan.get('job_id'),)).fetchone()
+            if not planning_job or planning_job[0]!='COMPLETE':
+                raise ValueError('Admitted follow-up lacks a completed real planning job')
+            if json.loads(json.loads(planning_job[1])['GOAL'])!=plan['input']:
+                raise ValueError('Retained planning input differs from the real worker request')
+            if planning_job[2]!=plan.get('raw_result'):
+                raise ValueError('Retained planning response differs from the real worker result')
             input_nodes={n['id']:n for n in plan.get('input',{}).get('graph',{}).get('nodes',[])}
             for use in proposal.get('finding_uses',[]):
                 nid=use.get('id'); node=known_new.get(nid)
@@ -151,8 +158,9 @@ def observe(native, fog, baseline, owner, repo, path, online=False):
     growth_domains = {d for f in merged for d in f['growth_domains']}
     pool_file=native/'output/scientific-authority-deployment.json'
     deployment=json.loads(pool_file.read_text(encoding='utf-8')) if pool_file.exists() else {}
-    extension_matches=deployment.get('bridge_version')=='14.13-scientific-resume' and any(
-        slot.get('connected') and slot.get('extension_build')=='6.2.4-scientific-resume' for slot in deployment.get('pool',{}).values())
+    connected=[slot for slot in deployment.get('pool',{}).values() if slot.get('connected')]
+    extension_matches=deployment.get('bridge_version')=='14.13-scientific-resume' and bool(connected) and all(
+        slot.get('extension_build')=='6.2.4-scientific-resume' for slot in connected)
     return {'sources_match':sources_match, 'evidence_valid':True, 'new_nodes':len({nid for f in merged for nid in f['new_ids']}),
             'growth_domains':len(growth_domains), 'merged_domains':len(growth_domains),
             'merged_batches':len(merged),
