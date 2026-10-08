@@ -1,5 +1,6 @@
-import unittest
-from verify_mission_acceptance import assess
+import hashlib,tempfile,unittest
+from pathlib import Path
+from verify_mission_acceptance import assess,retained_captures_match
 
 
 class MissionAcceptanceTests(unittest.TestCase):
@@ -36,6 +37,17 @@ class MissionAcceptanceTests(unittest.TestCase):
     def test_counts_do_not_replace_scientific_planning_or_restart_proof(self):
         for key in ('scientific_direction','substantive_followup','restart_recovered','no_duplicates','extension_matches'):
             with self.subTest(key=key):self.assertEqual(assess({**self.valid(),key:False})['status'],'INCOMPLETE')
+
+    def test_empty_missing_or_changed_capture_preimages_cannot_prove_preservation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);capture=root/'capture.json';capture.write_bytes(b'exact retained text')
+            proof={'retained_evidence':{'capture.json':hashlib.sha256(capture.read_bytes()).hexdigest()}}
+            self.assertTrue(retained_captures_match(root,proof))
+            self.assertFalse(retained_captures_match(root,{}))
+            capture.write_bytes(b'changed scientific text')
+            self.assertFalse(retained_captures_match(root,proof))
+            capture.unlink()
+            self.assertFalse(retained_captures_match(root,proof))
 
 
 if __name__=='__main__':

@@ -20,6 +20,12 @@ from evidence_compiler import candidate_digest, load_candidate, validate_evidenc
 PROTOCOL = 'fog-mission-acceptance/1'
 
 
+def retained_captures_match(native, proof):
+    captures=proof.get('retained_evidence',{})
+    return bool(captures) and all((native/name).is_file() and hashlib.sha256((native/name).read_bytes()).hexdigest()==sha
+                                  for name,sha in captures.items())
+
+
 def assess(observation, min_domains=3, min_nodes=6):
     checks = {
         'installed_sources_match_baseline': observation['sources_match'],
@@ -150,8 +156,7 @@ def observe(native, fog, baseline, owner, repo, path, online=False):
                 recovered.append(status=='COMPLETE' and hashlib.sha256(str(lease).encode()).hexdigest()==before['lease_sha256']
                     and hashlib.sha256(str(owner_value).encode()).hexdigest()==before['owner_sha256']
                     and hashlib.sha256(goal.encode()).hexdigest()==before['goal_sha256'] and updated>proof['started_at'])
-            retained=all((native/name).is_file() and hashlib.sha256((native/name).read_bytes()).hexdigest()==sha
-                         for name,sha in proof.get('retained_evidence',{}).items())
+            retained=retained_captures_match(native,proof)
             restart_recovered=bool(recovered) and all(recovered) and retained and proof['started_at']>=baseline['started_at'] and proof.get('before_pid')!=proof.get('after_pid') and bool(proof.get('after_pid'))
     finally:
         db.close()
