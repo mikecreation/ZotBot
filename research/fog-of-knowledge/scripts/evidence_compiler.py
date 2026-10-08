@@ -296,6 +296,13 @@ def validate_evidence_history(graph,root,policy):
         if candidate_digest(candidate)!=bundle["candidate_sha256"]:raise EvidenceError("retained batch missing or changed after review")
         context={"nodes":bundle.get("context_nodes",[]),"edges":[],"reviews":[],"domains":graph["domains"],"eras":graph["eras"]}
         proof=enforce(candidate,context,bundle["decisions"],policy)
+        if proof["decisions"]:
+            receipt=root/"nemesis/adjudications"/(bundle["candidate_sha256"]+".json")
+            if not receipt.exists():raise EvidenceError("retained adjudication receipt missing")
+            retained=json.loads(receipt.read_text(encoding="utf-8"))
+            retained_proof=enforce(candidate,context,retained["decisions"],policy)
+            if proof["decisions"]!=retained_proof["decisions"]:
+                raise EvidenceError("canonical review decisions differ from retained adjudication receipt")
         from source_capture import validate_captures
         validate_captures(proof['sources'],root)
         if list(proof["assertions"].values())!=bundle["assertions"]:raise EvidenceError("retained assertion differs from reviewed batch")

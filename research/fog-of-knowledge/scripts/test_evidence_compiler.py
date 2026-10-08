@@ -244,7 +244,8 @@ class EvidenceCompilerTests(unittest.TestCase):
             self.c['nodes.jsonl'][0]['sources'][0]['url']=source['url']
             record_hash=digest(self.c['nodes.jsonl'][0])
             self.c['assertions.jsonl'][0]['target_sha256']=record_hash
-            self.d=[{**d,'target_sha256':record_hash,'candidate_sha256':candidate_digest(self.c)} for d in self.d]
+            self.d=[{**d,'target_sha256':record_hash,'candidate_sha256':candidate_digest(self.c),
+                     'rationale':'Synthetic fixture preserves 2 ± 0.1 units; Λ is a label, not new evidence.'} for d in self.d]
             for name,value in self.c.items():
                 data=json.dumps(value) if name.endswith(".json") else "".join(json.dumps(row)+"\n" for row in value)
                 (folder/name).write_text(data,encoding="utf-8")
@@ -267,6 +268,16 @@ class EvidenceCompilerTests(unittest.TestCase):
             self.assertNotEqual(result.returncode,0)
             self.assertIn('HTTP response missing or changed',result.stdout+result.stderr)
             raw_response.write_bytes(original_response)
+            graph_path=target/'data/knowledge.json'
+            original_graph=graph_path.read_bytes()
+            altered=json.loads(original_graph)
+            own_bundle=next(b for b in altered['evidence_reviews'] if b['batch_id']=='test-evidence')
+            own_bundle['decisions'][0]['rationale']=own_bundle['decisions'][0]['rationale'].replace('±','\ufffd')
+            graph_path.write_text(json.dumps(altered,ensure_ascii=False),encoding='utf-8')
+            result=subprocess.run([sys.executable,'scripts/validate.py'],cwd=target,capture_output=True,text=True)
+            self.assertNotEqual(result.returncode,0)
+            self.assertIn('decisions differ from retained adjudication',result.stdout+result.stderr)
+            graph_path.write_bytes(original_graph)
             altered=json.loads((target/'data/knowledge.json').read_text(encoding='utf-8'))
             altered['nodes'][-1]['summary']='All signals are always exactly 2 units.'
             (target/'data/knowledge.json').write_text(json.dumps(altered),encoding='utf-8')

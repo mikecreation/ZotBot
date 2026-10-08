@@ -53,7 +53,7 @@ contract and nonblocking Brain polling. Admission checks retain explicit pause,
 ownership and lease rules while avoiding unchanged writes and rotating bounded
 queue windows. Polling work runs outside the HTTP event loop.
 
-Apply `crew-revision-budgets.patch` last. Formatting revisions have their own
+Apply `crew-revision-budgets.patch` next. Formatting revisions have their own
 four-revision limit, scientific revisions have a separate three-revision limit,
 and a wave has at most eight author attempts. A malformed JSON reply or ambiguous
 quote location cannot exhaust the scientific refinement allowance. Every revised
@@ -61,6 +61,33 @@ representation still requires both reviews. Explicit author evidence limitations
 and capture corruption stop immediately. Terminal states retain the latest exact
 review rationale and revision counts; reconnecting clears obsolete transport
 errors while leaving scientific objections visible.
+
+Apply `crew-startup-health.patch` last and restart the full supervisor, then
+reload the existing application page to load workspace client `ws14`.
+The supervisor owns the database across ports, drains its own Windows child
+process tree on restart, and audits a private SQLite snapshot instead of holding
+a long reader lock on the live DELETE-journal database. Full integrity remains a
+required verification; a pending audit keeps the healthy application running and
+retains the deployment marker without claiming a successful deployment.
+Owned restarts capture the consistent database before starting their exact new
+child. Verification records that scope and checks live API routes, migrations,
+SSE and a fresh scheduler heartbeat afterward. Read-only online audits remain
+available outside restart boundaries. SQLite performs ordinary hot-journal
+recovery at the drained restart boundary; committed history is preserved.
+Campaign badges retain the selected campaign's actual paused, blocked or stopped
+state even when other Brain work is active. Manual planning retires old fixed
+research-family queues while preserving paused campaigns and other campaigns.
+Isolated Python runs in explicit UTF-8 mode and rejects undecodable machine
+output rather than replacing characters in source or review JSON.
+Manual research dispatch records its own fresh, matching completed
+`NO_NEW_EVIDENCE` or `NO_CHANGE` attempt as done without inventing a scientific
+result. Missing, stale or mismatched attempt receipts remain blocked.
+The complete native regression gate has a bounded one-hour budget: this Windows
+workspace's measured complete run exceeded the former thirty-minute limit.
+A timeout remains incomplete infrastructure evidence and cannot mark a candidate
+as tested or send it to approval.
+The patch also updates obsolete regression contracts to the current evidence and
+Brain handoff rules; the intentionally disabled v15 module is skipped explicitly.
 
 The shared `representation_policy` defines `reported` as source attribution,
 `undated` as unresolved chronology, and `frontier:false` as no currency assertion.
@@ -86,6 +113,8 @@ The durable workflow is:
    beside the batch so this binding can be inspected.
 4. Entailment and adversarial reviewer jobs receive the same revision-bound
    packet. Both decisions are retained separately and checked by the compiler.
+   Canonical decisions must match their retained adjudication receipt exactly,
+   including rationale, limitations and Unicode text.
    Model review is recorded provenance, not independent scientific corroboration.
 5. The sandbox receives retained capture receipts, original binary responses and
    adjudications along with the candidate. Check/apply/validate repeat against
@@ -132,4 +161,5 @@ Run the focused runtime regressions after applying all patches:
 
 ```sh
 python -m pytest tests/test_github_evidence.py tests/test_fog_pipeline_reliability.py tests/test_github_workspace.py
+python -m pytest tests/test_github_sandbox_encoding.py tests/test_supervisor_snapshot_health.py tests/test_supervisor_startup_guard.py tests/test_supervisor_rollback.py tests/test_continuation_v17.py tests/test_autonomy_desks_v17.py tests/test_eureka_social_v14.py
 ```
