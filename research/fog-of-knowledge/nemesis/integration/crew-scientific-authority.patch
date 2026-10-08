@@ -648,6 +648,75 @@
 +    # Duplicate IDs, conflicts and relationships are deliberately left to the
 +    # existing compiler: array assembly must never silently merge identities.
 +    return result
+--- a/sim/github_sandbox.py
++++ b/sim/github_sandbox.py
+@@ -8,7 +8,7 @@
+ It then runs in a fresh temporary directory holding only the project's files at a
+ pinned commit (each blob verified against its git SHA-1), with the app's own
+ Python in isolated mode, a stripped environment (no tokens), a timeout and capped
+-output. This is process isolation, not a VM: the guarantee is the allowlist plus
++diagnostics. Machine output is complete. This is process isolation, not a VM: the guarantee is the allowlist plus
+ pinned, verified code from the repository the user chose.
+ """
+ from __future__ import annotations
+@@ -138,7 +138,9 @@
+         error = None
+     except subprocess.TimeoutExpired as exc:
+         code, out, err, error = -1, exc.stdout or b'', exc.stderr or b'', 'Timed out after %ds' % timeout
+-    dec = lambda b, errors='replace': redact((b if isinstance(b, bytes) else str(b).encode('utf-8'))[:OUTPUT_CAP].decode('utf-8', errors))
++    def dec(b, errors='replace', limit=None):
++        raw=b if isinstance(b,bytes) else str(b).encode('utf-8')
++        return redact((raw if limit is None else raw[:limit]).decode('utf-8',errors))
+     try:
+         stdout = dec(out, 'strict')
+     except UnicodeDecodeError:
+@@ -147,7 +149,7 @@
+         code = -1
+         error = error or 'Compiler stdout is not valid UTF-8; response was not accepted'
+         stdout = dec(out)
+-    return {'exit_code': code, 'stdout': stdout, 'stderr': dec(err), 'duration': round(time.time() - started, 2),
++    return {'exit_code': code, 'stdout': stdout, 'stderr': dec(err,limit=OUTPUT_CAP), 'duration': round(time.time() - started, 2),
+             'error': error, 'display': 'python %s' % ' '.join([script] + list(args))}
+ 
+ 
+--- a/sim/github_workspace.py
++++ b/sim/github_workspace.py
+@@ -888,6 +888,7 @@
+                 parsed = json.loads(result.get('stdout') or '')
+             except ValueError:
+                 parsed = None
++                result.update(exit_code=-1,error='Context command returned invalid JSON; no partial graph was accepted')
+         summary = summarize_context(parsed) if isinstance(parsed, dict) else None
+         record = {'sha': sha, 'ran_at': time.time(), 'exit_code': result.get('exit_code'), 'duration': result.get('duration'),
+                   'command': result.get('display'), 'summary': summary, 'files': result.get('files'),
+--- /dev/null
++++ b/tests/test_machine_context_complete.py
+@@ -0,0 +1,25 @@
++"""Synthetic sandbox boundary regression for the real 400 KB graph failure."""
++import json
++from types import SimpleNamespace
++from sim.github_sandbox import execute,OUTPUT_CAP
++
++def test_complete_machine_json_survives_diagnostic_cap(tmp_path):
++    packet={'nodes':[{'id':'new-finding','summary':'Primary source finding '+('x'*OUTPUT_CAP)}],'tail':'entire graph retained'}
++    raw=json.dumps(packet,ensure_ascii=False).encode()
++    result=execute(tmp_path,'scripts/context.py',[],runner=lambda *a,**k:SimpleNamespace(returncode=0,stdout=raw,stderr=b'x'*(OUTPUT_CAP+50)))
++    assert result['exit_code']==0
++    assert json.loads(result['stdout'])==packet
++    assert len(result['stderr'])==OUTPUT_CAP
++
++def test_invalid_utf8_cannot_become_machine_data(tmp_path):
++    result=execute(tmp_path,'scripts/context.py',[],runner=lambda *a,**k:SimpleNamespace(returncode=0,stdout=b'{"node":"\xff"}',stderr=b''))
++    assert result['exit_code']==-1 and 'not valid UTF-8' in result['error']
++
++def test_invalid_json_is_explicit_context_failure(tmp_path):
++    from test_github_workspace import FakeGitHub,make
++    fake=FakeGitHub();fake.files['research/fog/scripts/nemesis_context.py']=b'print("incomplete graph")\n'
++    store,workspace,_,client=make(tmp_path,fake=fake)
++    result=client.post('/api/github/project/mikecreation/ZotBot/context',json={'path':'research/fog'}).json()
++    assert result['exit_code']==-1 and 'invalid JSON' in result['error']
++    assert result['summary'] is None
++    assert not store.cache_get('gh:context-full:mikecreation/ZotBot:research/fog')
 --- /dev/null
 +++ b/tests/test_scientific_planner.py
 @@ -0,0 +1,129 @@

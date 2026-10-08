@@ -7,6 +7,12 @@ The installed architecture audit and responsibility trace are retained in
 `crew-coverage-expansion.patch`, together with the current browser transport
 patch. Exact installed native sources and fingerprints are retained under
 `scientific-authority`; exact extension sources are under `brain-transport`.
+
+The live preflight also exposed a sandbox boundary: `execute` clipped machine
+stdout at 400 KB, so a complete canonical graph became invalid JSON despite exit
+0. The retained repair preserves complete machine stdout, caps only diagnostics,
+and makes invalid context JSON an explicit failure. The operational regression
+uses a graph larger than the former limit; this is synthetic, not live growth.
 The incremental patch uses LF text. Verify the preimage and normalize only its
 allowlisted changed Python files to LF before applying it to a CRLF checkout;
 retain their original bytes in the upgrade backup. Never replace the database.
