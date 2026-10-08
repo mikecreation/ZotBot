@@ -1,0 +1,111 @@
+{
+  "protocol": "nemesis-capacity-measurement/1",
+  "measured_at": 1791438717.5555058,
+  "implementation_sha256": {
+    "measure_future_capacity.py": "c8fabee2ea4917945aafcecda0e79e91c45f562b298295e73c901eda7035bef7",
+    "graph_retrieval.py": "13b000f731de2adbfc0b044f74a47453f0a02743881e6cf224e29c6309837641",
+    "research_integrity.py": "5c98cc2787bd79834eedf6d7af140fd4c52bc6ecebe12422acc8b229c7c301b8"
+  },
+  "snapshot_protocol": "fog-query-snapshot/3",
+  "input_graph_sha256": "44ae45169cdfb3ed148de1c25c4c0631a678d6cd87ea53b4e23e14433c359320",
+  "baseline_counts": {
+    "nodes": 666,
+    "edges": 384,
+    "sources": 76,
+    "jobs": 624,
+    "history": 330
+  },
+  "workload": "Synthetic representative metadata for nodes, edges, sources, jobs and evidence history; no scientific records or model calls",
+  "bounds": {
+    "max_records_per_case": 300000,
+    "multipliers": [
+      10,
+      100
+    ]
+  },
+  "measurements": [
+    {
+      "multiplier": 10,
+      "status": "MEASURED",
+      "synthetic": true,
+      "counts": {
+        "nodes": 6660,
+        "edges": 3840,
+        "sources": 760,
+        "jobs": 6240,
+        "history": 3300
+      },
+      "records": 20800,
+      "database_bytes": 30572544,
+      "build_seconds": 5.696539799915627,
+      "verified_open_seconds": 2.6724307000404224,
+      "indexed_query_seconds": 0.09864350000862032,
+      "query_returned": 100,
+      "query_matched": 3330,
+      "query_envelope_bytes": 53927,
+      "whole_metadata_serialization_bytes": 13822072,
+      "serialization_seconds": 0.15517050004564226,
+      "python_allocated_peak_bytes": 510270,
+      "os_memory": {
+        "status": "MEASURED",
+        "working_set_bytes": 24838144,
+        "process_peak_working_set_so_far_bytes": 26906624
+      },
+      "memory_scope": "Python allocation peak plus observed OS process working set/high-water so far; does not multiply real PDF/source corpora or measure total system cache",
+      "context_token_estimate": {
+        "method": "bytes/4 rough planning estimate; not tokenizer/provider billing",
+        "whole_metadata": 3455518.0,
+        "one_query_page": 13481.75
+      },
+      "actual_model_calls": 0,
+      "actual_model_cost": 0,
+      "snapshot": "ec0c1cc988e772807d8326e147e27a1ac816f909c08afb76ea90eab4095fbde0"
+    },
+    {
+      "multiplier": 100,
+      "status": "MEASURED",
+      "synthetic": true,
+      "counts": {
+        "nodes": 66600,
+        "edges": 38400,
+        "sources": 7600,
+        "jobs": 62400,
+        "history": 33000
+      },
+      "records": 208000,
+      "database_bytes": 305815552,
+      "build_seconds": 54.785711899981834,
+      "verified_open_seconds": 28.566729499958456,
+      "indexed_query_seconds": 0.11611089995130897,
+      "query_returned": 100,
+      "query_matched": 33300,
+      "query_envelope_bytes": 53930,
+      "whole_metadata_serialization_bytes": 138428652,
+      "serialization_seconds": 1.5804606000892818,
+      "python_allocated_peak_bytes": 345183,
+      "os_memory": {
+        "status": "MEASURED",
+        "working_set_bytes": 25718784,
+        "process_peak_working_set_so_far_bytes": 28155904
+      },
+      "memory_scope": "Python allocation peak plus observed OS process working set/high-water so far; does not multiply real PDF/source corpora or measure total system cache",
+      "context_token_estimate": {
+        "method": "bytes/4 rough planning estimate; not tokenizer/provider billing",
+        "whole_metadata": 34607163.0,
+        "one_query_page": 13482.5
+      },
+      "actual_model_calls": 0,
+      "actual_model_cost": 0,
+      "snapshot": "530796f78f852f59579608803094435091cb9e6fe6bd7e19dcd05ed1f6bdf30c"
+    }
+  ],
+  "projection": {
+    "multiplier": 1000,
+    "status": "ESTIMATE_NOT_TESTED",
+    "basis_multiplier": 100,
+    "database_bytes_linear_estimate": 3058155520.0,
+    "whole_metadata_bytes_linear_estimate": 1384286520.0,
+    "build_seconds_linear_estimate": 547.8571189998183,
+    "limitations": "Index sorting/cache/I/O/model attention do not necessarily scale linearly. Full paper text/PDFs and network/provider limits were not multiplied."
+  }
+}

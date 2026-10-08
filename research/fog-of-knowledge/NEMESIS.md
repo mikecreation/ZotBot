@@ -83,6 +83,14 @@ read manifest
 
 A Nemesis worker may research thousands of papers in one run. Chat output should summarize the run. The actual records belong in the batch files.
 
+Engineering integrity checks, the boundary dependency registry, the independent
+mission watchdog and measured capacity results are documented in
+[ENGINEERING_IMMUNE_SYSTEM.md](nemesis/integration/ENGINEERING_IMMUNE_SYSTEM.md).
+`scripts/nemesis_retrieve.py` exposes exact snapshot-pinned graph/evidence pages
+without changing scientific authority. The current planner integration still
+uses whole-graph context; adopting interactive retrieval requires a separately
+verified adapter. Staged runtime fixes are not evidence of loaded behavior.
+
 ## What belongs in a batch?
 
 ### nodes.jsonl
