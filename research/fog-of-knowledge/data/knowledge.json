@@ -7378,6 +7378,234 @@
           "title": "Replaying Evolution to Test the Cause of Extinction of One Ecotype in an Experimentally Evolved Population"
         }
       ]
+    },
+    {
+      "id": "claim.longcontext.liu-relevant-position",
+      "label": "Liu et al. reported position-dependent retrieval in long inputs",
+      "kind": "claim",
+      "domain": "information",
+      "era": "undated",
+      "status": "reported",
+      "frontier": false,
+      "aliases": [],
+      "tags": [],
+      "summary": "Liu and colleagues report that models evaluated on multi-document question answering and key-value retrieval often performed best when relevant information occurred at the start or end of a long input, with marked degradation for middle positions.",
+      "sources": [
+        {
+          "id": "src.longcontext.liu-lost-middle-2024",
+          "url": "https://arxiv.org/abs/2307.03172",
+          "title": "Lost in the Middle: How Language Models Use Long Contexts"
+        }
+      ]
+    },
+    {
+      "id": "claim.longcontext.ruler-task-design",
+      "label": "RULER expands needle retrieval to multi-hop and aggregation",
+      "kind": "claim",
+      "domain": "information",
+      "era": "undated",
+      "status": "reported",
+      "frontier": false,
+      "aliases": [],
+      "tags": [],
+      "summary": "The RULER paper describes a configurable synthetic long-context benchmark extending needle-in-a-haystack retrieval with different needle types and counts, plus multi-hop tracing and aggregation; it evaluates 17 language models on 13 representative tasks.",
+      "sources": [
+        {
+          "id": "src.longcontext.hsieh-ruler-2024",
+          "url": "https://arxiv.org/abs/2404.06654",
+          "title": "RULER: What's the Real Context Size of Your Long-Context Language Models?"
+        }
+      ]
+    },
+    {
+      "id": "claim.longcontext.ruler-32k-performance",
+      "label": "RULER performance gap at claimed 32K context",
+      "kind": "claim",
+      "domain": "information",
+      "era": "undated",
+      "status": "reported",
+      "frontier": false,
+      "aliases": [],
+      "tags": [],
+      "summary": "In the RULER authors’ evaluation of 17 long-context models advertised for at least 32K tokens, almost all declined on RULER as input length grew, and the authors reported only about half maintained satisfactory performance at 32K, despite nearly perfect results on vanilla needle retrieval.",
+      "sources": [
+        {
+          "id": "src.longcontext.hsieh-ruler-2024",
+          "url": "https://arxiv.org/abs/2404.06654",
+          "title": "RULER: What's the Real Context Size of Your Long-Context Language Models?"
+        }
+      ]
+    },
+    {
+      "id": "claim.longcontext.nolima-nonliteral-retrieval",
+      "label": "NoLiMa tests retrieval without literal matching",
+      "kind": "claim",
+      "domain": "information",
+      "era": "undated",
+      "status": "reported",
+      "frontier": false,
+      "aliases": [],
+      "tags": [],
+      "summary": "The NoLiMa authors introduce a needle-retrieval benchmark in which questions and relevant text have minimal lexical overlap, requiring latent associations rather than straightforward literal matching to locate evidence.",
+      "sources": [
+        {
+          "id": "src.longcontext.modarressi-nolima-2025",
+          "url": "https://proceedings.mlr.press/v267/modarressi25a.html",
+          "title": "NoLiMa: Long-Context Evaluation Beyond Literal Matching"
+        }
+      ]
+    },
+    {
+      "id": "claim.longcontext.nolima-32k-degradation",
+      "label": "NoLiMa reported degradation in 13-model evaluation at 32K",
+      "kind": "claim",
+      "domain": "information",
+      "era": "undated",
+      "status": "reported",
+      "frontier": false,
+      "aliases": [],
+      "tags": [],
+      "summary": "In NoLiMa evaluations of 13 models claiming at least 128K-token support, 11 performed at under half their short-context baseline at 32K; the reported GPT-4o score dropped from 99.3% at short context to 69.7% at 32K.",
+      "sources": [
+        {
+          "id": "src.longcontext.modarressi-nolima-2025",
+          "url": "https://proceedings.mlr.press/v267/modarressi25a.html",
+          "title": "NoLiMa: Long-Context Evaluation Beyond Literal Matching"
+        }
+      ]
+    },
+    {
+      "id": "claim.longcontext.longbench-v2-design",
+      "label": "LongBench v2 realistic long-context question collection",
+      "kind": "claim",
+      "domain": "information",
+      "era": "undated",
+      "status": "reported",
+      "frontier": false,
+      "aliases": [],
+      "tags": [],
+      "summary": "The LongBench v2 authors describe 503 multiple-choice questions with source contexts from 8,000 to 2 million words spanning six categories, including multi-document questions and code-repository understanding.",
+      "sources": [
+        {
+          "id": "src.longcontext.bai-longbench-v2-2025",
+          "url": "https://aclanthology.org/2025.acl-long.183/",
+          "title": "LongBench v2: Towards Deeper Understanding and Reasoning on Realistic Long-context Multitasks"
+        }
+      ]
+    },
+    {
+      "id": "claim.longcontext.longbench-v2-score-comparison",
+      "label": "LongBench v2 reported expert and model benchmark accuracies",
+      "kind": "claim",
+      "domain": "information",
+      "era": "undated",
+      "status": "reported",
+      "frontier": false,
+      "aliases": [],
+      "tags": [],
+      "summary": "The LongBench v2 authors report 53.7% human-expert accuracy with a 15-minute limit, 50.1% for the strongest directly answering model, and 57.7% for o1-preview using longer reasoning under their reported evaluation.",
+      "sources": [
+        {
+          "id": "src.longcontext.bai-longbench-v2-2025",
+          "url": "https://aclanthology.org/2025.acl-long.183/",
+          "title": "LongBench v2: Towards Deeper Understanding and Reasoning on Realistic Long-context Multitasks"
+        }
+      ]
+    },
+    {
+      "id": "claim.longcontext.babilong-20-reasoning-tasks",
+      "label": "BABILong distributes reasoning facts through long documents",
+      "kind": "claim",
+      "domain": "information",
+      "era": "undated",
+      "status": "reported",
+      "frontier": false,
+      "aliases": [],
+      "tags": [],
+      "summary": "BABILong introduces 20 tasks involving fact chaining, induction, deduction, counting and lists or sets, designed to require reasoning over facts distributed through very long natural-language documents.",
+      "sources": [
+        {
+          "id": "src.longcontext.kuratov-babilong-2024",
+          "url": "https://arxiv.org/abs/2406.10149",
+          "title": "BABILong: Testing the Limits of LLMs with Long Context Reasoning-in-a-Haystack"
+        }
+      ]
+    },
+    {
+      "id": "claim.longcontext.helmet-niah-vs-downstream",
+      "label": "HELMET reported poor predictive validity of simple needle tests",
+      "kind": "claim",
+      "domain": "information",
+      "era": "undated",
+      "status": "reported",
+      "frontier": false,
+      "aliases": [],
+      "tags": [],
+      "summary": "In a study of 59 long-context models, the HELMET authors report that synthetic needle-in-a-haystack scores do not reliably predict downstream performance and that their different application-centered task categories have low correlations.",
+      "sources": [
+        {
+          "id": "src.longcontext.yen-helmet-2025",
+          "url": "https://arxiv.org/abs/2410.02694",
+          "title": "HELMET: How to Evaluate Long-Context Language Models Effectively and Thoroughly"
+        }
+      ]
+    },
+    {
+      "id": "claim.longcontext.infinitybench-over100k",
+      "label": "InfinityBench longer-than-100K-token benchmark design",
+      "kind": "claim",
+      "domain": "information",
+      "era": "undated",
+      "status": "reported",
+      "frontier": false,
+      "aliases": [],
+      "tags": [],
+      "summary": "The 2024 InfinityBench paper describes a benchmark with average data length above 100K tokens and a mix of synthetic and realistic English and Chinese tasks intended to require long-distance dependencies rather than retrieval of isolated passages.",
+      "sources": [
+        {
+          "id": "src.longcontext.zhang-infinitybench-2024",
+          "url": "https://aclanthology.org/2024.acl-long.814/",
+          "title": "∞Bench: Extending Long Context Evaluation Beyond 100K Tokens"
+        }
+      ]
+    },
+    {
+      "id": "claim.longcontext.longbench-original-design",
+      "label": "Original LongBench multilingual multitask composition",
+      "kind": "claim",
+      "domain": "information",
+      "era": "undated",
+      "status": "reported",
+      "frontier": false,
+      "aliases": [],
+      "tags": [],
+      "summary": "The original LongBench authors report 21 datasets in six task categories in English and Chinese, with average input lengths of 6,711 English words and 13,386 Chinese characters.",
+      "sources": [
+        {
+          "id": "src.longcontext.bai-longbench-2024",
+          "url": "https://aclanthology.org/2024.acl-long.172/",
+          "title": "LongBench: A Bilingual, Multitask Benchmark for Long Context Understanding"
+        }
+      ]
+    },
+    {
+      "id": "claim.longcontext.longcite-citation-pipeline",
+      "label": "LongCite sentence-level citation generation workflow",
+      "kind": "claim",
+      "domain": "information",
+      "era": "undated",
+      "status": "reported",
+      "frontier": false,
+      "aliases": [],
+      "tags": [],
+      "summary": "The LongCite authors propose a Coarse-to-Fine pipeline producing long-context question-answer pairs with sentence-level citations and report using its LongCite-45k training data to train LongCite-8B and LongCite-9B.",
+      "sources": [
+        {
+          "id": "src.longcontext.zhang-longcite-2024",
+          "url": "https://arxiv.org/abs/2409.02897",
+          "title": "LongCite: Enabling LLMs to Generate Fine-grained Citations in Long-context QA"
+        }
+      ]
     }
   ],
   "edges": [
@@ -18234,6 +18462,1179 @@
           "charset": "utf-8",
           "extraction_method": "http-html-data-lines/1",
           "capture_id": "c4a50faa0af6511e38766317b452b2568d5783a556ef2651eeae929c40639a28"
+        }
+      ]
+    },
+    {
+      "batch_id": "fog-discovery-effective-context-20261008-e6b6694c",
+      "candidate_sha256": "263be487988f686526742ca56c7627281e5b0dd03d144fbdf2bd3d5d7c164526",
+      "assertions": [
+        {
+          "id": "assertion.claim.longcontext.liu-relevant-position",
+          "target_kind": "node",
+          "canonical_record": {
+            "id": "claim.longcontext.liu-relevant-position",
+            "label": "Liu et al. reported position-dependent retrieval in long inputs",
+            "kind": "claim",
+            "domain": "information",
+            "era": "undated",
+            "status": "reported",
+            "frontier": false,
+            "aliases": [],
+            "tags": [],
+            "summary": "Liu and colleagues report that models evaluated on multi-document question answering and key-value retrieval often performed best when relevant information occurred at the start or end of a long input, with marked degradation for middle positions.",
+            "sources": [
+              {
+                "id": "src.longcontext.liu-lost-middle-2024",
+                "url": "https://arxiv.org/abs/2307.03172",
+                "title": "Lost in the Middle: How Language Models Use Long Contexts"
+              }
+            ]
+          },
+          "statement": "Liu and colleagues report that models evaluated on multi-document question answering and key-value retrieval often performed best when relevant information occurred at the start or end of a long input, with marked degradation for middle positions.",
+          "scope": {
+            "population": "Language models evaluated in the Lost in the Middle paper",
+            "time": "Research reported in the 2023 arXiv revision",
+            "assumptions": "Task-specific positional evaluation, not a universal behavior of all models",
+            "uncertainty": "Often, not always; no numerical effect size or current-model result established by the excerpt",
+            "units": "Relative task performance",
+            "quantifiers": "Two evaluated tasks; start/end versus middle"
+          },
+          "support": [
+            {
+              "source_id": "src.longcontext.liu-lost-middle-2024",
+              "quote": "We analyze the performance of language models on two tasks that require identifying relevant information in their input contexts: multi-document question answering and key-value retrieval.",
+              "source_sha256": "9be1db75f75a4327cdfe474c1703ea26020c52f2e2c14c0b6175fde4a4370692",
+              "start": 900,
+              "end": 1088
+            },
+            {
+              "source_id": "src.longcontext.liu-lost-middle-2024",
+              "quote": "In particular, we observe that performance is often highest when relevant information occurs at the beginning or end of the input context, and significantly degrades when models must access relevant information in the middle of long contexts, even for explicitly long-context models.",
+              "source_sha256": "9be1db75f75a4327cdfe474c1703ea26020c52f2e2c14c0b6175fde4a4370692",
+              "start": 1296,
+              "end": 1579
+            }
+          ],
+          "target_sha256": "60f7a0b3573a78915c1ff3cd05e8ea752707481997ffbf0fb658e175a789d3df"
+        },
+        {
+          "id": "assertion.claim.longcontext.ruler-task-design",
+          "target_kind": "node",
+          "canonical_record": {
+            "id": "claim.longcontext.ruler-task-design",
+            "label": "RULER expands needle retrieval to multi-hop and aggregation",
+            "kind": "claim",
+            "domain": "information",
+            "era": "undated",
+            "status": "reported",
+            "frontier": false,
+            "aliases": [],
+            "tags": [],
+            "summary": "The RULER paper describes a configurable synthetic long-context benchmark extending needle-in-a-haystack retrieval with different needle types and counts, plus multi-hop tracing and aggregation; it evaluates 17 language models on 13 representative tasks.",
+            "sources": [
+              {
+                "id": "src.longcontext.hsieh-ruler-2024",
+                "url": "https://arxiv.org/abs/2404.06654",
+                "title": "RULER: What's the Real Context Size of Your Long-Context Language Models?"
+              }
+            ]
+          },
+          "statement": "The RULER paper describes a configurable synthetic long-context benchmark extending needle-in-a-haystack retrieval with different needle types and counts, plus multi-hop tracing and aggregation; it evaluates 17 language models on 13 representative tasks.",
+          "scope": {
+            "population": "17 long-context language models",
+            "time": "2024 RULER evaluation",
+            "assumptions": "Synthetic tasks, configurable lengths and complexities",
+            "uncertainty": "Benchmark design is not a guarantee of coverage of all real applications",
+            "units": "Models and tasks",
+            "quantifiers": "17 models; 13 representative tasks"
+          },
+          "support": [
+            {
+              "source_id": "src.longcontext.hsieh-ruler-2024",
+              "quote": "RULER expands upon the vanilla NIAH test to encompass variations with diverse types and quantities of needles. Moreover, RULER introduces new task categories multi-hop tracing and aggregation to test behaviors beyond searching from context. We evaluate 17 long-context LMs with 13 representative tasks in RULER.",
+              "source_sha256": "2c01e359903ca57f0e4698e579eaf3790261ca503a34f8522ee8a55f7b955092",
+              "start": 1259,
+              "end": 1570
+            }
+          ],
+          "target_sha256": "87719f57f0b477616c5e026c2267271ff7ae343451eac80f2a50395c0f0211ee"
+        },
+        {
+          "id": "assertion.claim.longcontext.ruler-32k-performance",
+          "target_kind": "node",
+          "canonical_record": {
+            "id": "claim.longcontext.ruler-32k-performance",
+            "label": "RULER performance gap at claimed 32K context",
+            "kind": "claim",
+            "domain": "information",
+            "era": "undated",
+            "status": "reported",
+            "frontier": false,
+            "aliases": [],
+            "tags": [],
+            "summary": "In the RULER authors’ evaluation of 17 long-context models advertised for at least 32K tokens, almost all declined on RULER as input length grew, and the authors reported only about half maintained satisfactory performance at 32K, despite nearly perfect results on vanilla needle retrieval.",
+            "sources": [
+              {
+                "id": "src.longcontext.hsieh-ruler-2024",
+                "url": "https://arxiv.org/abs/2404.06654",
+                "title": "RULER: What's the Real Context Size of Your Long-Context Language Models?"
+              }
+            ]
+          },
+          "statement": "In the RULER authors’ evaluation of 17 long-context models advertised for at least 32K tokens, almost all declined on RULER as input length grew, and the authors reported only about half maintained satisfactory performance at 32K, despite nearly perfect results on vanilla needle retrieval.",
+          "scope": {
+            "population": "17 models assessed by RULER",
+            "time": "2024 evaluation; 32K-token test length",
+            "assumptions": "Satisfactory refers to the paper’s benchmark criterion, not an independently specified universal standard",
+            "uncertainty": "The excerpt does not give per-model scores, error bars or applicability to later models",
+            "units": "Models; tokens; fraction",
+            "quantifiers": "17 models; 32K tokens; approximately half"
+          },
+          "support": [
+            {
+              "source_id": "src.longcontext.hsieh-ruler-2024",
+              "quote": "We evaluate 17 long-context LMs with 13 representative tasks in RULER. Despite achieving nearly perfect accuracy in the vanilla NIAH test, almost all models exhibit large performance drops as the context length increases. While these models all claim context sizes of 32K tokens or greater, only half of them can maintain satisfactory performance at the length of 32K.",
+              "source_sha256": "2c01e359903ca57f0e4698e579eaf3790261ca503a34f8522ee8a55f7b955092",
+              "start": 1500,
+              "end": 1868
+            }
+          ],
+          "target_sha256": "5830bead6d5ffa2661398b1da12b4ae642347e1ce4cff5b0856be9d6b8d1f4d0"
+        },
+        {
+          "id": "assertion.claim.longcontext.nolima-nonliteral-retrieval",
+          "target_kind": "node",
+          "canonical_record": {
+            "id": "claim.longcontext.nolima-nonliteral-retrieval",
+            "label": "NoLiMa tests retrieval without literal matching",
+            "kind": "claim",
+            "domain": "information",
+            "era": "undated",
+            "status": "reported",
+            "frontier": false,
+            "aliases": [],
+            "tags": [],
+            "summary": "The NoLiMa authors introduce a needle-retrieval benchmark in which questions and relevant text have minimal lexical overlap, requiring latent associations rather than straightforward literal matching to locate evidence.",
+            "sources": [
+              {
+                "id": "src.longcontext.modarressi-nolima-2025",
+                "url": "https://proceedings.mlr.press/v267/modarressi25a.html",
+                "title": "NoLiMa: Long-Context Evaluation Beyond Literal Matching"
+              }
+            ]
+          },
+          "statement": "The NoLiMa authors introduce a needle-retrieval benchmark in which questions and relevant text have minimal lexical overlap, requiring latent associations rather than straightforward literal matching to locate evidence.",
+          "scope": {
+            "population": "Long-context language models evaluated by NoLiMa",
+            "time": "2025 benchmark publication",
+            "assumptions": "Needles are designed with minimal question-passage lexical overlap",
+            "uncertainty": "Minimal lexical overlap is a benchmark design property, not an assertion that lexical information is entirely absent",
+            "units": "Words and retrieval instances",
+            "quantifiers": "No universal performance quantifier"
+          },
+          "support": [
+            {
+              "source_id": "src.longcontext.modarressi-nolima-2025",
+              "quote": "To address this, we introduce NoLiMa, a benchmark extending NIAH with a carefully designed needle set, where questions and needles have minimal lexical overlap, requiring models to infer latent associations to locate the needle within the haystack.",
+              "start": 956,
+              "end": 1204,
+              "source_sha256": "7c4ab45423a8628efbdc6f7c11851b1fc3b31443d1c8115b25d3e0ee7a5827f7"
+            }
+          ],
+          "target_sha256": "1cb653431a83dbe5c1a3a6c9c2bd57f80615f37234098f0e5be2decd945c4124"
+        },
+        {
+          "id": "assertion.claim.longcontext.nolima-32k-degradation",
+          "target_kind": "node",
+          "canonical_record": {
+            "id": "claim.longcontext.nolima-32k-degradation",
+            "label": "NoLiMa reported degradation in 13-model evaluation at 32K",
+            "kind": "claim",
+            "domain": "information",
+            "era": "undated",
+            "status": "reported",
+            "frontier": false,
+            "aliases": [],
+            "tags": [],
+            "summary": "In NoLiMa evaluations of 13 models claiming at least 128K-token support, 11 performed at under half their short-context baseline at 32K; the reported GPT-4o score dropped from 99.3% at short context to 69.7% at 32K.",
+            "sources": [
+              {
+                "id": "src.longcontext.modarressi-nolima-2025",
+                "url": "https://proceedings.mlr.press/v267/modarressi25a.html",
+                "title": "NoLiMa: Long-Context Evaluation Beyond Literal Matching"
+              }
+            ]
+          },
+          "statement": "In NoLiMa evaluations of 13 models claiming at least 128K-token support, 11 performed at under half their short-context baseline at 32K; the reported GPT-4o score dropped from 99.3% at short context to 69.7% at 32K.",
+          "scope": {
+            "population": "13 models selected for the NoLiMa benchmark; GPT-4o among evaluated models",
+            "time": "2025 evaluation; short context under 1K tokens compared with 32K tokens",
+            "assumptions": "Below 50% means relative to each model’s own short-context performance, not below 50 percentage points in absolute accuracy",
+            "uncertainty": "Result applies to tested model versions and NoLiMa tasks; no statement about all uses of GPT-4o",
+            "units": "Tokens; accuracy percentage; baseline ratio",
+            "quantifiers": "13 models; 11 below half baseline; GPT-4o 99.3% to 69.7%"
+          },
+          "support": [
+            {
+              "source_id": "src.longcontext.modarressi-nolima-2025",
+              "quote": "We evaluate 13 popular LLMs that claim to support contexts of at least 128K tokens.",
+              "start": 1205,
+              "end": 1288,
+              "source_sha256": "7c4ab45423a8628efbdc6f7c11851b1fc3b31443d1c8115b25d3e0ee7a5827f7"
+            },
+            {
+              "source_id": "src.longcontext.modarressi-nolima-2025",
+              "quote": "At 32K, for instance, 11 models drop below 50% of their strong short-length baselines. Even GPT-4o, one of the top-performing exceptions, experiences a reduction from an almost-perfect baseline of 99.3% to 69.7%.",
+              "start": 1406,
+              "end": 1618,
+              "source_sha256": "7c4ab45423a8628efbdc6f7c11851b1fc3b31443d1c8115b25d3e0ee7a5827f7"
+            }
+          ],
+          "target_sha256": "b4efc7ad4a182ad14fc2a59fa4671f94e7b8734247a91d785f1892ffc131cc7f"
+        },
+        {
+          "id": "assertion.claim.longcontext.longbench-v2-design",
+          "target_kind": "node",
+          "canonical_record": {
+            "id": "claim.longcontext.longbench-v2-design",
+            "label": "LongBench v2 realistic long-context question collection",
+            "kind": "claim",
+            "domain": "information",
+            "era": "undated",
+            "status": "reported",
+            "frontier": false,
+            "aliases": [],
+            "tags": [],
+            "summary": "The LongBench v2 authors describe 503 multiple-choice questions with source contexts from 8,000 to 2 million words spanning six categories, including multi-document questions and code-repository understanding.",
+            "sources": [
+              {
+                "id": "src.longcontext.bai-longbench-v2-2025",
+                "url": "https://aclanthology.org/2025.acl-long.183/",
+                "title": "LongBench v2: Towards Deeper Understanding and Reasoning on Realistic Long-context Multitasks"
+              }
+            ]
+          },
+          "statement": "The LongBench v2 authors describe 503 multiple-choice questions with source contexts from 8,000 to 2 million words spanning six categories, including multi-document questions and code-repository understanding.",
+          "scope": {
+            "population": "LongBench v2 question set",
+            "time": "2025 benchmark publication",
+            "assumptions": "Context lengths are words, not model tokens; questions are multiple-choice",
+            "uncertainty": "The abstract does not establish that every evaluated model processed the entire 2-million-word range",
+            "units": "Questions; context words; categories",
+            "quantifiers": "503 questions; 8k to 2M words; 6 categories"
+          },
+          "support": [
+            {
+              "source_id": "src.longcontext.bai-longbench-v2-2025",
+              "quote": "LongBench v2 consists of 503 challenging multiple-choice questions, with contexts ranging from 8k to 2M words, across six major task categories: single-document QA, multi-document QA, long in-context learning, long-dialogue history understanding, code repository understanding, and long structured data understanding.",
+              "start": 2205,
+              "end": 2522,
+              "source_sha256": "721ead7bec44a2139d889bfc69e652ad185458380127f78f71c94c105940091e"
+            }
+          ],
+          "target_sha256": "b8a427f5b8e3d2bbdf7d66674d3e791a73c5ccbd5fe0f31d08a80920d4803304"
+        },
+        {
+          "id": "assertion.claim.longcontext.longbench-v2-score-comparison",
+          "target_kind": "node",
+          "canonical_record": {
+            "id": "claim.longcontext.longbench-v2-score-comparison",
+            "label": "LongBench v2 reported expert and model benchmark accuracies",
+            "kind": "claim",
+            "domain": "information",
+            "era": "undated",
+            "status": "reported",
+            "frontier": false,
+            "aliases": [],
+            "tags": [],
+            "summary": "The LongBench v2 authors report 53.7% human-expert accuracy with a 15-minute limit, 50.1% for the strongest directly answering model, and 57.7% for o1-preview using longer reasoning under their reported evaluation.",
+            "sources": [
+              {
+                "id": "src.longcontext.bai-longbench-v2-2025",
+                "url": "https://aclanthology.org/2025.acl-long.183/",
+                "title": "LongBench v2: Towards Deeper Understanding and Reasoning on Realistic Long-context Multitasks"
+              }
+            ]
+          },
+          "statement": "The LongBench v2 authors report 53.7% human-expert accuracy with a 15-minute limit, 50.1% for the strongest directly answering model, and 57.7% for o1-preview using longer reasoning under their reported evaluation.",
+          "scope": {
+            "population": "Human experts and evaluated models on the LongBench v2 multiple-choice test",
+            "time": "2025 benchmark; expert limit 15 minutes",
+            "assumptions": "Direct-answer model and reasoning-enabled o1-preview used distinct response settings; not evidence of universal superiority",
+            "uncertainty": "Reported accuracies are task-specific; the human constraint and model reasoning procedures limit direct equivalence",
+            "units": "Accuracy percentages; minutes",
+            "quantifiers": "Experts 53.7%; direct-answer 50.1%; o1-preview 57.7%; 15-minute human limit"
+          },
+          "support": [
+            {
+              "source_id": "src.longcontext.bai-longbench-v2-2025",
+              "quote": "We employ both automated and manual review processes to maintain high quality and difficulty, resulting in human experts achieving only 53.7% accuracy under a 15-minute time constraint.",
+              "start": 2666,
+              "end": 2851,
+              "source_sha256": "721ead7bec44a2139d889bfc69e652ad185458380127f78f71c94c105940091e"
+            },
+            {
+              "source_id": "src.longcontext.bai-longbench-v2-2025",
+              "quote": "Our evaluation reveals that the best-performing model, when directly answers the questions, achieves only 50.1% accuracy. In contrast, the o1-preview model, which includes longer reasoning, achieves 57.7%, surpassing the human baseline by 4%.",
+              "start": 2852,
+              "end": 3094,
+              "source_sha256": "721ead7bec44a2139d889bfc69e652ad185458380127f78f71c94c105940091e"
+            }
+          ],
+          "target_sha256": "65d06582bd666279770a9273afdddae57502fc67f3b467ef2378a37b1d203ca9"
+        },
+        {
+          "id": "assertion.claim.longcontext.babilong-20-reasoning-tasks",
+          "target_kind": "node",
+          "canonical_record": {
+            "id": "claim.longcontext.babilong-20-reasoning-tasks",
+            "label": "BABILong distributes reasoning facts through long documents",
+            "kind": "claim",
+            "domain": "information",
+            "era": "undated",
+            "status": "reported",
+            "frontier": false,
+            "aliases": [],
+            "tags": [],
+            "summary": "BABILong introduces 20 tasks involving fact chaining, induction, deduction, counting and lists or sets, designed to require reasoning over facts distributed through very long natural-language documents.",
+            "sources": [
+              {
+                "id": "src.longcontext.kuratov-babilong-2024",
+                "url": "https://arxiv.org/abs/2406.10149",
+                "title": "BABILong: Testing the Limits of LLMs with Long Context Reasoning-in-a-Haystack"
+              }
+            ]
+          },
+          "statement": "BABILong introduces 20 tasks involving fact chaining, induction, deduction, counting and lists or sets, designed to require reasoning over facts distributed through very long natural-language documents.",
+          "scope": {
+            "population": "Synthetic reasoning tasks of the BABILong benchmark",
+            "time": "2024 reported benchmark",
+            "assumptions": "Scattered target facts across long natural text",
+            "uncertainty": "Benchmark tasks are distinct from operational proof of general reasoning or exact context use",
+            "units": "Tasks",
+            "quantifiers": "20 tasks; five named examples of reasoning types"
+          },
+          "support": [
+            {
+              "source_id": "src.longcontext.kuratov-babilong-2024",
+              "quote": "To bridge this gap, we introduce the BABILong benchmark, designed to test language models' ability to reason across facts distributed in extremely long documents. BABILong includes a diverse set of 20 reasoning tasks, including fact chaining, simple induction, deduction, counting, and handling lists/sets.",
+              "source_sha256": "0b8a5b1e2518df6ba3e35331a7b446489ebef12b827f8194307288be3bf1fb3c",
+              "start": 974,
+              "end": 1280
+            }
+          ],
+          "target_sha256": "ae081b3226992054572b39840b65bc091fb4453b1c48916d330037f99f394d5a"
+        },
+        {
+          "id": "assertion.claim.longcontext.helmet-niah-vs-downstream",
+          "target_kind": "node",
+          "canonical_record": {
+            "id": "claim.longcontext.helmet-niah-vs-downstream",
+            "label": "HELMET reported poor predictive validity of simple needle tests",
+            "kind": "claim",
+            "domain": "information",
+            "era": "undated",
+            "status": "reported",
+            "frontier": false,
+            "aliases": [],
+            "tags": [],
+            "summary": "In a study of 59 long-context models, the HELMET authors report that synthetic needle-in-a-haystack scores do not reliably predict downstream performance and that their different application-centered task categories have low correlations.",
+            "sources": [
+              {
+                "id": "src.longcontext.yen-helmet-2025",
+                "url": "https://arxiv.org/abs/2410.02694",
+                "title": "HELMET: How to Evaluate Long-Context Language Models Effectively and Thoroughly"
+              }
+            ]
+          },
+          "statement": "In a study of 59 long-context models, the HELMET authors report that synthetic needle-in-a-haystack scores do not reliably predict downstream performance and that their different application-centered task categories have low correlations.",
+          "scope": {
+            "population": "59 long-context language models studied in HELMET",
+            "time": "2025 paper version",
+            "assumptions": "Comparative benchmark correlations and predictive value are empirical author reports",
+            "uncertainty": "Correlation magnitudes and individual model identities are not given in the selected excerpt",
+            "units": "Models; category correlations",
+            "quantifiers": "59 models; two named findings"
+          },
+          "support": [
+            {
+              "source_id": "src.longcontext.yen-helmet-2025",
+              "quote": "Through a comprehensive study of 59 LCLMs, we find that (1) synthetic tasks like NIAH do not reliably predict downstream performance; (2) the diverse categories in HELMET exhibit distinct trends and low correlations with each other;",
+              "source_sha256": "046e3a0166c8f73f23321107b7f33bec803ea33bb2165d0d2ab9a254c6515dbe",
+              "start": 1841,
+              "end": 2073
+            }
+          ],
+          "target_sha256": "cfa26560724993d5618463510330d28adba5a3d2d7ab47bc8009b9f0857b497c"
+        },
+        {
+          "id": "assertion.claim.longcontext.infinitybench-over100k",
+          "target_kind": "node",
+          "canonical_record": {
+            "id": "claim.longcontext.infinitybench-over100k",
+            "label": "InfinityBench longer-than-100K-token benchmark design",
+            "kind": "claim",
+            "domain": "information",
+            "era": "undated",
+            "status": "reported",
+            "frontier": false,
+            "aliases": [],
+            "tags": [],
+            "summary": "The 2024 InfinityBench paper describes a benchmark with average data length above 100K tokens and a mix of synthetic and realistic English and Chinese tasks intended to require long-distance dependencies rather than retrieval of isolated passages.",
+            "sources": [
+              {
+                "id": "src.longcontext.zhang-infinitybench-2024",
+                "url": "https://aclanthology.org/2024.acl-long.814/",
+                "title": "∞Bench: Extending Long Context Evaluation Beyond 100K Tokens"
+              }
+            ]
+          },
+          "statement": "The 2024 InfinityBench paper describes a benchmark with average data length above 100K tokens and a mix of synthetic and realistic English and Chinese tasks intended to require long-distance dependencies rather than retrieval of isolated passages.",
+          "scope": {
+            "population": "InfinityBench evaluated long-input benchmark tasks",
+            "time": "2024 ACL publication",
+            "assumptions": "Source HTML text extraction omits math-styled name at two locations; benchmark identity comes from source title; report describes planned demands, not demonstrated impossibility of partial retrieval",
+            "uncertainty": "The abstract does not list task counts or model scores; phrase first is author priority claim not independently established",
+            "units": "Tokens; averaged data length",
+            "quantifiers": "Average length >100K tokens"
+          },
+          "support": [
+            {
+              "source_id": "src.longcontext.zhang-infinitybench-2024",
+              "quote": "In this paper, we propose , the first LLM benchmark featuring an average data length surpassing 100K tokens.",
+              "start": 2444,
+              "end": 2552,
+              "source_sha256": "492f728709e4dbb69a9b6f2b64965970b2a6650cc9cbf364d82d1293bd70ee18"
+            },
+            {
+              "source_id": "src.longcontext.zhang-infinitybench-2024",
+              "quote": "The tasks in are designed to require an understanding of long dependencies in contexts and make simply retrieving a limited number of passages from contexts not sufficient for these tasks.",
+              "start": 2642,
+              "end": 2830,
+              "source_sha256": "492f728709e4dbb69a9b6f2b64965970b2a6650cc9cbf364d82d1293bd70ee18"
+            }
+          ],
+          "target_sha256": "10b5938f17fbea91d77a6212bc0387414317d0ac05a6adf760da6cdc629401b2"
+        },
+        {
+          "id": "assertion.claim.longcontext.longbench-original-design",
+          "target_kind": "node",
+          "canonical_record": {
+            "id": "claim.longcontext.longbench-original-design",
+            "label": "Original LongBench multilingual multitask composition",
+            "kind": "claim",
+            "domain": "information",
+            "era": "undated",
+            "status": "reported",
+            "frontier": false,
+            "aliases": [],
+            "tags": [],
+            "summary": "The original LongBench authors report 21 datasets in six task categories in English and Chinese, with average input lengths of 6,711 English words and 13,386 Chinese characters.",
+            "sources": [
+              {
+                "id": "src.longcontext.bai-longbench-2024",
+                "url": "https://aclanthology.org/2024.acl-long.172/",
+                "title": "LongBench: A Bilingual, Multitask Benchmark for Long Context Understanding"
+              }
+            ]
+          },
+          "statement": "The original LongBench authors report 21 datasets in six task categories in English and Chinese, with average input lengths of 6,711 English words and 13,386 Chinese characters.",
+          "scope": {
+            "population": "Datasets selected for original LongBench",
+            "time": "2024 ACL publication",
+            "assumptions": "English and Chinese lengths use different units and should not be directly compared",
+            "uncertainty": "Reported averages are not maximum supported context lengths and do not establish benchmark score reliability",
+            "units": "Datasets; task categories; words; characters",
+            "quantifiers": "21 datasets; 6 categories; 6711 English words; 13386 Chinese characters"
+          },
+          "support": [
+            {
+              "source_id": "src.longcontext.bai-longbench-2024",
+              "quote": "LongBench comprises 21 datasets across 6 task categories in both English and Chinese, with an average length of 6,711 words (English) and 13,386 characters (Chinese).",
+              "start": 2675,
+              "end": 2841,
+              "source_sha256": "cfac7a68d6fabd15919c439b72608ffb3c6c86b5c3078503cb9f6a554731d18b"
+            }
+          ],
+          "target_sha256": "53711a51b60b144c8a94511d19a3f93bf1bd42a07eefe5619c72cfca7782abfd"
+        },
+        {
+          "id": "assertion.claim.longcontext.longcite-citation-pipeline",
+          "target_kind": "node",
+          "canonical_record": {
+            "id": "claim.longcontext.longcite-citation-pipeline",
+            "label": "LongCite sentence-level citation generation workflow",
+            "kind": "claim",
+            "domain": "information",
+            "era": "undated",
+            "status": "reported",
+            "frontier": false,
+            "aliases": [],
+            "tags": [],
+            "summary": "The LongCite authors propose a Coarse-to-Fine pipeline producing long-context question-answer pairs with sentence-level citations and report using its LongCite-45k training data to train LongCite-8B and LongCite-9B.",
+            "sources": [
+              {
+                "id": "src.longcontext.zhang-longcite-2024",
+                "url": "https://arxiv.org/abs/2409.02897",
+                "title": "LongCite: Enabling LLMs to Generate Fine-grained Citations in Long-context QA"
+              }
+            ]
+          },
+          "statement": "The LongCite authors propose a Coarse-to-Fine pipeline producing long-context question-answer pairs with sentence-level citations and report using its LongCite-45k training data to train LongCite-8B and LongCite-9B.",
+          "scope": {
+            "population": "LongCite source-described QA pipeline and its two trained models",
+            "time": "2024 research manuscript",
+            "assumptions": "Sentence-level citation generation is not by itself verified attribution fidelity in every response",
+            "uncertainty": "Source describes its claimed result; no independent verification or current-model comparison inferred",
+            "units": "Training-set name; model names",
+            "quantifiers": "LongCite-45k; LongCite-8B; LongCite-9B"
+          },
+          "support": [
+            {
+              "source_id": "src.longcontext.zhang-longcite-2024",
+              "quote": "To this end, we propose CoF (Coarse to Fine), a novel pipeline that utilizes off-the-shelf LLMs to automatically generate long-context QA instances with precise sentence-level citations, and leverage this pipeline to construct LongCite-45k, a large-scale SFT dataset for LQAC. Finally, we train LongCite-8B and LongCite-9B using the LongCite-45k dataset, successfully enabling their generation of accurate responses and fine-grained sentence-level citations in a single output.",
+              "source_sha256": "58e1b8678416aa174246e7797dd5e56b8d173a13892b431f6a54b485cf473b06",
+              "start": 1428,
+              "end": 1905
+            }
+          ],
+          "target_sha256": "e448452a911a9127733b7c57fc769b4e98e4d9884088988b9065a0205375fa90"
+        }
+      ],
+      "decisions": [
+        {
+          "assertion_id": "assertion.claim.longcontext.liu-relevant-position",
+          "target_kind": "node",
+          "outcome": "supported",
+          "rationale": "The retained Lost in the Middle abstract explicitly identifies multi-document question answering and key-value retrieval as the two evaluated tasks. It reports that performance is often highest when relevant information appears at the beginning or end and declines significantly when that information appears in the middle. Both support excerpts occur uniquely at their specified offsets. The candidate preserves the qualified frequency and attributes the result to the evaluated models rather than all language models. Claim kind, information domain, reported status, undated era, frontier=false, empty aliases and tags, and the source identity are justified. No epistemic edge, identity merge, direction, or taxonomy placement is proposed.",
+          "limitations": "The retained abstract provides no numerical positional effect size, confidence interval, complete model roster, or evidence about models released after the evaluation. The reported effect is task-dependent rather than universal.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "target_sha256": "60f7a0b3573a78915c1ff3cd05e8ea752707481997ffbf0fb658e175a789d3df",
+          "candidate_sha256": "263be487988f686526742ca56c7627281e5b0dd03d144fbdf2bd3d5d7c164526",
+          "reviewer_id": "brain:7e52add9f6ac4a3faabd4a27d256b5b8",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "role": "entailment",
+          "reviewed_at": "2026-10-08T04:39:01.508825+00:00"
+        },
+        {
+          "assertion_id": "assertion.claim.longcontext.liu-relevant-position",
+          "outcome": "supported",
+          "rationale": "Both tasks and the beginning/end-versus-middle positional pattern are explicitly reported in Liu et al.'s retained abstract. 'Often' and 'can degrade' preserve nonuniversal task-specific behavior. This is a source-attributed information-domain claim, not a current-model capability claim; neutral reported/undated/frontier=false metadata are correctly used. No positive aliases, taxonomy, edges, direction, or identity merges are asserted.",
+          "limitations": "This is a historical evaluation on two retrieval-oriented tasks; the captured abstract supplies no model-by-position numerical table, effect size, or proof about every long-context model. It cannot establish current-model behavior or all kinds of long-context reasoning.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "target_kind": "node",
+          "target_sha256": "60f7a0b3573a78915c1ff3cd05e8ea752707481997ffbf0fb658e175a789d3df",
+          "candidate_sha256": "263be487988f686526742ca56c7627281e5b0dd03d144fbdf2bd3d5d7c164526",
+          "reviewer_id": "brain:f0ba8fe9c597470c91274e3f9f8649d8",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "role": "adversarial",
+          "reviewed_at": "2026-10-08T04:39:38.853515+00:00"
+        },
+        {
+          "assertion_id": "assertion.claim.longcontext.ruler-task-design",
+          "target_kind": "node",
+          "outcome": "supported",
+          "rationale": "The retained RULER abstract describes a configurable synthetic benchmark, variations in needle type and quantity, multi-hop tracing, aggregation, and an evaluation involving 17 language models and 13 representative tasks. The supporting excerpt is exact and uniquely located. The candidate represents the authors' benchmark construction and evaluation design without claiming that synthetic tasks establish comprehensive real-world competence. Claim kind, information domain, neutral metadata, source attribution, and empty identity and relationship structures are justified. No directional or taxonomy relationship is asserted.",
+          "limitations": "The cited excerpt does not enumerate all 13 tasks or specify each tested model and context length. Benchmark coverage is not equivalent to coverage of every downstream application.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "target_sha256": "87719f57f0b477616c5e026c2267271ff7ae343451eac80f2a50395c0f0211ee",
+          "candidate_sha256": "263be487988f686526742ca56c7627281e5b0dd03d144fbdf2bd3d5d7c164526",
+          "reviewer_id": "brain:7e52add9f6ac4a3faabd4a27d256b5b8",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "role": "entailment",
+          "reviewed_at": "2026-10-08T04:39:01.509868+00:00"
+        },
+        {
+          "assertion_id": "assertion.claim.longcontext.ruler-task-design",
+          "outcome": "supported",
+          "rationale": "RULER's retained abstract explicitly describes needle variation, multi-hop tracing, aggregation, and evaluation of 17 models on 13 tasks. Configurability and synthetic-task limits are preserved. The claim/information classification and neutral status, era, and frontier flags are appropriate; no relations, identities, or unsupported graph placement are proposed.",
+          "limitations": "All 13 tasks are synthetic; the abstract does not establish that they exhaust downstream workloads or reliably predict real-document performance. The 17 tested models cannot be generalized to all models.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "target_kind": "node",
+          "target_sha256": "87719f57f0b477616c5e026c2267271ff7ae343451eac80f2a50395c0f0211ee",
+          "candidate_sha256": "263be487988f686526742ca56c7627281e5b0dd03d144fbdf2bd3d5d7c164526",
+          "reviewer_id": "brain:f0ba8fe9c597470c91274e3f9f8649d8",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "role": "adversarial",
+          "reviewed_at": "2026-10-08T04:39:38.853725+00:00"
+        },
+        {
+          "assertion_id": "assertion.claim.longcontext.ruler-32k-performance",
+          "target_kind": "node",
+          "outcome": "supported",
+          "rationale": "The retained RULER abstract states that the evaluated 17 models claimed context capacities of at least 32K tokens, that almost all experienced large performance declines as input length increased, and that only half maintained satisfactory performance at 32K despite nearly perfect vanilla needle-retrieval accuracy. The candidate preserves the attribution, approximate fraction, test length, and distinction between advertised capacity and measured benchmark performance. The exact support excerpt occurs uniquely at its declared offsets. Claim kind, information domain, neutral metadata, source identity, and absence of edges or placements are justified.",
+          "limitations": "Satisfactory performance is the authors' benchmark-specific criterion. No precise per-model threshold, individual scores, statistical uncertainty, or assessment of later model versions follows from the retained abstract. The result does not establish a universal effective-context limit.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "target_sha256": "5830bead6d5ffa2661398b1da12b4ae642347e1ce4cff5b0856be9d6b8d1f4d0",
+          "candidate_sha256": "263be487988f686526742ca56c7627281e5b0dd03d144fbdf2bd3d5d7c164526",
+          "reviewer_id": "brain:7e52add9f6ac4a3faabd4a27d256b5b8",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "role": "entailment",
+          "reviewed_at": "2026-10-08T04:39:01.509868+00:00"
+        },
+        {
+          "assertion_id": "assertion.claim.longcontext.ruler-32k-performance",
+          "outcome": "supported",
+          "rationale": "The RULER abstract explicitly reports nearly perfect vanilla NIAH performance, declines for almost all 17 models as length increases, advertised 32K-or-greater windows, and only half retaining satisfactory RULER performance at 32K. The record attributes the authors' assessment rather than declaring a model-independent threshold. Claim/information and neutral reported/undated/frontier=false metadata are appropriate; no directional edges or identity/placement claims occur.",
+          "limitations": "'Satisfactory' is the authors' benchmark-dependent criterion, not a universal effective-context definition. The abstract provides no per-model 32K breakdown or statistical uncertainty, and does not establish 2026 model performance.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "target_kind": "node",
+          "target_sha256": "5830bead6d5ffa2661398b1da12b4ae642347e1ce4cff5b0856be9d6b8d1f4d0",
+          "candidate_sha256": "263be487988f686526742ca56c7627281e5b0dd03d144fbdf2bd3d5d7c164526",
+          "reviewer_id": "brain:f0ba8fe9c597470c91274e3f9f8649d8",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "role": "adversarial",
+          "reviewed_at": "2026-10-08T04:39:38.853725+00:00"
+        },
+        {
+          "assertion_id": "assertion.claim.longcontext.nolima-nonliteral-retrieval",
+          "target_kind": "node",
+          "outcome": "supported",
+          "rationale": "The NoLiMa authors explicitly describe designing needles and questions with minimal lexical overlap so that locating relevant evidence requires inference of latent associations. The proposed statement accurately presents that benchmark construction rather than asserting that literal matching is entirely absent or that semantic retrieval succeeds. The exact quoted passage occurs more than once in the retained publication metadata, and the supplied Unicode offsets select a valid occurrence. Claim kind, information domain, reported status, undated era, frontier=false, source identity, and the absence of relationships, identity merges, and taxonomy placement are justified.",
+          "limitations": "Minimal overlap does not mean zero shared vocabulary. The retained excerpt does not independently establish the benchmark's validity for all forms of semantic retrieval or document reasoning.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "target_sha256": "1cb653431a83dbe5c1a3a6c9c2bd57f80615f37234098f0e5be2decd945c4124",
+          "candidate_sha256": "263be487988f686526742ca56c7627281e5b0dd03d144fbdf2bd3d5d7c164526",
+          "reviewer_id": "brain:7e52add9f6ac4a3faabd4a27d256b5b8",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "role": "entailment",
+          "reviewed_at": "2026-10-08T04:39:01.509868+00:00"
+        },
+        {
+          "assertion_id": "assertion.claim.longcontext.nolima-nonliteral-retrieval",
+          "outcome": "supported",
+          "rationale": "NoLiMa's retained primary abstract directly states that the new needle set minimizes question-needle lexical overlap and requires latent associations to locate a needle. The statement preserves 'minimal' instead of claiming zero overlap. Claim/information and the neutral reported, undated, nonfrontier settings are justified; no edge, identity merge, or taxonomy placement occurs.",
+          "limitations": "NoLiMa still uses benchmark needle retrieval, even if literal overlap is reduced. A lack of literal matching does not by itself prove semantic reasoning in all real documents or that lexical cues are absent.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "target_kind": "node",
+          "target_sha256": "1cb653431a83dbe5c1a3a6c9c2bd57f80615f37234098f0e5be2decd945c4124",
+          "candidate_sha256": "263be487988f686526742ca56c7627281e5b0dd03d144fbdf2bd3d5d7c164526",
+          "reviewer_id": "brain:f0ba8fe9c597470c91274e3f9f8649d8",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "role": "adversarial",
+          "reviewed_at": "2026-10-08T04:39:38.853725+00:00"
+        },
+        {
+          "assertion_id": "assertion.claim.longcontext.nolima-32k-degradation",
+          "target_kind": "node",
+          "outcome": "supported",
+          "rationale": "The retained NoLiMa abstract states that 13 evaluated models claimed support for at least 128K tokens. At 32K, 11 fell below 50% of their own short-context baselines, while the evaluated GPT-4o score declined from 99.3% to 69.7%. The candidate preserves the relative-baseline interpretation rather than incorrectly treating the 50% threshold as absolute accuracy. Its short-context qualification is also supported by the retained abstract. Both repeated excerpts have valid occurrence-specific offsets. Claim kind, information domain, neutral metadata, and source representation are justified; no relationship, identity merge, or placement is proposed.",
+          "limitations": "These are results for particular model versions and NoLiMa tasks evaluated in the 2025 publication. The excerpt does not provide per-model confidence intervals or establish a general limit on GPT-4o or subsequent models. The authors' proposed attention-based explanation is not incorporated as a proven mechanism.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "target_sha256": "b4efc7ad4a182ad14fc2a59fa4671f94e7b8734247a91d785f1892ffc131cc7f",
+          "candidate_sha256": "263be487988f686526742ca56c7627281e5b0dd03d144fbdf2bd3d5d7c164526",
+          "reviewer_id": "brain:7e52add9f6ac4a3faabd4a27d256b5b8",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "role": "entailment",
+          "reviewed_at": "2026-10-08T04:39:01.509868+00:00"
+        },
+        {
+          "assertion_id": "assertion.claim.longcontext.nolima-32k-degradation",
+          "outcome": "supported",
+          "rationale": "The NoLiMa primary-source abstract directly states the 13-model, >=128K-advertised-support sample, the 11-model decline below 50% of each short-context baseline at 32K, and GPT-4o's 99.3%-to-69.7% result. The scope properly treats 50% as relative rather than absolute accuracy, and confines the finding to benchmark/model versions. Claim/information and neutral metadata are appropriate; no relationship or positive identity/placement claim is made.",
+          "limitations": "These are task-specific historical outcomes, not context-capacity certificates. The GPT-4o score remains 69.7%, not below half its baseline; the 11-model statistic describes the other overall sample results and should not be applied to GPT-4o.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "target_kind": "node",
+          "target_sha256": "b4efc7ad4a182ad14fc2a59fa4671f94e7b8734247a91d785f1892ffc131cc7f",
+          "candidate_sha256": "263be487988f686526742ca56c7627281e5b0dd03d144fbdf2bd3d5d7c164526",
+          "reviewer_id": "brain:f0ba8fe9c597470c91274e3f9f8649d8",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "role": "adversarial",
+          "reviewed_at": "2026-10-08T04:39:38.853725+00:00"
+        },
+        {
+          "assertion_id": "assertion.claim.longcontext.longbench-v2-design",
+          "target_kind": "node",
+          "outcome": "supported",
+          "rationale": "The retained LongBench v2 abstract specifies 503 multiple-choice questions, contexts ranging from 8,000 to 2 million words, and six task categories including multi-document question answering and code-repository understanding. The quoted passage occurs at the supplied valid offset despite repetition elsewhere in the publication metadata. The candidate preserves words as the measurement unit and describes benchmark material rather than asserting that every tested model processed the maximum context length. Claim kind, information domain, reported status, undated era, frontier=false, exact source identity, and absence of edges or taxonomy are justified.",
+          "limitations": "The range describes benchmark contexts, not the context capacity demonstrated by each evaluated model. The abstract alone does not establish balanced category sizes, complete coverage, or identical evaluation settings across all questions.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "target_sha256": "b8a427f5b8e3d2bbdf7d66674d3e791a73c5ccbd5fe0f31d08a80920d4803304",
+          "candidate_sha256": "263be487988f686526742ca56c7627281e5b0dd03d144fbdf2bd3d5d7c164526",
+          "reviewer_id": "brain:7e52add9f6ac4a3faabd4a27d256b5b8",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "role": "entailment",
+          "reviewed_at": "2026-10-08T04:39:01.509868+00:00"
+        },
+        {
+          "assertion_id": "assertion.claim.longcontext.longbench-v2-design",
+          "outcome": "supported",
+          "rationale": "The LongBench v2 authors' primary abstract explicitly reports 503 multiple-choice questions, 8K-to-2M-word contexts, and the six named categories, including multi-document QA and repository understanding. The scope correctly measures words, not tokens, and does not claim that any individual model processed the entire length range. Claim/information and neutral metadata are appropriate, without unsupported relations or placements.",
+          "limitations": "The length range describes the dataset, not successful ingestion of a 2-million-word case by any particular model. Benchmark collection and quality claims remain author reports.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "target_kind": "node",
+          "target_sha256": "b8a427f5b8e3d2bbdf7d66674d3e791a73c5ccbd5fe0f31d08a80920d4803304",
+          "candidate_sha256": "263be487988f686526742ca56c7627281e5b0dd03d144fbdf2bd3d5d7c164526",
+          "reviewer_id": "brain:f0ba8fe9c597470c91274e3f9f8649d8",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "role": "adversarial",
+          "reviewed_at": "2026-10-08T04:39:38.853725+00:00"
+        },
+        {
+          "assertion_id": "assertion.claim.longcontext.longbench-v2-score-comparison",
+          "target_kind": "node",
+          "outcome": "supported",
+          "rationale": "The retained LongBench v2 abstract reports 53.7% accuracy for human experts under a 15-minute limit, 50.1% for the best directly answering model, and 57.7% for o1-preview with longer reasoning. The candidate preserves those numerical outcomes and explicitly differentiates the evaluation procedures. Both support excerpts are exact and correctly offset within the retained text. It does not infer universal model superiority or general human-level reasoning. Claim kind, information domain, neutral metadata, source identity, and absence of identities, edges, direction, and taxonomy placement are justified.",
+          "limitations": "The percentages represent this specific multiple-choice benchmark. Human time constraints and differing model reasoning settings limit direct comparability. The abstract does not provide the full model roster, uncertainty intervals, or evidence of performance on subsequent models or other benchmarks.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "target_sha256": "65d06582bd666279770a9273afdddae57502fc67f3b467ef2378a37b1d203ca9",
+          "candidate_sha256": "263be487988f686526742ca56c7627281e5b0dd03d144fbdf2bd3d5d7c164526",
+          "reviewer_id": "brain:7e52add9f6ac4a3faabd4a27d256b5b8",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "role": "entailment",
+          "reviewed_at": "2026-10-08T04:39:01.509868+00:00"
+        },
+        {
+          "assertion_id": "assertion.claim.longcontext.longbench-v2-score-comparison",
+          "outcome": "supported",
+          "rationale": "The same LongBench v2 abstract directly reports 53.7% human expert accuracy with a 15-minute limit, 50.1% for the best direct-answer model, and 57.7% for reasoning-enabled o1-preview. The record preserves the distinct evaluation conditions and frames them as author-reported benchmark results. Kind/domain and neutral status/era/frontier are justified, with no identities or directional relationships proposed.",
+          "limitations": "Different human time constraints and model reasoning modes limit direct comparability; 57.7% does not establish general superiority to humans or any current benchmark ranking. No confidence intervals are supplied in the retained excerpt.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "target_kind": "node",
+          "target_sha256": "65d06582bd666279770a9273afdddae57502fc67f3b467ef2378a37b1d203ca9",
+          "candidate_sha256": "263be487988f686526742ca56c7627281e5b0dd03d144fbdf2bd3d5d7c164526",
+          "reviewer_id": "brain:f0ba8fe9c597470c91274e3f9f8649d8",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "role": "adversarial",
+          "reviewed_at": "2026-10-08T04:39:38.853725+00:00"
+        },
+        {
+          "assertion_id": "assertion.claim.longcontext.babilong-20-reasoning-tasks",
+          "target_kind": "node",
+          "outcome": "supported",
+          "rationale": "The retained BABILong abstract explicitly describes reasoning over facts distributed across extremely long documents and lists 20 tasks including fact chaining, simple induction, deduction, counting, and handling lists or sets. The candidate closely follows this benchmark-design description without adopting the paper's stronger claims about effective model context usage. The support passage is exact and uniquely present. Claim kind, information domain, reported status, undated era, frontier=false, source attribution, and empty aliases, relationships, identities, and taxonomy placement are justified.",
+          "limitations": "The 20 tasks are benchmark constructions rather than a comprehensive test of general intelligence. The abstract does not establish that all tasks have equal complexity or that performance transfers to every long-document application.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "target_sha256": "ae081b3226992054572b39840b65bc091fb4453b1c48916d330037f99f394d5a",
+          "candidate_sha256": "263be487988f686526742ca56c7627281e5b0dd03d144fbdf2bd3d5d7c164526",
+          "reviewer_id": "brain:7e52add9f6ac4a3faabd4a27d256b5b8",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "role": "entailment",
+          "reviewed_at": "2026-10-08T04:39:01.509868+00:00"
+        },
+        {
+          "assertion_id": "assertion.claim.longcontext.babilong-20-reasoning-tasks",
+          "outcome": "supported",
+          "rationale": "The BABILong abstract directly reports a 20-task collection, the listed reasoning operations and facts scattered in lengthy natural text. The candidate describes benchmark design, not demonstrated effective context utilization or universal reasoning proficiency. Claim/information and neutral reported/undated/frontier=false fields fit; no positive relationship, identity, or taxonomy placement is proposed.",
+          "limitations": "Tasks derive from constructed benchmarks and distributed fact conditions. The 20 tasks and named reasoning types do not guarantee generalization or document understanding and are not evidence of current model efficacy.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "target_kind": "node",
+          "target_sha256": "ae081b3226992054572b39840b65bc091fb4453b1c48916d330037f99f394d5a",
+          "candidate_sha256": "263be487988f686526742ca56c7627281e5b0dd03d144fbdf2bd3d5d7c164526",
+          "reviewer_id": "brain:f0ba8fe9c597470c91274e3f9f8649d8",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "role": "adversarial",
+          "reviewed_at": "2026-10-08T04:39:38.853725+00:00"
+        },
+        {
+          "assertion_id": "assertion.claim.longcontext.helmet-niah-vs-downstream",
+          "target_kind": "node",
+          "outcome": "supported",
+          "rationale": "The retained HELMET abstract states that the authors studied 59 long-context language models, found synthetic needle-in-a-haystack evaluations unreliable predictors of downstream performance, and observed distinct trends and low correlations among application-oriented categories. The candidate faithfully attributes these benchmark findings to HELMET rather than turning them into a universal prohibition on synthetic retrieval evaluation. Its support excerpt is exact and uniquely located. Claim kind, information domain, neutral metadata, source identity, and absence of directed edges, identity assertions, or taxonomy placement are justified.",
+          "limitations": "The quoted source gives neither correlation coefficients nor detailed per-model results. The findings concern the studied benchmarks and model population, not all synthetic tasks, all applications, or later model releases.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "target_sha256": "cfa26560724993d5618463510330d28adba5a3d2d7ab47bc8009b9f0857b497c",
+          "candidate_sha256": "263be487988f686526742ca56c7627281e5b0dd03d144fbdf2bd3d5d7c164526",
+          "reviewer_id": "brain:7e52add9f6ac4a3faabd4a27d256b5b8",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "role": "entailment",
+          "reviewed_at": "2026-10-08T04:39:01.509868+00:00"
+        },
+        {
+          "assertion_id": "assertion.claim.longcontext.helmet-niah-vs-downstream",
+          "outcome": "supported",
+          "rationale": "The HELMET arXiv abstract explicitly states a study of 59 long-context models, poor predictive reliability of synthetic NIAH for downstream performance, and low cross-category correlation among application-centric tasks. The statement retains author attribution and reports no invented effect size. Claim/information and neutral reported/undated/frontier=false metadata fit; no unsupported edge or identity claims are made.",
+          "limitations": "Correlation coefficients, individual model identities, and task-specific confidence intervals are not provided by the retained quotation. Poor predictive validity here is not proof that every NIAH test is entirely useless.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "target_kind": "node",
+          "target_sha256": "cfa26560724993d5618463510330d28adba5a3d2d7ab47bc8009b9f0857b497c",
+          "candidate_sha256": "263be487988f686526742ca56c7627281e5b0dd03d144fbdf2bd3d5d7c164526",
+          "reviewer_id": "brain:f0ba8fe9c597470c91274e3f9f8649d8",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "role": "adversarial",
+          "reviewed_at": "2026-10-08T04:39:38.853725+00:00"
+        },
+        {
+          "assertion_id": "assertion.claim.longcontext.infinitybench-over100k",
+          "target_kind": "node",
+          "outcome": "supported",
+          "rationale": "The retained ACL Anthology record identifies the paper as ∞Bench and reports a benchmark whose average data length exceeds 100K tokens. Its abstract also describes synthetic and realistic tasks in English and Chinese and explains that the task design aims to demand long-range dependencies rather than merely retrieving a few isolated passages. Although the text extractor omits the stylized benchmark name within some abstract sentences, the publication title establishes its identity. Both cited excerpts match the captured text at their specified offsets, and the intervening retained sentence supports the candidate's language and task-composition description. The candidate preserves the authors' design intention without claiming experimentally proven impossibility of limited-passage retrieval. Claim kind, information domain, neutral metadata, source identity, and absence of directional relationships or taxonomy placement are justified.",
+          "limitations": "The supporting excerpts alone omit the synthetic/realistic and bilingual detail; that detail is present in the adjacent retained source text. The abstract's stylized-name extraction is incomplete. Average input length does not establish that every instance exceeds 100K tokens or that every evaluated model processed all available material. The benchmark's effectiveness beyond passage retrieval is a design aim, not independently demonstrated by these excerpts.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "target_sha256": "10b5938f17fbea91d77a6212bc0387414317d0ac05a6adf760da6cdc629401b2",
+          "candidate_sha256": "263be487988f686526742ca56c7627281e5b0dd03d144fbdf2bd3d5d7c164526",
+          "reviewer_id": "brain:7e52add9f6ac4a3faabd4a27d256b5b8",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "role": "entailment",
+          "reviewed_at": "2026-10-08T04:39:01.510853+00:00"
+        },
+        {
+          "assertion_id": "assertion.claim.longcontext.infinitybench-over100k",
+          "outcome": "supported",
+          "rationale": "The retained ACL Anthology source identifies the benchmark in its title as ∞Bench and reports average data length above 100K tokens, synthetic and realistic English/Chinese tasks, and designed demands for long dependencies rather than passage-only retrieval. The missing mathematical name in the extracted abstract is resolved by its retained title, not fabricated source prose. The candidate does not adopt the authors' unverified 'first' priority claim. Claim/information and neutral metadata are appropriate; no relation or placement is proposed.",
+          "limitations": "Mathematical rendering dropped the benchmark name from abstract sentences, so support for its exact name depends on the retained title. The design claim does not establish real-life representativeness, exact per-task counts, or an achieved ability in evaluated models.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "target_kind": "node",
+          "target_sha256": "10b5938f17fbea91d77a6212bc0387414317d0ac05a6adf760da6cdc629401b2",
+          "candidate_sha256": "263be487988f686526742ca56c7627281e5b0dd03d144fbdf2bd3d5d7c164526",
+          "reviewer_id": "brain:f0ba8fe9c597470c91274e3f9f8649d8",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "role": "adversarial",
+          "reviewed_at": "2026-10-08T04:39:38.854722+00:00"
+        },
+        {
+          "assertion_id": "assertion.claim.longcontext.longbench-original-design",
+          "target_kind": "node",
+          "outcome": "supported",
+          "rationale": "The original LongBench abstract explicitly reports 21 datasets across six task categories in English and Chinese, with average lengths of 6,711 English words and 13,386 Chinese characters. The candidate preserves both distinct measurement units rather than equating word and character counts. Its exact support excerpt is correctly identified among repeated appearances in the retained record. Claim kind, information domain, reported status, undated era, frontier=false, source identity, and absence of relationships, identities, or taxonomy placement are justified.",
+          "limitations": "The averages describe benchmark inputs and are not evidence of any model's maximum or reliably usable context. English word counts and Chinese character counts cannot be compared as equivalent token counts. The excerpt supplies no variance or per-task score.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "target_sha256": "53711a51b60b144c8a94511d19a3f93bf1bd42a07eefe5619c72cfca7782abfd",
+          "candidate_sha256": "263be487988f686526742ca56c7627281e5b0dd03d144fbdf2bd3d5d7c164526",
+          "reviewer_id": "brain:7e52add9f6ac4a3faabd4a27d256b5b8",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "role": "entailment",
+          "reviewed_at": "2026-10-08T04:39:01.510853+00:00"
+        },
+        {
+          "assertion_id": "assertion.claim.longcontext.longbench-original-design",
+          "outcome": "supported",
+          "rationale": "The original LongBench publication abstract explicitly reports 21 datasets, six categories, and average lengths of 6,711 English words and 13,386 Chinese characters. The candidate correctly keeps language-specific measurement units separate and does not conflate this original benchmark with LongBench v2. Claim/information, neutral status/era/frontier and absence of edges, identities and taxonomy are justified.",
+          "limitations": "English words and Chinese characters are different measures, and these means are not token capacities, worst-case lengths, or proof of effective use. Original LongBench and v2 should not be considered independent replications by default.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "target_kind": "node",
+          "target_sha256": "53711a51b60b144c8a94511d19a3f93bf1bd42a07eefe5619c72cfca7782abfd",
+          "candidate_sha256": "263be487988f686526742ca56c7627281e5b0dd03d144fbdf2bd3d5d7c164526",
+          "reviewer_id": "brain:f0ba8fe9c597470c91274e3f9f8649d8",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "role": "adversarial",
+          "reviewed_at": "2026-10-08T04:39:38.854722+00:00"
+        },
+        {
+          "assertion_id": "assertion.claim.longcontext.longcite-citation-pipeline",
+          "target_kind": "node",
+          "outcome": "supported",
+          "rationale": "The retained LongCite abstract explicitly proposes the CoF, or Coarse-to-Fine, pipeline for generating long-context question-answer instances with sentence-level citations. It states that the authors constructed LongCite-45k and trained LongCite-8B and LongCite-9B using that dataset. The proposed summary preserves these reported procedural and model-training facts without independently endorsing the quality of generated citations. The quoted passage is exact and uniquely present. Claim kind, information domain, reported status, undated era, frontier=false, source identity, and the absence of directed edges, identity merges, or taxonomy placement are justified.",
+          "limitations": "The abstract reports the authors' own claims about citation accuracy. It does not establish universal source faithfulness, independent replication, or correctness of every generated citation. The candidate appropriately stops short of those conclusions.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "target_sha256": "e448452a911a9127733b7c57fc769b4e98e4d9884088988b9065a0205375fa90",
+          "candidate_sha256": "263be487988f686526742ca56c7627281e5b0dd03d144fbdf2bd3d5d7c164526",
+          "reviewer_id": "brain:7e52add9f6ac4a3faabd4a27d256b5b8",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "role": "entailment",
+          "reviewed_at": "2026-10-08T04:39:01.510853+00:00"
+        },
+        {
+          "assertion_id": "assertion.claim.longcontext.longcite-citation-pipeline",
+          "outcome": "supported",
+          "rationale": "The LongCite primary abstract explicitly describes its CoF pipeline, constructed long-context QA instances with sentence-level citations, the LongCite-45k dataset, and training of LongCite-8B and LongCite-9B with it. The record reports construction and training without independently validating citation faithfulness. Claim/information and neutral metadata are appropriate, with no invented relationship, identity merge, or taxonomy placement.",
+          "limitations": "The abstract is a methodological author report, not independent evidence that generated citations always support their associated claims. Dataset size in the name is not independently audited, and the model training does not prove present-day state of the art.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "target_kind": "node",
+          "target_sha256": "e448452a911a9127733b7c57fc769b4e98e4d9884088988b9065a0205375fa90",
+          "candidate_sha256": "263be487988f686526742ca56c7627281e5b0dd03d144fbdf2bd3d5d7c164526",
+          "reviewer_id": "brain:f0ba8fe9c597470c91274e3f9f8649d8",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "role": "adversarial",
+          "reviewed_at": "2026-10-08T04:39:38.854722+00:00"
+        }
+      ],
+      "context_nodes": [],
+      "sources": [
+        {
+          "id": "src.longcontext.liu-lost-middle-2024",
+          "url": "https://arxiv.org/abs/2307.03172",
+          "final_url": "https://arxiv.org/abs/2307.03172",
+          "title": "Lost in the Middle: How Language Models Use Long Contexts",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-08T04:34:22.073442+00:00",
+          "sha256": "9be1db75f75a4327cdfe474c1703ea26020c52f2e2c14c0b6175fde4a4370692",
+          "raw_sha256": "af63ac4b31d2d47748f3ad62081349ff820ca488c577888c8b0289545915c275",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "ccd0bd162238dbc13776c6ab24becb470cd6249ddf0aec7c89531b47bafeb694"
+        },
+        {
+          "id": "src.longcontext.hsieh-ruler-2024",
+          "url": "https://arxiv.org/abs/2404.06654",
+          "final_url": "https://arxiv.org/abs/2404.06654",
+          "title": "RULER: What's the Real Context Size of Your Long-Context Language Models?",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-08T04:34:22.200817+00:00",
+          "sha256": "2c01e359903ca57f0e4698e579eaf3790261ca503a34f8522ee8a55f7b955092",
+          "raw_sha256": "fc4d644f649918595252e8e4150770521ea8b6e63b77b9516abf5f9f4afc6622",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "7799d6ce9d084c51c58cc341018514b38a095e9cff1cb3edbfd056e974cae793"
+        },
+        {
+          "id": "src.longcontext.modarressi-nolima-2025",
+          "url": "https://proceedings.mlr.press/v267/modarressi25a.html",
+          "final_url": "https://proceedings.mlr.press/v267/modarressi25a.html",
+          "title": "NoLiMa: Long-Context Evaluation Beyond Literal Matching",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-08T04:34:22.403162+00:00",
+          "sha256": "7c4ab45423a8628efbdc6f7c11851b1fc3b31443d1c8115b25d3e0ee7a5827f7",
+          "raw_sha256": "bc851fd7ae3c66b4d36302b8158fdc71b76bbd2ef19118b9717fdfe3b1d0f0f4",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "e0dc922f07c9e8c74422f56394c9912097a5ea9fdf447d7337d8b3223d4dc84d"
+        },
+        {
+          "id": "src.longcontext.bai-longbench-v2-2025",
+          "url": "https://aclanthology.org/2025.acl-long.183/",
+          "final_url": "https://aclanthology.org/2025.acl-long.183/",
+          "title": "LongBench v2: Towards Deeper Understanding and Reasoning on Realistic Long-context Multitasks",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-08T04:34:22.723965+00:00",
+          "sha256": "721ead7bec44a2139d889bfc69e652ad185458380127f78f71c94c105940091e",
+          "raw_sha256": "392ae218603a680a2f489326103821bfa6761ac92c74ecab40a0e153c43f94e8",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "9d259542c6143a615bb53a0f113f2beb35c940f270919011429a5a30e78b08f1"
+        },
+        {
+          "id": "src.longcontext.kuratov-babilong-2024",
+          "url": "https://arxiv.org/abs/2406.10149",
+          "final_url": "https://arxiv.org/abs/2406.10149",
+          "title": "BABILong: Testing the Limits of LLMs with Long Context Reasoning-in-a-Haystack",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-08T04:34:29.204789+00:00",
+          "sha256": "0b8a5b1e2518df6ba3e35331a7b446489ebef12b827f8194307288be3bf1fb3c",
+          "raw_sha256": "c755dd535475842586c303d276f1b669fe43c4fa82c5a726b58423cf346c7bbc",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "703b48365c87ae72d66de5f4f000143f1aec2fb785b62f8915fd20cb12a77044"
+        },
+        {
+          "id": "src.longcontext.yen-helmet-2025",
+          "url": "https://arxiv.org/abs/2410.02694",
+          "final_url": "https://arxiv.org/abs/2410.02694",
+          "title": "HELMET: How to Evaluate Long-Context Language Models Effectively and Thoroughly",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-08T04:34:29.340591+00:00",
+          "sha256": "046e3a0166c8f73f23321107b7f33bec803ea33bb2165d0d2ab9a254c6515dbe",
+          "raw_sha256": "ec398a9bae6cfb022e6b34962d4be724ef1d37e6a55156eb94b790593987ded6",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "dee3bc64776a02f43f222b2e0b507eb85a6e73527fa5aba2a75274bfdb9f24db"
+        },
+        {
+          "id": "src.longcontext.zhang-infinitybench-2024",
+          "url": "https://aclanthology.org/2024.acl-long.814/",
+          "final_url": "https://aclanthology.org/2024.acl-long.814/",
+          "title": "∞Bench: Extending Long Context Evaluation Beyond 100K Tokens",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-08T04:34:29.675665+00:00",
+          "sha256": "492f728709e4dbb69a9b6f2b64965970b2a6650cc9cbf364d82d1293bd70ee18",
+          "raw_sha256": "8475be1184df538cf405983befbc324a4d2d71c4c8ca37ca3f2dd7d42167f510",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "a4db2cfc9fce380fd897852a401a6c47f516089c904a692117c6649c5ae1239b"
+        },
+        {
+          "id": "src.longcontext.bai-longbench-2024",
+          "url": "https://aclanthology.org/2024.acl-long.172/",
+          "final_url": "https://aclanthology.org/2024.acl-long.172/",
+          "title": "LongBench: A Bilingual, Multitask Benchmark for Long Context Understanding",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-08T04:34:29.942012+00:00",
+          "sha256": "cfac7a68d6fabd15919c439b72608ffb3c6c86b5c3078503cb9f6a554731d18b",
+          "raw_sha256": "9de6fe2047f0ea940a5dfa9cc5fe877ce3c68c4039ac2e5915a4b443e7e1e8ed",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "ba978381704558391f90ff315313c895876fa0a3063a118e66d47f447c9c0b00"
+        },
+        {
+          "id": "src.longcontext.zhang-longcite-2024",
+          "url": "https://arxiv.org/abs/2409.02897",
+          "final_url": "https://arxiv.org/abs/2409.02897",
+          "title": "LongCite: Enabling LLMs to Generate Fine-grained Citations in Long-context QA",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-08T04:34:36.064789+00:00",
+          "sha256": "58e1b8678416aa174246e7797dd5e56b8d173a13892b431f6a54b485cf473b06",
+          "raw_sha256": "e22f3a5208cc717141ce901380439085b0feae2c38c65d61334250b7ef35678f",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "6fba060af7d3894fb2e6a401525dacfe06230b8c94e5e81cc1ed77e24fc8a5c0"
         }
       ]
     }

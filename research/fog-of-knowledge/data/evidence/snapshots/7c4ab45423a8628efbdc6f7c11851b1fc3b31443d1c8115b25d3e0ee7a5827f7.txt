@@ -1,0 +1,90 @@
+NoLiMa: Long-Context Evaluation Beyond Literal Matching
+Proceedings of Machine Learning Research
+Volume 267
+JMLR
+DMLR
+TMLR
+MLOSS
+FAQ
+Submission Format
+[
+edit
+]
+NoLiMa: Long-Context Evaluation Beyond Literal Matching
+Ali Modarressi, Hanieh Deilamsalehy, Franck Dernoncourt, Trung Bui, Ryan A. Rossi, Seunghyun Yoon, Hinrich Schuetze
+Proceedings of the 42nd International Conference on Machine Learning
+, PMLR 267:44554-44570, 2025.
+Abstract
+Recent large language models (LLMs) support long contexts ranging from 128K to 1M tokens. A popular method for evaluating these capabilities is the needle-in-a-haystack (NIAH) test, which involves retrieving a "needle" (relevant information) from a "haystack" (long irrelevant context). Extensions of this approach include increasing distractors, fact chaining, and in-context reasoning. However, in these benchmarks, models can exploit existing literal matches between the needle and haystack to simplify the task. To address this, we introduce NoLiMa, a benchmark extending NIAH with a carefully designed needle set, where questions and needles have minimal lexical overlap, requiring models to infer latent associations to locate the needle within the haystack. We evaluate 13 popular LLMs that claim to support contexts of at least 128K tokens. While they perform well in short contexts ($
+<
+$1K), performance degrades significantly as context length increases. At 32K, for instance, 11 models drop below 50% of their strong short-length baselines. Even GPT-4o, one of the top-performing exceptions, experiences a reduction from an almost-perfect baseline of 99.3% to 69.7%. Our analysis suggests these declines stem from the increased difficulty the attention mechanism faces in longer contexts when literal matches are absent, making it harder to retrieve relevant information. Even models enhanced with reasoning capabilities or CoT prompting struggle to maintain performance in long contexts. We publicly release the dataset and evaluation code at https://github.com/adobe-research/NoLiMa.
+Cite this Paper
+BibTeX
+@InProceedings{pmlr-v267-modarressi25a,
+  title = 	 {{N}o{L}i{M}a: Long-Context Evaluation Beyond Literal Matching},
+  author =       {Modarressi, Ali and Deilamsalehy, Hanieh and Dernoncourt, Franck and Bui, Trung and Rossi, Ryan A. and Yoon, Seunghyun and Schuetze, Hinrich},
+  booktitle = 	 {Proceedings of the 42nd International Conference on Machine Learning},
+  pages = 	 {44554--44570},
+  year = 	 {2025},
+  editor = 	 {Singh, Aarti and Fazel, Maryam and Hsu, Daniel and Lacoste-Julien, Simon and Berkenkamp, Felix and Maharaj, Tegan and Wagstaff, Kiri and Zhu, Jerry},
+  volume = 	 {267},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {13--19 Jul},
+  publisher =    {PMLR},
+  pdf = 	 {https://raw.githubusercontent.com/mlresearch/v267/main/assets/modarressi25a/modarressi25a.pdf},
+  url = 	 {https://proceedings.mlr.press/v267/modarressi25a.html},
+  abstract = 	 {Recent large language models (LLMs) support long contexts ranging from 128K to 1M tokens. A popular method for evaluating these capabilities is the needle-in-a-haystack (NIAH) test, which involves retrieving a "needle" (relevant information) from a "haystack" (long irrelevant context). Extensions of this approach include increasing distractors, fact chaining, and in-context reasoning. However, in these benchmarks, models can exploit existing literal matches between the needle and haystack to simplify the task. To address this, we introduce NoLiMa, a benchmark extending NIAH with a carefully designed needle set, where questions and needles have minimal lexical overlap, requiring models to infer latent associations to locate the needle within the haystack. We evaluate 13 popular LLMs that claim to support contexts of at least 128K tokens. While they perform well in short contexts ($
+<
+$1K), performance degrades significantly as context length increases. At 32K, for instance, 11 models drop below 50% of their strong short-length baselines. Even GPT-4o, one of the top-performing exceptions, experiences a reduction from an almost-perfect baseline of 99.3% to 69.7%. Our analysis suggests these declines stem from the increased difficulty the attention mechanism faces in longer contexts when literal matches are absent, making it harder to retrieve relevant information. Even models enhanced with reasoning capabilities or CoT prompting struggle to maintain performance in long contexts. We publicly release the dataset and evaluation code at https://github.com/adobe-research/NoLiMa.}
+}
+Copy to Clipboard
+Download
+Endnote
+%0 Conference Paper
+%T NoLiMa: Long-Context Evaluation Beyond Literal Matching
+%A Ali Modarressi
+%A Hanieh Deilamsalehy
+%A Franck Dernoncourt
+%A Trung Bui
+%A Ryan A. Rossi
+%A Seunghyun Yoon
+%A Hinrich Schuetze
+%B Proceedings of the 42nd International Conference on Machine Learning
+%C Proceedings of Machine Learning Research
+%D 2025
+%E Aarti Singh
+%E Maryam Fazel
+%E Daniel Hsu
+%E Simon Lacoste-Julien
+%E Felix Berkenkamp
+%E Tegan Maharaj
+%E Kiri Wagstaff
+%E Jerry Zhu	
+%F pmlr-v267-modarressi25a
+%I PMLR
+%P 44554--44570
+%U https://proceedings.mlr.press/v267/modarressi25a.html
+%V 267
+%X Recent large language models (LLMs) support long contexts ranging from 128K to 1M tokens. A popular method for evaluating these capabilities is the needle-in-a-haystack (NIAH) test, which involves retrieving a "needle" (relevant information) from a "haystack" (long irrelevant context). Extensions of this approach include increasing distractors, fact chaining, and in-context reasoning. However, in these benchmarks, models can exploit existing literal matches between the needle and haystack to simplify the task. To address this, we introduce NoLiMa, a benchmark extending NIAH with a carefully designed needle set, where questions and needles have minimal lexical overlap, requiring models to infer latent associations to locate the needle within the haystack. We evaluate 13 popular LLMs that claim to support contexts of at least 128K tokens. While they perform well in short contexts ($
+<
+$1K), performance degrades significantly as context length increases. At 32K, for instance, 11 models drop below 50% of their strong short-length baselines. Even GPT-4o, one of the top-performing exceptions, experiences a reduction from an almost-perfect baseline of 99.3% to 69.7%. Our analysis suggests these declines stem from the increased difficulty the attention mechanism faces in longer contexts when literal matches are absent, making it harder to retrieve relevant information. Even models enhanced with reasoning capabilities or CoT prompting struggle to maintain performance in long contexts. We publicly release the dataset and evaluation code at https://github.com/adobe-research/NoLiMa.
+Copy to Clipboard
+Download
+APA
+Modarressi, A., Deilamsalehy, H., Dernoncourt, F., Bui, T., Rossi, R.A., Yoon, S. & Schuetze, H.. (2025). NoLiMa: Long-Context Evaluation Beyond Literal Matching.
+Proceedings of the 42nd International Conference on Machine Learning
+, in
+Proceedings of Machine Learning Research
+267:44554-44570 Available from https://proceedings.mlr.press/v267/modarressi25a.html.
+Copy to Clipboard
+Download
+Related Material
+Download PDF
+OpenReview
+Software
+This site last compiled Wed, 07 Oct 2026 11:42:10 +0000
+Github Account
+Copyright ©
+The authors and PMLR
+2026.
+MLResearchPress
