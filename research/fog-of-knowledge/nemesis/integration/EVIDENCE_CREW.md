@@ -36,7 +36,7 @@ page can otherwise keep submitting the retired `fog-crew:boss/w1/w2/w3` workflow
 after a server upgrade: those jobs finish but have no durable evidence handoff.
 The recovery patch rejects untracked Fog jobs on `/api/brain/jobs` with an explicit
 reload message before dispatch. Existing replies remain retained in `brain_jobs`.
-The current client loads as `github.js?v=gh-evidence-3`, checks the server's client
+The current client loads as `github.js?v=gh-evidence-4`, checks the server's client
 revision, and shows discovery, capture, author, review, completion and blocking
 reasons directly above the atlas. Idle connected slots are separate from pipeline
 progress; a blocked candidate does not masquerade as an active researcher.
@@ -52,6 +52,15 @@ Apply `crew-poll-reliability.patch` afterward for the current neutral-field auth
 contract and nonblocking Brain polling. Admission checks retain explicit pause,
 ownership and lease rules while avoiding unchanged writes and rotating bounded
 queue windows. Polling work runs outside the HTTP event loop.
+
+Apply `crew-revision-budgets.patch` last. Formatting revisions have their own
+four-revision limit, scientific revisions have a separate three-revision limit,
+and a wave has at most eight author attempts. A malformed JSON reply or ambiguous
+quote location cannot exhaust the scientific refinement allowance. Every revised
+representation still requires both reviews. Explicit author evidence limitations
+and capture corruption stop immediately. Terminal states retain the latest exact
+review rationale and revision counts; reconnecting clears obsolete transport
+errors while leaving scientific objections visible.
 
 The shared `representation_policy` defines `reported` as source attribution,
 `undated` as unresolved chronology, and `frontier:false` as no currency assertion.
@@ -92,8 +101,8 @@ ordinary JSON files. The server continues existing handoffs when the browser is
 closed and resumes tracked IDs after restart. It reads tracked Brain results by
 ID, avoiding the UI's twenty-most-recent-jobs limit. Candidate-format, preflight
 and uncertain-review failures request a new explicit author revision from the
-same captures, up to three author attempts. Prior candidates, raw replies and
-reviewer results are archived; revised targets require both reviews again.
+same captures within the separate bounded revision allowances. Prior candidates,
+raw replies and reviewer results are archived; revised targets require both reviews again.
 Capture corruption and changed publication heads block immediately. Operational
 failures retry with bounded backoff, then show the reason; CI has a 30-minute
 deadline. Malformed state files cannot stop other missions. Oversized packets
