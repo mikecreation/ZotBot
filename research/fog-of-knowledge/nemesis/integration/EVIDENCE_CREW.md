@@ -200,3 +200,31 @@ Pausing and resuming preserve tasks, captures, jobs and historical failures.
 python -m pytest tests/test_fog_coverage.py tests/test_fog_pipeline_reliability.py tests/test_github_evidence.py tests/test_brain_bridge_v14.py tests/test_v1410_brain_autorecovery.py tests/test_brain_rollover.py
 python scripts/test_coverage_context.py  # in the Fog checkout
 ```
+
+Architectural changes also require a **live mission acceptance run**. Passing unit
+tests alone never establishes that Pandora can continue expanding the atlas.
+Keep a pre-run baseline containing `started_at`, `main_sha`, `baseline_nodes`,
+`baseline_canonical_ids`, and SHA-256 values for the installed files under
+`native_sources`. Enable the real queue and retain its original jobs. Update the
+local Fog checkout to verified main as publications arrive, then run:
+
+```sh
+python scripts/verify_mission_acceptance.py --native-root /path/to/Nemesis \
+  --baseline /path/to/coverage-live-acceptance-baseline.json \
+  --report /path/to/coverage-live-acceptance.json --online
+```
+
+The acceptance verifier requires at least three completed real publications,
+reviewed additions across three fields, six distinct new canonical nodes, and
+an automatic later job whose retained request contains expanded knowledge.
+It independently checks canonical evidence history and original capture bytes,
+installed source hashes, actual canonical additions, and GitHub merge/head/CI
+identities. Search counts, author drafts, synthetic fixtures and unit-test totals
+cannot satisfy it. Repeated updates to one new ID cannot inflate the growth count.
+Every run retains its report and appends an observation ledger; incomplete or
+invalid proof exits nonzero. CI tests these rejection conditions, while live
+acceptance needs the local running workers and is explicitly separate from CI.
+This is a bounded demonstration of continuation, not a claim of scientific
+completeness or immunity to all future failures. ChatGPT chooses sources and
+assertions within the scheduled branch; the fair queue manages admission and
+continuation without deciding scientific truth or adding taxonomy.
