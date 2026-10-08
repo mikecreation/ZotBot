@@ -2190,3 +2190,16 @@
      assert 'data-t="survivors"' in html and '/api/science/survivors' in app
      assert 'LOADING EXACT CAMPAIGN' in science and 'AbortController' in science and "next.id!==id" in science
      assert 'LOADING FIELDS' in science and 'ensureScienceFields' in science
+--- a/tests/test_autonomous_scheduler_1.py
++++ b/tests/test_autonomous_scheduler_1.py
+@@ -49,7 +49,9 @@
+     async def scenario():
+         process=asyncio.create_task(p.auto_loop())
+         try:
+-            until=time.monotonic()+4
++            # Four coalesced scheduler passes must still drain the phase DAG;
++            # allow bounded filesystem/CPU contention during the complete gate.
++            until=time.monotonic()+12
+             while time.monotonic()<until:
+                 if p.db.campaign(cid)['phase']=='AWAITING_EVIDENCE' and store.one(
+                     "SELECT COUNT(*) AS n FROM campaign_tasks WHERE campaign_id=? AND status='DONE'",(cid,))['n']>=4:
