@@ -14,7 +14,7 @@ import uuid
 from urllib.parse import urlparse
 
 PROTOCOL = 'pandora-language/1'
-BRIDGE_VERSION = '14.14-paged-planning'
+BRIDGE_VERSION = '14.14.1-paged-handoff'
 TERMINAL = ('COMPLETE', 'FAILED', 'CANCELLED', 'INTERRUPTED')
 
 
