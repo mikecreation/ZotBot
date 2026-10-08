@@ -1,19 +1,23 @@
 """Exact graph retrieval CLI. Never dispatches workers or edits scientific records."""
-import argparse,hashlib,json,sqlite3
+import argparse,hashlib,json,sqlite3,sys
 from pathlib import Path
+sys.path.insert(0,str(Path(__file__).resolve().parent))
 from graph_retrieval import Snapshot,build,records_from_graph
 from research_integrity import IntegrityError,strict_json
 ROOT=Path(__file__).resolve().parents[1]
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('operation',choices=['build','catalog','query','evidence'])
+    p.add_argument('operation',choices=['build','catalog','query','evidence','serve'])
     p.add_argument('--cache',type=Path,default=ROOT/'.nemesis-query-cache')
     p.add_argument('--snapshot',type=Path)
     p.add_argument('--kind',default='nodes');p.add_argument('--domain');p.add_argument('--ids',nargs='*');p.add_argument('--incident');p.add_argument('--batch')
     p.add_argument('--limit',type=int,default=100);p.add_argument('--cursor');p.add_argument('--max-bytes',type=int,default=100000)
     p.add_argument('--capture-id');p.add_argument('--start',type=int,default=0);p.add_argument('--end',type=int)
     args=p.parse_args()
+    if args.operation=='serve':
+        from retrieval_service import serve
+        return serve(ROOT,args.cache)
     if args.operation=='build':
         from nemesis_context import merge_runtime_ologies
         raw=(ROOT/'data/knowledge.json').read_bytes();g=strict_json(raw);merge_runtime_ologies(g)
