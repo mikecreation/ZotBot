@@ -180,6 +180,12 @@ The machine does the volume. The human resolves the genuinely ambiguous decision
 
 ## Navigation and strict ingestion
 
+New Native scientific decisions use a catalog and exact snapshot-pinned retrieval
+turns instead of sending the whole graph into each Brain prompt. See
+[paged planning deployment](nemesis/integration/PAGED_PLANNING.md) for the read
+protocol, retained history, resource-window resume, Windows checkpoint repair,
+build identities and separate installed/live verification.
+
 Batch application regenerates `data/atlas-navigation.json`. After changing registry or family configuration, run `python scripts/atlas_navigation.py`; validation rejects a stale projection. Navigation routes are separate from scientific edges, and unresolved placement is explicitly pending.
 
 No semantic alias coercion is accepted. Unsupported kinds, domains, eras, statuses and missing metadata fail validation with a quarantined disposition. Correct the candidate explicitly with retained adjudication evidence; do not reinterpret it during a formatting retry. The evidence gate checks exact excerpts and requires separate entailment and adversarial reviews of the entire canonical representation. These reviews are retained provenance, not proof of scientific truth. Existing records remain legacy until reviewed. See [SCIENTIFIC_COMPILER.md](SCIENTIFIC_COMPILER.md).

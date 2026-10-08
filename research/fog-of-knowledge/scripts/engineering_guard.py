@@ -12,13 +12,16 @@ CORPUS=ROOT/'nemesis/integration/engineering-failures.json'
 CHECKS={'engineering':['scripts/test_engineering_integrity.py'],'context':['scripts/test_coverage_context.py'],
     'native_source':['scripts/test_native_authority_source.py'],'mission':['scripts/test_mission_acceptance.py'],
     'transport':['scripts/test_brain_transport_source.py'],'exchange':['scripts/test_nemesis_exchange.py'],
-    'compiler':['scripts/test_evidence_compiler.py'],'validate':['scripts/validate.py'],'guard':['scripts/test_engineering_guard.py'],'watchdog':['scripts/test_mission_watchdog.py'],'boundary_upgrade':['scripts/test_boundary_upgrade.py']}
+    'compiler':['scripts/test_evidence_compiler.py'],'validate':['scripts/validate.py'],'guard':['scripts/test_engineering_guard.py'],'watchdog':['scripts/test_mission_watchdog.py'],'boundary_upgrade':['scripts/test_boundary_upgrade.py'],
+    'paged_planning':['scripts/test_paged_planner_source.py','scripts/test_retrieval_service.py']}
 
 def normalize(path):
     path=path.replace('\\','/')
     prefix='research/fog-of-knowledge/'
     if path.startswith(prefix):path=path[len(prefix):]
     for retained in ('nemesis/integration/scientific-authority/','nemesis/integration/brain-transport/'):
+        if path.startswith(retained):path=path[len(retained):]
+    for retained in ('nemesis/integration/paged-planning/native/','nemesis/integration/paged-planning/extension/'):
         if path.startswith(retained):path=path[len(retained):]
     return path
 
