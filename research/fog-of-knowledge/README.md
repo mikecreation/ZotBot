@@ -108,6 +108,20 @@ python scripts/atlas_server.py --port 8097
 
 Open `http://127.0.0.1:8097`.
 
+For a preview that follows published GitHub updates whenever you press Refresh:
+
+```bash
+python scripts/atlas_server.py --port 8097 --published-preview
+```
+
+With Native already running on port 8000, this mode resolves the latest published
+`mikecreation/ZotBot` atlas on each page load and embeds its exact commit snapshot.
+It uses the existing read-only atlas endpoint, leaves the checkout untouched, and
+does not start, restart or change research workers. Refresh resolves again; all
+assets within a loaded page stay pinned to the same commit. If syncing fails, the
+page reports that failure rather than silently substituting an older local graph.
+Omit the flag to keep serving the local checkout and review desk for development.
+
 ## Data
 
 `data/knowledge.json` is the current canonical core graph. `data/ologies.tsv` is the compact curated registry loaded at runtime.

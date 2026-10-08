@@ -2,6 +2,7 @@
 from __future__ import annotations
 import argparse
 import json
+import re
 import threading
 import urllib.request
 from datetime import datetime, timezone
@@ -15,6 +16,9 @@ from evidence_pipeline import graph, load_decisions, retain_decisions
 JOB_FILE=ROOT/'nemesis/review-jobs.json'
 JOBS=json.loads(JOB_FILE.read_text(encoding='utf-8')) if JOB_FILE.exists() else {}
 LOCK=threading.Lock()
+NATIVE_ORIGIN="http://127.0.0.1:8000"
+PUBLISHED_ATLAS_API="/api/github/project/mikecreation/ZotBot/atlas?path=research%2Ffog-of-knowledge"
+PREVIEW_LOCK=threading.Lock()
 
 
 def save_jobs():
@@ -30,10 +34,26 @@ def batch_folder(batch_id):
     return path
 
 
-def brain(path,body=None):
-    request=urllib.request.Request("http://127.0.0.1:8000"+path,data=json.dumps(body).encode() if body is not None else None,
+def brain(path,body=None,timeout=10):
+    request=urllib.request.Request(NATIVE_ORIGIN+path,data=json.dumps(body).encode() if body is not None else None,
                                    headers={"Content-Type":"application/json"},method="POST" if body is not None else "GET")
-    with urllib.request.urlopen(request,timeout=10) as response:return json.load(response)
+    with urllib.request.urlopen(request,timeout=timeout) as response:return json.load(response)
+
+
+def published_snapshot():
+    # Resolve only on a page refresh, then keep every asset on that exact commit.
+    # This GET prepares the existing atlas cache; it never controls research jobs.
+    with PREVIEW_LOCK:
+        value=brain(PUBLISHED_ATLAS_API,timeout=60)
+    sha=value.get("sha","")
+    if (value.get("ok") is not True or
+        (value.get("owner"),value.get("repo"),value.get("path")) !=
+        ("mikecreation","ZotBot","research/fog-of-knowledge") or
+        not isinstance(sha,str) or not re.fullmatch(r"[0-9a-f]{40}",sha)):
+        raise ValueError("published atlas identity unavailable")
+    expected=f"/github-atlas/mikecreation/ZotBot/{sha}/research__fog-of-knowledge/"
+    if value.get("url")!=expected:raise ValueError("published atlas URL does not match its commit")
+    return sha,NATIVE_ORIGIN+expected
 
 
 def begin_review(batch_id):
@@ -88,6 +108,35 @@ def collect_reviews():
 
 
 class Handler(SimpleHTTPRequestHandler):
+    def __init__(self,*args,published_preview=False,**kwargs):
+        self.published_preview=published_preview
+        super().__init__(*args,**kwargs)
+
+    def published_page(self):
+        try:
+            sha,url=published_snapshot()
+            # Native's atlas shell redirect skips embedded pages. Keep the user's
+            # 8097 address, while the frame uses the same pinned assets as Chrome.
+            page=('<!doctype html><html lang="en"><head><meta charset="utf-8">'
+                  '<meta name="viewport" content="width=device-width,initial-scale=1">'
+                  '<title>Fog of Knowledge</title><style>html,body,iframe{width:100%;height:100%;'
+                  'margin:0;border:0;display:block;background:#04080e}body{overflow:hidden}</style>'
+                  f'</head><body><iframe title="Published Fog of Knowledge" src="{url}"></iframe></body></html>')
+            status=200
+        except Exception:
+            sha=None;status=503
+            page=('<!doctype html><html lang="en"><meta charset="utf-8"><title>Fog of Knowledge</title>'
+                  '<body style="background:#04080e;color:#e6edf5;font:18px system-ui;padding:3rem">'
+                  '<h1>Unable to sync the published atlas</h1>'
+                  '<p>Check that Nemesis is available, then press Refresh to try again.</p>'
+                  '<p>No older local copy has been substituted.</p></body></html>')
+        raw=page.encode("utf-8")
+        self.send_response(status)
+        self.send_header("Content-Type","text/html; charset=utf-8")
+        self.send_header("Cache-Control","no-store")
+        if sha:self.send_header("X-Fog-Preview-Commit",sha)
+        self.send_header("Content-Length",str(len(raw)));self.end_headers();self.wfile.write(raw)
+
     def json_response(self,value,status=200):
         raw=json.dumps(value,ensure_ascii=False).encode()
         self.send_response(status);self.send_header("Content-Type","application/json; charset=utf-8")
@@ -95,6 +144,7 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         parsed=urlparse(self.path);query=parse_qs(parsed.query)
+        if self.published_preview and parsed.path in {"/","/index.html"}:return self.published_page()
         try:
             if parsed.path=="/api/evidence/audit":return self.json_response(audit_index(graph()))
             if parsed.path=="/api/evidence/queue":
@@ -155,6 +205,8 @@ class Handler(SimpleHTTPRequestHandler):
 
 
 if __name__=="__main__":
-    parser=argparse.ArgumentParser();parser.add_argument("--port",type=int,default=8097);args=parser.parse_args()
+    parser=argparse.ArgumentParser();parser.add_argument("--port",type=int,default=8097)
+    parser.add_argument("--published-preview",action="store_true",help="Resolve the latest published ZotBot atlas on each page refresh via Native's read-only atlas endpoint")
+    args=parser.parse_args()
     print(f"Fog atlas and review desk: http://127.0.0.1:{args.port}/",flush=True)
-    ThreadingHTTPServer(("127.0.0.1",args.port),partial(Handler,directory=str(ROOT))).serve_forever()
+    ThreadingHTTPServer(("127.0.0.1",args.port),partial(Handler,directory=str(ROOT),published_preview=args.published_preview)).serve_forever()
