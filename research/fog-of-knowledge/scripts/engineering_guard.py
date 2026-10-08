@@ -13,7 +13,12 @@ CHECKS={'engineering':['scripts/test_engineering_integrity.py'],'context':['scri
     'native_source':['scripts/test_native_authority_source.py'],'mission':['scripts/test_mission_acceptance.py'],
     'transport':['scripts/test_brain_transport_source.py'],'exchange':['scripts/test_nemesis_exchange.py'],
     'compiler':['scripts/test_evidence_compiler.py'],'validate':['scripts/validate.py'],'guard':['scripts/test_engineering_guard.py'],'watchdog':['scripts/test_mission_watchdog.py'],'boundary_upgrade':['scripts/test_boundary_upgrade.py'],
-    'paged_planning':['scripts/test_paged_planner_source.py','scripts/test_retrieval_service.py']}
+    'paged_planning':['scripts/test_paged_planner_source.py','scripts/test_retrieval_service.py'],
+    'response_ownership':['scripts/test_response_ownership_source.py']}
+# This check includes the complete portable Native suite and browser fixtures.
+# Its measured Windows run exceeded the ordinary single-script budget; this is
+# an engineering-test limit, never a scientific job or mission budget extension.
+CHECK_TIMEOUTS={'scripts/test_paged_planner_source.py':600}
 
 def normalize(path):
     path=path.replace('\\','/')
@@ -21,7 +26,7 @@ def normalize(path):
     if path.startswith(prefix):path=path[len(prefix):]
     for retained in ('nemesis/integration/scientific-authority/','nemesis/integration/brain-transport/'):
         if path.startswith(retained):path=path[len(retained):]
-    for retained in ('nemesis/integration/paged-planning/native/','nemesis/integration/paged-planning/extension/'):
+    for retained in ('nemesis/integration/paged-planning/native/','nemesis/integration/paged-planning/extension/','nemesis/integration/response-ownership/extension/'):
         if path.startswith(retained):path=path[len(retained):]
     return path
 
@@ -89,17 +94,28 @@ def changed_files():
         changed=[p for boundary in registry.values() for p in boundary['paths']]
     return sorted(set(changed+git('ls-files','--others','--exclude-standard')))
 
+def run_checks(checks):
+    results=[]
+    for name,scripts in checks.items():
+        # Each registry entry is a list of independent script checks, not argv
+        # for the first script. Execute and record every one, including failures.
+        for script in scripts:
+            try:
+                budget=CHECK_TIMEOUTS.get(script,300)
+                run=subprocess.run([sys.executable,'-X','utf8',script],cwd=ROOT,capture_output=True,text=True,encoding='utf8',timeout=budget)
+                results.append({'check':name,'script':script,'exit_code':run.returncode,
+                    'stdout_excerpt':run.stdout[-2000:],'stderr_excerpt':run.stderr[-2000:]})
+            except subprocess.TimeoutExpired:
+                results.append({'check':name,'script':script,'exit_code':124,
+                    'stdout_excerpt':'','stderr_excerpt':'Check exceeded its execution budget. No pass inferred.'})
+    return results
+
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--changed',nargs='*');p.add_argument('--events',type=Path);p.add_argument('--run',action='store_true');p.add_argument('--report',type=Path)
     args=p.parse_args();result=plan(args.changed if args.changed is not None else changed_files())
     if args.events:result['recurrence']=recurrence([strict_json(s) for s in args.events.read_bytes().splitlines() if s.strip()])
     if args.run:
-        results=[]
-        for name,argv in result['checks'].items():
-            run=subprocess.run([sys.executable,'-X','utf8',*argv],cwd=ROOT,capture_output=True,text=True,encoding='utf8',timeout=300)
-            # Diagnostic output is bounded; test exit/status is retained distinctly.
-            results.append({'check':name,'exit_code':run.returncode,'stdout_excerpt':run.stdout[-2000:],'stderr_excerpt':run.stderr[-2000:]})
-        result['results']=results
+        result['results']=run_checks(result['checks'])
     text=json.dumps(result,ensure_ascii=False,indent=2)
     if args.report:args.report.parent.mkdir(parents=True,exist_ok=True);args.report.write_text(text+'\n',encoding='utf8')
     print(text)

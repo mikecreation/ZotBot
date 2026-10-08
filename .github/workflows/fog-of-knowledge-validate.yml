@@ -48,6 +48,10 @@ jobs:
           python scripts/test_paged_planner_source.py
           python scripts/test_retrieval_service.py
 
+      - name: Check owned responses in the latest-response presentation
+        working-directory: research/fog-of-knowledge
+        run: python scripts/test_response_ownership_source.py
+
       - name: Check engineering contracts and affected boundary path
         working-directory: research/fog-of-knowledge
         run: |
