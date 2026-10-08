@@ -240,3 +240,66 @@ policy or capture-integrity failures are never skipped. Public JSON/XML/Atom tex
 can also be retained verbatim from machine-readable publication APIs, without
 inventing or interpreting fields as scientific assertions. The compiler does not
 rewrite inaccessible publisher URLs or bypass their access restrictions.
+
+### Browser delivery and oversized evidence packets
+
+The live acceptance run found a transport failure which a healthy queue did not
+detect: ChatGPT rendered the owned user turn but rejected its oversized message.
+That is not an accepted research request and cannot produce a collected answer.
+Apply `brain-message-deadlines.patch` from the directory containing
+`NEMESIS_Brain_Extension_V6`, after the editor-transaction transport update. This
+updates the existing extension to Brain 6.2.4 without changing its permissions,
+host access or paired identity. Reload that unpacked extension, then refresh its
+worker conversations after preserving drafts and allowing ongoing answers to
+finish. Updating source files does not activate a running extension by itself.
+
+Fog packets over 48,000 serialized characters use the existing document-upload
+adapter. A UTF-8 JSON attachment retains the entire original packet, including
+the exact GOAL string, complete sources, graph rows and compiler/review contract.
+Its short message identifies the filename, byte count and SHA-256. This threshold
+is conservative transport selection, not a claim about ChatGPT's fixed limit.
+Workers must read the complete original packet or explicitly report blocked;
+the compiler still validates every returned assertion against original captures.
+Packets above the 4 MB file limit, or oversized packets already using attachments,
+fail visibly for evidence-complete splitting. No attachment or graph row is
+silently removed. Small packets and non-Fog jobs keep their existing transport.
+
+Current-turn platform alerts for oversized messages or usage limits terminate
+collection with the actual rejection reason. Old alerts and quoted source text
+cannot reject another job; a rejected submitted turn is never automatically
+resent by this collector. Page status/diagnostic waits end after eight seconds;
+send/formatting waits end after 45 seconds. A timeout is not proof of non-delivery.
+Persistent per-tab delivery fences prevent another send across extension/service
+worker restarts until an exact matching user-turn or known-unsent receipt resolves
+the ambiguity. One hung page releases its polling lock and reports an error
+heartbeat without blocking the other workers.
+
+Enabled bound tabs preserve their original automatic-discard preference, prevent
+automatic discarding while bound, and restore it on pause/unbind. An already
+discarded conversation requires restoration; it is never silently reloaded.
+A frozen bound tab is activated without focusing its browser window. Chrome
+documents that frozen pages cannot execute handlers/timers and resume on
+activation: [Chrome Tabs API](https://developer.chrome.com/docs/extensions/reference/api/tabs).
+Diagnostics expose frozen/discarded state and any unresolved delivery fence.
+Binding authenticates its token before replacing the saved binding.
+
+```sh
+node tests/brain_liveness_v624.test.cjs
+node tests/fog_packet_file_v624.test.cjs
+node tests/brain_rejection_v624.test.cjs
+node tests/site_files.test.cjs
+node tests/transport_editor_v624.test.cjs
+node tests/startup.test.cjs
+node tests/validate-extension.js
+```
+
+The editor/rejection fixtures use the existing `release-v17-transport/qa`
+dependencies; set `NEMESIS_QA_NODE_MODULES` in another checkout. The versioned
+`brain-transport` payload retains exact installed sources and their SHA-256 index,
+with locked offline test dependencies. CI checks those hashes, reverses/replays
+the portable patch, and executes the real transport regression fixtures through
+`scripts/test_brain_transport_source.py`. These checks inject failures offline and exercise complete upload,
+editor commit, single submission and collection. They do not replace the live
+cross-field mission acceptance requirement above. At the first verified
+publication the canonical atlas grew from 564 to 576; cross-field acceptance
+was still incomplete when the oversized-message failure was found.

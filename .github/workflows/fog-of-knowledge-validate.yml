@@ -23,6 +23,14 @@ jobs:
       - name: Install pinned PDF capture dependency
         run: python -m pip install -r research/fog-of-knowledge/requirements.txt
 
+      - name: Install locked offline editor test dependencies
+        working-directory: research/fog-of-knowledge/nemesis/integration/brain-transport
+        run: npm ci --ignore-scripts
+
+      - name: Check retained browser transport and delivery regressions
+        working-directory: research/fog-of-knowledge
+        run: python scripts/test_brain_transport_source.py
+
       - name: Validate canonical knowledge graph
         working-directory: research/fog-of-knowledge
         run: python scripts/validate.py
