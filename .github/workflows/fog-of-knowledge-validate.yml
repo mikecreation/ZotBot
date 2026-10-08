@@ -35,6 +35,10 @@ jobs:
         working-directory: research/fog-of-knowledge
         run: python scripts/validate.py
 
+      - name: Check retained scientific authority source and patch
+        working-directory: research/fog-of-knowledge
+        run: python scripts/test_native_authority_source.py
+
       - name: Check navigation and ingestion regressions
         working-directory: research/fog-of-knowledge
         run: python scripts/test_atlas_integrity.py

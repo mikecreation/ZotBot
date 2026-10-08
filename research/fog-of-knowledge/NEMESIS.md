@@ -65,7 +65,9 @@ Preferred autonomous workflow:
 ```text
 read manifest
 → obtain context
-→ choose bounded coverage target
+→ allocate fair concurrent domain capacity
+→ Brain proposes and justifies an investigation from canonical findings
+→ admit a durable nonduplicate investigation, including revisits or novel topics
 → create branch nemesis/<mission>-<batch_id>
 → research
 → write batch

@@ -68,7 +68,15 @@
  
    function baseURL(value){
      const u=new URL(value||'http://127.0.0.1:8000');
-@@ -106,10 +161,13 @@
+@@ -35,6 +90,7 @@
+   async function config(){const raw=(await chrome.storage.local.get(KEY))[KEY]||{};return normalize(raw);}
+   async function save(c){await chrome.storage.local.set({[KEY]:normalize(c)});}
+   async function api(c,path,body){
++    if(path==='poll')body={...body,extension_build:'6.2.4-scientific-resume'};
+     const r=await fetch(baseURL(c.base)+'/api/brain/'+path,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+c.token},body:JSON.stringify(body),signal:AbortSignal.timeout(15000)});
+     const data=await r.json();if(!r.ok)throw Error(data.detail||data.error||'NEMESIS HTTP '+r.status);return data;
+   }
+@@ -106,10 +162,13 @@
          await slotState(slotName,st);return;
        }
        const identity=await validateConversation(c,slotName,slot,tab);
@@ -84,7 +92,7 @@
        const job=response.job;
        if((slot.activeJobId||null)!==(job?.id||null)){slot.activeJobId=job?.id||null;c.slots[slotName]=slot;await save(c);}
        // A server-side Primary review hold outranks the local composer state. Do not
-@@ -121,7 +179,8 @@
+@@ -121,7 +180,8 @@
        await slotState(slotName,{...content,job:job?.id||null,url:tab.url,conversation_id:identity,serverEnabled:response.enabled,hold:response.hold||''});
        if(!job)return;
  
@@ -94,13 +102,16 @@
        // A FAILED receipt is normally terminal for this tab because replay after an
        // unknown click could duplicate a user turn. The one exception is a newer
        // server transport attempt that both sides know was never sent. The server
-@@ -130,9 +189,10 @@
+@@ -129,10 +189,12 @@
+       const safeRetry=s.state==='FAILED' && !s.transportBlocked && s.safeUnsent===true && job.status!=='SENT' &&
          Number(job.transport_retries||0)>Number(s.transportRetries||0);
        if(s.state==='READY' || safeRetry){
-         if(job.status==='SENT')s={state:'FAILED',error:'Sent request is missing from this page. Review manually; no resend.',clicked:true,safeUnsent:false,phase:'SENT_REQUEST_MISSING'};
+-        if(job.status==='SENT')s={state:'FAILED',error:'Sent request is missing from this page. Review manually; no resend.',clicked:true,safeUnsent:false,phase:'SENT_REQUEST_MISSING'};
 -        else s=await chrome.tabs.sendMessage(slot.tabId,{type:'NB_CONTENT_SEND',job});
 -      }
 -      if(s.state==='NEEDS_FORMAT')s=await chrome.tabs.sendMessage(slot.tabId,{type:'NB_CONTENT_REPAIR_FORMAT',job:{id:job.id}});
++        if(JSON.parse(job.packet||'{}').STATE?.resume_only)s={state:'DELIVERY_UNCONFIRMED',detail:'Restart or deadline: awaiting exact owned turn '+job.id+'. No resend.'};
++        else if(job.status==='SENT')s={state:'FAILED',error:'Sent request is missing from this page. Review manually; no resend.',clicked:true,safeUnsent:false,phase:'SENT_REQUEST_MISSING'};
 +        else if(pendingFence)s={state:'DELIVERY_UNCONFIRMED',detail:'Previous page submission '+pendingFence.id+' remains unconfirmed. No duplicate send.'};
 +        else s=await contentMessage(slot.tabId,{type:'NB_CONTENT_SEND',job});
 +      }
@@ -108,7 +119,7 @@
        const lease={client_id:c.clientId,lease:job.lease};
        if(s.state==='COMPLETE'){
          const accepted=await api(c,'jobs/'+job.id+'/result',{...lease,result:s.result});
-@@ -150,7 +210,7 @@
+@@ -150,7 +212,7 @@
        await api(c,'poll',{client_id:c.clientId,worker_slot:slotName,role:roleFor(slotName),state:s.state,detail:s.detail||s.error||'',request_id:job.id,url:tab.url,tab_id:tab.id,conversation_id:identity,tab_count:boundSlots(c).length});
        await slotState(slotName,{...s,job:job.id,url:tab.url,conversation_id:identity,serverEnabled:response.enabled});
      }catch(e){
@@ -117,7 +128,7 @@
        if(c?.enabled&&slot){try{await api(c,'poll',{...failure,client_id:c.clientId,worker_slot:slotName,role:roleFor(slotName),tab_id:slot.tabId,conversation_id:chatIdentity(slot.url),tab_count:boundSlots(c).length});}catch{}}
      }finally{polling.delete(slotName);}
    }
-@@ -189,32 +249,35 @@
+@@ -189,32 +251,35 @@
        if(m.type==='NB_DIAGNOSTICS'){
          const c=await dropClosedSlots(await config());const slots={};
          for(const name of boundSlots(c)){
@@ -317,7 +328,7 @@
    manifest.background?.service_worker,
 --- /dev/null
 +++ b/NEMESIS_Brain_Extension_V6/tests/brain_liveness_v624.test.cjs
-@@ -0,0 +1,46 @@
+@@ -0,0 +1,49 @@
 +const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 +const source=fs.readFileSync(path.join(__dirname,'../brain-background.js'),'utf8');
 +const flush=async()=>{for(let i=0;i<40;i++)await new Promise(r=>setImmediate(r));};
@@ -362,7 +373,10 @@
 +  f.handler(()=>({...ready,delivery:{requestId:'different-job',safeUnsent:true,sending:false}}));await f.tick(1);assert(f.store['nb.deliveryFence.1'],'another request receipt cannot clear fence');assert.equal(f.sends.filter(s=>s.type==='NB_CONTENT_SEND').length,1);
 +  f.handler((_id,m)=>({...ready,state:'FAILED',safeUnsent:true,clicked:false,transportRetries:0,delivery:{requestId:m.id,safeUnsent:true,sending:false}}));f.jobs[1].transport_retries=1;await f.tick(1);
 +  assert.equal(f.sends.filter(s=>s.type==='NB_CONTENT_SEND').length,2,'independent exact known-unsent receipt and newer lease permit retry');
-+  console.log('PASS bounded hung status/send, independent slots, heartbeat, restart fence, exact receipt reconciliation, lifecycle wake/restore, discarded-page preservation, and safe retry. Offline fault injection; live acceptance remains separate.');
++  f=fixture();f.jobs[1].packet=JSON.stringify({STATE:{resume_only:true}});await f.tick(1);
++  assert(!f.sends.some(s=>s.type==='NB_CONTENT_SEND'),'restart ambiguity must never send a new turn');
++  assert(f.polls.every(p=>p.extension_build==='6.2.4-scientific-resume'),'server must observe loaded background revision');
++  console.log('PASS bounded hung status/send, independent slots, heartbeat, restart fence, exact receipt reconciliation, lifecycle wake/restore, discarded-page preservation, safe retry, and collection-only server restart. Offline fault injection; live acceptance remains separate.');
 +})().catch(e=>{console.error(e);process.exitCode=1;});
 --- /dev/null
 +++ b/NEMESIS_Brain_Extension_V6/tests/fog_packet_file_v624.test.cjs

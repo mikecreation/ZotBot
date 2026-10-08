@@ -1,5 +1,63 @@
 # Nemesis evidence crew integration
 
+## Current scientific authority upgrade
+
+The installed architecture audit and responsibility trace are retained in
+`AUTONOMOUS_RESEARCH_AUDIT.md`. Apply `crew-scientific-authority.patch` after
+`crew-coverage-expansion.patch`, together with the current browser transport
+patch. Exact installed native sources and fingerprints are retained under
+`scientific-authority`; exact extension sources are under `brain-transport`.
+The incremental patch uses LF text. Verify the preimage and normalize only its
+allowlisted changed Python files to LF before applying it to a CRLF checkout;
+retain their original bytes in the upgrade backup. Never replace the database.
+
+Production now uses `ScientificCoveragePlanner`. The previous `choose_branch`
+implementation remains available for historical migration regressions; it no
+longer chooses production scientific targets. Nemesis allocates concurrent domain
+capacity and supplies the complete canonical planning graph, source outcomes,
+pending investigations and new substantive findings. Independent Brain requests
+propose a topic, rationale, queries, existing anchors or a declared novel topic,
+and exact canonical findings with an explanation of their influence. Proposals
+are state-validated, recorded and admitted as investigations; they are never
+published as knowledge. Repeating an identical investigation or all attempted
+queries is rejected. A distinct strategy can revisit a visited field.
+
+Each decision retains its exact input, input digest, Brain job and raw response.
+The progress ledger distinguishes attempted, completed, new evidence and blocked
+work. A waiting or rejected strategy is held at its substantive graph fingerprint;
+a changed canonical graph permits another planning decision. There is no global
+Physics override or single serialized planning worker. Existing manual jobs count
+toward the three simultaneous project investigations.
+
+Source acquisition processes four new URLs per capture operation while retaining
+the entire request backlog; four is an operation window, not a source limit.
+There is no twelve-target gate. Capacity uses actual serialized bytes. Oversized
+author inputs are partitioned without shortening captures; their outputs remain
+separate retained files before mechanical array assembly and the compiler's
+duplicate/identity checks. Oversized reviews retain the full candidate and context
+hashes and dispatch evidence-complete assertion units. Both independent roles
+must support every assertion before the unchanged final compiler and publication
+gate. An indivisible oversized source/assertion remains explicitly blocked with
+all inputs and pending work retained. It is never truncated or implicitly approved.
+
+Bridge `14.13-scientific-resume` preserves the exact owner, slot and lease for
+optional in-flight work on restart. It marks delivery collection-only and accepts
+the eventual reply for that original identity. Deadlines never requeue an ambiguous
+claimed/sent turn. Known-unsent retries remain bounded; primary engineering holds
+remain independent. Browser heartbeat build `6.2.4-scientific-resume` confirms
+activation of the tested restart guard. Updating files alone cannot confirm this.
+
+`verify_mission_acceptance.py` additionally requires a justified Brain direction,
+a follow-up citing an exact substantive new canonical finding, controlled restart
+recovery of unfinished work with original leases, no duplicate dispatch/publication,
+and the observed loaded extension build. Earlier successful publications and
+synthetic tests cannot substitute for these conditions. Native regressions run
+against disposable SQLite fixtures; CI checks exact retained sources and reversible
+patches separately from live acceptance. Keep demonstrations bounded and preserve
+the user's existing publication permission.
+
+The remainder documents earlier incremental upgrades and their original contracts.
+
 The local Nemesis upgrade is retained in `evidence-crew.patch`. It targets the V17
 runtime containing the existing live worker contract, GitHub batches and Brain
 bridge. Apply `github_batches-evidence.patch` first if the runtime does not yet

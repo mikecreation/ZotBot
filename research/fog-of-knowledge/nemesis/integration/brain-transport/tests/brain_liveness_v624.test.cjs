@@ -42,5 +42,8 @@ const ready={state:'READY',bridgeBuild:'6.2.4',collectorVersion:'6.2.0',transpor
   f.handler(()=>({...ready,delivery:{requestId:'different-job',safeUnsent:true,sending:false}}));await f.tick(1);assert(f.store['nb.deliveryFence.1'],'another request receipt cannot clear fence');assert.equal(f.sends.filter(s=>s.type==='NB_CONTENT_SEND').length,1);
   f.handler((_id,m)=>({...ready,state:'FAILED',safeUnsent:true,clicked:false,transportRetries:0,delivery:{requestId:m.id,safeUnsent:true,sending:false}}));f.jobs[1].transport_retries=1;await f.tick(1);
   assert.equal(f.sends.filter(s=>s.type==='NB_CONTENT_SEND').length,2,'independent exact known-unsent receipt and newer lease permit retry');
-  console.log('PASS bounded hung status/send, independent slots, heartbeat, restart fence, exact receipt reconciliation, lifecycle wake/restore, discarded-page preservation, and safe retry. Offline fault injection; live acceptance remains separate.');
+  f=fixture();f.jobs[1].packet=JSON.stringify({STATE:{resume_only:true}});await f.tick(1);
+  assert(!f.sends.some(s=>s.type==='NB_CONTENT_SEND'),'restart ambiguity must never send a new turn');
+  assert(f.polls.every(p=>p.extension_build==='6.2.4-scientific-resume'),'server must observe loaded background revision');
+  console.log('PASS bounded hung status/send, independent slots, heartbeat, restart fence, exact receipt reconciliation, lifecycle wake/restore, discarded-page preservation, safe retry, and collection-only server restart. Offline fault injection; live acceptance remains separate.');
 })().catch(e=>{console.error(e);process.exitCode=1;});

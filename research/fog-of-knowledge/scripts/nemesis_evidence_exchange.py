@@ -51,7 +51,7 @@ def retained_captures(batch,required=True):
 
 def capture(batch):
     requests=rows(batch/'source_requests.jsonl')
-    if not 1<=len(requests)<=4:raise EvidenceError('Discover one to four bounded public sources per batch')
+    if not requests:raise EvidenceError('At least one public source request required')
     control=batch/'.nemesis-control';sources=[];retained=list(retained_captures(batch,required=False).values())
     failed_path=control/'source-capture-failures.json'
     failures=json.loads(failed_path.read_text(encoding='utf-8')) if failed_path.exists() else []
@@ -65,6 +65,10 @@ def capture(batch):
         raise ExchangeError('capture-integrity','Source requests removed or duplicated an acquisition failure; create a new batch revision')
     requested_ids={r.get('id') for r in requests if isinstance(r.get('id'),str)}
     if set(s['id'] for s in retained)-requested_ids:raise ExchangeError('capture-integrity','Source requests removed a retained source; create a new batch revision')
+    pending=[r for r in requests if r.get('id') not in failed and not any(s['id']==r.get('id') for s in retained)]
+    # Capture at most four new URLs per operation timeout, preserving the complete
+    # request backlog. This is execution capacity, never a scientific source cap.
+    admitted={r.get('id') for r in pending[:4]}
     for request in requests:
         sid=request.get('id')
         if not isinstance(sid,str) or not sid or any(s['id']==sid for s in sources):raise EvidenceError('unique source ID required')
@@ -78,6 +82,7 @@ def capture(batch):
         if source:
             if any(source[k]!=request.get(k,'unknown' if k=='source_kind' else None) for k in ('url','title','source_kind')):raise ExchangeError('capture-integrity','Source request changed; create a new batch revision')
         else:
+            if sid not in admitted:continue
             try:
                 source=capture_source(request['url'],sid,request['title'],request.get('source_kind','unknown'),public_only=True)
             except HTTPError as exc:
@@ -87,16 +92,20 @@ def capture(batch):
                 continue
             retained.append(source);write(receipt,retained)
         sources.append(source)
+    remaining=[r for r in requests if r.get('id') not in failed and not any(s['id']==r.get('id') for s in retained)]
+    write(control/'source-backlog.json',{'protocol':'fog-source-backlog/1','requests':requests,'pending':remaining,
+          'captured_ids':[s['id'] for s in retained],'unavailable_ids':list(failed)})
+    if remaining:return {'captured':len(sources),'unavailable':len(failures),'pending':len(remaining)}
     if not sources:
         raise ExchangeError('source-unavailable','No public source could be captured; no candidate constructed',source_capture_failures=failures)
     discovery=json.loads((control/'discovery.json').read_text(encoding='utf-8')) if (control/'discovery.json').exists() else {}
     ids=discovery.get('target_ids',[])
-    if not isinstance(ids,list) or len(ids)>12:raise EvidenceError('At most twelve existing target_ids per mission')
+    if not isinstance(ids,list) or any(not isinstance(i,str) for i in ids):raise EvidenceError('Existing target_ids must be an array of IDs')
     g=graph()
-    value=bounded({'sources':sources,'source_capture_failures':failures,
+    value={'sources':sources,'source_capture_failures':failures,
                    'source_limitations':'Only compiler-captured sources below may support assertions. Unavailable URLs are not evidence; request a new source revision for unsupported targets.',
                    'existing_targets':[n for n in g['nodes'] if n['id'] in ids],
-                   'record_catalog':[{k:n.get(k) for k in ('id','label','kind','domain')} for n in g['nodes']]})
+                   'record_catalog':[{k:n.get(k) for k in ('id','label','kind','domain')} for n in g['nodes']]}
     write(control/'author-context.json',value)
     return {'captured':len(sources),'unavailable':len(failures)}
 
@@ -209,8 +218,10 @@ def packet(batch):
     try:preflight(candidate,graph(),sources)
     except (EvidenceError,BatchError,TypeError,KeyError) as exc:raise ExchangeError('candidate-preflight',str(exc)) from exc
     targets=sum(len(candidate[k]) for k in ('nodes.jsonl','edges.jsonl','reviews.jsonl','taxonomy.jsonl','identities.jsonl'))
-    if not 1<=targets<=12:raise EvidenceError('Use one to twelve fully supported targets per review packet')
-    value=bounded(review_packet(candidate,graph()))
+    if not targets:raise EvidenceError('At least one fully supported target required')
+    # Retain the complete packet; installed transport partitions by actual bytes.
+    # The final compiler still requires both roles for every exact assertion.
+    value=review_packet(candidate,graph())
     if unbound!=candidate:
         write(batch/'.nemesis-control/unbound-candidate.json',unbound)
         write(batch/'.nemesis-control/unbound-assertions.json',original)

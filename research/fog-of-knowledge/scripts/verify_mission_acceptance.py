@@ -32,6 +32,11 @@ def assess(observation, min_domains=3, min_nodes=6):
         'followup_used_expanded_knowledge': observation['followup_used_new_graph'],
         'continuation_still_enabled': observation['queue_enabled'],
         'publication_identity_verified': observation['publication_verified'],
+        'brain_justified_scientific_direction': observation.get('scientific_direction',False),
+        'followup_used_substantive_findings': observation.get('substantive_followup',False),
+        'unfinished_work_survived_controlled_restart': observation.get('restart_recovered',False),
+        'no_duplicate_dispatch_or_publication': observation.get('no_duplicates',False),
+        'loaded_extension_matches_tested_build': observation.get('extension_matches',False),
     }
     return {'status': 'PASSED' if all(checks.values()) else 'INCOMPLETE', 'checks': checks}
 
@@ -97,6 +102,7 @@ def observe(native, fog, baseline, owner, repo, path, online=False):
     first_merge = min((f['merged_at'] for f in merged), default=float('inf'))
     later = [t for t in tasks if t['created_at'] > first_merge and t.get('job_id')]
     followups = []
+    scientific_direction=False;substantive_followup=False;restart_recovered=False;no_duplicates=False
     db = sqlite3.connect((native/'data/arena.db').as_uri()+'?mode=ro', uri=True, timeout=1)
     try:
         db.execute('PRAGMA query_only=ON')
@@ -109,16 +115,53 @@ def observe(native, fog, baseline, owner, repo, path, online=False):
             count = goal.get('context',{}).get('counts',{}).get('nodes',0)
             followups.append({'branch':task['key'], 'domain':task['domain'], 'context_nodes':count,
                               'used_new_graph':count > baseline['baseline_nodes']})
+        known_new={n['id']:n for n in new}
+        decisions=state.get('decisions',{})
+        for plan in decisions.values():
+            proposal=plan.get('proposal',{})
+            if plan.get('state')=='ADMITTED' and proposal.get('rationale') and proposal.get('strategy',{}).get('queries'):
+                scientific_direction=True
+            if plan['created_at']<=first_merge:continue
+            input_nodes={n['id']:n for n in plan.get('input',{}).get('graph',{}).get('nodes',[])}
+            for use in proposal.get('finding_uses',[]):
+                nid=use.get('id'); node=known_new.get(nid)
+                if node and input_nodes.get(nid)==node and use.get('summary')==node.get('summary') and use.get('implication'):
+                    substantive_followup=True
+                    followups.append({'planning_id':plan['id'],'finding_id':nid,'summary':use['summary'],'implication':use['implication'],
+                                      'used_new_graph':True,'substantive':True,'job_id':plan.get('job_id')})
+        tags=db.execute("SELECT CASE WHEN json_valid(packet) THEN json_extract(packet,'$.STATE.tag') END tag,count(*) n FROM brain_jobs WHERE created>=? GROUP BY tag",(baseline['started_at'],)).fetchall()
+        no_duplicates=all(n==1 for tag,n in tags if tag and tag.startswith('fog-crew:')) and len({f['pr_url'] for f in merged})==len(merged)
+        proof_path=native/'output/scientific-authority-controlled-restart.json'
+        if proof_path.exists():
+            proof=json.loads(proof_path.read_text(encoding='utf-8'))
+            recovered=[]
+            for before in proof.get('inflight',[]):
+                r=db.execute('SELECT status,owner,lease,packet,updated FROM brain_jobs WHERE id=?',(before['id'],)).fetchone()
+                if not r:raise ValueError('Restart lost a tracked job')
+                status,owner_value,lease,packet_text,updated=r
+                goal=json.loads(packet_text)['GOAL']
+                recovered.append(status=='COMPLETE' and hashlib.sha256(str(lease).encode()).hexdigest()==before['lease_sha256']
+                    and hashlib.sha256(str(owner_value).encode()).hexdigest()==before['owner_sha256']
+                    and hashlib.sha256(goal.encode()).hexdigest()==before['goal_sha256'] and updated>proof['started_at'])
+            retained=all((native/name).is_file() and hashlib.sha256((native/name).read_bytes()).hexdigest()==sha
+                         for name,sha in proof.get('retained_evidence',{}).items())
+            restart_recovered=bool(recovered) and all(recovered) and retained and proof['started_at']>=baseline['started_at'] and proof.get('before_pid')!=proof.get('after_pid') and bool(proof.get('after_pid'))
     finally:
         db.close()
     growth_domains = {d for f in merged for d in f['growth_domains']}
+    pool_file=native/'output/scientific-authority-deployment.json'
+    deployment=json.loads(pool_file.read_text(encoding='utf-8')) if pool_file.exists() else {}
+    extension_matches=deployment.get('bridge_version')=='14.13-scientific-resume' and any(
+        slot.get('connected') and slot.get('extension_build')=='6.2.4-scientific-resume' for slot in deployment.get('pool',{}).values())
     return {'sources_match':sources_match, 'evidence_valid':True, 'new_nodes':len({nid for f in merged for nid in f['new_ids']}),
             'growth_domains':len(growth_domains), 'merged_domains':len(growth_domains),
             'merged_batches':len(merged),
             'followup_after_merge':bool(later), 'followup_used_new_graph':any(f['used_new_graph'] for f in followups),
             'queue_enabled':state['enabled'], 'publication_verified':bool(merged) and online,
             'visited_fields':len({t['domain'] for t in tasks}), 'visited_branches':len(tasks),
-            'inventory_sha':state.get('inventory_sha'), 'publications':merged, 'followups':followups}
+            'inventory_sha':state.get('inventory_sha'), 'publications':merged, 'followups':followups,
+            'scientific_direction':scientific_direction,'substantive_followup':substantive_followup,
+            'restart_recovered':restart_recovered,'no_duplicates':no_duplicates,'extension_matches':extension_matches}
 
 
 def main():
