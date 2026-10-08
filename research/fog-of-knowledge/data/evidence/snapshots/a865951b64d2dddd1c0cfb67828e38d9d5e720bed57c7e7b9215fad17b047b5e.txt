@@ -1,0 +1,994 @@
+                                                                                                                                                                   1
+
+        The SPARC Toroidal Field Model Coil Program
+
+Zachary S. Hartwig, Rui F. Vieira, Darby Dunn, Theodore Golfinopoulos, Brian LaBombard, Christopher Lammi, Phil Michael,
+       Susan Agabian, David Arsenault, Raheem Barnett, Mike Barry, Larry Bartoszek, William K. Beck, David Bellofatto,
+     Daniel Brunner, William Burke, Jason Burrows, William Byford, Charles Cauley, Sarah Chamberlain, David Chavarria,
+JL Cheng, James Chicarello, Van Diep, Eric Dombrowski, Jeffrey Doody, Raouf Doos, Brian Eberlin, Jose Estrada, Vincent Fry,
+     Matthew Fulton, Sarah Garberg, Robert Granetz, Aliya Greenberg, Martin Greenwald, Samuel Heller, Amanda Hubbard,
+ Ernest Ihloff, James Irby, Mark Iverson, Peter Jardin, Daniel Korsun, Sergey Kuznetsov, Stephen Lane-Walsh, Richard Landry,
+        Richard Lations, Rick Leccacorvi, Matthew Levine, George Mackay, Kristen Metcalfe, Kevin Moazeni, John Mota,
+       Theodore Mouratidis, Robert Mumgaard, JP Muncks, Richard Murray, Daniel Nash, Ben Nottingham, Colin O’Shea,
+  Andrew Pfeiffer, Samuel Pierson, Clayton Purdy, Alexi Radovinsky, Dhananjay K. Ravikumar, Veronica Reyes, Nicolo Riva,
+    Ron Rosati, Michael Rowell,           Erica E. Salazar, Fernando Santoro,           Akhdiyor Sattarov, Wayne Saunders, Patrick Schweiger,
+        Shane Schweiger, Maise Shepard, Syun’ichi Shiraiwa, Maria Silveira,                       FT Snowman, Brandon Sorbom, Peter Stahle,
+      Ken Stevens, Joshua Stillerman,           Deepthi Tammana, Thomas Toland, David Tracey, Ronnie Turcotte, Kiran Uppalapati,
+      Matthew Vernacchia, Christopher Vidal, Erik Voirin, Alex Warner, Amy Watterson, Dennis G. Whyte, Sid                                     ney Wilcox,
+                                            Michael Wolf, Bruce Wood, Lihua Zhou, Alex Zhukovsky.
+
+
+
+ Abstract— The SPARC Toroidal Field Model Coil (TFMC)                               of  sixteen REBCO stack           -in-plate style pancakes and twoij
+Program      was  a  three-year       effort  between  2018  and  2021              termination  plates  inside  a  Nitronic-50  structural  case,
+that developed novel Rare Earth Yttrium Barium Copper                               which  also  serves  as  a  pressure  vessel  for  the              cryogenic
+Oxide  (REBCO)  superconduc               tor  technologies  and  then              coolant flowing through channels in the winding pack. To
+successfully utilized these technologies to design, build, and                      execute the TFMC tests, a new magnet test facility was built
+test a first-in-class, high-field (~20 T), representative-scale                     and commissioned at the MIT PSFC. A centerpiece of the
+(~3   m)    superconducting   toroidal   field   coil.            With   the        test facility is a     pair of 50 kA LN2-cooled REBCO binary
+principal  objective  of  demonstrating  mature,  large                -scale,      current leads and VIPER REBCO cable feeder system. A
+REBCO  magnets, the project was executed jointly by the                             novel      liquid-free    cryocooler-based    cryogenic    system
+MIT   Plasma   Science   and   Fusion   Center   (PSFC)   and                       provided       20   K   supercritical   helium.           The   magnet   is
+Commonwealth  Fusion  Systems  (CFS)  as  a  technology                             integrated  with  the  feeder  and  helium              circulation     system
+enabler of the high-field pathway to fusion energy and, in                          inside  a  large  20  m3         vacuum  cryostat,  which  contains
+particular, as a risk retirement pro           gram for the TF magnet               internal  LN2 radiation  shields and  access  for  facility  and
+in the SPARC net-energy fusion tokamak. Weighing 10,058                             magnet instrumentation.
+kg (22,174 lb) and utilizing 270 km (168 mi) of REBCO, the                               The    TFMC    achieved    its    programmatic    goal    of
+TFMC is a no-insulation magnet comprising a winding pack                            experimentally          demonstrating   a   large-scale   high-field
+
+
+
+   This paper was submitted to arXiv on August 18 2023. The SPARC TFMC              Darby  Dunn, Christopher  Lammi,  Raheem  Barnett,  Michael  Barry,       Daniel
+Program was a joint effort between the MIT Plasma Science and Fusion Center         Brunner,  Sarah  Chamberlain,  David  Chavarria,  JL  Cheng,  Van  Diep,  Eric
+(PSFC) and Commonwealth Fusion Systems (CFS). The work was funded by                Dombrowski,  Raouf  Doos,  Brian  Eberlin,  Sarah  Garberg,  Aliya  Greenberg,
+CFS, and the parties have pursued patent protection relating to inventions. CFS     Samuel Heller, Peter Jardin, Sergey Kuznetsov, Chris Lammi, Matthew Levine,
+has exclusive commercial rights to the technology for energy generation.            Kristen   Metcalfe,   Robert   Mumgaard,   JP   Muncks,   Daniel     Nash,   Ben
+                                                                                    Nottingham,   Colin   O’Shea,    Clayton   Purdy,   Veronica   Reyes,  Akhdiyor
+Corresponding author: Zachary S. Hartwig <hartwig@psfc.mit.edu>                     Sattarov, Patrick Schweiger, Maise Shepard, Brandon Sorbom, Ken Stevens,
+                                                                                    Deepthi Tammana, Ronnie Turcotte,  Kiran Uppalapati, Matthew Vernacchia,
+Author affiliations based on associated institution at the time of contribution.    Alex  Warner,  and  Sidney  Wilcox  are  with  Commonwealth  Fusion  Systems,
+                                                                                    Devens MA 01434 USA.
+Zachary S. Hartwig, Rui F. Vieira, Theodore Golfinopolous, Brian
+LaBombard, Phil Michael, Susan Agabian, David Arsenault, William K.                 Larry Bartoszek is with Bartoszek Engineering, Aurora IL 60506 USA.
+Beck, David Bellofatto, William Burke, Jason Burrows, William Byford,
+Charles Cauley, James Chicarello, Jeffrey Doody, Vincent Fry, Matthew               Erik Voirin is with eViorin Engineering Consulting, Batavia IL 60510 USA.
+Fulton, Robert Granetz, Martin Greenwald, Amanda Hubbard, Ernest Ihloff,
+James Irby, Mark Iverson, Daniel Korsun, , Stephen Lane-Walsh, Richard              Michael  Wolf  is  with  Karlsruhe  Institute  of  Technology,  76131  Karlsruhe
+Landry, Richard Lations,  Rick Leccacorvi, George Mackay, Kevin Moazeni,            Germany.
+John Mota, Theodore Mouratidis, Richard Murray, Andrew Pfeiffer, Samuel
+Pierson, Alexi Radovinsky, DJ Ravikumar, Nicolo Riva, Ron Rosati, Michael
+Rowell, Erica E. Salazar, Fernando Santoro,  Wayne Saunders, Shane
+Schweiger, Syun’ichi Shiraiwa, Maria   Silveira, FT Snowman, Peter Stahle,
+Joshua Stillerman, Thomas Toland, David Tracey, Christopher Vidal,     Amy
+Watterson, Dennis G. Whyte, Bruce Wood, Lihua Zhou,       and Alex Zhukovsky
+are with the MIT Plasma Science and Fusion Center, Cambridge MA 02139
+USA.
+
+                                                                                                                                                             2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        Fig. 1: A view of the TFMC Magnet and test facility at the MIT Plasma Science and Fusion Center.
+
+REBCO magnet, achieving 20.1 T peak field-on-conductor                                                     I . INTRODUCTION
+with  40.5 kA      of  terminal  current,  815  kN/m  of  Lorentz                             he   SPARC   Toroidal   Field   Model   Coil   (TFMC)
+loading  on  the  REBCO  stacks,  and  almost  1  GPa  of
+mechanical  stress      accommodated  by  the  structural  case.                          Project was an approximately three         -year effort between
+Fifteen  internal  demountable  pancake-to-pancake  joints                       T 2018  and  2021             to  retire  the  design,  fabrication,  and
+operated in the 0.5 to 2.0 nΩ range at 20 K and in magnetic                      operational     risks     inherent     in     large  -scale,     high-field
+fields   up   to   12   T.   The   DC   and   AC   electromagnetic               superconducting   magnets   based   on   the   high   temperature
+performance of the magnet, predicted by new advances in                          superconductor   (HTS)   Rare        -Earth   Barium   Copper   Oxide
+high-fidelity computational models, was confirmed in two                         (REBCO). Executed jointly between the MIT Plasma Science
+test  campaigns      while  the    massively  parallel,  single-pass,            and Fusion Center (PSFC) and Commonwealth Fusion Systems
+pressure-vessel style coolant scheme capable of large heat                       (CFS), the project developed novel Rare Earth Yttrium Barium
+removal  was  validated.  The  REBCO  current  lead  and                         Copper Oxide (REBCO) superconductor technologies and then
+feeder system was experimentally qualified up to 50 kA, and                      utilized  those  technologies  to  successfully  design,  build,  and
+the  crycooler  based  cryogenic         system    provided  600  W  of          test a first-in-class, high-field (~20 T) representative scale (~3
+cooling power at 20 K with mass flow rates up to 70 g/s at a                     m in linear size) superconducting toroidal field (TF) coil known
+maximum        design   pressure   of   20   bar      -a   for   the   test      as the TFMC. In parallel to the construction of the magnet, a
+campaigns.  Finally,       the  feasibility  of    using    passive,  self-      new  superconducting  magnet  test  facility  was  established  at
+protection against a quench in a fusion           -scale NI TF coil was          MIT  to  serve  as  the  proving  grounds  for  the  experimental
+experimentally assessed. While the TFMC was intentionally                        demonstration    of    the    magnet.        The    test    facility    itself
+not optimized for quench resiliency           – and suffered localized           incorporated  novel  advances  in  both  REBCO  and  cryogenic
+thermal damage in response to an intentional open-circuit                        technology to meet the technical and schedule requirements for
+quench at 31.5 kA terminal current            – the extensive data and           testing the magnet. The magnet and test facility, shown together
+validated models that it produced            represent a critical step           in Fig. 1, were combined in the fall of 2021 to carry out a series
+towards this important objective.                                                of experimental test campaigns to assess the performance of the
+                                                                                 magnet,    validating    the    magnet        modeling,      design,     and
+Index Terms—Fusion energy, Rare Earth Barium Copper                              fabrication  techniques       and   proving  the  novel  technologies
+Oxide, Superconducting magnet, Toroidal field magnet                             deployed in the test facility.
+                                                                                     This  paper,  the  first    of  six  papers  in  this  special     issue
+                                                                                 covering the TFMC Program, serves two principal objectives:
+                                                                                 first,  it  presents  a  self-contained,  high-level  technical  and
+                                                                                 programmatic overview of the entire TFMC Program, including
+
+                                                                                                                                                                3
+
+a summary of the high-field path to fusion energy and a brief                      as the “high-field path to fusion energy,” and it can be divided
+history    of    large-scale    superconducting    fusion    magnet                chronologically  into  two  separate  eras  based  on  the           magnet
+development programs; and second, it provides the context for                      technology utilized.
+understanding the accompanying five papers that cover specific                        The first iteration of the high-field path focused on the use
+technical areas of the TFMC Program. These papers focus on                         of resistive copper magnet technology. The copper high-field
+the following topics:                                                              path to fusion energy relied on advanced water- or LN2-cooled
+•    Magnet design, fabrication, and assembly [1]                                  Bitter plate style magnets to achieve pulsed magnetic fields in
+•    Test facility design, construction, and commissioning               [2]       tokamaks exceeding 12 T peak field-on-coil, corresponding to
+•    50 kA binary LN2-cooled REBCO current leads [3]                               approximately 8 T in the plasma center [9]. Several tokamaks
+•    600 W cryocooler-based helium cryogenic system [4]                            were  built  and  operated  that  experimentally  validated  the
+•    Results of the test campaigns and post-mortem [5]                             plasma   physics       advantages   of   high-field   operation   and
+Taken together, the papers attempt to provide a comprehensive                      advanced the state of high magnetic field engineering including
+review of the program’s background, objectives, activities, and                    most notably the Frascati Tokamak Upgrade at ENEA in Italy
+achievements.                                                                      [10] and the three Alcator tokamaks at MIT in the United States
+   This    overview   and   introductory        paper   is   structured   as       culminating in the Alcator C-Mod Tokamak [11].
+follows: Section II presents the context and motivation for the                       Based on both the physics and engineering successes of FTU
+TFMC   Program,   namely           the   technical    and   programmatic           and    the    Alcators,    high-field    copper-based    tokamaks,
+advantages  of  accelerating  the  deployment  of  commercial                      particularly  in  the  United  States,  dominated  the  roadmap  for
+fusion  energy  through  the  use  of  high      -field  superconducting           achieving net-fusion energy in compact machines in the 1980s
+magnets; Section III briefly reviews the history of large-scale                    and  1990s.  Several       major   machine  design  and  engineering
+superconducting   magnet         development   in  order  to  provide              activities   were   initiated,   including   the        Burning   Plasma
+background and insight into why and how the TFMC Program                           Experiment (BPX) [12]Compact Ignition Tokamak (CIT) [13],
+was executed; Section IV provides a programmatic overview of                       the Fusion Ignition Research Experiment (FIRE)                [14], and the
+the project as a foundation to understand the technical research                   Ignitor Tokamak      [15]. Despite the advantages ascribed to these
+and development that was conducted; Section V briefly reviews                      machines, the copper high-field path was ultimately abandoned
+the two distinct conductor and coil technologies developed in                      due   to   the   challenge   of   scaling   resistive   copper   magnet
+the first phase of the TFMC Program (VIPER Cables [6] and                          technology to fusion power plants and the preference to begin
+no-insulation no-twist, or NINT, coils [7]) and summarizes the                     utilizing superconducting magnets, based on the emergent low-
+advantages of selecting NINT coils to be scale-up in the TFMC;                     temperature superconductors (LTS) NbTi in the 1980s and then
+Section  VI  summarizes  the  remaining  three  phases  of  the                    Nb3Sn in the 1990s, as an alternative.
+program, which are explored in greater technical depth in the                         Starting in 1978 with the T-7 tokamak in the Soviet Union,
+accompanying five papers; and, finally, Section VII concludes                      a series of superconducting machines with LTS were built and
+with some summary remarks about the TFMC Program impact                            operated with moderate field (1 – 8 T in the plasma center). This
+on the state of large-scale high-field REBCO magnets and the                       list includes EAST in China [16], KSTAR in South Korea [17],
+next steps towards high-field net-energy fusion devices.                           SST-1 in India [18], T-7 and T-15 in the Soviet Union/Russia,
+                                                                                   Tore Supra / WEST in France [19],  and TRIAM-1M in Japan
+     II. THE HIGH MAGNETIC FIELD PATH TO FUSION ENER                 GY            [20]  with JT-60SA       [21] as  the  most  recent. These  machines
+   It has long been recognized that the strength of the primary                    have     provided    the    necessary    superconducting    magnet
+magnetic   field   plays   a   principal   role   in   determining   the           engineering basis for ITER, a tokamak designed to achieve 500
+performance  of  a  magnetic  fusion  energy  device             such  as  a       MW of fusion power with a gain factor of ten using Nb3Sn TF
+tokamak.  Since the first magnetic confinement devices in                 the      coils to provide ~5.3 T in the center of the plasma             [22]. Based
+1950s, this has manifested in the exponential increase in plasma                   on the design and initial engineering work for ITER, a series of
+physics  performance   metrics  achieved  by  a  succession   of                   post-ITER  conceptual,  such  as  CFETR  in  China                [23],  and
+increasingly high    -field fusion tokamaks, which have relied on                  demonstration power plants such as DEMO in the EU [24], are
+advances   of   the   science   and   engineering   of   large         -scale      being  planned.  Because  Nb3Sn  magnets              limit  the  magnetic
+electromagnets    . In fact, a straightforward     theoretical   analysis of       fields in the plasma to approximately ~5.5 T, such tokamaks
+the  nuclear  and  engineering  aspects  of  a  tokamak,  combined                 typically  have  major  radii       between  6  and  9  m  to  achieve
+with a basic knowledge        plasma physics constraints, shows that               sufficient plasma performance, leading to extraordinally large
+increasing  the  magnetic  field  strength  is  one  of  the  most                 devices   associated   with   high   capital   cost,   multi-decadal
+powerful   and accessible     means of achieving both the conditions               schedules, scale challenges in supply chain and assembly, and
+required to access a     stable, burning, net-energy plasma          and the       complex organizational issues.
+design of a   cost-effective    compact tokamak fusion power plant                    In response to these challenges, and due to the emergence of
+[8]. The optimization strategy of maximizing the magnetic field                    a  new  class  of  superconductors  capable  of  achieving much
+strength to achieve net-fusion energy in more compact, lower                       higher magnetic fields than LTS materials, a second iteration of
+cost, and faster-to-build tokamaks has historically been known                     the high-field path to fusion energy was proposed by MIT in the
+
+                                                                                                                                                                4
+
+mid-2010s [25]. Anchored in the record-setting plasma physics                      inherently scalable on rapid timescales. The second part would
+performance  of  Alcator  C-Mod  in  2016           [26],  this  new  high-        undertake the scale-up of the conductor/coil technology into a
+field  path  proposes  the  use  of  superconducting           TF   magnets        representative   scale   magnet,   or   “model   coil”,   that   would
+exceeding  20  T  peak  field-on-coil  (8         –  12  T  in  the  plasma        ultimately   qualify   the   design,   fabrication,   modeling,   and
+center) based on REBCO.                                                            operation  of  a  high-field  REBCO  magnet  for  readiness  in  a
+   REBCO was discovered in 1987 [27]. While little was then                        first-generation   high-field   net   fusion   energy   device.         Such
+known   about   its   superconducting   performance   and    an                    model coils have historically played a critical role in advancing
+engineering-relevant   form   factor         remained     decades  in   the        superconducting  fusion  magnets,  confirming  the  arrival  of  a
+future, several theoretical papers emerged in the following few                    step-change in this key enabling technology.
+years   that   examined   the   advantageous   physics,   cost,   and
+complexity implications of superconducting toroidal field coils                        IV. BRIEF REVIEW OF LARGE-SCALE  SUPERCONDUCTING
+approaching      20   T   [24   -25].   Only    relatively   recently     has                        FUSION MAGNET TEST PROGRAMS
+sufficiently  high performance REBCO coated conductor tape                            Superconducting   magnet   systems   for   fusion   embody
+been characterized and manufactured at the industrial volumes                      substantial scale, cost, schedule, complexity, and risk. From a
+and cost levels required to actually design and build large-scale                  physics   perspective,   the   design,   operation,   and   ultimately
+high-field fusion magnets [30].                                                    fusion performance of the machine is fundamentally set by the
+   An  important  engineering  study of  a  toroidal  field  (TF)                  magnetic  fields,  making  achievement  of  the  magnet  design
+magnet with modern REBCO superconductor was carried out                            specifications imperative. From an engineering perspective, the
+in 2011 [31] as part of the conceptual design activities for the                   magnet   systems   are   heavily   integrated   into   the   device
+VULCAN tokamak [32]. The study was the first to highlight                          superstructure, making them difficult or impossible to replace
+significant advantages of high-field REBCO-based magnets for                       or  repair.  Thus,  while  advances  in  superconducting  magnet
+tokamaks,  including  feasible  TF  magnets  approaching  20  T                    technology can often bring transformational benefits to a fusion
+peak field-on-coil, an optimized operational temperature of 20                     machine, it is imperative that the technology be derisked  before
+K,  tolerance  of  large  nuclear  heating,  and  demountable  low-                being utilized in a fusion device. Therefore, the integration of
+resistance   joints.     Since   that   time,   several   physics   and            major  advances  in  superconducting  magnet  technology  has
+engineering  assessments        reinforcing  and  extending       the  scale,      historically    been    preceded    by    signficant    research    and
+schedule,  cost,  and  plasma-physics  advantages  of  high-field                  development programs on specially designed “model coils” that
+fusion  energy  powerplants        based  on  REBCO  magnets            have       achieve fusion device magnet relevant scale and performance
+been carried out for conventional aspect ratio tokamaks  [33],                     but  often  in  a  stand-alone  configuration  in  specialized  test
+spherical tokamaks       [34], and stellarators [35].                              facilities for efficiency.
+   In the mid-2010s, it was evident that execution of the high                        The first such endeavor was the Large Coil Task (LCT), an
+field    path    required    accelerating    the    development    an        d     international  collaboration  between  the  United  States,  Japan,
+deployment  of  fusion-relevant  REBCO  conductors  and  coils                     Switzerland, and Europe that sought to evaluate the feasibility
+beyond   their     then-nascent   state.      Two   separate   potential           of  large-scale  superconducting  magnets  for  fusion  tokamaks
+technologies had emerged by this time. First, a wide variety of                    [38].  By  1987,  the  LCT  successfully  demonstrated  multiple
+high-current  REBCO  cables  based  on  the insulated cable-in-                    fusion-relevant  superconducting  magnet  technologies,  many
+conduit conductor (CICC) concept were being built and tested                       for the first time in a large superconducting coil. Six 2.5 m x 3.5
+on small-scales. Although none to-date  had demonstrated the                       m bore toroidal field (TF) like coils capable of producing 8 T
+required performance, robustness, and scalability required for                     peak   field-on-coil   in   steady-state   were   built   and   tested
+fusion-scale  magnets,  the  initial       prototypes     were  promising          individually   and   as   an   array   at   the   International   Fusion
+[36].  Second,  single  REBCO  tape  wound  no-insulation  coils                   Superconducting Magnet Test Facility (IFSMTF) at Oak Ridge
+had   demonstrated   high   field   performance   with               simpler       National   Laboratory   (ORNL) [39].   Five   coils              –   General
+fabrication   and   the      potential   for   self-protection   during            Dynamics    (GD),    General    Electric/ORNL    (GE/ORNL),
+quench[37];   this   represented   an   alternative,   albeit   very               Switzerland  (CH),  EUROATOM  (EU)  and  Japan  (JA)                         –
+different, coil concept compared to insulated CICC cables.                         utilized NbTi superconductor in a steel structure while a sixth
+   Regardless   of   which   REBCO-based   concept   would   be                    from Westinghouse (WH) was the first large-scale coil to utilize
+developed  as  a  basis  for  high-field        superconducting       fusion       react-and-wind  Nb3Sn  in  an  aluminum  structure.  To  evalute
+magnet  technology,        the  TFMC  Program          engineering  R&D            cryogenics, three coils (GD, GE/ORNL, JA) were cooled with
+would follow a two-part sequence. The first part would focus                       atmospheric  liquid  helium  pool  boiling  while  the  remaining
+on technology readiness of basic conductor/coil technology at                      coils (EU, CH, WH) employed forced-flow supercritical helium
+the  small  scale.  Efforts  would  focus  on  engineering  design,
+fabrication  processes,  computational  modeling,  and              rigorous
+experimental       testing    of     small-scale      components.    The
+overarching   requirement   emplaced on               the   processes   and
+technology  created  during  this  phase was  that  it              must  be
+
+                                                                                                                                                             5
+
+at  1.5  MPa.  To  evaluate  winding  configurations,  five  of  the                 Table I: Parameter comparison between the TFMC and one coil
+coils were pancake wound while the GD coil was layer wound.                                from the SPARC toroidal field (TF) magnet        in 2021.
+   The LCT proved that steady-state, or DC, superconducting
+coils  could  indeed  be  built  and  operated         at  fusion-relevant            Design Parameter                            TFMC             TF Coil
+scales  and  performance;  however,  it  was  recognized  that  the                   Magnet mass [kg]                             10,058            18,025
+pulsed,  or  AC,  central  solenoid  (CS)  and  poloidal  field  (PF)                 Magnet size [m]                           1.9 x 2.9         3.0 x 4.3
+magnets  contained  significant  further  challenges  and  would                      Winding pack (WP) mass [kg]                   5,113             7,975
+require  their  own  model  coil  programs.  Two  such  programs                      WP minimum turn radius [m]                       0.2               0.4
+were undertaken. In the late 1980s and early 1990s, the US and                        WP current density [A/mm2]                      153                 94
+Japan  built  and  tested  several  Demonstration  Poloidal  Coils
+(DPC),  including  a  2  m  bore  30  kA,  10 T/s  Nb3Sn  cable-in-                   WP inductance [H]                               0.14              0.59
+conduit conductor (CICC) coil led by MIT in the US [40] and                           WP amp-turns [MA-turns]                         10.4               6.3
+30 kA NbTi coil led by JAERI in Japan               [41]. Following the               Terminal current [kA]                      40.5 kA                31.3
+conclusion of the DPC project, the large           POLO model coil, a                 Number of turns                                 256               200
+PF-like NbTi coil with a 3 m bore, 15 kA nominal current, and                         Number of pancakes                                16                16
+2   T/s   ramp   rate   was   built   and   successfully   tested   by                Total REBCO [km]                                270               270
+Forschungzentrum Karlsruhe (FZK) in 1997 [42].
+   One  of  the  key  conclusions  of  ITER  Conceptual  Design                       Coolant type                                Supercritical helium
+Activity (CDA) was that the ITER magnet systems would need                            Coolant pressure [bar]                      10 – 20                 15
+to be superconducting; thus, the follow-on ITER Engineering                           Operating temperature [K]                         20            8 – 17
+Design  Activity  (EDA)  initiated  two  model  coil  programs  in                    Peak magnetic field      [T]                    20.1                23
+1992 with the explicit objective of demonstrating the design,                         Peak Lorentz loading [kN/m]                     822               750
+manufacturing,  and  operation  of  ITER-relevant  TF  and  CS                        Magnetic stored energy [MJ]                     110               316
+magnets. The ITER Toroidal Field Model Coil (TFMC), carried
+out by the European Union, built a 40 ton, 80 kA, 7.8 MA-turn                    in fusion  -style magnets and cannot tolerate significant nuclear
+Nb3Sn CICC coil using 7 double pancakes inside a SS316 LN                        heating due to their small margins to critical temperature, low
+structural case with the objective of maximizing likeness to the                 heat  capacity,  and  low      thermal  diffusivity  at  4  K.  The  only
+ITER  TF  coil     in    a  scaled  test  article   [43].  The  coil  was        superconductor  capable  of  meeting  these  requirements  was
+successfully tested, individually and mounted at a 4.5 degree                    REBCO.
+angle to the EURATOM LCT coil to increase peak field-on-coil                         Given  the  lack  of  experience  world-wide  with  the  design,
+and out-of-plane IxB Lorentz loading to 9.97 T and 797 kN/m,                     fabrication,  and  operation  of  fusion-scale  REBCO  magnets,
+respectively,  at  the  TOSKA  facility  at  FZK  in  2001 [44].                 MIT and CFS undertook a rapid one-year conductor and coil
+Concurrently, the ITER Central Solenoid Model Coil                (CSMC)         development  program  to  establish  the  foundational               magnet
+project,  executed  by  the  European  Union,  Japan,  Russia,  and              technologies  followed  by a two-year period  to  design,  build,
+the United States, built a 101 ton, 46 kA coil composed of an                    and test the TFMC within a new magnet test facility.
+outer and inner module, built by Japan and the US, respectively,
+along with an insert coil built by Japan. Tested at the JAERI                        IV. PROGRAMMATIC OVERVIEW OF THE TFMC PROGRAM
+facilities in Naka, Japan, the combined CSMC achieved a peak
+field-on-coil of 13 T with ramp rates of 0.6 T/s (inner module)                  A. Project Objectives
+and 1.2 T/s (insert coil) – in excess of ITER CS requirements at                     The principal function of the TFMC was as a risk-retirement
+the  time   –  with  a  total  stored  energy  of  640  MJ  with  no             article  for  the  SPARC  TF  magnet;  as  such,  the              technical
+performance degradation after 10,000 load cycles [45].                           requirements and the project objectives flowed down from the
+   Following a similar progression as ITER, the MIT PSFC and                     TF to the TFMC. A comparison between the defining magnet
+CFS concluded an approximately five-year conceptual design                       engineering     parameters  of  the  TFMC  and  the  SPARC  TF
+activity  that  resulted  in  the  physics  basis  for        the  SPARC         magnet are presented in Table I. Compared to the SPARC TF
+tokamak in 2020 [46]. One of the key conclusions was that a                      in  terms  of  size,  the  TFMC  is an approximately 55%  scaled
+tokamak approximately ~35 times smaller in volume than ITER                      version,   which   is   large   enough   to   develop   representative
+could achieve high fusion gain (Qphysics > 2) provided that (1)                  fabrication  processing  but  at  significantly  reduced  cost  and
+the  TF  magnet  could  provide  12.2  T  on       -axis  magnetic  field,       schedule  compared  to  TF-scale.  Despite  the  scaled  size,  the
+corresponding to approximately 22 T peak field            -on-coil and (2)       TFMC is capable of matching or exceeding many of the critical
+that  the  TF  magnet  could  maintain  cryostability  despite  the              parameters  including  the  peak  field-on-coil,  electromagnetic
+significant nuclear heating expected in a compact tokamak with                   loading on conductor, terminal electrical current, winding pack
+minimal radiation shielding. Both requirements rule out the use                  current density, and  cryogenic cooling  metrics. Although  the
+of  NbTi  or  Nb3Sn  superconductor,   which  can  practically                   stored magnetic energy does not match, the TFMC at 110 MJ
+achieve maximum fields of around 9 T and 13 T, respectively,                     provides sufficient energy to assess the feasibility of dissipation
+
+                                                                                                                                                                 6
+
+uniformly  in  the  winding  pack  in  a  quench  scenario  and             to         Budget  and  schedule  are  two  important  constraints  in any
+induce localized thermal damage if this cannot be achieved.                        large-scale engineering project but were amplified in the TFMC
+   With the technical requirements defined, the TFMC Program                       Program as a result of project sponsorship through a start-up
+was then programmatically oriented around the achievement of                       company  (CFS)  with  a  fixed  capital  raise  and scheduled
+six main objectives:                                                               milestone  targets.  Schedule  proved  to  be  the  most  defining
+1.   The  achievement  of  20  T  peak  field-on-conductor  in  a                  constraint of the two. The June 2021 completion date for the
+     large-bore magnet with a terminal current of 40 kA and a                      TFMC  Program was  set  at  the  official  start  of  the  MIT-CFS
+     transverse IxB load of 800 kN/m at a temperature of 20 K                      colloboration in June of 2018, providing an immutable 3-year
+     with total stored magnetic energy of 110 MJ.                                  window to complete the four phases of the project described in
+2.   The demonstration of key aspects of the magnet design:                        Section IV C.
+                                                                                       Several strategies were employed to minimize schedule. The
+           •    Confirmation  of  no-insulation  magnet  physics                   “make-buy”   strategy   was   carefully   evaluated   with   heavy
+                and  operation,  particularly  the current,          voltage,      weighting towards in-housing  major  parts  and  subsystems  at
+                power,   and   temperature   distribitions   in   the              MIT and CFS while choosing fabrication processes and partner
+                magnet during charging/discharging and steady-                     vendors primarily on the ability to execute successfully on rapid
+                state regimes.                                                     schedules  over  other  considerations  such  as  cost. Closely
+           •    Demonstration   of        efficient   cryogenic   cooling          coupled to this strategy was the high – but carefully managed –
+                through the use of massively parallel, single pass,                tolerance  for  technical  risk  in  the  R&D  process, allowing
+                machined  cooling  channels  within  the  winding                  signficant  advances  with  less  iterations.  Examples              of  these
+                pack and the structural case as a pressure vessel.                 strategies on the TFMC include the decision to build and then
+                                                                                   use  all  the  equipment  required  to  wind  the  magnet  in-house
+           •    Demonstration  of  simple,  robust,  demountable                   while intentionally crafting the size and shape of the TFMC to
+                pancake-to-pancake joints internal to the magnet                   fit  within  the  existing  capacities  of  established  vendors  who
+                winding pack with resistances in the 1 nΩ range.                   could  deliver  on  the  required  schedule.            Another  example:
+3.   The    development    and    validation    of    high-fidelity                external, existing test facilities were sought but none identified
+     electromagnetic  and  thermo-mechanical  models  of  no-                      that  could  be  ready  on  the  schedule  required,  resulting  in  a
+     insulation magnets such that confidence in the design and                     decision to build a new test facility from scratch at MIT PSFC.
+     operation of the full-scale SPARC TF could be achieved.                       Decisions for major elements of the test facility itself, such as
+                                                                                   the  decision  to  design  and  build  custom  50  kA  binary  LN2-
+4.   Exploration of passive, self-protecting resilience to current                 cooled REBCO current leads, were driven by the lack of rapidly
+     sharing and quench in representative-scale, fusion-relevant                   available    50  kA  current  leads       from    national  laboratory  or
+     no insulation REBCO magnets.                                                  commercial vendors.
+5.   The    development    and    qualification    of    materials,                    Another  important  constraint  that  shaped  the  project,  in
+     instrumentation,    tooling,    fabrication    processes,    and              particular  the  design  of  the  test  facility,  was  the  pre-existing
+     external  vendors  to  enable  confidence and  speed  in  the                 infrastructure  available  at  the  MIT  PSFC.  Unlike  almost  all
+     construction of the SPARC TF magnet.                                          large-scale magnet test facilities, the MIT PSFC does not host
+                                                                                   an  extensive  liquid  helium  infrastructure,  which  is  typically
+6.   Development  of  the  REBCO  supply  chain  by  providing                     used both to provide the cryogenic coolant to the magnet as well
+     magnet-pull in the form of challenging tape specification,                    as the coolant to superconducting current leads and feeder cable
+     close  technical  partnerships,  and,  most  importantly,  an                 systems. To provide cooling to the TFMC, an innovative liquid-
+     unprecedenced  injection  of  capital  expenditure  through                   free cryocooler-based helium circulation system was developed
+     large tape orders to enable manufacturer scale-up.                            with   an  external  vendor to  provide  600  W           at  20  K  cooling
+B. Project Constraints                                                             capability at significantly reduced cost, footprint, and schedule
+   Another key shaping function for the TFMC, its test facility,                   compared  to  a  new  liquid  helium  infrastructure.  To  provide
+and the test campaigns were the constraints imposed upon the                       cooling to the 50 kA superconducting current leads and  feeder
+project. These constraints  were of two types: anticipated and                     cables,  the  large  18,000  gallon  capacity  LN2  storage  and
+accepted as the boundary conditions of executing the project                       distribution  system  was  utilized  by  designing  custom  LN2-
+under  the  circumstances  available;  and  unanticipated  from                    cooled REBCO current leads rather than the more traditional
+external  sources  beyond  project  control.  Understanding  the                   helium  vapor-cooled  leads  found  in  similar  scale  magnet
+constraints    helps  provide  insight  into  why        certain  technical        systems [47].
+decisions  were  made  and  how  those  decisions  manifested.                         While  high  bay  experimental  halls  were  available  for  the
+While a comprehensive list is beyond the scope of this paper, a                    fabrication and assembly of the TFMC and the 50 kA current
+brief review of the key constraints and mitigating decisions is                    leads, the test facility  had to be built in an experimental hall
+included here.                                                                     with 18 foot vertical clearance. This constraint challenged the
+                                                                                   design of the vertical 50 kA current leads as well as resulted in
+
+                                                                                                                                                                7
+
+the  decision  to  test  the  TFMC  magnet  in  the               horizontal       3.    Magnet  Test  Facility  (2019-2021):           In  parallel  with  the
+configuration,    which    departs    from    previous    large-scale                    magnet activities, the magnet required the establishment of
+superconducting magnet tests such as the ITER TFMC in the                                a  new  test  facility  capable  of  meeting  both  the  unique
+KIT TOSKA facility [44]                                                                  technical and demanding schedule requirements imposed
+   A   final   important   and   completely   unanticipated   set   of                   on the project. The test facility was built at the MIT PSFC
+constraints were those imposed on the project by the COVID-                              in    order    to    repurpose    the    pre-existing    large-scale
+19  pandemic.  Perhaps  the  most  significant  impact  was             near-            experimental facilities and infrastructure made available by
+complete    cessation  of  onsite  hardware  activities  at  MIT and                     the  shuttering  of  the  Alcator  C-Mod  tokamak  in  2016.
+CFS from mid-March to mid-May of 2020, followed by a slow                                These capabilities included a large ~835 m2 (~9,000 sq. ft.)
+ramp-up     during  the  summer  months  of  2020.  Many  of  the                        experimental  hall,      over  1  MVA  of  available  electrical
+project’s  key  vendors  were  similarly  impacted,  resulting  in                       power  up  to  13.8  kV,  a  400  kW         distilled  chilled  water
+closures and staffing issues. Further challenges resulted from                           system, and     18,000  gallon LN2  distribution  capabilities.
+the inability of TFMC personal to routinely make onsite visits                           Importantly, decades of experience conducting large-scale
+to vendors to collaborate effectively, witness critical processes,                       complex  electromechanical  experiments,  combined  with
+and  perform  quality  inspections,  typically  a  critical  set  of                     close cooperation  with MIT’s Environmental Health and
+activities    for    successful    complex    engineering    projects.                   Safety office, maximized the probability of safe, successful
+Strategies employed to mitigate impacts included rotating two                            tests.
+and three onsite shifts to minimize personnel density, requiring                   4.    Experimental  Test  Campaigns  (2021):             Two  distinct  test
+full personnel protection equipment and eventually vaccination                           campaigns were carried out in the fall of 2021. The first
+while working on site, twice a week onsite COVID testing at                              test  campaign     in  August  and  September  2021  targeted
+MIT and CFS, moving all meetings to videoconferencing, and                               assessment  of  the  charging/discharging  and  steady-state
+remote video inspection of vendor parts.                                                 performance of the coil including the demonstration of 20
+C. TFMC Program Structure and Timeline                                                   T peak field-on-conductor, electromagnetic characteristics,
+   To achieve the programmatic objectives within the imposed                             measurement of joint resistances, and structural assessment
+project constraints as described in the previous two subsections,                        of the coil under peak loads. The second test campaign in
+the  TFMC  Program          was  factored  into four  distinct  phases                   October 2021 focused on characterizing the response of the
+spanning approximately three years:                                                      coil  to  off-normal  events,  including  in  current-sharing
+1.   Foundational  conductor/coil  development (2018-2019):                              regimes  at  increasingly  higher  temperatures  and  under
+     Novel  REBCO  conductor  and  coil  technologies  were                              worst-case   open   circuit   quench   conditions.   The   test
+     required  to  meet  the  requirements  of  superconducting                          campaigns  were  followed  by  a  series  of  non-destructive
+     fusion magnets capable of achieving in excess of 20 T peak                          and  destructive  post-mortem  analysis  of  the  magnet  to
+     field-on-coil.  Activities  in  this  phase  focused  on  small-                    further validate the engineering design of the coil as well
+     scale  prototyping  and  testing  of  two  very  different  base                    as   to   confirm   experimental   findings   from   the   test
+     technologies  suitable  for  such  magnets:  REBCO  cables                          campaigns,  in  particular  the  localized  damage  sustained
+     based on the insulated cable-in-conduit conductor (CICC)                            during the final programmed open circuit quench.
+
+     concept pioneered by Montgomery, Hoenig, and Steeves at                       V. PRELIMINARY R&D TOWARDS THE TFMC
+     MIT in the mid-1970s [48]; and REBCO coils based on the                           This section provides a brief overview of the development of
+     single tape-wound no-insulation coils developed by Hahn,                      two different REBCO technologies –VIPER cable and NINT
+     Park, Bascunan, and Iwasa at MIT in the late 2000s [49].                      coils  –  that  took  place  during  the  first  phase  of  the        TFMC
+2.   Magnet  (2019-2021):          After  demonstration  of  the  base             Program.  This  development  was             completed  rapidly       and  in
+     conductor/coil  technologies,  it  was  decided  that  a  large-              parallel  at  small-scale     over  approximately  one        year  for  two
+     scale toroidal field (TF) magnet of fusion-relevant size and                  purposes:  first,  to    determine     which  of  the  two  technologies
+     performance  should  be  designed,  fabricated,  and  tested.                 would  be  selected  for  the  DC  TF  magnet  in  SPARC;  and
+     This approach followed a well-established precedent in the                    second, to develop a foundation for the cables required for the
+     advancement of large-scale superconductor technology, as                      AC   magnets   in   SPARC   and   superconducting   feeder/bus
+     reviewed in Section IV, of building representative “model                     systems.       NINT,     due     primarily     to     the     long     L/R
+     coils”   as   an   important   risk-retirement   step   towards               charging/discharging  time  constant  imposed  by  NI  magnet
+     constructing  full-scale  fusion  devices  incorporating  that                physics,  is  only  suitable  for  the      steady-state    TF  magnet.  In
+     technology. Magnet fabrication and assembly took place at                     contrast, insulated VIPER cable can satisfy the requirements of
+     the  MIT  PSFC,  in  a  large  ~370  m2         (~4,000  sq.  ft.)  hall      both steady-state magnets like the TF as well as handle the rapid
+     explicitly  reconfigured  for  this  purpose  with  REBCO                     magnetic flux density swings required by pulsed magnets like
+     quality-assurance/quality-control     and     some     magnet                 the  central  solenoid  (CS)  and  poloidal  field  (PF)  coils  in  a
+     winding activities taking place at CFS.                                       tokamak.
+
+                                                                                                                                                                 8
+
+                                                                                    Ic with less than 5% degradation at IxB load of 382 kN/m (2000
+                                                                                    cycles) and with axial strain of 0.3% for over 500 cycles [6],
+                                                                                    robust demountable joi       nts in the 2-5 nΩ range [6], and the first
+                                                                                    demonstration  of  two  separate  fiber  optic  quench  detection
+                                                                                    technologies      on    full-scale   conductors   in    fusion      -relevant
+                                                                                    conditions     suitable   for   the   low   normal   zone   propagation
+                                                                                    velocity of REBCO [61].
+                                                                                    B. No Insulation – No Twist (NINT) REBCO Coils
+                                                                                       In  the  mid-2010s,  no-insulation         REBCO       (NI)  technology
+                                                                                    had  emerged  as  an      alternative  means  of  building  high-field
+                                                                                    superconducting magnets. Superconducting NI coils were first
+                                                                                    proposed by Berlincourt and Hake, the co-discovers of NbTi as
+                                                                                    the one  of  the  earliest practical  superconductors,  in  the  mid-
+                                                                                    1960s    [62].  Since  that  time,  and      with  the  incorporation  of
+                                                                                    REBCO as the superconductor, single-tape wound REBCO NI
+                                                                                    coils have developed into mature, high-field, well-engineered
+                                                                                    magnet systems and presently hold the world record of 45.5 T
+                                                                                    magnetic field strength [63]. The first fusion-relevant REBCO
+                                                                                    NI coil at the MIT PSFC was built in 2016 using 500 m of 12
+                                                                                    mm wide tape and achieved a peak field in the 8 cm clear bore
+    Fig. 2: VIPER cables. (a) shows a cross section of two of steel-                of 6 T [64].
+      jacketed VIPER cables configured for SULTAN testing. (b)                         Several challenges existed at the start of the TFMC Program
+   shows a completed test assembly at MIT before shipping to PSI.                   in adapting such coils for fusion purposes. First, the scale of
+A. The VIPER REBCO Cable                                                            fusion TF coils required handling several GJ of stored magnet
+                                                                                    energy in the event of a quench, orders of magnitude beyond
+   At the start of the TFMC Program, a range of fusion-relevant                     what had been experimentally demonstrated to date on small-
+REBCO   cable   designs   had   been   proposed               [50]–[55]     by      bore     NI     coils.     Second,     the     extremely     long     L/R
+institutions around the world. These cables, were all based on                      charging/discharging times caused by high inductance from the
+either the twisted stacked tape conductor (TSTC) architecture                       single-tape/many-turns  approach  was  incompatible  with  the
+developed by Takayasu at MIT PSFC [56] or the conductor on                          timescales of fusion TF systems. Finally, the tightly packed NI
+round core (CORC®) architecture developed by van der Laan                           coil  geometry  was  unfavourable  to  efficiently  removing  the
+at Advanced Conductor Technologies  [57]. Despite significant                       large  amount  of  nuclear  heat  that           is  found  in  tokamaks,
+progress,    several    technical    issues       remained    unresolved            especially  compact  machines  with  limited  space  for  nuclear
+including critical current (Ic) degradation under representative                    radiation shielding.
+high-field  magnet  electromagnetic  loading  (including  axial                        In parallel with the VIPER cable program, a NINT REBCO
+strain and cycling) and quench detection given the slow normal                      coil  R&D  program  was  started  to  assess  the  feasibility  of
+zone   propagation   velocities   inherent   in   HTS   materials.                  adapting NI coils to serve as fusion TF magnets. The first part
+Complexity in fabrication, particularly in the preparation of low                   of the program focused on conceptual coil design and resulted
+resistance  joints,    and  little  development  in  integrating  and               in several innovations. A REBCO stack-in-plate concept was
+testing  these  cables  in  magnet  geometries  presented  scale-up
+challenges.
+   A  REBCO  CICC  cable  R&D  program  was  undertaken  to
+directly   address    these  remaining  issues.  The  result  was  the
+VIPER  cable      shown  in     Fig.  2,  an  industrially  scalable  high
+current REBCO cable based on the TSTC architecture. In the
+period  of  2018-2019,  over  a dozen  VIPER  cables  were built
+spanning lengths from 1 to 12 m, including a 3D single-turn coil
+intended to be tested in the NIFS 13 T large-bore test facility
+[58] and  a  multiturn  pancake  coil  tested  in  LN2  at  the  MIT
+PSFC.   The   most   stringent   tests   were   a   series   of   four
+experimental  campaigns  (comprising  two  identical  VIPER                                Fig. 3: NINT coils. (a) shows a NINT coil including the
+cables  each)  at  the  SULTAN  test  facility  at  PSI         [59]. Novel             superconducting terminals and instrumentation cabling. (b)
+cable  assemblies   were  developed  to  provide  simultaneous                        shows a NINT coil configured for 15 K testing at the MIT PSFC.
+transverse  IxB  Lorentz  loads        and  axial  strain  to  emulate  the         developed  in  which  a  stack  of  REBCO  tapes  was  wound
+force state of a 3D coil    [60]. Key results include      d achieve stable
+
+                                                                                                                                                               9
+
+
+
+  Table II: Summary of the proposed NINT advantages for a tokamak TF coil used to select NINT technology for the TFMC winding pack.
+
+    Proposed NINT Design Features                                                                  NINT Advantage to be Assessed by TMFC
+    High winding pack current density                                     Compact, high-field REBCO magnet; Large magnet design space
+    High thermal stability                                                Resistant to quench; Robust to REBCO defects and local damage
+    Quench resiliency                                                  Potential to eliminate active quench detection or mitigation systems
+    Single-pass pressure vessel cooling                   Handle high nuclear heating; Local cooling optimization; Simple manifolding
+    Simple modular construction                      Rapid fabrication; Scalable for SPARC and commercial use; Maintenance options
+    Intrinsically low voltage (< 1 V)                     Minimal insulation; Simple fabrication; Low voltage leads and feeders; Safety
+directly into spiral grooves machined into one side of a plate of                 degree of self-protection  from          quenches in experiments [64]
+
+structural metal [7]. As was done for VIPER cables, REBCO                         and  modelling [65].  If  this  capability  could  be  successfully
+tape stacks are soldered in place. Channels machined into the                     extended  to  large-scale  NI  coils  suitable  for  fusion,  active
+other side could accommodate cryogenic gas and be used for                        quench detection and mitigation systems could be eliminated.
+efficient,  local,  single-pass  cooling       [53].  After  this,  a   two-      This  would reduce the complexity of  magnet fabrication and
+pronged   approach   was   taken          that   coupled   a   series   of        operation   and   provide   passive   protection,   eliminating   or
+experiments  on  small  demonstration  coils  with  an  advanced                  minimizing perhaps the most significant operational challenge
+modelling program. A series of three 40 cm radius NINT coils                      in superconducting fusion magnets.
+with 16 tape REBCO stacks were built and tested at self-field                         In terms of cryogenics, the NINT design enables a scheme
+at 77.3 K in LN2 and up to 10 kA terminal current at 15 K in a                    of  massively  parallel,  single-pass  cooling  channels  in  the
+conduction-cooled configuration           with the thermally insulated            winding pack that maximizes global heat removal and can be
+coil  suspended  over  a  bath  of      liquid  helium     as  the  coolant       optimized for local heat removal. This capability is important
+source, as shown in Fig. 3. These tests provided experimental                     for the TF magnet in the SPARC tokamak, which minimizes
+data on the electromagnetic behaviour of the coils, particularly                  nuclear radiation shielding to achieve compact size and results
+on the high cryostability of the coils and passive self-protection                in large nuclear heating of the cryogenic TF.
+during  quench  by  uniformly  dissipating  the  magnet  stored                       In  terms  of  fabrication,  the     open  geometry  of  the  NINT
+energy throughout the cold mass of the magnet.                                    cable-in-plate  concept,      straightforward  fabrication       processes,
+C. Selection of NINT for the TFMC winding pack                                    and the absence of high voltage insulation makes production of
+   At the conclusion of the first phase of TFMC in June 2019,                     NI magnets relatively efficient and scalable. In particular, the
+a review  was  held  to  assess  the results  from the  VIPER  and                use of REBCO as opposed to LTS materials and the absence of
+NINT development programs with the objective of selecting the                     an epoxy vacuum pressure impregnation step eliminates two of
+technology     that  would  be  scaled-up       into  the  TFMC  and,  if         the   most   complex,   long   duration   high   temperature   heat
+successful, the SPARC TF. Design and analysis based on the                        treatment  operations  involved  in  traditional  insulated  LTS
+experimental and modelling results from the VIPER and NINT                        CICC  superconducting  fusion  magnets.  Because  the  magnet
+development                                                                       winding  pack  is  not  encased  in  VPI  epoxy  and  because
+programs showed that either technology could successfully be                      demountable  pancake-to-pancake  joints             can  be    used,  NINT
+used as the base magnet winding pack technology to achieve                        magnets   can   be   fully   disassembled   for   maintenance   or
+the necessary requirements for both the TFMC and the SPARC                        component    replacement    without    destructive    operations.
+TF. Ultimately, NINT technology was selected for the TFMC                         Finally, the intrinsic low voltage nature of NINT eliminates the
+on the basis of the proposed advantages summarized in Table II                    need   for   high   voltage   current       leads   and   feeder   cables,
+although, as discussed at the end of this section, VIPER cable                    traditionally  one  of  the  most  challenging         parts  of  insulated
+was utilized in several ways in the        TFMC Program.                          superconducting    fusion    magnet    systems,    and    provides
+   The  advantages  can  be       roughly  grouped  into  three  types:           enhanced personnel and machine safety.
+superconducting;    cryogenics;    and    fabrication.           The    high          The VIPER cable R&D program was also drawn upon for
+winding pack current density achievable with NINT, primarily                      TFMC. The  successful  vacuum pressure  impregnation  solder
+due to the lack of insulation     and the compact untwisted REBCO                 process  developed  for  VIPER  cables  was  directly  adapted  to
+stack, provides a large design space for a        compact but high     -field     fabricate NINT pancakes for the TFMC winding pack [66]. The
+magnet. Thermal stability is enabled by efficient cooling  and                    robust, demountable, low resistance joints of the VIPER cable
+large current sharing capacity of the unit cell. This allows the                  were  modified  to  serve  as  demountable  pancake             -to-pancake
+use  of  REBCO  with  defects  such  as  dropouts,  aggressively                  joints  embedded  within  the  winding  pack.    Finally,  VIPER
+grading the REBCO tape stack, and possible tolera              nce to some        cables  were  used  directly  in  the  implementation  of  the  test
+threshold-level   of   damage   sustained   during   fabrication   or             facility, with three pairs of jointed VIPER cables forming the
+
+operation. Small-scale NI coils have demonstrated a significant
+
+                                                                                                                                                              10
+
+                                                                                   GPa during operation, and serves as a pressure vessel              to enable
+                                                                                   single-pass    20  bar   supercritical  helium  flow        that  cools  the
+                                                                                   winding pack and case. Two high pressure vessels or “plena”
+                                                                                   are attached to the case with unique high         -pressure feedthroughs
+                                                                                   to  provide   winding  pack  access   for         current,   cooling,  and
+                                                                                   instrumentation    , completing the magnet assembly.
+                                                                                   B. The TFMC Test Facility
+                                                                                      The 835 m2 (9,000 sq. ft.)        TFMC Test Facility         is shown in
+                                                                                   overview  in    Fig.  1.  It  was  built  as  a stand-alone  large-scale
+                                                                                   REBCO magnet test facility at the MIT PSFC in less than two
+  Fig. 4: CAD rendering of the TFMC magnet showing the                             years  in  the  large  experiment  hall        formerly  housing      power
+  principal components.                                                            equipment      for   the   Alcator   C-Mod   tokamak.   The   major
+superconducting feeder system between the 50 kA LN2-cooled                         engineering systems enabling magnet testing are as follows:
+                                                                                   •    Main vacuum cryostat: A 35-ton SS316 vacuum cryostat
+binary current leads and the TFMC magnet terminals.                                     with 20 m3 internal volume was designed at MIT and built
+           VI. TFMC PROGRAM TECHNICAL OVERVIEW                                          at  an  external  vendor.       External  SS316  ribs  minimize
+   The purpose of this section is to provide a short summary of                         deflection   under   vacuum   while   the   support   structure
+the five technical papers that accompany this overview paper,                           underneath was carefully designed to properly support the
+covering  major  facets  of  the  program  at  a  high-level  and                       approximately   10-ton   TFMC    magnet.                The   cryostat
+providing   a   unified   view   of     how   the   entire   project   was              contains    ten  radial  NW500  flanges  to  provide abundant
+integrated   together   to   form   a   complete   whole.   Readers                     internal     access.     A    central    bore    is    provided    for
+interested   in   obtaining   an   in-depth   technical   analysis   are                instrumentation access within the high-field region of the
+encouraged  to review the companion  papers  associated  with                           TFMC.      The  top  lid separates     for  installation/removal  of
+each topic in this special issue.                                                       large components.
+                                                                                   •    Vacuum  system:        Pumping  is  provided  by  two  Leybold
+A. The TFMC Magnet                                                                      Turbovac  TMP1000  (total  of  2000  l/s            pumping  power)
+   The   TFMC,  shown  at  the  bottom-left  of           Fig.  1  and  as  a           backed  by  Leybold  Ecodry  35  scroll  pumps. The  scroll
+detailed CAD rendering in Fig. 4, is a non-insulated, REBCO                             pumps  were  located  outside  of  the  35-gauss  line  of  the
+stack-in-plate,     style   superconducting   magnet.   It   weighed                    TFMC  with the turbos enclosed within 1-inch thick iron
+10,058 kg and utilized 270 km of REBCO. It has three main                               magnetic shields. High vacuum in the 10-6 to 10-7 torr range
+components: (1) the winding pack; (2) the structural case; and                          was routinely achieved during experiments.
+(3) the plena. The winding pack is composed of a stack of 16                       •    LN2 radiation shields and distribution system: Radiation
+single pancakes with 2 termination plates top and bottom. The                           shields, consisting of modules of two steel panels with a
+pancakes  are  Nitronic-40  radial  plates  machined with  spiral                       thin interstitial space for LN2, were also designed at MIT
+channels on one side for the REBCO tape stack and single-pass                           and  built  by    an  external  vendor.      They  were  assembled
+channels on the opposite side for supercritical helium              coolant.            within the vacuum cryostat. The LN2 was gravity fed from
+After REBCO winding and pancake assembly is complete, the                               two storage dewars adjacent to the vacuum cryostat, which
+pancake  undergoes  a  vacuum-pressure  impregnation  solder                            were provided with  LN2 from an 18,000 external gallon
+process to provide good mechanical protection of the REBCO                              storage tank.
+stack    and    efficient    thermal    and    electrical    connectivity          •    Power   supply:       The   system   was   delivered   by   Alpha
+throughout each pancake. Each pancake is electrically tested in                         Scientific  Electronics  and  is  composed  of  eight  cabinets
+LN2 following the solder process, providing quality assurance                           each providing 6.25 kA for a total of 50 kA.
+/ quality control as well as superconducting performance data                      •    Current  leads  and  feeder  system:         A  set  of  binary  LN2-
+to guide pancake location within the winding pack stack and                             cooled 50  kA  REBCO  current  leads  and a VIPER  cable
+inform models of magnet performance. The pancakes are bolted                            feeder  system  were  designed  and  built  in-house  at  MIT
+at the perimeter to provide mechanical and thermal connectivity                         PSFC.  These  systems  are  described  in  more  detail  in
+while   inter-pancake   joints   provide   low   resistance   current                   Section VI C.
+transfer  between  pancakes.  The  top  and  bottom  termination                   •    Supercritical  helium  circulation  system:             A  liquid-free
+plates   facilitate  electrical  connection  to       a   superconducting               cryocooler-based system provided cooling down to 20 K
+feeder system.                                                                          for the TFMC, current leads, and feeder system was built
+   The  winding  pack  is  contained  within  a  structural  case,  a
+“trough   and  lid”  style design      composed  of  two        Nitronic-50
+forgings machined to shape and bolted together. The case reacts
+the large electromechanical loads, with stresses approaching 1
+
+                                                                                                                                                                 11
+
+                                                                                    petals  forms  an  electrical  and  mechanical  joint  with  the  first
+                                                                                    VIPER feeder cable.
+                                                                                        The superconducting FC system is composed of three sets of
+                                                                                    highly shaped non-planar VIPER cables, which are enclosed by
+                                                                                    a  conduction  cooled  copper  radiation  shield  attached  to  the
+                                                                                    main  vacuum  cryostat  LN2  radiation  shields.                The  longest,
+                                                                                    central set of cables – the “cold bus” – is a VIPER cable with a
+                                                                                    10 mm central cooling hole for coolant. The coolant is warm
+                                                                                    supercritical helium exhaust from the TFMC, nominally at 22 –
+                                                                                    25  K  compared  to  the 20  K  helium inlet  temperature                to  the
+                                                                                    magnet.  Four  stacks  of  REBCO resulted  in              an  Ic(25   K,  self-
+                                                                                    field)  of  101  kA  and  a  Tc(45  kA,  self-field)  of  55  K.  This
+                                                                                    provides a large factor of safety to the 40.5 kA 25 K nominal
+                                                                                    operating conditions. The bus cables have a gradual “S” shape
+      Fig. 5: CAD rendering showing how the superconducting                         bend along the cable axis, which enables the feeder system to
+    current leads (at top   -left) and VIPER cable feeder system (at                absorb with less than 0.1% axial strain the physical coefficient
+      center) interface with the TFMC magnet (at bottom          -right).           of thermal expansion movement induced during cooling when
+     by an  external  vendor.  The  system  is  described  in  more                 the current leads and the TFMC shrink away from each other.
+     detail in Section VI D.                                                        On  either  end  of  the  bus  cables,  a  set  of  nearly  identical
+                                                                                    performance  VIPER cables  joins  the  bus  to  the CLs  and                 the
+C. Current leads and feeder cable system                                            TFMC  terminals;  however,  these  cables  have  a  solid  copper
+   The  current  leads       (CL)    and  feeder     cables  (FC),  shown           former  to  maximize  conduction  cooling  and  simplify  the
+together in proximity to the TFMC magnet in Fig. 5, represent                       supercritical  helium  circuit.  All  cables  had  to  be  bent  to
+a significant superconducting achievement in their own right.                       tolerances of a few mm to guarantee successful assembly.
+Designed and built  in-house  at  the  MIT PSFC  as  part  of  the                  D. Cryocooler-based helium circulation system
+TFMC Test Facility, the system was designed to handle 50 kA                             Another innovative feature of the TFMC Test Facility was
+of  current  and  utilize  the  significant  onsite  LN2  storage  and              the  implementation  of  a  liquid-free  cryocooler-based  system
+distribution   system   available.         Prior   to   the   TFMC   test           that circulates supercritical helium as an alternative the more
+campaigns,    the      CL    and    FC    system    was         successfully        traditional   but     cost-   and   schedule-intensive   liquid   helium
+commissioned  at  41  kA  to  ensure  the  nominal               40.5  kA  of       infrastructure  found  at  large-scale  magnet  test  facilities.  The
+terminal   current   for   the   TFMC   tests;   post      -TFMC   testing          system was responsible for cooling the TFMC, the FCs, and the
+demonstrated stable operation at 50 kA, the maximum current                         REBCO-section of the CLs.
+available from the power supply.           CL-FC joint resistances and                  The design and construction of the system was contracted to
+FC joint resistances were measured in the 1 to 2 nΩ range at                        an external vendor       . To meet  the cryogenic requirements, two
+40.5 kA.                                                                            nearly  identical  modules         –  each  containing  four  Cryomech
+   Each  of  the  approximately  3  m  tall CLS           consists  of  three       AL630  cryocoolers  housed  within  an  LN2              -shielded  vacuum
+sections.    The   upper,   electrically   resistive   heat   exchanger             cryostat     –   were   operated   in   parallel.   Custom   gas   heat
+section  is  composed  of  a  large  heavily  slotted  C101 copper
+piece,   designed   to   transport   electrical   current   with   high
+conductivity while being cooled with gaseous nitrogen boiling
+off  from  the  middle  section.  The  middle  section  is  a  large
+boiling  chamber,  containing  an  internal  reservoir  of  LN2.
+Internally machined cooling fins maximize heat transfer while
+external claw pumps provide the ability to subcool the LN2 to
+65  K  by  reducing  the  vacuum  pressure  in  the  chamber.  The
+boiling  chambers  are  fed  from  a  large  LN2  reservoir  housed
+within the current lead vacuum cryostat, which also serves as
+the cryostat radiation  shield.  Connected  to  the  bottom  of  the
+boiling  chamber  is  the  lower  superconducting  section.  This
+section  is  composed      of  six  individual  petals that combine  to
+provide an Ic(77 K, self-field) of 58.4 kA. Each petal consists
+of two large C101 copper terminal blocks spanned with a SS316
+bridge   containing   twenty-two   stacks   of   4   REBCO   tapes
+soldered  into  machined  channels. When  assembled                  the  non-           Fig. 6: Data from the second cooldown of the TFMC magnet
+REBCO  side  of  the       C101    copper terminal  blocks  of  the         six                  from 300 K to 20 K over the course of 5 days.
+
+
+
+                                                                                                                                                                 12
+
+                                                                                    Without  the  ability  to  detect-and-dump  the  stored  magnetic
+                                                                                    energy  as  is  the  case  for  insulated  magnets,  large-scale  NI
+                                                                                    fusion magnets must have a successfully strategy for handling
+                                                                                    quench.  The  TFMC  tests  provided  the  first  opportunity  to
+                                                                                    gather extensive data on a fusion-scale NI TF coil to aid in the
+                                                                                    validation of computational models and to guide future magnet
+                                                                                    design.
+                                                                                        The   first   test   campaign   objectives   were   to   assess   the
+                                                                                    charging/discharging      and      steady        -state      electromagnetic
+                                                                                    response of the coil at the full design performance of 20 T peak
+                                                                                    field-on-conductor    with    40    kA    of    terminal    current.
+                                                                                    Measurements  were  successfully  made  of                radial  resistance,
+                                                                                    current, voltage  and  temperature  distribution  in  the  winding
+                                                                                    pack, the magnet’s L/R decay time constant, internal pancake-
+     Fig. 7: Data from the first TFMC test campaign, showing the                    to-pancake joint resistance, cryogenic helium flow distribution
+     terminal current (top) and 3D teslameter measurements of the                   and cooling power, and structural performance. Fig. 7 shows an
+            peak field-on-conductor exceeding 20 T (bottom).                        overview  of  the  campaign’s  magnet  ramp.  The  test  took
+                                                                                    approximately  5  days  due  to  the  approximately  3-hour  L/R
+exchangers   were   integrated   directly   into   the   cryocooler                 decay time constant, placing great demands upon the operators.
+coldhead, and cryofans with a maximum rotation speed of 60                          The  magnet  achieved  a  peak  field-on-coil  over  a  significant
+krpm    in  each  of  the  modules  actuated  helium  circulation.                  section of first turn REBCO stack of 20.1 T approximately 65
+During commissioning, the system confirmed 600 W of cooling                         hours into the test.
+power at 20 K with a supercritical helium mass flow of 70 g/s                           The second test campaign had two objectives: to precisely
+at maximum operating  pressure  of  20  bar-a. Heaters  in  each                    quantify TFMC REBCO superconducting performance in DC
+module provide for temperature control of the helium supply to                      as a function of temperature; and to fully measure the dynamics
+the circuit.                                                                        of the coil to an intentional open-circuit quench at a terminal
+   Fig. 6 shows an example of cryogenic system performance                          current    (31.5   kA)    very  close     to  the  proposed  SPARC  TF
+during a 300 K to 24 K cooldown of the TFMC. Average helium                         magnet. Excellent voltage and temperature data were acquired
+circuit  pressure,  roughly  maintained  during  cooldown  by  the                  during  the  initiation,  incubation,  and  dump  phases  of  the
+addition   of   fresh   helium,   was   approximately   13.3   bar-a.               quench.  The  acquisition  of  this  data  set,  and  subsequent
+Crycoolers  were  activated  in  sets  of  two  to  maximize  the                   utilization  to  validate  and  extend  the  extensive array  of NI
+cooling rate but stay well within the administrative limit of a 50                  computational  modelling  tools,  achieved               of   one   the  most
+K  maximum  difference  between  the  helium  inlet  and  return                    important objectives of the TFMC Program.
+
+temperature  to  avoid  temperature  gradient-induced  strains  in
+the winding pack and structural case. The heaters are activated
+around hour 105 to maintain the target TFMC temperature of
+24  K.  The  cooldown  time  of  approximately  4.5  days  was  in
+good agreement with the in-house cryogenic circuit model used
+to design the helium circuit.
+E. Experimental results from the TFMC campaigns
+   The   TFMC   was   experimentally   assessed   in   two                 test
+campaigns in between August and October of 2021; following
+the  test  campaigns  the  coil  was  removed  from  the  cryostat,
+carefully  disassembled,  and  subject  to  a  series  of  destructive
+and   non-destructive   tests.   Disassembly   was   aided   by   the
+modular,  demountable  nature  of  the  TFMC  coil.  The  post-
+mortem was conducted to maximize learning from the TFMC,
+including    confirmation    of    the    engineering    design    and
+construction   of   the   coil   after   rigorous   testing   up   to   full           Fig. 8: Post-quench analysis of the TFMC. (a) shows Pancake
+performance at 20 T and to assess the resiliency of the magnet                          #12 during the post-mortem with a sharply defined region of
+to  two  open-circuit  events       that  occurred  during  testing.  The              thermal damage in the upper-left tight corner. (b) shows a 3D
+                                                                                       FEA simulation 170 s into the evolution of a 30 kA quench; the
+open-circuits were of particular interest, as they represent the                                  burn region is reproduced almost perfectly.
+most damaging circumstances for an NI coil, as currents driven
+radially cause internal joule heating that can lead to a quench.
+
+                                                                                                                                                              13
+
+   In the quench; the predicted rapid (~3 s) inductive turn-to-
+turn  and  pancake-to-pancake  quench  cascades  were  clearly
+observed, confirming the dynamics of the basic self-protection
+mechanism for large-scale NI coils. The cascades are intended
+to  rapidly  distribute  the  stored  magnetic  energy  uniformly
+throughout the magnet. Post-quench analysis and experiments,
+however, indicated the present of localized damage. Data on the
+global  temperature  distribution  of  the  magnet  during  quench
+compared  with       3D  FEA      model  predictions  indicated         non-
+uniform  energy  deposition  within  the  winding  pack.  Post-
+quench electromagnetic tests after recooling to 24 K found that                       Fig. 9: The decrease in    normalized REBCO tape cost per meter
+the electromagnetic response of the coil (current path through                             during the time period spanning the TFMC Program..
+the  winding  pack, azimuthal  current  and  magnetic  field, and
+total pancake voltages) had been altered through the upper half                   fidelity  computational  models,  was  confirmed  in  experiment
+of the winding pack.                                                              while a novel cryogenic coolant scheme capable of the large
+   The   TFMC’s   post-mortem            confirmed   the   presence   of          heat removal required by compact tokamaks was  validated. A
+localized damage within the upper half of the magnet winding                      critical experimental step was taken to assess the feasibility of
+pack. Concentrated in only a few pancakes with the epicentre                      passive, self-protection against a quench in a fusion-scale NI
+in Pancake #12, thermal damage was found in a tightly defined                     TF coil. While the TFMC was intentionally not optimized for
+azimuthal arc in one of the tight corners as shown in Fig. 8a.                    quench resiliency, the extensive data and validated models that
+Due  to  the  non   -azimuthally  symmetric  shape,  magnetic  flux               it  produced  were  required  as  an  essential  step  towards  this
+density is concentrated in the tight corners and creates a sharply                important objective.
+defined critical surfaces characterized by high ratios of I/Ic (or                    As a result of the TFMC program, design and fabrication of
+T/Tc). For these regions, the result is susta       ined current sharing,         the NINT-based TF magnet, VIPER-based CS and PF magnets
+leading to rapid temperature rise and ultimately burning in these                 are  underway,  and  new  commercial  magnets  are  underway
+areas,  before  the  rapid  inductive  cascade  can  dissipate  the               Efforts since the close of the TFMC Program have focused on
+magnetic  stored  energy  throughout  the  magnet.            The    TFMC,        optimizing  the  TF  towards  quench  resiliency,  utilizing  the
+which intentionally concentrated magnetic flux in th              e corners       improved  modelling  capabilities,  technical  innovations,  and
+to  achieve  the  programmatic  DC  performance   goals,   was                    subsequent experiments. Based on the results from the TFMC
+inherently  vulnerable  to  this  effect.  Indeed,  the  post      -mortem        Program, VIPER-based cables known as PIT-VIPER cable for
+confirmed   that   the   engineering   design,   fabrication,   and               the CS and PF are being developed and qualified in small-scale
+assembly of the coil were executed perfectly with no technical,                   and model coil programs, making use of substantially expanded
+operational, or other issue inducing the quench.                                  fabrication and test facilities at CFS as well as MIT PSFC. The
+   Importantly,     this  effect  was  predicted  by  several  of  the            TFMC Test facility, upgraded to support fast-ramp capabilities,
+computational  models  developed  in  the  TFMC  program  as                      is presently being utilized in cable and model coil tests for the
+shown in Fig. 8b; however, the models had not converged to a                      CS.   In  addition  to  SPARC,  CFS  is  also  now  designing  and
+single self -consistent scenario requiring the experimental open                  building  high-field  REBCO  magnets  for  other  scientific  and
+circuit quench test. The extensive and unprecedented data set                     industrial  purposes,  such  as  the  WHAM  high-field  mirror
+obtained from the experimental quench have been used to refine                    project [67].
+the  simulation  toolset.  The  advances  in  NI  magnet  physics                     The TFMC Program also had an unprecedented impact on
+understanding  and  validated        models  are  now  being  used  to            the REBCO tape industry. One of the objectives of the program
+design  next-generation  NI  TF  coils  that  maximize  quench                    was to reduce the cost of REBCO and catalyze the evolution of
+resilience     through     a     multipronged     approach.     These             the    industry    from    small,    bespoke    tape    deliveries    to
+developments are outside the scope of this paper but expected                     standardized, industrial volumes. Fig. 9 shows the impact of the
+to be published in the future.                                                    TFMC Program on REBCO cost per meter. Starting with initial
+                                                                                  MIT     procurements       from  ten  manufacturers         in  early  2018
+                            VII. CONCLUSION                                       through all of the CFS procurement for the TFMC in mid-2021,
+   The TFMC achieved its programmatic goal of demonstraing                        the TFMC was instrumental in reducing the average REBCO
+a large-scale high-field magnet, achieving 20.1 T peak field             -on-     tape costs per meter by almost 40%. Procurements by CFS for
+conductor  with  40.5 kA         of  terminal  current,  815  kN/m  of            the SPARC tokamak, now underway and expected to approach
+Lorentz loading on the REBCO stacks, and almost 1 GPa of                          10    million    meters,    should    continue    to    decrease    cost.
+mechanical  stress.  Internal  demountable  pancake-to-pancake                    Furthermore,  the  demanding  REBCO  specifications  required
+joints  operated  in  the  0.5  to  2.0  nΩ      range  at  20  K  and  in        by TFMC presented a technical challenge, some manufacturers,
+magnetic fields up to 12 T. The DC and AC electromagnetic                         in response, proved capable of dramatically increasing both the
+performance of the magnet, predicted by new advances in high-                     performance  and  volume  of  REBCO  at  reduced  cost [30].
+
+                                                                                                                                                              14
+
+Finally, the need for high volume Ic(B,T, θ) measurements as                       tireless IT support; Ed Lamere and Mitch Galanek from MIT
+part of the NI modeling effort and quality-assurance / quality-                    EHS for overseeing test program safety; Bob Armstrong and
+control   program   for   TFMC   produced   superior   REBCO                       Randy Field at MIT Energy Initiative; MIT Central Machine
+characterization equipment [68].                                                   Shop  for  fabrication  support.       MIT  Central  Utility  Plant  for
+   A final positive impact of the TFMC Program has been the                        keeping the water cold, and MIT facilities for the keeping the
+significant  acceleration  of  other  high-field  superconducting                  lights on.
+magnet efforts based on REBCO across a variety of fields. For
+example, the first non-planar stellarator coil from REBCO was                      At CFS: Andrea Jarrett and Joseph Stiebler who oversaw CFS
+designed, built, and tested with VIPER cable by MIT PSFC and                       procurement,   Steve   Renter   for   handling   CFS   operations,
+Type  One  Energy,  a  private  fusion  company [69].  Another                     Carolina Zimmerman for collaboration on fiscal oversight, and
+example     is  how  the  reduction  in  REBCO  tape  cost  and                    Samuel Morgan for technical support.
+demonstration  of  high-field  REBCO  magnets  and  ancillary
+technology   is   opening   a   path   to   next-generation   collider             External:     Edward   Moses   for       unwavering   mentorship   and
+experiments at the frontier of particle physics [70].                              project   management        guidance;      Walter   Fietz   of   Karlsruhe
+   After a little over three years, the TFMC Program concluded                     Institute of Technology for technical contributions and program
+in  the  fall  of  2021  having  successefully  completed  all  of  its            review;  Nick  Strickland  and  Stuart  Wimbush  of  Robinson
+programmatic  and  technical  objectives. The  state of  REBCO                     Research      Institute      for      collaboration      on      REBCO
+magnet  technology  for  fusion  energy  at  the  outset  of  the                  characterization;  Nagato  Yanagi  of  the  National  Institute  for
+program,  rooted  in  small-scale  cable  and  coil prototypes  and                Fusion Sciences for collaboration on high-field cable testing;
+conceptual designs of full-scale system, looked very different                     Satoshi  Awaji,  Tatsu  Okada,  and  Arnaud  Badel  for  opening
+at its close. The first representative-scale REBCO TF coil – in                    their   facilities   and   expertise   to   us   in   high-field   REBCO
+fact,  the  first  large-scale  REBCO  magnet  ever  constructed             –     Ic(B,T,θ) measurements; Jeff Mullins from Oliver Welding for
+had  been  designed,  built,  and  successfully  tested.  Ancillary                perfect  welds;  to  George  Dodson  (MIT),  Joseph  Minervini
+technology,   from   high-current   REBCO   cables   to   50   kA                  (MIT),  Edward  Moses,  and  Soren  Prestemon  (LBNL)  for
+REBCO  current  leads,  from  liquid         -free  600  W  supercritical          serving   on   the   TFMC   Safety   and   Operations   Review
+helium cryogenic systems t       o advanced 3D FEA modeling of the                 committee.
+coupled  thermal,  mechanical,  and  electrical             phenomena       in
+large-scale  NI    magnets,    had  been  successfully  demonstrated.              Vendors:    The  project  would  not  have  succeeded           without  the
+REBCO,  in  terms  of  performance,  volume,  and  cost  took  its                 commitment   and   execution   of   our   vendor   partners,   who
+first significant step towards an industrial co         mmodity product            delivered  complex  procurements  on  challenging  schedules
+procured    at    the    ton-scale.    Finally,    and    perhaps    most          while  working at-risk through the COVID-19 pandemic. Our
+importantly,  a  new  pathway  to  achieving  fusion  energy  on                   sincerest gratitude to each of you.
+accelerated   timescales   in   compact   devices,   as   well   as                                                                                                                                                            •
+opportunities in other areas of science and industry             that utilize
+strong magnetic fields, had been opened by expanding                the state                                     REFERENCES
+of large-scale high-field superconducting magnets into the 20 T                    [1]     R. Vieira, “The design, fabrication, and assembly of the
+frontier.                                                                                  SPARC Toroidal Field Model Coil,” IEEE Trans. Appl.
+                                                                                           Supercond., no. Special issue on the SPARC Toroidal
+                          ACKNOWLEDGMENT                                                   Field Model Coil Project, 2023.
+   The authors are indebted to the many individuals and entities                   [2]     T. Golfinopoulos, “The SPARC Toroidal Field Model
+that  made  the  TFMC  Program  possible.              Executing  such       a             Coil Magnet Test Facility,” no. Special Issue on the
+program  makes  clear  the  full  extent  to  which  a  tremendous                         SPARC Toroidal FIeld Model Coil, 2023.
+number of people contribute to ensure collective success. We                       [3]     V. Fry, “50 kA capacity, nitrogen-cooled, demountable
+thank everyone who participated in the endeavour.                                          current leads for the SPARC Toroidal Field Model
+                                                                                           Coil,” IEEE Trans. Appl. Supercond., no. Special Issue
+At the MIT: Professor Ron Ballinger for timely advice on metal                             on the SPARC Toroidal Field Model Coil Project, 2023.
+forgings; Makoto Takayasu and Jim Kelsey for technical input                       [4]     P. Michael, “A 20 K, 600 W, cryocooler-based
+                                                                                           supercritical helium  system for the SPARC Toroidal
+and     reviews;     Joseph     Minervini     for     leadership     in                    Field Model Coil,” IEEE Trans. Appl. Supercond., no.
+superconductivity;      Corinne  Cotta  (PSFC)          for  overseeing      a             Special Issue on the SPARC Toroidal Field Model Coil
+sizeable  fraction  of  TFMC  procurement;  Mary  Davenport,                               Project, 2023.
+Tesha  Myers,  Vick  Sangha,  and  Katherine  Ware                for  fiscal      [5]     D. Whyte, “Experimental results from the SPARC
+oversight;      Jennifer     James        for     providing       unceasing                Toroidal Field Model Coil test campaigns.,” IEEE
+administrative   support;   David   Parker   for   handling   PSFC                         Trans. Appl. Supercond., no. Special Issue on the
+operations;  Karen  Cote  for  handling  PSFC  safety;             Brandon                 SPARC Toroidal Field Model Coil, 2023.
+Savage, Lee Berkowitz, Mark London, and Clarence Tucker for                        [6]     Z. S. Hartwig et al., “VIPER: an industrially scalable
+                                                                                           high-current high-temperature superconductor cable,”
+
+                                                                                                                                                        15
+
+       Supercond. Sci. Technol., vol. 33, no. 11, p. 11LT01,                    [24]   G. Federici et al., “Overview of EU DEMO design and
+       Oct. 2020, doi: 10.1088/1361-6668/abb8c0.                                       R&D activities,” Fusion Eng. Des., vol. 89, no. 7, pp.
+[7]    B. LABOMBARD et al., “Spiral-Grooved, Stacked-                                  882–889, Oct. 2014, doi:
+       Plate Superconducting Magnets And Related                                       10.1016/j.fusengdes.2014.01.070.
+       Construction Techniques,” US20200211744A1, Jul. 02,                      [25]   D. G. Whyte, J. Minervini, B. LaBombard, E. Marmar,
+       2020 Accessed: Jul. 13, 2023. [Online]. Available:                              L. Bromberg, and M. Greenwald, “Smaller & Sooner:
+       https://patents.google.com/patent/US20200211744A1/e                             Exploiting High Magnetic Fields from New
+       n                                                                               Superconductors for a More Attractive Fusion Energy
+[8]    J. P. Freidberg, F. J. Mangiarotti, and J. Minervini,                           Development Path,” J. Fusion Energy, vol. 35, no. 1,
+       “Designing a tokamak fusion reactor—How does                                    pp. 41–53, Feb. 2016, doi: 10.1007/s10894-015-0050-1.
+       plasma physics fit in?,” Phys. Plasmas, vol. 22, no. 7, p.               [26]   J. W. Hughes et al., “Access to pedestal pressure
+       070901, Jul. 2015, doi: 10.1063/1.4923266.                                      relevant to burning plasmas on the high magnetic field
+[9]    D. R. Cohn and L. Bromberg, “Advantages of high-field                           tokamak Alcator C-Mod,” Nucl. Fusion, vol. 58, no. 11,
+       tokamaks for fusion reactor development,” J. Fusion                             p. 112003, Sep. 2018, doi: 10.1088/1741-4326/aabc8a.
+       Energy, vol. 5, no. 3, pp. 161–170, Sep. 1986, doi:                      [27]   J. G. Bednorz and K. A. Muller, “Possible highT c
+       10.1007/BF01050610.                                                             superconductivity in the Ba-La-Cu-O system,” Z. Phys.
+[10]   R. Andreani, The FTU Frascati Tokamak Upgrade.                                  B Condens. Matter, vol. 64, no. 2, pp. 189–193, Jun.
+       United States: Pergamon Books Inc, 1987.                                        1986, doi: 10.1007/BF01303701.
+[11]   M. Greenwald et al., “20 years of research on the                        [28]   D. R. Cohn, J. Schwartz, L. Bromberg, and J. E. C.
+       Alcator C-Mod tokamaka),” Phys. Plasmas             , vol. 21, no.              Williams, “Tokamak reactor concepts using high
+       11, p. 110501, Nov. 2014, doi: 10.1063/1.4901920.                               temperature, high-field superconductors,” J. Fusion
+[12]   G. Cargulia, C. Bushnell, and J. Citrolo, “Evolution of                         Energy, vol. 7, no. 1, pp. 91–94, Mar. 1988, doi:
+       the BPX tokamak configuration,” in          [Proceedings] The                   10.1007/BF01108259.
+       14th IEEE/NPSS Symposium Fusion Engineering, Sep.                        [29]   J. Schwartz, L. Bromberg, D. R. Cohn, and J. E. C.
+       1991, pp. 1047–1049 vol.2. doi:                                                 Williams, “A Commercial Tokamak Reactor Using
+       10.1109/FUSION.1991.218767.                                                     Super High Field Superconducting Magnets,” Fusion
+[13]   D. Post et al., “Physics Aspects of the Compact Ignition                        Technol., vol. 15, no. 2P2B, pp. 957–964, Mar. 1989,
+       Tokamak,” Phys. Scr., vol. 1987, no. T16, p. 89, Jan.                           doi: 10.13182/FST89-A39817.
+       1987, doi: 10.1088/0031-8949/1987/T16/011.                               [30]   A. Molodyk et al., “Development and large volume
+[14]   D. M. Meade, “FIRE, a next step option for magnetic                             production of extremely high current density
+       fusion,” Fusion Eng. Des., vol. 63–64, pp. 531–540,                             YBa2Cu3O7 superconducting wires for fusion,” Sci.
+       Dec. 2002, doi: 10.1016/S0920-3796(02)00282-X.                                  Rep., vol. 11, no. 1, Art. no. 1, Jan. 2021, doi:
+[15]   B. Coppi and the Ignitor Project Group, “Highlights of                          10.1038/s41598-021-81559-z.
+       the Ignitor experiment,” J. Fusion Energy, vol. 13, no.                  [31]   Z. S. Hartwig, C. B. Haakonsen, R. T. Mumgaard, and
+       2, pp. 111–119, Sep. 1994, doi: 10.1007/BF02213946.                             L. Bromberg, “An initial study of demountable high-
+[16]   S. Wu, “An overview of the EAST project,” Fusion                                temperature superconducting toroidal field magnets for
+       Eng. Des., vol. 82, no. 5, pp. 463–471, Oct. 2007, doi:                         the Vulcan tokamak conceptual design,” Fusion Eng.
+       10.1016/j.fusengdes.2007.03.012.                                                Des., vol. 87, no. 3, pp. 201–214, Mar. 2012, doi:
+[17]   G. S. Lee et al., “Design and construction of the                               10.1016/j.fusengdes.2011.10.002.
+       KSTAR tokamak,” Nucl. Fusion, vol. 41, no. 10, p.                        [32]   G. M. Olynyk et al., “Vulcan: A steady-state tokamak
+       1515, Oct. 2001, doi: 10.1088/0029-5515/41/10/318.                              for reactor-relevant plasma–material interaction
+[18]   Y. C. Saxena and S.-1 Team, “Present status of the SST-                         science,” Fusion Eng. Des., vol. 87, no. 3, pp. 224–233,
+       1 project,” Nucl. Fusion, vol. 40, no. 6, p. 1069, Jun.                         Mar. 2012, doi: 10.1016/j.fusengdes.2011.12.009.
+       2000, doi: 10.1088/0029-5515/40/6/305.                                   [33]   B. N. Sorbom et al., “ARC: A compact, high-field,
+[19]   R. Aymar, B. Bareyt, and G. Bon Mardion, “Tore Supra                            fusion nuclear science facility and demonstration power
+       Basic design Tokamak system,” France, 1980.                                     plant with demountable magnets,” Fusion Eng. Des.,
+[20]   H. Zushi et al., “Overview of steady state tokamak                              vol. 100, pp. 378–405, Nov. 2015, doi:
+       plasma experiments in TRIAM-1M,” Nucl. Fusion, vol.                             10.1016/j.fusengdes.2015.07.008.
+       43, no. 12, p. 1600, Dec. 2003, doi: 10.1088/0029-                       [34]   A. Sykes et al., “Compact fusion energy based on the
+       5515/43/12/006.                                                                 spherical tokamak,” Nucl. Fusion, vol. 58, no. 1, p.
+[21]   Y. Kamada et al., “Completion of JT-60SA construction                           016039, Nov. 2017, doi: 10.1088/1741-4326/aa8c8d.
+       and contribution to ITER,” Nucl. Fusion, vol. 62, no. 4,                 [35]   J. A. Alonso et al., “Physics design point of high-field
+       p. 042002, Mar. 2022, doi: 10.1088/1741-4326/ac10e7.                            stellarator reactors,” Nucl. Fusion, vol. 62, no. 3, p.
+[22]   R. Aymar, P. Barabaschi, and Y. Shimomura, “The                                 036024, Mar. 2022, doi: 10.1088/1741-4326/ac49ac.
+       ITER design,” Plasma Phys. Control. Fusion, vol. 44,                     [36]   P. Bruzzone et al., “High temperature superconductors
+       no. 5, p. 519, Apr. 2002, doi: 10.1088/0741-                                    for fusion magnets,” Nucl. Fusion, vol. 58, no. 10, p.
+       3335/44/5/304.                                                                  103001, Aug. 2018, doi: 10.1088/1741-4326/aad835.
+[23]   Y. T. Song et al., “Concept Design of CFETR Tokamak                      [37]   T. Lécrevisse, X. Chaud, P. Fazilleau, C. Genot, and J.-
+       Machine,” IEEE Trans. Plasma Sci., vol. 42, no. 3, pp.                          B. Song, “Metal-as-insulation HTS coils,” Supercond.
+       503–509, Mar. 2014, doi: 10.1109/TPS.2014.2299277.
+
+                                                                                                                                                        16
+
+       Sci. Technol., vol. 35, no. 7, p. 074004, May 2022, doi:                        kA HTS cable prototypes in the EDIPO test facility,”
+       10.1088/1361-6668/ac49a5.                                                       Supercond. Sci. Technol., vol. 29, no. 8, p. 084002, Jun.
+[38]   D. S. Beard, W. Klose, and S. Shimamoto, “The IEA                               2016, doi: 10.1088/0953-2048/29/8/084002.
+       Large Coil Task,” Fusion Eng. Des., vol. 7, no. ½, pp.                  [53]    N. Yanagi et al., “Magnet design with 100-kA HTS
+       3–230, 1988.                                                                    STARS conductors for the helical fusion reactor,”
+[39]   M. S. Lubell et al., “The IEA Large Coil Task Test                              Cryogenics, vol. 80, pp. 243–249, Dec. 2016, doi:
+       Results in IFSMTF,” 10. international conference on                             10.1016/j.cryogenics.2016.06.011.
+       magnet technology (MT-10), Boston, MA, USA, 21 Sep                      [54]    M. J. Wolf, W. H. Fietz, C. M. Bayer, S. I. Schlachter,
+       1987, Jan. 01, 1987.                                                            R. Heller, and K.-P. Weiss, “HTS CroCo: A Stacked
+       https://digital.library.unt.edu/ark:/67531/metadc109384                         HTS Conductor Optimized for High Currents and Long-
+       3/ (accessed Jul. 13, 2022).                                                    Length Production,” IEEE Trans. Appl. Supercond., vol.
+[40]   M. M. Steeves et al., “The US demonstration poloidal                            26, no. 2, pp. 19–24, Mar. 2016, doi:
+       coil,” IEEE Trans. Magn., vol. 27, no. 2, pp. 2369–                             10.1109/TASC.2016.2521323.
+       2372, Mar. 1991, doi: 10.1109/20.133694.                                [55]    M. Takayasu, L. Chiesa, P. D. Noyes, and J. V.
+[41]   K. Okuno et al., “The first experiment of the 30 kA                             Minervini, “Investigation of HTS Twisted Stacked-Tape
+       NbTi DEMO POLOIDAL COILS (DPC-U1 and -U2),”                                     Cable (TSTC) Conductor for High-Field, High-Current
+       Proc. MT-11, vol. 2, pp. 812–817, 1989.                                         Fusion Magnets,” IEEE Trans. Appl. Supercond., vol.
+[42]   M. Darweschsad et al., “Development and test of the                             27, no. 4, pp. 1–5, Jun. 2017, doi:
+       poloidal field prototype coil POLO at the                                       10.1109/TASC.2017.2652328.
+       Forschungszentrum Karlsruhe,” Fusion Eng. Des., vol.                    [56]    M. Takayasu, L. Chiesa, L. Bromberg, and J. V.
+       36, no. 2, pp. 227–250, May 1997, doi: 10.1016/S0920-                           Minervini, “Cabling Method for High Current
+       3796(97)00005-7.                                                                Conductors Made of HTS Tapes,” IEEE Trans. Appl.
+[43]   A. Ulbricht et al., “The ITER toroidal field model coil                         Supercond., vol. 21, no. 3, pp. 2340–2344, Jun. 2011,
+       project,” Fusion Eng. Des., vol. 73, no. 2, pp. 189–327,                        doi: 10.1109/TASC.2010.2094176.
+       Oct. 2005, doi: 10.1016/j.fusengdes.2005.07.002.                        [57]    D. C. van der Laan, “YBa2Cu3O7-$\updelta$coated
+[44]   P. Komarek and E. Salpietro, “The test facility for the                         conductor cabling for low ac-loss and high-field magnet
+       ITER TF model coil,” Fusion Eng. Des., vol. 41, no. 1,                          applications,” Supercond. Sci. Technol., vol. 22, no. 6,
+       pp. 213–221, Sep. 1998, doi: 10.1016/S0920-                                     p. 065013, Apr. 2009, doi: 10.1088/0953-
+       3796(98)00116-1.                                                                2048/22/6/065013.
+[45]   H. Tsuji et al., “Progress of the ITER central solenoid                 [58]    S. Imagawa et al., “Plan for Testing High-Current
+       model coil programme,” Nucl. Fusion, vol. 41, no. 5,                            Superconductors for Fusion Reactors with A 15T Test
+       pp. 645–651, May 2001, doi: 10.1088/0029-                                       Facility,” Plasma Fusion Res., vol. 10, pp. 3405012–
+       5515/41/5/319.                                                                  3405012, 2015, doi: 10.1585/pfr.10.3405012.
+[46]   A. J. Creely et al., “Overview of the SPARC tokamak,”                   [59]    R. Wesche, P. Bruzzone, D. Uglietti, N. Bykovsky, and
+       J. Plasma Phys., vol. 86, no. 5, Oct. 2020, doi:                                M. Lewandowska, “Upgrade of SULTAN/EDIPO for
+       10.1017/S0022377820001257.                                                      HTS Cable Test,” Phys. Procedia, vol. 67, pp. 762–767,
+[47]   A. Ballarino et al., “Design of the HTS Current Leads                           Jan. 2015, doi: 10.1016/j.phpro.2015.06.129.
+       for ITER,” IEEE Trans. Appl. Supercond., vol. 22, no.                   [60]    V. Fry, J. Estrada, P. C. Michael, E. E. Salazar, R. F.
+       3, pp. 4800304–4800304, Jun. 2012, doi:                                         Vieira, and Z. S. Hartwig, “Simultaneous transverse
+       10.1109/TASC.2011.2175192.                                                      loading and axial strain for REBCO cable tests in the
+[48]   M. Hoenig and D. Montgomery, “Dense supercritical-                              SULTAN facility,” Supercond. Sci. Technol., vol. 35,
+       helium cooled superconductors for large high field                              no. 7, p. 075007, May 2022, doi: 10.1088/1361-
+       stabilized magnets,” IEEE Trans. Magn., vol. 11, no. 2,                         6668/ac6bcc.
+       pp. 569–572, Mar. 1975, doi:                                            [61]    E. E. Salazar et al., “Fiber optic quench detection for
+       10.1109/TMAG.1975.1058601.                                                      large-scale HTS magnets demonstrated on VIPER cable
+[49]   S. Hahn, D. K. Park, J. Bascunan, and Y. Iwasa, “HTS                            during high-fidelity testing at the SULTAN facility,”
+       Pancake Coils Without Turn-to-Turn Insulation,” IEEE                            Supercond. Sci. Technol., vol. 34, no. 3, p. 035027, Feb.
+       Trans. Appl. Supercond., vol. 21, no. 3, pp. 1592–1595,                         2021, doi: 10.1088/1361-6668/abdba8.
+       Jun. 2011, doi: 10.1109/TASC.2010.2093492.                              [62]    T. G. Berlincourt and R. R. Hake, “Means for insulating
+[50]   G. Celentano et al., “Design of an industrially feasible                        superconducting devices,” US3187235A, Jun. 01, 1965
+       twisted-stack HTS cable-in-conduit conductor for fusion                         Accessed: Aug. 10, 2023. [Online]. Available:
+       application,” IEEE Trans. Appl. Supercond., vol. 24, no.                        https://patents.google.com/patent/US3187235A/en?oq=
+       3, 2014, doi: 10.1109/TASC.2013.2287910.                                        US3187235A
+[51]   T. Mulder, J. Weiss, D. van der Laan, A. Dudarev, and                   [63]    S. Hahn et al., “45.5-tesla direct-current magnetic field
+       H. ten Kate, “Recent Progress in the Development of                             generated with a high-temperature superconducting
+       CORC Cable-In-Conduit Conductors,” IEEE Trans.                                  magnet,” Nature, vol. 570, no. 7762, Art. no. 7762, Jun.
+       Appl. Supercond., vol. 30, no. 4, pp. 1–5, Jun. 2020, doi:                      2019, doi: 10.1038/s41586-019-1293-1.
+       10.1109/TASC.2020.2968251.                                              [64]    P. C. Michael et al., “Development of REBCO-Based
+[52]   N. Bykovsky, D. Uglietti, K. Sedlak, B. Stepanov, R.                            Magnets for Plasma Physics Research,” IEEE Trans.
+       Wesche, and P. Bruzzone, “Performance evolution of 60
+
+                                                                                                                                                        17
+
+       Appl. Supercond., vol. 27, no. 4, pp. 1–5, Jun. 2017, doi:
+       10.1109/TASC.2016.2626978.
+[65]   J.-B. Song, S. Hahn, T. Lécrevisse, J. Voccio, J.
+       Bascuñán, and Y. Iwasa, “Over-current quench test and
+       self-protecting behavior of a 7 T/78 mm multi-width no-
+       insulation REBCO magnet at 4.2 K,” Supercond. Sci.
+       Technol., vol. 28, no. 11, p. 114001, Sep. 2015, doi:
+       10.1088/0953-2048/28/11/114001.
+[66]   Y. Wang, W. K. Chan, and J. Schwartz, “Self-protection
+       mechanisms in no-insulation (RE)Ba2Cu3Ox high
+       temperature superconductor pancake coils,” Supercond.
+       Sci. Technol., vol. 29, no. 4, p. 045007, Mar. 2016, doi:
+       10.1088/0953-2048/29/4/045007.
+[67]   A. Hubbard, “Processes, Systems and Devices for
+       Metal-Filling of Open HTS Channels,” 63/279,443
+[68]   J. Egedal, D. Endrizzi, C. B. Forest, and T. K. Fowler,
+       “Fusion by beam ions in a low collisionality, high
+       mirror ratio magnetic mirror,” Nucl. Fusion, vol. 62, no.
+       12, p. 126053, Nov. 2022, doi: 10.1088/1741-
+       4326/ac99ec.
+[69]   N. M. Strickland et al., “Extended-Performance
+       ‘SuperCurrent’ Cryogen-Free Transport Critical-Current
+       Measurement System,” IEEE Trans. Appl. Supercond.,
+       vol. 31, no. 5, pp. 1–5, Aug. 2021, doi:
+       10.1109/TASC.2021.3060355.
+[70]   N. Riva, “Development of the first multi-turn non-
+       planar REBCO stellarator coil using VIPER cable,”
+       Supercond. Sci. Technol., no. Accepted for Publication,
+       2023.
+[71]   L. Bottura, S. Prestemon, L. Rossi, and A. V. Zlobin,
+       “Superconducting magnets and technologies for future
+       colliders,” Front. Phys., vol. 10, 2022, Accessed: Aug.
+       09, 2023. [Online]. Available:
+       https://www.frontiersin.org/articles/10.3389/fphy.2022.
+       935196
