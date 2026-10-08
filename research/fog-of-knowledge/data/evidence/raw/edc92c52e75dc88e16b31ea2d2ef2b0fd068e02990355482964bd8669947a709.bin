@@ -1,0 +1,789 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<HTML>
+
+<HEAD>
+<script async type="text/javascript"
+        id="_fed_an_ua_tag"
+        src="https://dap.digitalgov.gov/Universal-Federated-Analytics-Min.js?agency=DOC&subagency=NIST&pua=UA-37115410-50&yt=true&exts=ppsx,pps,f90,sch,rtf,wrl,txz,m1v,xlsm,msi,xsd,f,tif,eps,mpg,xml,pl,xlt,c">
+</script>
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="GENERATOR" CONTENT="Mozilla/4.05 [en] (WinNT; U) [Netscape]">
+<TITLE>5.3.3.2. Randomized block designs</TITLE>
+<link rel="stylesheet" href="../../nist-header-footer/css/nist-combined.css">
+<script src="../../nist-header-footer/js/jquery-1.9.0.min.js"
+        type="text/javascript" defer="defer"></script>
+<script src="../../nist-header-footer/js/nist-header-footer.js"
+        type="text/javascript" defer="defer"></script>
+</HEAD>
+
+<BODY BGCOLOR="FFFFCC">
+
+<IMG SRC="../../gifs/nvgtbr.gif" BORDER=0 VALIGN="TOP" ISMAP USEMAP="#MenuBar">
+<map name="MenuBar">
+<area shape="rect" alt="Next Page" href="pri3321.htm" coords="463,27,504,45">
+<area shape="rect" alt="Previous Page" href="pri331.htm" coords="417,28,459,45">
+<area shape="rect" alt="Home" href="../../index.htm" coords="52,0,100,43">
+<area shape="rect" alt="Tools & Aids" href="../../toolaids.htm" coords="165,27,264,46">
+<area shape="rect" alt="Search Handbook" href="../../search.htm" coords="307,28,366,44">
+<area shape="default" nohref>
+</map>
+<BR>
+
+<TABLE CELLSPACING=20 CELLPADDING=0 WIDTH=540>
+
+<TR>
+<TD VALIGN=TOP COLSPAN=2>
+<FONT SIZE=-1>
+<FONT COLOR="#D60021">5.</FONT>
+<FONT COLOR="#00105A"><A HREF="../pri.htm">Process Improvement</a></FONT>
+<BR>
+<FONT COLOR="#D60021">5.3.</FONT>
+<FONT COLOR="#00105A"><A HREF="pri3.htm">Choosing an experimental design</a></FONT>
+<BR>
+<FONT COLOR="#D60021">5.3.3.</FONT>
+<FONT COLOR="#00105A"><A HREF="pri33.htm">How do you select an experimental design?</a></FONT>
+<BR>
+</FONT>
+<BR>
+<TABLE>
+<TR>
+<TD VALIGN=top>
+<H2><FONT COLOR="#D60021">5.3.3.2.</FONT></H2>
+</TD>
+<TD VALIGN=top>
+<H2>Randomized block designs</H2>
+</TD>
+</TR >
+</TABLE>
+</TD>
+</TR>
+
+
+
+
+
+
+
+
+
+
+
+<!-- begin paragraph -->
+<TR>
+<TD WIDTH=15% VALIGN=top>
+<i>Blocking to "remove" the effect of nuisance factors</i>
+</TD>
+<TD WIDTH=85% VALIGN=TOP>
+For randomized block designs, there is one factor or variable
+that is of primary interest.  However, there are also several other
+nuisance factors.
+<p>
+Nuisance factors are those that may affect the measured result, but
+are not of primary interest.  For example, in applying a treatment,
+nuisance factors might be the specific operator who prepared the
+treatment, the time of day the experiment was run, and the room
+temperature.  All experiments have nuisance factors. The experimenter
+will typically need to spend some time deciding which nuisance factors
+are important enough to keep track of or control, if possible, during
+the experiment.
+
+</TD>
+</TR>
+<!-- end paragraph -->
+
+<!-- begin paragraph -->
+<TR>
+<TD WIDTH=15% VALIGN=top>
+<I>
+Blocking used for nuisance factors that can be controlled
+</I>
+</TD>
+<TD WIDTH=85% VALIGN=TOP>
+When we can control nuisance factors, an important technique known as
+blocking can be used to reduce or eliminate the contribution to
+experimental error contributed by nuisance factors.  The basic concept
+is to create homogeneous blocks in which the nuisance factors are held
+constant and the factor of interest is allowed to vary.  Within blocks,
+it is possible to assess the effect of different levels of the factor of
+interest without having to worry about variations due to changes of the
+block factors, which are accounted for in the analysis.
+
+</TD>
+</TR>
+<!-- end paragraph -->
+
+<!-- begin paragraph -->
+<TR>
+<TD WIDTH=15% VALIGN=top>
+<i>Definition of blocking factors</i>
+</TD>
+<TD WIDTH=85% VALIGN=TOP>
+<i>A nuisance factor is used as a blocking factor if every level of
+the primary factor occurs the same number of times with each level of
+the nuisance factor</i>.  The analysis of the experiment will focus on
+the effect of varying levels of the primary factor within each block of
+the experiment.
+
+</TD>
+</TR>
+<!-- end paragraph -->
+
+<!-- begin paragraph -->
+<TR>
+<TD WIDTH=15% VALIGN=top>
+<I>
+Block for a few of the most important nuisance factors
+</I>
+</TD>
+<TD WIDTH=85% VALIGN=TOP>
+The general rule is:
+<ul>
+   <i>"Block what you can, randomize what you cannot."</i>
+</ul>
+Blocking is used to remove the effects of a few of the most important
+nuisance variables.  Randomization is then used to reduce the
+contaminating effects of the remaining nuisance variables.
+
+</TD>
+</TR>
+<!-- end paragraph -->
+
+<tr>
+<td VALIGN=TOP WIDTH="15%"><!-- Add marginal notes below -->
+<i>Table of randomized block designs</i>
+</td>
+
+<td VALIGN=TOP WIDTH="85%"><!-- Add main text below -->
+One useful way to look at a randomized block experiment is to consider
+it as a collection of completely randomized experiments, each run within
+one of the blocks of the total experiment.
+<p>
+<center>
+<table width=300>
+   <caption>
+      <b><u>Randomized Block Designs (RBD)</u></b>
+   </caption>
+   <tr>
+      <td valign=top align=center>
+         Name of<br>
+         Design
+      </td>
+      <td valign=top align=center>
+         Number of<br>
+         Factors</br>
+         <i>k</i>
+      </td>
+      <td valign=top align=center>
+         Number of<br>
+         Runs</br>
+         <i>n</i>
+      </td>
+   </tr>
+   <tr>
+      <td colspan=3>
+         <hr>
+      </td>
+   </tr>
+   <tr>
+      <td valign=top align=center>
+         2-factor RBD
+      </td>
+      <td valign=top align=center>
+         2
+      </td>
+      <td valign=top align=center>
+         L<sub>1</sub> * L<sub>2</sub>
+      </td>
+   </tr>
+   <tr>
+      <td valign=top align=center>
+         3-factor RBD
+      </td>
+      <td valign=top align=center>
+         3
+      </td>
+      <td valign=top align=center>
+         L<sub>1</sub> * L<sub>2</sub> * L<sub>3</sub>
+      </td>
+   </tr>
+   <tr>
+      <td valign=top align=center>
+         4-factor RBD
+      </td>
+      <td valign=top align=center>
+         4
+      </td>
+      <td valign=top align=center>
+         L<sub>1</sub> * L<sub>2</sub> * L<sub>3</sub> * L<sub>4</sub>
+      </td>
+   </tr>
+   <tr>
+      <td valign=top align=center>
+         .
+      </td>
+      <td valign=top align=center>
+         .
+      </td>
+      <td valign=top align=center>
+         .
+      </td>
+   </tr>
+   <tr>
+      <td valign=top align=center>
+         <i>k</i>-factor RBD
+      </td>
+      <td valign=top align=center>
+         <i>k</i>
+      </td>
+      <td valign=top align=center>
+         L<sub>1</sub> * L<sub>2</sub> * ... * L<sub><i>k</i></sub>
+      </td>
+   </tr>
+</table>
+<p>
+with
+<ul>
+   L<sub>1</sub> = number of levels (settings) of factor 1
+   <br>
+   L<sub>2</sub> = number of levels (settings) of factor 2
+   <br>
+   L<sub>3</sub> = number of levels (settings) of factor 3
+   <br>
+   L<sub>4</sub> = number of levels (settings) of factor 4
+   <pre>
+   .
+   .
+   .
+   </pre>
+   L<sub><i>k</i></sub> = number of levels (settings) of factor <i>k</i>
+</ul>
+</td>
+</tr>
+
+<tr>
+<td ALIGN=LEFT VALIGN=TOP WIDTH="15%">
+<I>
+</I>
+</td>
+
+<td ALIGN=LEFT VALIGN=TOP WIDTH="85%">
+<b>Example of a Randomized Block Design</b>
+
+</td>
+</tr>
+
+<!-- begin paragraph -->
+<TR>
+<TD WIDTH=15% VALIGN=top>
+<i>Example of a randomized block design</i>
+</TD>
+<TD WIDTH=85% VALIGN=TOP>
+Suppose engineers at a semiconductor manufacturing facility want to
+test whether different wafer implant material dosages have a significant
+effect on resistivity measurements after a diffusion process taking place
+in a furnace. They have four different dosages they want to try and
+enough experimental wafers from the same lot to run three wafers at each
+of the dosages.
+
+</TD>
+</TR>
+<!-- end paragraph -->
+
+<!-- begin paragraph -->
+<TR>
+<TD WIDTH=15% VALIGN=top>
+<I>
+Furnace run is a nuisance factor
+</I>
+</TD>
+<TD WIDTH=85% VALIGN=TOP>
+The nuisance factor they are concerned with is "furnace run" since
+it is known that each furnace run differs from the last and impacts
+many process parameters.
+
+</TD>
+</TR>
+<!-- end paragraph -->
+
+<!-- begin paragraph -->
+<TR>
+<TD WIDTH=15% VALIGN=top>
+<I>
+Ideal would be to eliminate nuisance furnace factor
+</I>
+</TD>
+<TD WIDTH=85% VALIGN=TOP>
+An ideal way to run this experiment would be to run all the 4x3=12
+wafers in the same furnace run. That would eliminate the nuisance
+furnace factor completely.  However, regular production wafers have
+furnace priority, and only a few experimental wafers are allowed into
+any furnace run at the same time.
+
+</TD>
+</TR>
+<!-- end paragraph -->
+
+<!-- begin paragraph -->
+<TR>
+<TD WIDTH=15% VALIGN=top>
+<I>
+Non-Blocked method
+</I>
+</TD>
+<TD WIDTH=85% VALIGN=TOP>
+A non-blocked way to run this experiment would be to run each of the
+twelve experimental wafers, in random order, one per furnace run.  That
+would increase the experimental error of each resistivity measurement by
+the run-to-run furnace variability and make it more difficult to study
+the effects of the different dosages.  The blocked way to run this
+experiment, assuming you can convince manufacturing to let you put four
+experimental wafers in a furnace run, would be to put four wafers with
+different dosages in each of three furnace runs.  The only randomization
+would be choosing which of the three wafers with dosage 1 would go into
+furnace run 1, and similarly for the wafers with dosages 2, 3 and 4.
+
+</TD>
+</TR>
+<!-- end paragraph -->
+
+<!-- begin paragraph -->
+<TR>
+<TD WIDTH=15% VALIGN=top>
+<I>
+Description of the experiment
+</I>
+</TD>
+<TD WIDTH=85% VALIGN=TOP>
+Let <i>X</i><sub>1</sub> be dosage "level" and <i>X</i><sub>2</sub> be
+the blocking factor furnace run.  Then the experiment can be described as
+follows:
+<ul>
+   <i>k</i> = 2 factors (1 primary factor <i>X</i><sub>1</sub> and 1
+   blocking factor <i>X</i><sub>2</sub>)
+   <br>
+   <i>L</i><sub>1</sub> = 4 levels of factor <i>X</i><sub>1</sub>
+   <br>
+   <i>L</i><sub>2</sub> = 3 levels of factor <i>X</i><sub>2</sub>
+   <br>
+   <i>n</i> = 1 replication per cell
+   <br>
+   <i>N</i> =<i>L</i><sub>1</sub> * <i>L</i><sub>2</sub> =
+   4 * 3 = 12 runs
+</ul>
+
+</TD>
+</TR>
+<!-- end paragraph -->
+
+<!-- begin paragraph -->
+<TR>
+<TD WIDTH=15% VALIGN=top>
+<I>
+Design trial before randomization
+</I>
+</TD>
+<TD WIDTH=85% VALIGN=TOP>
+Before randomization, the design trials look like:
+<p>
+<center>
+<table>
+   <tr>
+      <td valign=top align=center>
+         <u><i>X</i><sub>1</sub></u>
+      </td>
+      <td valign=top align=center>
+         <u><i>X</i><sub>2</sub></u>
+      </td>
+   </tr>
+   <tr>
+      <td valign=top align=center>
+         1
+      </td>
+      <td valign=top align=center>
+         1
+      </td>
+   </tr>
+   <tr>
+      <td valign=top align=center>
+         1
+      </td>
+      <td valign=top align=center>
+         2
+      </td>
+   </tr>
+   <tr>
+      <td valign=top align=center>
+         1
+      </td>
+      <td valign=top align=center>
+         3
+      </td>
+   </tr>
+   <tr>
+      <td valign=top align=center>
+         2
+      </td>
+      <td valign=top align=center>
+         1
+      </td>
+   </tr>
+   <tr>
+      <td valign=top align=center>
+         2
+      </td>
+      <td valign=top align=center>
+         2
+      </td>
+   </tr>
+   <tr>
+      <td valign=top align=center>
+         2
+      </td>
+      <td valign=top align=center>
+         3
+      </td>
+   </tr>
+   <tr>
+      <td valign=top align=center>
+         3
+      </td>
+      <td valign=top align=center>
+         1
+      </td>
+   </tr>
+   <tr>
+      <td valign=top align=center>
+         3
+      </td>
+      <td valign=top align=center>
+         2
+      </td>
+   </tr>
+   <tr>
+      <td valign=top align=center>
+         3
+      </td>
+      <td valign=top align=center>
+         3
+      </td>
+   </tr>
+   <tr>
+      <td valign=top align=center>
+         4
+      </td>
+      <td valign=top align=center>
+         1
+      </td>
+   </tr>
+   <tr>
+      <td valign=top align=center>
+         4
+      </td>
+      <td valign=top align=center>
+         2
+      </td>
+   </tr>
+   <tr>
+      <td valign=top align=center>
+         4
+      </td>
+      <td valign=top align=center>
+         3
+      </td>
+   </tr>
+</table>
+</center>
+
+</TD>
+</TR>
+<!-- end paragraph -->
+
+<!-- begin paragraph -->
+<TR>
+<TD WIDTH=15% VALIGN=top>
+<I>
+Matrix representation
+</I>
+</TD>
+<TD WIDTH=85% VALIGN=TOP>
+An alternate way of summarizing the design trials would be to use a
+4 by 3 matrix whose 4 rows are the levels of the treatment
+<i>X</i><sub>1</sub> and whose columns are the 3 levels of the blocking
+variable <i>X</i><sub>2</sub>.  The cells in the matrix have indices that
+match the <i>X</i><sub>1</sub>, <i>X</i><sub>2</sub> combinations above.
+<!-- 
+<p>
+<table BORDER COLS=3 WIDTH="100%">
+
+   <tr>
+   <td align=center>
+   (1,1)
+   </td>
+   <td align=center>
+   (1,2)
+   </td>
+   <td align=center>
+   (1,3)
+   </td>
+   </tr>
+   
+   <tr>
+   <td align=center>
+   (2,1)
+   </td>
+   <td align=center>
+   (2,2)
+   </td>
+   <td align=center>
+   (2,3)
+   </td>
+   </tr>
+   
+   <tr>
+   <td align=center>
+   (3,1)
+   </td>
+   <td align=center>
+   (3,2)
+   </td>
+   <td align=center>
+   (3,3)
+   </td>
+   </tr>
+   
+   <tr>
+   <td align=center>
+   (4,1)
+   </td>
+   <td align=center>
+   (4,2)
+   </td>
+   <td align=center>
+   (4,3)
+   </td>
+   </tr>
+
+</table>
+ -->
+<p>
+By extension, note that the trials for any <i>K</i>-factor randomized
+block design are simply the cell indices of a <i>K</i> dimensional matrix.
+
+</TD>
+</TR>
+<!-- end paragraph -->
+
+
+<!-- begin paragraph -->
+<TR>
+<TD WIDTH=15% VALIGN=top>
+<I>
+</I>
+</TD>
+<TD WIDTH=85% VALIGN=TOP>
+<b><u>Model for a Randomized Block Design</u></b>
+
+</TD>
+</TR>
+<!-- end paragraph -->
+
+<!-- begin paragraph -->
+<TR>
+<TD WIDTH=15% VALIGN=top>
+<a NAME="Model for a">
+<i>Model for a randomized block design</i>
+</a>
+</TD>
+<TD WIDTH=85% VALIGN=TOP>
+The model for a randomized block design with one nuisance variable is
+<ul>
+   <!--
+   <i>Y<sub>i,j</sub></i> = 
+   <img align=absmiddle src="eqns/mu.gif" alt="mu">
+   + <i>T<sub>i</sub></i> + <i>B<sub>j</sub></i> + random error -->
+   \( Y_{i,j} = \mu + T_{i} + B_{j} + \mbox{random error} \)
+</ul>
+where
+<ul>
+   <TABLE>
+      <TR>
+         <TD ALIGN=LEFT VALIGN=TOP WIDTH=75>
+            <i>Y<sub>i,j</sub></i>
+         </TD>
+         <TD ALIGN=LEFT VALIGN=TOP WIDTH=350>
+            is any observation for which<br>
+            <i>X</i><sub>1</sub> = <i>i</i> and <i>X</i><sub>2</sub>
+            = <i>j</i>
+         </TD>
+      </TR>
+      <TR>
+         <TD ALIGN=LEFT VALIGN=TOP WIDTH=75>
+            <i>X</i><sub>1</sub>
+         </TD>
+         <TD ALIGN=LEFT VALIGN=TOP WIDTH=350>
+            is the primary factor
+         </TD>
+      </TR>
+      <TR>
+         <TD ALIGN=LEFT VALIGN=TOP WIDTH=75>
+            <i>X</i><sub>2</sub>
+         </TD>
+         <TD ALIGN=LEFT VALIGN=TOP WIDTH=350>
+            is the blocking factor
+         </TD>
+      </TR>
+      <TR>
+         <TD ALIGN=LEFT VALIGN=TOP WIDTH=75>
+            <!-- <img align=absmiddle src="eqns/mu.gif" alt="mu"> -->
+            \( \mu \)
+         </TD>
+         <TD ALIGN=LEFT VALIGN=TOP WIDTH=350>
+            is the general location parameter (i.e., the mean)
+         </TD>
+      </TR>
+      <TR>
+         <TD ALIGN=LEFT VALIGN=TOP WIDTH=75>
+            <i>T<sub>i</sub></i>
+         </TD>
+         <TD ALIGN=LEFT VALIGN=TOP WIDTH=350>
+            is the effect for being in treatment <i>i</i>
+            (of factor <i>X</i><sub>1</sub>)
+         </TD>
+      </TR>
+      <TR>
+         <TD ALIGN=LEFT VALIGN=TOP WIDTH=75>
+            <i>B<sub>j</sub></i>
+         </TD>
+         <TD ALIGN=LEFT VALIGN=TOP WIDTH=350>
+            is the effect for being in block <i>j</i> (of factor
+            <i>X</i><sub>2</sub>)
+         </TD>
+      </TR>
+   </TABLE>
+</ul>
+
+</TD>
+</TR>
+<!-- end paragraph -->
+
+<!-- begin paragraph -->
+<TR>
+<TD WIDTH=15% VALIGN=top>
+<I>
+</I>
+</TD>
+<TD WIDTH=85% VALIGN=TOP>
+<b><u>Estimates for a Randomized Block Design</u></b>
+
+</TD>
+</TR>
+<!-- end paragraph -->
+
+<!-- begin paragraph -->
+<TR>
+<TD WIDTH=15% VALIGN=top>
+<i>Estimating factor effects for a randomized block design</i>
+</TD>
+<TD WIDTH=85% VALIGN=TOP>
+<TABLE>
+   <TR>
+      <TD ALIGN=LEFT VALIGN=TOP WIDTH=175>
+         Estimate for \( \mu \):
+      </TD>
+      <TD ALIGN=LEFT VALIGN=TOP WIDTH=250>
+         <!-- <img align=absmiddle src="eqns/ybar.gif" alt="ybarall"> -->
+         \( \bar{Y} \) = the average of all the data
+         <br>&nbsp;
+      </TD>
+   </TR>
+   <TR>
+      <TD ALIGN=LEFT VALIGN=TOP>
+         Estimate for <i>T<sub>i</sub></i>:
+      </TD>
+      <TD ALIGN=LEFT VALIGN=TOP>
+         <!--
+         <img align=absmiddle src="eqns/ybari.gif" alt="ybar(i)"> -
+         <img align=absmiddle src="eqns/ybar.gif" alt="ybarall">
+         -->
+         \( \bar{Y}_{i} - \bar{Y} \)
+         <p>
+         with 
+         <!-- <img align=absmiddle src="eqns/ybari.gif" alt="ybar(i)"> -->
+         \( \bar{Y}_{i} \) =
+         average of all <i>Y</i> for which <i>X</i><sub>1</sub> =
+         <i>i</i>.
+      </TD>
+   </TR>
+   <TR>
+      <TD ALIGN=LEFT VALIGN=TOP>
+         Estimate for <i>B<sub>j</sub></i>:
+      </TD>
+      <TD ALIGN=LEFT VALIGN=TOP>
+         \( \bar{Y}_{j} - \bar{Y} \)
+         <p>
+         with 
+         \( \bar{Y}_{j} \) =
+         average of all <i>Y</i> for which <i>X</i><sub>2</sub> =
+         <i>j</i>.
+      </TD>
+   </TR>
+</TABLE>
+<!--
+Estimate for <img align=absbottom src="eqns/mu.gif" alt="mu"> :
+&nbsp;&nbsp;&nbsp;
+<img align=absmiddle src="eqns/ybar.gif" alt="ybarall"> = the
+average of all the data
+<p>
+Estimate for T<sub>i</sub> :
+&nbsp;&nbsp;&nbsp;
+<img align=absmiddle src="eqns/ybari.gif" alt="ybar(i)"> -
+<img align=absmiddle src="eqns/ybar.gif" alt="ybarall">
+<ul>
+   with <img align=absmiddle src="eqns/ybari.gif" alt="ybar(i)"> =
+   average of all <i>Y</i> for which <i>X</i>1 = <i>i</i>.
+</ul>
+Estimate for B<sub>j</sub> :
+&nbsp;&nbsp;&nbsp;
+<img align=absmiddle src="eqns/ybarj.gif" alt="ybar(j)"> -
+<img align=absmiddle src="eqns/ybar.gif" alt="ybarall">
+<ul>
+   with <img align=absmiddle src="eqns/ybarj.gif" alt="ybar(j)"> =
+   average of all <i>Y</i> for which <i>X</i>2 = <i>j</i>.
+</ul>
+-->
+
+</TD>
+</TR>
+<!-- end paragraph -->
+
+
+
+
+
+
+
+
+
+   
+</TABLE>
+
+<IMG SRC="../../gifs/nvgbrbtm.gif" BORDER=0 USEMAP="#nvbar.nvbar">
+<map name="nvbar.nvbar">
+<area shape="rect" href="http://www.nist.gov" coords="22,6,67,20">
+<area shape="rect" href="https://www.itl.nist.gov/div898/handbook" coords="3,23,92,40">
+<area shape="rect" alt="Home" href="../../index.htm" coords="114,12,165,31">
+<area shape="rect" alt="Tools & Aids" href="../../toolaids.htm" coords="190,12,290,31">
+<area shape="rect" alt="Search Handbook" href="../../search.htm" coords="318,14,376,30">
+<area shape="rect" alt="Previous Page" href="pri331.htm" coords="428,15,471,29">
+<area shape="rect" alt="Next Page" href="pri3321.htm" coords="476,15,517,30">
+<area shape="default" nohref>
+</map>
+   
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4720c766cb5512a',t:'MTc5MTQzMDAzNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></BODY>
+
+</HTML>
