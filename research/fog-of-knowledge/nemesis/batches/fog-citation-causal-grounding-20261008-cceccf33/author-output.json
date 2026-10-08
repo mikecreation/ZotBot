@@ -1,0 +1,709 @@
+{
+  "job_id": "f626c8189f4f4586a75805d3d97dcd41",
+  "raw_result": "{\"RETURN\":{\"evidence\":[],\"status\":\"complete\",\"text\":\"{\\\"source_ids\\\":[\\\"src.citation.alce-gao-2023\\\",\\\"src.citation.contextcite-cohenwang-2024\\\",\\\"src.citation.finegrained-zhang-2024\\\",\\\"src.citation.contextprior-shen-2025\\\",\\\"src.citation.mirage-qi-2024\\\",\\\"src.citation.counterfactual-kamahi-2024\\\",\\\"src.citation.claimbench-javaji-2025\\\",\\\"src.citation.faithfulrag-zhang-2025\\\",\\\"src.citation.contextdpo-bi-2025\\\"],\\\"nodes\\\":[{\\\"id\\\":\\\"claim.citation.alce-metrics\\\",\\\"label\\\":\\\"ALCE evaluates fluency, correctness and citation quality\\\",\\\"kind\\\":\\\"claim\\\",\\\"domain\\\":\\\"information\\\",\\\"era\\\":\\\"undated\\\",\\\"status\\\":\\\"reported\\\",\\\"frontier\\\":false,\\\"aliases\\\":[],\\\"tags\\\":[],\\\"summary\\\":\\\"Gao et al. (2023) report that ALCE uses automatic metrics for fluency, correctness, and citation quality and that these metrics correlate strongly with human judgments.\\\",\\\"sources\\\":[{\\\"id\\\":\\\"src.citation.alce-gao-2023\\\"}]},{\\\"id\\\":\\\"claim.citation.alce-eli5\\\",\\\"label\\\":\\\"ALCE ELI5 evaluation found incomplete citation support\\\",\\\"kind\\\":\\\"claim\\\",\\\"domain\\\":\\\"information\\\",\\\"era\\\":\\\"undated\\\",\\\"status\\\":\\\"reported\\\",\\\"frontier\\\":false,\\\"aliases\\\":[],\\\"tags\\\":[],\\\"summary\\\":\\\"Gao et al. (2023) report that even the best models in their ELI5 evaluation lacked complete citation support 50% of the time.\\\",\\\"sources\\\":[{\\\"id\\\":\\\"src.citation.alce-gao-2023\\\"}]},{\\\"id\\\":\\\"claim.citation.contextcite-method\\\",\\\"label\\\":\\\"ContextCite contextual attribution method\\\",\\\"kind\\\":\\\"claim\\\",\\\"domain\\\":\\\"information\\\",\\\"era\\\":\\\"undated\\\",\\\"status\\\":\\\"reported\\\",\\\"frontier\\\":false,\\\"aliases\\\":[],\\\"tags\\\":[],\\\"summary\\\":\\\"Cohen-Wang et al. (2024) introduce ContextCite as a scalable method for attributing generated statements to supplied context, designed to operate on top of existing language models.\\\",\\\"sources\\\":[{\\\"id\\\":\\\"src.citation.contextcite-cohenwang-2024\\\"}]},{\\\"id\\\":\\\"claim.citation.finegrained-labels\\\",\\\"label\\\":\\\"Three-level evaluation of citation support\\\",\\\"kind\\\":\\\"claim\\\",\\\"domain\\\":\\\"information\\\",\\\"era\\\":\\\"undated\\\",\\\"status\\\":\\\"reported\\\",\\\"frontier\\\":false,\\\"aliases\\\":[],\\\"tags\\\":[],\\\"summary\\\":\\\"Zhang et al. (2024) propose evaluating citation faithfulness metrics against three support levels: full, partial, and no support.\\\",\\\"sources\\\":[{\\\"id\\\":\\\"src.citation.finegrained-zhang-2024\\\"}]},{\\\"id\\\":\\\"claim.citation.finegrained-metrics\\\",\\\"label\\\":\\\"No consistently best fine-grained citation faithfulness metric\\\",\\\"kind\\\":\\\"claim\\\",\\\"domain\\\":\\\"information\\\",\\\"era\\\":\\\"undated\\\",\\\"status\\\":\\\"reported\\\",\\\"frontier\\\":false,\\\"aliases\\\":[],\\\"tags\\\":[],\\\"summary\\\":\\\"Zhang et al. (2024) report that no single citation-faithfulness metric consistently performs best across their fine-grained evaluations.\\\",\\\"sources\\\":[{\\\"id\\\":\\\"src.citation.finegrained-zhang-2024\\\"}]},{\\\"id\\\":\\\"claim.citation.contextprior-task\\\",\\\"label\\\":\\\"Context-prior augmented citation evaluation dimensions\\\",\\\"kind\\\":\\\"claim\\\",\\\"domain\\\":\\\"information\\\",\\\"era\\\":\\\"undated\\\",\\\"status\\\":\\\"reported\\\",\\\"frontier\\\":false,\\\"aliases\\\":[],\\\"tags\\\":[],\\\"summary\\\":\\\"Shen et al. (2025) introduce a citation-generation task considering external context and internal model knowledge, evaluated with five metrics addressing helpfulness, citation faithfulness, and trustworthiness.\\\",\\\"sources\\\":[{\\\"id\\\":\\\"src.citation.contextprior-shen-2025\\\"}]},{\\\"id\\\":\\\"claim.citation.mirage-attribution\\\",\\\"label\\\":\\\"MIRAGE saliency-based answer attribution\\\",\\\"kind\\\":\\\"claim\\\",\\\"domain\\\":\\\"information\\\",\\\"era\\\":\\\"undated\\\",\\\"status\\\":\\\"reported\\\",\\\"frontier\\\":false,\\\"aliases\\\":[],\\\"tags\\\":[],\\\"summary\\\":\\\"Qi et al. (2024) describe MIRAGE as identifying context-sensitive answer tokens and attributing them to retrieved documents using saliency methods.\\\",\\\"sources\\\":[{\\\"id\\\":\\\"src.citation.mirage-qi-2024\\\"}]},{\\\"id\\\":\\\"claim.citation.counterfactual-eval\\\",\\\"label\\\":\\\"Fluent counterfactuals for attribution-faithfulness evaluation\\\",\\\"kind\\\":\\\"claim\\\",\\\"domain\\\":\\\"information\\\",\\\"era\\\":\\\"undated\\\",\\\"status\\\":\\\"reported\\\",\\\"frontier\\\":false,\\\"aliases\\\":[],\\\"tags\\\":[],\\\"summary\\\":\\\"Kamahi et al. (2024) argue that removing or corrupting input tokens creates out-of-distribution inputs for autoregressive language models and propose fluent in-distribution counterfactuals for evaluating attribution methods.\\\",\\\"sources\\\":[{\\\"id\\\":\\\"src.citation.counterfactual-kamahi-2024\\\"}]},{\\\"id\\\":\\\"claim.citation.claimbench-limits\\\",\\\"label\\\":\\\"CLAIM-BENCH observed scientific claim-evidence reasoning limitations\\\",\\\"kind\\\":\\\"claim\\\",\\\"domain\\\":\\\"information\\\",\\\"era\\\":\\\"undated\\\",\\\"status\\\":\\\"reported\\\",\\\"frontier\\\":false,\\\"aliases\\\":[],\\\"tags\\\":[],\\\"summary\\\":\\\"Javaji et al. (2025) report substantial limitations in processing scientific claim-evidence relationships when evaluating six LLMs on more than 300 claim-evidence pairs across multiple research domains.\\\",\\\"sources\\\":[{\\\"id\\\":\\\"src.citation.claimbench-javaji-2025\\\"}]},{\\\"id\\\":\\\"claim.citation.claimbench-prompting\\\",\\\"label\\\":\\\"Multi-pass prompting tradeoff in CLAIM-BENCH\\\",\\\"kind\\\":\\\"claim\\\",\\\"domain\\\":\\\"information\\\",\\\"era\\\":\\\"undated\\\",\\\"status\\\":\\\"reported\\\",\\\"frontier\\\":false,\\\"aliases\\\":[],\\\"tags\\\":[],\\\"summary\\\":\\\"Javaji et al. (2025) report that three-pass and one-by-one prompting improve LLM claim-to-evidence linking in their evaluations, with increased computational cost.\\\",\\\"sources\\\":[{\\\"id\\\":\\\"src.citation.claimbench-javaji-2025\\\"}]},{\\\"id\\\":\\\"claim.citation.faithfulrag-conflict\\\",\\\"label\\\":\\\"FaithfulRAG models context-prior conflicts at fact level\\\",\\\"kind\\\":\\\"claim\\\",\\\"domain\\\":\\\"information\\\",\\\"era\\\":\\\"undated\\\",\\\"status\\\":\\\"reported\\\",\\\"frontier\\\":false,\\\"aliases\\\":[],\\\"tags\\\":[],\\\"summary\\\":\\\"Zhang et al. (2025) propose FaithfulRAG, which identifies fact-level conflicts between retrieved context and model knowledge and uses a self-thinking process before generating responses.\\\",\\\"sources\\\":[{\\\"id\\\":\\\"src.citation.faithfulrag-zhang-2025\\\"}]},{\\\"id\\\":\\\"claim.citation.contextdpo-gain\\\",\\\"label\\\":\\\"Reported Context-DPO context-faithfulness improvements\\\",\\\"kind\\\":\\\"claim\\\",\\\"domain\\\":\\\"information\\\",\\\"era\\\":\\\"undated\\\",\\\"status\\\":\\\"reported\\\",\\\"frontier\\\":false,\\\"aliases\\\":[],\\\"tags\\\":[],\\\"summary\\\":\\\"Bi et al. (2025) report Context-DPO context-faithfulness improvements of 35% to 280% on popular open-source models in their experiments.\\\",\\\"sources\\\":[{\\\"id\\\":\\\"src.citation.contextdpo-bi-2025\\\"}]}],\\\"edges\\\":[],\\\"reviews\\\":[],\\\"assertions\\\":[{\\\"id\\\":\\\"assert.citation.alce-metrics\\\",\\\"target_kind\\\":\\\"node\\\",\\\"canonical_record\\\":{\\\"id\\\":\\\"claim.citation.alce-metrics\\\",\\\"label\\\":\\\"ALCE evaluates fluency, correctness and citation quality\\\",\\\"kind\\\":\\\"claim\\\",\\\"domain\\\":\\\"information\\\",\\\"era\\\":\\\"undated\\\",\\\"status\\\":\\\"reported\\\",\\\"frontier\\\":false,\\\"aliases\\\":[],\\\"tags\\\":[],\\\"summary\\\":\\\"Gao et al. (2023) report that ALCE uses automatic metrics for fluency, correctness, and citation quality and that these metrics correlate strongly with human judgments.\\\",\\\"sources\\\":[{\\\"id\\\":\\\"src.citation.alce-gao-2023\\\"}]},\\\"statement\\\":\\\"Gao et al. (2023) report that ALCE uses automatic metrics for fluency, correctness, and citation quality and that these metrics correlate strongly with human judgments.\\\",\\\"scope\\\":{\\\"population\\\":\\\"ALCE question-answering and citation evaluations\\\",\\\"time\\\":null,\\\"assumptions\\\":\\\"Authors report correlation without a numerical coefficient in the retained abstract\\\",\\\"uncertainty\\\":null,\\\"units\\\":null,\\\"quantifiers\\\":\\\"three evaluation dimensions\\\"},\\\"support\\\":[{\\\"source_id\\\":\\\"src.citation.alce-gao-2023\\\",\\\"quote\\\":\\\"We develop automatic metrics along three dimensions—fluency, correctness, and citation quality—and demonstrate their strong correlation with human judgements.\\\",\\\"start\\\":2529,\\\"end\\\":2687}]},{\\\"id\\\":\\\"assert.citation.alce-eli5\\\",\\\"target_kind\\\":\\\"node\\\",\\\"canonical_record\\\":{\\\"id\\\":\\\"claim.citation.alce-eli5\\\",\\\"label\\\":\\\"ALCE ELI5 evaluation found incomplete citation support\\\",\\\"kind\\\":\\\"claim\\\",\\\"domain\\\":\\\"information\\\",\\\"era\\\":\\\"undated\\\",\\\"status\\\":\\\"reported\\\",\\\"frontier\\\":false,\\\"aliases\\\":[],\\\"tags\\\":[],\\\"summary\\\":\\\"Gao et al. (2023) report that even the best models in their ELI5 evaluation lacked complete citation support 50% of the time.\\\",\\\"sources\\\":[{\\\"id\\\":\\\"src.citation.alce-gao-2023\\\"}]},\\\"statement\\\":\\\"Gao et al. (2023) report that even the best models in their ELI5 evaluation lacked complete citation support 50% of the time.\\\",\\\"scope\\\":{\\\"population\\\":\\\"Models evaluated on the ELI5 dataset within ALCE\\\",\\\"time\\\":null,\\\"assumptions\\\":\\\"Applies to the paper’s tested systems and citation-support metric\\\",\\\"uncertainty\\\":null,\\\"units\\\":\\\"percent\\\",\\\"quantifiers\\\":\\\"50% of evaluated cases for even the best models\\\"},\\\"support\\\":[{\\\"source_id\\\":\\\"src.citation.alce-gao-2023\\\",\\\"quote\\\":\\\"on the ELI5 dataset, even the best models lack complete citation support 50% of the time.\\\",\\\"start\\\":2840,\\\"end\\\":2929}]},{\\\"id\\\":\\\"assert.citation.contextcite-method\\\",\\\"target_kind\\\":\\\"node\\\",\\\"canonical_record\\\":{\\\"id\\\":\\\"claim.citation.contextcite-method\\\",\\\"label\\\":\\\"ContextCite contextual attribution method\\\",\\\"kind\\\":\\\"claim\\\",\\\"domain\\\":\\\"information\\\",\\\"era\\\":\\\"undated\\\",\\\"status\\\":\\\"reported\\\",\\\"frontier\\\":false,\\\"aliases\\\":[],\\\"tags\\\":[],\\\"summary\\\":\\\"Cohen-Wang et al. (2024) introduce ContextCite as a scalable method for attributing generated statements to supplied context, designed to operate on top of existing language models.\\\",\\\"sources\\\":[{\\\"id\\\":\\\"src.citation.contextcite-cohenwang-2024\\\"}]},\\\"statement\\\":\\\"Cohen-Wang et al. (2024) introduce ContextCite as a scalable method for attributing generated statements to supplied context, designed to operate on top of existing language models.\\\",\\\"scope\\\":{\\\"population\\\":\\\"Generated statements and supplied context in the authors’ attribution setting\\\",\\\"time\\\":null,\\\"assumptions\\\":\\\"Method introduced in the paper; the retained abstract does not establish complete causal identification of internal mechanisms\\\",\\\"uncertainty\\\":null,\\\"units\\\":null,\\\"quantifiers\\\":\\\"method proposal\\\"},\\\"support\\\":[{\\\"source_id\\\":\\\"src.citation.contextcite-cohenwang-2024\\\",\\\"quote\\\":\\\"We then present ContextCite, a simple and scalable method for context attribution that can be applied on top of any existing language model.\\\",\\\"start\\\":709,\\\"end\\\":849}]},{\\\"id\\\":\\\"assert.citation.finegrained-labels\\\",\\\"target_kind\\\":\\\"node\\\",\\\"canonical_record\\\":{\\\"id\\\":\\\"claim.citation.finegrained-labels\\\",\\\"label\\\":\\\"Three-level evaluation of citation support\\\",\\\"kind\\\":\\\"claim\\\",\\\"domain\\\":\\\"information\\\",\\\"era\\\":\\\"undated\\\",\\\"status\\\":\\\"reported\\\",\\\"frontier\\\":false,\\\"aliases\\\":[],\\\"tags\\\":[],\\\"summary\\\":\\\"Zhang et al. (2024) propose evaluating citation faithfulness metrics against three support levels: full, partial, and no support.\\\",\\\"sources\\\":[{\\\"id\\\":\\\"src.citation.finegrained-zhang-2024\\\"}]},\\\"statement\\\":\\\"Zhang et al. (2024) propose evaluating citation faithfulness metrics against three support levels: full, partial, and no support.\\\",\\\"scope\\\":{\\\"population\\\":\\\"Generated-text citations evaluated in the comparative framework\\\",\\\"time\\\":null,\\\"assumptions\\\":\\\"Three-category support classification defined by study design\\\",\\\"uncertainty\\\":null,\\\"units\\\":\\\"categorical support level\\\",\\\"quantifiers\\\":\\\"three categories\\\"},\\\"support\\\":[{\\\"source_id\\\":\\\"src.citation.finegrained-zhang-2024\\\",\\\"quote\\\":\\\"we propose a comparative evaluation framework that assesses the metric effectiveness in distinguishing citations between three-category support levels: full, partial, and no support.\\\",\\\"start\\\":2610,\\\"end\\\":2792}]},{\\\"id\\\":\\\"assert.citation.finegrained-metrics\\\",\\\"target_kind\\\":\\\"node\\\",\\\"canonical_record\\\":{\\\"id\\\":\\\"claim.citation.finegrained-metrics\\\",\\\"label\\\":\\\"No consistently best fine-grained citation faithfulness metric\\\",\\\"kind\\\":\\\"claim\\\",\\\"domain\\\":\\\"information\\\",\\\"era\\\":\\\"undated\\\",\\\"status\\\":\\\"reported\\\",\\\"frontier\\\":false,\\\"aliases\\\":[],\\\"tags\\\":[],\\\"summary\\\":\\\"Zhang et al. (2024) report that no single citation-faithfulness metric consistently performs best across their fine-grained evaluations.\\\",\\\"sources\\\":[{\\\"id\\\":\\\"src.citation.finegrained-zhang-2024\\\"}]},\\\"statement\\\":\\\"Zhang et al. (2024) report that no single citation-faithfulness metric consistently performs best across their fine-grained evaluations.\\\",\\\"scope\\\":{\\\"population\\\":\\\"Metrics and evaluations in the authors’ comparative framework\\\",\\\"time\\\":null,\\\"assumptions\\\":\\\"Limited to the evaluations performed in this paper\\\",\\\"uncertainty\\\":null,\\\"units\\\":null,\\\"quantifiers\\\":\\\"no single metric consistently excels\\\"},\\\"support\\\":[{\\\"source_id\\\":\\\"src.citation.finegrained-zhang-2024\\\",\\\"quote\\\":\\\"Our results show no single metric consistently excels across all evaluations, revealing the complexity of assessing fine-grained support.\\\",\\\"start\\\":2973,\\\"end\\\":3110}]},{\\\"id\\\":\\\"assert.citation.contextprior-task\\\",\\\"target_kind\\\":\\\"node\\\",\\\"canonical_record\\\":{\\\"id\\\":\\\"claim.citation.contextprior-task\\\",\\\"label\\\":\\\"Context-prior augmented citation evaluation dimensions\\\",\\\"kind\\\":\\\"claim\\\",\\\"domain\\\":\\\"information\\\",\\\"era\\\":\\\"undated\\\",\\\"status\\\":\\\"reported\\\",\\\"frontier\\\":false,\\\"aliases\\\":[],\\\"tags\\\":[],\\\"summary\\\":\\\"Shen et al. (2025) introduce a citation-generation task considering external context and internal model knowledge, evaluated with five metrics addressing helpfulness, citation faithfulness, and trustworthiness.\\\",\\\"sources\\\":[{\\\"id\\\":\\\"src.citation.contextprior-shen-2025\\\"}]},\\\"statement\\\":\\\"Shen et al. (2025) introduce a citation-generation task considering external context and internal model knowledge, evaluated with five metrics addressing helpfulness, citation faithfulness, and trustworthiness.\\\",\\\"scope\\\":{\\\"population\\\":\\\"Context-Prior Augmented Citation Generation task\\\",\\\"time\\\":null,\\\"assumptions\\\":\\\"Proposed evaluation task; assessing internal knowledge does not prove direct observation of model knowledge use\\\",\\\"uncertainty\\\":null,\\\"units\\\":\\\"evaluation metrics\\\",\\\"quantifiers\\\":\\\"five metrics over three aspects\\\"},\\\"support\\\":[{\\\"source_id\\\":\\\"src.citation.contextprior-shen-2025\\\",\\\"quote\\\":\\\"requiring models to generate citations considering both external and internal knowledge while providing trustworthy references, with 5 evaluation metrics focusing on 3 aspects: answer helpfulness, citation faithfulness, and trustworthiness.\\\",\\\"start\\\":2291,\\\"end\\\":2531}]},{\\\"id\\\":\\\"assert.citation.mirage-attribution\\\",\\\"target_kind\\\":\\\"node\\\",\\\"canonical_record\\\":{\\\"id\\\":\\\"claim.citation.mirage-attribution\\\",\\\"label\\\":\\\"MIRAGE saliency-based answer attribution\\\",\\\"kind\\\":\\\"claim\\\",\\\"domain\\\":\\\"information\\\",\\\"era\\\":\\\"undated\\\",\\\"status\\\":\\\"reported\\\",\\\"frontier\\\":false,\\\"aliases\\\":[],\\\"tags\\\":[],\\\"summary\\\":\\\"Qi et al. (2024) describe MIRAGE as identifying context-sensitive answer tokens and attributing them to retrieved documents using saliency methods.\\\",\\\"sources\\\":[{\\\"id\\\":\\\"src.citation.mirage-qi-2024\\\"}]},\\\"statement\\\":\\\"Qi et al. (2024) describe MIRAGE as identifying context-sensitive answer tokens and attributing them to retrieved documents using saliency methods.\\\",\\\"scope\\\":{\\\"population\\\":\\\"Retrieval-augmented question-answering systems in the authors’ method\\\",\\\"time\\\":null,\\\"assumptions\\\":\\\"Saliency-based attribution is a method, not proof of complete causal dependence\\\",\\\"uncertainty\\\":null,\\\"units\\\":null,\\\"quantifiers\\\":\\\"method proposal\\\"},\\\"support\\\":[{\\\"source_id\\\":\\\"src.citation.mirage-qi-2024\\\",\\\"quote\\\":\\\"MIRAGE detects context-sensitive answer tokens and pairs them with retrieved documents contributing to their prediction via saliency methods.\\\",\\\"start\\\":2571,\\\"end\\\":2712}]},{\\\"id\\\":\\\"assert.citation.counterfactual-eval\\\",\\\"target_kind\\\":\\\"node\\\",\\\"canonical_record\\\":{\\\"id\\\":\\\"claim.citation.counterfactual-eval\\\",\\\"label\\\":\\\"Fluent counterfactuals for attribution-faithfulness evaluation\\\",\\\"kind\\\":\\\"claim\\\",\\\"domain\\\":\\\"information\\\",\\\"era\\\":\\\"undated\\\",\\\"status\\\":\\\"reported\\\",\\\"frontier\\\":false,\\\"aliases\\\":[],\\\"tags\\\":[],\\\"summary\\\":\\\"Kamahi et al. (2024) argue that removing or corrupting input tokens creates out-of-distribution inputs for autoregressive language models and propose fluent in-distribution counterfactuals for evaluating attribution methods.\\\",\\\"sources\\\":[{\\\"id\\\":\\\"src.citation.counterfactual-kamahi-2024\\\"}]},\\\"statement\\\":\\\"Kamahi et al. (2024) argue that removing or corrupting input tokens creates out-of-distribution inputs for autoregressive language models and propose fluent in-distribution counterfactuals for evaluating attribution methods.\\\",\\\"scope\\\":{\\\"population\\\":\\\"Autoregressive language models in the authors’ proposed evaluation\\\",\\\"time\\\":null,\\\"assumptions\\\":\\\"Authors’ methodological argument, without quantitative validation in the retained abstract\\\",\\\"uncertainty\\\":null,\\\"units\\\":null,\\\"quantifiers\\\":\\\"methodological limitation and proposal\\\"},\\\"support\\\":[{\\\"source_id\\\":\\\"src.citation.counterfactual-kamahi-2024\\\",\\\"quote\\\":\\\"Most faithfulness evaluation techniques corrupt or remove input tokens deemed important by a particular attribution (feature importance) method and observe the resulting change in the model’s output.\\\",\\\"start\\\":2324,\\\"end\\\":2523},{\\\"source_id\\\":\\\"src.citation.counterfactual-kamahi-2024\\\",\\\"quote\\\":\\\"However, for autoregressive language models, this approach creates out-of-distribution inputs due to their next-token prediction training objective.\\\",\\\"start\\\":2524,\\\"end\\\":2672},{\\\"source_id\\\":\\\"src.citation.counterfactual-kamahi-2024\\\",\\\"quote\\\":\\\"Our technique generates fluent, in-distribution counterfactuals, making the evaluation protocol more reliable.\\\",\\\"start\\\":2840,\\\"end\\\":2950}]},{\\\"id\\\":\\\"assert.citation.claimbench-limits\\\",\\\"target_kind\\\":\\\"node\\\",\\\"canonical_record\\\":{\\\"id\\\":\\\"claim.citation.claimbench-limits\\\",\\\"label\\\":\\\"CLAIM-BENCH observed scientific claim-evidence reasoning limitations\\\",\\\"kind\\\":\\\"claim\\\",\\\"domain\\\":\\\"information\\\",\\\"era\\\":\\\"undated\\\",\\\"status\\\":\\\"reported\\\",\\\"frontier\\\":false,\\\"aliases\\\":[],\\\"tags\\\":[],\\\"summary\\\":\\\"Javaji et al. (2025) report substantial limitations in processing scientific claim-evidence relationships when evaluating six LLMs on more than 300 claim-evidence pairs across multiple research domains.\\\",\\\"sources\\\":[{\\\"id\\\":\\\"src.citation.claimbench-javaji-2025\\\"}]},\\\"statement\\\":\\\"Javaji et al. (2025) report substantial limitations in processing scientific claim-evidence relationships when evaluating six LLMs on more than 300 claim-evidence pairs across multiple research domains.\\\",\\\"scope\\\":{\\\"population\\\":\\\"Six LLMs and over 300 claim-evidence pairs across research domains\\\",\\\"time\\\":null,\\\"assumptions\\\":\\\"Limited to study tasks, prompts and tested models\\\",\\\"uncertainty\\\":null,\\\"units\\\":\\\"claim-evidence pairs\\\",\\\"quantifiers\\\":\\\"more than 300 pairs\\\"},\\\"support\\\":[{\\\"source_id\\\":\\\"src.citation.claimbench-javaji-2025\\\",\\\"quote\\\":\\\"We systematically compare three approaches which are inspired by divide and conquer approaches, across six diverse LLMs, highlighting model-specific strengths and weaknesses in scientific comprehension.\\\",\\\"start\\\":2531,\\\"end\\\":2733},{\\\"source_id\\\":\\\"src.citation.claimbench-javaji-2025\\\",\\\"quote\\\":\\\"Through evaluation involving over 300 claim-evidence pairs across multiple research domains, we reveal significant limitations in LLMs’ ability to process complex scientific content.\\\",\\\"start\\\":2734,\\\"end\\\":2916}]},{\\\"id\\\":\\\"assert.citation.claimbench-prompting\\\",\\\"target_kind\\\":\\\"node\\\",\\\"canonical_record\\\":{\\\"id\\\":\\\"claim.citation.claimbench-prompting\\\",\\\"label\\\":\\\"Multi-pass prompting tradeoff in CLAIM-BENCH\\\",\\\"kind\\\":\\\"claim\\\",\\\"domain\\\":\\\"information\\\",\\\"era\\\":\\\"undated\\\",\\\"status\\\":\\\"reported\\\",\\\"frontier\\\":false,\\\"aliases\\\":[],\\\"tags\\\":[],\\\"summary\\\":\\\"Javaji et al. (2025) report that three-pass and one-by-one prompting improve LLM claim-to-evidence linking in their evaluations, with increased computational cost.\\\",\\\"sources\\\":[{\\\"id\\\":\\\"src.citation.claimbench-javaji-2025\\\"}]},\\\"statement\\\":\\\"Javaji et al. (2025) report that three-pass and one-by-one prompting improve LLM claim-to-evidence linking in their evaluations, with increased computational cost.\\\",\\\"scope\\\":{\\\"population\\\":\\\"Models and claim-evidence tasks in CLAIM-BENCH\\\",\\\"time\\\":null,\\\"assumptions\\\":\\\"Comparison under the tested prompting procedures\\\",\\\"uncertainty\\\":null,\\\"units\\\":null,\\\"quantifiers\\\":\\\"improvement and higher computational cost\\\"},\\\"support\\\":[{\\\"source_id\\\":\\\"src.citation.claimbench-javaji-2025\\\",\\\"quote\\\":\\\"Furthermore, strategically designed three-pass and one-by-one prompting approaches significantly improve LLMs’ abilities to accurately link dispersed evidence with claims, although this comes at increased computational cost.\\\",\\\"start\\\":3106,\\\"end\\\":3330}]},{\\\"id\\\":\\\"assert.citation.faithfulrag-conflict\\\",\\\"target_kind\\\":\\\"node\\\",\\\"canonical_record\\\":{\\\"id\\\":\\\"claim.citation.faithfulrag-conflict\\\",\\\"label\\\":\\\"FaithfulRAG models context-prior conflicts at fact level\\\",\\\"kind\\\":\\\"claim\\\",\\\"domain\\\":\\\"information\\\",\\\"era\\\":\\\"undated\\\",\\\"status\\\":\\\"reported\\\",\\\"frontier\\\":false,\\\"aliases\\\":[],\\\"tags\\\":[],\\\"summary\\\":\\\"Zhang et al. (2025) propose FaithfulRAG, which identifies fact-level conflicts between retrieved context and model knowledge and uses a self-thinking process before generating responses.\\\",\\\"sources\\\":[{\\\"id\\\":\\\"src.citation.faithfulrag-zhang-2025\\\"}]},\\\"statement\\\":\\\"Zhang et al. (2025) propose FaithfulRAG, which identifies fact-level conflicts between retrieved context and model knowledge and uses a self-thinking process before generating responses.\\\",\\\"scope\\\":{\\\"population\\\":\\\"Retrieval-augmented language-model generation with knowledge conflict\\\",\\\"time\\\":null,\\\"assumptions\\\":\\\"Proposed algorithmic strategy; retained abstract does not establish external replication\\\",\\\"uncertainty\\\":null,\\\"units\\\":null,\\\"quantifiers\\\":\\\"framework proposal\\\"},\\\"support\\\":[{\\\"source_id\\\":\\\"src.citation.faithfulrag-zhang-2025\\\",\\\"quote\\\":\\\"This issue is particularly severe in cases of knowledge conflict, where the retrieved context conflicts with the model’s parametric knowledge.\\\",\\\"start\\\":2288,\\\"end\\\":2430},{\\\"source_id\\\":\\\"src.citation.faithfulrag-zhang-2025\\\",\\\"quote\\\":\\\"Specifically, FaithfulRAG identifies conflicting knowledge at the fact level and designs a self-thinking process, allowing LLMs to reason about and integrate conflicting facts before generating responses.\\\",\\\"start\\\":3006,\\\"end\\\":3210}]},{\\\"id\\\":\\\"assert.citation.contextdpo-gain\\\",\\\"target_kind\\\":\\\"node\\\",\\\"canonical_record\\\":{\\\"id\\\":\\\"claim.citation.contextdpo-gain\\\",\\\"label\\\":\\\"Reported Context-DPO context-faithfulness improvements\\\",\\\"kind\\\":\\\"claim\\\",\\\"domain\\\":\\\"information\\\",\\\"era\\\":\\\"undated\\\",\\\"status\\\":\\\"reported\\\",\\\"frontier\\\":false,\\\"aliases\\\":[],\\\"tags\\\":[],\\\"summary\\\":\\\"Bi et al. (2025) report Context-DPO context-faithfulness improvements of 35% to 280% on popular open-source models in their experiments.\\\",\\\"sources\\\":[{\\\"id\\\":\\\"src.citation.contextdpo-bi-2025\\\"}]},\\\"statement\\\":\\\"Bi et al. (2025) report Context-DPO context-faithfulness improvements of 35% to 280% on popular open-source models in their experiments.\\\",\\\"scope\\\":{\\\"population\\\":\\\"Popular open-source language models tested by the authors\\\",\\\"time\\\":null,\\\"assumptions\\\":\\\"Baseline, scoring metric, and study conditions determine percentage improvements; detailed settings not present in retained abstract\\\",\\\"uncertainty\\\":null,\\\"units\\\":\\\"percent\\\",\\\"quantifiers\\\":\\\"reported 35% to 280% improvement\\\"},\\\"support\\\":[{\\\"source_id\\\":\\\"src.citation.contextdpo-bi-2025\\\",\\\"quote\\\":\\\"Extensive experiments demonstrate that our Context-DPO significantly improves context-faithfulness, achieving 35% to 280% improvements on popular open-source models.\\\",\\\"start\\\":2703,\\\"end\\\":2868}]}],\\\"taxonomy\\\":[],\\\"identities\\\":[]}\"},\"protocol\":\"pandora-language/1\",\"request_id\":\"f626c8189f4f4586a75805d3d97dcd41\"}",
+  "output": {
+    "source_ids": [
+      "src.citation.alce-gao-2023",
+      "src.citation.contextcite-cohenwang-2024",
+      "src.citation.finegrained-zhang-2024",
+      "src.citation.contextprior-shen-2025",
+      "src.citation.mirage-qi-2024",
+      "src.citation.counterfactual-kamahi-2024",
+      "src.citation.claimbench-javaji-2025",
+      "src.citation.faithfulrag-zhang-2025",
+      "src.citation.contextdpo-bi-2025"
+    ],
+    "nodes": [
+      {
+        "id": "claim.citation.alce-metrics",
+        "label": "ALCE evaluates fluency, correctness and citation quality",
+        "kind": "claim",
+        "domain": "information",
+        "era": "undated",
+        "status": "reported",
+        "frontier": false,
+        "aliases": [],
+        "tags": [],
+        "summary": "Gao et al. (2023) report that ALCE uses automatic metrics for fluency, correctness, and citation quality and that these metrics correlate strongly with human judgments.",
+        "sources": [
+          {
+            "id": "src.citation.alce-gao-2023"
+          }
+        ]
+      },
+      {
+        "id": "claim.citation.alce-eli5",
+        "label": "ALCE ELI5 evaluation found incomplete citation support",
+        "kind": "claim",
+        "domain": "information",
+        "era": "undated",
+        "status": "reported",
+        "frontier": false,
+        "aliases": [],
+        "tags": [],
+        "summary": "Gao et al. (2023) report that even the best models in their ELI5 evaluation lacked complete citation support 50% of the time.",
+        "sources": [
+          {
+            "id": "src.citation.alce-gao-2023"
+          }
+        ]
+      },
+      {
+        "id": "claim.citation.contextcite-method",
+        "label": "ContextCite contextual attribution method",
+        "kind": "claim",
+        "domain": "information",
+        "era": "undated",
+        "status": "reported",
+        "frontier": false,
+        "aliases": [],
+        "tags": [],
+        "summary": "Cohen-Wang et al. (2024) introduce ContextCite as a scalable method for attributing generated statements to supplied context, designed to operate on top of existing language models.",
+        "sources": [
+          {
+            "id": "src.citation.contextcite-cohenwang-2024"
+          }
+        ]
+      },
+      {
+        "id": "claim.citation.finegrained-labels",
+        "label": "Three-level evaluation of citation support",
+        "kind": "claim",
+        "domain": "information",
+        "era": "undated",
+        "status": "reported",
+        "frontier": false,
+        "aliases": [],
+        "tags": [],
+        "summary": "Zhang et al. (2024) propose evaluating citation faithfulness metrics against three support levels: full, partial, and no support.",
+        "sources": [
+          {
+            "id": "src.citation.finegrained-zhang-2024"
+          }
+        ]
+      },
+      {
+        "id": "claim.citation.finegrained-metrics",
+        "label": "No consistently best fine-grained citation faithfulness metric",
+        "kind": "claim",
+        "domain": "information",
+        "era": "undated",
+        "status": "reported",
+        "frontier": false,
+        "aliases": [],
+        "tags": [],
+        "summary": "Zhang et al. (2024) report that no single citation-faithfulness metric consistently performs best across their fine-grained evaluations.",
+        "sources": [
+          {
+            "id": "src.citation.finegrained-zhang-2024"
+          }
+        ]
+      },
+      {
+        "id": "claim.citation.contextprior-task",
+        "label": "Context-prior augmented citation evaluation dimensions",
+        "kind": "claim",
+        "domain": "information",
+        "era": "undated",
+        "status": "reported",
+        "frontier": false,
+        "aliases": [],
+        "tags": [],
+        "summary": "Shen et al. (2025) introduce a citation-generation task considering external context and internal model knowledge, evaluated with five metrics addressing helpfulness, citation faithfulness, and trustworthiness.",
+        "sources": [
+          {
+            "id": "src.citation.contextprior-shen-2025"
+          }
+        ]
+      },
+      {
+        "id": "claim.citation.mirage-attribution",
+        "label": "MIRAGE saliency-based answer attribution",
+        "kind": "claim",
+        "domain": "information",
+        "era": "undated",
+        "status": "reported",
+        "frontier": false,
+        "aliases": [],
+        "tags": [],
+        "summary": "Qi et al. (2024) describe MIRAGE as identifying context-sensitive answer tokens and attributing them to retrieved documents using saliency methods.",
+        "sources": [
+          {
+            "id": "src.citation.mirage-qi-2024"
+          }
+        ]
+      },
+      {
+        "id": "claim.citation.counterfactual-eval",
+        "label": "Fluent counterfactuals for attribution-faithfulness evaluation",
+        "kind": "claim",
+        "domain": "information",
+        "era": "undated",
+        "status": "reported",
+        "frontier": false,
+        "aliases": [],
+        "tags": [],
+        "summary": "Kamahi et al. (2024) argue that removing or corrupting input tokens creates out-of-distribution inputs for autoregressive language models and propose fluent in-distribution counterfactuals for evaluating attribution methods.",
+        "sources": [
+          {
+            "id": "src.citation.counterfactual-kamahi-2024"
+          }
+        ]
+      },
+      {
+        "id": "claim.citation.claimbench-limits",
+        "label": "CLAIM-BENCH observed scientific claim-evidence reasoning limitations",
+        "kind": "claim",
+        "domain": "information",
+        "era": "undated",
+        "status": "reported",
+        "frontier": false,
+        "aliases": [],
+        "tags": [],
+        "summary": "Javaji et al. (2025) report substantial limitations in processing scientific claim-evidence relationships when evaluating six LLMs on more than 300 claim-evidence pairs across multiple research domains.",
+        "sources": [
+          {
+            "id": "src.citation.claimbench-javaji-2025"
+          }
+        ]
+      },
+      {
+        "id": "claim.citation.claimbench-prompting",
+        "label": "Multi-pass prompting tradeoff in CLAIM-BENCH",
+        "kind": "claim",
+        "domain": "information",
+        "era": "undated",
+        "status": "reported",
+        "frontier": false,
+        "aliases": [],
+        "tags": [],
+        "summary": "Javaji et al. (2025) report that three-pass and one-by-one prompting improve LLM claim-to-evidence linking in their evaluations, with increased computational cost.",
+        "sources": [
+          {
+            "id": "src.citation.claimbench-javaji-2025"
+          }
+        ]
+      },
+      {
+        "id": "claim.citation.faithfulrag-conflict",
+        "label": "FaithfulRAG models context-prior conflicts at fact level",
+        "kind": "claim",
+        "domain": "information",
+        "era": "undated",
+        "status": "reported",
+        "frontier": false,
+        "aliases": [],
+        "tags": [],
+        "summary": "Zhang et al. (2025) propose FaithfulRAG, which identifies fact-level conflicts between retrieved context and model knowledge and uses a self-thinking process before generating responses.",
+        "sources": [
+          {
+            "id": "src.citation.faithfulrag-zhang-2025"
+          }
+        ]
+      },
+      {
+        "id": "claim.citation.contextdpo-gain",
+        "label": "Reported Context-DPO context-faithfulness improvements",
+        "kind": "claim",
+        "domain": "information",
+        "era": "undated",
+        "status": "reported",
+        "frontier": false,
+        "aliases": [],
+        "tags": [],
+        "summary": "Bi et al. (2025) report Context-DPO context-faithfulness improvements of 35% to 280% on popular open-source models in their experiments.",
+        "sources": [
+          {
+            "id": "src.citation.contextdpo-bi-2025"
+          }
+        ]
+      }
+    ],
+    "edges": [],
+    "reviews": [],
+    "assertions": [
+      {
+        "id": "assert.citation.alce-metrics",
+        "target_kind": "node",
+        "canonical_record": {
+          "id": "claim.citation.alce-metrics",
+          "label": "ALCE evaluates fluency, correctness and citation quality",
+          "kind": "claim",
+          "domain": "information",
+          "era": "undated",
+          "status": "reported",
+          "frontier": false,
+          "aliases": [],
+          "tags": [],
+          "summary": "Gao et al. (2023) report that ALCE uses automatic metrics for fluency, correctness, and citation quality and that these metrics correlate strongly with human judgments.",
+          "sources": [
+            {
+              "id": "src.citation.alce-gao-2023"
+            }
+          ]
+        },
+        "statement": "Gao et al. (2023) report that ALCE uses automatic metrics for fluency, correctness, and citation quality and that these metrics correlate strongly with human judgments.",
+        "scope": {
+          "population": "ALCE question-answering and citation evaluations",
+          "time": null,
+          "assumptions": "Authors report correlation without a numerical coefficient in the retained abstract",
+          "uncertainty": null,
+          "units": null,
+          "quantifiers": "three evaluation dimensions"
+        },
+        "support": [
+          {
+            "source_id": "src.citation.alce-gao-2023",
+            "quote": "We develop automatic metrics along three dimensions—fluency, correctness, and citation quality—and demonstrate their strong correlation with human judgements.",
+            "start": 2529,
+            "end": 2687
+          }
+        ]
+      },
+      {
+        "id": "assert.citation.alce-eli5",
+        "target_kind": "node",
+        "canonical_record": {
+          "id": "claim.citation.alce-eli5",
+          "label": "ALCE ELI5 evaluation found incomplete citation support",
+          "kind": "claim",
+          "domain": "information",
+          "era": "undated",
+          "status": "reported",
+          "frontier": false,
+          "aliases": [],
+          "tags": [],
+          "summary": "Gao et al. (2023) report that even the best models in their ELI5 evaluation lacked complete citation support 50% of the time.",
+          "sources": [
+            {
+              "id": "src.citation.alce-gao-2023"
+            }
+          ]
+        },
+        "statement": "Gao et al. (2023) report that even the best models in their ELI5 evaluation lacked complete citation support 50% of the time.",
+        "scope": {
+          "population": "Models evaluated on the ELI5 dataset within ALCE",
+          "time": null,
+          "assumptions": "Applies to the paper’s tested systems and citation-support metric",
+          "uncertainty": null,
+          "units": "percent",
+          "quantifiers": "50% of evaluated cases for even the best models"
+        },
+        "support": [
+          {
+            "source_id": "src.citation.alce-gao-2023",
+            "quote": "on the ELI5 dataset, even the best models lack complete citation support 50% of the time.",
+            "start": 2840,
+            "end": 2929
+          }
+        ]
+      },
+      {
+        "id": "assert.citation.contextcite-method",
+        "target_kind": "node",
+        "canonical_record": {
+          "id": "claim.citation.contextcite-method",
+          "label": "ContextCite contextual attribution method",
+          "kind": "claim",
+          "domain": "information",
+          "era": "undated",
+          "status": "reported",
+          "frontier": false,
+          "aliases": [],
+          "tags": [],
+          "summary": "Cohen-Wang et al. (2024) introduce ContextCite as a scalable method for attributing generated statements to supplied context, designed to operate on top of existing language models.",
+          "sources": [
+            {
+              "id": "src.citation.contextcite-cohenwang-2024"
+            }
+          ]
+        },
+        "statement": "Cohen-Wang et al. (2024) introduce ContextCite as a scalable method for attributing generated statements to supplied context, designed to operate on top of existing language models.",
+        "scope": {
+          "population": "Generated statements and supplied context in the authors’ attribution setting",
+          "time": null,
+          "assumptions": "Method introduced in the paper; the retained abstract does not establish complete causal identification of internal mechanisms",
+          "uncertainty": null,
+          "units": null,
+          "quantifiers": "method proposal"
+        },
+        "support": [
+          {
+            "source_id": "src.citation.contextcite-cohenwang-2024",
+            "quote": "We then present ContextCite, a simple and scalable method for context attribution that can be applied on top of any existing language model.",
+            "start": 709,
+            "end": 849
+          }
+        ]
+      },
+      {
+        "id": "assert.citation.finegrained-labels",
+        "target_kind": "node",
+        "canonical_record": {
+          "id": "claim.citation.finegrained-labels",
+          "label": "Three-level evaluation of citation support",
+          "kind": "claim",
+          "domain": "information",
+          "era": "undated",
+          "status": "reported",
+          "frontier": false,
+          "aliases": [],
+          "tags": [],
+          "summary": "Zhang et al. (2024) propose evaluating citation faithfulness metrics against three support levels: full, partial, and no support.",
+          "sources": [
+            {
+              "id": "src.citation.finegrained-zhang-2024"
+            }
+          ]
+        },
+        "statement": "Zhang et al. (2024) propose evaluating citation faithfulness metrics against three support levels: full, partial, and no support.",
+        "scope": {
+          "population": "Generated-text citations evaluated in the comparative framework",
+          "time": null,
+          "assumptions": "Three-category support classification defined by study design",
+          "uncertainty": null,
+          "units": "categorical support level",
+          "quantifiers": "three categories"
+        },
+        "support": [
+          {
+            "source_id": "src.citation.finegrained-zhang-2024",
+            "quote": "we propose a comparative evaluation framework that assesses the metric effectiveness in distinguishing citations between three-category support levels: full, partial, and no support.",
+            "start": 2610,
+            "end": 2792
+          }
+        ]
+      },
+      {
+        "id": "assert.citation.finegrained-metrics",
+        "target_kind": "node",
+        "canonical_record": {
+          "id": "claim.citation.finegrained-metrics",
+          "label": "No consistently best fine-grained citation faithfulness metric",
+          "kind": "claim",
+          "domain": "information",
+          "era": "undated",
+          "status": "reported",
+          "frontier": false,
+          "aliases": [],
+          "tags": [],
+          "summary": "Zhang et al. (2024) report that no single citation-faithfulness metric consistently performs best across their fine-grained evaluations.",
+          "sources": [
+            {
+              "id": "src.citation.finegrained-zhang-2024"
+            }
+          ]
+        },
+        "statement": "Zhang et al. (2024) report that no single citation-faithfulness metric consistently performs best across their fine-grained evaluations.",
+        "scope": {
+          "population": "Metrics and evaluations in the authors’ comparative framework",
+          "time": null,
+          "assumptions": "Limited to the evaluations performed in this paper",
+          "uncertainty": null,
+          "units": null,
+          "quantifiers": "no single metric consistently excels"
+        },
+        "support": [
+          {
+            "source_id": "src.citation.finegrained-zhang-2024",
+            "quote": "Our results show no single metric consistently excels across all evaluations, revealing the complexity of assessing fine-grained support.",
+            "start": 2973,
+            "end": 3110
+          }
+        ]
+      },
+      {
+        "id": "assert.citation.contextprior-task",
+        "target_kind": "node",
+        "canonical_record": {
+          "id": "claim.citation.contextprior-task",
+          "label": "Context-prior augmented citation evaluation dimensions",
+          "kind": "claim",
+          "domain": "information",
+          "era": "undated",
+          "status": "reported",
+          "frontier": false,
+          "aliases": [],
+          "tags": [],
+          "summary": "Shen et al. (2025) introduce a citation-generation task considering external context and internal model knowledge, evaluated with five metrics addressing helpfulness, citation faithfulness, and trustworthiness.",
+          "sources": [
+            {
+              "id": "src.citation.contextprior-shen-2025"
+            }
+          ]
+        },
+        "statement": "Shen et al. (2025) introduce a citation-generation task considering external context and internal model knowledge, evaluated with five metrics addressing helpfulness, citation faithfulness, and trustworthiness.",
+        "scope": {
+          "population": "Context-Prior Augmented Citation Generation task",
+          "time": null,
+          "assumptions": "Proposed evaluation task; assessing internal knowledge does not prove direct observation of model knowledge use",
+          "uncertainty": null,
+          "units": "evaluation metrics",
+          "quantifiers": "five metrics over three aspects"
+        },
+        "support": [
+          {
+            "source_id": "src.citation.contextprior-shen-2025",
+            "quote": "requiring models to generate citations considering both external and internal knowledge while providing trustworthy references, with 5 evaluation metrics focusing on 3 aspects: answer helpfulness, citation faithfulness, and trustworthiness.",
+            "start": 2291,
+            "end": 2531
+          }
+        ]
+      },
+      {
+        "id": "assert.citation.mirage-attribution",
+        "target_kind": "node",
+        "canonical_record": {
+          "id": "claim.citation.mirage-attribution",
+          "label": "MIRAGE saliency-based answer attribution",
+          "kind": "claim",
+          "domain": "information",
+          "era": "undated",
+          "status": "reported",
+          "frontier": false,
+          "aliases": [],
+          "tags": [],
+          "summary": "Qi et al. (2024) describe MIRAGE as identifying context-sensitive answer tokens and attributing them to retrieved documents using saliency methods.",
+          "sources": [
+            {
+              "id": "src.citation.mirage-qi-2024"
+            }
+          ]
+        },
+        "statement": "Qi et al. (2024) describe MIRAGE as identifying context-sensitive answer tokens and attributing them to retrieved documents using saliency methods.",
+        "scope": {
+          "population": "Retrieval-augmented question-answering systems in the authors’ method",
+          "time": null,
+          "assumptions": "Saliency-based attribution is a method, not proof of complete causal dependence",
+          "uncertainty": null,
+          "units": null,
+          "quantifiers": "method proposal"
+        },
+        "support": [
+          {
+            "source_id": "src.citation.mirage-qi-2024",
+            "quote": "MIRAGE detects context-sensitive answer tokens and pairs them with retrieved documents contributing to their prediction via saliency methods.",
+            "start": 2571,
+            "end": 2712
+          }
+        ]
+      },
+      {
+        "id": "assert.citation.counterfactual-eval",
+        "target_kind": "node",
+        "canonical_record": {
+          "id": "claim.citation.counterfactual-eval",
+          "label": "Fluent counterfactuals for attribution-faithfulness evaluation",
+          "kind": "claim",
+          "domain": "information",
+          "era": "undated",
+          "status": "reported",
+          "frontier": false,
+          "aliases": [],
+          "tags": [],
+          "summary": "Kamahi et al. (2024) argue that removing or corrupting input tokens creates out-of-distribution inputs for autoregressive language models and propose fluent in-distribution counterfactuals for evaluating attribution methods.",
+          "sources": [
+            {
+              "id": "src.citation.counterfactual-kamahi-2024"
+            }
+          ]
+        },
+        "statement": "Kamahi et al. (2024) argue that removing or corrupting input tokens creates out-of-distribution inputs for autoregressive language models and propose fluent in-distribution counterfactuals for evaluating attribution methods.",
+        "scope": {
+          "population": "Autoregressive language models in the authors’ proposed evaluation",
+          "time": null,
+          "assumptions": "Authors’ methodological argument, without quantitative validation in the retained abstract",
+          "uncertainty": null,
+          "units": null,
+          "quantifiers": "methodological limitation and proposal"
+        },
+        "support": [
+          {
+            "source_id": "src.citation.counterfactual-kamahi-2024",
+            "quote": "Most faithfulness evaluation techniques corrupt or remove input tokens deemed important by a particular attribution (feature importance) method and observe the resulting change in the model’s output.",
+            "start": 2324,
+            "end": 2523
+          },
+          {
+            "source_id": "src.citation.counterfactual-kamahi-2024",
+            "quote": "However, for autoregressive language models, this approach creates out-of-distribution inputs due to their next-token prediction training objective.",
+            "start": 2524,
+            "end": 2672
+          },
+          {
+            "source_id": "src.citation.counterfactual-kamahi-2024",
+            "quote": "Our technique generates fluent, in-distribution counterfactuals, making the evaluation protocol more reliable.",
+            "start": 2840,
+            "end": 2950
+          }
+        ]
+      },
+      {
+        "id": "assert.citation.claimbench-limits",
+        "target_kind": "node",
+        "canonical_record": {
+          "id": "claim.citation.claimbench-limits",
+          "label": "CLAIM-BENCH observed scientific claim-evidence reasoning limitations",
+          "kind": "claim",
+          "domain": "information",
+          "era": "undated",
+          "status": "reported",
+          "frontier": false,
+          "aliases": [],
+          "tags": [],
+          "summary": "Javaji et al. (2025) report substantial limitations in processing scientific claim-evidence relationships when evaluating six LLMs on more than 300 claim-evidence pairs across multiple research domains.",
+          "sources": [
+            {
+              "id": "src.citation.claimbench-javaji-2025"
+            }
+          ]
+        },
+        "statement": "Javaji et al. (2025) report substantial limitations in processing scientific claim-evidence relationships when evaluating six LLMs on more than 300 claim-evidence pairs across multiple research domains.",
+        "scope": {
+          "population": "Six LLMs and over 300 claim-evidence pairs across research domains",
+          "time": null,
+          "assumptions": "Limited to study tasks, prompts and tested models",
+          "uncertainty": null,
+          "units": "claim-evidence pairs",
+          "quantifiers": "more than 300 pairs"
+        },
+        "support": [
+          {
+            "source_id": "src.citation.claimbench-javaji-2025",
+            "quote": "We systematically compare three approaches which are inspired by divide and conquer approaches, across six diverse LLMs, highlighting model-specific strengths and weaknesses in scientific comprehension.",
+            "start": 2531,
+            "end": 2733
+          },
+          {
+            "source_id": "src.citation.claimbench-javaji-2025",
+            "quote": "Through evaluation involving over 300 claim-evidence pairs across multiple research domains, we reveal significant limitations in LLMs’ ability to process complex scientific content.",
+            "start": 2734,
+            "end": 2916
+          }
+        ]
+      },
+      {
+        "id": "assert.citation.claimbench-prompting",
+        "target_kind": "node",
+        "canonical_record": {
+          "id": "claim.citation.claimbench-prompting",
+          "label": "Multi-pass prompting tradeoff in CLAIM-BENCH",
+          "kind": "claim",
+          "domain": "information",
+          "era": "undated",
+          "status": "reported",
+          "frontier": false,
+          "aliases": [],
+          "tags": [],
+          "summary": "Javaji et al. (2025) report that three-pass and one-by-one prompting improve LLM claim-to-evidence linking in their evaluations, with increased computational cost.",
+          "sources": [
+            {
+              "id": "src.citation.claimbench-javaji-2025"
+            }
+          ]
+        },
+        "statement": "Javaji et al. (2025) report that three-pass and one-by-one prompting improve LLM claim-to-evidence linking in their evaluations, with increased computational cost.",
+        "scope": {
+          "population": "Models and claim-evidence tasks in CLAIM-BENCH",
+          "time": null,
+          "assumptions": "Comparison under the tested prompting procedures",
+          "uncertainty": null,
+          "units": null,
+          "quantifiers": "improvement and higher computational cost"
+        },
+        "support": [
+          {
+            "source_id": "src.citation.claimbench-javaji-2025",
+            "quote": "Furthermore, strategically designed three-pass and one-by-one prompting approaches significantly improve LLMs’ abilities to accurately link dispersed evidence with claims, although this comes at increased computational cost.",
+            "start": 3106,
+            "end": 3330
+          }
+        ]
+      },
+      {
+        "id": "assert.citation.faithfulrag-conflict",
+        "target_kind": "node",
+        "canonical_record": {
+          "id": "claim.citation.faithfulrag-conflict",
+          "label": "FaithfulRAG models context-prior conflicts at fact level",
+          "kind": "claim",
+          "domain": "information",
+          "era": "undated",
+          "status": "reported",
+          "frontier": false,
+          "aliases": [],
+          "tags": [],
+          "summary": "Zhang et al. (2025) propose FaithfulRAG, which identifies fact-level conflicts between retrieved context and model knowledge and uses a self-thinking process before generating responses.",
+          "sources": [
+            {
+              "id": "src.citation.faithfulrag-zhang-2025"
+            }
+          ]
+        },
+        "statement": "Zhang et al. (2025) propose FaithfulRAG, which identifies fact-level conflicts between retrieved context and model knowledge and uses a self-thinking process before generating responses.",
+        "scope": {
+          "population": "Retrieval-augmented language-model generation with knowledge conflict",
+          "time": null,
+          "assumptions": "Proposed algorithmic strategy; retained abstract does not establish external replication",
+          "uncertainty": null,
+          "units": null,
+          "quantifiers": "framework proposal"
+        },
+        "support": [
+          {
+            "source_id": "src.citation.faithfulrag-zhang-2025",
+            "quote": "This issue is particularly severe in cases of knowledge conflict, where the retrieved context conflicts with the model’s parametric knowledge.",
+            "start": 2288,
+            "end": 2430
+          },
+          {
+            "source_id": "src.citation.faithfulrag-zhang-2025",
+            "quote": "Specifically, FaithfulRAG identifies conflicting knowledge at the fact level and designs a self-thinking process, allowing LLMs to reason about and integrate conflicting facts before generating responses.",
+            "start": 3006,
+            "end": 3210
+          }
+        ]
+      },
+      {
+        "id": "assert.citation.contextdpo-gain",
+        "target_kind": "node",
+        "canonical_record": {
+          "id": "claim.citation.contextdpo-gain",
+          "label": "Reported Context-DPO context-faithfulness improvements",
+          "kind": "claim",
+          "domain": "information",
+          "era": "undated",
+          "status": "reported",
+          "frontier": false,
+          "aliases": [],
+          "tags": [],
+          "summary": "Bi et al. (2025) report Context-DPO context-faithfulness improvements of 35% to 280% on popular open-source models in their experiments.",
+          "sources": [
+            {
+              "id": "src.citation.contextdpo-bi-2025"
+            }
+          ]
+        },
+        "statement": "Bi et al. (2025) report Context-DPO context-faithfulness improvements of 35% to 280% on popular open-source models in their experiments.",
+        "scope": {
+          "population": "Popular open-source language models tested by the authors",
+          "time": null,
+          "assumptions": "Baseline, scoring metric, and study conditions determine percentage improvements; detailed settings not present in retained abstract",
+          "uncertainty": null,
+          "units": "percent",
+          "quantifiers": "reported 35% to 280% improvement"
+        },
+        "support": [
+          {
+            "source_id": "src.citation.contextdpo-bi-2025",
+            "quote": "Extensive experiments demonstrate that our Context-DPO significantly improves context-faithfulness, achieving 35% to 280% improvements on popular open-source models.",
+            "start": 2703,
+            "end": 2868
+          }
+        ]
+      }
+    ],
+    "taxonomy": [],
+    "identities": []
+  }
+}
