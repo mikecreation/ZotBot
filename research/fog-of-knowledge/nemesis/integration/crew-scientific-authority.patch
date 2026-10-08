@@ -1,0 +1,855 @@
+--- a/sim/github_evidence.py
++++ b/sim/github_evidence.py
+@@ -97,8 +97,8 @@
+ class FogEvidenceCrew:
+     def __init__(self,ws,brain):
+         self.ws=ws;self.brain=brain;self.root=ws.cache_dir/'evidence-crew';self.lock=threading.RLock()
+-        from .fog_coverage import FogCoveragePlanner
+-        self.coverage=FogCoveragePlanner(self)
++        from .fog_scientific_planner import ScientificCoveragePlanner
++        self.coverage=ScientificCoveragePlanner(self)
+         self.running=False;self.last_error='';self.file_errors={}
+     def location(self,owner,repo,batch_id):
+         return self.root/check_owner(owner)/check_repo(repo)/_validate_batch_id(batch_id)
+@@ -152,6 +152,52 @@
+             if source.exists() and not (archive/name).exists():shutil.copyfile(source,archive/name)
+         batch=folder/'project/nemesis/batches'/flow['batch_id']
+         if batch.exists() and not (archive/'batch').exists():shutil.copytree(batch,archive/'batch')
++        for source in folder.glob('*unit*.json'):
++            if not (archive/source.name).exists():shutil.copyfile(source,archive/source.name)
++
++    def prepare_author_jobs(self,flow,folder):
++        from .fog_packet_units import author_units,encode
++        goal=self.author_goal(flow,folder)
++        if len(goal.encode())<=MAX_PACKET and not flow.get('author_units'):
++            flow['jobs']['author']=self.enqueue(AUTHOR_SYSTEM,goal,'author:'+flow['batch_id']);return
++        if not flow.get('author_units'):
++            # Preserve the complete oversized input before attempting partitioning.
++            write(folder/'author-unit-original.json',json.loads(goal))
++            units=author_units(json.loads(goal),MAX_PACKET-4096)
++            flow['author_units']=[{'index':i,'goal':encode(unit),'sha256':hashlib.sha256(encode(unit).encode()).hexdigest()} for i,unit in enumerate(units)]
++            write(folder/'author-unit-plan.json',flow['author_units']);self.save(folder,flow)
++        active=sum(bool(u.get('job_id')) and self.job(u['job_id'])['status'] in {'QUEUED','CLAIMED','SENT'} for u in flow['author_units'])
++        for unit in flow['author_units']:
++            if unit.get('job_id') or active>=2:continue
++            unit['job_id']=self.enqueue(AUTHOR_SYSTEM,unit['goal'],'author:'+flow['batch_id']+':unit:'+str(unit['index']))
++            flow['jobs'].setdefault('author',unit['job_id']);active+=1;self.save(folder,flow)
++
++    def review_partitioned(self,flow,folder,packet):
++        from .fog_packet_units import review_units,encode
++        batch=folder/'project/nemesis/batches'/flow['batch_id']
++        if not flow.get('review_units'):
++            units=review_units(packet,MAX_PACKET-4096)
++            flow['review_units']=[{'index':i,'packet':unit,'jobs':{},'retained_roles':[]} for i,unit in enumerate(units)]
++            write(folder/'review-unit-plan.json',flow['review_units']);self.save(folder,flow)
++        active=sum(self.job(j)['status'] in {'QUEUED','CLAIMED','SENT'} for u in flow['review_units'] for j in u['jobs'].values())
++        for unit in flow['review_units']:
++            for role in ('entailment','adversarial'):
++                if role not in unit['jobs'] and active<2:
++                    unit['jobs'][role]=self.enqueue(REVIEW_SYSTEM+' Your independent role is '+role+'.',encode(unit['packet']),role+':'+flow['batch_id']+':unit:'+str(unit['index']))
++                    flow['jobs'].setdefault(role,unit['jobs'][role]);active+=1;self.save(folder,flow)
++                if role not in unit['jobs'] or role in unit['retained_roles']:continue
++                job=self.job(unit['jobs'][role])
++                if job['status'] in {'QUEUED','CLAIMED','SENT'}:continue
++                write(folder/(role+'-unit-'+str(unit['index'])+'-result.json'),job)
++                if job['status']!='COMPLETE':raise ValueError('Reviewer unit '+job['status']+': '+str(job.get('error')))
++                response=result_object(job['result']);decisions=bind_review_response(response,unit['packet'])
++                if any(d.get('outcome')!='supported' or not all(d.get('checks',{}).get(k) is True for k in ('exact_support','scope_preserved','no_strengthening','relation_direction','representation_justified')) for d in decisions):
++                    raise CrewFailure('Reviewer '+role+' rejected partitioned assertion','scientific','review-rejection',{'role':role,'job_id':job['id'],'decisions':decisions})
++                write(batch/'.nemesis-control/review-input.json',{'decisions':decisions,'reviewer':'brain:'+job['id'],'model':'Nemesis Brain; provider model unavailable','role':role,'candidate_sha256':flow['candidate_sha256'],'context_sha256':flow['context_sha256']})
++                self.operation(flow,folder,'review_evidence');unit['retained_roles'].append(role);self.save(folder,flow)
++        complete=all(set(u['retained_roles'])=={'entailment','adversarial'} for u in flow['review_units'])
++        if complete:flow['retained_roles']=['entailment','adversarial']
++        return complete
+ 
+     def author_goal(self,flow,folder):
+         batch=folder/'project/nemesis/batches'/flow['batch_id']
+@@ -218,9 +264,10 @@
+         for name in ('author-result.json','entailment-result.json','adversarial-result.json'):
+             (folder/name).unlink(missing_ok=True)
+         counts[category]+=1;flow.pop('revision_exhausted',None)
++        flow.pop('author_units',None);flow.pop('review_units',None)
+         flow.update(author_attempt=attempt+1,jobs={},retained_roles=[],candidate_sha256=None,context_sha256=None,state='AUTHOR',error=message,failure_kind=kind,retry={'attempt':attempt,'next_at':None,'last_error':message})
+         self.save(folder,flow)
+-        flow['jobs']['author']=self.enqueue(AUTHOR_SYSTEM,self.author_goal(flow,folder),'author:'+flow['batch_id'])
++        self.prepare_author_jobs(flow,folder)
+         self.save(folder,flow);return True
+ 
+     def handle_failure(self,folder,flow,exc):
+@@ -247,7 +294,7 @@
+                 if old['source_job_id']!=job_id or old['path']!=path:raise ValueError('Batch identity already belongs to another discovery')
+                 return self.public(old)
+             requests=packet.get('source_requests')
+-            if not isinstance(requests,list) or not 1<=len(requests)<=4:raise ValueError('Discover one to four source_requests before candidate authoring')
++            if not isinstance(requests,list) or not requests:raise ValueError('Discover at least one source_request before candidate authoring')
+             if _batch_dir(self.ws,owner,repo,bid).exists():raise ValueError('Choose a fresh batch ID; existing draft retained')
+             flow={'protocol':VERSION,'owner':owner,'repo':repo,'path':path,'batch_id':bid,'source_job_id':job_id,'discovery':packet,'jobs':{},'revision_counts':{'format':0,'scientific':0},'auto_publish':bool(auto_publish),'state':'CAPTURE','created_at':time.time()}
+             discovery_path=self.root/'discoveries'/(job_id+'.json')
+@@ -274,8 +321,9 @@
+             raise ValueError('Fresh Fog context unavailable; no workers dispatched')
+         queued=[]
+         system=('Research public primary sources for a bounded Fog mission. Return one JSON object only: batch_id,mission,target_ids,source_requests. '
+-                'source_requests is an array of one to four objects with id,url,title,source_kind (primary/secondary/unknown). '
+-                'target_ids names at most twelve EXISTING canonical records you plan to update; otherwise []. Use a fresh unique batch_id. '
++                'source_requests is an array of objects with id,url,title,source_kind (primary/secondary/unknown). '
++                'Select as many relevant accessible sources as the reply capacity permits; all requests enter a durable capture backlog. '
++                'target_ids names EXISTING canonical records you plan to update; otherwise []. Use a fresh unique batch_id. '
+                 'Discover exact accessible public URLs for bounded sources, not fabricated text or claims. Prefer abstracts or bounded primary result pages. '
+                 'Nemesis will capture these sources before separate candidate construction. Do not emit canonical nodes, edges, assertions or review decisions at this discovery stage. '
+                 'If discovery fails return {"blocked_reason":"..."}. Private company capabilities remain unknown unless publicly disclosed.\n'+live['prompt_block'])
+@@ -286,6 +334,8 @@
+                 if task:
+                     packet={k:packet.get(k) for k in ('protocol','counts','nemesis_policy','review_priority')}
+                     packet['coverage_plan']={k:task[k] for k in ('key','domain','label','target','source_history')}
++                    for key in ('decision','planning_id','planning_job_id','planning_input_sha256','graph_fingerprint'):
++                        if key in task:packet['coverage_plan'][key]=task[key]
+                     packet['known_branch_records']=[n for n in context['packet']['coverage_inventory'] if n['domain']==task['domain']]
+                 else:
+                     packet={k:v for k,v in packet.items() if k!='coverage_inventory'}
+@@ -299,7 +349,7 @@
+                     found=self.brain.store.one('SELECT id,status,packet FROM brain_jobs WHERE '+TAG_EXPRESSION+'=? ORDER BY created DESC LIMIT 1',(tag,))
+                 jid=found['id'] if found else self.brain.enqueue(system,goal,max_tokens=6000 if task else 2500,tag=tag)
+                 entry={'job_id':jid,'owner':owner,'repo':repo,'path':path,'mission':mission,'auto_publish':bool(auto_publish),'state':'QUEUED','created_at':time.time()}
+-                if task:entry['coverage_task']={k:task[k] for k in ('key','domain','label','target','source_history')}
++                if task:entry['coverage_task']=copy.deepcopy(task)
+                 discovery_path=self.root/'discoveries'/(jid+'.json')
+                 if not discovery_path.exists():write(discovery_path,entry)
+                 queued.append(jid)
+@@ -449,6 +499,30 @@
+         for rel in paths:
+             target=artifacts/rel;target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(work/rel,target)
+         write(artifacts/'index.json',{'candidate_sha256':flow['candidate_sha256'],'files':paths})
++    def review_small(self,flow,folder,packet):
++        bid=flow['batch_id'];batch=folder/'project/nemesis/batches'/bid
++        for role in ('entailment','adversarial'):
++            if role not in flow['jobs']:
++                flow['jobs'][role]=self.enqueue(REVIEW_SYSTEM+' Your role is '+role+('. Seek counterexamples, unsupported scope and missing assumptions.' if role=='adversarial' else '. Evaluate exact entailment.'),json.dumps(packet,ensure_ascii=False),role+':'+bid)
++                self.save(folder,flow)
++        retained=flow.setdefault('retained_roles',[])
++        for role in ('entailment','adversarial'):
++            if role in retained:continue
++            job=self.job(flow['jobs'][role])
++            if job['status'] in {'QUEUED','CLAIMED','SENT'}:continue
++            if job['status']!='COMPLETE':raise ValueError('Reviewer '+role+' '+job['status']+': '+str(job['error']))
++            response=result_object(job['result']);write(folder/(role+'-result.json'),response)
++            decisions=bind_review_response(response,packet)
++            if any(d.get('outcome')!='supported' or not all(d.get('checks',{}).get(k) is True for k in ('exact_support','scope_preserved','no_strengthening','relation_direction','representation_justified')) for d in decisions):
++                raise CrewFailure('Reviewer '+role+' found unsupported or uncertain representation','scientific','review-rejection',{'role':role,'job_id':job['id'],'decisions':decisions})
++            write(batch/'.nemesis-control/review-input.json',{'decisions':decisions,'reviewer':'brain:'+job['id'],'model':'Nemesis Brain; provider model unavailable','role':role,'candidate_sha256':flow['candidate_sha256'],'context_sha256':flow['context_sha256']})
++            self.operation(flow,folder,'review_evidence');retained.append(role);self.save(folder,flow)
++        if len(retained)<2:return
++        self.export(folder,flow)
++        check=self.ws.check_batch(flow['owner'],flow['repo'],flow['path'],bid)
++        if not check['ok']:raise CrewFailure('Compiler gate rejected candidate: '+str(check.get('stdout_excerpt') or check.get('error')),'scientific','compiler-gate')
++        flow.update(state='PUBLISH' if flow['auto_publish'] else 'READY',error=None,failure_kind=None,retry=None);self.save(folder,flow)
++
+     def advance(self,folder):
+         flow=self.load(folder)
+         if flow['state'] in TERMINAL:return
+@@ -463,17 +537,32 @@
+                 batch.mkdir(parents=True,exist_ok=True)
+                 (batch/'source_requests.jsonl').write_text(''.join(json.dumps(r,ensure_ascii=False)+'\n' for r in flow['discovery']['source_requests']),encoding='utf-8')
+                 write(batch/'.nemesis-control/discovery.json',flow['discovery'])
+-                self.operation(flow,folder,'capture_sources')
++                capture=self.operation(flow,folder,'capture_sources')
++                if capture.get('pending'):
++                    flow['pending_sources']=capture['pending'];self.save(folder,flow);return
+                 context=json.loads((batch/'.nemesis-control/author-context.json').read_text(encoding='utf-8'))
+                 flow['author_identity']='brain-author:'+flow['source_job_id']
+                 flow['live_contract']=self.pinned_contract(flow,folder);flow.setdefault('author_attempt',1)
+-                if not flow.pop('reuse_author_result',False):flow['jobs']['author']=self.enqueue(AUTHOR_SYSTEM,self.author_goal(flow,folder),'author:'+bid)
++                if not flow.pop('reuse_author_result',False):self.prepare_author_jobs(flow,folder)
+                 flow.update(state='AUTHOR',error=None,failure_kind=None,retry=None,operational_attempts=0);self.save(folder,flow);return
+             if flow['state']=='AUTHOR':
+-                if 'author' not in flow['jobs']:
+-                    flow['jobs']['author']=self.enqueue(AUTHOR_SYSTEM,self.author_goal(flow,folder),'author:'+bid)
++                if 'author' not in flow['jobs'] or flow.get('author_units'):
++                    self.prepare_author_jobs(flow,folder)
+                     self.save(folder,flow)
+-                job=self.job(flow['jobs']['author'])
++                if flow.get('author_units'):
++                    packets=[]
++                    for unit in flow['author_units']:
++                        if not unit.get('job_id'):return
++                        unit_job=self.job(unit['job_id'])
++                        if unit_job['status'] in {'QUEUED','CLAIMED','SENT'}:return
++                        write(folder/('author-unit-'+str(unit['index'])+'-result.json'),unit_job)
++                        if unit_job['status']!='COMPLETE':raise ValueError('Author unit '+unit_job['status']+': '+str(unit_job.get('error')))
++                        packets.append(result_object(unit_job['result']))
++                    from .fog_packet_units import merge_authored
++                    try:combined=merge_authored(packets)
++                    except ValueError as exc:raise CrewFailure(str(exc),'scientific','author-evidence-limitation') from exc
++                    job={'id':flow['jobs']['author'],'status':'COMPLETE','result':json.dumps({'RETURN':{'text':json.dumps(combined,ensure_ascii=False)}})}
++                else:job=self.job(flow['jobs']['author'])
+                 if job['status'] in {'QUEUED','CLAIMED','SENT'}:return
+                 if job['status']!='COMPLETE':raise ValueError('Candidate author '+job['status']+': '+str(job['error']))
+                 # Preserve raw output even when JSON parsing or an explicit source
+@@ -505,27 +594,16 @@
+                 flow.update(state='REVIEW',error=None,failure_kind=None,retry=None,operational_attempts=0);self.save(folder,flow)
+             if flow['state']=='REVIEW':
+                 packet=json.loads((batch/'.nemesis-control/packet.json').read_text(encoding='utf-8'))
+-                for role in ('entailment','adversarial'):
+-                    if role not in flow['jobs']:
+-                        flow['jobs'][role]=self.enqueue(REVIEW_SYSTEM+' Your role is '+role+('. Seek counterexamples, unsupported scope and missing assumptions.' if role=='adversarial' else '. Evaluate exact entailment.'),json.dumps(packet,ensure_ascii=False),role+':'+bid)
+-                        self.save(folder,flow)
+-                retained=flow.setdefault('retained_roles',[])
+-                for role in ('entailment','adversarial'):
+-                    if role in retained:continue
+-                    job=self.job(flow['jobs'][role])
+-                    if job['status'] in {'QUEUED','CLAIMED','SENT'}:continue
+-                    if job['status']!='COMPLETE':raise ValueError('Reviewer '+role+' '+job['status']+': '+str(job['error']))
+-                    response=result_object(job['result']);write(folder/(role+'-result.json'),response)
+-                    decisions=bind_review_response(response,packet)
+-                    if any(d.get('outcome')!='supported' or not all(d.get('checks',{}).get(k) is True for k in ('exact_support','scope_preserved','no_strengthening','relation_direction','representation_justified')) for d in decisions):
+-                        raise CrewFailure('Reviewer '+role+' found unsupported or uncertain representation','scientific','review-rejection',{'role':role,'job_id':job['id'],'decisions':decisions})
+-                    write(batch/'.nemesis-control/review-input.json',{'decisions':decisions,'reviewer':'brain:'+job['id'],'model':'Nemesis Brain; provider model unavailable','role':role,'candidate_sha256':flow['candidate_sha256'],'context_sha256':flow['context_sha256']})
+-                    self.operation(flow,folder,'review_evidence');retained.append(role);self.save(folder,flow)
+-                if len(retained)<2:return
+-                self.export(folder,flow)
+-                check=self.ws.check_batch(flow['owner'],flow['repo'],flow['path'],bid)
+-                if not check['ok']:raise CrewFailure('Compiler gate rejected candidate: '+str(check.get('stdout_excerpt') or check.get('error')),'scientific','compiler-gate')
+-                flow.update(state='PUBLISH' if flow['auto_publish'] else 'READY',error=None,failure_kind=None,retry=None);self.save(folder,flow)
++                from .fog_packet_units import review_units,size
++                if size(packet)>MAX_PACKET:
++                    if not self.review_partitioned(flow,folder,packet):return
++                    self.export(folder,flow)
++                    check=self.ws.check_batch(flow['owner'],flow['repo'],flow['path'],bid)
++                    if not check['ok']:raise CrewFailure('Compiler gate rejected partitioned candidate: '+str(check),'scientific','compiler-gate')
++                    flow.update(state='PUBLISH' if flow['auto_publish'] else 'READY',error=None,failure_kind=None,retry=None);self.save(folder,flow)
++                else:
++                    self.review_small(flow,folder,packet)
++                    if flow['state']=='REVIEW':return
+             if flow['state']=='PUBLISH':
+                 allowed,waiting=self.publication_turn(flow)
+                 if not allowed:
+--- a/sim/brain_bridge.py
++++ b/sim/brain_bridge.py
+@@ -14,7 +14,7 @@
+ from urllib.parse import urlparse
+ 
+ PROTOCOL = 'pandora-language/1'
+-BRIDGE_VERSION = '14.12.1-fog-lease-retry'
++BRIDGE_VERSION = '14.13-scientific-resume'
+ TERMINAL = ('COMPLETE', 'FAILED', 'CANCELLED', 'INTERRUPTED')
+ 
+ 
+@@ -63,9 +63,10 @@
+                 break
+         if primary_uncertain:
+             store.kv_set('brain_hold', 'Server restarted during Primary delivery. Review the Primary chat before resuming.')
+-        else:
+-            # Safe restart path for optional Fog/research: reclaim unsent-or-orphaned
+-            # CLAIMED/SENT fog-crew rows so the wave does not sit dead until deadline.
++        if restart_inflight:
++            # Preserve optional deliveries with their exact owner, slot and lease.
++            # A browser may still finish the owned turn after a server restart.
++            # CLAIMED is also ambiguous: the click can precede the SENT acknowledgement.
+             now = time.time()
+             for pending in restart_inflight:
+                 try:
+@@ -74,19 +75,16 @@
+                     packet = {}
+                 tag = str((packet.get('STATE') or {}).get('tag') or '')
+                 slot = str(pending.get('worker_slot') or 'primary')
+-                if not tag.startswith('fog-crew:'):
++                if not self._is_optional_research_tag(tag, slot):
+                     continue
+                 state = packet.setdefault('STATE', {}) if isinstance(packet, dict) else {}
+                 if isinstance(state, dict):
+-                    state['fog_restart_requeue'] = int(state.get('fog_restart_requeue') or 0) + 1
+-                    if state.get('transport_test_slot') and state['fog_restart_requeue'] >= 1:
+-                        state['fog_slot_unpin'] = state.get('transport_test_slot')
+-                        state.pop('transport_test_slot', None)
+-                store.execute("""UPDATE brain_jobs SET status='QUEUED',error=?,owner=NULL,lease=NULL,
+-                  worker_slot='primary',avoid_slot='',packet=?,updated=?
++                    state['resume_only']=True
++                    state['restart_resumes']=int(state.get('restart_resumes') or 0)+1
++                store.execute("""UPDATE brain_jobs SET error=?,packet=?,updated=?,deadline=?
+                   WHERE id=? AND status IN ('CLAIMED','SENT')""",
+-                  ('Server restarted during Fog delivery; no completion recorded', packed(packet), now, pending['id']))
+-                store.execute("UPDATE brain_research_assignments SET status='QUEUED',updated=? WHERE job_id=? AND status IN ('CLAIMED','SENT')",(now, pending['id']))
++                  ('Restart: resume exact owned turn; no automatic resend', packed(packet), now,
++                   now+self._job_deadline_seconds(tag),pending['id']))
+         self.last_seen = 0
+         self.client = {}
+         with store.lock, store.db:
+@@ -141,11 +139,14 @@
+             # interrupted because the browser/server acknowledgement boundary is
+             # unknown after a restart and therefore must never be auto-replayed.
+             restart_now=time.time()
+-            store.db.execute("UPDATE brain_jobs SET status='INTERRUPTED',error='Server restarted during delivery; delivery is uncertain. No automatic resend.',updated=? WHERE status IN ('CLAIMED','SENT')", (restart_now,))
++            interrupted=[r['id'] for r in restart_inflight if not self._is_optional_research_tag(
++                str((self._json_object(r.get('packet') or '{}') or {}).get('STATE',{}).get('tag') or ''),r.get('worker_slot','primary'))]
++            for jid in interrupted:
++                store.db.execute("UPDATE brain_jobs SET status='INTERRUPTED',error='Server restarted during delivery; delivery is uncertain. No automatic resend.',updated=? WHERE id=? AND status IN ('CLAIMED','SENT')", (restart_now,jid))
+             store.db.execute("UPDATE brain_research_assignments SET status='INTERRUPTED',updated=? WHERE job_id IN (SELECT id FROM brain_jobs WHERE status='INTERRUPTED') AND status IN ('CLAIMED','SENT')",(restart_now,))
+             if restart_inflight and not primary_uncertain:
+                 store.db.execute("INSERT INTO kv(key,value) VALUES('brain_research_last_error',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+-                    (packed({'at':restart_now,'error':'Server restarted with optional research delivery in flight; affected jobs were interrupted without pausing Primary.','policy':'JOB_LOCAL_RESTART_INTERRUPTION'}),))
++                    (packed({'at':restart_now,'error':'Optional research retains original delivery identity for collection only.','policy':'EXACT_LEASE_RESTART_RESUME'}),))
+ 
+     @property
+     def enabled(self):
+@@ -407,6 +408,7 @@
+                 'active_purpose': purpose,
+                 'active_status': active['status'] if active else None,
+                 'last_seen': info.get('last_seen', 0),
++                'extension_build': info.get('extension_build'),
+             }
+         return out
+ 
+@@ -499,7 +501,7 @@
+             if int(state.get('fog_lease_recovery') or 0) >= 1:
+                 continue
+             err=str(row.get('error') or '').lower()
+-            if not any(x in err for x in ('lease', 'authorization paused', 'no send attempted', 'no prompt sent')):
++            if not any(x in err for x in ('no send attempted', 'no prompt sent')):
+                 continue
+             if int(row.get('transport_retries') or 0) >= 8:
+                 continue
+@@ -540,8 +542,8 @@
+             optional=self._is_optional_research_tag(tag, row.get('worker_slot'))
+             state=packet.setdefault('STATE', {}) if isinstance(packet, dict) else {}
+             timeout_retries=int(state.get('timeout_retries') or 0) if isinstance(state, dict) else 0
+-            # One automatic requeue for slow Fog/research replies; never pause the campaign.
+-            if optional and timeout_retries < 1 and str(row.get('status')) in ('CLAIMED','SENT','QUEUED'):
++            # QUEUED is known unsent. Never replace a lease after possible delivery.
++            if optional and timeout_retries < 1 and str(row.get('status'))=='QUEUED':
+                 if isinstance(state, dict):
+                     state['timeout_retries']=timeout_retries+1
+                     state['timeout_policy']='FOG_OR_RESEARCH_TIMEOUT_REQUEUE'
+@@ -556,6 +558,11 @@
+                 self.store.execute(
+                     "UPDATE brain_research_assignments SET status='QUEUED',updated=? WHERE job_id=? AND status IN ('CLAIMED','SENT','QUEUED')",
+                     (now, row['id']))
++                continue
++            if optional and timeout_retries < 1 and row.get('status') in ('CLAIMED','SENT'):
++                state.update(timeout_retries=1,resume_only=True,timeout_policy='EXACT_LEASE_TIMEOUT_RESUME')
++                self.store.execute("UPDATE brain_jobs SET packet=?,error=?,deadline=?,updated=? WHERE id=? AND status IN ('CLAIMED','SENT')",
++                    (packed(packet),'Reply delayed: resume exact owned turn; no automatic resend',now+self._job_deadline_seconds(tag),now,row['id']))
+                 continue
+             if optional:
+                 self.store.kv_set('brain_research_last_error',{'at':now,'job_id':row['id'],'slot':row.get('worker_slot'),
+@@ -649,6 +656,7 @@
+             'url': body.get('url', ''),
+             'conversation_id': body.get('conversation_id') or body.get('url', ''),
+             'tab_id': body.get('tab_id'),
++            'extension_build': body.get('extension_build'),
+             'last_seen': time.time(),
+         }
+         
+@@ -753,6 +761,8 @@
+         if not self.enabled:
+             return {'ok':False,'reason':'Brain paused'}
+         packet=json.loads(row['packet']);tag=str((packet.get('STATE') or {}).get('tag') or '')
++        if (packet.get('STATE') or {}).get('resume_only'):
++            return {'ok':False,'reason':'Delivery is uncertain; resume the exact owned turn, never resend'}
+         if self.store.kv_get('brain_transport_validation',{}).get('until',0)>time.time() and not (packet.get('STATE') or {}).get('transport_test_slot'):
+             return {'ok':False,'reason':'Dedicated transport validation excludes production sends'}
+         if tag.startswith('brain-research:') and not self.research_enabled:
+@@ -847,6 +857,7 @@
+             if safe_unsent:
+                 now=time.time()
+                 retries=current_retries+1
++                packet.get('STATE',{}).pop('resume_only',None)
+                 transport_blocked=transport.get('transport_blocked') is True
+                 policy='TRANSPORT_BLOCKED_NO_SEND' if transport_blocked else 'SAFE_AUTO_RETRY_NO_SEND'
+                 diag={'at':now,'job_id':jid,'slot':slot,'error':error,'transport_retries':retries,
+@@ -858,8 +869,8 @@
+                 # autonomously, but it cannot extend itself forever. avoid_slot plus
+                 # transport_retries provides a bounded exponential cooldown in poll().
+                 self.store.execute("""UPDATE brain_jobs SET status='QUEUED',error=?,owner=NULL,lease=NULL,
+-                  worker_slot='primary',avoid_slot=?,transport_retries=transport_retries+1,updated=?
+-                  WHERE id=? AND status='CLAIMED'""",(error,slot,now,jid))
++                  worker_slot='primary',avoid_slot=?,transport_retries=transport_retries+1,updated=?,packet=?
++                  WHERE id=? AND status='CLAIMED'""",(error,slot,now,packed(packet),jid))
+                 self.store.execute("UPDATE brain_research_assignments SET status='QUEUED',updated=? WHERE job_id=? AND status IN ('CLAIMED','SENT')",(now,jid))
+                 if tag.startswith('fog-crew:') and retries >= 2:
+                     self._fog_crew_release_slot_pin(jid)
+--- /dev/null
++++ b/sim/fog_scientific_planner.py
+@@ -0,0 +1,215 @@
++"""Brain chooses scientific investigations; Nemesis admits durable concurrent work.
++
++Planning proposals are never knowledge or review decisions. The legacy coverage
++queue and every historical task survive migration; visited is not exhausted.
++"""
++from __future__ import annotations
++import hashlib,json,re,time
++from .fog_coverage import FogCoveragePlanner,TAG_EXPRESSION,url_key
++
++AUTHORITY='fog-scientific-planning/1'
++OPEN_PLANS={'INTENT','QUEUED','CLAIMED','SENT'}
++SYSTEM='''You own scientific research direction for the supplied current objective.
++Nemesis allocates a fair concurrent domain lane; it does not choose a topic for you.
++Read the complete supplied canonical graph, source outcomes, prior investigations,
++pending work and recent substantive findings. Historic missions are history, not
++instructions. Identify a valuable gap, dependency, contradiction or follow-up.
++Visited fields remain eligible. Topics absent from the graph are allowed; declare
++novel_topic=true without inventing canonical records or unsupported facts.
++Return one JSON object: decision (investigate or wait), domain, topic, rationale,
++anchor_ids (existing IDs, possibly []), novel_topic (boolean), strategy {question,
++queries (nonempty array), source_preferences (array), reuse (array of {url,
++new_assertion})}, finding_uses (array of {id,summary,implication}). Copy each used
++finding's summary exactly; explain how it changes the investigation. Source reuse
++must identify a distinct assertion; cookie interstitials are not evidence.
++For wait return domain, reason and exhausted_strategy; this exhausts only that
++strategy at this graph state, not the field. Do not repeat an identical strategy.
++No fixed Physics priority, target count quota, review decision or publication.
++Choose within allocated_domain, noting cross-field relevance in your rationale.
++Prefer accessible primary text and meaningful contribution over record volume.'''
++
++def digest(value):
++    return hashlib.sha256(json.dumps(value,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest()
++
++def normalized(value):return re.sub(r'\s+',' ',value.strip()).casefold()
++
++def investigation_key(proposal):
++    strategy=proposal['strategy']
++    return digest({'domain':proposal['domain'],'topic':normalized(proposal['topic']),
++                   'question':normalized(strategy['question']),
++                   'queries':sorted(normalized(q) for q in strategy['queries'])})
++
++def validate_proposal(proposal,plan,state):
++    """Validate state bindings, not the truth or value of a proposed science claim."""
++    if not isinstance(proposal,dict) or proposal.get('domain')!=plan['domain']:
++        raise ValueError('Planning proposal does not match its allocated domain')
++    if proposal.get('decision')=='wait':
++        if not isinstance(proposal.get('reason'),str) or not proposal['reason'].strip():
++            raise ValueError('Waiting requires a specific scientific or source limitation')
++        return None
++    if proposal.get('decision')!='investigate':raise ValueError('Unknown planning decision')
++    for key in ('topic','rationale'):
++        if not isinstance(proposal.get(key),str) or not proposal[key].strip():raise ValueError('Missing '+key)
++    if len(proposal['topic'])>240:raise ValueError('Topic identifier exceeds operational capacity')
++    anchors=proposal.get('anchor_ids'); known={n['id']:n for n in plan['input']['graph']['nodes']}
++    if not isinstance(anchors,list) or any(a not in known for a in anchors):raise ValueError('Unknown existing anchor')
++    if not isinstance(proposal.get('novel_topic'),bool) or (not anchors and not proposal['novel_topic']):
++        raise ValueError('Declare a novel topic or bind existing anchors')
++    strategy=proposal.get('strategy')
++    if not isinstance(strategy,dict) or not isinstance(strategy.get('question'),str) or not strategy['question'].strip():
++        raise ValueError('Investigation requires a specific question')
++    queries=strategy.get('queries')
++    if not isinstance(queries,list) or not queries or any(not isinstance(q,str) or not q.strip() for q in queries):
++        raise ValueError('Investigation requires nonempty search queries')
++    used_queries={normalized(q) for t in state['tasks'].values() if t['domain']==plan['domain']
++                  for q in t.get('decision',{}).get('strategy',{}).get('queries',[])}
++    if all(normalized(q) in used_queries for q in queries):raise ValueError('All proposed queries repeat an attempted investigation')
++    reuse=strategy.get('reuse',[])
++    if not isinstance(reuse,list) or any(not isinstance(r,dict) or not isinstance(r.get('url'),str)
++        or not isinstance(r.get('new_assertion'),str) or not r['new_assertion'].strip() for r in reuse):
++        raise ValueError('Source reuse requires a distinct intended assertion')
++    uses=proposal.get('finding_uses',[])
++    if not isinstance(uses,list):raise ValueError('finding_uses must be an array')
++    for use in uses:
++        if not isinstance(use,dict) or use.get('id') not in known or use.get('summary')!=known[use['id']].get('summary',''):
++            raise ValueError('Finding differs from exact canonical planning input')
++        if not isinstance(use.get('implication'),str) or not use['implication'].strip():raise ValueError('Explain finding influence')
++    key=investigation_key(proposal)
++    if key in state['tasks']:raise ValueError('Identical investigation already admitted')
++    return key
++
++class ScientificCoveragePlanner(FogCoveragePlanner):
++    def initialize(self,state,packet):
++        if state.get('authority')!=AUTHORITY:
++            state.update(authority=AUTHORITY,objective='Continuously expand, source and challenge human knowledge using exact evidence; preserve uncertainty and history.',
++                         decisions={},progress={},planning_sequence=0,
++                         known_ids=[n['id'] for n in packet['coverage_inventory']])
++            for task in state['tasks'].values():task.setdefault('origin','legacy-coverage')
++
++    def graph(self,packet):
++        graph=packet.get('planning_graph')
++        if not isinstance(graph,dict) or not isinstance(graph.get('nodes'),list) or not isinstance(graph.get('edges'),list):
++            raise ValueError('Current Fog must expose complete planning_graph before scientific planning')
++        ids={n['id'] for n in graph['nodes']}
++        if ids!={n['id'] for n in packet['coverage_inventory']}:
++            raise ValueError('Planning graph is incomplete relative to current inventory')
++        return graph
++
++    def source_ledger(self,state):
++        ledger=[]
++        for file in sorted((self.crew.root/state['owner']/state['repo']).glob('*/flow.json')):
++            flow=self.crew.load(file.parent)
++            ledger.append({'batch_id':flow.get('batch_id',file.parent.name),'state':flow['state'],'reason':flow.get('error'),
++                'sources':flow['discovery'].get('source_requests',[]),'yield_counts':flow.get('yield_counts'),
++                'publication':{k:(flow.get('publication') or {}).get(k) for k in ('pr_url','commit_sha','merge_commit_sha','merged_at')},
++                'mission':flow['discovery'].get('mission')})
++        return ledger
++
++    def update_progress(self,state):
++        for key,task in state['tasks'].items():
++            progress=state['progress'].setdefault(key,{'domain':task['domain'],'attempted_at':task['created_at']})
++            progress.update(state=task['state'],completed=task['state']=='MERGED',
++                blocked=task['state']=='HELD',reason=task.get('reason'),
++                new_evidence=task.get('yield_counts',{}),publication_batch=task.get('batch_id'))
++
++    def enqueue_plan(self,filename,state,plan):
++        tag='fog-crew:plan:'+digest([state['owner'],state['repo'],state['path'],plan['id']])
++        found=self.crew.brain.store.one('SELECT id,status,packet FROM brain_jobs WHERE '+TAG_EXPRESSION+'=? ORDER BY created DESC LIMIT 1',(tag,))
++        goal=json.dumps(plan['input'],ensure_ascii=False,separators=(',',':'))
++        # The existing bridge enforces actual transport capacity. No clipping.
++        jid=found['id'] if found else self.crew.brain.enqueue(SYSTEM,goal,max_tokens=5000,tag=tag)
++        plan.update(job_id=jid,state='QUEUED');self.save(filename,state)
++
++    def reconcile_decisions(self,filename,state):
++        from .github_evidence import result_object
++        for plan in state['decisions'].values():
++            if plan['state']=='INTENT':self.enqueue_plan(filename,state,plan)
++            if plan['state'] not in OPEN_PLANS:continue
++            job=self.crew.job(plan['job_id']);plan['state']=job['status']
++            if job['status'] in {'QUEUED','CLAIMED','SENT'}:continue
++            if job['status']!='COMPLETE':
++                plan.update(state='HELD',reason=job.get('error') or job['status']);continue
++            # Retain raw response before parsing or rejecting it.
++            plan['raw_result']=job['result'];plan['finished_at']=time.time()
++            try:
++                proposal=result_object(job['result']);plan['proposal']=proposal
++                key=validate_proposal(proposal,plan,state)
++                if key is None:
++                    plan.update(state='WAITING',reason=proposal['reason']);continue
++                target={'id':proposal['anchor_ids'][0] if proposal['anchor_ids'] else 'proposed-topic:'+key,
++                        'label':proposal['topic'],'domain':plan['domain'],'kind':'research-topic',
++                        'canonical':False}
++                task={'key':key,'domain':plan['domain'],'label':proposal['topic'],'state':'INTENT',
++                      'created_at':time.time(),'target':target,'decision':proposal,'planning_id':plan['id'],
++                      'planning_job_id':plan['job_id'],'planning_input_sha256':digest(plan['input']),
++                      'graph_fingerprint':plan['graph_fingerprint'],'origin':AUTHORITY,
++                      'source_history':self.history(state,target)}
++                state['tasks'][key]=task;plan.update(state='ADMITTED',task_key=key)
++            except (ValueError,TypeError,KeyError) as exc:plan.update(state='HELD',reason=str(exc))
++            self.save(filename,state)
++
++    def schedule(self,filename,state):
++        self.reconcile(state)
++        if not state['enabled']:
++            if state.get('authority')==AUTHORITY:self.update_progress(state)
++            self.save(filename,state);return
++        if not self.crew.brain.enabled or self.crew.brain.store.kv_get('brain_hold',''):
++            state['state']='WAITING_FOR_BRAIN';self.save(filename,state);return
++        packet=self.refresh(state);graph=self.graph(packet);self.initialize(state,packet)
++        budget=state.get('live_acceptance_budget')
++        if budget and (time.time()>=budget['deadline'] or sum(t.get('origin')==AUTHORITY for t in state['tasks'].values())>=budget['max_investigations']
++                       or len(state['decisions'])>=budget['max_planning_requests']):
++            state.update(enabled=False,state='BOUNDED_DEMO_COMPLETE',waiting_reasons=['Live demonstration budget reached; retained work may finish.'])
++            self.save(filename,state);return
++        self.reconcile_decisions(filename,state);self.update_progress(state)
++        # Recover admitted pre-dispatch intents before allocating more lanes.
++        for task in state['tasks'].values():
++            if task['state']!='INTENT' or task.get('origin')!=AUTHORITY:continue
++            queued=self.crew.discover(state['owner'],state['repo'],state['path'],
++                    [self.mission(task)],state['auto_publish'],coverage_tasks=[task])
++            task.update(job_id=queued['jobs'][0],state='QUEUED');self.save(filename,state)
++        active_plans=[p for p in state['decisions'].values() if p['state'] in OPEN_PLANS]
++        free=max(0,3-self.active_count(state)-len(active_plans))
++        fingerprint=digest(graph)
++        recent=[n for n in graph['nodes'] if n['id'] not in set(state['known_ids'])]
++        domains=[d['id'] for d in state['domains']]
++        if state.get('last_domain') in domains:
++            i=domains.index(state['last_domain'])+1;domains=domains[i:]+domains[:i]
++        busy={p['domain'] for p in active_plans}|{t['domain'] for t in state['tasks'].values()
++                if t['state'] not in {'MERGED','HELD','READY','PR_OPEN'}}
++        # A wait blocks only the strategy at the same substantive graph state.
++        held={p['domain'] for p in state['decisions'].values() if p['state'] in {'WAITING','HELD'}
++              and p['graph_fingerprint']==fingerprint}
++        for domain in [d for d in domains if d not in busy|held][:free]:
++            state['planning_sequence']+=1;pid=str(state['planning_sequence'])+'-'+domain
++            plan={'id':pid,'domain':domain,'state':'INTENT','created_at':time.time(),
++                  'graph_fingerprint':fingerprint,'input':{'protocol':AUTHORITY,
++                    'objective':state['objective'],'allocated_domain':domain,
++                    'canonical_sha':state['inventory_sha'],'graph':graph,'recent_findings':recent,
++                    'coverage':packet['coverage_by_domain'],'source_history':self.source_ledger(state),
++                    'investigations':[{k:t.get(k) for k in ('key','domain','label','state','decision','reason','yield_counts','batch_id')}
++                                      for t in state['tasks'].values()],
++                    'progress':state['progress']}}
++            state['decisions'][pid]=plan;state['last_domain']=domain
++            self.save(filename,state);self.enqueue_plan(filename,state,plan)
++        state.update(state='RUNNING' if self.active_count(state) or any(p['state'] in OPEN_PLANS for p in state['decisions'].values())
++                     else 'WAITING_FOR_SCIENTIFIC_DIRECTION',waiting_reasons=[p.get('reason') for p in state['decisions'].values()
++                     if p['state'] in {'WAITING','HELD'} and p['graph_fingerprint']==fingerprint],error=None,next_attempt_at=0)
++        self.save(filename,state)
++
++    @staticmethod
++    def mission(task):
++        if task.get('origin')!=AUTHORITY:return FogCoveragePlanner.mission(task)
++        return ('Investigate '+task['label']+'. The complete Brain decision, rationale, search strategy, '
++                'canonical findings and previous source outcomes are in context.coverage_plan.decision. '
++                'Follow that justified investigation, not historic missions. Discover accessible primary sources '
++                'for distinct unsupported gaps; preserve uncertainty and do not invent taxonomy or frontier status.')
++
++    @staticmethod
++    def public(state):
++        result=FogCoveragePlanner.public(state)
++        result.update(authority=state.get('authority'),objective=state.get('objective'),
++            decision_states={k:sum(p['state']==k for p in state.get('decisions',{}).values())
++                             for k in {p['state'] for p in state.get('decisions',{}).values()}},
++            waiting_reasons=state.get('waiting_reasons',[]))
++        return result
+--- /dev/null
++++ b/sim/fog_packet_units.py
+@@ -0,0 +1,61 @@
++"""Durable capacity partitioning; raw inputs and every unfinished unit survive.
++
++No claim or source is shortened. A single indivisible evidence unit that cannot
++fit remains explicitly blocked; partitioning never creates review approval.
++"""
++import copy,hashlib,json
++
++def encode(value):return json.dumps(value,ensure_ascii=False,separators=(',',':'))
++def size(value):return len(encode(value).encode())
++
++def author_units(value,limit):
++    base=copy.deepcopy(value);sources=base.pop('sources')
++    units=[];current=[]
++    for source in sources:
++        proposal={**base,'sources':current+[source]}
++        if size(proposal)>limit and current:
++            units.append({**base,'sources':current});current=[]
++        single={**base,'sources':[source]}
++        if size(single)>limit:raise ValueError('Atomic source exceeds author capacity; full capture and pending findings retained: '+source['id'])
++        current.append(source)
++    if current:units.append({**base,'sources':current})
++    for i,unit in enumerate(units):
++        unit['partition']={'index':i,'count':len(units),'rule':'Author only this unit; other source units remain pending. Do not invent cross-unit relationships. Return every supported finding, without a target quota.'}
++        if size(unit)>limit:raise ValueError('Partition metadata exceeds author capacity; all inputs retained')
++    return units
++
++def review_units(packet,limit):
++    if size(packet)<=limit:return [packet]
++    result=[];records=packet['records'];assertions=records['assertions.jsonl']
++    file_for={'node':'nodes.jsonl','edge':'edges.jsonl','review':'reviews.jsonl','taxonomy':'taxonomy.jsonl','identity':'identities.jsonl'}
++    def record_hash(record):return hashlib.sha256(json.dumps(record,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest()
++    for assertion in assertions:
++        subset={k:[] for k in records};subset['manifest.json']=copy.deepcopy(records['manifest.json'])
++        subset['assertions.jsonl']=[copy.deepcopy(assertion)]
++        kind=assertion['target_kind'];filename=file_for[kind]
++        subset[filename]=[copy.deepcopy(r) for r in records[filename] if record_hash(r)==assertion['target_sha256']]
++        if not subset[filename]:raise ValueError('Partition target does not match exact assertion hash')
++        source_ids={s['source_id'] for s in assertion['support']}
++        subset['sources.jsonl']=[copy.deepcopy(s) for s in records['sources.jsonl'] if s['id'] in source_ids]
++        unit={**copy.deepcopy(packet),'records':subset,
++              'existing_endpoints':copy.deepcopy(packet.get('existing_endpoints',[]))+copy.deepcopy(records['nodes.jsonl'])}
++        unit['partition']={'index':len(result),'assertion_id':assertion['id'],
++            'rule':'This exact assertion belongs to the unchanged full candidate/context hashes. Other assertions require separate reviews; never approve them implicitly.'}
++        if size(unit)>limit:raise ValueError('Atomic review evidence exceeds capacity; full candidate and all pending assertions retained: '+assertion['id'])
++        result.append(unit)
++    if not result:raise ValueError('No assertions to partition')
++    return result
++
++def merge_authored(packets):
++    result={'source_ids':[],**{k:[] for k in ('nodes','edges','reviews','assertions','taxonomy','identities')}}
++    for packet in packets:
++        if packet.get('blocked_reason'):raise ValueError('Source unit blocked: '+packet['blocked_reason'])
++        for sid in packet.get('source_ids',[]):
++            if sid not in result['source_ids']:result['source_ids'].append(sid)
++        for key in ('nodes','edges','reviews','assertions','taxonomy','identities'):
++            value=packet.get(key,[])
++            if not isinstance(value,list):raise ValueError('Partition '+key+' must be an array')
++            result[key].extend(copy.deepcopy(value))
++    # Duplicate IDs, conflicts and relationships are deliberately left to the
++    # existing compiler: array assembly must never silently merge identities.
++    return result
+--- /dev/null
++++ b/tests/test_scientific_planner.py
+@@ -0,0 +1,129 @@
++"""Synthetic integrated state transitions; never count as live scientific output."""
++import copy,json,time
++import pytest
++from test_fog_coverage import planner,inventory,context,finish
++from sim.fog_scientific_planner import ScientificCoveragePlanner,AUTHORITY,validate_proposal,digest
++from sim.brain_bridge import BrainBridge
++from sim.store import Store
++
++@pytest.fixture
++def science(planner):
++    packet=context(inventory());packet['planning_graph']={'nodes':copy.deepcopy(packet['coverage_inventory']),'edges':[],'reviews':[]}
++    planner.crew.ws.s.cache_get=lambda key:{'sha':'a'*40,'packet':packet}
++    planner.crew.job=lambda jid:planner.crew.brain.rows[jid]
++    return ScientificCoveragePlanner(planner.crew),packet
++
++def state(p):return p.load('owner','repo','fog')
++def activate(p):p.configure('owner','repo','fog',True,True);p.tick();return state(p)
++def proposal(plan,topic='New question',query='primary evidence question'):
++    return {'decision':'investigate','domain':plan['domain'],'topic':topic,'rationale':'The supplied source gap merits a distinct investigation.',
++            'anchor_ids':[],'novel_topic':True,'strategy':{'question':topic,'queries':[query],'reuse':[]},'finding_uses':[]}
++def complete(p,plan,value):p.crew.brain.complete(plan['job_id'],value)
++
++def test_parallel_planning_lanes_have_no_fixed_physics_mission(science):
++    p,packet=science;s=activate(p)
++    plans=list(s['decisions'].values());assert len(plans)==3
++    assert len({v['domain'] for v in plans})==3
++    for plan in plans:
++        assert plan['input']['objective']==s['objective']
++        assert plan['input']['graph']==packet['planning_graph']
++        assert 'Map the physics branch' not in p.crew.brain.rows[plan['job_id']]['system']
++    p.tick();assert len(p.crew.brain.rows)==3
++
++def test_new_topic_is_admitted_with_saved_brain_rationale(science):
++    p,_=science;s=activate(p);plan=next(iter(s['decisions'].values()))
++    value=proposal(plan);complete(p,plan,value);p.tick();s=state(p)
++    task=next(iter(s['tasks'].values()))
++    assert task['decision']==value and task['origin']==AUTHORITY
++    assert not task['target']['canonical'] and task['target']['id'].startswith('proposed-topic:')
++    assert task['planning_job_id']==plan['job_id'] and task['planning_input_sha256']==digest(plan['input'])
++
++def test_same_investigation_rejected_but_distinct_revisit_allowed(science):
++    p,_=science;s=activate(p);plan=next(iter(s['decisions'].values()));value=proposal(plan)
++    key=validate_proposal(value,plan,s);s['tasks'][key]={'domain':plan['domain'],'decision':value}
++    with pytest.raises(ValueError,match='repeat'):validate_proposal(value,plan,s)
++    other=proposal(plan,'New mechanism','different primary evidence')
++    assert validate_proposal(other,plan,s)!=key
++
++def test_substantive_graph_change_replans_waiting_domain(science):
++    p,packet=science;s=activate(p);plans=list(s['decisions'].values())
++    for plan in plans:complete(p,plan,{'decision':'wait','domain':plan['domain'],'reason':'Current strategy has no usable primary evidence','exhausted_strategy':'first search'})
++    p.tick();before=len(p.crew.brain.rows)
++    for _ in range(5):p.tick()
++    # Remaining domains may obtain lanes; exhausted same-state lanes never repeat.
++    assert sum(d['domain']==plans[0]['domain'] for d in state(p)['decisions'].values())==1
++    packet['planning_graph']['nodes'].append({'id':'new.finding','label':'New finding','domain':plans[0]['domain'],'kind':'claim','summary':'A scoped new result.'})
++    packet['coverage_inventory'].append(packet['planning_graph']['nodes'][-1])
++    p.crew.ws.resolve=lambda *a:'b'*40;p.crew.ws.s.cache_get=lambda key:{'sha':'b'*40,'packet':packet}
++    # Finish other lanes so re-planning capacity exists.
++    for d in state(p)['decisions'].values():
++        if d['state'] in {'QUEUED','CLAIMED','SENT'}:complete(p,d,{'decision':'wait','domain':d['domain'],'reason':'No usable source','exhausted_strategy':'search'})
++    p.tick();s=state(p)
++    assert any(any(n['id']=='new.finding' for n in d['input']['recent_findings']) for d in s['decisions'].values())
++
++def test_finding_reference_requires_exact_summary_and_reason(science):
++    p,_=science;s=activate(p);plan=next(iter(s['decisions'].values()));v=proposal(plan)
++    n=plan['input']['graph']['nodes'][0]
++    v['finding_uses']=[{'id':n['id'],'summary':'invented stronger assertion','implication':'test'}]
++    with pytest.raises(ValueError,match='exact canonical'):validate_proposal(v,plan,s)
++    v['finding_uses'][0]['summary']=n.get('summary','');assert validate_proposal(v,plan,s)
++
++def test_source_reuse_requires_distinct_assertion(science):
++    p,_=science;s=activate(p);plan=next(iter(s['decisions'].values()));v=proposal(plan)
++    v['strategy']['reuse']=[{'url':'https://example.org/primary'}]
++    with pytest.raises(ValueError,match='distinct'):validate_proposal(v,plan,s)
++    v['strategy']['reuse'][0]['new_assertion']='A different unrepresented measurement'
++    assert validate_proposal(v,plan,s)
++
++def test_planning_enqueue_crash_recovers_same_job(science):
++    p,_=science;p.configure('owner','repo','fog',True,True)
++    original=p.crew.brain.enqueue
++    def crash(*args,**kwargs):original(*args,**kwargs);raise RuntimeError('post-commit crash')
++    p.crew.brain.enqueue=crash;p.tick();s=state(p);assert len(p.crew.brain.rows)==1
++    s['next_attempt_at']=0;p.save(p.location('owner','repo','fog'),s);p.crew.brain.enqueue=original
++    restarted=ScientificCoveragePlanner(p.crew);restarted.tick()
++    assert len(p.crew.brain.rows)==3 and len({d['job_id'] for d in state(p)['decisions'].values()})==3
++
++def test_pause_preserves_publication_permission_and_plans(science):
++    p,_=science;s=activate(p);p.configure('owner','repo','fog',False,True);p.tick()
++    assert state(p)['auto_publish'] and not state(p)['enabled']
++    assert state(p)['decisions']==s['decisions']
++
++def test_completed_publication_automatically_gets_justified_substantive_followup(science):
++    p,packet=science
++    nodes=[n for n in packet['coverage_inventory'] if n['domain']=='physics']
++    packet['coverage_inventory']=nodes;packet['planning_graph']['nodes']=copy.deepcopy(nodes)
++    packet['coverage_by_domain']=[{'domain':'physics','label':'Synthetic Physics lane'}]
++    s=activate(p);first=next(iter(s['decisions'].values()));complete(p,first,proposal(first));p.tick()
++    task=next(iter(state(p)['tasks'].values()));finish(p,task)
++    finding={'id':'published.new.finding','label':'New measured result','domain':'physics','kind':'claim','summary':'The primary experiment reports a bounded result.'}
++    packet['coverage_inventory'].append(finding);packet['planning_graph']['nodes'].append(copy.deepcopy(finding))
++    p.crew.ws.resolve=lambda *a:'b'*40;p.crew.ws.s.cache_get=lambda key:{'sha':'b'*40,'packet':packet}
++    p.tick();s=state(p);second=list(s['decisions'].values())[-1]
++    assert second['id']!=first['id'] and finding in second['input']['recent_findings']
++    v=proposal(second,'Follow up new measurement','independent primary replication query')
++    v['finding_uses']=[{'id':finding['id'],'summary':finding['summary'],'implication':'Investigate independent replication of this exact bounded result.'}]
++    complete(p,second,v);p.tick();s=state(p)
++    assert len(s['tasks'])==2 and list(s['tasks'].values())[-1]['decision']==v
++    before=len(p.crew.brain.rows)
++    for _ in range(3):p.tick()
++    assert len(p.crew.brain.rows)==before and s['totals']['new_nodes']==7
++
++@pytest.mark.parametrize('status',['CLAIMED','SENT'])
++def test_restart_and_deadline_resume_exact_lease_never_requeue(tmp_path,status):
++    store=Store(str(tmp_path/'arena.db'))
++    try:
++        b=BrainBridge(store);b.set_enabled(True);b.set_research_config(enabled=True)
++        jid=b.enqueue('synthetic','synthetic',20,'fog-crew:plan:restart')
++        owner='synthetic-owner-12345';body={'client_id':owner,'worker_slot':'worker_1','role':'research','state':'READY'}
++        job=b.poll(body)['job'];store.execute('UPDATE brain_jobs SET status=? WHERE id=?',(status,jid))
++        restarted=BrainBridge(store);again=restarted.poll(body)['job']
++        assert again['status']==status and again['lease']==job['lease'] and again['owner']==owner
++        assert json.loads(again['packet'])['STATE']['resume_only']
++        assert not restarted.authorize_send(jid,{'client_id':owner,'lease':job['lease'],'worker_slot':'worker_1'})['ok']
++        store.execute('UPDATE brain_jobs SET deadline=? WHERE id=?',(time.time()-1,jid));restarted.expire()
++        row=store.one('SELECT * FROM brain_jobs WHERE id=?',(jid,));assert row['status']==status and row['lease']==job['lease']
++        result={'client_id':owner,'lease':job['lease'],'result':{'protocol':'pandora-language/1','request_id':jid,'RETURN':{'status':'complete','text':'real shape; synthetic response','evidence':[]}}}
++        assert restarted.result(jid,result)['status']=='COMPLETE'
++        assert len(store.query('SELECT id FROM brain_jobs'))==1
++    finally:store.db.close()
+--- /dev/null
++++ b/tests/test_fog_packet_units.py
+@@ -0,0 +1,40 @@
++"""Synthetic capacity faults: preserve full inputs and independently review units."""
++import copy,json
++import pytest
++from sim.fog_packet_units import author_units,review_units,merge_authored,size
++
++def test_author_partition_keeps_every_source_verbatim_and_all_context():
++    sources=[{'id':str(i),'text':'Exact complete scientific evidence λ'*40} for i in range(10)]
++    value={'sources':sources,'mission':'current objective','existing_targets':[{'id':'prior','summary':'Unchanged representation'}]}
++    units=author_units(value,4500)
++    assert len(units)>1 and all(size(u)<=4500 for u in units)
++    assert [s for u in units for s in u['sources']]==sources
++    assert all(u['existing_targets']==value['existing_targets'] for u in units)
++
++def test_atomic_capacity_block_does_not_mutate_or_discard_input():
++    value={'sources':[{'id':'huge','text':'x'*6000}],'existing_targets':[]};original=copy.deepcopy(value)
++    with pytest.raises(ValueError,match='full capture'):author_units(value,2000)
++    assert value==original
++
++def test_assembly_preserves_findings_and_leaves_identity_conflicts_for_compiler():
++    packets=[{'source_ids':['a'],'nodes':[{'id':'same','summary':'First'}]},
++             {'source_ids':['b'],'nodes':[{'id':'same','summary':'Different'}]}]
++    merged=merge_authored(packets)
++    assert merged['source_ids']==['a','b'] and merged['nodes']==[p['nodes'][0] for p in packets]
++    with pytest.raises(ValueError,match='blocked'):merge_authored([*packets,{'blocked_reason':'No actual source text'}])
++
++def test_review_partition_keeps_exact_full_candidate_hash_and_every_assertion():
++    from sim.fog_scientific_planner import digest
++    nodes=[{'id':str(i),'summary':'distinct scoped result '+str(i)} for i in range(30)]
++    sources=[{'id':str(i),'text':'verbatim '+str(i)+'x'*1000} for i in range(30)]
++    assertions=[{'id':'assertion'+str(i),'target_kind':'node','target_sha256':digest(n),'canonical_record':n,
++                 'support':[{'source_id':str(i),'quote':'verbatim '+str(i)}]} for i,n in enumerate(nodes)]
++    packet={'candidate_sha256':'original-full-hash','context_sha256':'original-context-hash',
++            'records':{'manifest.json':{'batch_id':'synthetic'},'nodes.jsonl':nodes,'sources.jsonl':sources,
++                       'assertions.jsonl':assertions,'edges.jsonl':[],'reviews.jsonl':[],'taxonomy.jsonl':[],'identities.jsonl':[]},
++            'existing_endpoints':[],'representation_policy':{'neutral':'still needs support'}}
++    original=copy.deepcopy(packet);units=review_units(packet,6000)
++    assert len(units)==30 and all(size(u)<=6000 for u in units)
++    assert [a for u in units for a in u['records']['assertions.jsonl']]==assertions
++    assert all(u['candidate_sha256']=='original-full-hash' and u['context_sha256']=='original-context-hash' for u in units)
++    assert packet==original
+--- a/tests/test_fog_coverage.py
++++ b/tests/test_fog_coverage.py
+@@ -231,13 +231,13 @@
+     author(rig)
+     flow = rig.crew.load(rig.folder)
+     graphpath = rig.folder/'project/data/knowledge.json'
+-    graph = json.loads(graphpath.read_text())
++    graph = json.loads(graphpath.read_text(encoding='utf-8'))
+     represented = copy.deepcopy(rig.candidate['nodes.jsonl'][0])
+     represented['id'] = 'already-represented'
+     represented['sources'] = [{'url': flow['discovery']['source_requests'][0]['url']}]
+     representations = [{**represented, 'id': 'already-represented-'+str(i)} for i in range(41)]
+     graph['nodes'].extend(representations)
+-    graphpath.write_text(json.dumps(graph))
++    graphpath.write_text(json.dumps(graph),encoding='utf-8')
+     flow['coverage_task'] = dict(key='branch', target={'id': 'branch'}, source_history=[{'url': represented['sources'][0]['url']}])
+     goal = json.loads(rig.crew.author_goal(flow, rig.folder))
+     assert goal['coverage_plan']['existing_representations'] == representations
+--- a/tests/test_frontier_v16.py
++++ b/tests/test_frontier_v16.py
+@@ -250,7 +250,8 @@
+     p.frontier.tick()
+     assert s.one('SELECT status FROM frontier_actions WHERE id=?',(aid,))['status']=='WAITING'
+     retried=s.one('SELECT status,packet FROM brain_jobs WHERE id=?',(job,))
+-    assert retried['status']=='QUEUED' and json.loads(retried['packet'])['STATE']['timeout_retries']==1
++    assert retried['status']=='SENT' and json.loads(retried['packet'])['STATE']['timeout_retries']==1
++    assert json.loads(retried['packet'])['STATE']['resume_only'] is True
+     assert not a.llm.brain.hold
+     s.execute("UPDATE brain_jobs SET status='SENT',deadline=? WHERE id=?",(time.time()-1,job))
+     p.frontier.tick()

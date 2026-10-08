@@ -169,9 +169,13 @@ def build_context(graph: dict, max_items: int) -> dict:
              "frontier": bool(n.get("frontier")), "has_sources": bool(n.get("sources")),
              "source_urls": sorted({s if isinstance(s, str) else s["url"]
                                     for s in n.get("sources", []) if isinstance(s, str) or s.get("url")}),
-             "summary": n.get("summary", "")[:800]}
+             "summary": n.get("summary", "")}
             for n in sorted(graph["nodes"], key=lambda row: (row["domain"], row["id"]))
         ],
+        # Complete canonical representations for scientific planning. Derived
+        # priority scores remain advisory; they are never a scientific decision.
+        "planning_graph": {"nodes": graph["nodes"], "edges": graph["edges"],
+                           "reviews": graph.get("reviews", [])},
         "recommended_next_domain": coverage[0]["domain"] if coverage else None,
         "frontier_nodes": frontier_nodes[:max_items],
         "challenged_nodes": challenged_nodes[:max_items],
@@ -216,6 +220,7 @@ def main() -> int:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(text, encoding="utf-8")
     else:
+        if hasattr(sys.stdout,'reconfigure'):sys.stdout.reconfigure(encoding='utf-8')
         print(text, end="")
 
     return 0

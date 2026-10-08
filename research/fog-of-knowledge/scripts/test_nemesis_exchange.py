@@ -28,7 +28,7 @@ class ExchangeTests(unittest.TestCase):
         for name,value in self.c.items():
             (self.batch/name).write_text(json.dumps(value) if name.endswith('.json') else ''.join(json.dumps(v)+'\n' for v in value),encoding='utf-8')
     def run_cli(self,script,*args):
-        return subprocess.run([sys.executable,'-I','-B','scripts/'+script,*args],cwd=self.root,text=True,capture_output=True,timeout=30)
+        return subprocess.run([sys.executable,'-I','-B','-X','utf8','scripts/'+script,*args],cwd=self.root,text=True,encoding='utf-8',capture_output=True,timeout=30)
     def exchange(self,mode):return self.run_cli('nemesis_evidence_exchange.py','nemesis/batches/test-evidence','--'+mode)
     def packet(self):
         result=self.exchange('packet');self.assertEqual(result.returncode,0,result.stdout+result.stderr)
@@ -107,6 +107,18 @@ class ExchangeTests(unittest.TestCase):
         self.c['assertions.jsonl'][0]['support'][0]['source_id']=missing['id'];self.save()
         result=self.exchange('packet');self.assertNotEqual(result.returncode,0)
         self.assertFalse((self.control/'packet.json').exists())
+
+    def test_capture_capacity_preserves_entire_pending_backlog(self):
+        missing,_=self.mixed_source_requests()
+        requests=[json.loads(line) for line in (self.batch/'source_requests.jsonl').read_text(encoding='utf-8').splitlines()]
+        requests=[r for r in requests if r['id']!=missing['id']]+[{**missing,'id':missing['id']+str(i),'url':missing['url']+'?unit='+str(i)} for i in range(6)]
+        (self.batch/'source_requests.jsonl').write_text(''.join(json.dumps(r)+'\n' for r in requests),encoding='utf-8')
+        first,calls=self.capture_with_http_failure();self.assertEqual(calls,4);self.assertEqual(first['pending'],2)
+        backlog=json.loads((self.control/'source-backlog.json').read_text(encoding='utf-8'))
+        self.assertEqual(backlog['requests'],requests);self.assertEqual(len(backlog['pending']),2)
+        second,calls=self.capture_with_http_failure();self.assertEqual(calls,2);self.assertEqual(second,{'captured':1,'unavailable':6})
+        backlog=json.loads((self.control/'source-backlog.json').read_text(encoding='utf-8'))
+        self.assertEqual(backlog['pending'],[]);self.assertEqual(len(backlog['unavailable_ids']),6)
 
     def test_all_unavailable_sources_never_construct_author_context(self):
         missing,_=self.mixed_source_requests()

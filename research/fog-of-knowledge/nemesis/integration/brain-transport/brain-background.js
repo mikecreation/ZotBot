@@ -90,6 +90,7 @@
   async function config(){const raw=(await chrome.storage.local.get(KEY))[KEY]||{};return normalize(raw);}
   async function save(c){await chrome.storage.local.set({[KEY]:normalize(c)});}
   async function api(c,path,body){
+    if(path==='poll')body={...body,extension_build:'6.2.4-scientific-resume'};
     const r=await fetch(baseURL(c.base)+'/api/brain/'+path,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+c.token},body:JSON.stringify(body),signal:AbortSignal.timeout(15000)});
     const data=await r.json();if(!r.ok)throw Error(data.detail||data.error||'NEMESIS HTTP '+r.status);return data;
   }
@@ -188,7 +189,8 @@
       const safeRetry=s.state==='FAILED' && !s.transportBlocked && s.safeUnsent===true && job.status!=='SENT' &&
         Number(job.transport_retries||0)>Number(s.transportRetries||0);
       if(s.state==='READY' || safeRetry){
-        if(job.status==='SENT')s={state:'FAILED',error:'Sent request is missing from this page. Review manually; no resend.',clicked:true,safeUnsent:false,phase:'SENT_REQUEST_MISSING'};
+        if(JSON.parse(job.packet||'{}').STATE?.resume_only)s={state:'DELIVERY_UNCONFIRMED',detail:'Restart or deadline: awaiting exact owned turn '+job.id+'. No resend.'};
+        else if(job.status==='SENT')s={state:'FAILED',error:'Sent request is missing from this page. Review manually; no resend.',clicked:true,safeUnsent:false,phase:'SENT_REQUEST_MISSING'};
         else if(pendingFence)s={state:'DELIVERY_UNCONFIRMED',detail:'Previous page submission '+pendingFence.id+' remains unconfirmed. No duplicate send.'};
         else s=await contentMessage(slot.tabId,{type:'NB_CONTENT_SEND',job});
       }

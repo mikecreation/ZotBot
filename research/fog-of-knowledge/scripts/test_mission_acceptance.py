@@ -6,7 +6,8 @@ class MissionAcceptanceTests(unittest.TestCase):
     def valid(self):
         return dict(sources_match=True,evidence_valid=True,new_nodes=9,growth_domains=3,
                     merged_domains=3,merged_batches=3,followup_after_merge=True,followup_used_new_graph=True,
-                    queue_enabled=True,publication_verified=True)
+                    queue_enabled=True,publication_verified=True,scientific_direction=True,
+                    substantive_followup=True,restart_recovered=True,no_duplicates=True,extension_matches=True)
 
     def test_bounded_live_acceptance_requires_the_whole_behavior(self):
         self.assertEqual(assess(self.valid())['status'],'PASSED')
@@ -31,6 +32,10 @@ class MissionAcceptanceTests(unittest.TestCase):
         for key in ('sources_match','evidence_valid','publication_verified'):
             with self.subTest(key=key):
                 self.assertEqual(assess({**self.valid(),key:False})['status'],'INCOMPLETE')
+
+    def test_counts_do_not_replace_scientific_planning_or_restart_proof(self):
+        for key in ('scientific_direction','substantive_followup','restart_recovered','no_duplicates','extension_matches'):
+            with self.subTest(key=key):self.assertEqual(assess({**self.valid(),key:False})['status'],'INCOMPLETE')
 
 
 if __name__=='__main__':
