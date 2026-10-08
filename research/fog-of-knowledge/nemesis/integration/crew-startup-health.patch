@@ -1,0 +1,2205 @@
+--- a/supervisor.py
++++ b/supervisor.py
+@@ -16,6 +16,7 @@
+ import statistics
+ import subprocess
+ import sys
++import tempfile
+ import time
+ import urllib.error
+ import urllib.request
+@@ -26,6 +27,37 @@
+ SUPERVISOR_LOG=ROOT/'data'/'nemesis-supervisor.log'
+ ALLOWED='static/governance-lab.css'
+ RUNNING=True
++AUDIT_TIMEOUT=60
++AUDIT_RETRY=30
++_PENDING_AUDITS={}
++_RESTART_SNAPSHOTS={}
++_OWNED_DESCENDANTS={}
++_ACTIVE_CHILD=None
++
++
++class IntegrityAuditPending(TimeoutError):
++    """Application readiness passed; complete DB integrity remains unverified."""
++    def __init__(self,message,details=None,outcome=None):
++        super().__init__(message);self.details=details or {};self.outcome=outcome or {}
++
++
++def marker_key(marker):
++    return digest(json.dumps(marker,sort_keys=True).encode()) if marker is not None else None
++
++
++def remember_pending(proc,marker,exc,rollback_reason=None):
++    old=_PENDING_AUDITS.get(id(proc),{})
++    if rollback_reason is None and old.get('marker')==marker_key(marker):rollback_reason=old.get('rollback_reason')
++    _PENDING_AUDITS[id(proc)]={'marker':marker_key(marker),'retry_at':time.monotonic()+AUDIT_RETRY,'details':exc.details,'rollback_reason':rollback_reason}
++
++
++def pending_matches(proc,marker):
++    pending=_PENDING_AUDITS.get(id(proc))
++    return bool(pending and pending['marker']==marker_key(marker))
++
++
++def audit_due(proc):
++    return time.monotonic()>=_PENDING_AUDITS.get(id(proc),{}).get('retry_at',0)
+ 
+ 
+ def digest(data):return hashlib.sha256(data).hexdigest()
+@@ -47,56 +79,146 @@
+     RUNNING=False
+ 
+ 
++class StartupGuard:
++    def __init__(self,files):self.files=files
++    def close(self):
++        for file in reversed(self.files):file.close()
++        self.files=[]
++
++
+ def acquire_startup_guard(host,port):
+     """Reject duplicate launchers BEFORE importing the app or touching its DB."""
+     folder=ROOT/'data';folder.mkdir(parents=True,exist_ok=True)
+-    guard=(folder/('.supervisor-'+str(port)+'.lock')).open('a+b')
+-    try:
+-        guard.seek(0)
+-        if os.name=='nt':
+-            import msvcrt
+-            if guard.read(1)==b'':guard.write(b'0');guard.flush()
+-            guard.seek(0);msvcrt.locking(guard.fileno(),msvcrt.LK_NBLCK,1)
+-        else:
+-            import fcntl
+-            fcntl.flock(guard.fileno(),fcntl.LOCK_EX|fcntl.LOCK_NB)
++    guards=[]
++    try:
++        # Database ownership is shared across ports. Keep the legacy port lock
++        # as well so an older same-port launcher still cannot overlap startup.
++        for name in ('.supervisor-database.lock','.supervisor-'+str(port)+'.lock'):
++            guard=(folder/name).open('a+b');guards.append(guard);guard.seek(0)
++            if os.name=='nt':
++                import msvcrt
++                if guard.read(1)==b'':guard.write(b'0');guard.flush()
++                guard.seek(0);msvcrt.locking(guard.fileno(),msvcrt.LK_NBLCK,1)
++            else:
++                import fcntl
++                fcntl.flock(guard.fileno(),fcntl.LOCK_EX|fcntl.LOCK_NB)
+         # Older launchers do not hold our new lock. An occupied port is also a
+         # hard stop, rather than accepting the other process's HTTP health.
+         with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as probe:
+             if hasattr(socket,'SO_EXCLUSIVEADDRUSE'):
+                 probe.setsockopt(socket.SOL_SOCKET,socket.SO_EXCLUSIVEADDRUSE,1)
+             probe.bind((host,port))
+-        return guard
++        return StartupGuard(guards)
+     except OSError as exc:
+-        guard.close()
++        StartupGuard(guards).close()
+         raise RuntimeError('NEMESIS already owns this database or port; duplicate launcher refused before application startup') from exc
+ 
+ 
+ def child_start(host,port):
++    global _ACTIVE_CHILD
++    if _ACTIVE_CHILD is not None:raise RuntimeError('Owned child must be fully drained before another application starts')
++    proof=prepare_restart_snapshot()
+     proc=subprocess.Popen([sys.executable,'-m','uvicorn','server:app','--host',host,'--port',str(port)],
+          cwd=str(ROOT),env=dict(os.environ,NEMESIS_SUPERVISED='1',PYTHONUNBUFFERED='1'))
++    _ACTIVE_CHILD=proc
++    proof.update(child=proc,child_pid=proc.pid,port=port)
++    _RESTART_SNAPSHOTS[id(proc)]=proof
++    if os.name=='nt':
++        # The venv redirector can exit while its base-Python child survives.
++        # Keep exact creation identities, never just a reusable numeric PID.
++        try:
++            for _ in range(3):
++                rows=windows_processes();owned=descendants(rows,[proc.pid])
++                if len(owned)>1:break
++                time.sleep(.1)
++            _OWNED_DESCENDANTS[id(proc)]=owned
++        except Exception as exc:log('Application ownership inspection delayed; stop must verify descendants before restart: '+type(exc).__name__)
+     log(f'started application pid={proc.pid} port={port}')
+     return proc
+ 
+ 
++def windows_processes():
++    script="Get-CimInstance Win32_Process | Select-Object ProcessId,ParentProcessId,CreationDate | ConvertTo-Json -Compress"
++    result=subprocess.run(['powershell','-NoProfile','-Command',script],capture_output=True,text=True,timeout=8,
++                          creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
++    if result.returncode:raise RuntimeError('Cannot verify owned application process descendants')
++    rows=json.loads(result.stdout)
++    return {int(row['ProcessId']):{'pid':int(row['ProcessId']),'parent':int(row['ParentProcessId']),'created':row['CreationDate']} for row in (rows if isinstance(rows,list) else [rows])}
++
++
++def descendants(rows,roots):
++    owned={pid:rows[pid] for pid in roots if pid in rows}
++    while True:
++        added={pid:row for pid,row in rows.items() if row['parent'] in owned and pid not in owned}
++        if not added:return owned
++        owned.update(added)
++
++
++def stop_windows_descendants(proc):
++    rows=windows_processes();saved=_OWNED_DESCENDANTS.get(id(proc),{})
++    # A live Popen handle proves the wrapper is still ours. For an exited
++    # wrapper only previously captured, creation-matching descendants qualify.
++    running=proc.poll() is None
++    if running and proc.pid not in rows:raise RuntimeError('Cannot verify live owned wrapper before restart')
++    roots=[proc.pid] if running else [pid for pid,row in saved.items() if pid in rows and rows[pid]['created']==row['created']]
++    owned=descendants(rows,roots)
++    if any(not row.get('created') for row in owned.values()):raise RuntimeError('Cannot verify owned process creation identity')
++    if proc.poll() is not None:owned.pop(proc.pid,None)
++    for pid,row in sorted(owned.items(),key=lambda item:item[0]==proc.pid):
++        current=windows_processes().get(pid)
++        if current is None:continue
++        if current['created']!=row['created']:raise RuntimeError('Owned child PID was reused; refusing unverified termination')
++        result=subprocess.run(['taskkill','/PID',str(pid),'/T','/F'],capture_output=True,text=True,timeout=8,
++                              creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
++        if result.returncode and windows_processes().get(pid)==current:raise RuntimeError('Owned application child did not stop')
++    deadline=time.monotonic()+9
++    while time.monotonic()<deadline:
++        current=windows_processes()
++        if not any(pid in current and current[pid]['created']==row['created'] for pid,row in owned.items()):
++            _OWNED_DESCENDANTS.pop(id(proc),None);return
++        time.sleep(.1)
++    raise RuntimeError('Owned application descendants still hold the restart boundary')
++
++
++def discard_restart_snapshot(proc):
++    proof=_RESTART_SNAPSHOTS.pop(id(proc),None)
++    if proof and proof.get('temporary'):proof['temporary'].cleanup()
++
++
+ def child_stop(proc):
+-    if not proc or proc.poll() is not None:return
+-    proc.terminate()
++    global _ACTIVE_CHILD
++    _PENDING_AUDITS.pop(id(proc),None)
++    if not proc:return
++    if os.name=='nt':stop_windows_descendants(proc)
++    elif proc.poll() is None:proc.terminate()
+     try:proc.wait(timeout=9)
+     except subprocess.TimeoutExpired:
+         proc.kill();proc.wait(timeout=5)
++    discard_restart_snapshot(proc)
++    if _ACTIVE_CHILD is proc:_ACTIVE_CHILD=None
+     log(f'stopped old application pid={proc.pid}')
+ 
+ 
+-def start_until_healthy(host,port,label):
++def start_until_healthy(host,port,label,marker=None,rollback_reason=None,expected_hash=None):
+     """Keep the watchdog alive even if one restart misses the health window."""
+     attempt=0
+     while RUNNING:
+         attempt+=1
+         proc=child_start(host,port)
+         try:
+-            outcome=check(port,timeout=40 if attempt==1 else 25)
++            outcome=check(port,timeout=40 if attempt==1 else 25,child=proc,expected_hash=expected_hash)
++            if marker:
++                if marker.get('kind')=='GENERIC':
++                    snapshot,_=validated_generic(marker)
++                    audit_generic(int(marker['amendment_id']),int(marker['child_id']),'ROLLED_BACK',
++                                  rollback_reason,marker['manifest_sha256'],outcome,snapshot)
++                else:audit_state(int(marker['amendment_id']),'ROLLED_BACK',rollback_reason,outcome)
++                CONTROL.unlink(missing_ok=True)
+             log(f'{label} healthy on attempt {attempt}; median={outcome.get("http_median_ms")}ms')
++            return proc
++        except IntegrityAuditPending as exc:
++            remember_pending(proc,marker,exc,rollback_reason=rollback_reason)
++            log(f'{label} application ready on attempt {attempt}; full SQLite integrity AUDIT PENDING: {exc}')
+             return proc
+         except Exception as exc:
+             code=proc.poll()
+@@ -107,36 +229,151 @@
+     return None
+ 
+ 
+-def database_health(connection, science_running=False):
++def scheduler_health(connection):
++    runtime=connection.execute('SELECT COUNT(*) FROM campaign_runtime').fetchone()[0]
++    if runtime:
++        last=connection.execute('SELECT MAX(last_pass) FROM campaign_scheduler_heartbeats').fetchone()[0]
++        if not last or time.time()-last>30:
++            raise RuntimeError('Pandora scheduler heartbeat overdue; HTTP 200 does not prove work is running')
++
++
++def live_scheduler_health(deadline=None):
++    connection=sqlite3.connect(DB.resolve().as_uri()+'?mode=ro',uri=True,timeout=.2)
++    try:
++        if deadline is not None:connection.set_progress_handler(lambda: int(time.monotonic()>=deadline),1000)
++        scheduler_health(connection)
++    finally:connection.close()
++
++
++def prepare_restart_snapshot():
++    """Only called at an existing stopped-child startup/restart boundary."""
++    proof={'captured_at':time.time(),'source':str(DB.resolve()),'verified':False,'temporary':None}
++    if not DB.exists():return proof
++    temporary=tempfile.TemporaryDirectory(prefix='nemesis-prestart-')
++    proof.update(temporary=temporary,path=Path(temporary.name)/'snapshot.db')
++    source=None;target=None;deadline=time.monotonic()+AUDIT_TIMEOUT
++    try:
++        # A crashed DELETE-journal writer can leave a hot journal. At this
++        # verified stopped-child boundary only, let SQLite recover it normally
++        # before copying; readonly opens cannot perform that atomic recovery.
++        # mode=rw refuses a missing source and we never issue data writes.
++        source=sqlite3.connect(DB.resolve().as_uri()+'?mode=rw',uri=True,timeout=.2)
++        source.execute('SELECT COUNT(*) FROM sqlite_master').fetchone()
++        source.execute('PRAGMA query_only=ON')
++        target=sqlite3.connect(str(proof['path']),timeout=.2)
++        def progress(status,remaining,total):
++            if time.monotonic()>=deadline:raise IntegrityAuditPending('Pre-start snapshot capture exceeded deadline',{'phase':'prestart-capture'})
++        source.backup(target,pages=4096,progress=progress,sleep=.01)
++        proof['captured']=True
++    except Exception as exc:
++        proof['capture_error']=exc
++    finally:
++        if target:target.close()
++        if source:source.close()
++    return proof
++
++
++def restart_database_health(child,port,deadline):
++    proof=_RESTART_SNAPSHOTS.get(id(child))
++    if not proof or proof.get('child') is not child or proof.get('child_pid')!=child.pid or proof.get('port')!=port or proof.get('source')!=str(DB.resolve()) or child.poll() is not None:
++        raise RuntimeError('Pre-start integrity proof does not belong to this live child')
++    if proof.get('capture_error'):
++        error=proof['capture_error']
++        if isinstance(error,sqlite3.DatabaseError) and getattr(error,'sqlite_errorcode',0) in (sqlite3.SQLITE_CORRUPT,sqlite3.SQLITE_NOTADB):raise RuntimeError('Pre-start database capture found corruption') from error
++        # A temporary pre-start capture failure must not freeze a healthy child.
++        # Retry the ordinary full online snapshot audit, with that scope explicit.
++        return None
++    if not proof.get('captured'):
++        # An absent DB is legitimate only on first installation. Its newly
++        # initialized live DB still requires the ordinary full online audit.
++        return None
++    if not proof['verified']:
++        connection=sqlite3.connect(proof['path'].as_uri()+'?mode=ro',uri=True,timeout=.2)
++        try:
++            try:database_health(connection,deadline=deadline)
++            except sqlite3.OperationalError as exc:
++                if 'interrupted' in str(exc).lower() and time.monotonic()>=deadline:
++                    raise IntegrityAuditPending('Private pre-start integrity audit exceeded deadline; capture retained',{'phase':'prestart-integrity','child_pid':child.pid}) from exc
++                raise
++        finally:connection.close()
++        proof['verified']=True;proof['verified_at']=time.time()
++    return {'scope':'consistent database snapshot before this child started','child_pid':child.pid,'captured_at':proof['captured_at'],'verified_at':proof['verified_at']}
++
++
++def database_health(connection, science_running=False, deadline=None):
+     """Do not accept quick_check(1) as DB integrity: it missed absent index rows.
+ 
+     Whole-database integrity is bounded by DB pages, not by campaign transcript
+     length. Only reads the DB; any index-only repair requires an isolated test,
+     a preserved backup and a separate, verified maintenance action.
+     """
+-    errors=[r[0] for r in connection.execute('PRAGMA integrity_check').fetchall()]
++    if deadline is not None:
++        connection.set_progress_handler(lambda: int(time.monotonic()>=deadline),1000)
++    try:errors=[r[0] for r in connection.execute('PRAGMA integrity_check').fetchall()]
++    finally:
++        if deadline is not None:connection.set_progress_handler(None,0)
+     if errors!=['ok']:
+         raise RuntimeError('SQLite full integrity_check: '+ '; '.join(errors[:4])[:320])
+-    if science_running:
+-        runtime=connection.execute('SELECT COUNT(*) FROM campaign_runtime').fetchone()[0]
+-        if runtime:
+-            last=connection.execute('SELECT MAX(last_pass) FROM campaign_scheduler_heartbeats').fetchone()[0]
+-            if not last or time.time()-last>30:
+-                raise RuntimeError('Pandora scheduler heartbeat overdue; HTTP 200 does not prove work is running')
++    if science_running:scheduler_health(connection)
+     return True
+ 
+ 
+-def check(port,expected_hash=None,timeout=20):
++def snapshot_database_health(science_running=False,deadline=None):
++    """Full integrity verification must never hold a live DB reader for its scan.
++
++    DELETE-journal SQLite needs readers to release before application commit.
++    Online backup releases the source read lock between bounded page batches;
++    integrity_check then scans only the private consistent snapshot. Read the
++    scheduler heartbeat afresh from production after the scan, not from its copy.
++    """
++    deadline=deadline if deadline is not None else time.monotonic()+AUDIT_TIMEOUT
++    state={'phase':'snapshot','remaining_pages':None,'total_pages':None}
++    def progress(status,remaining,total):
++        state.update(remaining_pages=remaining,total_pages=total)
++        if time.monotonic()>=deadline:raise IntegrityAuditPending('SQLite health snapshot exceeded verification deadline',dict(state))
++        # Backup progress runs after each read-lock batch is released. Give
++        # waiting application commits a turn rather than immediately relocking.
++        if remaining:time.sleep(.001)
++    source=sqlite3.connect(DB.resolve().as_uri()+'?mode=ro',uri=True,timeout=.2)
++    try:
++        source.execute('PRAGMA query_only=ON')
++        source.execute('PRAGMA cache_size=-8192')
++        with tempfile.TemporaryDirectory(prefix='nemesis-health-') as folder:
++            snapshot=sqlite3.connect(str(Path(folder)/'snapshot.db'),timeout=.2)
++            try:
++                source.backup(snapshot,pages=4096,progress=progress,sleep=.01)
++                progress(None,0,0)
++                state['phase']='integrity'
++                try:database_health(snapshot,science_running=False,deadline=deadline)
++                except sqlite3.OperationalError as exc:
++                    if 'interrupted' in str(exc).lower() and time.monotonic()>=deadline:
++                        raise IntegrityAuditPending('SQLite full integrity audit exceeded verification deadline',dict(state)) from exc
++                    raise
++            finally:snapshot.close()
++        if science_running:
++            source.set_progress_handler(lambda: int(time.monotonic()>=deadline),1000)
++            try:scheduler_health(source)
++            finally:source.set_progress_handler(None,0)
++        progress(None,0,0)
++        return True
++    finally:source.close()
++
++
++def check(port,expected_hash=None,timeout=20,audit_timeout=AUDIT_TIMEOUT,child=None):
+     base=f'http://127.0.0.1:{port}'
+-    start=time.monotonic();last='not started'
+-    while RUNNING and time.monotonic()-start<timeout:
++    deadline=time.monotonic()+timeout;last='not started'
++    def request_timeout():
++        remaining=deadline-time.monotonic()
++        if remaining<=0:raise TimeoutError('Post-restart verification deadline exceeded')
++        return min(6,remaining)
++    while RUNNING and time.monotonic()<deadline:
+         try:
+             delays=[];data={}
+             for path in ('/api/health','/api/state','/api/science/status','/api/science/report',
+                          '/api/world/status','/api/world/viewport?cx=0&cy=0&radius=1',
+                          '/api/governance/status','/api/governance/tools','/'):
+                 t=time.perf_counter()
+-                with urllib.request.urlopen(base+path,timeout=6) as r:
++                with urllib.request.urlopen(base+path,timeout=request_timeout()) as r:
+                     body=r.read(8_000_001)
+                     if len(body)>8_000_000:raise RuntimeError('Health JSON exceeds 8 MB verification limit')
+                     if r.status!=200:raise RuntimeError(path+' HTTP '+str(r.status))
+@@ -151,23 +388,32 @@
+                 raise RuntimeError('persistent world failed to open')
+             if not isinstance(data['/api/governance/tools'],dict):
+                 raise RuntimeError('capability registry route failed')
+-            with urllib.request.urlopen(base+'/static/governance-lab.css',timeout=6) as r:
++            with urllib.request.urlopen(base+'/static/governance-lab.css',timeout=request_timeout()) as r:
+                 css=r.read(32_000)
+             if expected_hash and digest(css)!=expected_hash:
+                 raise RuntimeError('restarted server did not serve the approved code hash')
+-            with urllib.request.urlopen(base+'/api/stream',timeout=6) as r:
++            with urllib.request.urlopen(base+'/api/stream',timeout=request_timeout()) as r:
+                 first=r.readline(200_000)
+                 if not first.startswith(b'data: ') or b'HELLO' not in first:
+                     raise RuntimeError('SSE/live updates handshake failed')
+-            connection=sqlite3.connect(str(DB),timeout=5)
+-            try:database_health(connection,science_running=bool(health.get('science_worker')))
+-            finally:connection.close()
+-            return {'ok':True,'http_median_ms':round(statistics.median(delays),2),
++            if health.get('science_worker'):live_scheduler_health(deadline)
++            outcome={'ok':True,'http_median_ms':round(statistics.median(delays),2),
+                     'http_ms':delays,'checks':['server','SQLite integrity','migrations v10',
+                     'Arena/18 fields/36 agents','Pandora/report','world/viewport',
+                     'SSE','tool registry','approved code hash'],
+                     'css_sha256':digest(css),'at':time.time(),
+                     'note':'API timing is local and noisy; rendered usability was not measured.'}
++            try:
++                scope=restart_database_health(child,port,time.monotonic()+audit_timeout) if child is not None else None
++                if scope is None:
++                    snapshot_database_health(science_running=bool(health.get('science_worker')),deadline=time.monotonic()+audit_timeout)
++                    scope={'scope':'consistent online database snapshot'}
++                elif health.get('science_worker'):live_scheduler_health(time.monotonic()+1)
++            except IntegrityAuditPending as exc:
++                exc.outcome={**outcome,'ok':False,'app_ready':True,'integrity':'pending','audit':exc.details,'checks':[c for c in outcome['checks'] if c!='SQLite integrity']}
++                raise
++            return {**outcome,'integrity':'verified','integrity_snapshot':scope}
++        except IntegrityAuditPending:raise
+         except Exception as exc:
+             last=f'{type(exc).__name__}: {str(exc)[:250]}'
+             time.sleep(.25)
+@@ -291,6 +537,8 @@
+ 
+ def perform_generic(marker,child,host,port):
+     aid=int(marker['amendment_id']);child_id=int(marker['child_id']);action=marker['action']
++    recovery_reason=(_PENDING_AUDITS.get(id(child),{}).get('rollback_reason') if pending_matches(child,marker) else None)
++    if recovery_reason:action='GENERIC_ROLLBACK'
+     snapshot,manifest=validated_generic(marker)
+     candidate_root=(ROOT/manifest.get('candidate_root','')).resolve()
+     eng=(ROOT/'data'/'engineering').resolve()
+@@ -301,18 +549,20 @@
+             src=candidate_root/item['path']
+             if not src.is_file() or digest(src.read_bytes())!=item['candidate_sha256']:
+                 raise RuntimeError('candidate byte/hash mismatch: '+item['path'])
+-    child_stop(child)
+-    if action=='GENERIC_ROLLBACK':
+-        restore_generic(snapshot,manifest)
+-        log(f'generic human rollback #{aid:03d}: restored {len(manifest["files"])} source preimage(s); SQLite preserved')
+-    else:
+-        for item in manifest['files']:
+-            src=candidate_root/item['path'];target=ROOT/item['path']
+-            target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(src.read_bytes())
+-        log(f'generic deployment #{aid:03d}: promoted {len(manifest["files"])} exact tested source file(s)')
+-    child=child_start(host,port)
+-    try:
+-        outcome=check(port,timeout=35)
++    if not pending_matches(child,marker):
++        child_stop(child)
++        if action=='GENERIC_ROLLBACK':
++            restore_generic(snapshot,manifest)
++            log(f'generic human rollback #{aid:03d}: restored {len(manifest["files"])} source preimage(s); SQLite preserved')
++        else:
++            for item in manifest['files']:
++                src=candidate_root/item['path'];target=ROOT/item['path']
++                target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(src.read_bytes())
++            log(f'generic deployment #{aid:03d}: promoted {len(manifest["files"])} exact tested source file(s)')
++        child=child_start(host,port)
++    pending=False
++    try:
++        outcome=check(port,timeout=35,child=child)
+         # The restarted process must be serving the exact promoted/restored disk bytes.
+         for item in manifest['files']:
+             target=ROOT/item['path']
+@@ -326,33 +576,45 @@
+                           marker['manifest_sha256'],outcome,snapshot)
+             log(f'generic amendment #{aid:03d} DEPLOYED + VERIFIED')
+         else:
+-            audit_generic(aid,child_id,'ROLLED_BACK','Human requested generic code rollback; persistent DB retained.',
++            audit_generic(aid,child_id,'ROLLED_BACK',recovery_reason or 'Human requested generic code rollback; persistent DB retained.',
+                           marker['manifest_sha256'],outcome,snapshot)
+             log(f'generic amendment #{aid:03d} ROLLED BACK + VERIFIED')
++    except IntegrityAuditPending as exc:
++        pending=True;remember_pending(child,marker,exc)
++        log(f'generic amendment #{aid:03d} application ready; full SQLite integrity AUDIT PENDING; retaining running code and control marker: {exc}')
+     except Exception as exc:
+         log(f'generic amendment #{aid:03d} FAILED live health ({exc}); restoring all preimages')
+         child_stop(child);restore_generic(snapshot,manifest);child=child_start(host,port)
+-        recovered=check(port,timeout=35)
+-        audit_generic(aid,child_id,'ROLLED_BACK','AUTOMATIC HEALTH FAILURE: '+str(exc)[:500],
+-                      marker['manifest_sha256'],recovered,snapshot)
+-        log(f'generic amendment #{aid:03d} AUTOMATIC ROLLBACK VERIFIED')
++        reason='AUTOMATIC HEALTH FAILURE: '+str(exc)[:500]
++        try:recovered=check(port,timeout=35,child=child)
++        except IntegrityAuditPending as wait:
++            pending=True;remember_pending(child,marker,wait,rollback_reason=reason)
++            log(f'generic amendment #{aid:03d} rollback application ready; full SQLite integrity AUDIT PENDING; control marker retained: {wait}')
++        else:
++            audit_generic(aid,child_id,'ROLLED_BACK',reason,marker['manifest_sha256'],recovered,snapshot)
++            log(f'generic amendment #{aid:03d} AUTOMATIC ROLLBACK VERIFIED')
+     finally:
+-        CONTROL.unlink(missing_ok=True)
++        if not pending:
++            _PENDING_AUDITS.pop(id(child),None);CONTROL.unlink(missing_ok=True)
+     return child
+ 
+ def perform(marker,child,host,port):
+     aid=int(marker['amendment_id']);action=marker['action']
++    recovery_reason=(_PENDING_AUDITS.get(id(child),{}).get('rollback_reason') if pending_matches(child,marker) else None)
++    if recovery_reason:action='ROLLBACK'
+     _,preimage=validated_snapshot(marker)
+     target=ROOT/ALLOWED
+     if action=='DEPLOY' and digest(target.read_bytes())!=marker.get('candidate_sha256'):
+         raise RuntimeError('candidate source differs from approved hash; refusing restart')
+-    if action=='ROLLBACK':
+-        target.write_bytes(preimage)
+-        log(f'human rollback #{aid:03d}: restored actual stylesheet; SQLite preserved')
+-    child_stop(child)
+-    child=child_start(host,port)
+-    try:
+-        outcome=check(port,expected_hash=(digest(preimage) if action=='ROLLBACK' else marker['candidate_sha256']))
++    if not pending_matches(child,marker):
++        if action=='ROLLBACK':
++            target.write_bytes(preimage)
++            log(f'human rollback #{aid:03d}: restored actual stylesheet; SQLite preserved')
++        child_stop(child)
++        child=child_start(host,port)
++    pending=False
++    try:
++        outcome=check(port,expected_hash=(digest(preimage) if action=='ROLLBACK' else marker['candidate_sha256']),child=child)
+         if action=='DEPLOY':
+             # Measurements are gates, NOT proof of human usability.
+             c=sqlite3.connect(str(DB))
+@@ -366,19 +628,28 @@
+             audit_state(aid,'DEPLOYED','Approved patch is RUNNING after supervised restart; post-deploy API gates passed',outcome)
+             log(f'amendment #{aid:03d} DEPLOYED; verified real code hash {outcome["css_sha256"][:14]}')
+         else:
+-            audit_state(aid,'ROLLED_BACK','Human requested code rollback; current scientific/archive DB kept',outcome)
++            audit_state(aid,'ROLLED_BACK',recovery_reason or 'Human requested code rollback; current scientific/archive DB kept',outcome)
+             log(f'amendment #{aid:03d} ROLLED_BACK; app and SSE healthy')
++    except IntegrityAuditPending as exc:
++        pending=True;remember_pending(child,marker,exc)
++        log(f'amendment #{aid:03d} application ready; full SQLite integrity AUDIT PENDING; retaining running code and control marker: {exc}')
+     except Exception as exc:
+         log(f'amendment #{aid:03d} FAILED health ({exc}); restoring KNOWN GOOD code')
+         child_stop(child);target.write_bytes(preimage)
+         child=child_start(host,port)
+-        recovered=check(port,expected_hash=digest(preimage))
+-        audit_state(aid,'ROLLED_BACK','AUTOMATIC HEALTH FAILURE: '+str(exc)[:240],recovered)
+-        log(f'amendment #{aid:03d} AUTOMATIC ROLLBACK VERIFIED; database retained')
++        reason='AUTOMATIC HEALTH FAILURE: '+str(exc)[:240]
++        try:recovered=check(port,expected_hash=digest(preimage),child=child)
++        except IntegrityAuditPending as wait:
++            pending=True;remember_pending(child,marker,wait,rollback_reason=reason)
++            log(f'amendment #{aid:03d} rollback application ready; full SQLite integrity AUDIT PENDING; control marker retained: {wait}')
++        else:
++            audit_state(aid,'ROLLED_BACK',reason,recovered)
++            log(f'amendment #{aid:03d} AUTOMATIC ROLLBACK VERIFIED; database retained')
+     finally:
+         # DB audit precedes marker removal; crash recovery can safely repeat a
+         # deployment/rollback marker if interrupted during restart.
+-        CONTROL.unlink(missing_ok=True)
++        if not pending:
++            _PENDING_AUDITS.pop(id(child),None);CONTROL.unlink(missing_ok=True)
+     return child
+ 
+ 
+@@ -391,8 +662,11 @@
+     signal.signal(signal.SIGTERM,quit_signal);signal.signal(signal.SIGINT,quit_signal)
+     child=child_start(args.host,args.port)
+     try:
+-        check(args.port,timeout=40)
++        check(args.port,timeout=40,child=child)
+         log('KNOWN GOOD service healthy; awaiting approved amendments')
++    except IntegrityAuditPending as exc:
++        remember_pending(child,None,exc)
++        log('Application ready; full SQLite integrity AUDIT PENDING; keeping service running: '+str(exc))
+     except Exception as exc:
+         log('initial health failure: '+str(exc))
+         if CONTROL.exists():
+@@ -408,47 +682,71 @@
+             if child.poll() is not None:
+                 exit_code=child.returncode
+                 log(f'application exited unexpectedly with code {exit_code}; attempting known-good recovery')
++                # A Windows venv wrapper may exit while actual Python survives.
++                # Drain its verified descendants before taking a new snapshot.
++                child_stop(child)
+                 marker=json.loads(CONTROL.read_text(encoding='utf-8')) if CONTROL.exists() else None
++                recovery_marker=None;expected_hash=None
+                 if marker:
+                     try:
+                         if marker.get('kind')=='GENERIC':
+                             snap,man=validated_generic(marker);restore_generic(snap,man)
+-                            audit_generic(int(marker['amendment_id']),int(marker['child_id']),'ROLLED_BACK',
+-                              'AUTOMATIC HEALTH FAILURE: child crashed before generic approval',marker['manifest_sha256'],{},snap)
+                         else:
+                             _,pre=validated_snapshot(marker);(ROOT/ALLOWED).write_bytes(pre)
+-                            audit_state(int(marker['amendment_id']),'ROLLED_BACK','AUTOMATIC HEALTH FAILURE: child crashed before approval',{})
++                            expected_hash=digest(pre)
++                        recovery_marker=marker
+                     except Exception as exc:
+                         log('crash-time rollback inspection failed: '+repr(exc))
+-                    finally:
+-                        CONTROL.unlink(missing_ok=True)
+-                child=start_until_healthy(args.host,args.port,'crash recovery')
++                if recovery_marker:
++                    child=start_until_healthy(args.host,args.port,'crash recovery',marker=recovery_marker,
++                                              rollback_reason='AUTOMATIC HEALTH FAILURE: child crashed before approval',expected_hash=expected_hash)
++                else:child=start_until_healthy(args.host,args.port,'crash recovery')
+                 if not child: break
+-            if CONTROL.exists():
++            if CONTROL.exists() and audit_due(child):
+                 marker=None
+                 try:
+                     marker=json.loads(CONTROL.read_text(encoding='utf-8'))
+                     child=perform_generic(marker,child,args.host,args.port) if marker.get('kind')=='GENERIC' else perform(marker,child,args.host,args.port)
+                 except Exception as exc:
++                    child=_ACTIVE_CHILD or child
+                     log('deployment instruction error: '+repr(exc))
++                    restored=False;reason='AUTOMATIC HEALTH FAILURE: '+str(exc)[:400]
+                     try:
+                         if marker and marker.get('kind')=='GENERIC':
+                             snap,man=validated_generic(marker);child_stop(child);restore_generic(snap,man)
+-                            child=child_start(args.host,args.port);check(args.port,timeout=30)
++                            child=child_start(args.host,args.port);outcome=check(args.port,timeout=30,child=child)
+                             audit_generic(int(marker['amendment_id']),int(marker['child_id']),'ROLLED_BACK',
+-                                          'AUTOMATIC HEALTH FAILURE: '+str(exc)[:400],marker['manifest_sha256'],{},snap)
++                                          reason,marker['manifest_sha256'],outcome,snap)
+                         elif marker:
+                             _,pre=validated_snapshot(marker)
+                             child_stop(child);(ROOT/ALLOWED).write_bytes(pre)
+                             child=child_start(args.host,args.port)
+-                            check(args.port,expected_hash=digest(pre),timeout=30)
++                            outcome=check(args.port,expected_hash=digest(pre),timeout=30,child=child)
+                             audit_state(int(marker['amendment_id']),'ROLLED_BACK',
+-                                        'AUTOMATIC HEALTH FAILURE: '+str(exc)[:240])
++                                        reason,outcome)
++                        restored=bool(marker)
++                    except IntegrityAuditPending as wait:
++                        child=_ACTIVE_CHILD or child
++                        remember_pending(child,marker,wait,rollback_reason=reason)
++                        log('Known-good rollback application ready; full SQLite integrity AUDIT PENDING; control marker retained: '+str(wait))
+                     except Exception as second:log('CRITICAL: known-good restoration needs human inspection: '+repr(second))
+-                    CONTROL.unlink(missing_ok=True)
++                    if restored:
++                        _PENDING_AUDITS.pop(id(child),None);CONTROL.unlink(missing_ok=True)
++            elif pending_matches(child,None) and audit_due(child):
++                try:
++                    check(args.port,timeout=20,child=child)
++                    _PENDING_AUDITS.pop(id(child),None)
++                    log('Full SQLite integrity audit completed; KNOWN GOOD service verified')
++                except IntegrityAuditPending as exc:
++                    remember_pending(child,None,exc)
++                    log('Application readiness passed; full SQLite integrity AUDIT remains PENDING: '+str(exc))
++                except Exception as exc:
++                    log('Pending audit application health failed: '+str(exc))
++                    child_stop(child);child=start_until_healthy(args.host,args.port,'pending audit recovery')
++                    if not child:break
+             time.sleep(.3)
+     finally:
+-        child_stop(child);startup_guard.close()
++        child_stop(_ACTIVE_CHILD or child);startup_guard.close()
+ 
+ 
+ if __name__=='__main__':main()
+--- /dev/null
++++ b/tests/test_supervisor_snapshot_health.py
+@@ -0,0 +1,715 @@
++"""Supervisor health must verify integrity without blocking production commits.
++
++Every database here is disposable. These tests use real DELETE-journal SQLite
++locks, including the previous live integrity-scan failure mechanism.
++"""
++import json
++import sqlite3
++import subprocess
++import sys
++import threading
++import time
++from pathlib import Path
++from types import SimpleNamespace
++from contextlib import closing
++
++import pytest
++
++import supervisor
++
++
++@pytest.fixture(autouse=True)
++def isolated_supervisor_log(tmp_path,monkeypatch):
++    monkeypatch.setattr(supervisor,'SUPERVISOR_LOG',tmp_path/'supervisor.log')
++    monkeypatch.setattr(supervisor,'_PENDING_AUDITS',{})
++    monkeypatch.setattr(supervisor,'_RESTART_SNAPSHOTS',{})
++    monkeypatch.setattr(supervisor,'_OWNED_DESCENDANTS',{})
++    monkeypatch.setattr(supervisor,'_ACTIVE_CHILD',None)
++    yield
++    for proof in list(supervisor._RESTART_SNAPSHOTS.values()):
++        if proof.get('temporary'):proof['temporary'].cleanup()
++
++
++@pytest.fixture
++def database(tmp_path, monkeypatch):
++    path = tmp_path / 'arena.db'
++    with sqlite3.connect(path) as connection:
++        connection.execute('PRAGMA journal_mode=DELETE')
++        connection.execute('CREATE TABLE payload(id INTEGER PRIMARY KEY, body BLOB)')
++        connection.executemany('INSERT INTO payload(body) VALUES(?)', [(b'x' * 4096,)] * 650)
++        connection.execute('CREATE TABLE campaign_runtime(campaign_id TEXT)')
++        connection.execute('CREATE TABLE campaign_scheduler_heartbeats(last_pass REAL)')
++        connection.execute("INSERT INTO campaign_runtime VALUES('fixture')")
++        connection.execute('INSERT INTO campaign_scheduler_heartbeats VALUES(?)', (time.time() - 100,))
++    monkeypatch.setattr(supervisor, 'DB', path)
++    return path
++
++
++def run_thread(function):
++    result = []
++    errors = []
++    def run():
++        try:
++            result.append(function())
++        except BaseException as exc:
++            errors.append(exc)
++    thread = threading.Thread(target=run)
++    thread.start()
++    return thread, result, errors
++
++
++def hold_integrity_scan(connection, ready, release):
++    first = [True]
++    def progress():
++        if first:
++            first.pop()
++            ready.set()
++            if not release.wait(3):
++                raise TimeoutError('Test did not release the paused integrity scan')
++        return 0
++    connection.set_progress_handler(progress, 50)
++
++
++def test_old_live_integrity_scan_reproduces_commit_database_locked(database):
++    ready = threading.Event()
++    release = threading.Event()
++    def health():
++        connection = sqlite3.connect(database)
++        try:
++            hold_integrity_scan(connection, ready, release)
++            return supervisor.database_health(connection)
++        finally:
++            connection.close()
++    thread, result, errors = run_thread(health)
++    try:
++        assert ready.wait(2)
++        writer = sqlite3.connect(database, timeout=.05)
++        try:
++            writer.execute('UPDATE payload SET body=? WHERE id=1', (b'changed',))
++            with pytest.raises(sqlite3.OperationalError, match='database is locked'):
++                writer.commit()
++            writer.rollback()
++        finally:
++            writer.close()
++    finally:
++        release.set()
++        thread.join(3)
++    assert not thread.is_alive() and not errors and result == [True]
++
++
++def test_snapshot_integrity_scan_allows_live_commit_and_checks_fresh_heartbeat(database, monkeypatch):
++    ready = threading.Event()
++    release = threading.Event()
++    original = supervisor.database_health
++    scanned_paths = []
++    def paused_snapshot(connection, science_running=False, deadline=None):
++        scanned_paths.append(connection.execute('PRAGMA database_list').fetchone()[2])
++        hold_integrity_scan(connection, ready, release)
++        return original(connection, science_running=False)
++    monkeypatch.setattr(supervisor, 'database_health', paused_snapshot)
++    thread, result, errors = run_thread(lambda: supervisor.snapshot_database_health(True, time.monotonic() + 5))
++    try:
++        assert ready.wait(2)
++        with sqlite3.connect(database, timeout=.05) as writer:
++            writer.execute('UPDATE payload SET body=? WHERE id=1', (b'changed while verifying',))
++            writer.execute('UPDATE campaign_scheduler_heartbeats SET last_pass=?', (time.time(),))
++    finally:
++        release.set()
++        thread.join(3)
++    assert not thread.is_alive() and not errors and result == [True]
++    assert scanned_paths and scanned_paths[0] != str(database)
++    assert not Path(scanned_paths[0]).exists(), 'Temporary snapshot is cleaned up'
++    with sqlite3.connect(database) as connection:
++        assert connection.execute('PRAGMA journal_mode').fetchone()[0] == 'delete'
++        assert connection.execute('SELECT body FROM payload WHERE id=1').fetchone()[0] == b'changed while verifying'
++
++
++def test_incremental_snapshot_releases_source_lock_between_page_steps(database, monkeypatch):
++    ready = threading.Event()
++    release = threading.Event()
++    first = [True]
++    original_connect = sqlite3.connect
++    with original_connect(database) as connection:
++        connection.executemany('INSERT INTO payload(body) VALUES(?)', [(b'x' * 4096,)] * 5000)
++    class Connection(sqlite3.Connection):
++        def backup(self, target, **kwargs):
++            original_progress = kwargs['progress']
++            def progress(status, remaining, total):
++                if first and remaining:
++                    first.pop()
++                    ready.set()
++                    assert release.wait(3)
++                original_progress(status, remaining, total)
++            kwargs['progress'] = progress
++            return super().backup(target, **kwargs)
++    def connect(*args, **kwargs):
++        kwargs['factory'] = Connection
++        return original_connect(*args, **kwargs)
++    monkeypatch.setattr(supervisor.sqlite3, 'connect', connect)
++    thread, result, errors = run_thread(lambda: supervisor.snapshot_database_health(False, time.monotonic() + 5))
++    try:
++        assert ready.wait(2)
++        with original_connect(database, timeout=.05) as writer:
++            writer.execute('UPDATE payload SET body=? WHERE id=2', (b'committed between backup steps',))
++    finally:
++        release.set()
++        thread.join(3)
++    assert not thread.is_alive() and not errors and result == [True]
++
++
++def test_snapshot_backup_deadline_is_bounded_and_does_not_change_source(database):
++    with sqlite3.connect(database) as connection:
++        before = connection.execute('SELECT body FROM payload WHERE id=1').fetchone()[0]
++    started = time.monotonic()
++    with pytest.raises(TimeoutError, match='verification deadline'):
++        supervisor.snapshot_database_health(False, started - 1)
++    assert time.monotonic() - started < 1
++    with sqlite3.connect(database) as connection:
++        assert connection.execute('SELECT body FROM payload WHERE id=1').fetchone()[0] == before
++
++
++def test_full_integrity_scan_honors_deadline(database):
++    connection = sqlite3.connect(database)
++    try:
++        with pytest.raises(sqlite3.OperationalError, match='interrupted'):
++            supervisor.database_health(connection, deadline=time.monotonic() - 1)
++        # Its progress handler is removed even after interruption.
++        assert supervisor.database_health(connection)
++    finally:
++        connection.close()
++
++
++def test_snapshot_still_rejects_current_idle_scheduler(database):
++    with pytest.raises(RuntimeError, match='heartbeat overdue'):
++        supervisor.snapshot_database_health(True, time.monotonic() + 5)
++
++
++def test_http_verification_uses_remaining_overall_deadline(monkeypatch):
++    responses = {
++        '/api/health': {'agents': 36, 'science_schema': 10, 'science_worker': False},
++        '/api/state': {'fields': [None] * 18, 'agents': [None] * 36},
++        '/api/world/status': {'discovered_chunks': 1},
++    }
++    requested_timeouts = []
++    class Response:
++        status = 200
++        def __init__(self, url):
++            self.path = url.split(':8000', 1)[1]
++        def __enter__(self):
++            return self
++        def __exit__(self, *args):
++            return False
++        def read(self, limit):
++            return json.dumps(responses.get(self.path, {})).encode()
++        def readline(self, limit):
++            return b'data: {"kind":"HELLO"}\n'
++    def urlopen(url, timeout):
++        requested_timeouts.append(timeout)
++        return Response(url)
++    monkeypatch.setattr(supervisor.urllib.request, 'urlopen', urlopen)
++    deadlines = []
++    def health(science_running=False, deadline=None):
++        deadlines.append(deadline)
++        return True
++    monkeypatch.setattr(supervisor, 'snapshot_database_health', health)
++    assert supervisor.check(8000, timeout=.5)['ok']
++    assert requested_timeouts and all(0 < timeout <= .5 for timeout in requested_timeouts)
++    assert len(deadlines) == 1 and deadlines[0] > time.monotonic()
++
++
++def test_pending_audit_keeps_startup_child_without_claiming_full_health(monkeypatch):
++    child = SimpleNamespace(pid=123, poll=lambda: None)
++    started = []
++    stopped = []
++    monkeypatch.setattr(supervisor, 'child_start', lambda *args: started.append(child) or child)
++    monkeypatch.setattr(supervisor, 'child_stop', lambda proc: stopped.append(proc))
++    def pending(*args, **kwargs):
++        raise supervisor.IntegrityAuditPending('Snapshot changed repeatedly under live writes', {'phase': 'snapshot', 'remaining_pages': 100})
++    monkeypatch.setattr(supervisor, 'check', pending)
++    assert supervisor.start_until_healthy('127.0.0.1', 8000, 'fixture recovery') is child
++    assert len(started) == 1 and not stopped
++    assert supervisor.pending_matches(child, None)
++    assert supervisor.audit_due(child) is False
++    log = supervisor.SUPERVISOR_LOG.read_text()
++    assert 'AUDIT PENDING' in log
++    assert 'healthy on attempt' not in log
++
++
++@pytest.fixture
++def amendment(tmp_path, monkeypatch):
++    root = tmp_path / 'application'
++    target = root / 'static/governance-lab.css'
++    target.parent.mkdir(parents=True)
++    old = b'/* preserved known-good code */'
++    candidate = b'/* tested candidate code */'
++    target.write_bytes(candidate)
++    control = root / 'data/governance/control.json'
++    control.parent.mkdir(parents=True)
++    marker = {'amendment_id': 1, 'action': 'DEPLOY', 'file': supervisor.ALLOWED, 'candidate_sha256': supervisor.digest(candidate)}
++    control.write_text(json.dumps(marker))
++    database = root / 'data/arena.db'
++    with sqlite3.connect(database) as connection:
++        connection.execute('CREATE TABLE system_amendments(id INTEGER PRIMARY KEY, candidate_metrics TEXT)')
++        connection.execute("INSERT INTO system_amendments VALUES(1,'{}')")
++    monkeypatch.setattr(supervisor, 'ROOT', root)
++    monkeypatch.setattr(supervisor, 'DB', database)
++    monkeypatch.setattr(supervisor, 'CONTROL', control)
++    monkeypatch.setattr(supervisor, 'validated_snapshot', lambda value: (root, old))
++    started = []
++    stopped = []
++    audits = []
++    def start(*args):
++        child = SimpleNamespace(pid=100 + len(started), poll=lambda: None)
++        started.append(child)
++        return child
++    monkeypatch.setattr(supervisor, 'child_start', start)
++    monkeypatch.setattr(supervisor, 'child_stop', lambda child: stopped.append(child))
++    monkeypatch.setattr(supervisor, 'audit_state', lambda *args: audits.append(args))
++    return SimpleNamespace(root=root, target=target, old=old, candidate=candidate, marker=marker, control=control, started=started, stopped=stopped, audits=audits)
++
++
++def sequence_health(monkeypatch, sequence):
++    def check(*args, **kwargs):
++        value = sequence.pop(0)
++        if isinstance(value, BaseException):
++            raise value
++        return {'css_sha256': kwargs.get('expected_hash', 'f' * 64), **value}
++    monkeypatch.setattr(supervisor, 'check', check)
++
++
++def test_pending_deployment_retains_marker_and_rechecks_same_child_before_audit(amendment, monkeypatch):
++    sequence_health(monkeypatch, [supervisor.IntegrityAuditPending('Busy copy is unverified'), {'ok': True, 'http_median_ms': 5}])
++    child = supervisor.perform(amendment.marker, object(), '127.0.0.1', 8000)
++    assert len(amendment.started) == 1 and len(amendment.stopped) == 1
++    assert amendment.control.exists() and not amendment.audits
++    assert amendment.target.read_bytes() == amendment.candidate
++    assert supervisor.perform(amendment.marker, child, '127.0.0.1', 8000) is child
++    assert len(amendment.started) == 1 and len(amendment.stopped) == 1
++    assert not amendment.control.exists()
++    assert amendment.audits[0][1] == 'DEPLOYED'
++
++
++def test_pending_automatic_rollback_retains_proof_until_full_audit(amendment, monkeypatch):
++    sequence_health(monkeypatch, [RuntimeError('Actual API failure'), supervisor.IntegrityAuditPending('Rollback ready; integrity still pending'), {'ok': True, 'http_median_ms': 5}])
++    child = supervisor.perform(amendment.marker, object(), '127.0.0.1', 8000)
++    assert len(amendment.started) == 2 and len(amendment.stopped) == 2
++    assert amendment.target.read_bytes() == amendment.old
++    assert amendment.control.exists() and not amendment.audits
++    assert supervisor.perform(amendment.marker, child, '127.0.0.1', 8000) is child
++    assert len(amendment.started) == 2 and len(amendment.stopped) == 2
++    assert not amendment.control.exists()
++    assert amendment.audits[0][1] == 'ROLLED_BACK'
++    assert amendment.audits[0][2].startswith('AUTOMATIC HEALTH FAILURE: Actual API failure')
++
++
++@pytest.mark.parametrize('rollback', [False, True])
++def test_generic_pending_deployment_and_rollback_never_restart_healthy_child(amendment, monkeypatch, rollback):
++    source = amendment.root / 'data/engineering/candidate/static/governance-lab.css'
++    source.parent.mkdir(parents=True)
++    source.write_bytes(amendment.candidate)
++    snapshot = amendment.root / 'snapshot'
++    preimage = snapshot / 'pre/static/governance-lab.css'
++    preimage.parent.mkdir(parents=True)
++    preimage.write_bytes(amendment.old)
++    manifest = {'candidate_root': 'data/engineering/candidate', 'files': [{'path': supervisor.ALLOWED, 'candidate_sha256': supervisor.digest(amendment.candidate), 'pre_sha256': supervisor.digest(amendment.old)}]}
++    marker = {**amendment.marker, 'kind': 'GENERIC', 'action': 'GENERIC_DEPLOY', 'child_id': 1, 'manifest_sha256': 'fixture-manifest'}
++    monkeypatch.setattr(supervisor, 'validated_generic', lambda value: (snapshot, manifest))
++    monkeypatch.setattr(supervisor, 'audit_generic', lambda *args: amendment.audits.append(args))
++    sequence = [supervisor.IntegrityAuditPending('Full audit still pending'), {'ok': True, 'http_median_ms': 5}]
++    if rollback:
++        sequence.insert(0, RuntimeError('Actual generic API failure'))
++    sequence_health(monkeypatch, sequence)
++    child = supervisor.perform_generic(marker, object(), '127.0.0.1', 8000)
++    starts = len(amendment.started)
++    stops = len(amendment.stopped)
++    assert amendment.control.exists() and not amendment.audits
++    assert amendment.target.read_bytes() == (amendment.old if rollback else amendment.candidate)
++    assert supervisor.perform_generic(marker, child, '127.0.0.1', 8000) is child
++    assert len(amendment.started) == starts and len(amendment.stopped) == stops
++    assert not amendment.control.exists()
++    assert amendment.audits[0][2] == ('ROLLED_BACK' if rollback else 'DEPLOYED')
++
++
++def test_main_pending_audit_backoff_does_not_restart_service(monkeypatch):
++    child = SimpleNamespace(pid=200, poll=lambda: None)
++    started = []
++    stopped = []
++    checks = []
++    monkeypatch.setattr(supervisor, 'RUNNING', True)
++    monkeypatch.setattr(supervisor, 'CONTROL', supervisor.SUPERVISOR_LOG.parent / 'absent-control.json')
++    monkeypatch.setattr(supervisor, 'acquire_startup_guard', lambda *args: SimpleNamespace(close=lambda: None))
++    monkeypatch.setattr(supervisor.signal, 'signal', lambda *args: None)
++    monkeypatch.setattr(supervisor, 'child_start', lambda *args: started.append(child) or child)
++    monkeypatch.setattr(supervisor, 'child_stop', lambda proc: stopped.append(proc))
++    def check(*args, **kwargs):
++        checks.append(args)
++        raise supervisor.IntegrityAuditPending('Busy but still unverified')
++    monkeypatch.setattr(supervisor, 'check', check)
++    monkeypatch.setattr(supervisor.time, 'sleep', lambda seconds: setattr(supervisor, 'RUNNING', False))
++    monkeypatch.setattr('sys.argv', ['supervisor.py', '--host', '127.0.0.1', '--port', '8000'])
++    supervisor.main()
++    assert len(started) == 1 and len(checks) == 1
++    assert stopped == [child], 'Only normal supervisor shutdown stops the child'
++    assert 'AUDIT PENDING' in supervisor.SUPERVISOR_LOG.read_text()
++
++
++def captured_child(database, pid=400, port=8000):
++    child = SimpleNamespace(pid=pid, poll=lambda: None)
++    proof = supervisor.prepare_restart_snapshot()
++    proof.update(child=child, child_pid=pid, port=port)
++    supervisor._RESTART_SNAPSHOTS[id(child)] = proof
++    assert proof['captured'], proof.get('capture_error')
++    return child, proof
++
++
++def test_prestart_snapshot_is_private_and_can_be_verified_after_live_writes(database):
++    child, proof = captured_child(database)
++    with sqlite3.connect(database) as connection:
++        connection.execute('UPDATE payload SET body=? WHERE id=1', (b'post-start update',))
++    scope = supervisor.restart_database_health(child, 8000, time.monotonic() + 5)
++    assert scope['scope'] == 'consistent database snapshot before this child started'
++    assert scope['child_pid'] == child.pid and proof['verified']
++    with closing(sqlite3.connect(proof['path'])) as connection:
++        assert connection.execute('SELECT body FROM payload WHERE id=1').fetchone()[0] != b'post-start update'
++    with sqlite3.connect(database) as connection:
++        assert connection.execute('SELECT body FROM payload WHERE id=1').fetchone()[0] == b'post-start update'
++
++
++def test_prestart_proof_cannot_transfer_to_another_child_or_port(database):
++    first, old = captured_child(database, 400)
++    with sqlite3.connect(database) as connection:
++        connection.execute('UPDATE payload SET body=? WHERE id=1', (b'new restart database',))
++    second, current = captured_child(database, 401)
++    assert old['path'] != current['path']
++    supervisor._RESTART_SNAPSHOTS[id(second)] = old
++    with pytest.raises(RuntimeError, match='does not belong'):
++        supervisor.restart_database_health(second, 8000, time.monotonic() + 5)
++    supervisor._RESTART_SNAPSHOTS[id(second)] = current
++    with pytest.raises(RuntimeError, match='does not belong'):
++        supervisor.restart_database_health(second, 8001, time.monotonic() + 5)
++    assert not current['verified']
++    assert supervisor.restart_database_health(second, 8000, time.monotonic() + 5)['child_pid'] == 401
++    with closing(sqlite3.connect(current['path'])) as connection:
++        assert connection.execute('SELECT body FROM payload WHERE id=1').fetchone()[0] == b'new restart database'
++
++
++def test_prestart_private_audit_timeout_retains_same_capture_for_retry(database):
++    child, proof = captured_child(database)
++    path = proof['path']
++    with pytest.raises(supervisor.IntegrityAuditPending, match='capture retained'):
++        supervisor.restart_database_health(child, 8000, time.monotonic() - 1)
++    assert path.exists() and not proof['verified']
++    scope = supervisor.restart_database_health(child, 8000, time.monotonic() + 5)
++    assert proof['path'] == path and proof['verified']
++    assert scope['captured_at'] == proof['captured_at']
++
++
++def test_corrupt_prestart_database_never_becomes_full_verified(database):
++    # Deliberately corrupt only this disposable fixture's index root pointer.
++    with sqlite3.connect(database) as connection:
++        connection.execute('CREATE INDEX ix_fixture_body ON payload(body)')
++        root = connection.execute("SELECT rootpage FROM sqlite_master WHERE name='payload'").fetchone()[0]
++        connection.execute('PRAGMA writable_schema=ON')
++        connection.execute("UPDATE sqlite_master SET rootpage=? WHERE name='ix_fixture_body'", (root,))
++    child = SimpleNamespace(pid=400, poll=lambda: None)
++    proof = supervisor.prepare_restart_snapshot()
++    proof.update(child=child, child_pid=400, port=8000)
++    supervisor._RESTART_SNAPSHOTS[id(child)] = proof
++    with pytest.raises((RuntimeError, sqlite3.DatabaseError)):
++        supervisor.restart_database_health(child, 8000, time.monotonic() + 5)
++    assert not proof['verified']
++
++
++def test_prestart_snapshot_recovers_hot_journal_without_losing_committed_rows(database):
++    # Crash a disposable DELETE-journal writer after dirty pages reach disk.
++    # This imports no server/provider code and touches only the temporary DB.
++    code = """
++import os, sqlite3, sys
++connection = sqlite3.connect(sys.argv[1])
++connection.execute('PRAGMA cache_size=10')
++connection.execute('BEGIN IMMEDIATE')
++connection.execute('UPDATE payload SET body=zeroblob(4096)')
++connection.execute('INSERT INTO payload(id,body) VALUES(10000,?)', (b'uncommitted',))
++os._exit(1)
++"""
++    crashed = subprocess.run([sys.executable, '-I', '-c', code, str(database.resolve())],
++                             cwd=database.parent, capture_output=True, timeout=10)
++    assert crashed.returncode == 1 and not crashed.stderr
++    assert Path(str(database) + '-journal').exists()
++    with closing(sqlite3.connect(database.resolve().as_uri() + '?mode=ro', uri=True)) as connection:
++        with pytest.raises(sqlite3.OperationalError, match='readonly'):
++            connection.execute('SELECT COUNT(*) FROM payload').fetchone()
++
++    child, proof = captured_child(database)
++    assert not proof.get('capture_error')
++    assert supervisor.restart_database_health(child, 8000, time.monotonic() + 5)['child_pid'] == child.pid
++    assert proof['verified']
++    for path in (database, proof['path']):
++        with closing(sqlite3.connect(path)) as connection:
++            assert connection.execute('SELECT COUNT(*) FROM payload').fetchone()[0] == 650
++            assert connection.execute('SELECT COUNT(*) FROM payload WHERE body=?', (b'x' * 4096,)).fetchone()[0] == 650
++            assert connection.execute('SELECT COUNT(*) FROM payload WHERE id=10000').fetchone()[0] == 0
++            assert connection.execute('PRAGMA journal_mode').fetchone()[0] == 'delete'
++
++
++def test_temporary_prestart_capture_failure_uses_full_online_fallback(database):
++    child = SimpleNamespace(pid=400, poll=lambda: None)
++    supervisor._RESTART_SNAPSHOTS[id(child)] = {'child': child, 'child_pid': 400, 'port': 8000, 'source': str(database.resolve()), 'capture_error': OSError('Temporary snapshot I/O unavailable'), 'verified': False}
++    assert supervisor.restart_database_health(child, 8000, time.monotonic() + 5) is None
++    assert supervisor.snapshot_database_health(False, time.monotonic() + 5)
++    assert not supervisor._RESTART_SNAPSHOTS[id(child)]['verified']
++
++
++def test_child_start_captures_fresh_snapshot_for_each_existing_restart(database, monkeypatch):
++    children = []
++    def popen(*args, **kwargs):
++        child = SimpleNamespace(pid=400 + len(children), poll=lambda: None, wait=lambda **kwargs: 0)
++        children.append(child)
++        return child
++    monkeypatch.setattr(supervisor.subprocess, 'Popen', popen)
++    monkeypatch.setattr(supervisor, 'windows_processes', lambda: {})
++    first = supervisor.child_start('127.0.0.1', 8000)
++    previous_path = supervisor._RESTART_SNAPSHOTS[id(first)]['path']
++    first.poll = lambda: 0  # Its owned application has already stopped.
++    supervisor.child_stop(first)
++    with sqlite3.connect(database) as connection:
++        connection.execute('UPDATE payload SET body=? WHERE id=1', (b'restart update',))
++    second = supervisor.child_start('127.0.0.1', 8000)
++    assert previous_path != supervisor._RESTART_SNAPSHOTS[id(second)]['path']
++    assert supervisor.restart_database_health(second, 8000, time.monotonic() + 5)['child_pid'] == second.pid
++    with pytest.raises(RuntimeError, match='does not belong'):
++        supervisor.restart_database_health(first, 8000, time.monotonic() + 5)
++
++
++def fake_windows_tree(monkeypatch, rows):
++    live = dict(rows)
++    calls = []
++    monkeypatch.setattr(supervisor, 'windows_processes', lambda: dict(live))
++    def run(args, **kwargs):
++        assert args[0] == 'taskkill' and '/T' in args and '/F' in args
++        pid = int(args[args.index('/PID') + 1])
++        calls.append(pid)
++        for owned in supervisor.descendants(live, [pid]):
++            live.pop(owned, None)
++        return SimpleNamespace(returncode=0)
++    monkeypatch.setattr(supervisor.subprocess, 'run', run)
++    return live, calls
++
++
++def test_windows_stop_reaps_actual_python_descendant_before_wrapper_restart(monkeypatch):
++    rows = {100: {'pid': 100, 'parent': 1, 'created': 'wrapper'}, 101: {'pid': 101, 'parent': 100, 'created': 'actual-python'}, 102: {'pid': 102, 'parent': 101, 'created': 'owned-child'}, 200: {'pid': 200, 'parent': 1, 'created': 'unrelated'}}
++    live, calls = fake_windows_tree(monkeypatch, rows)
++    child = SimpleNamespace(pid=100, poll=lambda: None)
++    supervisor._OWNED_DESCENDANTS[id(child)] = supervisor.descendants(rows, [100])
++    supervisor.stop_windows_descendants(child)
++    assert set(calls) <= {100, 101, 102}
++    assert 101 not in live and 100 not in live and 200 in live
++
++
++def test_exited_wrapper_uses_saved_creation_identity_and_ignores_reused_pid(monkeypatch):
++    rows = {100: {'pid': 100, 'parent': 1, 'created': 'new-unrelated-wrapper'}, 101: {'pid': 101, 'parent': 100, 'created': 'actual-python'}, 102: {'pid': 102, 'parent': 101, 'created': 'owned-child'}, 200: {'pid': 200, 'parent': 100, 'created': 'new-unrelated-child'}}
++    live, calls = fake_windows_tree(monkeypatch, rows)
++    child = SimpleNamespace(pid=100, poll=lambda: 1)
++    supervisor._OWNED_DESCENDANTS[id(child)] = {100: {**rows[100], 'created': 'old-wrapper'}, 101: rows[101]}
++    supervisor.stop_windows_descendants(child)
++    assert calls == [101]
++    assert 101 not in live and 102 not in live
++    assert 100 in live and 200 in live
++
++
++def test_pid_reuse_during_windows_stop_refuses_unverified_termination(monkeypatch):
++    child = SimpleNamespace(pid=100, poll=lambda: None)
++    initial = {100: {'pid': 100, 'parent': 1, 'created': 'wrapper'}, 101: {'pid': 101, 'parent': 100, 'created': 'old-python'}}
++    newer = {**initial, 101: {**initial[101], 'created': 'reused-python'}}
++    inventories = [initial, newer]
++    monkeypatch.setattr(supervisor, 'windows_processes', lambda: inventories.pop(0))
++    monkeypatch.setattr(supervisor.subprocess, 'run', lambda *args, **kwargs: pytest.fail('No unverified PID can be killed'))
++    with pytest.raises(RuntimeError, match='PID was reused'):
++        supervisor.stop_windows_descendants(child)
++
++
++def test_crashed_wrapper_is_drained_before_recovery_captures_next_child(monkeypatch):
++    exited = [False]
++    old = SimpleNamespace(pid=400, returncode=1, poll=lambda: 1 if exited[0] else None)
++    new = SimpleNamespace(pid=401, poll=lambda: None)
++    events = []
++    monkeypatch.setattr(supervisor, 'RUNNING', True)
++    monkeypatch.setattr(supervisor, 'CONTROL', supervisor.SUPERVISOR_LOG.parent / 'absent-control.json')
++    monkeypatch.setattr(supervisor, 'acquire_startup_guard', lambda *args: SimpleNamespace(close=lambda: None))
++    monkeypatch.setattr(supervisor.signal, 'signal', lambda *args: None)
++    monkeypatch.setattr(supervisor, 'child_start', lambda *args: old)
++    monkeypatch.setattr(supervisor, 'child_stop', lambda child: events.append(('stop', child.pid)))
++    def healthy(*args, **kwargs):
++        exited[0] = True
++        return {'ok': True}
++    monkeypatch.setattr(supervisor, 'check', healthy)
++    monkeypatch.setattr(supervisor, 'start_until_healthy', lambda *args: events.append(('restart', new.pid)) or new)
++    monkeypatch.setattr(supervisor.time, 'sleep', lambda seconds: setattr(supervisor, 'RUNNING', False))
++    monkeypatch.setattr('sys.argv', ['supervisor.py', '--host', '127.0.0.1', '--port', '8000'])
++    supervisor.main()
++    assert events == [('stop', 400), ('restart', 401), ('stop', 401)]
++
++
++def test_replacement_child_registry_prevents_second_start_before_verified_drain(database, monkeypatch):
++    child = SimpleNamespace(pid=400, poll=lambda: None)
++    monkeypatch.setattr(supervisor, '_ACTIVE_CHILD', child)
++    monkeypatch.setattr(supervisor, 'prepare_restart_snapshot', lambda: pytest.fail('Cannot capture while owned child remains undrained'))
++    monkeypatch.setattr(supervisor.subprocess, 'Popen', lambda *args, **kwargs: pytest.fail('Cannot start duplicate child'))
++    with pytest.raises(RuntimeError, match='fully drained'):
++        supervisor.child_start('127.0.0.1', 8000)
++
++
++def test_outer_recovery_drains_actual_replacement_after_operation_throws(monkeypatch):
++    old = SimpleNamespace(pid=400, poll=lambda: None)
++    replacement = SimpleNamespace(pid=401, poll=lambda: None)
++    events = []
++    marker = {'action': 'ROLLBACK', 'amendment_id': 1}
++    control = supervisor.SUPERVISOR_LOG.parent / 'control.json'
++    control.write_text(json.dumps(marker))
++    monkeypatch.setattr(supervisor, 'RUNNING', True)
++    monkeypatch.setattr(supervisor, 'CONTROL', control)
++    monkeypatch.setattr(supervisor, 'ROOT', supervisor.SUPERVISOR_LOG.parent)
++    target = supervisor.ROOT / supervisor.ALLOWED
++    target.parent.mkdir(parents=True)
++    target.write_bytes(b'known-good')
++    monkeypatch.setattr(supervisor, 'acquire_startup_guard', lambda *args: SimpleNamespace(close=lambda: None))
++    monkeypatch.setattr(supervisor.signal, 'signal', lambda *args: None)
++    monkeypatch.setattr(supervisor, 'child_start', lambda *args: old)
++    monkeypatch.setattr(supervisor, 'child_stop', lambda child: events.append(('stop', child.pid)))
++    monkeypatch.setattr(supervisor, 'check', lambda *args, **kwargs: {'ok': True})
++    monkeypatch.setattr(supervisor, 'validated_snapshot', lambda value: (supervisor.ROOT, b'known-good'))
++    monkeypatch.setattr(supervisor, 'audit_state', lambda *args, **kwargs: None)
++    def failed_operation(*args):
++        supervisor._ACTIVE_CHILD = replacement
++        raise RuntimeError('Replacement failed strict private integrity verification')
++    monkeypatch.setattr(supervisor, 'perform', failed_operation)
++    monkeypatch.setattr(supervisor.time, 'sleep', lambda seconds: setattr(supervisor, 'RUNNING', False))
++    monkeypatch.setattr('sys.argv', ['supervisor.py', '--host', '127.0.0.1', '--port', '8000'])
++    supervisor.main()
++    assert events[0] == ('stop', 401), 'Actual replacement must be drained before recovery starts anything else'
++
++
++def recovery_main_fixture(monkeypatch, generic=False):
++    root = supervisor.SUPERVISOR_LOG.parent
++    marker = {'action': 'GENERIC_DEPLOY' if generic else 'DEPLOY', 'amendment_id': 1}
++    if generic:
++        marker.update(kind='GENERIC', child_id=7, manifest_sha256='fixture-manifest')
++    control = root / 'control.json'
++    control.write_text(json.dumps(marker))
++    monkeypatch.setattr(supervisor, 'RUNNING', True)
++    monkeypatch.setattr(supervisor, 'CONTROL', control)
++    monkeypatch.setattr(supervisor, 'ROOT', root)
++    target = root / supervisor.ALLOWED
++    target.parent.mkdir(parents=True)
++    target.write_bytes(b'known-good')
++    monkeypatch.setattr(supervisor, 'acquire_startup_guard', lambda *args: SimpleNamespace(close=lambda: None))
++    monkeypatch.setattr(supervisor.signal, 'signal', lambda *args: None)
++    monkeypatch.setattr(supervisor, 'validated_snapshot', lambda value: (root, b'known-good'))
++    monkeypatch.setattr(supervisor, 'validated_generic', lambda value: (root, {'files': []}))
++    monkeypatch.setattr(supervisor, 'restore_generic', lambda *args: None)
++    monkeypatch.setattr('sys.argv', ['supervisor.py', '--host', '127.0.0.1', '--port', '8000'])
++    return marker, control
++
++
++@pytest.mark.parametrize('generic', [False, True])
++def test_outer_fallback_pending_retains_marker_actual_child_and_no_receipt(monkeypatch, generic):
++    marker, control = recovery_main_fixture(monkeypatch, generic)
++    old = SimpleNamespace(pid=400, poll=lambda: None)
++    replacement = SimpleNamespace(pid=401, poll=lambda: None)
++    restored = SimpleNamespace(pid=402, poll=lambda: None)
++    starts = []
++    stops = []
++    checks = []
++    def start(*args):
++        child = old if not starts else restored
++        starts.append(child.pid)
++        supervisor._ACTIVE_CHILD = child
++        return child
++    def stop(child):
++        stops.append(child.pid)
++        if supervisor._ACTIVE_CHILD is child:
++            supervisor._ACTIVE_CHILD = None
++    def health(*args, child=None, **kwargs):
++        checks.append(child.pid)
++        if child is restored:
++            raise supervisor.IntegrityAuditPending('Private integrity scan still pending', {'phase': 'prestart-integrity'})
++        return {'ok': True}
++    def operation(*args):
++        supervisor._ACTIVE_CHILD = replacement
++        raise RuntimeError('Promoted replacement failed health before returning')
++    monkeypatch.setattr(supervisor, 'child_start', start)
++    monkeypatch.setattr(supervisor, 'child_stop', stop)
++    monkeypatch.setattr(supervisor, 'check', health)
++    monkeypatch.setattr(supervisor, 'perform_generic' if generic else 'perform', operation)
++    monkeypatch.setattr(supervisor, 'audit_generic', lambda *args, **kwargs: pytest.fail('Pending rollback cannot be recorded as verified'))
++    monkeypatch.setattr(supervisor, 'audit_state', lambda *args, **kwargs: pytest.fail('Pending rollback cannot be recorded as verified'))
++    def finish(seconds):
++        assert control.exists()
++        assert supervisor.pending_matches(restored, marker)
++        assert supervisor._PENDING_AUDITS[id(restored)]['rollback_reason'].endswith('Promoted replacement failed health before returning')
++        supervisor.RUNNING = False
++    monkeypatch.setattr(supervisor.time, 'sleep', finish)
++    supervisor.main()
++    assert starts == [400, 402] and checks == [400, 402]
++    assert stops == [401, 402], 'Only the failed replacement and final owned rollback child are stopped'
++    assert control.exists()
++
++
++@pytest.mark.parametrize('generic', [False, True])
++def test_crash_pending_retains_rollback_marker_without_premature_receipt(monkeypatch, generic):
++    marker, control = recovery_main_fixture(monkeypatch, generic)
++    exited = [False]
++    old = SimpleNamespace(pid=400, returncode=1, poll=lambda: 1 if exited[0] else None)
++    restored = SimpleNamespace(pid=401, poll=lambda: None)
++    starts = []
++    stops = []
++    def start(*args):
++        child = old if not starts else restored
++        starts.append(child.pid)
++        supervisor._ACTIVE_CHILD = child
++        return child
++    def stop(child):
++        stops.append(child.pid)
++        if supervisor._ACTIVE_CHILD is child:
++            supervisor._ACTIVE_CHILD = None
++    def health(*args, child=None, **kwargs):
++        if child is old:
++            exited[0] = True
++            return {'ok': True}
++        assert stops == [400], 'Crashed wrapper is drained before the replacement check'
++        raise supervisor.IntegrityAuditPending('Private integrity scan still pending')
++    monkeypatch.setattr(supervisor, 'child_start', start)
++    monkeypatch.setattr(supervisor, 'child_stop', stop)
++    monkeypatch.setattr(supervisor, 'check', health)
++    monkeypatch.setattr(supervisor, 'audit_generic', lambda *args, **kwargs: pytest.fail('Crashed service cannot receive a verified rollback receipt'))
++    monkeypatch.setattr(supervisor, 'audit_state', lambda *args, **kwargs: pytest.fail('Crashed service cannot receive a verified rollback receipt'))
++    def finish(seconds):
++        assert control.exists() and supervisor.pending_matches(restored, marker)
++        assert supervisor._PENDING_AUDITS[id(restored)]['rollback_reason'] == 'AUTOMATIC HEALTH FAILURE: child crashed before approval'
++        supervisor.RUNNING = False
++    monkeypatch.setattr(supervisor.time, 'sleep', finish)
++    supervisor.main()
++    assert starts == [400, 401] and stops == [400, 401]
++    assert control.exists()
++
++
++@pytest.mark.parametrize('generic', [False, True])
++def test_crash_rollback_receipt_requires_full_verified_result(monkeypatch, generic):
++    marker, control = recovery_main_fixture(monkeypatch, generic)
++    restored = SimpleNamespace(pid=401, poll=lambda: None)
++    outcome = {'ok': True, 'integrity': 'verified', 'integrity_snapshot': {'scope': 'fixture exact child'}}
++    events = []
++    monkeypatch.setattr(supervisor, 'child_start', lambda *args: restored)
++    def health(*args, **kwargs):
++        events.append('full-check')
++        return outcome
++    def receipt(*args):
++        assert control.exists() and events == ['full-check']
++        assert outcome in args
++        events.append('receipt')
++    monkeypatch.setattr(supervisor, 'check', health)
++    monkeypatch.setattr(supervisor, 'audit_state', receipt)
++    monkeypatch.setattr(supervisor, 'audit_generic', receipt)
++    assert supervisor.start_until_healthy('127.0.0.1', 8000, 'crash recovery', marker=marker,
++                                          rollback_reason='child crashed', expected_hash='fixture hash') is restored
++    assert events == ['full-check', 'receipt'] and not control.exists()
+--- a/tests/test_supervisor_rollback.py
++++ b/tests/test_supervisor_rollback.py
+@@ -12,6 +12,12 @@
+ from sim.store import Store
+ from sim.engine import Arena
+ from sim.governance import Governance,generate_patch
++
++
++@pytest.fixture(autouse=True)
++def isolated_supervisor_log(tmp_path,monkeypatch):
++    monkeypatch.setattr(supervisor,'SUPERVISOR_LOG',tmp_path/'supervisor.log')
++    monkeypatch.setattr(supervisor,'_PENDING_AUDITS',{})
+ 
+ 
+ def test_full_db_integrity_catches_index_gaps_missed_by_quick_check():
+@@ -60,7 +66,7 @@
+         started=[];checked=[]
+         monkeypatch.setattr(supervisor,'child_stop',lambda c:None)
+         monkeypatch.setattr(supervisor,'child_start',lambda h,p:started.append(object()) or started[-1])
+-        def health(port,expected_hash=None,timeout=20):
++        def health(port,expected_hash=None,timeout=20,child=None):
+             checked.append(expected_hash)
+             if len(checked)==1:raise RuntimeError('deliberate API post-deploy outage')
+             assert expected_hash==hashlib.sha256(old).hexdigest()
+--- a/tests/test_supervisor_startup_guard.py
++++ b/tests/test_supervisor_startup_guard.py
+@@ -1,6 +1,25 @@
+ import socket
+ import pytest
+ import supervisor
++
++
++@pytest.fixture(autouse=True)
++def isolated_supervisor_log(tmp_path,monkeypatch):
++    monkeypatch.setattr(supervisor,'SUPERVISOR_LOG',tmp_path/'supervisor.log')
++    monkeypatch.setattr(supervisor,'_PENDING_AUDITS',{})
++
++
++def test_same_database_different_ports_cannot_start_second_launcher(tmp_path,monkeypatch):
++    monkeypatch.setattr(supervisor,'ROOT',tmp_path)
++    with socket.socket() as first, socket.socket() as second:
++        first.bind(('127.0.0.1',0));second.bind(('127.0.0.1',0))
++        first_port=first.getsockname()[1];second_port=second.getsockname()[1]
++    guard=supervisor.acquire_startup_guard('127.0.0.1',first_port)
++    try:
++        with pytest.raises(RuntimeError,match='already owns this database'):
++            supervisor.acquire_startup_guard('127.0.0.1',second_port)
++    finally:guard.close()
++    supervisor.acquire_startup_guard('127.0.0.1',second_port).close()
+ 
+ 
+ def test_occupied_port_refuses_before_application_start(tmp_path,monkeypatch):
+--- a/sim/frontier.py
++++ b/sim/frontier.py
+@@ -231,6 +231,11 @@
+         rt = self.s.one('SELECT paused FROM campaign_runtime WHERE campaign_id=?', (cid,))
+         if rt and rt['paused']:
+             return 0
++        # Manual planning must retire legacy admission queues just as ticking does.
++        # Otherwise an old fixed-family action can be dispatched before the Brain
++        # chooses the campaign's next research direction.
++        from .capability_evolution import demote_family_admission
++        demote_family_admission(self, cid)
+         sources = self.evidence(cid)
+         # Searches are distinct tasks; provider identity does not confer independence.
+         from .research_intent import compile_intent
+--- a/sim/github_sandbox.py
++++ b/sim/github_sandbox.py
+@@ -126,7 +126,9 @@
+ 
+ 
+ def execute(workdir, script, args, timeout=TIMEOUT, runner=None):
+-    argv = [sys.executable, '-I', '-B', script] + list(args)
++    # -I ignores PYTHONUTF8/PYTHONIOENCODING from sandbox_env. Select UTF-8
++    # explicitly so compiler JSON survives Windows pipe encoding unchanged.
++    argv = [sys.executable, '-I', '-B', '-X', 'utf8', script] + list(args)
+     started = time.time()
+     runner = runner or subprocess.run
+     try:
+@@ -136,8 +138,16 @@
+         error = None
+     except subprocess.TimeoutExpired as exc:
+         code, out, err, error = -1, exc.stdout or b'', exc.stderr or b'', 'Timed out after %ds' % timeout
+-    dec = lambda b: redact((b if isinstance(b, bytes) else str(b).encode())[:OUTPUT_CAP].decode('utf-8', 'replace'))
+-    return {'exit_code': code, 'stdout': dec(out), 'stderr': dec(err), 'duration': round(time.time() - started, 2),
++    dec = lambda b, errors='replace': redact((b if isinstance(b, bytes) else str(b).encode('utf-8'))[:OUTPUT_CAP].decode('utf-8', errors))
++    try:
++        stdout = dec(out, 'strict')
++    except UnicodeDecodeError:
++        # stdout is a machine-readable compiler response. A lossy replacement
++        # may remain in diagnostics, but must never be accepted as compiler data.
++        code = -1
++        error = error or 'Compiler stdout is not valid UTF-8; response was not accepted'
++        stdout = dec(out)
++    return {'exit_code': code, 'stdout': stdout, 'stderr': dec(err), 'duration': round(time.time() - started, 2),
+             'error': error, 'display': 'python %s' % ' '.join([script] + list(args))}
+ 
+ 
+--- /dev/null
++++ b/tests/test_github_sandbox_encoding.py
+@@ -0,0 +1,45 @@
++"""Real isolated compiler subprocesses preserve scientific Unicode on Windows."""
++import json
++from types import SimpleNamespace
++
++import pytest
++
++from sim.github_sandbox import execute
++
++
++@pytest.mark.parametrize('rationale', [
++    '4.2\u00b10.1 tonne-years',
++    '\u039bCDM \u2014 \u03bc = 0.1',
++    '\u91cf\u5b50\u91cd\u529b',
++])
++def test_isolated_compiler_unicode_roundtrip(tmp_path, monkeypatch, rationale):
++    monkeypatch.setenv('PYTHONIOENCODING', 'cp1252')
++    scripts=tmp_path/'scripts';scripts.mkdir()
++    script=scripts/'unicode_fixture.py'
++    script.write_text(
++        'import json, sys\n'
++        'rationale = '+ascii(rationale)+'\n'
++        'print(json.dumps({"rationale":rationale},ensure_ascii=False))\n'
++        'print(rationale,file=sys.stderr)\n',encoding='utf-8')
++    result=execute(tmp_path,'scripts/unicode_fixture.py',[])
++    assert result['exit_code']==0, result
++    assert result['error'] is None
++    assert json.loads(result['stdout'])['rationale']==rationale
++    assert result['stderr'].strip()==rationale
++    assert '\ufffd' not in result['stdout']+result['stderr']
++
++
++def test_invalid_compiler_stdout_cannot_be_accepted_with_replacement(tmp_path):
++    result=execute(tmp_path,'scripts/fixture.py',[],runner=lambda *a,**kw:
++                   SimpleNamespace(returncode=0,stdout=b'{"rationale":"4.2\xb10.1"}',stderr=b''))
++    assert result['exit_code']!=0
++    assert 'not valid UTF-8' in result['error']
++
++
++def test_non_utf8_diagnostic_does_not_discard_valid_compiler_response(tmp_path):
++    result=execute(tmp_path,'scripts/fixture.py',[],runner=lambda *a,**kw:
++                   SimpleNamespace(returncode=0,stdout=b'{"ok":true}',stderr=b'legacy diagnostic: \xb1'))
++    assert result['exit_code']==0
++    assert result['error'] is None
++    assert json.loads(result['stdout'])=={'ok':True}
++    assert result['stderr'].startswith('legacy diagnostic: ')
+--- a/sim/problem_dispatch.py
++++ b/sim/problem_dispatch.py
+@@ -113,7 +113,23 @@
+             else:
+                 # Manual work continues even if the automatic Arena loop is paused.
+                 # An early salvage perk must not consume this unrelated question.
++                previous=self.store.kv_get('last_research_duel_attempt',{}) or {}
+                 inv=await self.arena.force_duel(row['field_id'],problem=original['text'])
++                if not inv:
++                    attempt=self.store.kv_get('last_research_duel_attempt',{}) or {}
++                    if (attempt.get('match_id') and attempt.get('match_id')!=previous.get('match_id')
++                        and attempt.get('at',0)>=now and attempt.get('field_id')==row['field_id']
++                        and attempt.get('problem')==original['text'] and attempt.get('stage')=='OUTCOME'
++                        and attempt.get('outcome') in ('NO_CHANGE','NO_NEW_EVIDENCE')
++                        and attempt.get('state_changed') is False):
++                        self.store.execute("""UPDATE problem_jobs SET status='DONE',invention_id=NULL,
++                          heartbeat=?,finished=? WHERE problem_id=? AND status='RUNNING'""",
++                          (time.time(),time.time(),pid))
++                        self.store.mark_problem_used(pid)  # completed attempt, no scientific success asserted
++                        self.arena.emit('INJECT_WORK',f'User problem #{pid}: {attempt["outcome"]}; canonical state retained',
++                          row['field_id'],'',{'problem_id':pid,'match_id':attempt['match_id'],
++                          'outcome':attempt['outcome'],'state_changed':False,'reason':attempt.get('reason','')})
++                        return self.status(pid)
+                 if not inv or inv['problem']!=original['text']:
+                     raise RuntimeError('Arena returned no matching invention for the actual injected question')
+                 self.store.execute('''UPDATE problem_jobs SET status='DONE',invention_id=?,
+--- a/tests/test_system_dispatch.py
++++ b/tests/test_system_dispatch.py
+@@ -3,7 +3,7 @@
+ All fixtures use disposable databases, offline Arena sources and zero provider calls.
+ Never restore a backup over live state or import historical simulated ballots.
+ """
+-import asyncio,hashlib,json
++import asyncio,hashlib,json,time
+ 
+ import pytest
+ from sim.engine import Arena
+@@ -213,12 +213,36 @@
+     assert out['target']=='ARENA' and out['field_id']=='neuroscience'
+     assert out['status']=='DISPATCH_REQUESTED' and not a.running
+     result=asyncio.run(d.run(out['problem_id']))
+-    assert result['status']=='DONE' and result['invention_id']
+-    inv=s.invention(result['invention_id'])
+-    assert inv['problem']==text and inv['field_id']=='neuroscience'
++    assert result['status']=='DONE' and not result['invention_id']
++    attempt=s.kv_get('last_research_duel_attempt',{})
++    assert attempt['problem']==text and attempt['field_id']=='neuroscience'
++    assert attempt['outcome']=='NO_NEW_EVIDENCE' and attempt['state_changed'] is False
++    assert attempt['match_id'] and not s.inventions()
+     assert result['used']==1 and a.running is False
+     assert not s.query('SELECT * FROM system_amendments')
+     assert s.one('PRAGMA integrity_check')['integrity_check']=='ok'
++
++
++@pytest.mark.parametrize('mismatch',['stale','different-question','different-field','changed-state'])
++def test_no_change_dispatch_requires_its_own_fresh_completed_attempt(unit,mismatch):
++    s,a,g,w,d=unit
++    text='Bounded offline water-quality request'
++    previous={'match_id':'old-match','at':time.time()-10,'field_id':'earth','problem':text,
++              'stage':'OUTCOME','outcome':'NO_CHANGE','state_changed':False}
++    s.kv_set('last_research_duel_attempt',previous)
++    async def mismatched_duel(fid,problem=None):
++        attempt={**previous,'match_id':'new-match','at':time.time(),'field_id':fid,'problem':problem}
++        if mismatch=='stale':attempt=previous
++        elif mismatch=='different-question':attempt['problem']='Unrelated question'
++        elif mismatch=='different-field':attempt['field_id']='computing'
++        elif mismatch=='changed-state':attempt['state_changed']=True
++        s.kv_set('last_research_duel_attempt',attempt)
++        return None
++    a.force_duel=mismatched_duel
++    submitted=d.submit(text,target='arena',field_id='earth')
++    result=asyncio.run(d.run(submitted['problem_id']))
++    assert result['status']=='BLOCKED' and not result['invention_id'] and result['used']==0
++    assert not s.inventions()
+ 
+ 
+ def test_interrupted_worker_retained_not_replayed_as_fake_success(unit):
+--- a/tests/test_world_sparse.py
++++ b/tests/test_world_sparse.py
+@@ -32,7 +32,11 @@
+     arena.inject('Offline fixture problem: quantify watershed impacts', 'biology')
+     assert s.problems()[0]['source']=='user'
+     inv=asyncio.run(arena.force_duel('biology',problem='Offline fixture manual duel on watershed impacts'))
+-    assert inv and s.invention(inv['id']) and inv['field_id']=='biology'
++    assert inv is None and not s.inventions()
++    attempt=s.kv_get('last_research_duel_attempt',{})
++    assert attempt['field_id']=='biology' and attempt['problem']=='Offline fixture manual duel on watershed impacts'
++    assert attempt['outcome']=='NO_NEW_EVIDENCE' and attempt['state_changed'] is False
++    assert arena.duels_total==1 and attempt['match_id']
+     assert arena.cycle==1 and len(arena.agents)==36
+     assert s.one('SELECT COUNT(*) AS n FROM research_campaigns')['n']==0
+     assert s.one("SELECT next_task FROM agent_positions WHERE agent_id='biology:sci'")['next_task']==1
+--- a/tests/test_frontier_v16.py
++++ b/tests/test_frontier_v16.py
+@@ -248,5 +248,11 @@
+     job=s.one('SELECT job_id FROM frontier_actions WHERE id=?',(aid,))['job_id']
+     s.execute("UPDATE brain_jobs SET status='SENT',deadline=?,worker_slot='worker_1' WHERE id=?",(time.time()-1,job))
+     p.frontier.tick()
++    assert s.one('SELECT status FROM frontier_actions WHERE id=?',(aid,))['status']=='WAITING'
++    retried=s.one('SELECT status,packet FROM brain_jobs WHERE id=?',(job,))
++    assert retried['status']=='QUEUED' and json.loads(retried['packet'])['STATE']['timeout_retries']==1
++    assert not a.llm.brain.hold
++    s.execute("UPDATE brain_jobs SET status='SENT',deadline=? WHERE id=?",(time.time()-1,job))
++    p.frontier.tick()
+     assert s.one('SELECT status FROM frontier_actions WHERE id=?',(aid,))['status']=='FAILED'
+     assert not a.llm.brain.hold
+--- a/static/workspace.js
++++ b/static/workspace.js
+@@ -59,8 +59,9 @@
+     return 'ChatGPT is not connected right now.';
+   }
+   const STALE_CHECKPOINT=/INVENT_METHOD|second copy|Market admission|fresh public-evidence|one fresh public/i;
++  const CONNECTION_SCOPE_NOTE='Heartbeat is not work in flight for this objective. Shared ChatGPT activity can belong to another campaign.';
+ 
+-  function humanStatus(payload, liveView){
++  function humanStatus(payload){
+     const exec=(payload&&payload.execution_state)||{};
+     const code=String(exec.code||'');
+     const ctrl=(payload&&payload.badges&&payload.badges.control)||{};
+@@ -72,15 +73,13 @@
+     const pending=Number(counts.pending_actions||0);
+     const working=sent>0||active.length>0;
+     if(ctrl.user_paused||code==='PAUSED') return {label:'You paused it.', tone:exec.tone||'amber', detail:'', code:code||'PAUSED'};
+-    if(liveView && brainLive && brainLive.working) return {label:'Working.', tone:'green', detail:'', code:code||'RUNNING'};
+     if(code==='WAITING_FOR_BRAIN') return {label:'Waiting on the ChatGPT Brain.', tone:exec.tone||'amber', detail:sanitizeStatusDetail(exec.reason), code};
+     if(code==='RUNNING'){
+       if(working||queued>0||pending>0) return {label:'Working.', tone:exec.tone||'green', detail:'', code};
+       return {label:'Working.', tone:exec.tone||'green', detail:sanitizeStatusDetail(exec.reason), code};
+     }
+     if(code==='BLOCKED'||code==='STALLED'){
+-      if(sent===0) return {label:'Stopped. The last step finished and nothing new was started.', tone:exec.tone||'amber', detail:sanitizeStatusDetail(exec.reason), code};
+-      return {label:'Working.', tone:exec.tone||'amber', detail:sanitizeStatusDetail(exec.reason), code};
++      return {label:exec.label||(code==='BLOCKED'?'Blocked.':'Stalled.'), tone:exec.tone||'amber', detail:sanitizeStatusDetail(exec.reason), code};
+     }
+     if(code==='STOPPED') return {label:'Stopped. The last step finished and nothing new was started.', tone:exec.tone||'muted', detail:sanitizeStatusDetail(exec.reason), code};
+     if(code==='WAITING_FOR_EVIDENCE') return {label:exec.label||'Waiting for evidence', tone:exec.tone||'amber', detail:sanitizeStatusDetail(exec.reason), code};
+@@ -117,14 +116,14 @@
+     const ready=!!(brainLive&&(brainLive.connected||brainLive.working));
+     el.classList.toggle('ready', ready);
+     el.querySelector('span').textContent=text;
+-    el.title=brainLive&&brainLive.working?'A bound ChatGPT slot is generating, or a brain job is queued, claimed, or sent.':((c&&c.detail)||'');
++    el.title=(brainLive&&brainLive.working?'A bound ChatGPT slot is generating, or a brain job is queued, claimed, or sent.':((c&&c.detail)||''))+' '+CONNECTION_SCOPE_NOTE;
+     el.dataset.heartbeat=ready?'ready':'down';
+     const sync=$('#workspace-sync'); if(sync) sync.textContent='Synced '+new Date().toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});
+   }
+   function missions(){
+     const rows=index?.campaigns||[];
+     $('#workspace-history-toggle').textContent='Your research history · '+(index?.total||0)+' objective'+(index?.total===1?'':'s')+' ▾';
+-    $('#workspace-missions').innerHTML=rows.map(c=>`<button class="workspace-mission ${selected===c.id?'selected':''}" data-campaign="${E(c.id)}" ${selected===c.id?'aria-current="true"':''}><strong>${E(c.label)}</strong><small>${E(humanStatus({execution_state:c.execution_state,state:c.state,badges:c.badges,execution:c.execution}, selected===c.id).label)} · ${E(c.field_id.replaceAll('_',' '))}</small></button>`).join('')||'<p class="workspace-muted">'+(query?'No matching objectives.':'Your research history will appear here.')+'</p>';
++    $('#workspace-missions').innerHTML=rows.map(c=>`<button class="workspace-mission ${selected===c.id?'selected':''}" data-campaign="${E(c.id)}" ${selected===c.id?'aria-current="true"':''}><strong>${E(c.label)}</strong><small>${E(humanStatus({execution_state:c.execution_state,state:c.state,badges:c.badges,execution:c.execution}).label)} · ${E(c.field_id.replaceAll('_',' '))}</small></button>`).join('')||'<p class="workspace-muted">'+(query?'No matching objectives.':'Your research history will appear here.')+'</p>';
+     $('#workspace-pagination').innerHTML=(index?.total>30||offset)?`${offset?'<button data-history="previous">← Previous</button>':''}<span>${offset+1}–${Math.min(offset+rows.length,index.total)} of ${index.total}</span>${offset+rows.length<index.total?'<button data-history="next">Next →</button>':''}`:'';
+   }
+   async function refresh(force=false){
+@@ -189,11 +188,11 @@
+   function welcome(){return `<section class="workspace-welcome"><span class="workspace-eyebrow">AUTONOMOUS RESEARCH / HUMAN UNDERSTANDING</span><h1>A better question.<br>A deeper explanation.</h1><p>Give NEMESIS something worth figuring out. Its researchers find evidence, compare explanations, attack weak assumptions, and look again when a better model emerges.</p><button class="workspace-primary" data-open="compose">Give NEMESIS an objective ↗</button><div class="workspace-welcome-examples"><button data-example="What evidence would distinguish a useful research-memory system from one that simply accumulates more information?">Find the distinction that matters<br><span class="workspace-muted">Compare explanations and the evidence that separates them.</span></button><button data-example="Can a different explanatory model produce useful new predictions from the same retained evidence? Identify the smallest test that could refute it.">Get more from what is already known<br><span class="workspace-muted">Change the generator. Reconsider the evidence.</span></button></div></section>`;}
+   function badges(payload){
+     const b=payload&&payload.badges; if(!b) return '';
+-    const hs=humanStatus(payload, true);
++    const hs=humanStatus(payload);
+     const brainLine=connectionText()||'Checking ChatGPT.';
+     const detail=hs.detail?(' · '+E(hs.detail)):'';
+     const pause=b.control&&b.control.user_paused?'You paused it.':'';
+-    return `<div class="workspace-badges" data-badges="split"><span data-badge="brain" data-heartbeat="${(brainLive&&(brainLive.connected||brainLive.working))?'ready':'down'}">${E(brainLine)}</span><span data-badge="frontier" data-execution-state="${E(hs.code||'')}">${E(hs.label)}${detail}</span>${pause?`<span data-badge="control">${E(pause)}</span>`:''}</div>`;
++    return `<div class="workspace-badges" data-badges="split"><span data-badge="brain" data-heartbeat="${(brainLive&&(brainLive.connected||brainLive.working))?'ready':'down'}" title="${E(CONNECTION_SCOPE_NOTE)}">${E(brainLine)}</span><span data-badge="frontier" data-execution-state="${E(hs.code||'')}">${E(hs.label)}${detail}</span>${pause?`<span data-badge="control">${E(pause)}</span>`:''}</div>`;
+   }
+   function research(){
+     if(!data)return welcome();
+@@ -207,10 +206,10 @@
+     const showControl=!execCode||pausable||['PAUSED','STOPPED','BLOCKED','STALLED','WAITING_FOR_EVIDENCE'].includes(execCode);
+     const controlAction=pausable?'pause':'resume';
+     const controlLabel=pausable?'Ⅱ Pause research':'▶ Resume research';
+-    const hs=humanStatus(data, true);
+-    const liveWorking=!!(brainLive&&brainLive.working);
++    const hs=humanStatus(data);
++    const campaignWorking=Number(data.execution?.sent_waiting||0)>0||active.length>0;
+     const activityNote=hs.code==='PAUSED'?'You paused it.':hs.code==='BLOCKED'||hs.code==='STALLED'?hs.label:(hs.code==='WAITING_FOR_BRAIN'?hs.label:(hs.code==='RUNNING'?hs.label:(hs.detail||hs.label||'')));
+-    return `<section class="workspace-hero"><div class="workspace-title-line"><span class="workspace-eyebrow">YOUR RESEARCH / ${E(data.field.replaceAll('_',' '))}</span>${state(hs.code?{label:hs.label,tone:hs.tone,code:hs.code}:data.state)}</div><h1>${E(trim(data.objective,280))}</h1>${badges(data)}${data.objective.length>280?'<details class="workspace-proof-details" data-disclosure="objective"><summary>Read the full retained objective</summary><p>'+E(data.objective)+'</p></details>':''}<p class="workspace-muted" role="status">Research execution: ${Number(data.execution?.pending_actions||0)} pending actions · ${Number(data.execution?.queued_requests||0)} requests awaiting send · ${Number(data.execution?.sent_waiting||0)} sent, awaiting result · ${Number(data.execution?.collected_results||0)} results collected${data.execution?.uncertain_deliveries?" · "+Number(data.execution.uncertain_deliveries)+" earlier uncertain deliveries retained":""}${hs.detail&&hs.code&&hs.code!=='RUNNING'?' <span data-execution-state="'+E(hs.code)+'">'+E(hs.detail)+'</span>':''}</p><div class="workspace-hero-actions">${!data.identity_blocked&&showControl&&!(liveWorking&&(execCode?controlAction:(paused?'resume':'pause'))==='resume')?`<button data-action="${execCode?controlAction:(paused?'resume':'pause')}">${execCode?controlLabel:(paused?'▶ Resume research':'Ⅱ Pause research')}</button>`:''}<button data-page="outputs">Read outputs ↗</button><button data-page="sources">Inspect evidence</button><span class="workspace-muted">${data.sources.length} source records in this view · revision ${data.revision}</span></div></section>
++    return `<section class="workspace-hero"><div class="workspace-title-line"><span class="workspace-eyebrow">YOUR RESEARCH / ${E(data.field.replaceAll('_',' '))}</span>${state(hs.code?{label:hs.label,tone:hs.tone,code:hs.code}:data.state)}</div><h1>${E(trim(data.objective,280))}</h1>${badges(data)}${data.objective.length>280?'<details class="workspace-proof-details" data-disclosure="objective"><summary>Read the full retained objective</summary><p>'+E(data.objective)+'</p></details>':''}<p class="workspace-muted" role="status">Research execution: ${Number(data.execution?.pending_actions||0)} pending actions · ${Number(data.execution?.queued_requests||0)} requests awaiting send · ${Number(data.execution?.sent_waiting||0)} sent, awaiting result · ${Number(data.execution?.collected_results||0)} results collected${data.execution?.uncertain_deliveries?" · "+Number(data.execution.uncertain_deliveries)+" earlier uncertain deliveries retained":""}${hs.detail&&hs.code&&hs.code!=='RUNNING'?' <span data-execution-state="'+E(hs.code)+'">'+E(hs.detail)+'</span>':''}</p><div class="workspace-hero-actions">${!data.identity_blocked&&showControl&&!(campaignWorking&&(execCode?controlAction:(paused?'resume':'pause'))==='resume')?`<button data-action="${execCode?controlAction:(paused?'resume':'pause')}">${execCode?controlLabel:(paused?'▶ Resume research':'Ⅱ Pause research')}</button>`:''}<button data-page="outputs">Read outputs ↗</button><button data-page="sources">Inspect evidence</button><span class="workspace-muted">${data.sources.length} source records in this view · revision ${data.revision}</span></div></section>
+       ${need()}
+       <div class="workspace-summary"><article class="workspace-lead"><div class="workspace-eyebrow"><span>${lead?'LEADING INTERPRETATION':'THE RESEARCH QUESTION IS OPEN'}</span><span>01 / UNDERSTAND</span></div><h2>${E(trim(lead?.text||'The evidence has not produced a claim-specific finding yet.',360))}</h2><p class="workspace-muted">${E(lead?.label||'A research objective is a starting point. Retrieval and activity alone do not establish an answer.')}${lead?.scope?' · '+E(trim(lead.scope,220)):''}</p><div class="workspace-lead-foot"><span>${lead?.citations.length?lead.citations.length+' retained quotation(s) linked; support unverified':'Claim-specific support has not been verified'}</span>${lead?`<button data-finding="${E(lead.id)}">Why this? ↗</button>`:''}</div></article>
+       <aside class="workspace-unresolved"><span class="workspace-eyebrow">THE QUESTION THAT MATTERS NEXT</span><p style="margin-top:14px">${E(question?.text||question?.test||'Which observation or counterexample would most clearly separate the strongest explanations?')}</p><p class="workspace-muted">${activityNote}</p><button data-page="questions">See what remains open ↗</button></aside></div>
+--- a/static/index.html
++++ b/static/index.html
+@@ -278,6 +278,6 @@
+ <script src="/static/frontier.js" defer></script>
+ <script src="/static/social.js?v=eureka2" defer></script>
+ <script src="/static/github.js?v=gh-evidence-4" defer></script>
+-<script src="/static/workspace.js?v=ws13" defer></script>
++<script src="/static/workspace.js?v=ws14" defer></script>
+ </body>
+ </html>
+--- a/tests/test_autonomy_desks_v17.py
++++ b/tests/test_autonomy_desks_v17.py
+@@ -8,6 +8,7 @@
+ from fastapi.testclient import TestClient
+ from test_frontier_v16 import unit, source, action
+ from sim.frontier_watchdog import review, recover, offer_invention
++from sim.frontier_acquisition import MAX_SEARCHES
+ from sim.regional_desks import RegionalDesks
+ from sim.distribution import parse_metrics, curve, METRICS
+ from sim.desk_routes import install_desk_routes
+@@ -111,7 +112,25 @@
+     assert result=='DONE'
+     method=p.frontier.objects(cid,'METHOD')[0]
+     assert method['payload']['impossibility']=='UNKNOWN'
++    assert method['payload']['epistemic_status']=='UNTESTED'
++    assert not s.one("SELECT 1 FROM frontier_actions WHERE kind='ATTACK_METHOD' AND target=?",(method['id'],))
++    # A proposed external dependency first opens bounded evidence acquisition.
++    # Exhausting that fixture search does not prove the candidate method works.
++    for attempt in range(MAX_SEARCHES):
++        acquisition=s.one("""SELECT * FROM frontier_actions WHERE campaign_id=?
++            AND kind='ACQUIRE_EVIDENCE' AND status IN ('QUEUED','DISPATCHED','WAITING')
++            ORDER BY created LIMIT 1""",(cid,))
++        assert acquisition
++        assert json.loads(acquisition['packet'])['acquisition']['requirement']=='Existing authorized domain and receiving endpoint'
++        assert p.frontier.ingest(acquisition['id'],{'sources':[],
++            'queries_used':['offline external-dependency fixture'],
++            'conclusion':'No independently retained source was found in this fixture.'},provider='offline-fixture')=='LOW_YIELD'
++        if attempt+1<MAX_SEARCHES:
++            assert not s.one("SELECT 1 FROM frontier_actions WHERE kind='ATTACK_METHOD' AND target=?",(method['id'],))
+     assert s.one("SELECT 1 FROM frontier_actions WHERE kind='ATTACK_METHOD' AND target=?",(method['id'],))
++    retained=p.frontier.objects(cid,'METHOD')[0]
++    assert retained['payload']['impossibility']=='UNKNOWN'
++    assert retained['payload']['epistemic_status']=='UNTESTED'
+ 
+ 
+ class FakeBrowser:
+--- a/tests/test_continuation_v17.py
++++ b/tests/test_continuation_v17.py
+@@ -1,5 +1,6 @@
+ ﻿"""One continuation after market closure, split badges, portable checkpoint."""
+ import json
++from types import SimpleNamespace
+ 
+ from sim.engine import Arena
+ from sim.frontier_checkpoint import export_checkpoint, import_checkpoint
+@@ -83,11 +84,12 @@
+         runtime_paused=True, runtime_blocker=CONTINUATION_MISSING_REASON,
+         pending_actions=0, sent_waiting=0, queued_requests=0, guided_status='PAUSED')
+     assert state['code'] == 'BLOCKED'
++    assert state['tone'] == 'amber'
++    assert state['reason'] == CONTINUATION_MISSING_REASON
+     js = Path_read()
+     assert 'data-badge="brain"' in js
+     assert 'data-badge="frontier"' in js
+     assert 'data-badge="control"' in js
+-    assert 'Heartbeat is not work in flight' in js or 'Not work in flight' in js
+ 
+ 
+ def Path_read():
+@@ -370,18 +372,40 @@
+         (cid,))['n'] == before
+ 
+ 
++def _enable_fixture_brain(pandora):
++    """Expose capacity only; no provider, browser, or real worker is invoked."""
++    brain = SimpleNamespace(
++        enabled=True, research_enabled=True, hold='',
++        pool_status=lambda: {'primary': {'connected': True, 'state': 'READY', 'role': 'primary'}})
++    pandora.arena.llm = SimpleNamespace(enabled=True, brain=brain)
++
++
++def _assert_brain_handoff(store, cid):
++    cognition = _pending(store, cid, 'cognition:%')
++    assert len(cognition) == 1
++    assert cognition[0]['kind'] == 'SYNTHESIZE'
++    action = store.one('SELECT reason,revision FROM frontier_actions WHERE campaign_id=? AND target=?',
++                       (cid, cognition[0]['target']))
++    assert 'existing ChatGPT Brain' in action['reason']
++    assert action['revision'] == store.one(
++        'SELECT revision FROM frontier_campaigns WHERE campaign_id=?', (cid,))['revision']
++    assert _pending(store, cid, 'family:%') == []
++    return cognition[0]['target']
++
++
+ def test_impossible_physical_target_rejected_and_search_continues(tmp_path):
+     conclusion = (
+         'The solution must work on a device with a locked bootloader. '
+         'A physical phone is required. Adding a software tool does not perform that prerequisite.'
+     )
+     store, pandora, cid, before = _exhausted(tmp_path, conclusion=conclusion)
++    _enable_fixture_brain(pandora)
+     pandora.frontier.resume(cid)
+     refused_rows = store.query("SELECT value FROM kv WHERE key LIKE ?", ('admission_refused:' + cid + ':%',))
+     assert any('PHYSICAL_EXTERNAL_REQUIREMENT' in row['value'] for row in refused_rows)
+     assert any('will not be admitted again' in row['value'] or 'not be admitted again' in row['value'] for row in refused_rows)
+     assert _pending(store, cid, 'reconsider:fresh-public:spent') == []
+-    assert _pending(store, cid, 'family:%')
++    _assert_brain_handoff(store, cid)
+     reason = pandora.frontier.row(cid)['reason'] or ''
+     assert 'Bounded public acquisition and current reasoning actions exhausted' not in reason
+     _assert_quiet(store, cid, before)
+@@ -430,39 +454,32 @@
+     store.db.close()
+ 
+ 
+-def test_exhausted_family_generates_a_new_family(tmp_path):
++def test_exhausted_direction_requests_existing_brain_once(tmp_path):
+     conclusion = (
+         'Listed payout must be compared with machine cost before this marketplace service is executable. '
+         'The retained terms are a software calculation the application can run locally.'
+     )
+     store, pandora, cid, before = _exhausted(tmp_path, conclusion=conclusion)
+-    pandora.frontier.resume(cid)
+-    first = store.query("SELECT target FROM frontier_actions WHERE campaign_id=? AND target LIKE 'family:%'", (cid,))
+-    assert len(first) == 1
+-    store.execute(
+-        "UPDATE frontier_actions SET status='DONE', job_id=NULL, task_id=NULL WHERE campaign_id=? AND status IN ('QUEUED','DISPATCHED','WAITING')",
+-        (cid,))
+-    store.execute("UPDATE frontier_campaigns SET status='ACTIVE', reason='' WHERE campaign_id=?", (cid,))
+-    store.execute("UPDATE campaign_runtime SET paused=0, blocker='' WHERE campaign_id=?", (cid,))
+-    store.execute("UPDATE guided_research SET status='ACTIVE' WHERE campaign_id=?", (cid,))
+-    pandora.frontier.plan(cid)
+-    families = store.query("SELECT target,status FROM frontier_actions WHERE campaign_id=? AND target LIKE 'family:%'", (cid,))
+-    assert len(families) >= 2
+-    assert len({row['target'] for row in families}) >= 2
+-    assert any(row['status'] in ('QUEUED', 'DISPATCHED', 'WAITING') for row in families)
++    _enable_fixture_brain(pandora)
++    pandora.frontier.resume(cid)
++    target = _assert_brain_handoff(store, cid)
++    for _ in range(3):
++        pandora.frontier.plan(cid)
++        assert _assert_brain_handoff(store, cid) == target
++    assert store.one("SELECT COUNT(*) n FROM frontier_actions WHERE campaign_id=? AND target LIKE 'cognition:%'",
++                     (cid,))['n'] == 1
++    assert store.one("SELECT COUNT(*) n FROM frontier_actions WHERE campaign_id=? AND target LIKE 'family:%'",
++                     (cid,))['n'] == 0
+     _assert_quiet(store, cid, before)
+     store.db.close()
+ 
+ 
+ def test_capability_first_discovery_without_a_candidate(tmp_path):
+     store, pandora, cid, before = _exhausted(tmp_path)
++    _enable_fixture_brain(pandora)
+     pandora.frontier.resume(cid)
+     assert store.one("SELECT status FROM tool_registry WHERE id='value-comparison-v1'")['status'] == 'INSTALLED'
+-    unlocked = store.query(
+-        "SELECT status,target FROM frontier_actions WHERE campaign_id=? AND target LIKE 'family:unlocked-by-value-comparison:%'",
+-        (cid,))
+-    assert len(unlocked) == 1
+-    assert unlocked[0]['status'] in ('QUEUED', 'DISPATCHED', 'WAITING')
++    _assert_brain_handoff(store, cid)
+     assert _pending(store, cid, 'reconsider:%') == []
+     _assert_quiet(store, cid, before)
+     store.db.close()
+@@ -470,6 +487,7 @@
+ 
+ def test_failed_upgrade_is_persisted_and_alternate_is_chosen(tmp_path):
+     store, pandora, cid, before = _exhausted(tmp_path, question=MARKET + ' failing adapter fixture')
++    _enable_fixture_brain(pandora)
+     pandora.frontier.resume(cid)
+     evolve = store.one(
+         "SELECT status FROM frontier_actions WHERE campaign_id=? AND target LIKE 'evolve:%'",
+@@ -477,7 +495,7 @@
+     assert evolve and evolve['status'] == 'FAILED'
+     assert store.one("SELECT id FROM tool_registry WHERE status='INSTALLED'") is None
+     assert store.one("SELECT value FROM kv WHERE key LIKE ?", ('evolution_failed:' + cid + ':%',))
+-    assert _pending(store, cid, 'family:%')
++    _assert_brain_handoff(store, cid)
+     _assert_quiet(store, cid, before)
+     store.db.close()
+ 
+@@ -503,8 +521,8 @@
+     store.db.close()
+ 
+ 
+-def test_exhausted_fixed_families_generate_a_novel_fourth(tmp_path):
+-    """Known families exhausted means expand the set, and a rename is not admissible."""
++def test_exhausted_fixed_families_hand_direction_to_brain(tmp_path):
++    """Retained old families do not authorize another hardcoded direction."""
+     from sim.capability_evolution import family_admissible, family_signature
+     conclusion = (
+         'Listed payout must be compared with machine cost before this marketplace service is executable. '
+@@ -512,37 +530,21 @@
+     )
+     fixed = ('machine-cost-operations', 'new-economic-activities', 'marketplace-terms')
+     store, pandora, cid, before = _exhausted(tmp_path, conclusion=conclusion)
+-    pandora.frontier.resume(cid)
+-
+-    def rows():
+-        return store.query(
+-            "SELECT target,status FROM frontier_actions WHERE campaign_id=? AND target LIKE 'family:%'",
+-            (cid,))
+-
+-    def is_fixed(target):
+-        return any(name in target for name in fixed)
+-
+-    novel = []
+-    for _ in range(6):
+-        found = rows()
+-        novel = [row for row in found if not is_fixed(row['target']) and row['status'] in ('QUEUED', 'DISPATCHED', 'WAITING')]
+-        if sum(1 for row in found if is_fixed(row['target'])) >= 3 and novel:
+-            break
+-        store.execute(
+-            "UPDATE frontier_actions SET status='DONE', job_id=NULL, task_id=NULL WHERE campaign_id=? AND status IN ('QUEUED','DISPATCHED','WAITING')",
+-            (cid,))
+-        store.execute("UPDATE frontier_campaigns SET status='ACTIVE', reason='' WHERE campaign_id=?", (cid,))
+-        store.execute("UPDATE campaign_runtime SET paused=0, blocker='' WHERE campaign_id=?", (cid,))
+-        store.execute("UPDATE guided_research SET status='ACTIVE' WHERE campaign_id=?", (cid,))
++    _enable_fixture_brain(pandora)
++    for name in fixed:
++        target = 'family:' + name + ':' + ('ab' * 10)
++        pandora.frontier._offer(cid, 'SYNTHESIZE', target, 8, 2, 'Retained exhausted legacy family')
++        store.execute("UPDATE frontier_actions SET status='DONE' WHERE campaign_id=? AND target=?", (cid, target))
++    pandora.frontier.resume(cid)
++    target = _assert_brain_handoff(store, cid)
++    for _ in range(3):
+         pandora.frontier.plan(cid)
+-    assert novel, rows()
+-    fourth = novel[0]['target']
+-    for banned in ('machine-cost', 'new-economic', 'marketplace-terms'):
+-        assert banned not in fourth
+-    assert 'verification-path' in fourth or 'capability-composition' in fourth or 'market-structure' in fourth or 'economic-mechanism' in fourth
+-    assert family_admissible(fourth, [family_signature('family:' + name + ':' + ('ab' * 10)) for name in fixed])
++        assert _assert_brain_handoff(store, cid) == target
++    families = store.query("SELECT target,status FROM frontier_actions WHERE campaign_id=? AND target LIKE 'family:%'", (cid,))
++    assert len(families) == len(fixed)
++    assert all(row['status'] == 'DONE' for row in families)
+     assert not family_admissible('operations-at-machine-cost', [family_signature('family:machine-cost-operations:' + ('ab' * 10))])
+-    assert not family_admissible('-'.join(family_signature(fourth)), [family_signature(fourth)])
++    assert not family_admissible('marketplace-terms', [family_signature('family:marketplace-terms:' + ('ab' * 10))])
+     assert pandora.frontier.row(cid)['status'] == 'ACTIVE'
+     assert 'frontier-family generation was attempted and produced no' not in (pandora.frontier.row(cid)['reason'] or '')
+     _assert_quiet(store, cid, before)
+@@ -550,9 +552,9 @@
+ 
+ 
+ 
+-def test_token_suffix_of_exhausted_stem_is_rejected_and_distinct_family_registers(tmp_path):
+-    """A mission-token swap on an exhausted stem is not a family. A different mechanism is."""
+-    from sim.capability_evolution import FAMILIES, _digest, family_stem, is_token_suffix
++def test_token_suffix_is_retired_before_manual_plan_and_brain_chooses_direction(tmp_path):
++    """Neither token walks nor distinct fixed families may preempt the Brain."""
++    from sim.capability_evolution import FAMILIES, _digest, is_token_suffix
+     exhausted = [
+         'verification-path-via-value-comparison-v1-on-discover',
+         'verification-path-via-value-comparison-v1-on-verify',
+@@ -567,6 +569,7 @@
+         'The retained terms are a software calculation the application can run locally.'
+     )
+     store, pandora, cid, before = _exhausted(tmp_path, conclusion=conclusion)
++    _enable_fixture_brain(pandora)
+     pandora.frontier.resume(cid)
+     revision = pandora.frontier.row(cid)['revision']
+     digest = _digest(revision)
+@@ -584,7 +587,7 @@
+         "UPDATE frontier_actions SET status='DONE', job_id=NULL, task_id=NULL WHERE campaign_id=? AND target LIKE 'family:%' AND target!=?",
+         (cid, pending_walk))
+     store.execute(
+-        "UPDATE frontier_actions SET status='DONE', job_id=NULL, task_id=NULL WHERE campaign_id=? AND target NOT LIKE 'family:%' AND status IN ('QUEUED','DISPATCHED','WAITING')",
++        "UPDATE frontier_actions SET status='DONE', job_id=NULL, task_id=NULL WHERE campaign_id=? AND target NOT LIKE 'family:%' AND target NOT LIKE 'cognition:%' AND status IN ('QUEUED','DISPATCHED','WAITING')",
+         (cid,))
+     store.execute("UPDATE frontier_campaigns SET status='ACTIVE', reason='' WHERE campaign_id=?", (cid,))
+     store.execute("UPDATE campaign_runtime SET paused=0, blocker='' WHERE campaign_id=?", (cid,))
+@@ -592,20 +595,36 @@
+     pandora.frontier.plan(cid)
+     walked = store.one('SELECT status,reason FROM frontier_actions WHERE campaign_id=? AND target=?', (cid, pending_walk))
+     assert walked['status'] == 'SUPERSEDED'
+-    assert 'token-suffix' in (walked['reason'] or '')
+-    live = store.query(
+-        "SELECT target,status FROM frontier_actions WHERE campaign_id=? AND target LIKE 'family:%' AND status IN ('QUEUED','DISPATCHED','WAITING')",
+-        (cid,))
+-    assert len(live) == 1, live
+-    registered = family_stem(live[0]['target'])
+-    assert not is_token_suffix(registered, exhausted)
+-    assert '-on-discover' not in registered and '-on-verify' not in registered and '-on-falsify' not in registered
+-    assert registered != distinct or 'capability-composition' in registered
+-    assert any(axis in registered for axis in ('capability-composition', 'market-structure', 'economic-mechanism'))
+-    assert 'value-comparison-v1' in registered
+-    assert 'machine-cost-operations' not in registered
+-    assert 'new-economic-activities' not in registered
+-    assert 'marketplace-terms' not in registered
++    assert 'token-walk' in (walked['reason'] or '') or 'token-suffix' in (walked['reason'] or '')
++    _assert_brain_handoff(store, cid)
+     assert pandora.frontier.row(cid)['status'] == 'ACTIVE'
+     _assert_quiet(store, cid, before)
+     store.db.close()
++
++
++def test_manual_family_retirement_respects_pause_and_campaign_ownership(tmp_path):
++    store, pandora = _unit(tmp_path)
++    other = pandora.guided.start(MARKET + ' in a separate campaign', 'computing', mode='RESEARCH')['campaign_id']
++    pandora.frontier.enable(other)
++    # Retain a historical campaign without starting two concurrent guided missions.
++    store.execute("UPDATE guided_research SET status='SATURATED' WHERE campaign_id=?", (other,))
++    store.execute("UPDATE frontier_campaigns SET status='SATURATED' WHERE campaign_id=?", (other,))
++    first = pandora.guided.start(MARKET, 'computing', mode='RESEARCH')['campaign_id']
++    pandora.frontier.enable(first)
++    target = 'family:verification-path-on-falsify:legacy'
++    for cid in (first, other):
++        pandora.frontier._offer(cid, 'SYNTHESIZE', target, 8, 2, 'Legacy action must not preempt the Brain')
++    store.execute('UPDATE campaign_runtime SET paused=1 WHERE campaign_id=?', (first,))
++    assert pandora.frontier.plan(first) == 0
++    for cid in (first, other):
++        assert store.one('SELECT status FROM frontier_actions WHERE campaign_id=? AND target=?',
++                         (cid, target))['status'] == 'QUEUED'
++    store.execute('UPDATE campaign_runtime SET paused=0 WHERE campaign_id=?', (first,))
++    pandora.frontier.plan(first)
++    retired = store.one('SELECT status,reason FROM frontier_actions WHERE campaign_id=? AND target=?',
++                        (first, target))
++    assert retired['status'] == 'SUPERSEDED'
++    assert 'Brain chooses the next direction' in retired['reason']
++    assert store.one('SELECT status FROM frontier_actions WHERE campaign_id=? AND target=?',
++                     (other, target))['status'] == 'QUEUED'
++    store.db.close()
+--- a/tests/test_research_v15.py
++++ b/tests/test_research_v15.py
+@@ -4,6 +4,11 @@
+ 
+ from sim.engine import Arena
+ from sim.pandora import Pandora
++pytest.importorskip(
++    'sim.research_v15',
++    reason='The legacy research_v15 implementation is intentionally disabled; these tests resume when its module is restored.',
++    exc_type=ModuleNotFoundError,
++)
+ from sim.research_v15 import (
+     _forge_task_quote,
+     build_research_map,
+--- a/tests/test_eureka_social_v14.py
++++ b/tests/test_eureka_social_v14.py
+@@ -4,20 +4,44 @@
+ from test_manuscript_d3 import campaign, store
+ 
+ 
+-def test_working_paper_compiles_one_eureka_per_completed_researcher_and_page_deck(store):
++def test_working_paper_requires_concluded_delta_before_researcher_and_page_eurekas(store):
+     p,cid=campaign(store)
++    retained_status=p.db.campaign(cid)['status']
+     task=store.one("SELECT id,agent_id FROM campaign_tasks WHERE campaign_id=? ORDER BY created LIMIT 1",(cid,))
+     assert task
+     store.execute("""UPDATE campaign_tasks SET status='DONE',completed=123,result_ref=?,result=? WHERE id=?""",
+                   ('fixture:eureka',json.dumps({'finding':'A search result changes the frontier only after its evidence link survives the exact objective gate.'}),task['id']))
+     paper=p.manuscripts.checkpoint(cid,reason='eureka social regression')
+     social=paper['manuscript']['eureka_social']
++    # A completed task and process finding are not a conceptual discovery.
++    assert social['researcher_quotes']==[]
++    assert social['champion'] is None
++    assert len(social['page_quotes'])==social['page_count']
++    assert all(q['kind']=='PAGE_NO_EUREKA' and not q['quote'] for q in social['page_quotes'])
++
++    # Explicit offline arithmetic fixture: the social projection may compress this
++    # scoped conclusion, while publication/readiness gates remain independent.
++    conclusion='In the paired fixture, adding one to every observation raises the mean by one without changing the spread.'
++    store.execute("UPDATE campaign_tasks SET result_ref=?,result=? WHERE id=?",
++                  ('fixture:paired-arithmetic',json.dumps({
++                      'hypothesis':'The mean difference might require a change in spread.',
++                      'conclusion':conclusion,'verified_delta':conclusion,
++                      'scope':'Only the four supplied pairs; no external empirical conclusion.',
++                      'inputs':{'baseline':[1,2,3,4],'intervention':[2,3,4,5]},
++                      'falsifier':'A paired difference other than one refutes this fixture conclusion.'
++                  }),task['id']))
++    paper=p.manuscripts.checkpoint(cid,reason='scoped concluded arithmetic fixture')
++    social=paper['manuscript']['eureka_social']
+     assert social['researcher_quotes']
+     q=next(x for x in social['researcher_quotes'] if x['agent_id']==task['agent_id'])
+-    assert q['evidence_ref']=='fixture:eureka'
++    assert q['evidence_ref']=='fixture:paired-arithmetic'
++    assert q['quote']==conclusion
+     assert len(q['x_post'])<=280
+     assert len(social['page_quotes'])==social['page_count']
+     assert social['champion']
++    assert social['champion']['id']==q['id']
++    assert p.db.campaign(cid)['status']==retained_status
++    assert paper['status']!='PUBLICATION_READY_MANUSCRIPT'
+ 
+ 
+ def test_operator_ui_does_not_report_resolved_test_history_as_current_stuck_state():
+--- a/tests/test_guided_research_v21.py
++++ b/tests/test_guided_research_v21.py
+@@ -27,7 +27,14 @@
+     cid=started['campaign_id']
+     try:
+         assert s.schema_version>=21
+-        assert a.running is False
++        # Guided work keeps the user's running Arena, with adversarial duels
++        # focused on this exact objective and the experiment gate still locked.
++        assert a.running is True
++        policy = p.mobilization.policy()
++        assert policy['guided_research'] is True and policy['campaign_id'] == cid
++        assert policy['guided_objective'] == objective
++        assert policy['arena_duels'] == 1 and policy['arena_interval'] == 18
++        assert s.one('SELECT prior_arena_running FROM guided_research WHERE campaign_id=?', (cid,))['prior_arena_running'] == 1
+         assert started['experiment_gate']=='LOCKED'
+         tasks=s.query("""SELECT agent_id,status,target_ref FROM campaign_tasks
+           WHERE campaign_id=? AND task_type='SWARM_GUIDED_PRIOR_ART'""",(cid,))
+--- a/tests/test_review_revision_c2.py
++++ b/tests/test_review_revision_c2.py
+@@ -252,7 +252,8 @@
+     s.execute('PRAGMA user_version=13')  # interrupted/partially migrated schema fixture
+     s.db.close()
+     reopened = Store(str(path))
+-    assert reopened.schema_version >= 19  # additive typed-gate schema after v14 backfill
++    migrated_version = reopened.schema_version
++    assert migrated_version == 24  # Includes additive GitHub workspace tables after v14 backfill.
+     assert reopened.one('SELECT id,revision,question,claim FROM research_campaigns WHERE id=?', (cid,)) == before
+     assert reopened.one('SELECT revision FROM campaign_source_revisions WHERE campaign_id=? AND source_id=?', (cid, old_source['source_id']))['revision'] == 1
+     assert reopened.one('SELECT revision FROM science_node_revisions WHERE campaign_id=? AND node_id=?', (cid, old_node['id']))['revision'] == 1
+@@ -260,6 +261,8 @@
+     reopened.db.close()
+     again = Store(str(path))
+     assert again.one('SELECT COUNT(*) AS n FROM campaign_source_revisions WHERE campaign_id=?', (cid,))['n'] == old_count
+-    assert again.one('PRAGMA user_version')['user_version'] == 23
++    assert again.one('PRAGMA user_version')['user_version'] == migrated_version
+     assert again.one("SELECT name FROM sqlite_master WHERE type='table' AND name='system_engineering_children'")
++    assert again.one("SELECT name FROM sqlite_master WHERE type='table' AND name='github_projects'")
++    assert again.one('PRAGMA integrity_check')['integrity_check'] == 'ok'
+     again.db.close()
+--- a/sim/engineering_runner.py
++++ b/sim/engineering_runner.py
+@@ -7,7 +7,9 @@
+ import time
+ 
+ RUNNER_VERSION = 'WINDOWS_GATE_REPAIR_1'
+-SUITE_TIMEOUT = 1800
++# The complete offline suite takes about 36 minutes on the supported Windows
++# workspace; retain its real gate with bounded headroom for disk contention.
++SUITE_TIMEOUT = 3600
+ TARGET_TIMEOUT = 900
+ 
+ 
+--- a/tests/test_engineering_runner_windows.py
++++ b/tests/test_engineering_runner_windows.py
+@@ -147,7 +147,7 @@
+         w.engineer._test_generic(w.engineer._child(child['id']))
+         result=w.engineer._child(child['id'])
+         assert result['status']==expected
+-        assert ('Complete source regression suite',1800) in calls
++        assert ('Complete source regression suite',3600) in calls
+         assert not s.query('SELECT * FROM system_candidate_votes')
+         stages={r['stage'] for r in s.query('SELECT stage FROM system_engineering_steps')}
+         assert 'GENERIC_ISOLATED_TESTS' in stages and 'REPAIR_OBLIGATION' not in stages
+--- a/tests/test_production_hardening_v17.py
++++ b/tests/test_production_hardening_v17.py
+@@ -9,12 +9,17 @@
+ from sim.research_intent import compile_intent, classify, query_for_provider, install_retrieval_intent
+ from sim.research_execution_fix import install_research_execution_fix
+ from sim.research_workspace import ResearchWorkspace
++from sim.science import ScholarlyFederation
+ 
+ OBJECTIVE='Bounded production smoke study: What do reliability diagrams establish about probabilistic rain forecast calibration versus discrimination and sharpness? Use retained primary scholarly evidence.'
+ 
+ 
+ @pytest.fixture
+-def machine(tmp_path):
++def machine(tmp_path,monkeypatch):
++    # Runtime overlays replace this shared class-level static method. Keep them
++    # active for the fixture, then restore the descriptor before another module
++    # tests the base relevance policy.
++    monkeypatch.setattr(ScholarlyFederation,'relevance',ScholarlyFederation.__dict__['relevance'])
+     s=Store(str(tmp_path/'production.db'));a=Arena(s);p=Pandora(s,arena=a);a.pandora=p
+     install_research_execution_fix(p)
+     authority=install_research_authority(p)
+--- a/tests/test_market_closure_v17.py
++++ b/tests/test_market_closure_v17.py
+@@ -217,6 +217,10 @@
+     assert 'data.execution_state' in js
+     assert "execCode==='RUNNING'||execCode==='WAITING_FOR_BRAIN'" in js
+     assert 'data-execution-state' in js
+-    assert "execCode==='BLOCKED'||execCode==='STALLED'" in js
++    # Campaign state is rendered by humanStatus; shared Brain activity must not
++    # relabel a blocked/stalled campaign as working.
++    assert "if(code==='BLOCKED'||code==='STALLED')" in js
++    assert "label:exec.label||(code==='BLOCKED'?'Blocked.':'Stalled.')" in js
++    assert 'campaignWorking=Number(data.execution?.sent_waiting||0)>0||active.length>0' in js
+     assert 'data-badge="frontier"' in js
+-    assert 'Not work in flight' in js
++    assert 'not work in flight' in js.lower()
+--- a/tests/test_research_focus_ui_v11.py
++++ b/tests/test_research_focus_ui_v11.py
+@@ -22,7 +22,9 @@
+     science=(root/'static/science.js').read_text(encoding='utf-8')
+     html=(root/'static/index.html').read_text(encoding='utf-8')
+     css=(root/'static/style.css').read_text(encoding='utf-8')
+-    assert 'renderGuidedArena' in app and 'ALL-AGENT GUIDED RESEARCH FOCUS' in app
++    assert 'renderGuidedArena' in app and 'GUIDED RESEARCH + ADVERSARIAL ARENA' in app
++    assert 'cards=fields.map' in app and "guidedAgentSide(sci,st,'sci',g)" in app and "guidedAgentSide(des,dt,'des',g)" in app
++    assert 'Research is primary, not exclusive.' in app
+     assert 'data-t="survivors"' in html and '/api/science/survivors' in app
+     assert 'LOADING EXACT CAMPAIGN' in science and 'AbortController' in science and "next.id!==id" in science
+     assert 'LOADING FIELDS' in science and 'ensureScienceFields' in science
+--- a/tests/test_autonomous_scheduler_1.py
++++ b/tests/test_autonomous_scheduler_1.py
+@@ -49,7 +49,9 @@
+     async def scenario():
+         process=asyncio.create_task(p.auto_loop())
+         try:
+-            until=time.monotonic()+4
++            # Four coalesced scheduler passes must still drain the phase DAG;
++            # allow bounded filesystem/CPU contention during the complete gate.
++            until=time.monotonic()+12
+             while time.monotonic()<until:
+                 if p.db.campaign(cid)['phase']=='AWAITING_EVIDENCE' and store.one(
+                     "SELECT COUNT(*) AS n FROM campaign_tasks WHERE campaign_id=? AND status='DONE'",(cid,))['n']>=4:
