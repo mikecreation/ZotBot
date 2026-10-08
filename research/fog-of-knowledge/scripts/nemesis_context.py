@@ -195,6 +195,7 @@ def main() -> int:
     parser.add_argument("--max-items", type=int, default=100)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--compact", action="store_true")
+    parser.add_argument("--integrity", action="store_true", help="Attach a verifiable complete-context manifest; existing live command remains unchanged")
     args = parser.parse_args()
 
     graph = load_graph()
@@ -208,6 +209,9 @@ def main() -> int:
     packet['identity_candidates']=evidence['identity_candidates'][:max(0,args.max_items)]
     packet['navigation_coverage']=navigation['counts']
     packet['review_priority']='Exact source-to-assertion review, source gaps and justified placement precede record volume.'
+    if args.integrity:
+        from research_integrity import context_proof
+        packet['integrity']=context_proof(packet)
 
     text = json.dumps(
         packet,

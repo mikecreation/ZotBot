@@ -39,6 +39,15 @@ jobs:
         working-directory: research/fog-of-knowledge
         run: python scripts/test_native_authority_source.py
 
+      - name: Check engineering contracts and affected boundary path
+        working-directory: research/fog-of-knowledge
+        run: |
+          python scripts/engineering_guard.py --report /tmp/nemesis-affected-path.json
+          python scripts/test_engineering_integrity.py
+          python scripts/test_engineering_guard.py
+          python scripts/test_boundary_upgrade.py
+          python scripts/test_mission_watchdog.py
+
       - name: Check navigation and ingestion regressions
         working-directory: research/fog-of-knowledge
         run: python scripts/test_atlas_integrity.py
