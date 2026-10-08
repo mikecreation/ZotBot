@@ -25,9 +25,10 @@ python -m pytest tests/test_github_evidence.py tests/test_github_workspace.py
 
 Restart through the normal Nemesis supervisor. `/api/health` reports
 `fog_evidence_crew.version = fog-evidence-crew/1` and `running = true`.
-Starting the application does not start a new Fog wave. **Expand map with crew**
-explicitly queues three bounded discovery missions. Connected Brain slots handle
-these jobs without pinning work to a disconnected worker.
+Starting the application resumes an explicitly enabled persistent coverage queue.
+**Expand map with crew** enables that queue; **Pause expansion queue** prevents new
+research while allowing current batches to finish. Connected Brain slots handle
+jobs without pinning work to a disconnected worker.
 
 After the base patch, apply `crew-recovery.patch` and restart Nemesis, then reload
 the existing **Nemesis application page**. Its atlas-only Refresh button refreshes
@@ -36,7 +37,7 @@ page can otherwise keep submitting the retired `fog-crew:boss/w1/w2/w3` workflow
 after a server upgrade: those jobs finish but have no durable evidence handoff.
 The recovery patch rejects untracked Fog jobs on `/api/brain/jobs` with an explicit
 reload message before dispatch. Existing replies remain retained in `brain_jobs`.
-The current client loads as `github.js?v=gh-evidence-4`, checks the server's client
+The current client loads as `github.js?v=gh-evidence-5`, checks the server's client
 revision, and shows discovery, capture, author, review, completion and blocking
 reasons directly above the atlas. Idle connected slots are separate from pipeline
 progress; a blocked candidate does not masquerade as an active researcher.
@@ -62,7 +63,7 @@ and capture corruption stop immediately. Terminal states retain the latest exact
 review rationale and revision counts; reconnecting clears obsolete transport
 errors while leaving scientific objections visible.
 
-Apply `crew-startup-health.patch` last and restart the full supervisor, then
+Apply `crew-startup-health.patch` next and restart the full supervisor, then
 reload the existing application page to load workspace client `ws14`.
 The supervisor owns the database across ports, drains its own Windows child
 process tree on restart, and audits a private SQLite snapshot instead of holding
@@ -101,7 +102,7 @@ The durable workflow is:
    records that need evidence. No scientific record is published at this stage.
 2. Pinned compiler capture retains HTTP bytes, extraction metadata and full text.
    Local/private source destinations and redirects are rejected by this adapter.
-3. A separate author job constructs one or two conservative targets with exact
+3. A separate author job constructs a bounded set of supported targets with exact
    excerpts, complete representations and explicit scope. The author references
    retained source IDs instead of reproducing capture metadata. Nemesis owns
    batch identity and the delivery manifest; the compiler owns exact source
@@ -162,4 +163,40 @@ Run the focused runtime regressions after applying all patches:
 ```sh
 python -m pytest tests/test_github_evidence.py tests/test_fog_pipeline_reliability.py tests/test_github_workspace.py
 python -m pytest tests/test_github_sandbox_encoding.py tests/test_supervisor_snapshot_health.py tests/test_supervisor_startup_guard.py tests/test_supervisor_rollback.py tests/test_continuation_v17.py tests/test_autonomy_desks_v17.py tests/test_eureka_social_v14.py
+```
+
+Apply `crew-coverage-expansion.patch` after the preceding patches, restart the full
+supervisor, then reload the existing application page. It removes the three
+repeated Physics missions and the one-or-two-target author restriction. Discovery
+receives the complete thin inventory for its domain, including old URL sources;
+authoring receives every existing representation referencing its captured sources.
+Oversized context fails visibly instead of silently dropping matching records.
+
+The queue visits each domain before returning to another branch in that domain.
+At most three discoveries/batches occupy expansion capacity, including existing
+manual batches. Merged and held branches free capacity automatically; held evidence
+is retained and never promoted. New branches on later main revisions enter the
+inventory. Once all eligible branches are visited, the queue waits for new ones
+instead of repeatedly searching the same branch. Branches are research scheduling
+units, not newly reviewed taxonomy or scientific completeness claims.
+
+Queue checkpoints live under `data/github_cache/evidence-crew/coverage`. Intents
+are reserved before dispatch; deterministic project/branch tags recover jobs after
+an interrupted enqueue. An additive JSON-safe Brain tag index makes that lookup
+independent of total job history without rewriting old packets. Source-use history
+is advisory: a previously used source can support a distinct assertion. Authors
+aim for 6–12 targets when justified; this is a capacity goal, never an admission quota.
+Exact capture, both explicit reviews, current-main preflight and exact-head CI
+remain mandatory. Totals count proposed targets in merged batches, not searches
+or a claim that the whole atlas has been scientifically reviewed.
+
+The local same-origin coverage endpoint accepts
+`POST /api/github/project/{owner}/{repo}/evidence-crew/coverage` with
+`{"path":"research/fog-of-knowledge","enabled":true,"auto_publish":true}`.
+It respects project permissions, Brain disable/hold, and manual publication mode.
+Pausing and resuming preserve tasks, captures, jobs and historical failures.
+
+```sh
+python -m pytest tests/test_fog_coverage.py tests/test_fog_pipeline_reliability.py tests/test_github_evidence.py tests/test_brain_bridge_v14.py tests/test_v1410_brain_autorecovery.py tests/test_brain_rollover.py
+python scripts/test_coverage_context.py  # in the Fog checkout
 ```

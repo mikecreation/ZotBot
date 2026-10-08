@@ -161,6 +161,17 @@ def build_context(graph: dict, max_items: int) -> dict:
             "relation_counts": dict(sorted(relation_counts.items())),
         },
         "coverage_by_domain": coverage,
+        # Scheduling metadata, not newly adjudicated scientific classifications.
+        # Keep the complete thin inventory: global top-N truncation starves fields.
+        "coverage_inventory": [
+            {"id": n["id"], "label": n["label"], "domain": n["domain"],
+             "kind": n["kind"], "status": statuses.get(n["id"], n.get("status")),
+             "frontier": bool(n.get("frontier")), "has_sources": bool(n.get("sources")),
+             "source_urls": sorted({s if isinstance(s, str) else s["url"]
+                                    for s in n.get("sources", []) if isinstance(s, str) or s.get("url")}),
+             "summary": n.get("summary", "")[:800]}
+            for n in sorted(graph["nodes"], key=lambda row: (row["domain"], row["id"]))
+        ],
         "recommended_next_domain": coverage[0]["domain"] if coverage else None,
         "frontier_nodes": frontier_nodes[:max_items],
         "challenged_nodes": challenged_nodes[:max_items],
