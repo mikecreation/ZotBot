@@ -2,6 +2,7 @@
 from __future__ import annotations
 import argparse,json,os,sys
 from pathlib import Path
+from urllib.error import HTTPError
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 from evidence_compiler import ROOT,EvidenceError,candidate_digest,context_digest,digest,load_candidate,review_packet,rows,storage_record,unique,validate_assertions,validate_dag,validate_public_frontier,validate_sources
 from evidence_pipeline import graph,retain_decisions
@@ -52,28 +53,52 @@ def capture(batch):
     requests=rows(batch/'source_requests.jsonl')
     if not 1<=len(requests)<=4:raise EvidenceError('Discover one to four bounded public sources per batch')
     control=batch/'.nemesis-control';sources=[];retained=list(retained_captures(batch,required=False).values())
+    failed_path=control/'source-capture-failures.json'
+    failures=json.loads(failed_path.read_text(encoding='utf-8')) if failed_path.exists() else []
+    if not isinstance(failures,list) or any(not isinstance(f,dict) or not isinstance(f.get('request'),dict) or f.get('status') not in {403,404,410} for f in failures):
+        raise ExchangeError('capture-integrity','Malformed source acquisition history; original retained')
+    ids=[r.get('id') for r in requests]
+    if any(not isinstance(sid,str) or not sid for sid in ids) or len(ids)!=len(set(ids)):
+        raise EvidenceError('unique source ID required')
+    failed={f['request'].get('id'):f for f in failures}
+    if len(failed)!=len(failures) or set(failed)-set(ids):
+        raise ExchangeError('capture-integrity','Source requests removed or duplicated an acquisition failure; create a new batch revision')
     requested_ids={r.get('id') for r in requests if isinstance(r.get('id'),str)}
     if set(s['id'] for s in retained)-requested_ids:raise ExchangeError('capture-integrity','Source requests removed a retained source; create a new batch revision')
     for request in requests:
         sid=request.get('id')
         if not isinstance(sid,str) or not sid or any(s['id']==sid for s in sources):raise EvidenceError('unique source ID required')
+        if sid in failed:
+            if failed[sid]['request']!=request or any(s['id']==sid for s in retained):
+                raise ExchangeError('capture-integrity','Source request changed or conflicting capture history; create a new batch revision')
+            continue  # Retain permanent access outcomes, never fetch a later revision silently.
         # A resumed capture reuses its retained revision; it never silently fetches newer text.
         receipt=control/'captured-sources.json'
         source=next((s for s in retained if s['id']==sid),None)
         if source:
             if any(source[k]!=request.get(k,'unknown' if k=='source_kind' else None) for k in ('url','title','source_kind')):raise ExchangeError('capture-integrity','Source request changed; create a new batch revision')
         else:
-            source=capture_source(request['url'],sid,request['title'],request.get('source_kind','unknown'),public_only=True)
+            try:
+                source=capture_source(request['url'],sid,request['title'],request.get('source_kind','unknown'),public_only=True)
+            except HTTPError as exc:
+                if exc.code not in {403,404,410}:raise  # transient failures retain bounded runtime retry
+                failure={'request':request,'status':exc.code,'reason':'Public source returned HTTP '+str(exc.code)+'; no source text captured'}
+                failures.append(failure);failed[sid]=failure;write(failed_path,failures)
+                continue
             retained.append(source);write(receipt,retained)
         sources.append(source)
+    if not sources:
+        raise ExchangeError('source-unavailable','No public source could be captured; no candidate constructed',source_capture_failures=failures)
     discovery=json.loads((control/'discovery.json').read_text(encoding='utf-8')) if (control/'discovery.json').exists() else {}
     ids=discovery.get('target_ids',[])
     if not isinstance(ids,list) or len(ids)>12:raise EvidenceError('At most twelve existing target_ids per mission')
     g=graph()
-    value=bounded({'sources':sources,'existing_targets':[n for n in g['nodes'] if n['id'] in ids],
+    value=bounded({'sources':sources,'source_capture_failures':failures,
+                   'source_limitations':'Only compiler-captured sources below may support assertions. Unavailable URLs are not evidence; request a new source revision for unsupported targets.',
+                   'existing_targets':[n for n in g['nodes'] if n['id'] in ids],
                    'record_catalog':[{k:n.get(k) for k in ('id','label','kind','domain')} for n in g['nodes']]})
     write(control/'author-context.json',value)
-    return {'captured':len(sources)}
+    return {'captured':len(sources),'unavailable':len(failures)}
 
 def captured_sources(batch,candidate):
     """The compiler owns captures; model metadata can never replace them."""
