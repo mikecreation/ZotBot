@@ -1910,3 +1910,16 @@ window.FogAtlasState={
   }
 };
 atlasBoot.catch(()=>{});
+// Only the embedding localhost preview can transfer navigation/camera state.
+// Scientific graph records never cross this UI bridge.
+window.addEventListener('message',async event=>{
+  if(window.parent===window||event.source!==window.parent||
+    !/^http:\/\/(127\.0\.0\.1|localhost):\d+$/.test(event.origin))return;
+  if(event.data?.type==='fog-preview:snapshot'){
+    if(typeof event.data.request_id!=='string'||event.data.request_id.length>80)return;
+    event.source.postMessage({type:'fog-preview:state',request_id:event.data.request_id,
+      snapshot:window.FogAtlasState.snapshot()},event.origin);
+  }else if(event.data?.type==='fog-preview:restore'){
+    try{await window.FogAtlasState.restore(event.data.snapshot)}catch(error){console.warn('Preview view restoration failed',error)}
+  }
+});
