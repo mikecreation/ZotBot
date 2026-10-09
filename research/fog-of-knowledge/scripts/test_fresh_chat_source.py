@@ -9,6 +9,10 @@ with tempfile.TemporaryDirectory(prefix='fog-fresh-chat-') as directory:
     for name in ('paged-planning','planning-recovery','cancellation-recovery','bounded-evidence','completed-fence','fresh-chat'):
         layer=ROOT/'nemesis/integration'/name
         for path,expected in json.loads((layer/'source-sha256.json').read_text(encoding='utf8'))['sources'].items():
+            # Earlier planner bundles retain historical extension versions too.
+            # Compose their Native chain, then the complete current extension;
+            # do not mix obsolete fixture APIs into the current browser suite.
+            if name not in ('completed-fence','fresh-chat') and not path.startswith('native/'):continue
             raw=(layer/path).read_bytes();assert hashlib.sha256(raw).hexdigest()==expected,path
             p=target/path;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(raw)
     command=['git','-c','core.autocrlf=false','-C',directory,'apply'];patch=SOURCE/'upgrade.patch'
