@@ -269,6 +269,22 @@
         "review"
       ],
       "proof": "New production GOAL contains catalog only; exact cursor walk, mandatory relevant read, unread-anchor rejection, independent reply-hash validation and retained resource-wait resume"
+    },
+    {
+      "id": "accepted-result-retains-delivery-fence",
+      "category": "platform-error",
+      "boundaries": [
+        "dispatch",
+        "transport",
+        "continuation",
+        "persistence"
+      ],
+      "assumption": "No active server lease means generic READY page status can reconcile every retained delivery fence.",
+      "failure": "A collected COMPLETE request leaves a persistent fence; generic status omits its exact request ID and blocks the slot forever.",
+      "required_checks": [
+        "completed_fence",
+        "status_scan"
+      ]
     }
   ]
 }

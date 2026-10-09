@@ -1,0 +1,103 @@
+--- a/extension/brain-background.js
++++ b/extension/brain-background.js
+@@ -1,10 +1,11 @@
+-/* NEMESIS Brain 6.2.11 — bounded messages and durable delivery ambiguity. */
++/* NEMESIS Brain 6.2.12 — exact completed-fence reconciliation. */
+ (() => {
+   const KEY='nb.config';
+   const STATUS_KEY='nb.status';
+   const POOL_STATUS_KEY='nb.poolStatus';
+   const SLOT_NAMES=['primary','worker_1','worker_2','worker_3','worker_4'];
+   const TRANSPORT_REVISION='6.2.11-status-scan';
++  const BACKGROUND_BUILD='6.2.12-completed-fence';
+   const polling=new Set();
+   const lastTick=new Map();
+   const fenceKey=tabId=>'nb.deliveryFence.'+tabId;
+@@ -88,6 +89,12 @@
+   async function reconcileFence(tabId,report){
+     const key=fenceKey(tabId),fence=(await chrome.storage.local.get(key))[key];
+     if(!fence)return null;
++    // Once the server accepts a result, its active lease disappears. A generic
++    // READY page report does not inspect the retained request. Probe that exact
++    // fence ID before declaring this slot ambiguous forever. Status only: no
++    // editor changes, replay, format send, lease reset, or server result write.
++    if(report?.state==='READY' || report?.delivery?.requestId!==fence.id)
++      report=await contentMessage(tabId,{type:'NB_CONTENT_STATUS',id:fence.id});
+     const d=report?.delivery;
+     const ownedResponse=report?.state==='COMPLETE' && d?.responseConfirmed===true &&
+       d.receiptId===fence.id && d.clicked===true && !d.sending &&
+@@ -149,7 +156,7 @@
+     return editConfig(c=>{if(!c.enabled || c.slots?.[name]?.tabId!==expectedTabId)throw Error('Brain slot binding changed; old poll retired');Object.assign(c.slots[name],changes);});
+   }
+   async function api(c,path,body){
+-    if(path==='poll')body={...body,extension_build:'6.2.11-status-scan'};
++    if(path==='poll')body={...body,extension_build:BACKGROUND_BUILD};
+     const r=await fetch(baseURL(c.base)+'/api/brain/'+path,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+c.token},body:JSON.stringify(body),signal:AbortSignal.timeout(15000)});
+     const data=await r.json();if(!r.ok)throw Error(data.detail||data.error||'NEMESIS HTTP '+r.status);return data;
+   }
+@@ -450,7 +457,7 @@
+       await slotState(slotName,{...s,job:job.id,url:tab.url,conversation_id:identity,serverEnabled:response.enabled});
+     }catch(e){
+       if(e.pageUnresponsive && e.tabId===slot?.tabId && await noteHang(slotName,slot.tabId,e))return;
+-      const failure={state:'ERROR',detail:'Brain pool 6.2.11: '+String(e.message||e),url:tab?.url||slot?.url||''};await slotState(slotName,failure);
++      const failure={state:'ERROR',detail:'Brain pool 6.2.12: '+String(e.message||e),url:tab?.url||slot?.url||''};await slotState(slotName,failure);
+       if(c?.enabled&&slot){try{await api(c,'poll',{...failure,client_id:c.clientId,worker_slot:slotName,role:roleFor(slotName),tab_id:slot.tabId,conversation_id:chatIdentity(slot.url),tab_count:boundSlots(c).length});}catch{}}
+     }finally{polling.delete(slotName);}
+   }
+--- a/extension/manifest.json
++++ b/extension/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "NEMESIS Brain + zotX Capture",
+-  "version": "6.2.11",
++  "version": "6.2.12",
+   "description": "Brain transport with bounded page messages, persistent delivery fences, bound-tab lifecycle recovery and verified editor commits.",
+   "permissions": [
+     "activeTab",
+--- a/extension/tests/brain_liveness_v626.test.cjs
++++ b/extension/tests/brain_liveness_v626.test.cjs
+@@ -50,6 +50,22 @@
+   f=fixture();f.store['nb.deliveryFence.1']={id:'job-one',type:'NB_CONTENT_REPAIR_FORMAT',nonce:'format-fence'};
+   f.handler((_id,m)=>({...ready,state:'COMPLETE',result:owned,delivery:{requestId:m.id,receiptId:m.id,responseConfirmed:true,clicked:true,sending:false}}));
+   await f.tick(1);assert(f.store['nb.deliveryFence.1'],'format recovery retains its separate user-turn confirmation requirement');
++  // Real regression: the server accepted the answer and removed the active
++  // lease, but the persistent page fence still owns that completed request.
++  // Status without an ID returns READY and cannot prove the old delivery.
++  for(const confirmed of [true,false]){
++    f=fixture();f.store['nb.config'].slots.worker_1.activeJobId=null;f.jobs[1]=null;
++    f.store['nb.deliveryFence.1']={id:'job-one',type:'NB_CONTENT_SEND',nonce:'accepted-fence'};
++    f.handler((_id,m)=>m.id==='job-one'&&confirmed ?
++      {...ready,state:'COMPLETE',result:owned,delivery:{requestId:m.id,receiptId:m.id,responseConfirmed:true,clicked:true,sending:false}} :
++      {...ready,delivery:{requestId:m.id||null,sending:false}});
++    await f.tick(1);
++    assert.equal(!f.store['nb.deliveryFence.1'],confirmed,'accepted lease must probe its exact retained request; ambiguous deliveries stay fenced');
++    assert.equal(f.store['nb.config'].slots.worker_1.activeJobId,null);
++    assert(f.polls.some(p=>p.tab_id===1&&p.state===(confirmed?'READY':'DELIVERY_UNCONFIRMED')));
++    assert(!f.sends.some(s=>s.type==='NB_CONTENT_SEND'||s.type==='NB_CONTENT_REPAIR_FORMAT'),'fence recovery is collection-only');
++    assert.equal(f.results.length,0,'a removed server lease must not be resubmitted');
++  }
+   f=fixture({tab:{frozen:true,autoDiscardable:true}});await f.tick(1);
+   assert(f.updates.some(u=>u.id===1&&u.active===true));assert(f.updates.some(u=>u.id===1&&u.autoDiscardable===false));assert(!f.updates.some(u=>u.id!==1));
+   await f.operation('NB_PAUSE');assert(f.updates.some(u=>u.id===1&&u.autoDiscardable===true),'pause must restore original discard preference');
+@@ -60,6 +76,6 @@
+   assert.equal(f.sends.filter(s=>s.type==='NB_CONTENT_SEND').length,2,'independent exact known-unsent receipt and newer lease permit retry');
+   f=fixture();f.jobs[1].packet=JSON.stringify({STATE:{resume_only:true}});await f.tick(1);
+   assert(!f.sends.some(s=>s.type==='NB_CONTENT_SEND'),'restart ambiguity must never send a new turn');
+-  assert(f.polls.every(p=>p.extension_build==='6.2.11-status-scan'),'server must observe loaded background revision');
++  assert(f.polls.every(p=>p.extension_build==='6.2.12-completed-fence'),'server must observe loaded background revision');
+   console.log('PASS bounded hung status/send, independent slots, heartbeat, restart fence, exact receipt reconciliation, lifecycle wake/restore, discarded-page preservation, safe retry, and collection-only server restart. Offline fault injection; live acceptance remains separate.');
+ })().catch(e=>{console.error(e);process.exitCode=1;});
+--- a/extension/tests/validate-extension.js
++++ b/extension/tests/validate-extension.js
+@@ -12,8 +12,8 @@
+ 
+ const manifest = JSON.parse(read('manifest.json'));
+ assert.equal(manifest.manifest_version, 3);
+-assert.equal(manifest.version, '6.2.11');
+-pass('manifest parses as combined MV3 Brain version 6.2.11; scanner build remains 3.7.7');
++assert.equal(manifest.version, '6.2.12');
++pass('manifest parses as combined MV3 Brain version 6.2.12; scanner build remains 3.7.7');
+ 
+ const manifestReferences = [
+   manifest.background?.service_worker,
