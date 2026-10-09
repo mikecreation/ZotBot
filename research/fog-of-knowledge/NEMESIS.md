@@ -105,6 +105,10 @@ and bounded cooldowns; see [PLANNING_RECOVERY.md](nemesis/integration/PLANNING_R
 Provider disable preserves Fog candidate and review progress; see
 [CANCELLATION_RECOVERY.md](nemesis/integration/CANCELLATION_RECOVERY.md).
 
+Author and reviewer inputs now use bounded exact evidence views over complete
+retained captures, with additional source/record reads and independent role
+journals. See [BOUNDED_EVIDENCE.md](nemesis/integration/BOUNDED_EVIDENCE.md).
+
 ## What belongs in a batch?
 
 ### nodes.jsonl
