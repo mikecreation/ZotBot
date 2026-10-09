@@ -21,7 +21,7 @@ function fixture(options={}){
   const fixtureOptions=options;
   const ctx={console,URL,AbortSignal,crypto:require('node:crypto').webcrypto,Date:class extends Date{static now(){return now;}},
     setTimeout:(fn,ms)=>{const id=++nextTimer;timers.set(id,{fn,at:now+ms});return id;},clearTimeout:id=>timers.delete(id),chrome,
-    fetch:async(url,o)=>{if(options.apiFailure)throw Error('Native server is offline');const body=JSON.parse(o.body);if(url.endsWith('/poll'))return {ok:true,json:async()=>({enabled:true,job:jobs[body.worker_slot],hold:''})};if(url.endsWith('/retire-conversation')){retirements.push({url,body});for(const n of names)if(jobs[n]?.id===url.split('/').at(-2))delete jobs[n];return {ok:true,json:async()=>({ok:true,retired:true,status:'QUARANTINED'})};}results.push({url,body});return {ok:true,json:async()=>({ok:true,status:body.sent?'SENT':'COMPLETE'})};}};
+    fetch:async(url,o)=>{if(options.apiFailure)throw Error('Native server is offline');const body=JSON.parse(o.body);if(url.endsWith('/poll'))return {ok:true,json:async()=>({enabled:true,job:jobs[body.worker_slot],hold:''})};if(url.endsWith('/retire-conversation')){retirements.push({url,body});for(const n of names)if(jobs[n]?.id===url.split('/').at(-2))delete jobs[n];if(options.stallRetire)return new Promise(()=>{});return {ok:true,json:async()=>({ok:true,retired:true,status:'QUARANTINED'})};}results.push({url,body});return {ok:true,json:async()=>({ok:true,status:body.sent?'SENT':'COMPLETE'})};}};
   vm.createContext(ctx);vm.runInContext(source,ctx);
   const f={store,tabs,jobs,retirements,messages,creates,removes,reloads,restores,results,now:()=>now,
     handler:fn=>handler=fn,
@@ -100,5 +100,12 @@ async function prolongedHang(f){for(let i=0;i<3;i++){await f.hang();if(i<2)await
   // An unfinished old journal that already committed its replacement migrates.
   f=fixture();f.store['nb.recovery.worker_1']={nonce:'journal-old-123456',phase:'LOADING',at:f.now(),oldTabId:50,newTabId:1,jobId:'job-1',url:'https://chatgpt.com/c/1',bindingToken:null,placeholder:'chrome-extension://fixture/recovery.html#journal-old-123456'};
   await f.alarm();assert.equal(f.tabs[1].url,'https://chatgpt.com/');assert.equal(f.retirements.length,1);assert.equal(f.store['nb.config'].slots.worker_1.activeJobId,null);
+  // Crash after Native retirement but before the root's fence was cleared.
+  f=fixture({stallRetire:true});f.jobs.worker_1.status='SENT';f.tabs[1].url='https://chatgpt.com/';f.store['nb.config'].slots.worker_1.url=f.tabs[1].url;
+  f.store['nb.deliveryFence.1']={id:'job-1',nonce:'old-fence'};f.store['nb.jobConversation.job-1']={identity:'c:original',url:'https://chatgpt.com/c/original'};
+  await f.tick(1);assert.equal(f.store['nb.recovery.worker_1'].phase,'RETIRING');assert.equal(f.store['nb.config'].slots.worker_1.recoveryPending,f.store['nb.recovery.worker_1'].nonce);
+  const rootRestart=fixture({store:f.store,tabs:f.tabs,jobs:f.jobs,now:f.now()});await rootRestart.alarm();
+  assert.equal(rootRestart.store['nb.config'].slots.worker_1.activeJobId,null);assert.equal(rootRestart.store['nb.deliveryFence.1'],null);assert.equal(rootRestart.retirements[0].body.recovery_id,f.retirements[0].body.recovery_id);
+  assert.equal(rootRestart.tabs[1].url,'https://chatgpt.com/');assert(!rootRestart.messages.some(m=>m.id===1&&m.type==='NB_CONTENT_SEND'));
   console.log('PASS primary/worker fresh-chat replacement, independent next-job delivery, exact lease retirement, journal/legacy-fence migration, completed-turn rollover, restart idempotency, generation/draft/navigation protections and bounded recovery. OFFLINE FAULT INJECTION.');
 })().catch(e=>{console.error(e);process.exitCode=1;});

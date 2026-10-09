@@ -1,5 +1,5 @@
 diff --git a/extension/brain-background.js b/extension/brain-background.js
-index 23405ca..fd378f6 100644
+index 23405ca..c220cb4 100644
 --- a/extension/brain-background.js
 +++ b/extension/brain-background.js
 @@ -1,18 +1,50 @@
@@ -162,7 +162,7 @@ index 23405ca..fd378f6 100644
    }
  
    function provisionalChatIdentity(value){
-@@ -133,26 +202,229 @@
+@@ -133,26 +202,241 @@
      // first user turn. That is the SAME tab/conversation bootstrap, not a user
      // navigation. Promote it only while this slot owns an active NEMESIS job.
      if(provisionalChatIdentity(saved)&&current.startsWith('c:')&&slot.activeJobId){
@@ -276,12 +276,27 @@ index 23405ca..fd378f6 100644
 +    await slotState(name,{...report,job:null,retiredJob:j.jobId,url:j.url,recoveredAt:j.finished,detail:j.detail+'. '+(report.detail||report.state)});
 +    return true;
 +  }
++  async function finishRootRetirement(name,j){
++    const c=await config(),slot=c.slots?.[name];
++    if(!c.enabled || slot?.tabId!==j.oldTabId || (slot.bindingToken||null)!==j.bindingToken){
++      j.phase='CANCELLED';await chrome.storage.local.set({[recoveryKey(name)]:j});return false;
++    }
++    const tab=await chrome.tabs.get(j.oldTabId);
++    if(chatIdentity(tab.url)!=='root')throw Error('Fresh root navigated during retirement; no automatic replay');
++    await updateSlot(name,j.oldTabId,{recoveryPending:j.nonce});
++    await retireForFreshChat(c,name,j);
++    if(j.fence)await clearFence(j.oldTabId,j.fence);
++    await updateSlot(name,j.oldTabId,{activeJobId:null,recoveryPending:null});
++    j.phase='DONE';await chrome.storage.local.set({[recoveryKey(name)]:j});
++    await slotState(name,{state:'READY',retiredJob:j.jobId,url:tab.url,detail:'Keeping this fresh chat. Old uncertain request quarantined; no replay.'});
++    return true;
++  }
 +  async function resumeRecovery(name){
 +    const j=(await chrome.storage.local.get(recoveryKey(name)))[recoveryKey(name)];
 +    if(!j || ['DONE','CANCELLED'].includes(j.phase))return true;
 +    if(recovering.has(name))return false;
 +    recovering.add(name);
-+    try{return await finishRecovery(name,j);}catch(e){
++    try{return await (j.kind==='ROOT_RETIREMENT'?finishRootRetirement(name,j):finishRecovery(name,j));}catch(e){
 +      j.error=String(e.message||e);await chrome.storage.local.set({[recoveryKey(name)]:j});
 +      await recoveryState(name,j,'Tab replacement is pending: '+j.error);
 +      // A hung replacement must not trap the watchdog in LOADING forever.
@@ -367,13 +382,10 @@ index 23405ca..fd378f6 100644
 +      const current=await config();
 +      if(!current.enabled || current.slots?.[slotName]?.tabId!==tab.id)return true;
 +      const nonce=crypto.randomUUID();
-+      await updateSlot(slotName,tab.id,{recoveryPending:nonce});
-+      const j={nonce,jobId:job.id,oldUrl:route?.url||slot.url||tab.url,job,fence,phase:'DONE'};
-+      try{await retireForFreshChat(current,slotName,j);}
-+      finally{await updateSlot(slotName,tab.id,{recoveryPending:null});}
-+      if(fence)await clearFence(tab.id,fence);
-+      await updateSlot(slotName,tab.id,{activeJobId:null});
-+      await slotState(slotName,{state:'READY',retiredJob:job.id,url:tab.url,detail:'Keeping this fresh chat. Old uncertain request quarantined; no replay.'});
++      const j={nonce,kind:'ROOT_RETIREMENT',jobId:job.id,oldTabId:tab.id,at:Date.now(),oldUrl:route?.url||slot.url||tab.url,
++        job,fence,bindingToken:current.slots[slotName].bindingToken||null,phase:'RETIRING'};
++      await chrome.storage.local.set({[recoveryKey(slotName)]:j});
++      await resumeRecovery(slotName);
 +      return true;
 +    }
 +    if(!route)return false;
@@ -396,7 +408,7 @@ index 23405ca..fd378f6 100644
          await slotState(slotName,{state:'UNBOUND',detail:'Bound ChatGPT tab was closed; slot released automatically.',url:slot.url||''});
          return;
        }
-@@ -165,12 +437,18 @@
+@@ -165,12 +449,18 @@
        await keepBoundTabAlive(tab);
        let content=await contentMessage(slot.tabId,{type:'NB_CONTENT_STATUS',id:slot.activeJobId});
        const previousFence=await reconcileFence(slot.tabId,content);
@@ -418,7 +430,7 @@ index 23405ca..fd378f6 100644
        // A server-side Primary review hold outranks the local composer state. Do not
        // show READY below a global PRIMARY_PAUSED_REVIEW banner.
        if(slotName==='primary' && response.hold){
-@@ -182,6 +460,8 @@
+@@ -182,6 +472,8 @@
  
        let s=await contentMessage(slot.tabId,{type:'NB_CONTENT_STATUS',id:job.id});
        const pendingFence=await reconcileFence(slot.tabId,s);
@@ -427,7 +439,7 @@ index 23405ca..fd378f6 100644
        // A FAILED receipt is normally terminal for this tab because replay after an
        // unknown click could duplicate a user turn. The one exception is a newer
        // server transport attempt that both sides know was never sent. The server
-@@ -199,6 +479,9 @@
+@@ -199,6 +491,9 @@
        if(s.state==='COMPLETE'){
          const accepted=await api(c,'jobs/'+job.id+'/result',{...lease,result:s.result});
          if(!accepted.ok||accepted.status!=='COMPLETE')throw Error('NEMESIS did not accept collected reply: '+(accepted.status||'unknown')+'.');
@@ -437,7 +449,7 @@ index 23405ca..fd378f6 100644
        }else if(s.state==='FAILED' || (s.state==='TRANSPORT_BLOCKED' && s.safeUnsent===true)){
          const safeUnsent=s.safeUnsent===true;
          const clicked=s.clicked===true;
-@@ -212,7 +495,8 @@
+@@ -212,7 +507,8 @@
        await api(c,'poll',{client_id:c.clientId,worker_slot:slotName,role:roleFor(slotName),state:s.state,detail:s.detail||s.error||'',request_id:job.id,url:tab.url,tab_id:tab.id,conversation_id:identity,tab_count:boundSlots(c).length});
        await slotState(slotName,{...s,job:job.id,url:tab.url,conversation_id:identity,serverEnabled:response.enabled});
      }catch(e){
@@ -447,7 +459,7 @@ index 23405ca..fd378f6 100644
        if(c?.enabled&&slot){try{await api(c,'poll',{...failure,client_id:c.clientId,worker_slot:slotName,role:roleFor(slotName),tab_id:slot.tabId,conversation_id:chatIdentity(slot.url),tab_count:boundSlots(c).length});}catch{}}
      }finally{polling.delete(slotName);}
    }
-@@ -221,20 +505,35 @@
+@@ -221,20 +517,35 @@
    chrome.alarms.create('nb-heartbeat',{periodInMinutes:.5});
    chrome.alarms.onAlarm.addListener(a=>{if(a.name==='nb-heartbeat')void pollAll();});
    chrome.tabs.onRemoved.addListener(tabId=>{void (async()=>{
@@ -487,7 +499,7 @@ index 23405ca..fd378f6 100644
          const tab=await chrome.tabs.get(sender.tab.id);
          await validateConversation(c,name,c.slots[name],tab);
          return api(c,'jobs/'+m.job.id+'/authorize-send',{client_id:c.clientId,lease:m.job.lease,worker_slot:name});
-@@ -252,7 +551,7 @@
+@@ -252,7 +563,7 @@
          const c=await dropClosedSlots(await config());const slots={};
          for(const name of boundSlots(c)){
            const sc=c.slots[name];let tab=null,content=null;try{tab=await chrome.tabs.get(sc.tabId);if(tab&&chat(tab.url))content=await contentMessage(sc.tabId,{type:'NB_CONTENT_DIAGNOSTICS'});}catch(e){content={error:String(e.message||e)}}
@@ -496,7 +508,7 @@ index 23405ca..fd378f6 100644
          }
          let research=null,pool=null;try{research=await api(c,'research/status',{});}catch(e){research={error:String(e.message||e)}}try{pool=await apiGet(c,'pool');}catch(e){pool={error:String(e.message||e)}}
          return {ok:true,diagnostics:{at:Date.now(),bridgeStatus:(await chrome.storage.local.get(STATUS_KEY))[STATUS_KEY]||null,poolStatus:(await chrome.storage.local.get(POOL_STATUS_KEY))[POOL_STATUS_KEY]||{},slots,research,serverPool:pool}};
-@@ -264,16 +563,22 @@
+@@ -264,16 +575,22 @@
          for(const other of SLOT_NAMES){if(other!==name&&old.slots?.[other]?.tabId===tab.id)throw Error('That ChatGPT tab is already bound to '+other+'.');}
          old.base=baseURL(m.base||old.base);old.token=String(m.token||old.token).trim();old.enabled=true;old.clientId=old.clientId||crypto.randomUUID();old.slots=old.slots||{};old.slots[name]={tabId:tab.id,url:tab.url,enabled:true,role:roleFor(name),activeJobId:null};
          await chrome.scripting.executeScript({target:{tabId:tab.id},files:['contentScript.js']}).catch(()=>{});
@@ -550,7 +562,7 @@ index 5fccb56..bb814d1 100644
    console.log('PASS bounded hung status/send, independent slots, heartbeat, restart fence, exact receipt reconciliation, lifecycle wake/restore, discarded-page preservation, safe retry, and collection-only server restart. Offline fault injection; live acceptance remains separate.');
  })().catch(e=>{console.error(e);process.exitCode=1;});
 diff --git a/extension/tests/tab_recovery.test.cjs b/extension/tests/tab_recovery.test.cjs
-index 8cc7367..dd6624b 100644
+index 8cc7367..dd1b5e6 100644
 --- a/extension/tests/tab_recovery.test.cjs
 +++ b/extension/tests/tab_recovery.test.cjs
 @@ -4,7 +4,7 @@ const flush=async()=>{for(let i=0;i<100;i++)await new Promise(r=>setImmediate(r)
@@ -567,7 +579,7 @@ index 8cc7367..dd6624b 100644
    const ctx={console,URL,AbortSignal,crypto:require('node:crypto').webcrypto,Date:class extends Date{static now(){return now;}},
      setTimeout:(fn,ms)=>{const id=++nextTimer;timers.set(id,{fn,at:now+ms});return id;},clearTimeout:id=>timers.delete(id),chrome,
 -    fetch:async(url,o)=>{if(options.apiFailure)throw Error('Native server is offline');const body=JSON.parse(o.body);if(url.endsWith('/poll'))return {ok:true,json:async()=>({enabled:true,job:jobs[body.worker_slot],hold:''})};results.push({url,body});return {ok:true,json:async()=>({ok:true,status:body.sent?'SENT':'COMPLETE'})};}};
-+    fetch:async(url,o)=>{if(options.apiFailure)throw Error('Native server is offline');const body=JSON.parse(o.body);if(url.endsWith('/poll'))return {ok:true,json:async()=>({enabled:true,job:jobs[body.worker_slot],hold:''})};if(url.endsWith('/retire-conversation')){retirements.push({url,body});for(const n of names)if(jobs[n]?.id===url.split('/').at(-2))delete jobs[n];return {ok:true,json:async()=>({ok:true,retired:true,status:'QUARANTINED'})};}results.push({url,body});return {ok:true,json:async()=>({ok:true,status:body.sent?'SENT':'COMPLETE'})};}};
++    fetch:async(url,o)=>{if(options.apiFailure)throw Error('Native server is offline');const body=JSON.parse(o.body);if(url.endsWith('/poll'))return {ok:true,json:async()=>({enabled:true,job:jobs[body.worker_slot],hold:''})};if(url.endsWith('/retire-conversation')){retirements.push({url,body});for(const n of names)if(jobs[n]?.id===url.split('/').at(-2))delete jobs[n];if(options.stallRetire)return new Promise(()=>{});return {ok:true,json:async()=>({ok:true,retired:true,status:'QUARANTINED'})};}results.push({url,body});return {ok:true,json:async()=>({ok:true,status:body.sent?'SENT':'COMPLETE'})};}};
    vm.createContext(ctx);vm.runInContext(source,ctx);
 -  const f={store,tabs,jobs,messages,creates,removes,reloads,restores,results,now:()=>now,
 +  const f={store,tabs,jobs,retirements,messages,creates,removes,reloads,restores,results,now:()=>now,
@@ -605,7 +617,7 @@ index 8cc7367..dd6624b 100644
    f=fixture({onCreate:async store=>{store['nb.config'].enabled=false;},handler:()=>new Promise(()=>{})});await prolongedHang(f);assert(!f.removes.includes(1),'pause during handoff preserves old page');
    f=fixture({handler:()=>new Promise(()=>{})});f.store['nb.watchdog.worker_1']={tabId:1,recoveries:[f.now()-1000,f.now()-500]};await prolongedHang(f);assert.equal(f.creates.length,0);assert.equal(f.store['nb.poolStatus'].worker_1.state,'RECOVERY_BACKOFF');
    const stream={...ready,state:'FAILED',phase:'STREAM_ERROR',error:'ChatGPT error in message stream',sent:true,delivery:{requestId:'job-1',userTurnConfirmed:true,clicked:true}};
-@@ -77,10 +78,27 @@ async function prolongedHang(f){for(let i=0;i<3;i++){await f.hang();if(i<2)await
+@@ -77,10 +78,34 @@ async function prolongedHang(f){for(let i=0;i<3;i++){await f.hang();if(i<2)await
    f=fixture();f.jobs.worker_1.status='SENT';f.jobs.worker_1.packet=JSON.stringify({STATE:{resume_only:true}});
    f.tabs[1].url='https://chatgpt.com/';f.store['nb.config'].slots.worker_1.url=f.tabs[1].url;
    f.store['nb.jobConversation.job-1']={id:'job-1',identity:'c:original',url:'https://chatgpt.com/c/original',transportRetries:0};
@@ -633,6 +645,13 @@ index 8cc7367..dd6624b 100644
 +  // An unfinished old journal that already committed its replacement migrates.
 +  f=fixture();f.store['nb.recovery.worker_1']={nonce:'journal-old-123456',phase:'LOADING',at:f.now(),oldTabId:50,newTabId:1,jobId:'job-1',url:'https://chatgpt.com/c/1',bindingToken:null,placeholder:'chrome-extension://fixture/recovery.html#journal-old-123456'};
 +  await f.alarm();assert.equal(f.tabs[1].url,'https://chatgpt.com/');assert.equal(f.retirements.length,1);assert.equal(f.store['nb.config'].slots.worker_1.activeJobId,null);
++  // Crash after Native retirement but before the root's fence was cleared.
++  f=fixture({stallRetire:true});f.jobs.worker_1.status='SENT';f.tabs[1].url='https://chatgpt.com/';f.store['nb.config'].slots.worker_1.url=f.tabs[1].url;
++  f.store['nb.deliveryFence.1']={id:'job-1',nonce:'old-fence'};f.store['nb.jobConversation.job-1']={identity:'c:original',url:'https://chatgpt.com/c/original'};
++  await f.tick(1);assert.equal(f.store['nb.recovery.worker_1'].phase,'RETIRING');assert.equal(f.store['nb.config'].slots.worker_1.recoveryPending,f.store['nb.recovery.worker_1'].nonce);
++  const rootRestart=fixture({store:f.store,tabs:f.tabs,jobs:f.jobs,now:f.now()});await rootRestart.alarm();
++  assert.equal(rootRestart.store['nb.config'].slots.worker_1.activeJobId,null);assert.equal(rootRestart.store['nb.deliveryFence.1'],null);assert.equal(rootRestart.retirements[0].body.recovery_id,f.retirements[0].body.recovery_id);
++  assert.equal(rootRestart.tabs[1].url,'https://chatgpt.com/');assert(!rootRestart.messages.some(m=>m.id===1&&m.type==='NB_CONTENT_SEND'));
 +  console.log('PASS primary/worker fresh-chat replacement, independent next-job delivery, exact lease retirement, journal/legacy-fence migration, completed-turn rollover, restart idempotency, generation/draft/navigation protections and bounded recovery. OFFLINE FAULT INJECTION.');
  })().catch(e=>{console.error(e);process.exitCode=1;});
 diff --git a/native/sim/brain_bridge.py b/native/sim/brain_bridge.py

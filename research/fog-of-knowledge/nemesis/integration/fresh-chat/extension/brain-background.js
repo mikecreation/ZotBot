@@ -309,12 +309,27 @@
     await slotState(name,{...report,job:null,retiredJob:j.jobId,url:j.url,recoveredAt:j.finished,detail:j.detail+'. '+(report.detail||report.state)});
     return true;
   }
+  async function finishRootRetirement(name,j){
+    const c=await config(),slot=c.slots?.[name];
+    if(!c.enabled || slot?.tabId!==j.oldTabId || (slot.bindingToken||null)!==j.bindingToken){
+      j.phase='CANCELLED';await chrome.storage.local.set({[recoveryKey(name)]:j});return false;
+    }
+    const tab=await chrome.tabs.get(j.oldTabId);
+    if(chatIdentity(tab.url)!=='root')throw Error('Fresh root navigated during retirement; no automatic replay');
+    await updateSlot(name,j.oldTabId,{recoveryPending:j.nonce});
+    await retireForFreshChat(c,name,j);
+    if(j.fence)await clearFence(j.oldTabId,j.fence);
+    await updateSlot(name,j.oldTabId,{activeJobId:null,recoveryPending:null});
+    j.phase='DONE';await chrome.storage.local.set({[recoveryKey(name)]:j});
+    await slotState(name,{state:'READY',retiredJob:j.jobId,url:tab.url,detail:'Keeping this fresh chat. Old uncertain request quarantined; no replay.'});
+    return true;
+  }
   async function resumeRecovery(name){
     const j=(await chrome.storage.local.get(recoveryKey(name)))[recoveryKey(name)];
     if(!j || ['DONE','CANCELLED'].includes(j.phase))return true;
     if(recovering.has(name))return false;
     recovering.add(name);
-    try{return await finishRecovery(name,j);}catch(e){
+    try{return await (j.kind==='ROOT_RETIREMENT'?finishRootRetirement(name,j):finishRecovery(name,j));}catch(e){
       j.error=String(e.message||e);await chrome.storage.local.set({[recoveryKey(name)]:j});
       await recoveryState(name,j,'Tab replacement is pending: '+j.error);
       // A hung replacement must not trap the watchdog in LOADING forever.
@@ -400,13 +415,10 @@
       const current=await config();
       if(!current.enabled || current.slots?.[slotName]?.tabId!==tab.id)return true;
       const nonce=crypto.randomUUID();
-      await updateSlot(slotName,tab.id,{recoveryPending:nonce});
-      const j={nonce,jobId:job.id,oldUrl:route?.url||slot.url||tab.url,job,fence,phase:'DONE'};
-      try{await retireForFreshChat(current,slotName,j);}
-      finally{await updateSlot(slotName,tab.id,{recoveryPending:null});}
-      if(fence)await clearFence(tab.id,fence);
-      await updateSlot(slotName,tab.id,{activeJobId:null});
-      await slotState(slotName,{state:'READY',retiredJob:job.id,url:tab.url,detail:'Keeping this fresh chat. Old uncertain request quarantined; no replay.'});
+      const j={nonce,kind:'ROOT_RETIREMENT',jobId:job.id,oldTabId:tab.id,at:Date.now(),oldUrl:route?.url||slot.url||tab.url,
+        job,fence,bindingToken:current.slots[slotName].bindingToken||null,phase:'RETIRING'};
+      await chrome.storage.local.set({[recoveryKey(slotName)]:j});
+      await resumeRecovery(slotName);
       return true;
     }
     if(!route)return false;
