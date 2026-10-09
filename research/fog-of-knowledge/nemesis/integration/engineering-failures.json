@@ -2,6 +2,18 @@
   "protocol": "nemesis-failure-corpus/1",
   "cases": [
     {
+      "id": "planning-timeout-exhausts-every-domain",
+      "category": "platform-error",
+      "assumption": "A failed planning transport is a scientific decision that holds an entire field until canonical graph changes.",
+      "boundaries": [
+        "planning",
+        "dispatch",
+        "continuation",
+        "persistence"
+      ],
+      "proof": "Ten retained timeout holds with three READY slots reproduce zero dispatch on the old scheduler. New exact-job-verified planning requests preserve original FAILED jobs, apply durable backoff, respect scientific/resource waits and pause, and survive restart without duplicate requests. Live admission and publication remain separate."
+    },
+    {
       "id": "disabled-upload-quota-in-portal",
       "category": "platform-error",
       "assumption": "An upload quota notice always appears inside main, and assigning files to a disabled input initiates an upload.",
