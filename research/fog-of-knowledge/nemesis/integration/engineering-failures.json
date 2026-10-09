@@ -1,27 +1,262 @@
 {
   "protocol": "nemesis-failure-corpus/1",
   "cases": [
-    {"id":"paged-discovery-expects-full-inventory","category":"partial-retrieval","assumption":"Testing a planner with a stubbed discovery enqueue proves its catalog-only input reaches the real discovery handoff.","boundaries":["planning","context","dispatch","persistence"],"proof":"Actual production discover regression reproduces coverage_inventory KeyError; pinned exact-anchor handoff, explicit incomplete-domain scope, enqueue-before-checkpoint crash/restart reuse, changed identity/scope/bytes and missing-record rejection; saved live investigations are verified separately."},
-    {"id":"latest-response-virtualizes-user-turn","category":"uncertain-delivery","assumption":"Every completed owned assistant response has a rendered matching user turn.","boundaries":["dispatch","worker","persistence"],"proof":"Observed real Latest response view omitted all user DOM. Brain 6.2.6 requires persisted clicked receipt, exact latest nonce-bound return, complete turn and completion actions, idle generation and eight seconds stable text. Wrong/unowned/intervened/stopped/partial replies stay fenced; no resend or formatting request."},
-    {"id":"windows-checkpoint-sharing-denial","category":"persistent-identity","assumption":"Atomic rename always succeeds immediately even while readers or another writer hold the destination on Windows.","boundaries":["persistence","continuation"],"proof":"Native actual Windows sharing-denial test, bounded retry / last-valid-byte preservation / unique concurrent staging; independent installed checkpoint proof remains separate"},
-    {"id":"capacity-report-concurrent-input","category":"scientific-data-loss","assumption":"Re-reading a mutable input later identifies the snapshot that was actually measured.","boundaries":["retrieval","context"],"proof":"capacity baseline pins initial graph bytes; concurrent-change fault test checks report identity"},
-    {"id":"machine-output-clipping","category":"scientific-data-loss","assumption":"A successful process exit implies the machine response is complete.","boundaries":["context","retrieval"],"proof":"engineering: changed/truncated payload, exact bytes/hash/counts"},
-    {"id":"machine-output-redaction","category":"scientific-data-loss","assumption":"A diagnostic redactor is safe for exact source or graph content.","boundaries":["context","capture","review"],"proof":"engineering: exact public token-shaped quote fixture"},
-    {"id":"child-encoding-not-inherited","category":"scientific-data-loss","assumption":"A parent's UTF-8 interpreter mode propagates to a newly launched Python interpreter.","boundaries":["context","persistence"],"proof":"real Windows affected-path runner failed four exchange tests under cp1252; explicit child -X utf8 and full rerun required"},
-    {"id":"visited-means-exhausted","category":"scientific-planning","assumption":"One investigation exhausts a branch or restricts topics to existing node IDs.","boundaries":["planning","continuation"],"proof":"installed scientific-planner regressions plus real novel-topic and substantive follow-up evidence"},
-    {"id":"restart-ambiguous-send","category":"uncertain-delivery","assumption":"Timeout/restart/disconnect establishes that a user turn was never sent.","boundaries":["dispatch","worker","persistence"],"proof":"retained transport fence/restart tests and three original SENT jobs recovered with identical lease/owner/GOAL"},
-    {"id":"stale-client-identity","category":"stale-component","assumption":"Installed bytes prove which extension/client version is actually loaded.","boundaries":["dispatch","worker","continuation"],"proof":"loaded heartbeat marker and DOM client check; this detects revision mismatch but does not attest runtime bytes"},
-    {"id":"platform-error-collecting","category":"platform-error","assumption":"Only a fixed list of English rejection messages represents failed generation.","boundaries":["worker","dispatch","continuation"],"proof":"observed current owned-turn Hmm/something-seems-to-have-gone-wrong UI; staged classifier replay"},
-    {"id":"owned-upload-not-confirmed","category":"platform-error","assumption":"A fixed DOM chip/progress selector always proves upload completion.","boundaries":["worker","dispatch","author"],"proof":"real upload confirmation failures; retained owned-editor/lifecycle tests; unknown DOM remains possible"},
-    {"id":"atomic-source-too-large","category":"physical-capacity","assumption":"Every complete captured source fits an author packet.","boundaries":["capture","author","retrieval"],"proof":"real NASA CERES hold; paged exact evidence regression, oversize query fails without shortening"},
-    {"id":"unavailable-source-is-evidence","category":"source-integrity","assumption":"A URL/citation or successful search constitutes captured supporting text.","boundaries":["capture","review"],"proof":"existing compiler/exchange source-capture and failed-review tests; live unavailable sources explicitly retained"},
-    {"id":"review-failure-publication","category":"scientific-integrity","assumption":"Candidate creation or an incomplete reviewer set proves scientific acceptance.","boundaries":["author","review","publication"],"proof":"existing exact-target dual-review/compiler regressions and retained live failed candidate attempts"},
-    {"id":"stale-publication-ack","category":"publication-integrity","assumption":"Any successful CI/merge acknowledgment applies to the exact candidate head.","boundaries":["publication","continuation"],"proof":"existing publication reliability and independent exact-head GitHub/CI observer"},
-    {"id":"cursor-snapshot-mismatch","category":"partial-retrieval","assumption":"A page cursor can be reused after graph/filter changes.","boundaries":["retrieval","context"],"proof":"engineering: exact snapshot/query cursor binding, complete traversal and false-completeness rejection"},
-    {"id":"checkpoint-database-crash","category":"persistent-identity","assumption":"A file write and database enqueue form one atomic transaction.","boundaries":["persistence","dispatch","author"],"proof":"temporary child-process DB rollback and interrupted index build; installed enqueue/checkpoint recovery regression"},
-    {"id":"test-total-is-mission-success","category":"false-mission-success","assumption":"Searches, completed jobs, proposed nodes or passing tests establish scientific progress.","boundaries":["continuation","review","publication"],"proof":"independent live verifier and mission watchdog; actual current acceptance remains INCOMPLETE"},
-    {"id":"per-assertion-revision-amplification","category":"resource-amplification","assumption":"An investigation-count budget caps all model work and whole-candidate revisions are cheap.","boundaries":["author","review","planning"],"proof":"measured real 31\u201335 assertion review units and repeated author revisions; only detected, not repaired here"},
-    {"id":"retrieval-turn-commit-crash","category":"persistent-identity","assumption":"A model read response, retained page, next-turn enqueue and file checkpoint share one atomic transaction.","boundaries":["planning","persistence","dispatch"],"proof":"Paged integration: enqueue-before-checkpoint reuses exact turn tag and GOAL; replay tampering blocks admission"},
-    {"id":"catalog-is-complete-graph","category":"partial-retrieval","assumption":"A small catalog or current page proves the entire graph was inspected.","boundaries":["retrieval","planning","review"],"proof":"New production GOAL contains catalog only; exact cursor walk, mandatory relevant read, unread-anchor rejection, independent reply-hash validation and retained resource-wait resume"}
+    {
+      "id": "disabled-upload-quota-in-portal",
+      "category": "platform-error",
+      "assumption": "An upload quota notice always appears inside main, and assigning files to a disabled input initiates an upload.",
+      "boundaries": [
+        "worker",
+        "dispatch",
+        "author"
+      ],
+      "proof": "Observed disabled Attach files input and Upload limit reached / Wait 1 hour menu outside main. Actual adapter fault tests probe/close the menu, preserve human-opened menus, forbid fallback for quoted notices, and stop throttled waits by elapsed time. Live activation is a separate gate."
+    },
+    {
+      "id": "rebound-root-still-owns-sent-job",
+      "category": "uncertain-delivery",
+      "assumption": "Binding a blank chat frees its slot from the server-owned sent request.",
+      "boundaries": [
+        "dispatch",
+        "worker",
+        "persistence"
+      ],
+      "proof": "Observed worker_2 root bound to old SENT 6dff246706ac44d68e76382d5000b748. New per-job conversation routing restores only an empty root to a previously proven conversation, without send replay; draft/other-conversation and known-unsent retry fixtures cover protections."
+    },
+    {
+      "id": "paged-discovery-expects-full-inventory",
+      "category": "partial-retrieval",
+      "assumption": "Testing a planner with a stubbed discovery enqueue proves its catalog-only input reaches the real discovery handoff.",
+      "boundaries": [
+        "planning",
+        "context",
+        "dispatch",
+        "persistence"
+      ],
+      "proof": "Actual production discover regression reproduces coverage_inventory KeyError; pinned exact-anchor handoff, explicit incomplete-domain scope, enqueue-before-checkpoint crash/restart reuse, changed identity/scope/bytes and missing-record rejection; saved live investigations are verified separately."
+    },
+    {
+      "id": "latest-response-virtualizes-user-turn",
+      "category": "uncertain-delivery",
+      "assumption": "Every completed owned assistant response has a rendered matching user turn.",
+      "boundaries": [
+        "dispatch",
+        "worker",
+        "persistence"
+      ],
+      "proof": "Observed real Latest response view omitted all user DOM. Brain 6.2.6 requires persisted clicked receipt, exact latest nonce-bound return, complete turn and completion actions, idle generation and eight seconds stable text. Wrong/unowned/intervened/stopped/partial replies stay fenced; no resend or formatting request."
+    },
+    {
+      "id": "windows-checkpoint-sharing-denial",
+      "category": "persistent-identity",
+      "assumption": "Atomic rename always succeeds immediately even while readers or another writer hold the destination on Windows.",
+      "boundaries": [
+        "persistence",
+        "continuation"
+      ],
+      "proof": "Native actual Windows sharing-denial test, bounded retry / last-valid-byte preservation / unique concurrent staging; independent installed checkpoint proof remains separate"
+    },
+    {
+      "id": "capacity-report-concurrent-input",
+      "category": "scientific-data-loss",
+      "assumption": "Re-reading a mutable input later identifies the snapshot that was actually measured.",
+      "boundaries": [
+        "retrieval",
+        "context"
+      ],
+      "proof": "capacity baseline pins initial graph bytes; concurrent-change fault test checks report identity"
+    },
+    {
+      "id": "machine-output-clipping",
+      "category": "scientific-data-loss",
+      "assumption": "A successful process exit implies the machine response is complete.",
+      "boundaries": [
+        "context",
+        "retrieval"
+      ],
+      "proof": "engineering: changed/truncated payload, exact bytes/hash/counts"
+    },
+    {
+      "id": "machine-output-redaction",
+      "category": "scientific-data-loss",
+      "assumption": "A diagnostic redactor is safe for exact source or graph content.",
+      "boundaries": [
+        "context",
+        "capture",
+        "review"
+      ],
+      "proof": "engineering: exact public token-shaped quote fixture"
+    },
+    {
+      "id": "child-encoding-not-inherited",
+      "category": "scientific-data-loss",
+      "assumption": "A parent's UTF-8 interpreter mode propagates to a newly launched Python interpreter.",
+      "boundaries": [
+        "context",
+        "persistence"
+      ],
+      "proof": "real Windows affected-path runner failed four exchange tests under cp1252; explicit child -X utf8 and full rerun required"
+    },
+    {
+      "id": "visited-means-exhausted",
+      "category": "scientific-planning",
+      "assumption": "One investigation exhausts a branch or restricts topics to existing node IDs.",
+      "boundaries": [
+        "planning",
+        "continuation"
+      ],
+      "proof": "installed scientific-planner regressions plus real novel-topic and substantive follow-up evidence"
+    },
+    {
+      "id": "restart-ambiguous-send",
+      "category": "uncertain-delivery",
+      "assumption": "Timeout/restart/disconnect establishes that a user turn was never sent.",
+      "boundaries": [
+        "dispatch",
+        "worker",
+        "persistence"
+      ],
+      "proof": "retained transport fence/restart tests and three original SENT jobs recovered with identical lease/owner/GOAL"
+    },
+    {
+      "id": "stale-client-identity",
+      "category": "stale-component",
+      "assumption": "Installed bytes prove which extension/client version is actually loaded.",
+      "boundaries": [
+        "dispatch",
+        "worker",
+        "continuation"
+      ],
+      "proof": "loaded heartbeat marker and DOM client check; this detects revision mismatch but does not attest runtime bytes"
+    },
+    {
+      "id": "platform-error-collecting",
+      "category": "platform-error",
+      "assumption": "Only a fixed list of English rejection messages represents failed generation.",
+      "boundaries": [
+        "worker",
+        "dispatch",
+        "continuation"
+      ],
+      "proof": "observed current owned-turn Hmm/something-seems-to-have-gone-wrong UI; staged classifier replay"
+    },
+    {
+      "id": "owned-upload-not-confirmed",
+      "category": "platform-error",
+      "assumption": "A fixed DOM chip/progress selector always proves upload completion.",
+      "boundaries": [
+        "worker",
+        "dispatch",
+        "author"
+      ],
+      "proof": "real upload confirmation failures; retained owned-editor/lifecycle tests; unknown DOM remains possible"
+    },
+    {
+      "id": "atomic-source-too-large",
+      "category": "physical-capacity",
+      "assumption": "Every complete captured source fits an author packet.",
+      "boundaries": [
+        "capture",
+        "author",
+        "retrieval"
+      ],
+      "proof": "real NASA CERES hold; paged exact evidence regression, oversize query fails without shortening"
+    },
+    {
+      "id": "unavailable-source-is-evidence",
+      "category": "source-integrity",
+      "assumption": "A URL/citation or successful search constitutes captured supporting text.",
+      "boundaries": [
+        "capture",
+        "review"
+      ],
+      "proof": "existing compiler/exchange source-capture and failed-review tests; live unavailable sources explicitly retained"
+    },
+    {
+      "id": "review-failure-publication",
+      "category": "scientific-integrity",
+      "assumption": "Candidate creation or an incomplete reviewer set proves scientific acceptance.",
+      "boundaries": [
+        "author",
+        "review",
+        "publication"
+      ],
+      "proof": "existing exact-target dual-review/compiler regressions and retained live failed candidate attempts"
+    },
+    {
+      "id": "stale-publication-ack",
+      "category": "publication-integrity",
+      "assumption": "Any successful CI/merge acknowledgment applies to the exact candidate head.",
+      "boundaries": [
+        "publication",
+        "continuation"
+      ],
+      "proof": "existing publication reliability and independent exact-head GitHub/CI observer"
+    },
+    {
+      "id": "cursor-snapshot-mismatch",
+      "category": "partial-retrieval",
+      "assumption": "A page cursor can be reused after graph/filter changes.",
+      "boundaries": [
+        "retrieval",
+        "context"
+      ],
+      "proof": "engineering: exact snapshot/query cursor binding, complete traversal and false-completeness rejection"
+    },
+    {
+      "id": "checkpoint-database-crash",
+      "category": "persistent-identity",
+      "assumption": "A file write and database enqueue form one atomic transaction.",
+      "boundaries": [
+        "persistence",
+        "dispatch",
+        "author"
+      ],
+      "proof": "temporary child-process DB rollback and interrupted index build; installed enqueue/checkpoint recovery regression"
+    },
+    {
+      "id": "test-total-is-mission-success",
+      "category": "false-mission-success",
+      "assumption": "Searches, completed jobs, proposed nodes or passing tests establish scientific progress.",
+      "boundaries": [
+        "continuation",
+        "review",
+        "publication"
+      ],
+      "proof": "independent live verifier and mission watchdog; actual current acceptance remains INCOMPLETE"
+    },
+    {
+      "id": "per-assertion-revision-amplification",
+      "category": "resource-amplification",
+      "assumption": "An investigation-count budget caps all model work and whole-candidate revisions are cheap.",
+      "boundaries": [
+        "author",
+        "review",
+        "planning"
+      ],
+      "proof": "measured real 31\u201335 assertion review units and repeated author revisions; only detected, not repaired here"
+    },
+    {
+      "id": "retrieval-turn-commit-crash",
+      "category": "persistent-identity",
+      "assumption": "A model read response, retained page, next-turn enqueue and file checkpoint share one atomic transaction.",
+      "boundaries": [
+        "planning",
+        "persistence",
+        "dispatch"
+      ],
+      "proof": "Paged integration: enqueue-before-checkpoint reuses exact turn tag and GOAL; replay tampering blocks admission"
+    },
+    {
+      "id": "catalog-is-complete-graph",
+      "category": "partial-retrieval",
+      "assumption": "A small catalog or current page proves the entire graph was inspected.",
+      "boundaries": [
+        "retrieval",
+        "planning",
+        "review"
+      ],
+      "proof": "New production GOAL contains catalog only; exact cursor walk, mandatory relevant read, unread-anchor rejection, independent reply-hash validation and retained resource-wait resume"
+    }
   ]
 }

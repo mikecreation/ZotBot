@@ -93,7 +93,9 @@ Retained source checks and loaded/live verification are separate release gates.
 
 The current Brain transport uses complete packet files first, with exact inline
 fallback only after a visible, explicit upload block. Bound worker and primary
-tabs have an independent page watchdog and owned stream-error refresh. See
+tabs have an independent page watchdog and owned stream-error refresh. Disabled upload
+inputs and menu quota notices are handled by the
+[6.2.10 upload recovery](nemesis/integration/UPLOAD_RECOVERY.md). See
 [TAB_RECOVERY.md](nemesis/integration/TAB_RECOVERY.md) for delivery preservation,
 recovery limits and release verification.
 
