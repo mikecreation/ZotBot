@@ -166,7 +166,8 @@ class FogEvidenceCrew:
             if not (archive/source.name).exists():shutil.copyfile(source,archive/source.name)
 
     def read_session(self,folder,flow,key):
-        return EvidenceReads(folder,flow,'attempt:'+str(flow.get('author_attempt',1))+':'+key)
+        epoch=('recovery:'+str(flow['recovered_at'])+':') if flow.get('recovered_at') else ''
+        return EvidenceReads(folder,flow,epoch+'attempt:'+str(flow.get('author_attempt',1))+':'+key)
 
     def evidence_enqueue(self,folder,flow,key,system,original,frame,tag):
         try:
@@ -675,6 +676,9 @@ class FogEvidenceCrew:
                 else:job=self.job(flow['jobs']['author'])
                 if job['status'] in {'QUEUED','CLAIMED','SENT'}:return
                 self.require_complete_job(job,'Candidate author')
+                # Retain malformed output before attempting retrieval/candidate
+                # parsing, so a format failure cannot erase its own evidence.
+                write(batch/'author-output.json',{'job_id':job['id'],'raw_result':job['result'],'output':None})
                 if not flow.get('author_units'):
                     response,next_job=self.evidence_response(folder,flow,'author',AUTHOR_SYSTEM,lambda:json.loads(self.author_goal(flow,folder)),lambda:author_frames(json.loads(self.author_goal(flow,folder)))[0],job,'author:'+bid)
                     if response is None:
@@ -682,7 +686,6 @@ class FogEvidenceCrew:
                         self.save(folder,flow);return
                 # Preserve raw output even when JSON parsing or an explicit source
                 # limitation prevents construction of a canonical candidate.
-                write(batch/'author-output.json',{'job_id':job['id'],'raw_result':job['result'],'output':None})
                 packet=result_object(job['result']);write(folder/'author-result.json',packet)
                 write(batch/'author-output.json',{'job_id':job['id'],'raw_result':job['result'],'output':packet})
                 if packet.get('blocked_reason'):

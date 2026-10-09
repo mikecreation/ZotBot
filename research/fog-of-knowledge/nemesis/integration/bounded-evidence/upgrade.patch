@@ -259,7 +259,7 @@ index 7d35041..50d4273 100644
      if not result:raise ValueError('No assertions to partition')
      return result
 diff --git a/native/sim/github_evidence.py b/native/sim/github_evidence.py
-index e59fb0f..e53c938 100644
+index e59fb0f..3617959 100644
 --- a/native/sim/github_evidence.py
 +++ b/native/sim/github_evidence.py
 @@ -11,10 +11,11 @@ from fastapi import Request,HTTPException
@@ -275,12 +275,13 @@ index e59fb0f..e53c938 100644
  TERMINAL={'MERGED','PR_OPEN','READY','BLOCKED','STALE'}
  MAX_PACKET=300_000
  MAX_AUTHOR_ATTEMPTS=8
-@@ -164,42 +165,99 @@ class FogEvidenceCrew:
+@@ -164,42 +165,100 @@ class FogEvidenceCrew:
          for source in folder.glob('*unit*.json'):
              if not (archive/source.name).exists():shutil.copyfile(source,archive/source.name)
  
 +    def read_session(self,folder,flow,key):
-+        return EvidenceReads(folder,flow,'attempt:'+str(flow.get('author_attempt',1))+':'+key)
++        epoch=('recovery:'+str(flow['recovered_at'])+':') if flow.get('recovered_at') else ''
++        return EvidenceReads(folder,flow,epoch+'attempt:'+str(flow.get('author_attempt',1))+':'+key)
 +
 +    def evidence_enqueue(self,folder,flow,key,system,original,frame,tag):
 +        try:
@@ -329,15 +330,15 @@ index e59fb0f..e53c938 100644
 -        if len(goal.encode())<=MAX_PACKET and not flow.get('author_units'):
 -            flow['jobs']['author']=self.enqueue(AUTHOR_SYSTEM,goal,'author:'+flow['batch_id']);return
 +        original=json.loads(goal)
-+        if not flow.get('author_units'):
-+            try:units=author_frames(original)
-+            except ValueError as exc:raise CrewFailure(str(exc),'operational','evidence-read-capacity') from exc
-+            if len(units)==1:
-+                flow['jobs']['author']=self.evidence_enqueue(folder,flow,'author',AUTHOR_SYSTEM,original,units[0],'author:'+flow['batch_id']);return
          if not flow.get('author_units'):
 -            # Preserve the complete oversized input before attempting partitioning.
 -            write(folder/'author-unit-original.json',json.loads(goal))
 -            units=author_units(json.loads(goal),MAX_PACKET-4096)
++            try:units=author_frames(original)
++            except ValueError as exc:raise CrewFailure(str(exc),'operational','evidence-read-capacity') from exc
++            if len(units)==1:
++                flow['jobs']['author']=self.evidence_enqueue(folder,flow,'author',AUTHOR_SYSTEM,original,units[0],'author:'+flow['batch_id']);return
++        if not flow.get('author_units'):
 +            # Complete captures remain local; bounded previews are model views.
 +            write(folder/'author-unit-original.json',original)
              flow['author_units']=[{'index':i,'goal':encode(unit),'sha256':hashlib.sha256(encode(unit).encode()).hexdigest()} for i,unit in enumerate(units)]
@@ -385,7 +386,7 @@ index e59fb0f..e53c938 100644
                  if any(d.get('outcome')!='supported' or not all(d.get('checks',{}).get(k) is True for k in ('exact_support','scope_preserved','no_strengthening','relation_direction','representation_justified')) for d in decisions):
                      raise CrewFailure('Reviewer '+role+' rejected partitioned assertion','scientific','review-rejection',{'role':role,'job_id':job['id'],'decisions':decisions})
                  write(batch/'.nemesis-control/review-input.json',{'decisions':decisions,'reviewer':'brain:'+job['id'],'model':'Nemesis Brain; provider model unavailable','role':role,'candidate_sha256':flow['candidate_sha256'],'context_sha256':flow['context_sha256']})
-@@ -380,8 +438,12 @@ class FogEvidenceCrew:
+@@ -380,8 +439,12 @@ class FogEvidenceCrew:
          return {'protocol':VERSION,'jobs':queued,'contract_sha':live['sha']}
      @staticmethod
      def public(flow):
@@ -399,7 +400,7 @@ index e59fb0f..e53c938 100644
          return value
  
      def publication_turn(self,flow):
-@@ -530,7 +592,7 @@ class FogEvidenceCrew:
+@@ -530,7 +593,7 @@ class FogEvidenceCrew:
          bid=flow['batch_id'];batch=folder/'project/nemesis/batches'/bid
          for role in ('entailment','adversarial'):
              if role not in flow['jobs']:
@@ -408,7 +409,7 @@ index e59fb0f..e53c938 100644
                  self.save(folder,flow)
          retained=flow.setdefault('retained_roles',[])
          for role in ('entailment','adversarial'):
-@@ -538,7 +600,11 @@ class FogEvidenceCrew:
+@@ -538,7 +601,11 @@ class FogEvidenceCrew:
              job=self.job(flow['jobs'][role])
              if job['status'] in {'QUEUED','CLAIMED','SENT'}:continue
              self.require_complete_job(job,'Reviewer '+role)
@@ -421,7 +422,7 @@ index e59fb0f..e53c938 100644
              decisions=bind_review_response(response,packet)
              if any(d.get('outcome')!='supported' or not all(d.get('checks',{}).get(k) is True for k in ('exact_support','scope_preserved','no_strengthening','relation_direction','representation_justified')) for d in decisions):
                  raise CrewFailure('Reviewer '+role+' found unsupported or uncertain representation','scientific','review-rejection',{'role':role,'job_id':job['id'],'decisions':decisions})
-@@ -595,7 +661,13 @@ class FogEvidenceCrew:
+@@ -595,7 +662,13 @@ class FogEvidenceCrew:
                          if unit_job['status'] in {'QUEUED','CLAIMED','SENT'}:return
                          write(folder/('author-unit-'+str(unit['index'])+'-result.json'),unit_job)
                          self.require_complete_job(unit_job,'Author unit')
@@ -436,10 +437,13 @@ index e59fb0f..e53c938 100644
                      from .fog_packet_units import merge_authored
                      try:combined=merge_authored(packets)
                      except ValueError as exc:raise CrewFailure(str(exc),'scientific','author-evidence-limitation') from exc
-@@ -603,6 +675,11 @@ class FogEvidenceCrew:
+@@ -603,9 +676,16 @@ class FogEvidenceCrew:
                  else:job=self.job(flow['jobs']['author'])
                  if job['status'] in {'QUEUED','CLAIMED','SENT'}:return
                  self.require_complete_job(job,'Candidate author')
++                # Retain malformed output before attempting retrieval/candidate
++                # parsing, so a format failure cannot erase its own evidence.
++                write(batch/'author-output.json',{'job_id':job['id'],'raw_result':job['result'],'output':None})
 +                if not flow.get('author_units'):
 +                    response,next_job=self.evidence_response(folder,flow,'author',AUTHOR_SYSTEM,lambda:json.loads(self.author_goal(flow,folder)),lambda:author_frames(json.loads(self.author_goal(flow,folder)))[0],job,'author:'+bid)
 +                    if response is None:
@@ -447,8 +451,11 @@ index e59fb0f..e53c938 100644
 +                        self.save(folder,flow);return
                  # Preserve raw output even when JSON parsing or an explicit source
                  # limitation prevents construction of a canonical candidate.
-                 write(batch/'author-output.json',{'job_id':job['id'],'raw_result':job['result'],'output':None})
-@@ -633,7 +710,9 @@ class FogEvidenceCrew:
+-                write(batch/'author-output.json',{'job_id':job['id'],'raw_result':job['result'],'output':None})
+                 packet=result_object(job['result']);write(folder/'author-result.json',packet)
+                 write(batch/'author-output.json',{'job_id':job['id'],'raw_result':job['result'],'output':packet})
+                 if packet.get('blocked_reason'):
+@@ -633,7 +713,9 @@ class FogEvidenceCrew:
              if flow['state']=='REVIEW':
                  packet=json.loads((batch/'.nemesis-control/packet.json').read_text(encoding='utf-8'))
                  from .fog_packet_units import review_units,size
@@ -459,7 +466,7 @@ index e59fb0f..e53c938 100644
                      if not self.review_partitioned(flow,folder,packet):return
                      self.export(folder,flow)
                      check=self.ws.check_batch(flow['owner'],flow['repo'],flow['path'],bid)
-@@ -772,6 +851,14 @@ def install_evidence_routes(app,crew):
+@@ -772,6 +854,14 @@ def install_evidence_routes(app,crew):
              body=json.loads(raw)
              return await asyncio.to_thread(crew.coverage.resume_retrieval,owner,repo,body['path'],body['plan_id'],body['additional_turns'])
          except (ValueError,KeyError,OSError) as exc:raise HTTPException(400,str(exc))
