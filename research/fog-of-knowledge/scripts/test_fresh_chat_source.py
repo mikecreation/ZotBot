@@ -6,7 +6,7 @@ SOURCE=ROOT/'nemesis/integration/fresh-chat'
 index=json.loads((SOURCE/'source-sha256.json').read_text(encoding='utf8'))
 with tempfile.TemporaryDirectory(prefix='fog-fresh-chat-') as directory:
     target=Path(directory)
-    for name in ('completed-fence','paged-planning','planning-recovery','cancellation-recovery','bounded-evidence','fresh-chat'):
+    for name in ('paged-planning','planning-recovery','cancellation-recovery','bounded-evidence','completed-fence','fresh-chat'):
         layer=ROOT/'nemesis/integration'/name
         for path,expected in json.loads((layer/'source-sha256.json').read_text(encoding='utf8'))['sources'].items():
             raw=(layer/path).read_bytes();assert hashlib.sha256(raw).hexdigest()==expected,path
