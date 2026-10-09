@@ -1,0 +1,465 @@
+{
+  "protocol": "fog-evidence-adjudication/1",
+  "candidate_sha256": "933751cf3173453f07a367deb7637508a78571ccfe9d708b3aa91174d5313273",
+  "decisions": [
+    {
+      "assertion_id": "assert.claim.anytime.confidence-sequences-uniform-coverage",
+      "target_kind": "node",
+      "target_sha256": "68ca37e18f082737b556793e432eeab98dd6ba9b86ba952317ab39b7a78c3d67",
+      "outcome": "supported",
+      "rationale": "Verified full UTF-8 packet (80,966 bytes; SHA-256 a7577f4294534c7087b24c075baa27b61e444a0f425a26ecb75a0afd38750006); all 1 supplied support excerpt(s) match exact retained-source Unicode offsets and source-text SHA-256. The Howard et al. arXiv abstract explicitly defines time-uniform coverage over an unbounded time horizon and says their confidence sequences shrink toward zero width with nonasymptotic guarantees under nonparametric conditions. Its source excerpt is an exact, uniquely occurring substring of the retained source. The outcome is supported as an attributed construction, not as an independently verified theorem. The canonical record matches the proposed node and its statement matches the summary. Claim kind and formal domain fit the mathematical-statistical subject; the label and primary-source identity are consistent. The source-attributed reported status does not claim independently proven truth or consensus; undated resolves no historical era; frontier=false asserts no latest-frontier currency. No edge, directional dependency, taxonomy placement, alias, or identity merge is proposed. The supplied existing-endpoint list is empty; absence from this list does not establish global novelty.",
+      "limitations": [
+        "The abstract does not specify coverage probability, exact error bound, stopping-time sigma-fields, or all assumptions for a particular construction.",
+        "Nonparametric does not mean assumption-free; the paper mentions sub-Gaussian and Bernstein conditions and other specialized settings.",
+        "Shrinking width need not hold for arbitrary data distributions, parameters, or confidence-sequence constructions.",
+        "Time-uniform coverage is not a license to select unregistered hypotheses or recycle dependent data without validity checks."
+      ],
+      "checks": {
+        "exact_support": true,
+        "scope_preserved": true,
+        "no_strengthening": true,
+        "relation_direction": true,
+        "representation_justified": true
+      },
+      "candidate_sha256": "933751cf3173453f07a367deb7637508a78571ccfe9d708b3aa91174d5313273",
+      "reviewer_id": "brain:1834fd3e6adc4fc99b61e70fbe51c987",
+      "model": "Nemesis Brain; provider model unavailable",
+      "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "role": "entailment",
+      "reviewed_at": "2026-10-09T18:51:44.461915+00:00"
+    },
+    {
+      "assertion_id": "assert.claim.anytime.vovk-wang-averaging-evalues",
+      "target_kind": "node",
+      "target_sha256": "dbe39d2a0723ed43752401ee1d344963195f3360b406c40ba5149094de058dce",
+      "outcome": "supported",
+      "rationale": "Verified full UTF-8 packet (80,966 bytes; SHA-256 a7577f4294534c7087b24c075baa27b61e444a0f425a26ecb75a0afd38750006); all 1 supplied support excerpt(s) match exact retained-source Unicode offsets and source-text SHA-256. The Vovk and Wang arXiv abstract explicitly says e-values arising from multiple tests of a single hypothesis can be merged simply by averaging them. The exact supporting quotation appears once and matches its retained-source hash and offsets. The candidate remains limited to valid e-values for a common null. The canonical record matches the proposed node and its statement matches the summary. Claim kind and formal domain fit the mathematical-statistical subject; the label and primary-source identity are consistent. The source-attributed reported status does not claim independently proven truth or consensus; undated resolves no historical era; frontier=false asserts no latest-frontier currency. No edge, directional dependency, taxonomy placement, alias, or identity merge is proposed. The supplied existing-endpoint list is empty; absence from this list does not establish global novelty.",
+      "limitations": [
+        "The arithmetic mean must be of valid e-values for the same null, not arbitrarily normalized scores or p-values.",
+        "This same-null e-value claim does not automatically establish that sequential e-processes built relative to different filtrations may be averaged.",
+        "The retained abstract does not state detailed input-dependence, weighting, calibration, or multiplicity-control requirements; its claim of merging cannot be expanded to those operations.",
+        "Combining evidence for one hypothesis is distinct from FDR control when testing many hypotheses."
+      ],
+      "checks": {
+        "exact_support": true,
+        "scope_preserved": true,
+        "no_strengthening": true,
+        "relation_direction": true,
+        "representation_justified": true
+      },
+      "candidate_sha256": "933751cf3173453f07a367deb7637508a78571ccfe9d708b3aa91174d5313273",
+      "reviewer_id": "brain:1834fd3e6adc4fc99b61e70fbe51c987",
+      "model": "Nemesis Brain; provider model unavailable",
+      "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "role": "entailment",
+      "reviewed_at": "2026-10-09T18:51:44.461915+00:00"
+    },
+    {
+      "assertion_id": "assert.claim.anytime.xu-ramdas-elond-arbitrary-dependence",
+      "target_kind": "node",
+      "target_sha256": "675742d5169d7f9a2f4f71db47ffacf9df5a791a68c5c96e52e3597753d0284d",
+      "outcome": "supported",
+      "rationale": "Verified full UTF-8 packet (80,966 bytes; SHA-256 a7577f4294534c7087b24c075baa27b61e444a0f425a26ecb75a0afd38750006); all 1 supplied support excerpt(s) match exact retained-source Unicode offsets and source-text SHA-256. Xu and Ramdas explicitly state in the retained PMLR article abstract that e-LOND controls online false discovery rate under arbitrary, potentially unknown, dependence. The exact excerpt matches the retained source and hashes (its wording is repeated in the page bibliography). The claim is an attributed method-specific result, not a claim about all online multiple-testing procedures. The canonical record matches the proposed node and its statement matches the summary. Claim kind and formal domain fit the mathematical-statistical subject; the label and primary-source identity are consistent. The source-attributed reported status does not claim independently proven truth or consensus; undated resolves no historical era; frontier=false asserts no latest-frontier currency. No edge, directional dependency, taxonomy placement, alias, or identity merge is proposed. The supplied existing-endpoint list is empty; absence from this list does not establish global novelty.",
+      "limitations": [
+        "The guarantee concerns e-LOND with suitable valid e-values and prescribed online rejection rules; arbitrary dependence does not authorize arbitrary construction or selection of invalid inputs.",
+        "The abstract supplies neither a particular FDR target nor a full mathematical proof and cannot justify unconditional validity under any hypothesis-generation workflow.",
+        "The article reports greater power through simulations, which is not needed to support this assertion and should not be elevated into a universal performance claim.",
+        "Online FDR is an expectation over a discovery sequence, not a guarantee that each rejection is true or that realized false-discovery proportions never exceed the threshold."
+      ],
+      "checks": {
+        "exact_support": true,
+        "scope_preserved": true,
+        "no_strengthening": true,
+        "relation_direction": true,
+        "representation_justified": true
+      },
+      "candidate_sha256": "933751cf3173453f07a367deb7637508a78571ccfe9d708b3aa91174d5313273",
+      "reviewer_id": "brain:1834fd3e6adc4fc99b61e70fbe51c987",
+      "model": "Nemesis Brain; provider model unavailable",
+      "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "role": "entailment",
+      "reviewed_at": "2026-10-09T18:51:44.461915+00:00"
+    },
+    {
+      "assertion_id": "assert.claim.anytime.waudbysmith-bounded-means-betting",
+      "target_kind": "node",
+      "target_sha256": "ef6a6872a68401634ed0b146bb3e1b28c668d7f5c8feddba67931dc42159580b",
+      "outcome": "supported",
+      "rationale": "Verified full UTF-8 packet (80,966 bytes; SHA-256 a7577f4294534c7087b24c075baa27b61e444a0f425a26ecb75a0afd38750006); all 2 supplied support excerpt(s) match exact retained-source Unicode offsets and source-text SHA-256. Waudby-Smith and Ramdas explicitly report confidence intervals and time-uniform confidence sequences for bounded-variable means, using composite nonnegative martingales, extending to sampling without replacement, and adapting to unknown variance. Both support excerpts exactly match the retained primary arXiv abstract and source hash. The canonical record matches the proposed node and its statement matches the summary. Claim kind and formal domain fit the mathematical-statistical subject; the label and primary-source identity are consistent. The source-attributed reported status does not claim independently proven truth or consensus; undated resolves no historical era; frontier=false asserts no latest-frontier currency. No edge, directional dependency, taxonomy placement, alias, or identity merge is proposed. The supplied existing-endpoint list is empty; absence from this list does not establish global novelty.",
+      "limitations": [
+        "The guarantees are for bounded observations and the authors’ specified sampling and betting constructions, not arbitrarily unbounded observations or unrestricted dependence.",
+        "The abstract says adaptation to unknown variance, not that variance estimates are perfectly known or cost-free.",
+        "Sampling without replacement is an extension with its own design assumptions, not equivalent to unrestricted adaptive sampling.",
+        "Claims of empirical improvement in the abstract are not part of the reviewed node and are not independently reproduced here."
+      ],
+      "checks": {
+        "exact_support": true,
+        "scope_preserved": true,
+        "no_strengthening": true,
+        "relation_direction": true,
+        "representation_justified": true
+      },
+      "candidate_sha256": "933751cf3173453f07a367deb7637508a78571ccfe9d708b3aa91174d5313273",
+      "reviewer_id": "brain:1834fd3e6adc4fc99b61e70fbe51c987",
+      "model": "Nemesis Brain; provider model unavailable",
+      "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "role": "entailment",
+      "reviewed_at": "2026-10-09T18:51:44.461915+00:00"
+    },
+    {
+      "assertion_id": "assert.claim.anytime.choe-ramdas-coarse-fine-incompatibility",
+      "target_kind": "node",
+      "target_sha256": "c4b27edcb8fd7bc16536bb6e7f66c2e57bcc3f0da2db4e3f7f40bce99f2c0e2e",
+      "outcome": "supported",
+      "rationale": "Verified full UTF-8 packet (80,966 bytes; SHA-256 a7577f4294534c7087b24c075baa27b61e444a0f425a26ecb75a0afd38750006); all 1 supplied support excerpt(s) match exact retained-source Unicode offsets and source-text SHA-256. Choe and Ramdas explicitly state that e-processes constructed under different filtrations cannot in general be directly averaged because validity under a coarser information filtration does not imply validity under a finer one. The quotation matches exactly in the retained primary abstract. The scope correctly restricts this to e-processes for a common null in distinct filtrations. The canonical record matches the proposed node and its statement matches the summary. Claim kind and formal domain fit the mathematical-statistical subject; the label and primary-source identity are consistent. The source-attributed reported status does not claim independently proven truth or consensus; undated resolves no historical era; frontier=false asserts no latest-frontier currency. No edge, directional dependency, taxonomy placement, alias, or identity merge is proposed. The supplied existing-endpoint list is empty; absence from this list does not establish global novelty.",
+      "limitations": [
+        "The obstruction is to unadjusted evidence merging in general, not a claim that every specific average must be numerically invalid.",
+        "An e-process may be valid under a particular finer filtration if separately proved; coarse-filtration validity alone is insufficient.",
+        "This does not contradict Vovk and Wang’s pointwise same-null e-value averaging; processes and stopping-time filtrations have additional validity conditions.",
+        "The retained abstract does not supply the counterexample or proof and is evidence for the authors’ attributed assertion, not a stand-alone formal verification."
+      ],
+      "checks": {
+        "exact_support": true,
+        "scope_preserved": true,
+        "no_strengthening": true,
+        "relation_direction": true,
+        "representation_justified": true
+      },
+      "candidate_sha256": "933751cf3173453f07a367deb7637508a78571ccfe9d708b3aa91174d5313273",
+      "reviewer_id": "brain:1834fd3e6adc4fc99b61e70fbe51c987",
+      "model": "Nemesis Brain; provider model unavailable",
+      "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "role": "entailment",
+      "reviewed_at": "2026-10-09T18:51:44.461915+00:00"
+    },
+    {
+      "assertion_id": "assert.claim.anytime.choe-ramdas-adjust-then-combine",
+      "target_kind": "node",
+      "target_sha256": "90f595158b943c426cfce125a50e9af269626792ba25d1d7b6df6c7660dd8f0c",
+      "outcome": "supported",
+      "rationale": "Verified full UTF-8 packet (80,966 bytes; SHA-256 a7577f4294534c7087b24c075baa27b61e444a0f425a26ecb75a0afd38750006); all 2 supplied support excerpt(s) match exact retained-source Unicode offsets and source-text SHA-256. Choe and Ramdas report that suitable adjusters can lift arbitrary e-processes across filtrations, producing an adjust-then-combine procedure, and separately state that recovering validity from a coarsened filtration incurs a logarithmic cost. Both exact excerpts match the retained paper abstract. The candidate avoids a numerical bound or an unqualified claim of lossless recovery. The canonical record matches the proposed node and its statement matches the summary. Claim kind and formal domain fit the mathematical-statistical subject; the label and primary-source identity are consistent. The source-attributed reported status does not claim independently proven truth or consensus; undated resolves no historical era; frontier=false asserts no latest-frontier currency. No edge, directional dependency, taxonomy placement, alias, or identity merge is proposed. The supplied existing-endpoint list is empty; absence from this list does not establish global novelty.",
+      "limitations": [
+        "The procedure requires an appropriate adjuster, a common null, and the authors’ framework; arbitrary combination without the adjustment is not justified.",
+        "Logarithmic cost is a qualitative characterization here; no constants, rate formula, or optimal bound is provided in the retained abstract.",
+        "Lifting preserves an appropriate formal validity guarantee; it need not preserve test power or every sample-path value.",
+        "The retained abstract alone is not a proof of the characterization or the universality of all possible combinations."
+      ],
+      "checks": {
+        "exact_support": true,
+        "scope_preserved": true,
+        "no_strengthening": true,
+        "relation_direction": true,
+        "representation_justified": true
+      },
+      "candidate_sha256": "933751cf3173453f07a367deb7637508a78571ccfe9d708b3aa91174d5313273",
+      "reviewer_id": "brain:1834fd3e6adc4fc99b61e70fbe51c987",
+      "model": "Nemesis Brain; provider model unavailable",
+      "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "role": "entailment",
+      "reviewed_at": "2026-10-09T18:51:44.461915+00:00"
+    },
+    {
+      "assertion_id": "assert.claim.anytime.dwork-adaptive-holdout-validation",
+      "target_kind": "node",
+      "target_sha256": "b9a4f4b788ce62902a2d852f5bff9d4bce8496d5e9fa5f56c092e6f265f7d136",
+      "outcome": "supported",
+      "rationale": "Verified full UTF-8 packet (80,966 bytes; SHA-256 a7577f4294534c7087b24c075baa27b61e444a0f425a26ecb75a0afd38750006); all 1 supplied support excerpt(s) match exact retained-source Unicode offsets and source-text SHA-256. Dwork et al. explicitly say in their arXiv abstract that adaptive repeated reuse of a holdout set can cause holdout overfitting and that they provide an algorithm for validating a large number of adaptively chosen hypotheses while provably avoiding that overfitting. The excerpt is exact and source-verifiable. The proposed claim accurately attributes the guarantee to their algorithm. The canonical record matches the proposed node and its statement matches the summary. Claim kind and formal domain fit the mathematical-statistical subject; the label and primary-source identity are consistent. The source-attributed reported status does not claim independently proven truth or consensus; undated resolves no historical era; frontier=false asserts no latest-frontier currency. No edge, directional dependency, taxonomy placement, alias, or identity merge is proposed. The supplied existing-endpoint list is empty; absence from this list does not establish global novelty.",
+      "limitations": [
+        "The result is not unconditional permission to repeatedly inspect or query any fixed holdout: it depends on the algorithm and its assumptions.",
+        "The abstract does not supply sample-size, query-budget, tolerance, or confidence parameters; no quantitative capacity follows from this review.",
+        "This is a guarantee about adaptive statistical generalization/validation, not necessarily causal inference or anytime-valid inference under arbitrary stopping rules.",
+        "The related PubMed capture in the packet is only a cookie-warning page, so it does not independently corroborate this theorem; the linked arXiv abstract provides the actual support."
+      ],
+      "checks": {
+        "exact_support": true,
+        "scope_preserved": true,
+        "no_strengthening": true,
+        "relation_direction": true,
+        "representation_justified": true
+      },
+      "candidate_sha256": "933751cf3173453f07a367deb7637508a78571ccfe9d708b3aa91174d5313273",
+      "reviewer_id": "brain:1834fd3e6adc4fc99b61e70fbe51c987",
+      "model": "Nemesis Brain; provider model unavailable",
+      "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "role": "entailment",
+      "reviewed_at": "2026-10-09T18:51:44.461915+00:00"
+    },
+    {
+      "assertion_id": "assert.claim.anytime.lee-lasso-postselection-conditioning",
+      "target_kind": "node",
+      "target_sha256": "c02d1818fe6d0af2be4cdb645f5dfe9c30b866ee513d9669f565c1d004ffb8fe",
+      "outcome": "supported",
+      "rationale": "Verified full UTF-8 packet (80,966 bytes; SHA-256 a7577f4294534c7087b24c075baa27b61e444a0f425a26ecb75a0afd38750006); all 1 supplied support excerpt(s) match exact retained-source Unicode offsets and source-text SHA-256. Lee et al. explicitly report a framework characterizing a post-selection estimator’s distribution conditional on the selection event and specialize it to the lasso, producing confidence intervals for selected coefficients and hypothesis tests. The retained excerpt directly entails the narrow report and matches its source offsets and hash. The canonical record matches the proposed node and its statement matches the summary. Claim kind and formal domain fit the mathematical-statistical subject; the label and primary-source identity are consistent. The source-attributed reported status does not claim independently proven truth or consensus; undated resolves no historical era; frontier=false asserts no latest-frontier currency. No edge, directional dependency, taxonomy placement, alias, or identity merge is proposed. The supplied existing-endpoint list is empty; absence from this list does not establish global novelty.",
+      "limitations": [
+        "Conditional post-selection inference is conditional on the specified selection event and model assumptions, not general inference after any arbitrary, unrecorded modeling decisions.",
+        "The reported tests include whether relevant variables have been included, not necessarily tests of every possible scientific hypothesis or causal effects.",
+        "The abstract does not detail Gaussianity, fixed design, conditioning geometry, or selection-procedure constraints; claiming a universal model-free guarantee would be unsupported.",
+        "Nothing in the retained record shows that lasso inference can be freely combined with sequential optional stopping without additional work."
+      ],
+      "checks": {
+        "exact_support": true,
+        "scope_preserved": true,
+        "no_strengthening": true,
+        "relation_direction": true,
+        "representation_justified": true
+      },
+      "candidate_sha256": "933751cf3173453f07a367deb7637508a78571ccfe9d708b3aa91174d5313273",
+      "reviewer_id": "brain:1834fd3e6adc4fc99b61e70fbe51c987",
+      "model": "Nemesis Brain; provider model unavailable",
+      "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "role": "entailment",
+      "reviewed_at": "2026-10-09T18:51:44.461915+00:00"
+    },
+    {
+      "assertion_id": "assert.claim.anytime.ramdas-admissible-martingale-necessity",
+      "target_kind": "node",
+      "target_sha256": "d914813e55f79b2bf9b53bd577d283b6b564a87e9f6ef852333dca5f550784fa",
+      "outcome": "supported",
+      "rationale": "Verified full UTF-8 packet (80,966 bytes; SHA-256 a7577f4294534c7087b24c075baa27b61e444a0f425a26ecb75a0afd38750006); all 2 supplied support excerpt(s) match exact retained-source Unicode offsets and source-text SHA-256. Ramdas et al. explicitly report in their retained arXiv abstract that, under their appropriately defined admissibility concept, all admissible confidence sequences, p-processes, and e-processes must rely on nonnegative martingales. Two exact retained quotations support both the qualified universality assertion and the specified class of procedures. The canonical record matches the proposed node and its statement matches the summary. Claim kind and formal domain fit the mathematical-statistical subject; the label and primary-source identity are consistent. The source-attributed reported status does not claim independently proven truth or consensus; undated resolves no historical era; frontier=false asserts no latest-frontier currency. No edge, directional dependency, taxonomy placement, alias, or identity merge is proposed. The supplied existing-endpoint list is empty; absence from this list does not establish global novelty.",
+      "limitations": [
+        "The universality claim is conditional on the authors’ formal definition of admissibility and relevant model class; it is not a claim that every possible valid procedure literally implements a martingale algorithm.",
+        "The abstract distinguishes martingales from the wider class of supermartingales and discusses recovery/dominance. It does not establish a simplistic syntactic identity between every inference rule and a martingale.",
+        "The source reports a necessity theorem; the retained abstract does not provide the full proof or all measure-theoretic and filtration assumptions.",
+        "This claim does not independently validate the martingale conditions of any particular downstream adaptive-discovery system."
+      ],
+      "checks": {
+        "exact_support": true,
+        "scope_preserved": true,
+        "no_strengthening": true,
+        "relation_direction": true,
+        "representation_justified": true
+      },
+      "candidate_sha256": "933751cf3173453f07a367deb7637508a78571ccfe9d708b3aa91174d5313273",
+      "reviewer_id": "brain:1834fd3e6adc4fc99b61e70fbe51c987",
+      "model": "Nemesis Brain; provider model unavailable",
+      "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "role": "entailment",
+      "reviewed_at": "2026-10-09T18:51:44.461915+00:00"
+    },
+    {
+      "assertion_id": "assert.claim.anytime.confidence-sequences-uniform-coverage",
+      "target_kind": "node",
+      "target_sha256": "68ca37e18f082737b556793e432eeab98dd6ba9b86ba952317ab39b7a78c3d67",
+      "outcome": "supported",
+      "rationale": "Howard et al. explicitly describe confidence sequences with widths tending to zero and time-uniform nonasymptotic coverage under nonparametric conditions over unbounded horizons. This entails the attributed construction claim, not an assumption-free theorem. The label, claim kind, formal domain, source identity and time-uniform scope fit the primary abstract. The retained quotation matches its source offsets and hash; the complete 81006-byte transport matches its declared SHA-256. The assertion statement and canonical node agree exactly. Reported means source attribution, undated leaves chronological classification unresolved, and frontier=false asserts no current-frontier status. No edges, direction-bearing relations, taxonomy placements or identity merges are proposed. The empty existing-endpoint list does not establish novelty.",
+      "limitations": [
+        "Coverage depends on the parameter, statistical model and concentration or martingale conditions; nonparametric does not mean valid under arbitrary adaptive sampling or filtration.",
+        "The retained abstract gives no coverage level, complete assumptions or full proof and does not establish universal shrinkage for every data-generating process.",
+        "Time-uniform inference for a specified estimand does not automatically remain valid after opportunistic parameter selection, incompatible filtration changes or unaccounted data reuse."
+      ],
+      "checks": {
+        "exact_support": true,
+        "scope_preserved": true,
+        "no_strengthening": true,
+        "relation_direction": true,
+        "representation_justified": true
+      },
+      "candidate_sha256": "933751cf3173453f07a367deb7637508a78571ccfe9d708b3aa91174d5313273",
+      "reviewer_id": "brain:4c7c6c7ce54a426b83c6d65c873eaa93",
+      "model": "Nemesis Brain; provider model unavailable",
+      "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "role": "adversarial",
+      "reviewed_at": "2026-10-09T18:53:54.249367+00:00"
+    },
+    {
+      "assertion_id": "assert.claim.anytime.vovk-wang-averaging-evalues",
+      "target_kind": "node",
+      "target_sha256": "dbe39d2a0723ed43752401ee1d344963195f3360b406c40ba5149094de058dce",
+      "outcome": "supported",
+      "rationale": "Vovk and Wang explicitly state that e-values from multiple tests of one hypothesis can be merged by averaging. The candidate preserves the common-null scope and valid-e-value requirement. Its claim kind, formal domain, label, source identity and canonical representation are justified. The supporting quotation matches the retained source exactly, including offsets and source hash. Reported, undated and frontier=false have only their stipulated neutral meanings. No relationship, taxonomy placement or identity merge is proposed. The empty endpoint catalog does not demonstrate novelty.",
+      "limitations": [
+        "Every input must be a valid e-value for the applicable common null; arbitrary scores, uncalibrated p-values and selectively reported evidence do not qualify.",
+        "Averaging fixed-time e-values does not automatically justify averaging sequential e-processes defined under different filtrations at arbitrary stopping times.",
+        "The retained abstract does not establish validity for arbitrary adaptive weights, post-selection combinations or false-discovery control across distinct hypotheses."
+      ],
+      "checks": {
+        "exact_support": true,
+        "scope_preserved": true,
+        "no_strengthening": true,
+        "relation_direction": true,
+        "representation_justified": true
+      },
+      "candidate_sha256": "933751cf3173453f07a367deb7637508a78571ccfe9d708b3aa91174d5313273",
+      "reviewer_id": "brain:4c7c6c7ce54a426b83c6d65c873eaa93",
+      "model": "Nemesis Brain; provider model unavailable",
+      "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "role": "adversarial",
+      "reviewed_at": "2026-10-09T18:53:54.249367+00:00"
+    },
+    {
+      "assertion_id": "assert.claim.anytime.xu-ramdas-elond-arbitrary-dependence",
+      "target_kind": "node",
+      "target_sha256": "675742d5169d7f9a2f4f71db47ffacf9df5a791a68c5c96e52e3597753d0284d",
+      "outcome": "supported",
+      "rationale": "The retained Xu and Ramdas PMLR abstract explicitly states that e-LOND provides online false discovery rate control under arbitrary, possibly unknown, dependence. The claim names the specific procedure and preserves its online multiple-testing scope. Its formal domain, claim kind, label and source attribution are justified. The supporting passage matches the recorded source offsets and hash, although the same sentence appears in repeated bibliographic material. Reported denotes attribution, undated resolves no era and frontier=false asserts no present currency. There are no proposed edges, placements or merges.",
+      "limitations": [
+        "Arbitrary dependence does not authorize invalid e-values, data leakage, arbitrary changes to e-LOND's rejection rule or unaccounted evidence reuse.",
+        "The abstract does not specify all restrictions on hypothesis arrival, null validity, adaptivity, thresholds and implementation; an arbitrary discovery pipeline cannot inherit the theorem without checking these conditions.",
+        "Online FDR control concerns an expected error proportion under specified conditions, not an error-free realized discovery sequence or family-wise error control."
+      ],
+      "checks": {
+        "exact_support": true,
+        "scope_preserved": true,
+        "no_strengthening": true,
+        "relation_direction": true,
+        "representation_justified": true
+      },
+      "candidate_sha256": "933751cf3173453f07a367deb7637508a78571ccfe9d708b3aa91174d5313273",
+      "reviewer_id": "brain:4c7c6c7ce54a426b83c6d65c873eaa93",
+      "model": "Nemesis Brain; provider model unavailable",
+      "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "role": "adversarial",
+      "reviewed_at": "2026-10-09T18:53:54.249367+00:00"
+    },
+    {
+      "assertion_id": "assert.claim.anytime.waudbysmith-bounded-means-betting",
+      "target_kind": "node",
+      "target_sha256": "ef6a6872a68401634ed0b146bb3e1b28c668d7f5c8feddba67931dc42159580b",
+      "outcome": "supported",
+      "rationale": "Waudby-Smith and Ramdas explicitly report martingale-based confidence intervals and time-uniform confidence sequences for bounded means, extensions to sampling without replacement, and adaptation to unknown variance. Both retained quotations match their exact source spans and hashes. The node preserves the bounded-observation scope and identifies the relevant mathematical-statistical domain, authors and approach. Reported, undated and frontier=false contain no independent acceptance, chronology or currency claim. No directional relationships, placements or identity merges are proposed.",
+      "limitations": [
+        "The source does not establish validity for arbitrary unbounded observations or unrestricted adversarial data generation.",
+        "Sampling without replacement has its own finite-population and sampling-design conditions; it is not interchangeable with unrestricted adaptive sample selection.",
+        "Variance adaptation does not remove the assumptions required for validity. The abstract provides neither detailed theorems nor independent verification of its empirical superiority claims."
+      ],
+      "checks": {
+        "exact_support": true,
+        "scope_preserved": true,
+        "no_strengthening": true,
+        "relation_direction": true,
+        "representation_justified": true
+      },
+      "candidate_sha256": "933751cf3173453f07a367deb7637508a78571ccfe9d708b3aa91174d5313273",
+      "reviewer_id": "brain:4c7c6c7ce54a426b83c6d65c873eaa93",
+      "model": "Nemesis Brain; provider model unavailable",
+      "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "role": "adversarial",
+      "reviewed_at": "2026-10-09T18:53:54.249367+00:00"
+    },
+    {
+      "assertion_id": "assert.claim.anytime.choe-ramdas-coarse-fine-incompatibility",
+      "target_kind": "node",
+      "target_sha256": "c4b27edcb8fd7bc16536bb6e7f66c2e57bcc3f0da2db4e3f7f40bce99f2c0e2e",
+      "outcome": "supported",
+      "rationale": "Choe and Ramdas explicitly state that e-processes in different filtrations cannot generally be combined by unadjusted averaging because validity under a coarser filtration does not transfer automatically to a finer one. The candidate preserves the correct coarse-to-fine direction, common-null setting and sequential e-process scope. Its exact quotation and source hash match. Claim kind, formal domain, label and source identity are justified. Neutral metadata assert no scientific consensus, established era or current frontier. No edges, placements or merges are proposed.",
+      "limitations": [
+        "The obstruction is failure of an automatic guarantee, not proof that every individual cross-filtration average must be invalid. Additional conditions can establish finer-filtration validity.",
+        "The result concerns sequential e-processes and stopping-time information, not an unconditional prohibition on averaging fixed-time e-values.",
+        "The captured abstract contains no explicit mathematical counterexample or full proof; the review establishes accurate attribution to the authors."
+      ],
+      "checks": {
+        "exact_support": true,
+        "scope_preserved": true,
+        "no_strengthening": true,
+        "relation_direction": true,
+        "representation_justified": true
+      },
+      "candidate_sha256": "933751cf3173453f07a367deb7637508a78571ccfe9d708b3aa91174d5313273",
+      "reviewer_id": "brain:4c7c6c7ce54a426b83c6d65c873eaa93",
+      "model": "Nemesis Brain; provider model unavailable",
+      "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "role": "adversarial",
+      "reviewed_at": "2026-10-09T18:53:54.249367+00:00"
+    },
+    {
+      "assertion_id": "assert.claim.anytime.choe-ramdas-adjust-then-combine",
+      "target_kind": "node",
+      "target_sha256": "90f595158b943c426cfce125a50e9af269626792ba25d1d7b6df6c7660dd8f0c",
+      "outcome": "supported",
+      "rationale": "Choe and Ramdas explicitly report adjusters that lift e-processes across filtrations, an adjust-then-combine procedure, and a logarithmic cost of recovering validity after coarsening the filtration. Both exact source excerpts match their retained spans and hashes. The representation preserves the authors' common-null and suitable-adjuster qualifications, without inventing quantitative constants. The claim kind, formal domain, label and source identity are appropriate. Reported, undated and frontier=false are neutral as defined. No graph relationships or placements are proposed.",
+      "limitations": [
+        "The procedure requires adjusters satisfying the authors' conditions; directly averaging or otherwise combining incompatible unadjusted processes remains unjustified.",
+        "The abstract does not provide a precise logarithmic cost formula, constants or optimality regime. It cannot support a universal numerical power penalty.",
+        "Restoring validity does not establish that evidence magnitude, power or sample efficiency is preserved without loss for every filtration or process."
+      ],
+      "checks": {
+        "exact_support": true,
+        "scope_preserved": true,
+        "no_strengthening": true,
+        "relation_direction": true,
+        "representation_justified": true
+      },
+      "candidate_sha256": "933751cf3173453f07a367deb7637508a78571ccfe9d708b3aa91174d5313273",
+      "reviewer_id": "brain:4c7c6c7ce54a426b83c6d65c873eaa93",
+      "model": "Nemesis Brain; provider model unavailable",
+      "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "role": "adversarial",
+      "reviewed_at": "2026-10-09T18:53:54.250364+00:00"
+    },
+    {
+      "assertion_id": "assert.claim.anytime.dwork-adaptive-holdout-validation",
+      "target_kind": "node",
+      "target_sha256": "b9a4f4b788ce62902a2d852f5bff9d4bce8496d5e9fa5f56c092e6f265f7d136",
+      "outcome": "supported",
+      "rationale": "Dwork et al. explicitly identify overfitting from adaptive repeated holdout reuse and propose an algorithm for validating many adaptively chosen hypotheses while provably avoiding that overfitting. The candidate attributes this claim to the particular proposed method rather than treating all repeated validation as safe. The exact supporting quotation and source hash match. The formal domain, claim kind, label and canonical representation are appropriate. Reported does not claim independent proof verification; undated and frontier=false make no chronology or currency claims. No graph edges or placements are proposed.",
+      "limitations": [
+        "The guarantee depends on the particular algorithm and applicable statistical assumptions. Repeatedly inspecting an ordinary exposed holdout is not made safe by this paper.",
+        "The abstract does not specify the permitted number of queries, sample-size requirements, validation tolerance or failure probability.",
+        "The other retained PubMed capture is a cookie-warning page, not independent corroboration. The supported source is the authors' arXiv abstract, which does not establish arbitrary stopping-time validity or causal identification."
+      ],
+      "checks": {
+        "exact_support": true,
+        "scope_preserved": true,
+        "no_strengthening": true,
+        "relation_direction": true,
+        "representation_justified": true
+      },
+      "candidate_sha256": "933751cf3173453f07a367deb7637508a78571ccfe9d708b3aa91174d5313273",
+      "reviewer_id": "brain:4c7c6c7ce54a426b83c6d65c873eaa93",
+      "model": "Nemesis Brain; provider model unavailable",
+      "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "role": "adversarial",
+      "reviewed_at": "2026-10-09T18:53:54.250364+00:00"
+    },
+    {
+      "assertion_id": "assert.claim.anytime.lee-lasso-postselection-conditioning",
+      "target_kind": "node",
+      "target_sha256": "c02d1818fe6d0af2be4cdb645f5dfe9c30b866ee513d9669f565c1d004ffb8fe",
+      "outcome": "supported",
+      "rationale": "Lee et al. explicitly report inference based on the distribution of an estimator conditional on the selection event and specialize their approach to confidence intervals for lasso-selected coefficients and hypothesis tests. The candidate correctly preserves the lasso and selection-conditional scope. Its exact quotation, source hash, canonical node, formal domain, claim kind and source identity are consistent. Reported, undated and frontier=false retain their neutral meanings. No edges, classifications or identity merges are proposed.",
+      "limitations": [
+        "Selection-conditional validity depends on the actual selection event and the model's assumptions. It is not automatically available after arbitrary undisclosed model searches.",
+        "The described testing includes whether relevant variables were included; it does not establish inference for every possible post-selection hypothesis or causal interpretation of coefficients.",
+        "The abstract omits detailed distributional and design assumptions and supplies no guarantee of validity under arbitrary optional stopping, incompatible filtrations or repeated data reuse."
+      ],
+      "checks": {
+        "exact_support": true,
+        "scope_preserved": true,
+        "no_strengthening": true,
+        "relation_direction": true,
+        "representation_justified": true
+      },
+      "candidate_sha256": "933751cf3173453f07a367deb7637508a78571ccfe9d708b3aa91174d5313273",
+      "reviewer_id": "brain:4c7c6c7ce54a426b83c6d65c873eaa93",
+      "model": "Nemesis Brain; provider model unavailable",
+      "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "role": "adversarial",
+      "reviewed_at": "2026-10-09T18:53:54.250364+00:00"
+    },
+    {
+      "assertion_id": "assert.claim.anytime.ramdas-admissible-martingale-necessity",
+      "target_kind": "node",
+      "target_sha256": "d914813e55f79b2bf9b53bd577d283b6b564a87e9f6ef852333dca5f550784fa",
+      "outcome": "supported",
+      "rationale": "Ramdas et al. explicitly state that, after defining admissibility appropriately, all admissible confidence sequences, p-processes and e-processes necessarily rely on nonnegative martingales. Both recorded excerpts match the retained source offsets and hashes. Crucially, the node retains the restriction to the authors' formal admissibility definition rather than asserting a universal theorem about all possible inference procedures. The claim kind, formal domain, source identity and label are justified. Reported is attribution, undated is unresolved era and frontier=false asserts no current-frontier standing. No directional relationships, taxonomy placements or identity merges are proposed.",
+      "limitations": [
+        "The universal quantifier holds only within the authors' formal definition of admissibility and associated mathematical framework. Removing these qualifications would materially strengthen the claim.",
+        "Reliance on a nonnegative martingale need not imply that every practical implementation explicitly calculates a martingale; a mathematical representation or related construction may be involved.",
+        "The abstract does not provide the complete proof, filtration assumptions, null classes or admissibility conditions. This review does not verify the theorem independently or certify a downstream adaptive-discovery workflow."
+      ],
+      "checks": {
+        "exact_support": true,
+        "scope_preserved": true,
+        "no_strengthening": true,
+        "relation_direction": true,
+        "representation_justified": true
+      },
+      "candidate_sha256": "933751cf3173453f07a367deb7637508a78571ccfe9d708b3aa91174d5313273",
+      "reviewer_id": "brain:4c7c6c7ce54a426b83c6d65c873eaa93",
+      "model": "Nemesis Brain; provider model unavailable",
+      "context_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "role": "adversarial",
+      "reviewed_at": "2026-10-09T18:53:54.250364+00:00"
+    }
+  ]
+}
