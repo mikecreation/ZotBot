@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NEMESIS — Research that moves the question forward</title>
+<link rel="stylesheet" href="/static/style.css">
+<link rel="stylesheet" href="/static/science.css">
+<link rel="stylesheet" href="/static/world.css">
+<link rel="stylesheet" href="/static/governance.css">
+<link rel="stylesheet" href="/static/governance-lab.css">
+<link rel="stylesheet" href="/static/panel-minimize.css">
+<link rel="stylesheet" href="/static/frontier.css">
+<link rel="stylesheet" href="/static/workspace.css">
+<link rel="stylesheet" href="/static/social.css?v=eureka1">
+<link rel="stylesheet" href="/static/github.css?v=gh-atlas-display-1">
+</head>
+<body class="workspace-mode">
+<div id="research-workspace">
+  <header class="workspace-header">
+    <button class="workspace-brand" data-page="research" aria-label="NEMESIS research home"><span class="workspace-mark">N<span>•</span></span><span>NEMESIS<small>THE RESEARCH WORKSPACE</small></span></button>
+    <nav class="workspace-nav" aria-label="Main navigation">
+      <button data-page="research" aria-current="page">Research</button>
+      <button data-page="insights">Insights</button>
+      <button data-page="outputs">Outputs</button>
+      <button data-page="social">Social Media</button>
+      <button data-page="github">GitHub</button>
+      <button data-page="explore">Explore</button>
+    </nav>
+    <div class="workspace-header-actions"><button id="workspace-connection" data-open="settings"><i></i><span>Checking researchers</span></button><button class="workspace-primary" data-open="compose">+ Give NEMESIS work</button></div>
+  </header>
+  <div class="workspace-layout">
+    <aside class="workspace-sidebar" aria-label="Research history">
+      <button id="workspace-history-toggle" aria-expanded="false">Your research history ▾</button>
+      <div class="workspace-rail-title"><span>YOUR RESEARCH</span><button data-open="compose" aria-label="New objective">+</button></div>
+      <label class="workspace-search"><span class="sr-only">Find an objective</span><input id="workspace-search" type="search" placeholder="Find an objective…" maxlength="200"></label>
+      <div id="workspace-missions"><p class="workspace-muted">Loading research history…</p></div>
+      <div class="workspace-pagination" id="workspace-pagination"></div>
+      <div class="workspace-rail-footer"><p>One question.<br>Many ways to see further.</p><button data-open="improve">↗ Improve NEMESIS</button><button data-page="improvements">Improvement history</button><button data-open="settings">⚙ Connections & settings</button><button data-open="advanced">Research controls</button></div>
+    </aside>
+    <main class="workspace-main" id="workspace-main" tabindex="-1"><div class="workspace-loading">Reading the retained research…</div></main>
+  </div>
+  <footer class="workspace-footer"><span>NEMESIS / PANDORA</span><span>Evidence → explanation → challenge → better question</span><span id="workspace-sync" role="status">Connecting</span></footer>
+</div>
+<dialog id="workspace-compose" class="workspace-dialog" aria-labelledby="workspace-compose-title">
+  <form id="workspace-command">
+    <div class="workspace-dialog-top"><span class="workspace-eyebrow">GIVE NEMESIS WORK</span><button type="button" data-close="workspace-compose" aria-label="Close">✕</button></div>
+    <h2 id="workspace-compose-title">What do you want to figure out?</h2>
+    <p>Describe the outcome. NEMESIS chooses the researchers and the next useful steps.</p>
+    <div class="workspace-intent" role="group" aria-label="Type of outcome"><button type="button" data-intent="research" aria-pressed="true">Research a question</button><button type="button" data-intent="improve" aria-pressed="false">Improve NEMESIS</button></div>
+    <label for="workspace-objective" class="sr-only">Objective</label><textarea id="workspace-objective" placeholder="What would be important to understand, and what would change your mind?" minlength="15" maxlength="1200" rows="6" required></textarea>
+    <p id="workspace-command-help" class="workspace-muted">Your exact objective is retained. The research team searches, compares explanations, challenges claims, and reconsiders evidence automatically with rolling safety reviews.</p>
+    <div class="workspace-command-options"><label>Research field <select id="workspace-field"><option value="auto">Choose automatically</option></select></label><span id="workspace-objective-length">0 / 1200</span></div>
+    <p id="workspace-command-error" role="alert"></p><button type="submit" id="workspace-command-submit" class="workspace-primary">Start researching ↗</button>
+  </form>
+</dialog>
+<dialog id="workspace-inspector" class="workspace-dialog workspace-inspector" aria-labelledby="workspace-inspector-title"><div id="workspace-inspector-content"></div></dialog>
+<dialog id="workspace-provider-dialog" class="workspace-dialog workspace-provider-dialog" aria-label="Model provider connections"></dialog>
+<div id="workspace-notification" role="status" aria-live="polite" hidden></div>
+<div id="workspace-lab-bar" hidden><button data-page="research">← Research workspace</button><span>EXPLORATION & ADVANCED TOOLS</span><button data-open="settings">Connections</button></div>
+<div class="scanlines"></div>
+<div class="vignette"></div>
+
+<header class="hud">
+  <div class="brand">
+    <div class="logo">
+      <span class="glyph">▚</span>
+      <div>
+        <h1>PROJECT&nbsp;NEMESIS</h1>
+        <p>autonomous research arena · <span id="tagline">18 fields / 36 agents / $0 default</span></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="hud-stats">
+    <div class="stat"><label>cycle</label><b id="s-cycle">0</b></div>
+    <div class="stat"><label>duels</label><b id="s-duels">0</b></div>
+    <div class="stat"><label>docs read</label><b id="s-docs">0</b></div>
+    <div class="stat"><label>tribunal</label><b id="s-appeals">0</b></div>
+    <div class="stat money"><label>spent</label><b id="s-spent">$0.00</b></div>
+    <div class="stat money" title="Hypothetical API replacement cost estimate, not scientific value, revenue or actual spending"><label>cost avoided*</label><b id="s-shadow">$0.00</b></div>
+  </div>
+
+  <div class="controls">
+    <button id="frontier-open" class="btn" aria-haspopup="dialog">✦ MISSION CONTROL</button>
+    <button id="btn-view-arena" class="btn view-on" aria-label="Open arena">⚔ ARENA</button>
+    <button id="btn-view-science" class="btn" aria-label="Open scientific archive">⌬ SCIENCE</button>
+    <button id="btn-view-world" class="btn" aria-label="Open living scientific world">◈ WORLD</button>
+    <button id="btn-view-governance" class="btn" aria-label="Open system amendment governance">⚙ SYSTEM</button>
+    <button id="btn-run" class="btn go">▶ RUN</button>
+    <button id="btn-pause" class="btn">❚❚ PAUSE</button>
+    <button id="btn-step" class="btn">⏭ STEP</button>
+    <select id="sel-field" class="sel" title="Primary Arena research field when no higher-priority SYSTEM or injected research task is active"></select>
+    <select id="sel-topic" class="sel topic-sel" title="Research focus within the selected field" hidden></select>
+    <button id="btn-duel" class="btn warn">⚔ FORCE RESEARCH DUEL</button>
+    <label class="slider">speed<input id="rng-speed" type="range" min="0.5" max="6" step="0.5" value="1"><span id="lbl-speed">1.0x</span></label>
+    <div id="status" class="status idle"><i></i><span>IDLE</span></div>
+  </div>
+</header>
+
+<main class="grid">
+
+  <!-- ─────────────────────────── ROSTER ─────────────────────────── -->
+  <aside class="panel roster">
+    <div class="panel-head">
+      <h2>ROSTER</h2>
+      <div class="seg" id="roster-filter">
+        <button data-f="all" class="on">ALL</button>
+        <button data-f="scientist">SCIENTISTS</button>
+        <button data-f="destroyer">DESTROYERS</button>
+      </div>
+    </div>
+    <div class="panel-body" id="roster"></div>
+  </aside>
+
+  <!-- ─────────────────────────── ARENA ─────────────────────────── -->
+  <section class="panel arena">
+    <div class="panel-head">
+      <h2>LIVE ARENA</h2>
+      <div class="head-right" id="arena-status">waiting for first cycle…</div>
+    </div>
+    <div class="panel-body" id="arena">
+      <div class="empty" id="arena-empty">
+        <div class="empty-art">▚▚▚</div>
+        <p>18 scientists are filing patents.<br>18 destroyers are sharpening objections.</p>
+        <p class="dim">Press <b>RUN</b> to start the argument, or <b>STEP</b> to advance one cycle.</p>
+      </div>
+      <div id="duels"></div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── LIVING WORLD / SPARSE CHUNK STREAM ───────────────────────── -->
+  <section class="panel world-view" id="world-view" aria-label="Persistent scientific civilization map">
+    <div class="panel-head world-header"><h2>◈ LIVING WORLD <span style="font-size:8px;color:var(--dim)">/ PROVENANCE BEFORE PROGRESS</span></h2>
+      <div class="world-controls">
+        <span class="head-right" id="world-coordinates">CHUNK 0, 0</span>
+        <button class="btn" id="world-zoom-out">−</button><span id="world-zoom-label">100%</span><button class="btn" id="world-zoom-in">+</button>
+        <button class="btn" id="world-follow">◎ FOLLOW: OFF</button>
+        <button class="btn warn" id="world-atlas-open">▦ DISCOVERED MAP</button>
+      </div>
+    </div>
+    <div class="world-stage" id="world-stage">
+      <canvas id="world-canvas" aria-label="Procedurally streamed local terrain and walking agents"></canvas>
+      <div class="world-legend">DRAG TO PAN · SCROLL TO ZOOM · CLICK A SCIENTIST · WASD TO MOVE · UNKNOWN TERRAIN IS NOT LOADED</div>
+      <div class="world-mini-box"><div class="world-mini-title">LOCAL / MINIMAP <span id="world-mini-region">0 : 0</span></div>
+        <canvas id="world-minimap" width="184" height="184" aria-label="Nearby discoveries and current viewport"></canvas>
+        <div id="world-mini-stats">SEED / LOADING</div></div>
+      <div id="world-inspector" class="world-inspector" hidden></div>
+      <div id="world-atlas-overlay" class="world-atlas-overlay" hidden>
+        <div class="world-atlas-head"><h2>▦ DISCOVERED WORLD / REGION LOD</h2><span id="world-atlas-summary">LOADING…</span><button class="btn" id="world-atlas-mode">▣ DETAIL / ALL</button><button class="btn" id="world-atlas-close">✕ CLOSE</button></div>
+        <canvas id="world-atlas-canvas" aria-label="Paginated atlas of discovered scientific territory"></canvas>
+        <div class="world-atlas-foot">DRAG TO PAN · WHEEL TO ZOOM · CLICK A REGION TO FLY CAMERA · NEVER LOADS THE FULL UNDISCOVERED WORLD</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── PANDORA — real research, separate from arena verdicts ───── -->
+  <section class="panel science-view" id="science-view" aria-label="Pandora scientific archive">
+    <div class="science-browser">
+      <aside class="science-queue">
+        <div class="science-queue-head"><span>RESEARCH CAMPAIGNS</span><button id="science-new" class="btn">+ QUESTION</button></div>
+        <div class="science-queue-tools"><button id="science-overnight" class="btn">◉ OVERNIGHT: OFF</button><button id="science-report" class="btn">☷ REPORT</button><button id="science-paper-library" class="btn warn">▤ PAPER LIBRARY</button></div>
+        <div id="science-new-form" class="science-new-form" hidden>
+          <label>FIELD<select id="science-field" class="sel"></select></label>
+          <label>EXACT QUESTION<textarea id="science-question" placeholder="What precisely is being investigated?"></textarea></label>
+          <label>TESTABLE CLAIM<textarea id="science-claim" placeholder="What would turn out to be true or false?"></textarea></label>
+          <label>PROPOSED MECHANISM (OPTIONAL)<textarea id="science-mechanism" placeholder="Specify the causal or mathematical mechanism…"></textarea></label>
+          <small class="science-form-note">Exact text retained if accepted. Limits: question 1,200; claim 1,600; mechanism 8,192 characters (raw UTF-8 JSON ≤16 KiB). Oversize submissions fail visibly — never silently truncated.</small>
+          <button id="science-create" class="btn warn">LOCK QUESTION</button>
+          <p id="science-form-error" class="science-error"></p>
+        </div>
+        <div class="science-scope">ARENA VERDICTS ARE LEADS, NOT EVIDENCE. SOURCE TITLES ARE LEADS, NOT PROOF.</div>
+        <div id="science-campaign-list" class="science-queue-list"></div>
+      </aside>
+      <div class="science-main">
+        <div class="panel-head"><h2>PANDORA // SCIENTIFIC ARCHIVE</h2><span id="science-counter" class="head-right">0 CAMPAIGNS</span></div>
+        <div id="science-exclusive-banner" class="science-exclusive-banner" role="status" aria-live="polite">EXCLUSIVE DIRECTIVE · loading exact target and worker status…</div>
+        <div class="science-tabs" id="science-tabs">
+          <button data-s="live" class="on">LIVE</button><button data-s="graph">CLAIM GRAPH</button>
+          <button data-s="sources">SOURCES</button><button data-s="calculations">CALCULATIONS</button>
+          <button data-s="attacks">ATTACKS</button><button data-s="reviews">REVIEWS</button>
+          <button data-s="replication">REPLICATION</button><button data-s="eurekas">⚡ EUREKA SOCIAL</button><button data-s="papers">PAPERS</button>
+        </div>
+        <div class="science-content" id="science-content"><div class="science-empty">⌬ SELECT A CAMPAIGN OR LOCK A NEW QUESTION.<br><br>THE ARENA MAY PROPOSE. PANDORA MUST VERIFY.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <div id="science-paper-overlay" class="science-paper-overlay" hidden>
+    <div class="science-paper-window">
+      <div class="science-paper-head"><h2>▤ PANDORA RESEARCH PAPER LIBRARY</h2><span id="science-paper-count">0 PAPERS</span><button class="btn" id="science-paper-close">✕ CLOSE</button></div>
+      <div class="science-paper-body">
+        <aside id="science-paper-list" class="science-paper-list"></aside>
+        <main class="science-paper-preview">
+          <div id="science-paper-meta" class="science-paper-meta">SELECT A PAPER · working drafts are not published findings.</div>
+          <div id="science-paper-actions" class="science-paper-actions"></div>
+          <iframe id="science-paper-frame" title="Pandora research paper PDF preview"></iframe>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────── AUDITABLE SYSTEM SELF-AMENDMENTS ─────────────────────── -->
+  <section class="panel system-view" id="system-view" aria-label="System amendments and engineering governance">
+    <div class="panel-head system-header"><h2>⚙ SYSTEM / GOVERNANCE</h2>
+      <span class="head-right" id="system-health">CHECKING SUPERVISOR…</span>
+      <button id="system-observe" class="btn">+ OBSERVE PROBLEM</button>
+      <button id="system-models" class="btn" title="Configure free model providers and test them live">⚡ MODEL EXCHANGE</button>
+      <button id="system-feeds" class="btn" title="Connect quota-aware public data feeds as external world context">☄ LIVE FEEDS</button>
+      <button id="system-run" class="btn warn" title="Run only the allowlisted Level-1 engineering pilot">▶ RUN AGENT PIPELINE</button>
+      <button id="system-research" class="btn" hidden title="Mobilize all 36 agents to research prior art and adjacent technical approaches for the selected app upgrade">⌬ RESEARCH PRIOR ART</button>
+      <button id="system-stop-research" class="btn danger" hidden title="Pause/stop the guided scholarly mission without deleting its research archive">■ STOP RESEARCH</button>
+      <button id="system-advance" class="btn warn" title="Advance the selected exact SYSTEM job through engineering, test and repair">▶ ADVANCE ENGINEERING</button>
+      <button id="system-vote" class="btn warn" hidden title="Only when the exact tested candidate is READY: run cross-field evidence review and vote; deploy only if it actually passes">✓ REVIEW + VOTE + DEPLOY IF APPROVED</button>
+      <button id="system-rollback" class="btn danger" title="Restore preimage code; never restore an old science database">⟲ ROLLBACK CODE</button>
+      <button id="system-reload" class="btn">↻ RELOAD APP</button>
+    </div>
+    <div class="system-notice" id="system-primary-summary">PRIMARY SYSTEM JOB · checking persisted user directive and actual worker status. A new proposal is never rejected merely because its ID is new. Research, safety, Arena and Science maintenance continue.</div>
+    <div class="system-columns">
+      <aside class="system-side"><h3>AGENT PROPOSALS / HISTORY</h3><div id="system-list" class="system-list"></div>
+        <details class="system-draft"><summary>+ FILE A USER SYSTEM JOB (AUTO DISPATCH)</summary>
+          <label>PROPOSING AGENT<select id="system-author" class="sel"></select></label>
+          <label>OBSERVED PROBLEM<textarea id="system-observation" maxlength="800" placeholder="What repeated system weakness was actually observed?"></textarea></label>
+          <label>TESTABLE BENEFIT<textarea id="system-prediction" maxlength="800" placeholder="What should visibly work after the upgrade?"></textarea></label>
+          <label class="system-check"><input id="system-research-first" type="checkbox"> OPTIONAL RESEARCH-FIRST GATE · CHECK ONLY IF ALL-AGENT DISCOVERY SHOULD DELAY CHATGPT CODING</label>
+          <button id="system-draft-submit" class="btn">BUILD AS PRIMARY JOB</button>
+          <p>SYSTEM always has top priority. Even with this box OFF, Arena scientists/destroyers research the exact SYSTEM objective while ChatGPT remains the coding authority. Turn this box ON only when you explicitly want a bounded all-agent discovery campaign to become a prerequisite before coding.</p>
+        </details>
+        <h3>CAPABILITY REGISTRY</h3><div id="system-tool-list" class="system-list system-tool-list">Registry loads after this view opens.</div>
+      </aside>
+      <div class="system-detail" id="system-detail"><div class="system-empty">SELECT A SYSTEM AMENDMENT.<br><br>A REAL AGENT INSPECTS A REAL WEAKNESS. ENGINEERING MAY RUN ONLY AFTER YOU START THE PILOT.<br><br>THE PATCH MUST SURVIVE TESTS, ADVERSARIAL REVIEW, WEIGHTED VOTES, RESTART AND HEALTH CHECKS.</div></div>
+    </div>
+    <div class="system-footer" id="system-message">IDLE · AGENT GOVERNANCE IS SEPARATE FROM SCIENTIFIC EVIDENCE.</div>
+    <div id="provider-overlay" class="provider-overlay" hidden>
+      <div class="provider-shell" role="dialog" aria-modal="true" aria-labelledby="provider-title">
+        <div class="provider-head"><div><h2 id="provider-title">⚡ MODEL FEDERATION · V9</h2><p>International-first inference federation. ModelScope International (.ai) stays OPTIONAL; China .cn stays disabled. 401/402/403 become manual account blocks instead of endless retries. New lanes include AIHubMix, Z.AI/BigModel, and SiliconFlow Global.</p></div><div class="provider-head-actions"><button id="provider-test-all" class="btn warn">TEST ALL CONFIGURED</button><button id="provider-close" class="btn">✕ CLOSE</button></div></div>
+        <div class="provider-summary" id="provider-summary">Loading provider health…</div>
+        <div class="provider-grid" id="provider-grid"></div>
+        <div class="provider-foot">Secrets stay local and are never returned after saving. A route is trusted only after a real inference succeeds. HTTP 402 billing depletion, 401 auth failures, 403 entitlement failures, and 404 model/config failures are HARD BLOCKS until you explicitly save/test again; 429 and transient server errors cool down and fail over automatically.</div>
+      </div>
+    </div>
+    <div id="feed-overlay" class="provider-overlay" hidden>
+      <div class="provider-shell" role="dialog" aria-modal="true" aria-labelledby="feed-title">
+        <div class="provider-head"><div><h2 id="feed-title">☄ LIVE CONTEXT FEEDS · V9</h2><p>Real public data can perturb the world without pretending it is scientific proof. All upstream hosts are allowlisted, cached, quota-aware, and labeled EXTERNAL_CONTEXT_DATA.</p></div><div class="provider-head-actions"><button id="feed-sample-all" class="btn warn">SAMPLE ALL ENABLED</button><button id="feed-close" class="btn">✕ CLOSE</button></div></div>
+        <div class="provider-summary" id="feed-summary">Loading feed health…</div>
+        <div class="provider-grid" id="feed-grid"></div>
+        <div class="provider-foot">No arbitrary URL proxy, no mobile-private endpoint spoofing, no rotating-proxy quota evasion. Open-Meteo, NASA DONKI, USGS, Wikimedia, Met Open Access, CoinGecko Demo, and bounded OpenStreetMap Overpass are wired as external context only. They cannot satisfy Pandora evidence gates.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── INTEL ─────────────────────────── -->
+  <aside class="panel intel">
+    <div class="tabs" id="tabs">
+      <button data-t="feed" class="on">FEED</button>
+      <button data-t="logs">LOGS</button>
+      <button data-t="archive">ARCHIVE</button>
+      <button data-t="ranks">RANKS</button>
+      <button data-t="ledger">LEDGER</button>
+      <button data-t="problems">RESEARCH</button>
+      <button data-t="survivors">SURVIVORS</button>
+    </div>
+    <div class="panel-body" id="intel"></div>
+  </aside>
+</main>
+
+<footer class="ticker">
+  <div class="ticker-track" id="ticker"></div>
+</footer>
+
+<script src="/static/app.js"></script>
+<script src="/static/science.js"></script>
+<script src="/static/world.js"></script>
+<script src="/static/value-text.js"></script>
+<script src="/static/governance.js"></script>
+<script src="/static/panel-minimize.js" defer></script>
+<script src="/static/brain.js?v=20261004-ready-state"></script>
+<script src="/static/frontier.js" defer></script>
+<script src="/static/social.js?v=eureka2" defer></script>
+<script src="/static/github.js?v=gh-atlas-display-1" defer></script>
+<script src="/static/workspace.js?v=ws14" defer></script>
+</body>
+</html>

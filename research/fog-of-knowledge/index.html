@@ -9,9 +9,24 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <style>html,body{background:#02040a}</style>
-<link rel="stylesheet" href="styles.css?v=0.11.4">
+<link rel="stylesheet" href="styles.css?v=0.14.0">
 </head>
 <body>
+<div id="atlasDisplayDock" class="atlasDisplayDock" aria-label="Map display">
+  <div id="atlasDockTabs"></div>
+  <button id="mapOnlyBtn" type="button" aria-pressed="false">MAP ONLY</button>
+  <button id="fullscreenMapBtn" type="button">FULLSCREEN</button>
+  <details id="atlasPanelsMenu"><summary>PANELS</summary><div>
+    <label><input type="checkbox" data-atlas-panel="header" checked> Title &amp; navigation</label>
+    <label><input type="checkbox" data-atlas-panel="toolbar" checked> Search &amp; counters</label>
+    <label><input type="checkbox" data-atlas-panel="detail" checked> Node details</label>
+    <label><input type="checkbox" data-atlas-panel="caption" checked> Bottom map caption</label>
+    <label><input type="checkbox" data-atlas-panel="tools" checked> Zoom controls</label>
+    <label><input type="checkbox" data-atlas-panel="shell" checked> Nemesis / preview header</label>
+  </div></details>
+  <output id="atlasDisplayStatus" role="status" hidden></output>
+  <button id="minimizeMapControlsBtn" type="button" aria-expanded="true" title="Minimize map controls">−</button>
+</div>
 <header class="topbar">
   <div class="brand">
     <small>OPEN KNOWLEDGE ATLAS</small>
@@ -146,10 +161,11 @@
 <script src="circuit-spatial.js?v=0.11.4" defer></script>
 <script src="circuit-painter.js?v=0.11.4" defer></script>
 <script src="node-connections.js?v=0.11.4" defer></script>
-<script src="massive-atlas.js?v=0.11.4" defer></script>
+<script src="massive-atlas.js?v=0.14.0" defer></script>
 <script src="public-frontier.js?v=0.11.4" defer></script>
 <script src="branch-layout.js?v=0.11.4" defer></script>
 <script src="atlas-interaction.js?v=0.11.4" defer></script>
 <script src="app.js?v=0.11.4" defer></script>
+<script src="atlas-display.js?v=0.14.0" defer></script>
 </body>
 </html>

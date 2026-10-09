@@ -168,7 +168,7 @@ class Handler(SimpleHTTPRequestHandler):
             # Native's atlas shell redirect skips embedded pages. Keep the user's
             # 8097 address, while the frame uses the same pinned assets as Chrome.
             content=(toolbar.format(state=f'Published snapshot · {sha[:8]}')+
-                     f'<iframe id="publishedAtlas" data-sha="{sha}" title="Published Fog of Knowledge" src="{url}"></iframe>')
+                     f'<iframe id="publishedAtlas" allowfullscreen data-sha="{sha}" title="Published Fog of Knowledge" src="{url}"></iframe>')
             status=200
         except Exception:
             sha=None;status=503
@@ -193,6 +193,7 @@ class Handler(SimpleHTTPRequestHandler):
               'color:#afc3d8;flex:none;order:1}.research-progress summary{cursor:pointer}'
               '.research-progress ul{max-height:180px;overflow:auto;padding-left:20px}'
               '.research-progress li{padding:4px 0}.sync-error{padding:3rem;overflow:auto;order:2}'
+              'body.atlas-shell-hidden .preview-bar,body.atlas-shell-hidden .research-progress{display:none}'
               '</style></head><body>'+content+
               '<details class="research-progress" id="researchProgress"><summary id="researchSummary">'
               'Research progress · connecting…</summary><ul id="researchBatches"></ul></details>'

@@ -77,11 +77,13 @@ jobs:
           python scripts/test_atlas_integrity.py
           python scripts/test_atlas_preview.py
           node scripts/test_live_preview.js
+          node scripts/test_atlas_display.js
 
       - name: Check atlas renderer syntax
         working-directory: research/fog-of-knowledge
         run: |
           node --check app.js
+          node --check atlas-display.js
           node --check atlas-interaction.js
           node --check branch-layout.js
           node --check circuit-worker.js

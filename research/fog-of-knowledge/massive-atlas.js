@@ -31,7 +31,7 @@
       this.worker.onerror=()=>{this.progress.hidden=false;this.progress.textContent='Circuit worker could not load. Reload the atlas to retry.'};
       const rect=canvas.parentElement.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);
       this.worker.postMessage({families:data.families,links:data.navigation.links,nodes:data.nodes.map(n=>({id:n.id,domain:n.domain,label:n.label,short_label:n.short_label,kind:n.kind,frontier:n.frontier,_status:n._status})),pending:data.navigation.placement_pending_ids,edges:data.edges,connectionRecords:this.connectionRecords,size:{width:Math.round(rect.width*dpr),height:Math.round(rect.height*dpr),dpr}});
-      this.resizeObserver=new ResizeObserver(()=>this.schedule());this.resizeObserver.observe(canvas.parentElement);
+      this.resizeObserver=new ResizeObserver(()=>{const r=canvas.parentElement.getBoundingClientRect();if(!r.width||!r.height)return;if(this.overviewCache?.canvas.close)this.overviewCache.canvas.close();this.overviewCache=null;if(this.active&&this.ready&&!viewportOverride)this.fit();else this.schedule()});this.resizeObserver.observe(canvas.parentElement);
       graph.addEventListener('pointermove',ev=>{if(!this.active||!this.ready||ev.buttons)return;const item=this.hit(ev);data.onHover(item?.kind==='node'?this.nodes.get(item.id):null)});
       graph.addEventListener('pointerleave',()=>data.onHover(null));
       graph.addEventListener('click',ev=>{if(!this.active||!this.ready||cameraGesture)return;const item=this.hit(ev);if(item?.kind==='node')data.onSelect(this.nodes.get(item.id));else if(item?.kind==='family'){expandAll=false;expandFieldDeep=false;activePath=[familyToken(item.id)];render()}});
