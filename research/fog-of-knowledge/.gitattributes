@@ -4,3 +4,6 @@ data/evidence/raw/*.bin -text
 nemesis/batches/** -text
 # Unified patches require a literal space on empty context lines.
 nemesis/integration/*.patch -text whitespace=-blank-at-eol
+# Exact retained Brain 6.2.7 source hashes and reversible patch bytes.
+nemesis/integration/blank-composer/** -text whitespace=cr-at-eol
+nemesis/integration/blank-composer/upgrade.patch whitespace=cr-at-eol,-blank-at-eol
