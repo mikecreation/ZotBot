@@ -218,6 +218,12 @@
   }
   async function retireForFreshChat(c,name,j){
     if(j.retired)return;
+    // An explicitly rebound tab can have no local activeJobId while Native
+    // still owns the old claim. Check Native even during idle rollover.
+    if(!j.jobId){
+      const r=await api(c,'poll',{client_id:c.clientId,worker_slot:name,role:roleFor(name),state:'RECOVERING'});
+      if(r.job){j.jobId=r.job.id;j.job=r.job;await chrome.storage.local.set({[recoveryKey(name)]:j});}
+    }
     if(j.jobId){
       // RECOVERING cannot claim a new queued request. It only returns the
       // existing lease; use that exact lease, never invent a replacement.
@@ -240,6 +246,7 @@
   async function finishRecovery(name,j){
     // Migrate unfinished journals from the same-URL recovery build.
     j.oldUrl=j.oldUrl||j.url;j.url='https://chatgpt.com/';j.mode='FRESH_CHAT';
+    if(!('expectedActiveJobId' in j))j.expectedActiveJobId=j.jobId||null;
     let c=await config(),slot=c.slots?.[name];
     if(!c.enabled || !slot || (slot.bindingToken||null)!==j.bindingToken || ![j.oldTabId,j.newTabId].includes(slot.tabId)){
       j.phase='CANCELLED';j.detail='Paused or explicitly rebound; recovery cancelled';
@@ -272,7 +279,7 @@
       await chrome.storage.local.set({[fenceKey(j.newTabId)]:null});
       await editConfig(current=>{
         const bound=current.slots?.[name];
-        if(!current.enabled || bound?.tabId!==j.oldTabId || (bound.bindingToken||null)!==j.bindingToken || (bound.activeJobId||null)!==j.jobId)throw Error('Recovery cancelled by a changed binding or lease');
+        if(!current.enabled || bound?.tabId!==j.oldTabId || (bound.bindingToken||null)!==j.bindingToken || (bound.activeJobId||null)!==j.expectedActiveJobId)throw Error('Recovery cancelled by a changed binding or lease');
         current.slots[name]={...bound,tabId:j.newTabId,url:j.url,activeJobId:null,recoveryPending:j.nonce,completedTurns:0,conversationChars:0,lastCompletedJob:null};
       });
       j.phase='COMMITTED';await chrome.storage.local.set({[recoveryKey(name)]:j});
@@ -411,7 +418,7 @@
       route={id:job.id,url:tab.url,identity,transportRetries:Number(job.transport_retries||0),at:Date.now()};await chrome.storage.local.set({[key]:route});
     }
     if(route?.identity===identity)return false;
-    if(resume && identity==='root' && report.state==='READY' && !report.delivery?.sending && (!fence || fence.id===job.id)){
+    if((resume || route && route.identity!==identity) && identity==='root' && report.state==='READY' && !report.delivery?.sending && (!fence || fence.id===job.id)){
       const current=await config();
       if(!current.enabled || current.slots?.[slotName]?.tabId!==tab.id)return true;
       const nonce=crypto.randomUUID();

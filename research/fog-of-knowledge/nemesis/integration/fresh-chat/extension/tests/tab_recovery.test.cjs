@@ -107,5 +107,12 @@ async function prolongedHang(f){for(let i=0;i<3;i++){await f.hang();if(i<2)await
   const rootRestart=fixture({store:f.store,tabs:f.tabs,jobs:f.jobs,now:f.now()});await rootRestart.alarm();
   assert.equal(rootRestart.store['nb.config'].slots.worker_1.activeJobId,null);assert.equal(rootRestart.store['nb.deliveryFence.1'],null);assert.equal(rootRestart.retirements[0].body.recovery_id,f.retirements[0].body.recovery_id);
   assert.equal(rootRestart.tabs[1].url,'https://chatgpt.com/');assert(!rootRestart.messages.some(m=>m.id===1&&m.type==='NB_CONTENT_SEND'));
+  // A rebound empty root must retire a routed old CLAIMED job too, even
+  // before Native has set resume_only or acknowledged the old page click.
+  f=fixture();f.tabs[1].url='https://chatgpt.com/';f.store['nb.config'].slots.worker_1.url=f.tabs[1].url;f.store['nb.jobConversation.job-1']={identity:'c:previous',url:'https://chatgpt.com/c/previous'};
+  await f.tick(1);assert.equal(f.retirements.length,1);assert(!f.messages.some(m=>m.id===1&&m.type==='NB_CONTENT_SEND'));
+  // Lost local activeJobId does not make a Native-owned claim safe to replay.
+  f=fixture();Object.assign(f.store['nb.config'].slots.worker_1,{activeJobId:null,completedTurns:4});
+  await f.tick(1);assert.equal(f.retirements[0].body.lease,'original-lease-1');assert.equal(f.tabs[f.store['nb.config'].slots.worker_1.tabId].url,'https://chatgpt.com/');
   console.log('PASS primary/worker fresh-chat replacement, independent next-job delivery, exact lease retirement, journal/legacy-fence migration, completed-turn rollover, restart idempotency, generation/draft/navigation protections and bounded recovery. OFFLINE FAULT INJECTION.');
 })().catch(e=>{console.error(e);process.exitCode=1;});
