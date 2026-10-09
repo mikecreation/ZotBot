@@ -170,3 +170,62 @@ def test_context_read_never_converts_reviewer_rejection_into_publication(rig):
     response['decisions'][0].update(outcome='unsupported',rationale='Synthetic counterevidence invalidates the asserted scope')
     rig.brain.complete(jid,response);rig.crew.tick()
     assert rig.crew.load(rig.folder)['state']=='BLOCKED' and not rig.ws.publications
+
+@pytest.mark.parametrize('status',['QUEUED','CLAIMED','SENT','COMPLETE'])
+def test_startup_bounds_only_unsent_legacy_job_preserving_request_identity(tmp_path,monkeypatch,status):
+    from types import SimpleNamespace
+    from sim.store import Store
+    from sim.brain_bridge import BrainBridge
+    from sim.github_evidence import FogEvidenceCrew,AUTHOR_SYSTEM,write
+    original={'sources':[source('Actual retained source '+'x'*200000)],'record_catalog':[]}
+    store=Store(str(tmp_path/'test.db'));brain=BrainBridge(store);brain.set_enabled(True)
+    jid=brain.enqueue(AUTHOR_SYSTEM,json.dumps(original),16000,'fog-crew:evidence:author:fixture:unit:0')
+    if status!='QUEUED':store.execute('UPDATE brain_jobs SET status=?,owner=?,lease=? WHERE id=?',(status,'actual-owner','actual-lease',jid))
+    before=store.one('SELECT * FROM brain_jobs WHERE id=?',(jid,))
+    ws=SimpleNamespace(cache_dir=tmp_path);folder=tmp_path/'evidence-crew/owner/repo/fixture';folder.mkdir(parents=True)
+    flow={'state':'AUTHOR','batch_id':'fixture','author_attempt':1,'jobs':{'author':jid},
+          'author_units':[{'index':0,'job_id':jid,'goal':json.dumps(original)}],
+          'candidate_sha256':'unchanged','retained_roles':['previous-independent-review']}
+    write(folder/'flow.json',flow)
+    # An archived attempt must never be swept or rewritten.
+    archived=folder/'attempts/author-0/flow.json';write(archived,flow);archive_before=archived.read_bytes()
+    monkeypatch.setattr(FogEvidenceCrew,'author_goal',lambda self,f,p:json.dumps(original))
+    crew=FogEvidenceCrew(ws,brain);after=store.one('SELECT * FROM brain_jobs WHERE id=?',(jid,))
+    assert after['id']==jid and after['status']==status
+    assert after['owner']==before['owner'] and after['lease']==before['lease']
+    assert archived.read_bytes()==archive_before
+    if status=='QUEUED':
+        envelope=json.loads(after['packet']);view=json.loads(envelope['GOAL'])
+        assert size(view)<=FRAME_LIMIT and view['evidence_access']['complete_captures_retained']
+        assert envelope['request_id']==json.loads(before['packet'])['request_id']
+        assert envelope['STATE']==json.loads(before['packet'])['STATE']
+        retained=json.loads((folder/'queued-packet-upgrade'/jid/'original-packet.json').read_text(encoding='utf8'))
+        assert retained['packet']==before['packet']
+        upgraded=crew.load(folder);reads=crew.read_session(folder,upgraded,'author:unit:0')
+        assert reads.original()==original and upgraded['candidate_sha256']=='unchanged'
+        assert upgraded['retained_roles']==flow['retained_roles']
+        # A restart and a subsequent context read reuse this exact stream.
+        FogEvidenceCrew(ws,brain)
+        reads.create(original,reads.base())
+        assert reads.exchange({'operation':'source','source_id':'paper','start':199000,'end':200000})['data']['window']['text']==original['sources'][0]['text'][199000:200000]
+    else:assert after['packet']==before['packet'] and not (folder/'queued-packet-upgrade').exists()
+    store.db.close()
+
+def test_legacy_review_upgrade_preserves_approved_role_and_exact_candidate(tmp_path):
+    from types import SimpleNamespace
+    from sim.store import Store
+    from sim.brain_bridge import BrainBridge
+    from sim.github_evidence import FogEvidenceCrew,REVIEW_SYSTEM,write
+    original=packet('Support sentence.'+'x'*200000);store=Store(str(tmp_path/'test.db'));brain=BrainBridge(store);brain.set_enabled(True)
+    jobs={r:brain.enqueue(REVIEW_SYSTEM,json.dumps(original),16000,'fog-crew:evidence:'+r+':fixture') for r in ('entailment','adversarial')}
+    store.execute("UPDATE brain_jobs SET status='COMPLETE',result=? WHERE id=?",('actual independently collected decision',jobs['entailment']))
+    approved=store.one('SELECT * FROM brain_jobs WHERE id=?',(jobs['entailment'],))
+    folder=tmp_path/'evidence-crew/owner/repo/fixture';folder.mkdir(parents=True)
+    flow={'state':'REVIEW','batch_id':'fixture','jobs':jobs,'retained_roles':['entailment'],'candidate_sha256':original['candidate_sha256']}
+    write(folder/'flow.json',flow);crew=FogEvidenceCrew(SimpleNamespace(cache_dir=tmp_path),brain)
+    assert store.one('SELECT * FROM brain_jobs WHERE id=?',(jobs['entailment'],))==approved
+    row=store.one('SELECT * FROM brain_jobs WHERE id=?',(jobs['adversarial'],));view=json.loads(json.loads(row['packet'])['GOAL'])
+    assert size(view)<=FRAME_LIMIT and view['records']['assertions.jsonl']==original['records']['assertions.jsonl']
+    assert view['records']['nodes.jsonl']==original['records']['nodes.jsonl']
+    assert crew.load(folder)['retained_roles']==['entailment'] and crew.load(folder)['candidate_sha256']==original['candidate_sha256']
+    store.db.close()

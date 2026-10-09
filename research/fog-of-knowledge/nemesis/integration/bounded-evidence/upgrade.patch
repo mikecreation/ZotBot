@@ -259,7 +259,7 @@ index 7d35041..50d4273 100644
      if not result:raise ValueError('No assertions to partition')
      return result
 diff --git a/native/sim/github_evidence.py b/native/sim/github_evidence.py
-index e59fb0f..3617959 100644
+index e59fb0f..6932aad 100644
 --- a/native/sim/github_evidence.py
 +++ b/native/sim/github_evidence.py
 @@ -11,10 +11,11 @@ from fastapi import Request,HTTPException
@@ -271,11 +271,82 @@ index e59fb0f..3617959 100644
  VERSION='fog-evidence-crew/1'
  CLIENT_REVISION='gh-evidence-5'
 -RUNTIME_REVISION='crew-cancellation-recovery/1'
-+RUNTIME_REVISION='crew-bounded-evidence/1'
++RUNTIME_REVISION='crew-bounded-evidence/2'
  TERMINAL={'MERGED','PR_OPEN','READY','BLOCKED','STALE'}
  MAX_PACKET=300_000
  MAX_AUTHOR_ATTEMPTS=8
-@@ -164,42 +165,100 @@ class FogEvidenceCrew:
+@@ -100,6 +101,70 @@ class FogEvidenceCrew:
+         from .fog_scientific_planner import ScientificCoveragePlanner
+         self.coverage=ScientificCoveragePlanner(self)
+         self.running=False;self.last_error='';self.file_errors={}
++        self.compact_queued_evidence()
++
++    def compact_queued_evidence(self):
++        """Upgrade only known-unsent packets before HTTP polling can claim them.
++
++        Keep the request ID, tag, candidate and completed reviews. A claim and
++        this update use the same SQLite lock; delivery-uncertain work is never
++        rewritten. Retain the original envelope before changing its model view.
++        """
++        store=self.brain.store
++        if not hasattr(store,'db') or not hasattr(store,'lock'):return
++        with store.lock,store.db:
++            for path in self.root.glob('*/*/*/flow.json'):
++                flow=json.loads(path.read_text(encoding='utf8'));folder=path.parent
++                if flow.get('state') in TERMINAL:continue
++                refs=[]
++                if flow.get('author_units'):
++                    refs.extend(('author:unit:'+str(u['index']),'author',u['job_id'],None)
++                                for u in flow['author_units'] if u.get('job_id'))
++                elif flow.get('jobs',{}).get('author'):
++                    refs.append(('author','author',flow['jobs']['author'],None))
++                if flow.get('review_units'):
++                    refs.extend((role+':unit:'+str(u['index']),role,jid,u['packet'])
++                                for u in flow['review_units'] for role,jid in u['jobs'].items())
++                else:
++                    refs.extend((role,role,flow['jobs'][role],None)
++                                for role in ('entailment','adversarial') if flow.get('jobs',{}).get(role))
++                changed=False
++                for key,role,jid,original in refs:
++                    row=store.db.execute('SELECT * FROM brain_jobs WHERE id=?',(jid,)).fetchone()
++                    if not row or row['status']!='QUEUED' or row['owner'] is not None or row['lease'] is not None:continue
++                    envelope=json.loads(row['packet']);raw=json.loads(envelope['GOAL'])
++                    if raw.get('evidence_access',{}).get('protocol')=='fog-evidence-reads/1':continue
++                    archive=folder/'queued-packet-upgrade'/str(jid)
++                    archive.mkdir(parents=True,exist_ok=True)
++                    retained=archive/'original-packet.json'
++                    if retained.exists():
++                        if json.loads(retained.read_text(encoding='utf8'))['packet']!=row['packet']:
++                            raise ValueError('Queued evidence envelope changed during upgrade')
++                    else:write(retained,{'packet':row['packet']})
++                    try:
++                        if role=='author':
++                            original=json.loads(self.author_goal(flow,folder))
++                            frame=author_frames(raw)[0]
++                            if 'unit:' in key:
++                                frame['partition']['source_ids']=[s['id'] for s in raw['sources']]
++                                frame['partition']['rule']='Author these source IDs; additional complete sources are accessible through catalog and reads.'
++                        else:original=original or raw;frame=review_frame(raw)
++                        reads=self.read_session(folder,flow,key);frame=reads.create(original,frame)
++                        if size(frame)>FRAME_LIMIT:raise ValueError('Exact queued evidence exceeds view capacity')
++                        envelope['GOAL']=encode(frame)
++                        constraint=envelope.setdefault('CONSTRAINT',{})
++                        constraint['caller_instructions']=constraint.get('caller_instructions','')+'\n'+READ_SYSTEM
++                        store.db.execute("UPDATE brain_jobs SET packet=? WHERE id=? AND status='QUEUED' AND owner IS NULL AND lease IS NULL",
++                                         (encode(envelope),jid))
++                        write(archive/'receipt.json',{'job_id':jid,'original_packet_sha256':hashlib.sha256(row['packet'].encode()).hexdigest(),
++                            'view_packet_sha256':hashlib.sha256(encode(envelope).encode()).hexdigest(),'goal_bytes':size(frame)})
++                    except (ValueError,KeyError) as exc:
++                        # A complete assertion that cannot fit is a visible
++                        # resource failure, never a clipped review or approval.
++                        store.db.execute("UPDATE brain_jobs SET status='FAILED',error=? WHERE id=? AND status='QUEUED' AND owner IS NULL AND lease IS NULL",
++                            ('Queued evidence view cannot be bounded without changing exact input: '+str(exc),jid))
++                    changed=True
++                if changed:write(path,flow)
+     def location(self,owner,repo,batch_id):
+         return self.root/check_owner(owner)/check_repo(repo)/_validate_batch_id(batch_id)
+     def load(self,folder):return json.loads((folder/'flow.json').read_text(encoding='utf-8'))
+@@ -164,42 +229,100 @@ class FogEvidenceCrew:
          for source in folder.glob('*unit*.json'):
              if not (archive/source.name).exists():shutil.copyfile(source,archive/source.name)
  
@@ -386,7 +457,7 @@ index e59fb0f..3617959 100644
                  if any(d.get('outcome')!='supported' or not all(d.get('checks',{}).get(k) is True for k in ('exact_support','scope_preserved','no_strengthening','relation_direction','representation_justified')) for d in decisions):
                      raise CrewFailure('Reviewer '+role+' rejected partitioned assertion','scientific','review-rejection',{'role':role,'job_id':job['id'],'decisions':decisions})
                  write(batch/'.nemesis-control/review-input.json',{'decisions':decisions,'reviewer':'brain:'+job['id'],'model':'Nemesis Brain; provider model unavailable','role':role,'candidate_sha256':flow['candidate_sha256'],'context_sha256':flow['context_sha256']})
-@@ -380,8 +439,12 @@ class FogEvidenceCrew:
+@@ -380,8 +503,12 @@ class FogEvidenceCrew:
          return {'protocol':VERSION,'jobs':queued,'contract_sha':live['sha']}
      @staticmethod
      def public(flow):
@@ -400,7 +471,7 @@ index e59fb0f..3617959 100644
          return value
  
      def publication_turn(self,flow):
-@@ -530,7 +593,7 @@ class FogEvidenceCrew:
+@@ -530,7 +657,7 @@ class FogEvidenceCrew:
          bid=flow['batch_id'];batch=folder/'project/nemesis/batches'/bid
          for role in ('entailment','adversarial'):
              if role not in flow['jobs']:
@@ -409,7 +480,7 @@ index e59fb0f..3617959 100644
                  self.save(folder,flow)
          retained=flow.setdefault('retained_roles',[])
          for role in ('entailment','adversarial'):
-@@ -538,7 +601,11 @@ class FogEvidenceCrew:
+@@ -538,7 +665,11 @@ class FogEvidenceCrew:
              job=self.job(flow['jobs'][role])
              if job['status'] in {'QUEUED','CLAIMED','SENT'}:continue
              self.require_complete_job(job,'Reviewer '+role)
@@ -422,7 +493,7 @@ index e59fb0f..3617959 100644
              decisions=bind_review_response(response,packet)
              if any(d.get('outcome')!='supported' or not all(d.get('checks',{}).get(k) is True for k in ('exact_support','scope_preserved','no_strengthening','relation_direction','representation_justified')) for d in decisions):
                  raise CrewFailure('Reviewer '+role+' found unsupported or uncertain representation','scientific','review-rejection',{'role':role,'job_id':job['id'],'decisions':decisions})
-@@ -595,7 +662,13 @@ class FogEvidenceCrew:
+@@ -595,7 +726,13 @@ class FogEvidenceCrew:
                          if unit_job['status'] in {'QUEUED','CLAIMED','SENT'}:return
                          write(folder/('author-unit-'+str(unit['index'])+'-result.json'),unit_job)
                          self.require_complete_job(unit_job,'Author unit')
@@ -437,7 +508,7 @@ index e59fb0f..3617959 100644
                      from .fog_packet_units import merge_authored
                      try:combined=merge_authored(packets)
                      except ValueError as exc:raise CrewFailure(str(exc),'scientific','author-evidence-limitation') from exc
-@@ -603,9 +676,16 @@ class FogEvidenceCrew:
+@@ -603,9 +740,16 @@ class FogEvidenceCrew:
                  else:job=self.job(flow['jobs']['author'])
                  if job['status'] in {'QUEUED','CLAIMED','SENT'}:return
                  self.require_complete_job(job,'Candidate author')
@@ -455,7 +526,7 @@ index e59fb0f..3617959 100644
                  packet=result_object(job['result']);write(folder/'author-result.json',packet)
                  write(batch/'author-output.json',{'job_id':job['id'],'raw_result':job['result'],'output':packet})
                  if packet.get('blocked_reason'):
-@@ -633,7 +713,9 @@ class FogEvidenceCrew:
+@@ -633,7 +777,9 @@ class FogEvidenceCrew:
              if flow['state']=='REVIEW':
                  packet=json.loads((batch/'.nemesis-control/packet.json').read_text(encoding='utf-8'))
                  from .fog_packet_units import review_units,size
@@ -466,7 +537,7 @@ index e59fb0f..3617959 100644
                      if not self.review_partitioned(flow,folder,packet):return
                      self.export(folder,flow)
                      check=self.ws.check_batch(flow['owner'],flow['repo'],flow['path'],bid)
-@@ -772,6 +854,14 @@ def install_evidence_routes(app,crew):
+@@ -772,6 +918,14 @@ def install_evidence_routes(app,crew):
              body=json.loads(raw)
              return await asyncio.to_thread(crew.coverage.resume_retrieval,owner,repo,body['path'],body['plan_id'],body['additional_turns'])
          except (ValueError,KeyError,OSError) as exc:raise HTTPException(400,str(exc))
@@ -483,10 +554,10 @@ index e59fb0f..3617959 100644
          guard(request);raw=await request.body()
 diff --git a/native/tests/test_evidence_reads.py b/native/tests/test_evidence_reads.py
 new file mode 100644
-index 0000000..db246f3
+index 0000000..8895d19
 --- /dev/null
 +++ b/native/tests/test_evidence_reads.py
-@@ -0,0 +1,172 @@
+@@ -0,0 +1,231 @@
 +"""Bounded delivery must preserve evidence access and the real compiler gate."""
 +import copy,hashlib,json,sys
 +from pathlib import Path
@@ -659,3 +730,62 @@ index 0000000..db246f3
 +    response['decisions'][0].update(outcome='unsupported',rationale='Synthetic counterevidence invalidates the asserted scope')
 +    rig.brain.complete(jid,response);rig.crew.tick()
 +    assert rig.crew.load(rig.folder)['state']=='BLOCKED' and not rig.ws.publications
++
++@pytest.mark.parametrize('status',['QUEUED','CLAIMED','SENT','COMPLETE'])
++def test_startup_bounds_only_unsent_legacy_job_preserving_request_identity(tmp_path,monkeypatch,status):
++    from types import SimpleNamespace
++    from sim.store import Store
++    from sim.brain_bridge import BrainBridge
++    from sim.github_evidence import FogEvidenceCrew,AUTHOR_SYSTEM,write
++    original={'sources':[source('Actual retained source '+'x'*200000)],'record_catalog':[]}
++    store=Store(str(tmp_path/'test.db'));brain=BrainBridge(store);brain.set_enabled(True)
++    jid=brain.enqueue(AUTHOR_SYSTEM,json.dumps(original),16000,'fog-crew:evidence:author:fixture:unit:0')
++    if status!='QUEUED':store.execute('UPDATE brain_jobs SET status=?,owner=?,lease=? WHERE id=?',(status,'actual-owner','actual-lease',jid))
++    before=store.one('SELECT * FROM brain_jobs WHERE id=?',(jid,))
++    ws=SimpleNamespace(cache_dir=tmp_path);folder=tmp_path/'evidence-crew/owner/repo/fixture';folder.mkdir(parents=True)
++    flow={'state':'AUTHOR','batch_id':'fixture','author_attempt':1,'jobs':{'author':jid},
++          'author_units':[{'index':0,'job_id':jid,'goal':json.dumps(original)}],
++          'candidate_sha256':'unchanged','retained_roles':['previous-independent-review']}
++    write(folder/'flow.json',flow)
++    # An archived attempt must never be swept or rewritten.
++    archived=folder/'attempts/author-0/flow.json';write(archived,flow);archive_before=archived.read_bytes()
++    monkeypatch.setattr(FogEvidenceCrew,'author_goal',lambda self,f,p:json.dumps(original))
++    crew=FogEvidenceCrew(ws,brain);after=store.one('SELECT * FROM brain_jobs WHERE id=?',(jid,))
++    assert after['id']==jid and after['status']==status
++    assert after['owner']==before['owner'] and after['lease']==before['lease']
++    assert archived.read_bytes()==archive_before
++    if status=='QUEUED':
++        envelope=json.loads(after['packet']);view=json.loads(envelope['GOAL'])
++        assert size(view)<=FRAME_LIMIT and view['evidence_access']['complete_captures_retained']
++        assert envelope['request_id']==json.loads(before['packet'])['request_id']
++        assert envelope['STATE']==json.loads(before['packet'])['STATE']
++        retained=json.loads((folder/'queued-packet-upgrade'/jid/'original-packet.json').read_text(encoding='utf8'))
++        assert retained['packet']==before['packet']
++        upgraded=crew.load(folder);reads=crew.read_session(folder,upgraded,'author:unit:0')
++        assert reads.original()==original and upgraded['candidate_sha256']=='unchanged'
++        assert upgraded['retained_roles']==flow['retained_roles']
++        # A restart and a subsequent context read reuse this exact stream.
++        FogEvidenceCrew(ws,brain)
++        reads.create(original,reads.base())
++        assert reads.exchange({'operation':'source','source_id':'paper','start':199000,'end':200000})['data']['window']['text']==original['sources'][0]['text'][199000:200000]
++    else:assert after['packet']==before['packet'] and not (folder/'queued-packet-upgrade').exists()
++    store.db.close()
++
++def test_legacy_review_upgrade_preserves_approved_role_and_exact_candidate(tmp_path):
++    from types import SimpleNamespace
++    from sim.store import Store
++    from sim.brain_bridge import BrainBridge
++    from sim.github_evidence import FogEvidenceCrew,REVIEW_SYSTEM,write
++    original=packet('Support sentence.'+'x'*200000);store=Store(str(tmp_path/'test.db'));brain=BrainBridge(store);brain.set_enabled(True)
++    jobs={r:brain.enqueue(REVIEW_SYSTEM,json.dumps(original),16000,'fog-crew:evidence:'+r+':fixture') for r in ('entailment','adversarial')}
++    store.execute("UPDATE brain_jobs SET status='COMPLETE',result=? WHERE id=?",('actual independently collected decision',jobs['entailment']))
++    approved=store.one('SELECT * FROM brain_jobs WHERE id=?',(jobs['entailment'],))
++    folder=tmp_path/'evidence-crew/owner/repo/fixture';folder.mkdir(parents=True)
++    flow={'state':'REVIEW','batch_id':'fixture','jobs':jobs,'retained_roles':['entailment'],'candidate_sha256':original['candidate_sha256']}
++    write(folder/'flow.json',flow);crew=FogEvidenceCrew(SimpleNamespace(cache_dir=tmp_path),brain)
++    assert store.one('SELECT * FROM brain_jobs WHERE id=?',(jobs['entailment'],))==approved
++    row=store.one('SELECT * FROM brain_jobs WHERE id=?',(jobs['adversarial'],));view=json.loads(json.loads(row['packet'])['GOAL'])
++    assert size(view)<=FRAME_LIMIT and view['records']['assertions.jsonl']==original['records']['assertions.jsonl']
++    assert view['records']['nodes.jsonl']==original['records']['nodes.jsonl']
++    assert crew.load(folder)['retained_roles']==['entailment'] and crew.load(folder)['candidate_sha256']==original['candidate_sha256']
++    store.db.close()

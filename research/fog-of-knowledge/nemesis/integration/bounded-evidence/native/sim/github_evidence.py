@@ -15,7 +15,7 @@ from .fog_evidence_reads import EvidenceReads,author_frames,review_frame,bounded
 
 VERSION='fog-evidence-crew/1'
 CLIENT_REVISION='gh-evidence-5'
-RUNTIME_REVISION='crew-bounded-evidence/1'
+RUNTIME_REVISION='crew-bounded-evidence/2'
 TERMINAL={'MERGED','PR_OPEN','READY','BLOCKED','STALE'}
 MAX_PACKET=300_000
 MAX_AUTHOR_ATTEMPTS=8
@@ -101,6 +101,70 @@ class FogEvidenceCrew:
         from .fog_scientific_planner import ScientificCoveragePlanner
         self.coverage=ScientificCoveragePlanner(self)
         self.running=False;self.last_error='';self.file_errors={}
+        self.compact_queued_evidence()
+
+    def compact_queued_evidence(self):
+        """Upgrade only known-unsent packets before HTTP polling can claim them.
+
+        Keep the request ID, tag, candidate and completed reviews. A claim and
+        this update use the same SQLite lock; delivery-uncertain work is never
+        rewritten. Retain the original envelope before changing its model view.
+        """
+        store=self.brain.store
+        if not hasattr(store,'db') or not hasattr(store,'lock'):return
+        with store.lock,store.db:
+            for path in self.root.glob('*/*/*/flow.json'):
+                flow=json.loads(path.read_text(encoding='utf8'));folder=path.parent
+                if flow.get('state') in TERMINAL:continue
+                refs=[]
+                if flow.get('author_units'):
+                    refs.extend(('author:unit:'+str(u['index']),'author',u['job_id'],None)
+                                for u in flow['author_units'] if u.get('job_id'))
+                elif flow.get('jobs',{}).get('author'):
+                    refs.append(('author','author',flow['jobs']['author'],None))
+                if flow.get('review_units'):
+                    refs.extend((role+':unit:'+str(u['index']),role,jid,u['packet'])
+                                for u in flow['review_units'] for role,jid in u['jobs'].items())
+                else:
+                    refs.extend((role,role,flow['jobs'][role],None)
+                                for role in ('entailment','adversarial') if flow.get('jobs',{}).get(role))
+                changed=False
+                for key,role,jid,original in refs:
+                    row=store.db.execute('SELECT * FROM brain_jobs WHERE id=?',(jid,)).fetchone()
+                    if not row or row['status']!='QUEUED' or row['owner'] is not None or row['lease'] is not None:continue
+                    envelope=json.loads(row['packet']);raw=json.loads(envelope['GOAL'])
+                    if raw.get('evidence_access',{}).get('protocol')=='fog-evidence-reads/1':continue
+                    archive=folder/'queued-packet-upgrade'/str(jid)
+                    archive.mkdir(parents=True,exist_ok=True)
+                    retained=archive/'original-packet.json'
+                    if retained.exists():
+                        if json.loads(retained.read_text(encoding='utf8'))['packet']!=row['packet']:
+                            raise ValueError('Queued evidence envelope changed during upgrade')
+                    else:write(retained,{'packet':row['packet']})
+                    try:
+                        if role=='author':
+                            original=json.loads(self.author_goal(flow,folder))
+                            frame=author_frames(raw)[0]
+                            if 'unit:' in key:
+                                frame['partition']['source_ids']=[s['id'] for s in raw['sources']]
+                                frame['partition']['rule']='Author these source IDs; additional complete sources are accessible through catalog and reads.'
+                        else:original=original or raw;frame=review_frame(raw)
+                        reads=self.read_session(folder,flow,key);frame=reads.create(original,frame)
+                        if size(frame)>FRAME_LIMIT:raise ValueError('Exact queued evidence exceeds view capacity')
+                        envelope['GOAL']=encode(frame)
+                        constraint=envelope.setdefault('CONSTRAINT',{})
+                        constraint['caller_instructions']=constraint.get('caller_instructions','')+'\n'+READ_SYSTEM
+                        store.db.execute("UPDATE brain_jobs SET packet=? WHERE id=? AND status='QUEUED' AND owner IS NULL AND lease IS NULL",
+                                         (encode(envelope),jid))
+                        write(archive/'receipt.json',{'job_id':jid,'original_packet_sha256':hashlib.sha256(row['packet'].encode()).hexdigest(),
+                            'view_packet_sha256':hashlib.sha256(encode(envelope).encode()).hexdigest(),'goal_bytes':size(frame)})
+                    except (ValueError,KeyError) as exc:
+                        # A complete assertion that cannot fit is a visible
+                        # resource failure, never a clipped review or approval.
+                        store.db.execute("UPDATE brain_jobs SET status='FAILED',error=? WHERE id=? AND status='QUEUED' AND owner IS NULL AND lease IS NULL",
+                            ('Queued evidence view cannot be bounded without changing exact input: '+str(exc),jid))
+                    changed=True
+                if changed:write(path,flow)
     def location(self,owner,repo,batch_id):
         return self.root/check_owner(owner)/check_repo(repo)/_validate_batch_id(batch_id)
     def load(self,folder):return json.loads((folder/'flow.json').read_text(encoding='utf-8'))

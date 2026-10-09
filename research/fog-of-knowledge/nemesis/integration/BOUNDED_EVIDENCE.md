@@ -47,10 +47,13 @@ The grant never enables a paused pool or bypasses review. Status exposes
 `evidence_read_wait`. Invalid/oversized requests return an explicit error, never
 silently shortened evidence.
 
-Migration preserves existing submitted jobs and retained review roles. Only new
-jobs use bounded views; an already sent giant message and its conversation history
-are not erased. Activation requires loading Native runtime revision
-`crew-bounded-evidence/1`; no extension update is required. Offline tests cover
+Migration preserves existing submitted jobs and retained review roles. Startup
+also converts known-unsent queued evidence jobs under the same SQLite lock used
+to claim them. Original envelopes are archived before replacement, and request
+IDs, tags, candidate hashes and completed reviews stay unchanged. Claimed or sent
+jobs are never rewritten; an already sent giant message and its conversation
+history are not erased. Activation requires loading Native runtime revision
+`crew-bounded-evidence/2`; no extension update is required. Offline tests cover
 large sources, Unicode/page offsets, late counterevidence, immutable identities,
 journal recovery, independent reviews, the real compiler/apply/validator and
 exact-head CI. Those tests do not establish live scientific publication or guarantee
