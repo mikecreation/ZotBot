@@ -231,7 +231,8 @@
   function composerBlank(el) {
     if(!el || !/^[ \t\r\n]*$/.test(exactComposerText(el)))return false;
     if(el instanceof HTMLTextAreaElement || el instanceof HTMLInputElement)return true;
-    return [...el.querySelectorAll('*')].every(node=>/^(P|BR)$/.test(node.tagName));
+    return [...el.querySelectorAll('*')].every(node=>/^(P|BR)$/.test(node.tagName) ||
+      (node.tagName==='SPAN' && node.attributes.length===0));
   }
 
   function composerEmpty(el = getComposer()) {
@@ -1206,6 +1207,7 @@
   const NB_OWNED_ATTACHMENTS = 'nemesis.brain.attachments.v2';
   const NB_TRANSPORT_BLOCK = 'nemesis.brain.transport-block.v623';
   const NB_TRANSPORT_REVISION = '6.2.7-blank-composer';
+  document.documentElement.setAttribute('data-nemesis-blank-composer','ascii-plain-span/1');
   let nbEditorGeneration = '', nbEditorCheckedAt = 0, nbEditorProbe = null;
   function nbBlock() {try{return JSON.parse(sessionStorage.getItem(NB_TRANSPORT_BLOCK)||'null');}catch{return null;}}
   function nbBlockActive() {

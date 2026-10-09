@@ -70,6 +70,13 @@ async function fixture({reject=false,controller=true,draft='',raceDraft=null}={}
       assert.equal(blank.clicks(),1,'Whitespace recovery must not replay confirmed sends');
     }finally{blank.close();}
   }
+  const wrapped=await fixture({draft:' '});
+  try{
+    wrapped.el.firstChild.innerHTML='<span> </span>';
+    assert.equal((await wrapped.message({type:'NB_CONTENT_STATUS'})).state,'READY');
+    const out=await wrapped.message({type:'NB_CONTENT_SEND',job:{id:'observed-plain-span',lease:'fixture',packet:{GOAL:'Observed reload shape'}}});
+    assert.equal(out.sent,true,JSON.stringify(out));assert.equal(wrapped.clicks(),1);assert.equal(wrapped.writes(),1);
+  }finally{wrapped.close();}
   for(const draft of [' my real draft ','\u200B','\u00A0']){
     const protectedDraft=await fixture({draft});
     try{

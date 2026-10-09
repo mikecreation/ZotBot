@@ -1,13 +1,15 @@
 # Brain 6.2.7 blank-composer recovery
 
-Worker 1's live ChatGPT composer contained `<p> </p>`. The readiness check
+Worker 1's live ChatGPT composer contained `<p> </p>`, then
+`<p><span> </span></p>` after a reload. The readiness check
 normalized that to empty, while insertion's exact-text check rejected it as an
 existing draft. The exported failure was at VERIFY_COMMIT with no click; the
 export did not retain the original completed insertion details, so this observed
 mismatch does not establish the cause of every earlier transport failure.
 
 The new bundle uses one definition of a blank composer for readiness, insertion,
-and retry cleanup: ASCII spaces, tabs and line endings in plain paragraphs/breaks.
+and retry cleanup: ASCII spaces, tabs and line endings in plain paragraphs/breaks
+and attribute-free span wrappers. Attributed spans remain protected.
 Insertion still requires the exact observed DOM preimage. The native editor
 model must also be blank and contain only plain paragraphs, text and breaks.
 Real text, zero-width Unicode, nonbreaking spaces, marked text, embedded objects,

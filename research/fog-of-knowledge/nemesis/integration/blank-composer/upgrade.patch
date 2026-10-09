@@ -86,7 +86,7 @@
    try {
 --- a/extension/contentScript.js
 +++ b/extension/contentScript.js
-@@ -222,8 +222,16 @@
+@@ -222,8 +222,17 @@
  
    function composerText(el) {
      if (!el) return "";
@@ -101,11 +101,12 @@
 +  function composerBlank(el) {
 +    if(!el || !/^[ \t\r\n]*$/.test(exactComposerText(el)))return false;
 +    if(el instanceof HTMLTextAreaElement || el instanceof HTMLInputElement)return true;
-+    return [...el.querySelectorAll('*')].every(node=>/^(P|BR)$/.test(node.tagName));
++    return [...el.querySelectorAll('*')].every(node=>/^(P|BR)$/.test(node.tagName) ||
++      (node.tagName==='SPAN' && node.attributes.length===0));
    }
  
    function composerEmpty(el = getComposer()) {
-@@ -497,8 +505,8 @@
+@@ -497,8 +506,8 @@
      const wanted=String(text??'').replace(/\r\n?/g,'\n');
      // One model transaction per delivery attempt. A failed transaction is not
      // erased or rewritten. The slot circuit breaker controls future attempts.
@@ -116,16 +117,17 @@
      if(!main.ok)return {...main,ok:false,attempts:1};
      const independent=await composerLooksCommitted(el,wanted);
      return {...main,ok:independent,attempts:1,independentReadback:independent};
-@@ -1197,7 +1205,7 @@
+@@ -1197,7 +1206,8 @@
    const NB_RECEIPT = 'nemesis.brain.receipt.v1';
    const NB_OWNED_ATTACHMENTS = 'nemesis.brain.attachments.v2';
    const NB_TRANSPORT_BLOCK = 'nemesis.brain.transport-block.v623';
 -  const NB_TRANSPORT_REVISION = '6.2.3-editor-transaction';
 +  const NB_TRANSPORT_REVISION = '6.2.7-blank-composer';
++  document.documentElement.setAttribute('data-nemesis-blank-composer','ascii-plain-span/1');
    let nbEditorGeneration = '', nbEditorCheckedAt = 0, nbEditorProbe = null;
    function nbBlock() {try{return JSON.parse(sessionStorage.getItem(NB_TRANSPORT_BLOCK)||'null');}catch{return null;}}
    function nbBlockActive() {
-@@ -1359,7 +1367,7 @@
+@@ -1359,7 +1369,7 @@
          const result = matched;
          const completed = nbReplyFinished(assistant);
          const issue=result ? null : nbReadIssue(candidates,id);
@@ -134,7 +136,7 @@
            messageRoots:assistants.map(m=>({tag:m.root.tagName,role:m.root.getAttribute('data-conversation-role'),
              searchUnit:m.root.getAttribute('data-content-search-unit-key')||m.root.getAttribute('data-chatgpt-search-unit-key'),
              codeBlocks:m.node.querySelectorAll('pre').length,textChars:(m.node.textContent||'').length})),
-@@ -1400,7 +1408,7 @@
+@@ -1400,7 +1410,7 @@
          const issue=result ? null : nbReadIssue(candidates,id);
          if(id!==nbStableId || text!==nbStableText){nbStableId=id;nbStableText=text;nbStableAt=Date.now();}
          const stableMs=Date.now()-nbStableAt;
@@ -143,7 +145,7 @@
            matched:!!result,completionControls:true,stableMs,issue,
            candidates:candidates.slice(0,12).map(t=>t.slice(0,250000)),
            captureTruncated:candidates.length>12 || candidates.some(t=>t.length>250000)};
-@@ -1489,10 +1497,10 @@
+@@ -1489,10 +1499,10 @@
            !!nbResult(JSON.stringify(status.result),id),
          safeUnsent:receipt?.id===id && receipt?.safeUnsent===true && !receipt?.clicked,
          formatDeliveryConfirmed:receipt?.id===id && matchingUserTurns>Number(receipt?.priorUserCount||0)};
@@ -157,7 +159,7 @@
    }
    async function nbAttach(attachments, jobId) {
      if (!attachments?.length) return {count:0,names:[]};
-@@ -1619,7 +1627,12 @@
+@@ -1619,7 +1629,12 @@
        const filled = await fillComposer(composer, prompt);
        const after=snapshot(getComposer()||composer);
        nbLastSendAttempt={...(nbLastSendAttempt||{}),request_id:job.id,promptChars:prompt.length,before,filled,after,phase:'VERIFY_COMMIT',transportRetries:retryCount};
@@ -171,7 +173,7 @@
        nbMarkOwnedDraft(job.id,prompt.replace(/\r\n?/g,'\n'));
        phase('FIND_SEND',{filled,after});
        const button = await waitForSendReady(getComposer(), 6000);
-@@ -1655,7 +1668,8 @@
+@@ -1655,7 +1670,8 @@
        const safeUnsent=!clicked && !userExists;
        const phase=String(nbLastSendAttempt?.phase||'TRANSPORT');
        nbLastSendAttempt={...(nbLastSendAttempt||{}),request_id:job.id,failedAt:Date.now(),error,clicked,safeUnsent,transportRetries:retryCount};
@@ -258,7 +260,7 @@
        if(m.type==='NB_AUTHORIZE_SEND')return {ok:config.enabled};
        return {ok:true};
      }}};
-@@ -50,6 +58,57 @@
+@@ -50,6 +58,64 @@
    return {w,view,el,native,message,uploaded,writes:()=>writes,clicks:()=>clicks,pause:()=>{config.enabled=false;},close:()=>{view.destroy();dom.window.close();}};
  }
  (async()=>{
@@ -274,6 +276,13 @@
 +      assert.equal(blank.clicks(),1,'Whitespace recovery must not replay confirmed sends');
 +    }finally{blank.close();}
 +  }
++  const wrapped=await fixture({draft:' '});
++  try{
++    wrapped.el.firstChild.innerHTML='<span> </span>';
++    assert.equal((await wrapped.message({type:'NB_CONTENT_STATUS'})).state,'READY');
++    const out=await wrapped.message({type:'NB_CONTENT_SEND',job:{id:'observed-plain-span',lease:'fixture',packet:{GOAL:'Observed reload shape'}}});
++    assert.equal(out.sent,true,JSON.stringify(out));assert.equal(wrapped.clicks(),1);assert.equal(wrapped.writes(),1);
++  }finally{wrapped.close();}
 +  for(const draft of [' my real draft ','\u200B','\u00A0']){
 +    const protectedDraft=await fixture({draft});
 +    try{
