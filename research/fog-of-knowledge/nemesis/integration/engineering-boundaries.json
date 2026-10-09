@@ -7,7 +7,7 @@
     "dispatch": {"paths":["sim/brain_bridge.py","brain-background.js"],"next":["worker","persistence"],"checks":["transport","completed_fence","cancellation_recovery"]},
     "worker": {"paths":["contentScript.js","orchestratorContent.js","manifest.json","scripts/test_response_ownership_source.py","scripts/test_tab_recovery_source.py","scripts/test_upload_recovery_source.py","scripts/test_status_scan_source.py"],"next":["capture","review"],"checks":["transport","engineering","response_ownership","tab_recovery","upload_recovery","status_scan"]},
     "capture": {"paths":["scripts/source_capture.py"],"next":["author"],"checks":["exchange","compiler"]},
-    "author": {"paths":["sim/github_evidence.py","sim/fog_packet_units.py","scripts/nemesis_evidence_exchange.py"],"next":["review","persistence"],"checks":["exchange","engineering","cancellation_recovery"]},
+    "author": {"paths":["sim/github_evidence.py","sim/fog_packet_units.py","sim/fog_evidence_reads.py","scripts/nemesis_evidence_exchange.py"],"next":["review","persistence"],"checks":["exchange","engineering","cancellation_recovery","bounded_evidence"]},
     "review": {"paths":["scripts/evidence_pipeline.py","scripts/evidence_compiler.py"],"next":["publication"],"checks":["compiler","exchange","cancellation_recovery"]},
     "publication": {"paths":["sim/github_batches.py","scripts/nemesis_apply.py","scripts/validate.py"],"next":["continuation"],"checks":["compiler","exchange","validate"]},
     "continuation": {"paths":["static/github.js","scripts/verify_mission_acceptance.py","scripts/mission_watchdog.py"],"next":["context"],"checks":["mission","watchdog","completed_fence"]},
