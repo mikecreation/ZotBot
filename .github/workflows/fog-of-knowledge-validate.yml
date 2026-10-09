@@ -63,7 +63,9 @@ jobs:
 
       - name: Check navigation and ingestion regressions
         working-directory: research/fog-of-knowledge
-        run: python scripts/test_atlas_integrity.py
+        run: |
+          python scripts/test_atlas_integrity.py
+          python scripts/test_atlas_preview.py
 
       - name: Check atlas renderer syntax
         working-directory: research/fog-of-knowledge
