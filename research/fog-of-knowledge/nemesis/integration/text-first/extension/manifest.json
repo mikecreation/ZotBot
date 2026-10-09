@@ -1,0 +1,75 @@
+{
+  "manifest_version": 3,
+  "name": "NEMESIS Brain + zotX Capture",
+  "version": "6.2.8",
+  "description": "Brain transport with bounded page messages, persistent delivery fences, bound-tab lifecycle recovery and verified editor commits.",
+  "permissions": [
+    "activeTab",
+    "alarms",
+    "clipboardRead",
+    "clipboardWrite",
+    "downloads",
+    "scripting",
+    "sidePanel",
+    "storage",
+    "tabs",
+    "unlimitedStorage",
+    "webRequest",
+    "windows",
+    "debugger"
+  ],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "action": {
+    "default_title": "Open zotX Website Safety Scanner"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://x.com/*",
+        "https://*.x.com/*",
+        "https://twitter.com/*",
+        "https://*.twitter.com/*",
+        "https://threads.net/*",
+        "https://*.threads.net/*"
+      ],
+      "js": [
+        "passive-social-observer.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "https://x.com/*",
+        "https://*.x.com/*",
+        "https://twitter.com/*",
+        "https://*.twitter.com/*"
+      ],
+      "js": [
+        "following-assist.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*"
+      ],
+      "js": [
+        "contentScript.js",
+        "orchestratorContent.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "options_page": "brain.html"
+}
