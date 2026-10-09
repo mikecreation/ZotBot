@@ -4,13 +4,13 @@
     "retrieval": {"paths":["scripts/graph_retrieval.py","scripts/nemesis_retrieve.py","scripts/research_integrity.py","scripts/measure_future_capacity.py","scripts/retrieval_service.py","sim/fog_graph_access.py"],"next":["context"],"checks":["engineering"]},
     "context": {"paths":["scripts/nemesis_context.py","sim/github_sandbox.py","sim/github_workspace.py","scripts/test_machine_context_complete.py","scripts/stage_engineering_upgrade.py"],"next":["planning"],"checks":["context","native_source","engineering","boundary_upgrade"]},
     "planning": {"paths":["sim/fog_scientific_planner.py","sim/fog_coverage.py","sim/fog_paged_planning.py","scripts/test_paged_planner_source.py","scripts/test_retrieval_service.py"],"next":["dispatch"],"checks":["mission","paged_planning","planning_recovery"]},
-    "dispatch": {"paths":["sim/brain_bridge.py","brain-background.js"],"next":["worker","persistence"],"checks":["transport"]},
+    "dispatch": {"paths":["sim/brain_bridge.py","brain-background.js"],"next":["worker","persistence"],"checks":["transport","completed_fence"]},
     "worker": {"paths":["contentScript.js","orchestratorContent.js","manifest.json","scripts/test_response_ownership_source.py","scripts/test_tab_recovery_source.py","scripts/test_upload_recovery_source.py","scripts/test_status_scan_source.py"],"next":["capture","review"],"checks":["transport","engineering","response_ownership","tab_recovery","upload_recovery","status_scan"]},
     "capture": {"paths":["scripts/source_capture.py"],"next":["author"],"checks":["exchange","compiler"]},
     "author": {"paths":["sim/github_evidence.py","sim/fog_packet_units.py","scripts/nemesis_evidence_exchange.py"],"next":["review","persistence"],"checks":["exchange","engineering"]},
     "review": {"paths":["scripts/evidence_pipeline.py","scripts/evidence_compiler.py"],"next":["publication"],"checks":["compiler","exchange"]},
     "publication": {"paths":["sim/github_batches.py","scripts/nemesis_apply.py","scripts/validate.py"],"next":["continuation"],"checks":["compiler","exchange","validate"]},
-    "continuation": {"paths":["static/github.js","scripts/verify_mission_acceptance.py","scripts/mission_watchdog.py"],"next":["context"],"checks":["mission","watchdog"]},
+    "continuation": {"paths":["static/github.js","scripts/verify_mission_acceptance.py","scripts/mission_watchdog.py"],"next":["context"],"checks":["mission","watchdog","completed_fence"]},
     "persistence": {"paths":["sim/store.py","scripts/engineering_guard.py","scripts/test_engineering*.py","scripts/test_boundary_upgrade.py","scripts/test_mission_watchdog.py","nemesis/integration/engineering-boundaries.json","nemesis/integration/engineering-failures.json","sim/durable_json.py"],"next":["context","dispatch","author","continuation"],"checks":["engineering","guard"]}
   }
 }
