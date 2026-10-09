@@ -99,6 +99,9 @@ inputs and menu quota notices are handled by the
 [TAB_RECOVERY.md](nemesis/integration/TAB_RECOVERY.md) for delivery preservation,
 recovery limits and release verification.
 
+Planning timeout holds use fresh independent decisions with retained failure history
+and bounded cooldowns; see [PLANNING_RECOVERY.md](nemesis/integration/PLANNING_RECOVERY.md).
+
 ## What belongs in a batch?
 
 ### nodes.jsonl

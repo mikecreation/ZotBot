@@ -15,7 +15,7 @@ CHECKS={'engineering':['scripts/test_engineering_integrity.py'],'context':['scri
     'compiler':['scripts/test_evidence_compiler.py'],'validate':['scripts/validate.py'],'guard':['scripts/test_engineering_guard.py'],'watchdog':['scripts/test_mission_watchdog.py'],'boundary_upgrade':['scripts/test_boundary_upgrade.py'],
     'paged_planning':['scripts/test_paged_planner_source.py','scripts/test_retrieval_service.py'],
     'response_ownership':['scripts/test_response_ownership_source.py'],
-    'tab_recovery':['scripts/test_tab_recovery_source.py'],'upload_recovery':['scripts/test_upload_recovery_source.py'],'status_scan':['scripts/test_status_scan_source.py']}
+    'tab_recovery':['scripts/test_tab_recovery_source.py'],'upload_recovery':['scripts/test_upload_recovery_source.py'],'status_scan':['scripts/test_status_scan_source.py'],'planning_recovery':['scripts/test_planning_recovery_source.py']}
 # This check includes the complete portable Native suite and browser fixtures.
 # Its measured Windows run exceeded the ordinary single-script budget; this is
 # an engineering-test limit, never a scientific job or mission budget extension.
@@ -27,7 +27,7 @@ def normalize(path):
     if path.startswith(prefix):path=path[len(prefix):]
     for retained in ('nemesis/integration/scientific-authority/','nemesis/integration/brain-transport/'):
         if path.startswith(retained):path=path[len(retained):]
-    for retained in ('nemesis/integration/paged-planning/native/','nemesis/integration/paged-planning/extension/','nemesis/integration/response-ownership/extension/','nemesis/integration/tab-recovery/extension/','nemesis/integration/upload-recovery/extension/','nemesis/integration/status-scan/extension/'):
+    for retained in ('nemesis/integration/paged-planning/native/','nemesis/integration/paged-planning/extension/','nemesis/integration/response-ownership/extension/','nemesis/integration/tab-recovery/extension/','nemesis/integration/upload-recovery/extension/','nemesis/integration/status-scan/extension/','nemesis/integration/planning-recovery/native/'):
         if path.startswith(retained):path=path[len(retained):]
     return path
 

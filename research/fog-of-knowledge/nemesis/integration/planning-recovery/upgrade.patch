@@ -1,0 +1,175 @@
+--- a/native/sim/fog_scientific_planner.py
++++ b/native/sim/fog_scientific_planner.py
+@@ -168,7 +168,7 @@
+             job=self.crew.job(plan['job_id']);plan['state']=job['status']
+             if job['status'] in {'QUEUED','CLAIMED','SENT'}:continue
+             if job['status']!='COMPLETE':
+-                plan.update(state='HELD',reason=job.get('error') or job['status']);continue
++                plan.update(state='HELD',reason=job.get('error') or job['status'],finished_at=time.time());continue
+             # Retain raw response before parsing or rejecting it.
+             plan['raw_result']=job['result'];plan['finished_at']=time.time()
+             try:
+@@ -191,6 +191,33 @@
+                 state['tasks'][key]=task;plan.update(state='ADMITTED',task_key=key)
+             except (ValueError,TypeError,KeyError) as exc:plan.update(state='HELD',reason=str(exc))
+             self.save(filename,state)
++
++    def planning_timeout(self,plan):
++        # A failed transport never constitutes a scientific decision to wait.
++        # Inspect the original terminal job; do not change its status or resend it.
++        if plan['state']!='HELD' or plan.get('reason')!='Deadline exceeded; no automatic resend':return False
++        job=self.crew.job(plan['job_id'])
++        return job['status']=='FAILED' and job.get('error')==plan['reason']
++
++    def planning_holds(self,state,fingerprint):
++        held=set();recoveries={};now=time.time()
++        for domain in (d['id'] for d in state['domains']):
++            plans=[p for p in state['decisions'].values() if p['domain']==domain and p['graph_fingerprint']==fingerprint]
++            if not plans:continue
++            latest=plans[-1]
++            if latest['state'] not in {'WAITING','HELD','RETRIEVAL_WAIT'}:continue
++            if not self.planning_timeout(latest):held.add(domain);continue
++            consecutive=0
++            for previous in reversed(plans):
++                if not self.planning_timeout(previous):break
++                consecutive+=1
++            delay=min(900,60*2**min(consecutive-1,4))
++            retry_at=latest.get('finished_at',latest['created_at'])+delay
++            recoveries[domain]={'domain':domain,'plan_id':latest['id'],'job_id':latest['job_id'],
++                'reason':latest['reason'],'retry_at':retry_at,'consecutive_timeouts':consecutive,
++                'scope':'New planning decision only; the terminal request is preserved and never resent.'}
++            if now<retry_at:held.add(domain)
++        return held,recoveries
+ 
+     def schedule(self,filename,state):
+         self.reconcile(state)
+@@ -226,8 +253,8 @@
+         busy={p['domain'] for p in active_plans}|{t['domain'] for t in state['tasks'].values()
+                 if t['state'] not in {'MERGED','HELD','READY','PR_OPEN'}}
+         # A wait blocks only the strategy at the same substantive graph state.
+-        held={p['domain'] for p in state['decisions'].values() if p['state'] in {'WAITING','HELD','RETRIEVAL_WAIT'}
+-              and p['graph_fingerprint']==fingerprint}
++        held,recoveries=self.planning_holds(state,fingerprint)
++        state['planning_recoveries']=list(recoveries.values())
+         for domain in [d for d in domains if d not in busy|held][:free]:
+             state['planning_sequence']+=1;pid=str(state['planning_sequence'])+'-'+domain
+             if self.paged is not None:
+@@ -241,10 +268,15 @@
+                     'investigations':[{k:t.get(k) for k in ('key','domain','label','state','decision','reason','yield_counts','batch_id')}
+                                       for t in state['tasks'].values()],
+                     'progress':state['progress']}}
++            if domain in recoveries:
++                recovery=recoveries[domain]
++                plan['recovery_of']=recovery
++                plan['input']['planning_recovery']=recovery
++                if plan.get('brief') is not None:plan['brief']['planning_recovery']=recovery
+             state['decisions'][pid]=plan;state['last_domain']=domain
+             self.save(filename,state);self.enqueue_plan(filename,state,plan)
+         state.update(state='RUNNING' if self.active_count(state) or any(p['state'] in OPEN_PLANS for p in state['decisions'].values())
+-                     else 'WAITING_FOR_SCIENTIFIC_DIRECTION',waiting_reasons=[p.get('reason') for p in state['decisions'].values()
++                     else 'WAITING_FOR_PLANNING_RECOVERY' if recoveries else 'WAITING_FOR_SCIENTIFIC_DIRECTION',waiting_reasons=[p.get('reason') for p in state['decisions'].values()
+                      if p['state'] in {'WAITING','HELD'} and p['graph_fingerprint']==fingerprint],error=None,next_attempt_at=0)
+         self.save(filename,state)
+ 
+@@ -262,7 +294,7 @@
+         result.update(authority=state.get('authority'),objective=state.get('objective'),
+             decision_states={k:sum(p['state']==k for p in state.get('decisions',{}).values())
+                              for k in {p['state'] for p in state.get('decisions',{}).values()}},
+-            waiting_reasons=state.get('waiting_reasons',[]),
++            waiting_reasons=state.get('waiting_reasons',[]),planning_recoveries=state.get('planning_recoveries',[]),
+             retrieval_waits=[{'plan_id':p['id'],'domain':p['domain'],'turn':p['turn'],'limit':p['retrieval_turn_limit'],'reason':p.get('reason')}
+                 for p in state.get('decisions',{}).values() if p['state']=='RETRIEVAL_WAIT'])
+         return result
+--- /dev/null
++++ b/native/tests/test_planning_recovery.py
+@@ -0,0 +1,90 @@
++"""Reproduce ten permanently held planning lanes without any live research."""
++import copy,json
++import inspect
++from pathlib import Path
++import pytest
++from test_fog_coverage import planner
++from test_scientific_planner import science,activate,state
++from test_paged_planning import paged,load,read
++from sim.fog_scientific_planner import ScientificCoveragePlanner
++
++ERROR='Deadline exceeded; no automatic resend'
++
++def test_runs_the_staged_runtime_not_another_checkout():
++    assert Path(inspect.getfile(ScientificCoveragePlanner)).resolve()==Path(__file__).resolve().parents[1]/'sim/fog_scientific_planner.py'
++
++def held_lanes(p,s,now):
++    template=next(iter(s['decisions'].values()))
++    for plan in s['decisions'].values():
++        p.crew.brain.rows[plan['job_id']].update(status='FAILED',error=ERROR)
++        plan.update(state='HELD',reason=ERROR,finished_at=now)
++    for domain in [d['id'] for d in s['domains'] if d['id'] not in {v['domain'] for v in s['decisions'].values()}]:
++        s['planning_sequence']+=1;pid=str(s['planning_sequence'])+'-'+domain
++        plan=copy.deepcopy(template);plan.update(id=pid,domain=domain,created_at=now,finished_at=now,state='HELD',reason=ERROR)
++        plan['job_id']=p.crew.brain.enqueue('old','old',5000,'old:'+pid)
++        p.crew.brain.rows[plan['job_id']].update(status='FAILED',error=ERROR)
++        s['decisions'][pid]=plan
++    p.save(p.location('owner','repo','fog'),s)
++    return copy.deepcopy(s['decisions']),copy.deepcopy(p.crew.brain.rows)
++
++def test_all_ten_timeout_holds_continue_without_graph_change_or_resend(science,monkeypatch):
++    p,_=science;s=activate(p);now=100000
++    old,jobs=held_lanes(p,s,now)
++    monkeypatch.setattr('sim.fog_scientific_planner.time.time',lambda:now+61)
++    p.tick();s=state(p)
++    new=[v for k,v in s['decisions'].items() if k not in old]
++    assert len(new)==3 and len({v['domain'] for v in new})==3
++    assert s['state']=='RUNNING' and not s['tasks']
++    assert {k:s['decisions'][k] for k in old}==old
++    assert {k:p.crew.brain.rows[k] for k in jobs}==jobs
++    for plan in new:
++        assert plan['job_id'] not in jobs and plan['recovery_of']['job_id'] in jobs
++        assert plan['input']['planning_recovery']==plan['recovery_of']
++        assert json.loads(p.crew.brain.rows[plan['job_id']]['packet'])['GOAL']!=json.loads(jobs[plan['recovery_of']['job_id']]['packet'])['GOAL']
++    count=len(p.crew.brain.rows)
++    restarted=ScientificCoveragePlanner(p.crew);restarted.paged=None;restarted.tick()
++    assert len(p.crew.brain.rows)==count,'restart must recover the three new exact intents'
++
++def test_durable_cooldown_and_pause_do_not_dispatch(science,monkeypatch):
++    p,_=science;s=activate(p);now=100000
++    old,jobs=held_lanes(p,s,now)
++    monkeypatch.setattr('sim.fog_scientific_planner.time.time',lambda:now+59)
++    p.tick();assert len(p.crew.brain.rows)==len(jobs)
++    assert state(p)['state']=='WAITING_FOR_PLANNING_RECOVERY'
++    assert all(v['retry_at']==now+60 for v in p.public(state(p))['planning_recoveries'])
++    p.configure('owner','repo','fog',False,True)
++    monkeypatch.setattr('sim.fog_scientific_planner.time.time',lambda:now+1000)
++    p.tick();assert len(p.crew.brain.rows)==len(jobs)
++    assert state(p)['decisions']==old
++
++@pytest.mark.parametrize('status,reason',[('COMPLETE',ERROR),('CANCELLED',ERROR),('QUARANTINED',ERROR),('FAILED','Evidence is unsupported')])
++def test_only_verified_terminal_planning_timeout_is_recoverable(science,status,reason):
++    p,_=science;s=activate(p);plan=next(iter(s['decisions'].values()))
++    p.crew.brain.rows[plan['job_id']].update(status=status,error=reason)
++    plan.update(state='HELD',reason=reason)
++    assert not p.planning_timeout(plan)
++    for hold in ['WAITING','RETRIEVAL_WAIT']:
++        plan['state']=hold;assert not p.planning_timeout(plan)
++
++def test_consecutive_timeouts_back_off_but_keep_lanes_eligible(science,monkeypatch):
++    p,_=science;s=activate(p);now=100000
++    held_lanes(p,s,now);monkeypatch.setattr('sim.fog_scientific_planner.time.time',lambda:now+61)
++    p.tick();s=state(p)
++    latest=list(s['decisions'].values())[-1];domain=latest['domain']
++    latest.update(state='HELD',reason=ERROR,finished_at=now+61)
++    p.crew.brain.rows[latest['job_id']].update(status='FAILED',error=ERROR)
++    held,recovery=p.planning_holds(s,latest['graph_fingerprint'])
++    assert domain in held and recovery[domain]['retry_at']==now+181
++    monkeypatch.setattr('sim.fog_scientific_planner.time.time',lambda:now+182)
++    held,_=p.planning_holds(s,latest['graph_fingerprint']);assert domain not in held
++
++def test_paged_recovery_retains_context_through_exact_reads(paged,monkeypatch):
++    p,_=paged;s=load(p);now=100000
++    old,jobs=held_lanes(p,s,now)
++    monkeypatch.setattr('sim.fog_scientific_planner.time.time',lambda:now+61)
++    p.tick();s=load(p);plan=next(v for k,v in s['decisions'].items() if k not in old)
++    recovery=copy.deepcopy(plan['recovery_of'])
++    assert plan['brief']['planning_recovery']==recovery
++    current=read(p,plan)
++    assert current['turn']==1 and current['input']['planning_recovery']==recovery
++    assert {k:p.crew.brain.rows[k] for k in jobs}==jobs
