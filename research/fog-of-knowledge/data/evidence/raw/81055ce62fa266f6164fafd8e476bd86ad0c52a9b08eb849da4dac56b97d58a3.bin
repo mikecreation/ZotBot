@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Search Engine Info --><title>Online multiple testing with e-values</title><meta name="description" content="Online multiple testing with e-valuesZiyu Xu,&nbsp;Aaditya RamdasA scientist tests a continuous stream of hypotheses over time in the course of her investiga..."><!-- Solution from http://stackoverflow.com/questions/31593297/using-execcommand-javascript-to-copy-hidden-text-to-clipboard -->
+<script src="https://proceedings.mlr.press/v238/assets/js/copy_input.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://proceedings.mlr.press/v238/assets/js/download.js"></script>
+<meta name="citation_publisher" content="PMLR"/><meta name="citation_title" content="Online multiple testing with e-values"/><meta name="citation_language" content="en"/>
+<meta name="citation_abstract_html_url" content="https://proceedings.mlr.press/v238/xu24a.html"/><meta name="citation_pdf_url" content="https://proceedings.mlr.press/v238/xu24a/xu24a.pdf"><meta name="citation_firstpage" content="3997"><meta name="citation_lastpage" content="4005"><meta name="citation_author" content="Ziyu Xu"><meta name="citation_author" content="Aaditya Ramdas"><meta name="citation_publication_date" content="2024/04/18"><meta name="citation_inbook_title" content="International Conference on Artificial Intelligence and Statistics"/><meta name="citation_conference_title" content="International Conference on Artificial Intelligence and Statistics"/><meta name="citation_issn" content="2640-3498"><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Online multiple testing with e-values"/><meta name="twitter:site" content="@MLResearchPress" /><meta name="twitter:description" content="A scientist tests a continuous stream of hypotheses over time in the course of her investigation — she does not test a predetermined, fixed number of hypothe..."/><meta name="twitter:image" content="https://proceedings.mlr.press/v238/assets/images/logo-pmlr.png"/>
+<meta name="twitter:image:alt" content="PMLR Logo"/><meta property="og:title" content="Online multiple testing with e-values"/>
+<meta property="og:description" content="A scientist tests a continuous stream of hypotheses over time in the course of her investigation — she does not test a predetermined, fixed number of hypotheses. The scientist wishes to make as man..."/>
+<meta property="og:type" content="article"/><meta property="article:published_time" content="2024-04-18T00:00:00+00:00"><meta property="og:url" content="https://proceedings.mlr.press/v238/xu24a.html"/><meta property="og:image" content="https://proceedings.mlr.press/v238/assets/images/logo-pmlr.png"/><meta property="og:site_name" content="PMLR"/><!-- Style Info -->
+  <link rel="stylesheet" type="text/css" href="https://proceedings.mlr.press/v238/assets/css/pmlr.css" />
+  <style>.hero-text {
+    color: #303030;
+  }</style>
+
+  <!-- Icon Info -->
+  <link rel="shortcut icon" href="https://proceedings.mlr.press/v238/assets/images/favicon-pmlr.ico" type="image/x-icon">
+  <link rel="icon" href="https://proceedings.mlr.press/v238/assets/images/favicon-pmlr.ico" type="image/x-icon">
+
+  <!-- Feed Info --><link type="application/atom+xml" rel="alternate" href="https://proceedings.mlr.press/v238/feed.xml" title="Proceedings of Machine Learning Research" /><!-- Scripting info --><!-- Solution from http://stackoverflow.com/questions/31593297/using-execcommand-javascript-to-copy-hidden-text-to-clipboard -->
+<script src="https://proceedings.mlr.press/v238/assets/js/copy_input.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://proceedings.mlr.press/v238/assets/js/download.js"></script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-92432422-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+          autoNumber: "AMS"
+        }
+      },
+      tex2jax: {
+      inlineMath: [ ['$','$'], ['\\(', '\\)'] ],
+      displayMath: [ ['$$','$$'], ['\\[', '\\]'] ],
+      processEscapes: true,
+    }
+  });
+</script>
+<script  async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  <!-- User custom header -->
+</head>
+
+
+
+
+
+
+<body>
+
+
+<header class="site-header">
+  <div class="wrapper">
+    
+
+
+<div class="hero-image">
+  <div class="hero-text">
+    <a href="/" target="_top"><img src="/v238/assets/images/logo-pmlr.svg" alt="[International Conference on Artificial Intelligence and Statistics Logo]"></a>
+    Proceedings of Machine Learning Research
+  </div>
+</div>
+
+
+    <nav class="site-nav">
+  <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+  <label for="nav-trigger">
+  <span class="menu-icon"><svg viewBox="0 0 18 15" width="18px" height="15px">
+  <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+</svg>
+</span>
+  </label>
+  <div class="trigger"><a class="page-link" href="https://proceedings.mlr.press/v238/">Volume 238</a><a class="page-link" href="https://www.jmlr.org/">JMLR</a> 
+    <a class="page-link" href="https://data.mlr.press/">DMLR</a> 
+    <a class="page-link" href="https://jmlr.org/tmlr/">TMLR</a> 
+    <a class="page-link" href="https://www.jmlr.org/mloss">MLOSS</a>
+    <a class="page-link" href="/faq.html">FAQ</a>
+    <a class="page-link" href="/spec.html">Submission Format</a>
+    <a class="page-link" href="https://proceedings.mlr.press//v238/assets/rss/feed.xml">
+      <img src="https://proceedings.mlr.press/v238/assets/images/RSS.gif" class="rss" alt="RSS Feed">
+    </a>
+  </div>
+</nav>
+
+  </div>
+</header>
+
+
+
+
+
+<main class="page-content" aria-label="Content"><div class="wrapper">
+
+
+<p style="text-align:right">[<a href="https://github.com/mlresearch/v238/edit/gh-pages/_posts/2024-04-18-xu24a.md" target="_blank" onclick="ga('send', 'event', 'Edit Page', 'Edit', 'https://github.com/mlresearch/v238/edit/gh-pages/_posts/2024-04-18-xu24a.md', 13);">edit</a>]</p>
+
+<article class="post-content">
+  <h1>Online multiple testing with e-values</h1><span class="authors">Ziyu Xu,&nbsp;Aaditya Ramdas</span>
+<div id="info"><i>Proceedings of The 27th International Conference on Artificial Intelligence and Statistics</i>,&nbsp;PMLR 238:3997-4005,&nbsp;2024.
+  </div> <!-- info -->
+  
+  <h4>Abstract</h4>
+  <div id="abstract" class="abstract">
+    A scientist tests a continuous stream of hypotheses over time in the course of her investigation — she does not test a predetermined, fixed number of hypotheses. The scientist wishes to make as many discoveries as possible while ensuring the number of false discoveries is controlled — a well recognized way for accomplishing this is to control the false discovery rate (FDR). Prior methods for FDR control in the online setting have focused on formulating algorithms when specific dependency structures are assumed to exist between the test statistics of each hypothesis. However, in practice, these dependencies often cannot be known beforehand or tested after the fact. Our algorithm, e-LOND, provides FDR control under arbitrary, possibly unknown, dependence. We show that our method is more powerful than existing approaches to this problem through simulations. We also formulate extensions of this algorithm to utilize randomization for increased power and for constructing confidence intervals in online selective inference.
+  </div>
+  <h4>Cite this Paper</h4>
+<hr class="bibhr">
+
+<div class="bibbuttongroup row row--justified">
+  <div class="bibbuttontext column">
+    BibTeX
+  </div>
+  <div class="column">
+  <div class="codebox">
+    <code class="citecode" id="bibtex">@InProceedings{pmlr-v238-xu24a,
+  title = 	 {Online multiple testing with e-values},
+  author =       {Xu, Ziyu and Ramdas, Aaditya},
+  booktitle = 	 {Proceedings of The 27th International Conference on Artificial Intelligence and Statistics},
+  pages = 	 {3997--4005},
+  year = 	 {2024},
+  editor = 	 {Dasgupta, Sanjoy and Mandt, Stephan and Li, Yingzhen},
+  volume = 	 {238},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {02--04 May},
+  publisher =    {PMLR},
+  pdf = 	 {https://proceedings.mlr.press/v238/xu24a/xu24a.pdf},
+  url = 	 {https://proceedings.mlr.press/v238/xu24a.html},
+  abstract = 	 {A scientist tests a continuous stream of hypotheses over time in the course of her investigation — she does not test a predetermined, fixed number of hypotheses. The scientist wishes to make as many discoveries as possible while ensuring the number of false discoveries is controlled — a well recognized way for accomplishing this is to control the false discovery rate (FDR). Prior methods for FDR control in the online setting have focused on formulating algorithms when specific dependency structures are assumed to exist between the test statistics of each hypothesis. However, in practice, these dependencies often cannot be known beforehand or tested after the fact. Our algorithm, e-LOND, provides FDR control under arbitrary, possibly unknown, dependence. We show that our method is more powerful than existing approaches to this problem through simulations. We also formulate extensions of this algorithm to utilize randomization for increased power and for constructing confidence intervals in online selective inference.}
+}
+</code>
+  </div>
+  <button class="button"  id="button-bibtex1" onclick="CopyToClipboard('bibtex');  ga('send', 'event', 'Ref Copy', 'CopyToClipboard', '/v238/pmlr-v238-xu24a.bib', 15);">Copy to Clipboard</button>
+  <button class="button" id="button-bibtex2" onclick="DownloadTexToFile('pmlr-v238-xu24a.bib', 'bibtex'); ga('send', 'event', 'Ref Downloads', 'Download', '/v238/pmlr-v238-xu24a.bib', 16);">Download</button>
+  </div>
+</div>
+
+
+<div class="bibbuttongroup row row--justified">
+  <div class="bibbuttontext column">
+    Endnote
+  </div>
+  <div class="column">
+  <div class="codebox">
+    <code class="citecode" id="endnote">%0 Conference Paper
+%T Online multiple testing with e-values
+%A Ziyu Xu
+%A Aaditya Ramdas
+%B Proceedings of The 27th International Conference on Artificial Intelligence and Statistics
+%C Proceedings of Machine Learning Research
+%D 2024
+%E Sanjoy Dasgupta
+%E Stephan Mandt
+%E Yingzhen Li	
+%F pmlr-v238-xu24a
+%I PMLR
+%P 3997--4005
+%U https://proceedings.mlr.press/v238/xu24a.html
+%V 238
+%X A scientist tests a continuous stream of hypotheses over time in the course of her investigation — she does not test a predetermined, fixed number of hypotheses. The scientist wishes to make as many discoveries as possible while ensuring the number of false discoveries is controlled — a well recognized way for accomplishing this is to control the false discovery rate (FDR). Prior methods for FDR control in the online setting have focused on formulating algorithms when specific dependency structures are assumed to exist between the test statistics of each hypothesis. However, in practice, these dependencies often cannot be known beforehand or tested after the fact. Our algorithm, e-LOND, provides FDR control under arbitrary, possibly unknown, dependence. We show that our method is more powerful than existing approaches to this problem through simulations. We also formulate extensions of this algorithm to utilize randomization for increased power and for constructing confidence intervals in online selective inference.
+</code>
+  </div>
+  <button class="button"  id="button-endnote1" onclick="CopyToClipboard('endnote');  ga('send', 'event', 'Ref Copy', 'CopyToClipboard', '/v238/pmlr-v238-xu24a.enw', 15);">Copy to Clipboard</button>
+  <button class="button" id="button-endnote2" onclick="DownloadTexToFile('pmlr-v238-xu24a.enw', 'endnote'); ga('send', 'event', 'Ref Downloads', 'Download', '/v238/pmlr-v238-xu24a.enw', 16);">Download</button>
+  </div>
+</div>
+
+
+
+<div class="bibbuttongroup row row--justified">
+  <div class="bibbuttontext column">
+    APA
+  </div>
+  <div class="column">
+  <div class="codebox">
+    <code class="citecode" id="apa">Xu, Z. & Ramdas, A.. (2024). Online multiple testing with e-values. <i>Proceedings of The 27th International Conference on Artificial Intelligence and Statistics</i>, in <i>Proceedings of Machine Learning Research</i> 238:3997-4005 Available from https://proceedings.mlr.press/v238/xu24a.html.
+
+</code>
+  </div>
+  <button class="button"  id="button-apa1" onclick="CopyToClipboard('apa');  ga('send', 'event', 'Ref Copy', 'CopyToClipboard', '/v238/pmlr-v238-xu24a.txt', 15);">Copy to Clipboard</button>
+  <button class="button" id="button-apa2" onclick="DownloadTexToFile('pmlr-v238-xu24a.txt', 'apa'); ga('send', 'event', 'Ref Downloads', 'Download', '/v238/pmlr-v238-xu24a.txt', 16);">Download</button>
+  </div>
+</div>
+
+<hr class="bibhr">
+
+
+  
+  <h4>Related Material</h4>
+  <div id="extras">
+    <ul>
+      <li><a href="https://proceedings.mlr.press/v238/xu24a/xu24a.pdf" target="_blank" onclick="ga('send', 'event', 'PDF Downloads', 'Download', 'https://proceedings.mlr.press/v238/xu24a/xu24a.pdf', 10);">Download PDF</a></li>
+      <li><a href="https://github.com/neilzxu/evalue-omt" target="_blank" onclick="ga('send', 'event', 'Software Link', 'Software', 'https://github.com/neilzxu/evalue-omt', 0);">Software</a></li>
+    </ul>
+  </div>
+  
+
+</article>
+
+
+
+
+
+
+
+
+
+      </div>
+    </main>
+
+
+<footer class="site-footer">
+  <div class="wrapper">
+    <p>This site last compiled Sun, 04 Oct 2026 21:13:04 +0000</p>
+      <div class="footer-left"><i><a href="https://github.com/mlresearch/v238">Github Account</a></i>
+      </div>
+      <div class="footer-right">Copyright &copy; <a href="https://proceedings.mlr.press">The authors and PMLR</a> 2026.<a href="https://twitter.com/MLResearchPress"><i class="icon-twitter"></i>&nbsp;MLResearchPress</a></div>
+  </div>
+</footer>
+
+
+
+
+
+</body>
+
+</html>
