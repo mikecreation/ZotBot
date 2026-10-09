@@ -13,6 +13,10 @@ class GuardTests(unittest.TestCase):
         self.assertEqual(set(value['checks']),set(CHECKS))
     def test_visual_change_does_not_invent_scientific_boundary(self):
         self.assertEqual(plan(['app.css'])['affected'],[])
+    def test_tab_recovery_retained_source_is_on_real_delivery_boundary(self):
+        value=plan(['research/fog-of-knowledge/nemesis/integration/tab-recovery/extension/brain-background.js'])
+        self.assertEqual(value['direct'],['dispatch'])
+        self.assertIn('tab_recovery',value['checks'])
     def test_every_registered_script_runs_and_timeout_does_not_hide_later_checks(self):
         with patch('engineering_guard.subprocess.run',side_effect=[
             subprocess.CompletedProcess([],0,'first result',''),
