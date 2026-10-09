@@ -1,0 +1,331 @@
+--- a/extension/brain-background.js
++++ b/extension/brain-background.js
+@@ -1,10 +1,10 @@
+-/* NEMESIS Brain 6.2.6 — bounded messages and durable delivery ambiguity. */
++/* NEMESIS Brain 6.2.7 — bounded messages and durable delivery ambiguity. */
+ (() => {
+   const KEY='nb.config';
+   const STATUS_KEY='nb.status';
+   const POOL_STATUS_KEY='nb.poolStatus';
+   const SLOT_NAMES=['primary','worker_1','worker_2','worker_3','worker_4'];
+-  const TRANSPORT_REVISION='6.2.3-editor-transaction';
++  const TRANSPORT_REVISION='6.2.7-blank-composer';
+   const polling=new Set();
+   const lastTick=new Map();
+   const fenceKey=tabId=>'nb.deliveryFence.'+tabId;
+@@ -94,7 +94,7 @@
+   async function config(){const raw=(await chrome.storage.local.get(KEY))[KEY]||{};return normalize(raw);}
+   async function save(c){await chrome.storage.local.set({[KEY]:normalize(c)});}
+   async function api(c,path,body){
+-    if(path==='poll')body={...body,extension_build:'6.2.6-response-ownership'};
++    if(path==='poll')body={...body,extension_build:'6.2.7-blank-composer'};
+     const r=await fetch(baseURL(c.base)+'/api/brain/'+path,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+c.token},body:JSON.stringify(body),signal:AbortSignal.timeout(15000)});
+     const data=await r.json();if(!r.ok)throw Error(data.detail||data.error||'NEMESIS HTTP '+r.status);return data;
+   }
+@@ -169,9 +169,9 @@
+       await keepBoundTabAlive(tab);
+       let content=await contentMessage(slot.tabId,{type:'NB_CONTENT_STATUS',id:slot.activeJobId});
+       const previousFence=await reconcileFence(slot.tabId,content);
+-      if(content?.collectorVersion!=='6.2.6')throw Error('ChatGPT has an old reply collector. Refresh this ChatGPT tab. Expected 6.2.6; received '+(content?.collectorVersion||'unversioned')+'.');
++      if(content?.collectorVersion!=='6.2.7')throw Error('ChatGPT has an old reply collector. Refresh this ChatGPT tab. Expected 6.2.7; received '+(content?.collectorVersion||'unversioned')+'.');
+       if(content?.transportRevision!==TRANSPORT_REVISION)throw Error('Refresh this ChatGPT tab to load transport '+TRANSPORT_REVISION+'.');
+-      if(content?.bridgeBuild!=='6.2.6')throw Error('Refresh this ChatGPT tab to load Brain 6.2.6 completed-response ownership and rejection detection.');
++      if(content?.bridgeBuild!=='6.2.7')throw Error('Refresh this ChatGPT tab to load Brain 6.2.7 completed-response ownership and rejection detection.');
+       const response=await api(c,'poll',{client_id:c.clientId,worker_slot:slotName,role:roleFor(slotName),state:previousFence?'DELIVERY_UNCONFIRMED':content.state,detail:content.detail||'',url:tab.url,tab_id:tab.id,conversation_id:identity,tab_count:boundSlots(c).length});
+       const job=response.job;
+       if((slot.activeJobId||null)!==(job?.id||null)){slot.activeJobId=job?.id||null;c.slots[slotName]=slot;await save(c);}
+@@ -216,7 +216,7 @@
+       await api(c,'poll',{client_id:c.clientId,worker_slot:slotName,role:roleFor(slotName),state:s.state,detail:s.detail||s.error||'',request_id:job.id,url:tab.url,tab_id:tab.id,conversation_id:identity,tab_count:boundSlots(c).length});
+       await slotState(slotName,{...s,job:job.id,url:tab.url,conversation_id:identity,serverEnabled:response.enabled});
+     }catch(e){
+-      const failure={state:'ERROR',detail:'Brain pool 6.2.6: '+String(e.message||e),url:tab?.url||slot?.url||''};await slotState(slotName,failure);
++      const failure={state:'ERROR',detail:'Brain pool 6.2.7: '+String(e.message||e),url:tab?.url||slot?.url||''};await slotState(slotName,failure);
+       if(c?.enabled&&slot){try{await api(c,'poll',{...failure,client_id:c.clientId,worker_slot:slotName,role:roleFor(slotName),tab_id:slot.tabId,conversation_id:chatIdentity(slot.url),tab_count:boundSlots(c).length});}catch{}}
+     }finally{polling.delete(slotName);}
+   }
+@@ -268,7 +268,7 @@
+         for(const other of SLOT_NAMES){if(other!==name&&old.slots?.[other]?.tabId===tab.id)throw Error('That ChatGPT tab is already bound to '+other+'.');}
+         old.base=baseURL(m.base||old.base);old.token=String(m.token||old.token).trim();old.enabled=true;old.clientId=old.clientId||crypto.randomUUID();old.slots=old.slots||{};old.slots[name]={tabId:tab.id,url:tab.url,enabled:true,role:roleFor(name),activeJobId:null};
+         await chrome.scripting.executeScript({target:{tabId:tab.id},files:['contentScript.js']}).catch(()=>{});
+-        const ts=await contentMessage(tab.id,{type:'NB_CONTENT_STATUS'});if(ts?.collectorVersion!=='6.2.6')throw Error('Refresh this ChatGPT tab to load reply collector 6.2.6, then bind again.');if(!ts?.state)throw Error('ChatGPT content bridge did not respond.');
++        const ts=await contentMessage(tab.id,{type:'NB_CONTENT_STATUS'});if(ts?.collectorVersion!=='6.2.7')throw Error('Refresh this ChatGPT tab to load reply collector 6.2.7, then bind again.');if(!ts?.state)throw Error('ChatGPT content bridge did not respond.');
+         await api(old,'poll',{client_id:old.clientId,worker_slot:name,role:roleFor(name),state:'PAIRING',tab_id:tab.id,url:tab.url,conversation_id:chatIdentity(tab.url),tab_count:boundSlots(old).length});
+         if(previousTabId&&previousTabId!==tab.id)await restoreBoundTab(previousTabId);
+         await save(old);await pollSlot(name,{force:true});return {ok:true,slot:name,status:ts};
+--- a/extension/composer-transaction.js
++++ b/extension/composer-transaction.js
+@@ -1,7 +1,7 @@
+ /* Injected in MAIN world. Only a model belonging to the exact live composer may
+  * receive a transaction. Never replace DOM, forge a paste, or call React setters. */
+ async function nemesisComposerTransaction(options = {}) {
+-  const revision = '6.2.3-editor-transaction';
++  const revision = '6.2.7-blank-composer';
+   const canon = value => String(value ?? '').replace(/\r\n?/g, '\n');
+   const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
+   const visible = el => {
+@@ -64,9 +64,19 @@
+   const modelText = () => controller ? canon(controller.getPlainText()) : view ? canon(view.state.doc.textBetween(0, view.state.doc.content.size, '\n', '\n')) : null;
+   if (options.operation === 'inspect') return {...base, ok:true, domChars:domText(el).length, modelChars:modelText()?.length ?? null};
+   const value = canon(options.text), expected = canon(options.expected ?? '');
+-  if (domText(el) !== expected || (view && modelText() !== expected))
++  const blank = text => typeof text==='string' && /^[ \t\r\n]*$/.test(text);
++  const blankReplacement=options.allowBlank===true && blank(expected) && blank(domText(el)) && blank(modelText());
++  if (domText(el) !== expected || (view && modelText() !== expected && !blankReplacement))
+     return {...base, ok:false, method:'draft-changed-preserved'};
+   if (!view) return {...base, ok:false, method:'editor-model-unavailable'};
++  if(blankReplacement){
++    let plain=true;
++    view.state.doc.descendants(node=>{
++      if(!['paragraph','text','hard_break'].includes(node.type.name) || node.marks?.length ||
++         (node.isText && !blank(node.text)))plain=false;
++    });
++    if(!plain)return {...base,ok:false,method:'non-text-draft-preserved'};
++  }
+   if (view.composing) return {...base, ok:false, method:'user-composition-in-progress'};
+   let method = 'prosemirror-model-transaction';
+   try {
+--- a/extension/contentScript.js
++++ b/extension/contentScript.js
+@@ -222,8 +222,16 @@
+ 
+   function composerText(el) {
+     if (!el) return "";
+-    if (el instanceof HTMLTextAreaElement || el instanceof HTMLInputElement) return norm(el.value);
+-    return norm(el.innerText || el.textContent);
++    if (composerBlank(el)) return "";
++    const raw=exactComposerText(el);
++    // Do not classify invisible Unicode or embedded objects as an empty draft.
++    return norm(raw) || raw || '[non-text draft]';
++  }
++
++  function composerBlank(el) {
++    if(!el || !/^[ \t\r\n]*$/.test(exactComposerText(el)))return false;
++    if(el instanceof HTMLTextAreaElement || el instanceof HTMLInputElement)return true;
++    return [...el.querySelectorAll('*')].every(node=>/^(P|BR)$/.test(node.tagName));
+   }
+ 
+   function composerEmpty(el = getComposer()) {
+@@ -497,8 +505,8 @@
+     const wanted=String(text??'').replace(/\r\n?/g,'\n');
+     // One model transaction per delivery attempt. A failed transaction is not
+     // erased or rewritten. The slot circuit breaker controls future attempts.
+-    if(exactComposerText(el))return {ok:false,method:'existing-draft-preserved',attempts:0};
+-    const main=await mainWorldSetComposer(wanted,{elementToken:composerToken(el),expected:''});
++    if(!composerBlank(el))return {ok:false,method:'existing-draft-preserved',attempts:0};
++    const main=await mainWorldSetComposer(wanted,{elementToken:composerToken(el),expected:exactComposerText(el),allowBlank:true});
+     if(!main.ok)return {...main,ok:false,attempts:1};
+     const independent=await composerLooksCommitted(el,wanted);
+     return {...main,ok:independent,attempts:1,independentReadback:independent};
+@@ -1197,7 +1205,7 @@
+   const NB_RECEIPT = 'nemesis.brain.receipt.v1';
+   const NB_OWNED_ATTACHMENTS = 'nemesis.brain.attachments.v2';
+   const NB_TRANSPORT_BLOCK = 'nemesis.brain.transport-block.v623';
+-  const NB_TRANSPORT_REVISION = '6.2.3-editor-transaction';
++  const NB_TRANSPORT_REVISION = '6.2.7-blank-composer';
+   let nbEditorGeneration = '', nbEditorCheckedAt = 0, nbEditorProbe = null;
+   function nbBlock() {try{return JSON.parse(sessionStorage.getItem(NB_TRANSPORT_BLOCK)||'null');}catch{return null;}}
+   function nbBlockActive() {
+@@ -1359,7 +1367,7 @@
+         const result = matched;
+         const completed = nbReplyFinished(assistant);
+         const issue=result ? null : nbReadIssue(candidates,id);
+-        nbLastCapture={request_id:id,at:Date.now(),collectorVersion:'6.2.6',matched:!!result,
++        nbLastCapture={request_id:id,at:Date.now(),collectorVersion:'6.2.7',matched:!!result,
+           messageRoots:assistants.map(m=>({tag:m.root.tagName,role:m.root.getAttribute('data-conversation-role'),
+             searchUnit:m.root.getAttribute('data-content-search-unit-key')||m.root.getAttribute('data-chatgpt-search-unit-key'),
+             codeBlocks:m.node.querySelectorAll('pre').length,textChars:(m.node.textContent||'').length})),
+@@ -1400,7 +1408,7 @@
+         const issue=result ? null : nbReadIssue(candidates,id);
+         if(id!==nbStableId || text!==nbStableText){nbStableId=id;nbStableText=text;nbStableAt=Date.now();}
+         const stableMs=Date.now()-nbStableAt;
+-        nbLastCapture={request_id:id,at:Date.now(),collectorVersion:'6.2.6',ownership:'clicked-receipt-and-latest-complete-return',
++        nbLastCapture={request_id:id,at:Date.now(),collectorVersion:'6.2.7',ownership:'clicked-receipt-and-latest-complete-return',
+           matched:!!result,completionControls:true,stableMs,issue,
+           candidates:candidates.slice(0,12).map(t=>t.slice(0,250000)),
+           captureTruncated:candidates.length>12 || candidates.some(t=>t.length>250000)};
+@@ -1489,10 +1497,10 @@
+           !!nbResult(JSON.stringify(status.result),id),
+         safeUnsent:receipt?.id===id && receipt?.safeUnsent===true && !receipt?.clicked,
+         formatDeliveryConfirmed:receipt?.id===id && matchingUserTurns>Number(receipt?.priorUserCount||0)};
+-      return {...status,bridgeBuild:'6.2.6',transportRevision:NB_TRANSPORT_REVISION,fileAdapter:'site-evidence-files/1',editorGeneration:nbEditorGeneration,collectorVersion:'6.2.6',url:location.href,matchingUserTurns,assistantNodes,
++      return {...status,bridgeBuild:'6.2.7',transportRevision:NB_TRANSPORT_REVISION,fileAdapter:'site-evidence-files/1',editorGeneration:nbEditorGeneration,collectorVersion:'6.2.7',url:location.href,matchingUserTurns,assistantNodes,
+         delivery,
+-        detail:(status.detail||status.error||status.state)+' · Brain 6.2.6 · collector 6.2.6'+(id?' · matching user turns '+matchingUserTurns+' · assistant nodes '+assistantNodes:'')};
+-    } catch(e) {return {state:'ERROR',collectorVersion:'6.2.6',url:location.href,detail:'Reply collector failed: '+String(e.message||e)};}
++        detail:(status.detail||status.error||status.state)+' · Brain 6.2.7 · collector 6.2.7'+(id?' · matching user turns '+matchingUserTurns+' · assistant nodes '+assistantNodes:'')};
++    } catch(e) {return {state:'ERROR',collectorVersion:'6.2.7',url:location.href,detail:'Reply collector failed: '+String(e.message||e)};}
+   }
+   async function nbAttach(attachments, jobId) {
+     if (!attachments?.length) return {count:0,names:[]};
+@@ -1619,7 +1627,12 @@
+       const filled = await fillComposer(composer, prompt);
+       const after=snapshot(getComposer()||composer);
+       nbLastSendAttempt={...(nbLastSendAttempt||{}),request_id:job.id,promptChars:prompt.length,before,filled,after,phase:'VERIFY_COMMIT',transportRetries:retryCount};
+-      if (!filled.ok) throw Error('Composer model transaction could not be verified; no send attempted');
++      if (!filled.ok) {
++        const failed=Object.entries(filled.checks||{}).filter(([,ok])=>ok===false).map(([name])=>name);
++        if(filled.independentReadback===false)failed.push('independent-readback');
++        throw Error('Composer verification refused ('+String(filled.method||'unavailable')+
++          (failed.length?'; failed checks: '+failed.join(', '):'')+'); no send attempted');
++      }
+       nbMarkOwnedDraft(job.id,prompt.replace(/\r\n?/g,'\n'));
+       phase('FIND_SEND',{filled,after});
+       const button = await waitForSendReady(getComposer(), 6000);
+@@ -1655,7 +1668,8 @@
+       const safeUnsent=!clicked && !userExists;
+       const phase=String(nbLastSendAttempt?.phase||'TRANSPORT');
+       nbLastSendAttempt={...(nbLastSendAttempt||{}),request_id:job.id,failedAt:Date.now(),error,clicked,safeUnsent,transportRetries:retryCount};
+-      const transportBlocked=safeUnsent && phase==='VERIFY_COMMIT';
++      const draftConflict=['existing-draft-preserved','draft-changed-preserved','non-text-draft-preserved'].includes(nbLastSendAttempt?.filled?.method);
++      const transportBlocked=safeUnsent && phase==='VERIFY_COMMIT' && !draftConflict;
+       const block=transportBlocked ? nbBlockTransport(error,nbLastSendAttempt) : null;
+       nbSave({id:job.id,state:'FAILED',error,phase,clicked,safeUnsent,transportBlocked,transportRetries:retryCount,at:Date.now()});
+       if(safeUnsent) {
+--- a/extension/manifest.json
++++ b/extension/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "NEMESIS Brain + zotX Capture",
+-  "version": "6.2.6",
++  "version": "6.2.7",
+   "description": "Brain transport with bounded page messages, persistent delivery fences, bound-tab lifecycle recovery and verified editor commits.",
+   "permissions": [
+     "activeTab",
+--- a/extension/tests/brain_liveness_v626.test.cjs
++++ b/extension/tests/brain_liveness_v626.test.cjs
+@@ -5,7 +5,7 @@
+   let now=100000,nextTimer=0;const timers=new Map(),listeners=[],polls=[],sends=[],updates=[],results=[];
+   const store=options.store||{'nb.config':{base:'http://127.0.0.1:8000',token:'fixture',enabled:true,clientId:'fixture-client-123456',slots:{worker_1:{tabId:1,url:'https://chatgpt.com/c/one',activeJobId:'job-one'},worker_2:{tabId:2,url:'https://chatgpt.com/c/two',activeJobId:'job-two'}}}};
+   const jobs={1:{id:'job-one',status:'CLAIMED',lease:'fixture',packet:'{}'},2:{id:'job-two',status:'CLAIMED',lease:'fixture',packet:'{}'}};
+-  let handler=options.handler||((_id,m)=>m.type==='NB_CONTENT_STATUS'?{state:'READY',bridgeBuild:'6.2.6',collectorVersion:'6.2.6',transportRevision:'6.2.3-editor-transaction'}:{state:'GENERATING',sent:true});
++  let handler=options.handler||((_id,m)=>m.type==='NB_CONTENT_STATUS'?{state:'READY',bridgeBuild:'6.2.7',collectorVersion:'6.2.7',transportRevision:'6.2.7-blank-composer'}:{state:'GENERATING',sent:true});
+   const tabs={1:{id:1,url:'https://chatgpt.com/c/one',...options.tab},2:{id:2,url:'https://chatgpt.com/c/two'}};
+   const ctx={console,URL,AbortSignal,crypto:require('node:crypto').webcrypto,
+     Date:class extends Date{static now(){return now;}},
+@@ -22,7 +22,7 @@
+     advance:async ms=>{now+=ms;for(const [id,t] of [...timers])if(t.at<=now){timers.delete(id);t.fn();}await flush();},
+     operation:async type=>new Promise(resolve=>listeners[0]({type},{url:'chrome-extension://fixture/brain.html'},resolve))};
+ }
+-const ready={state:'READY',bridgeBuild:'6.2.6',collectorVersion:'6.2.6',transportRevision:'6.2.3-editor-transaction'};
++const ready={state:'READY',bridgeBuild:'6.2.7',collectorVersion:'6.2.7',transportRevision:'6.2.7-blank-composer'};
+ (async()=>{
+   let f=fixture({handler:(id,m)=>id===1?new Promise(()=>{}):m.type==='NB_CONTENT_STATUS'?ready:{state:'GENERATING',sent:true}});
+   await Promise.all([f.tick(1),f.tick(2)]);assert(f.sends.some(s=>s.id===2&&s.type==='NB_CONTENT_SEND'),'a stuck page must not stall another slot');
+@@ -60,6 +60,6 @@
+   assert.equal(f.sends.filter(s=>s.type==='NB_CONTENT_SEND').length,2,'independent exact known-unsent receipt and newer lease permit retry');
+   f=fixture();f.jobs[1].packet=JSON.stringify({STATE:{resume_only:true}});await f.tick(1);
+   assert(!f.sends.some(s=>s.type==='NB_CONTENT_SEND'),'restart ambiguity must never send a new turn');
+-  assert(f.polls.every(p=>p.extension_build==='6.2.6-response-ownership'),'server must observe loaded background revision');
++  assert(f.polls.every(p=>p.extension_build==='6.2.7-blank-composer'),'server must observe loaded background revision');
+   console.log('PASS bounded hung status/send, independent slots, heartbeat, restart fence, exact receipt reconciliation, lifecycle wake/restore, discarded-page preservation, safe retry, and collection-only server restart. Offline fault injection; live acceptance remains separate.');
+ })().catch(e=>{console.error(e);process.exitCode=1;});
+--- a/extension/tests/transport_editor_v626.test.cjs
++++ b/extension/tests/transport_editor_v626.test.cjs
+@@ -5,9 +5,11 @@
+ const {EditorState}=require(path.join(qa,'prosemirror-state'));
+ const {EditorView}=require(path.join(qa,'prosemirror-view'));
+ const root=path.resolve(__dirname,'..');
+-const schema=new Schema({nodes:{doc:{content:'paragraph+'},paragraph:{content:'text*',toDOM:()=>['p',0]},text:{group:'inline'}}});
++const schema=new Schema({nodes:{doc:{content:'paragraph+'},paragraph:{content:'inline*',toDOM:()=>['p',0]},
++  mention:{inline:true,group:'inline',atom:true,toDOM:()=>['span',{'data-mention':'token'},'']},text:{group:'inline'}},
++  marks:{strong:{toDOM:()=>['strong',0]}}});
+ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+-async function fixture({reject=false,controller=true}={}) {
++async function fixture({reject=false,controller=true,draft='',raceDraft=null}={}) {
+   const dom=new JSDOM('<main><div contenteditable="true" role="textbox">USER ANSWER BLOCK</div><form><section><div id="mount"></div></section><button aria-label="Send" type="button">Send</button></form></main>',{url:'https://chatgpt.com/',pretendToBeVisual:true,runScripts:'outside-only'});
+   const w=dom.window;w.scrollBy=()=>{};global.window=w;global.document=w.document;global.getSelection=()=>w.getSelection();global.navigator=w.navigator;global.getComputedStyle=w.getComputedStyle.bind(w);
+   w.TextEncoder=TextEncoder;Object.defineProperty(w.crypto,'subtle',{value:require('node:crypto').webcrypto.subtle});
+@@ -19,6 +21,7 @@
+   let writes=0,clicks=0;const listeners=[];
+   const view=new EditorView(w.document.getElementById('mount'),{state:EditorState.create({schema})});
+   const el=view.dom;el.setAttribute('data-composer-markdown','');el.setAttribute('role','textbox');el.setAttribute('aria-label','Ask ChatGPT');
++  if(draft)view.dispatch(view.state.tr.insertText(draft));
+   // Standard ProseMirror's descriptor really has no .view. This is the shape the
+   // previous test incorrectly replaced with an invented {view} descriptor.
+   assert.equal(el.pmViewDesc.view,undefined);
+@@ -33,7 +36,12 @@
+   let config={enabled:true};
+   w.chrome={storage:{local:{get:async()=>({'nb.config':config}),set:async()=>{}}},runtime:{
+     onMessage:{addListener:fn=>listeners.push(fn)},sendMessage:async m=>{
+-      if(m.type==='AC44_MAIN_SET_COMPOSER')return w.nemesisComposerTransaction({...m.options,text:m.text});
++      if(m.type==='AC44_MAIN_SET_COMPOSER'){
++        if(raceDraft!==null && m.options?.operation!=='inspect'){
++          view.dispatch(view.state.tr.insertText(raceDraft));raceDraft=null;
++        }
++        return w.nemesisComposerTransaction({...m.options,text:m.text});
++      }
+       if(m.type==='NB_AUTHORIZE_SEND')return {ok:config.enabled};
+       return {ok:true};
+     }}};
+@@ -50,6 +58,57 @@
+   return {w,view,el,native,message,uploaded,writes:()=>writes,clicks:()=>clicks,pause:()=>{config.enabled=false;},close:()=>{view.destroy();dom.window.close();}};
+ }
+ (async()=>{
++  for(const draft of [' ','\n \t\n']){
++    const blank=await fixture({draft});
++    try{
++      assert.equal((await blank.message({type:'NB_CONTENT_STATUS'})).state,'READY');
++      const out=await blank.message({type:'NB_CONTENT_SEND',job:{id:'blank-space',lease:'fixture',packet:{GOAL:'Keep exact Unicode 日本語 and \\"quotes\\"'},transport_retries:0}});
++      assert.equal(out.sent,true,JSON.stringify(out));assert.equal(blank.clicks(),1);assert.equal(blank.writes(),1);
++      const diag=await blank.message({type:'NB_CONTENT_DIAGNOSTICS'});
++      assert.equal(diag.sendAttempt.filled.independentReadback,true);
++      await blank.message({type:'NB_CONTENT_SEND',job:{id:'blank-space',packet:{},transport_retries:1}});
++      assert.equal(blank.clicks(),1,'Whitespace recovery must not replay confirmed sends');
++    }finally{blank.close();}
++  }
++  for(const draft of [' my real draft ','\u200B','\u00A0']){
++    const protectedDraft=await fixture({draft});
++    try{
++      assert.equal((await protectedDraft.message({type:'NB_CONTENT_STATUS'})).state,'BLOCKED');
++      const out=await protectedDraft.message({type:'NB_CONTENT_SEND',job:{id:'human-draft',packet:{}}});
++      assert.equal(out.state,'BLOCKED');assert.equal(protectedDraft.native.getPlainText(),draft);
++      assert.equal(protectedDraft.writes(),0);assert.equal(protectedDraft.clicks(),0);
++    }finally{protectedDraft.close();}
++  }
++  let recovery=await fixture({draft:' '});
++  try{
++    recovery.w.sessionStorage.setItem('nemesis.brain.transport-block.v623',JSON.stringify({revision:'6.2.3-editor-transaction',retryAfter:Date.now()+1800000,error:'old blank gate'}));
++    recovery.w.sessionStorage.setItem('nemesis.brain.receipt.v1',JSON.stringify({id:'blank-retry',state:'FAILED',phase:'VERIFY_COMMIT',safeUnsent:true,clicked:false,transportRetries:0}));
++    const out=await recovery.message({type:'NB_CONTENT_SEND',job:{id:'blank-retry',lease:'fixture',packet:{GOAL:'Original unsent job'},transport_retries:1}});
++    assert.equal(out.sent,true,JSON.stringify(out));assert.equal(recovery.clicks(),1);
++  }finally{recovery.close();}
++  let raced=await fixture({raceDraft:'human edit during insertion'});
++  try{
++    const out=await raced.message({type:'NB_CONTENT_SEND',job:{id:'draft-race',lease:'fixture',packet:{GOAL:'Never overwrite user edits'}}});
++    assert.equal(out.clicked,false);assert.equal(out.transportBlocked,false);
++    assert(out.error.includes('draft-changed-preserved'),JSON.stringify(out));
++    assert.equal(raced.native.getPlainText(),'human edit during insertion');assert.equal(raced.writes(),0);assert.equal(raced.clicks(),0);
++    assert.equal((await raced.message({type:'NB_CONTENT_STATUS'})).state,'BLOCKED');
++  }finally{raced.close();}
++  const atom=await fixture();
++  try{
++    atom.view.dispatch(atom.view.state.tr.insert(1,schema.nodes.mention.create()));
++    assert.equal((await atom.message({type:'NB_CONTENT_STATUS'})).state,'BLOCKED');
++    const out=await atom.w.nemesisComposerTransaction({text:'Must not replace embedded object',expected:'',allowBlank:true});
++    assert.equal(out.ok,false);assert.equal(out.method,'non-text-draft-preserved');
++    assert.equal(atom.writes(),0);assert.equal(atom.clicks(),0);assert.equal(atom.view.state.doc.firstChild.firstChild.type.name,'mention');
++  }finally{atom.close();}
++  const marked=await fixture({draft:' '});
++  try{
++    marked.view.dispatch(marked.view.state.tr.addMark(1,2,schema.marks.strong.create()));
++    const out=await marked.w.nemesisComposerTransaction({text:'Must preserve marked draft',expected:' ',allowBlank:true});
++    assert.equal(out.ok,false);assert.equal(out.method,'non-text-draft-preserved');assert.equal(marked.writes(),0);
++    assert.equal(marked.view.state.doc.firstChild.firstChild.marks[0].type.name,'strong');
++  }finally{marked.close();}
+   let f=await fixture();
+   try {
+     const long='line one\n\nline two \\" escapes\\n unicode 日本語 '+ 'literal [x] {} \\'.repeat(3000);
+--- a/extension/tests/validate-extension.js
++++ b/extension/tests/validate-extension.js
+@@ -12,8 +12,8 @@
+ 
+ const manifest = JSON.parse(read('manifest.json'));
+ assert.equal(manifest.manifest_version, 3);
+-assert.equal(manifest.version, '6.2.6');
+-pass('manifest parses as combined MV3 Brain version 6.2.6; scanner build remains 3.7.7');
++assert.equal(manifest.version, '6.2.7');
++pass('manifest parses as combined MV3 Brain version 6.2.7; scanner build remains 3.7.7');
+ 
+ const manifestReferences = [
+   manifest.background?.service_worker,
