@@ -34,6 +34,9 @@ class PreviewTests(unittest.TestCase):
         self.failure=False
         self.override={}
         self.calls=[]
+        atlas_server.LIVE_PREVIEW_CACHE=None
+        atlas_server.PREVIEW_COUNTS.clear()
+        self.node_count=710
         fixture=self
 
         class Upstream(BaseHTTPRequestHandler):
@@ -43,10 +46,15 @@ class PreviewTests(unittest.TestCase):
                 fixture.calls.append((self.command,self.path))
                 if fixture.failure:
                     self.send_error(503);return
-                value={"ok":True,"owner":"mikecreation","repo":"ZotBot",
-                       "path":"research/fog-of-knowledge","sha":fixture.sha,
-                       "url":f"/github-atlas/mikecreation/ZotBot/{fixture.sha}/research__fog-of-knowledge/"}
-                value.update(fixture.override)
+                if self.path.endswith('/data/atlas-navigation.json'):
+                    value={'counts':{'canonical':fixture.node_count-225,'registry_added':225,'discoverable':fixture.node_count}}
+                elif self.path==atlas_server.PUBLISHED_CREW_API:
+                    value={'running':True,'flows':[{'batch_id':'test-review','state':'REVIEW','updated_at':1}], 'coverage':{}}
+                else:
+                    value={"ok":True,"owner":"mikecreation","repo":"ZotBot",
+                           "path":"research/fog-of-knowledge","sha":fixture.sha,
+                           "url":f"/github-atlas/mikecreation/ZotBot/{fixture.sha}/research__fog-of-knowledge/"}
+                    value.update(fixture.override)
                 raw=json.dumps(value).encode()
                 self.send_response(200);self.send_header("Content-Length",str(len(raw)))
                 self.end_headers();self.wfile.write(raw)
@@ -74,6 +82,11 @@ class PreviewTests(unittest.TestCase):
                     self.assertEqual(headers["X-Fog-Preview-Commit"],sha)
                     self.assertIn(f'src="{native}/github-atlas/mikecreation/ZotBot/{sha}/research__fog-of-knowledge/"',body)
                     self.assertIn("<iframe",body)
+                    self.assertIn('id="refreshAtlas" type="button"',body)
+                    self.assertIn('↻ Refresh atlas',body)
+                    self.assertIn('src="/atlas-preview.js"',body)
+                    self.assertIn('id="liveNodeCount"',body)
+                    self.assertIn('research workers keep running',body)
                 self.assertNotIn("a"*40,second[2])
                 self.assertEqual(self.calls,[("GET",atlas_server.PUBLISHED_ATLAS_API)]*2)
 
@@ -88,6 +101,7 @@ class PreviewTests(unittest.TestCase):
                 self.assertNotIn("X-Fog-Preview-Commit",headers)
                 self.assertNotIn("<iframe",body)
                 self.assertIn("Unable to sync",body)
+                self.assertIn('id="refreshAtlas" type="button"',body)
                 self.failure=False
                 self.assertEqual(self.get(preview)[0],200)
                 self.assertTrue(all(method=="GET" and path==atlas_server.PUBLISHED_ATLAS_API for method,path in self.calls))
@@ -116,6 +130,28 @@ class PreviewTests(unittest.TestCase):
                 self.assertEqual(self.calls,[("GET",atlas_server.PUBLISHED_ATLAS_API)])
             self.assertEqual(index.read_text(encoding="utf-8"),"local development page")
             self.assertEqual(asset.read_text(encoding="utf-8"),"unchanged asset")
+
+    def test_live_poll_coalesces_and_detects_exactly_one_new_published_node(self):
+        with serving(self.upstream) as native, patch.object(atlas_server,'NATIVE_ORIGIN',native):
+            with serving(partial(QuietPreview,published_preview=True)) as preview:
+                first=json.loads(self.get(preview+'/api/preview/live')[2])
+                second=json.loads(self.get(preview+'/api/preview/live')[2])
+                self.assertEqual(first,second)
+                self.assertEqual(first['counts']['discoverable'],710)
+                self.assertEqual(first['research']['states'],{'REVIEW':1})
+                self.assertEqual(len(self.calls),3)
+                atlas_server.LIVE_PREVIEW_CACHE=None
+                self.get(preview+'/api/preview/live')
+                self.assertEqual(sum(path.endswith('atlas-navigation.json') for _,path in self.calls),1)
+                self.sha='b'*40;self.node_count=711;atlas_server.LIVE_PREVIEW_CACHE=None
+                latest=json.loads(self.get(preview+'/api/preview/live')[2])
+                self.assertEqual(latest['counts']['discoverable'],711)
+                self.assertEqual(latest['sha'],self.sha)
+                self.failure=True;atlas_server.LIVE_PREVIEW_CACHE=None
+                self.assertEqual(self.get(preview+'/api/preview/live')[0],503)
+                self.failure=False
+                self.assertEqual(self.get(preview+'/api/preview/live')[0],200)
+                self.assertTrue(all(method=='GET' for method,_ in self.calls))
 
 
 if __name__=="__main__":unittest.main()

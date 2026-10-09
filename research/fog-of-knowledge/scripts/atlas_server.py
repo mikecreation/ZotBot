@@ -4,6 +4,7 @@ import argparse
 import json
 import re
 import threading
+import time
 import urllib.request
 from datetime import datetime, timezone
 from functools import partial
@@ -19,6 +20,10 @@ LOCK=threading.Lock()
 NATIVE_ORIGIN="http://127.0.0.1:8000"
 PUBLISHED_ATLAS_API="/api/github/project/mikecreation/ZotBot/atlas?path=research%2Ffog-of-knowledge"
 PREVIEW_LOCK=threading.Lock()
+LIVE_PREVIEW_LOCK=threading.Lock()
+LIVE_PREVIEW_CACHE=None
+PREVIEW_COUNTS={}
+PUBLISHED_CREW_API="/api/github/project/mikecreation/ZotBot/evidence-crew?path=research%2Ffog-of-knowledge"
 
 
 def save_jobs():
@@ -41,7 +46,7 @@ def brain(path,body=None,timeout=10):
 
 
 def published_snapshot():
-    # Resolve only on a page refresh, then keep every asset on that exact commit.
+    # Keep every asset on one exact published commit.
     # This GET prepares the existing atlas cache; it never controls research jobs.
     with PREVIEW_LOCK:
         value=brain(PUBLISHED_ATLAS_API,timeout=60)
@@ -54,6 +59,46 @@ def published_snapshot():
     expected=f"/github-atlas/mikecreation/ZotBot/{sha}/research__fog-of-knowledge/"
     if value.get("url")!=expected:raise ValueError("published atlas URL does not match its commit")
     return sha,NATIVE_ORIGIN+expected
+
+
+def live_preview_snapshot():
+    global LIVE_PREVIEW_CACHE
+    # Multiple open previews share one lookup; unchanged commits never reread graph data.
+    with LIVE_PREVIEW_LOCK:
+        if LIVE_PREVIEW_CACHE and time.monotonic()-LIVE_PREVIEW_CACHE[0]<4:
+            return LIVE_PREVIEW_CACHE[1]
+        sha,url=published_snapshot()
+        if sha not in PREVIEW_COUNTS:
+            with urllib.request.urlopen(url+'data/atlas-navigation.json',timeout=15) as response:
+                navigation=json.load(response)
+            counts=navigation['counts']
+            for key in ('canonical','registry_added','discoverable'):
+                if type(counts.get(key)) is not int or counts[key]<0:raise ValueError('Invalid published node count')
+            if counts['discoverable']!=counts['canonical']+counts['registry_added']:
+                raise ValueError('Published node counts do not reconcile')
+            PREVIEW_COUNTS[sha]={key:counts[key] for key in ('canonical','registry_added','discoverable')}
+            if len(PREVIEW_COUNTS)>8:del PREVIEW_COUNTS[next(iter(PREVIEW_COUNTS))]
+        value={'sha':sha,'url':url,'counts':PREVIEW_COUNTS[sha],
+               'checked_at':datetime.now(timezone.utc).isoformat()}
+        try:
+            crew=brain(PUBLISHED_CREW_API)
+            # Progress is about retained batches; transport states are not scientific progress.
+            states={}
+            entries=[]
+            for flow in crew.get('flows',[]):
+                state=str(flow.get('state','UNKNOWN'));states[state]=states.get(state,0)+1
+                entries.append({'batch_id':flow.get('batch_id'),'state':state,'error':flow.get('error'),
+                                'updated_at':flow.get('updated_at',0),'yield_counts':flow.get('yield_counts'),
+                                'publication_wait':flow.get('publication_wait')})
+            coverage=crew.get('coverage') or {}
+            value['research']={'running':crew.get('running') is True,'states':states,
+                'last_error':crew.get('last_error'),'totals':coverage.get('totals',{}),
+                'active_tasks':coverage.get('active_tasks',[]),
+                'batches':sorted(entries,key=lambda row:row['updated_at'] or 0,reverse=True)[:12]}
+        except Exception:
+            value['research']={'unavailable':True}
+        LIVE_PREVIEW_CACHE=(time.monotonic(),value)
+        return value
 
 
 def begin_review(batch_id):
@@ -113,23 +158,45 @@ class Handler(SimpleHTTPRequestHandler):
         super().__init__(*args,**kwargs)
 
     def published_page(self):
+        toolbar=('<header class="preview-bar"><button id="refreshAtlas" type="button" '
+                 'title="Sync this preview to the latest published atlas">↻ Refresh atlas</button>'
+                 '<strong id="liveNodeCount">Live nodes · loading…</strong>'
+                 '<span>Auto-sync every 5 seconds · research workers keep running</span>'
+                 '<output id="previewStatus" aria-live="polite">{state}</output></header>')
         try:
             sha,url=published_snapshot()
             # Native's atlas shell redirect skips embedded pages. Keep the user's
             # 8097 address, while the frame uses the same pinned assets as Chrome.
-            page=('<!doctype html><html lang="en"><head><meta charset="utf-8">'
-                  '<meta name="viewport" content="width=device-width,initial-scale=1">'
-                  '<title>Fog of Knowledge</title><style>html,body,iframe{width:100%;height:100%;'
-                  'margin:0;border:0;display:block;background:#04080e}body{overflow:hidden}</style>'
-                  f'</head><body><iframe title="Published Fog of Knowledge" src="{url}"></iframe></body></html>')
+            content=(toolbar.format(state=f'Published snapshot · {sha[:8]}')+
+                     f'<iframe id="publishedAtlas" data-sha="{sha}" title="Published Fog of Knowledge" src="{url}"></iframe>')
             status=200
         except Exception:
             sha=None;status=503
-            page=('<!doctype html><html lang="en"><meta charset="utf-8"><title>Fog of Knowledge</title>'
-                  '<body style="background:#04080e;color:#e6edf5;font:18px system-ui;padding:3rem">'
+            content=(toolbar.format(state='Sync unavailable')+'<main class="sync-error">'
                   '<h1>Unable to sync the published atlas</h1>'
-                  '<p>Check that Nemesis is available, then press Refresh to try again.</p>'
-                  '<p>No older local copy has been substituted.</p></body></html>')
+                  '<p>Check that Nemesis is available, then press Refresh atlas to try again.</p>'
+                  '<p>No older local copy has been substituted.</p></main>')
+        page=('<!doctype html><html lang="en"><head><meta charset="utf-8">'
+              '<meta name="viewport" content="width=device-width,initial-scale=1">'
+              '<title>Fog of Knowledge</title><style>'
+              'html,body{width:100%;height:100%;margin:0;background:#04080e;color:#e6edf5;'
+              'font:13px system-ui}body{display:flex;flex-direction:column;overflow:hidden}'
+              '.preview-bar{display:flex;align-items:center;gap:16px;padding:9px 16px;'
+              'background:#0b1420;border-bottom:1px solid #253d50;flex:none;flex-wrap:wrap}'
+              '.preview-bar button{color:#c5f6ff;background:#163146;border:1px solid #44849b;'
+              'border-radius:7px;padding:8px 15px;font:600 13px system-ui;cursor:pointer}'
+              '.preview-bar button:hover{background:#20465d}.preview-bar button:focus-visible{'
+              'outline:2px solid #89e7ff;outline-offset:3px}.preview-bar span{color:#9eb1c4}'
+              '.preview-bar output{margin-left:auto;color:#9eb1c4}'
+              'iframe{width:100%;flex:1;min-height:0;border:0;display:block;order:2}'
+              '.research-progress{padding:7px 16px;background:#09111d;border-bottom:1px solid #253d50;'
+              'color:#afc3d8;flex:none;order:1}.research-progress summary{cursor:pointer}'
+              '.research-progress ul{max-height:180px;overflow:auto;padding-left:20px}'
+              '.research-progress li{padding:4px 0}.sync-error{padding:3rem;overflow:auto;order:2}'
+              '</style></head><body>'+content+
+              '<details class="research-progress" id="researchProgress"><summary id="researchSummary">'
+              'Research progress · connecting…</summary><ul id="researchBatches"></ul></details>'
+              '<script src="/atlas-preview.js"></script></body></html>')
         raw=page.encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type","text/html; charset=utf-8")
@@ -146,6 +213,8 @@ class Handler(SimpleHTTPRequestHandler):
         parsed=urlparse(self.path);query=parse_qs(parsed.query)
         if self.published_preview and parsed.path in {"/","/index.html"}:return self.published_page()
         try:
+            if self.published_preview and parsed.path=='/api/preview/live':
+                return self.json_response(live_preview_snapshot())
             if parsed.path=="/api/evidence/audit":return self.json_response(audit_index(graph()))
             if parsed.path=="/api/evidence/queue":
                 entries=[]
