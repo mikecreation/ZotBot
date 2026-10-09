@@ -1512,7 +1512,7 @@
       elementVisible(n) && !n.closest('[data-message-author-role],[data-conversation-role],[data-user-message-bubble],[data-assistant-message-bubble],pre,code,[contenteditable="true"]') &&
       !n.querySelector('[data-message-author-role],[data-conversation-role],[data-user-message-bubble],[data-assistant-message-bubble],pre,code,[contenteditable="true"],textarea') &&
       /^You[’']re out of attachments for now\./i.test((n.innerText||n.textContent||'').trim()));
-    if(quota)throw Error('ChatGPT attachment quota exhausted: '+String(quota.innerText||quota.textContent).trim().slice(0,500)+' No file upload or prompt send attempted. Full evidence retained.');
+    if(quota)throw Error('ChatGPT attachment quota exhausted: '+String(quota.innerText||quota.textContent).trim().slice(0,500)+' No file upload attempted; no send attempted. Full evidence retained.');
     if(attachments.length>4)throw Error('More than four attachments require a separate evidence packet; no attachment was omitted and no send attempted');
     const documents=attachments.some(item=>item.kind==='site-evidence' && !String(item.data_url||'').startsWith('data:image/jpeg;'));
     const input=[...document.querySelectorAll('input[type="file"]')].find(el=>!el.webkitdirectory && (!documents || !el.getAttribute('accept') || /text\/plain|application\/(?:json|zip)|\.(?:txt|json|zip)/i.test(el.getAttribute('accept'))));

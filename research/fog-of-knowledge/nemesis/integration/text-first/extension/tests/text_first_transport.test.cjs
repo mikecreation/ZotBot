@@ -30,7 +30,7 @@ vm.createContext(ctx);vm.runInContext(source.slice(start,end)+'globalThis.prepar
     return {attach:context.attach,touched:()=>touched};
   }
   let f=uploadFixture('<div>You’re out of attachments for now. Try again after 9:52 PM.</div><input type="file">');
-  await assert.rejects(f.attach([image],'quota'),/attachment quota exhausted.*9:52 PM.*No file upload or prompt send attempted/);
+  await assert.rejects(f.attach([image],'quota'),/attachment quota exhausted.*9:52 PM.*No file upload attempted; no send attempted/);
   assert.equal(f.touched(),0);
   assert.equal((await f.attach([],'text')).count,0,'upload quota never blocks text-only jobs');
   for(const html of [
