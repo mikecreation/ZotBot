@@ -19,7 +19,8 @@ CHECKS={'engineering':['scripts/test_engineering_integrity.py'],'context':['scri
 # This check includes the complete portable Native suite and browser fixtures.
 # Its measured Windows run exceeded the ordinary single-script budget; this is
 # an engineering-test limit, never a scientific job or mission budget extension.
-CHECK_TIMEOUTS={'scripts/test_paged_planner_source.py':600}
+CHECK_TIMEOUTS={'scripts/test_paged_planner_source.py':600,'scripts/test_fresh_chat_source.py':600}
+CHECKS['fresh_chat']=['scripts/test_fresh_chat_source.py']
 
 def normalize(path):
     path=path.replace('\\','/')
@@ -30,6 +31,8 @@ def normalize(path):
     for retained in ('nemesis/integration/paged-planning/native/','nemesis/integration/paged-planning/extension/','nemesis/integration/response-ownership/extension/','nemesis/integration/tab-recovery/extension/','nemesis/integration/upload-recovery/extension/','nemesis/integration/status-scan/extension/','nemesis/integration/planning-recovery/native/','nemesis/integration/completed-fence/extension/','nemesis/integration/cancellation-recovery/native/'):
         if path.startswith(retained):path=path[len(retained):]
     if path.startswith('nemesis/integration/bounded-evidence/native/'):path=path[len('nemesis/integration/bounded-evidence/native/'):]
+    for retained in ('nemesis/integration/fresh-chat/native/','nemesis/integration/fresh-chat/extension/'):
+        if path.startswith(retained):path=path[len(retained):]
     return path
 
 def closure(registry,seeds):

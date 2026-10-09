@@ -13,6 +13,11 @@ class GuardTests(unittest.TestCase):
         self.assertEqual(set(value['checks']),set(CHECKS))
     def test_visual_change_does_not_invent_scientific_boundary(self):
         self.assertEqual(plan(['app.css'])['affected'],[])
+    def test_fresh_chat_runs_native_and_browser_delivery_checks(self):
+        for path in ('native/sim/brain_bridge.py','extension/brain-background.js'):
+            value=plan(['research/fog-of-knowledge/nemesis/integration/fresh-chat/'+path])
+            self.assertEqual(value['direct'],['dispatch'])
+            self.assertIn('fresh_chat',value['checks'])
     def test_tab_recovery_retained_source_is_on_real_delivery_boundary(self):
         value=plan(['research/fog-of-knowledge/nemesis/integration/tab-recovery/extension/brain-background.js'])
         self.assertEqual(value['direct'],['dispatch'])
