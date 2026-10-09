@@ -46,7 +46,7 @@ jobs:
         working-directory: research/fog-of-knowledge
         run: |
           python scripts/test_paged_planner_source.py --source-only
-          python scripts/test_planning_recovery_source.py --full-native
+          python scripts/test_cancellation_recovery_source.py --full-native
           python scripts/test_retrieval_service.py
 
       - name: Check owned responses in the latest-response presentation

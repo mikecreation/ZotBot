@@ -102,6 +102,9 @@ recovery limits and release verification.
 Planning timeout holds use fresh independent decisions with retained failure history
 and bounded cooldowns; see [PLANNING_RECOVERY.md](nemesis/integration/PLANNING_RECOVERY.md).
 
+Provider disable preserves Fog candidate and review progress; see
+[CANCELLATION_RECOVERY.md](nemesis/integration/CANCELLATION_RECOVERY.md).
+
 ## What belongs in a batch?
 
 ### nodes.jsonl

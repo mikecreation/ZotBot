@@ -282,6 +282,20 @@
       "assumption": "No active server lease means generic READY page status can reconcile every retained delivery fence.",
       "failure": "A collected COMPLETE request leaves a persistent fence; generic status omits its exact request ID and blocks the slot forever.",
       "proof": "Old background fails the removed-active-lease regression; exact retained request probe releases proven completion, preserves ambiguity and format confirmation, never sends or resubmits, and retains source hashes with a reversible patch. Live delivery is separate."
+    },
+    {
+      "id": "transport-cancellation-reauthors-reviewed-candidate",
+      "category": "platform-error",
+      "boundaries": [
+        "dispatch",
+        "author",
+        "review",
+        "persistence",
+        "continuation"
+      ],
+      "assumption": "A terminated author or review transport is evidence that the scientific candidate needs rewriting.",
+      "failure": "Provider disable cancels Fog jobs; generic ValueError is classified as candidate rejection and discards active author/review units while spending a format revision.",
+      "proof": "Exact candidate/source/review hashes survive cancellation fault injection in all four author/review paths; disable preserves Fog IDs, leases and packets, excludes paused deadline exhaustion, and permits only exact owned-result collection. Scientific rejection remains separately gated."
     }
   ]
 }
