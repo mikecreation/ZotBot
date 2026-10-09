@@ -20,7 +20,8 @@
       const taskNames=new Map((research.active_tasks||[]).map(task=>[task.batch_id,task.label]));
       for(const row of research.batches||[]){
         const item=doc.createElement('li'), yielded=row.yield_counts;
-        const yieldText=yielded?' · '+(yielded.new_nodes||0)+' new nodes, '+(yielded.updated_nodes||0)+' updates':'';
+        const stage=row.state==='MERGED'?'published':'proposed';
+        const yieldText=yielded?' · '+(yielded.new_nodes||0)+' '+stage+' new nodes, '+(yielded.updated_nodes||0)+' '+stage+' updates':'';
         item.textContent=(taskNames.get(row.batch_id)||row.batch_id||'Batch')+' — '+(labels[row.state]||row.state)+yieldText+
           (row.error?' · '+row.error:'')+(row.publication_wait?' · '+row.publication_wait:'');
         batches.append(item);
