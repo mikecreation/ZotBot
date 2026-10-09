@@ -1665,3 +1665,31 @@ body.publicFrontierOpen main,body.publicFrontierOpen .toolbar,body.publicFrontie
 body{display:flex;flex-direction:column;height:100vh;overflow:hidden}.topbar,.toolbar{flex-shrink:0}main{flex:1;min-height:0;height:auto!important}#mapShell{height:100%;min-height:0}#publicFrontier{flex:1;min-height:0;height:auto}
 
 @media(min-width:1201px){.topbar{grid-template-columns:minmax(330px,1fr) auto;min-height:125px}.brand{grid-column:1;grid-row:1/span 2}.atlasTabs{grid-column:2;grid-row:1;margin-right:120px}.viewnav{grid-column:2;grid-row:2;align-self:center}}
+
+/* Drawing geometry must not create an internal scroll offset. */
+body,body.layout-compact{height:100dvh;overflow:hidden}
+main,body.layout-compact main{flex:1;min-height:0;overflow:clip;grid-template-columns:minmax(0,1fr) 350px}
+#mapShell,body.layout-compact #mapShell{height:100%;min-height:0;overflow:clip}
+#graph,#graph.canvasOverlay,body.layout-compact #graph{display:block;position:absolute;inset:0;width:100%;height:100%}
+#compactList,body.layout-compact #compactList{display:none!important}
+body.layout-compact .mapCaption{position:absolute;margin:0;max-width:560px}
+.atlasDisplayDock{display:flex;align-items:center;gap:6px;flex:none;min-height:44px;padding:6px 10px;background:#07101dec;border-bottom:1px solid #24384b;z-index:100}
+.atlasDisplayDock button,.atlasDisplayDock summary{font:600 10px system-ui;color:#c6e9f6;background:#102333;border:1px solid #305267;border-radius:6px;padding:7px 10px;cursor:pointer;white-space:nowrap}
+.atlasDisplayDock button[aria-pressed=true]{background:#1b4052}
+.atlasDisplayDock .atlasTabs{display:flex;margin:0;gap:6px}
+.atlasDisplayDock details{position:relative}
+.atlasDisplayDock details>div{position:absolute;top:100%;right:0;min-width:235px;background:#091522;border:1px solid #305267;border-radius:8px;padding:10px;box-shadow:0 10px 30px #0009}
+.atlasDisplayDock label{display:flex;align-items:center;gap:8px;padding:7px;color:#d4e7f2;font-size:12px}
+.atlasDisplayDock.controls-minimized>button:not(#minimizeMapControlsBtn),.atlasDisplayDock.controls-minimized>details,.atlasDisplayDock.controls-minimized>output{display:none}
+.atlasDisplayDock input{accent-color:#73e8ff}
+#atlasDisplayStatus{font-size:11px;color:#ffc857}
+body.hide-atlas-header .topbar,body.hide-atlas-toolbar .toolbar,body.hide-atlas-detail #detail,body.hide-atlas-caption #mapCaption,body.hide-atlas-tools .mapTools{display:none!important}
+body.hide-atlas-detail main{grid-template-columns:minmax(0,1fr)}
+body.atlas-map-only .atlasDisplayDock{position:absolute;top:8px;left:8px;max-width:calc(100% - 16px);border:1px solid #305267;border-radius:8px;flex-wrap:wrap}
+body.atlas-map-only main{height:100%!important}
+body.atlas-map-only #publicFrontier{padding-top:64px}
+@media(max-width:1150px){
+  main,body.layout-compact main{grid-template-columns:minmax(0,1fr)}
+  #detail,body.layout-compact #detail{position:absolute;right:0;bottom:0;top:210px;z-index:20;width:min(320px,80vw);min-height:0;background:#080d18f5}
+  .atlasDisplayDock{flex-wrap:wrap}
+}

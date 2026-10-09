@@ -7,6 +7,16 @@
     const summary=doc.getElementById('researchSummary'), batches=doc.getElementById('researchBatches');
     let frame=doc.getElementById('publishedAtlas'), busy=false, timer=null, stopped=false, sequence=0;
     let sha=frame?.dataset.sha||'', previousCount=null;
+    // Frontend-only activation also works with an already-running preview server.
+    const displayStyle=doc.createElement('style');
+    displayStyle.textContent='body.atlas-shell-hidden .preview-bar,body.atlas-shell-hidden .research-progress{display:none}';
+    doc.head.append(displayStyle);
+    if(frame)frame.allowFullscreen=true;
+    win.addEventListener('message',event=>{
+      if(event.source!==frame?.contentWindow||event.data?.type!=='fog-atlas-display')return;
+      if(event.origin!==new URL(frame.src,win.location.href).origin)return;
+      doc.body.classList.toggle('atlas-shell-hidden',event.data.shellHidden===true);
+    });
     const labels={CAPTURE:'Capturing sources',AUTHOR:'Building candidates',REVIEW:'Reviewing',
       READY:'Ready to publish',PUBLISH:'Publishing',CI:'Awaiting CI',MERGED:'Published',BLOCKED:'Blocked'};
     function progress(research){
@@ -42,7 +52,7 @@
     async function replaceFrame(value){
       const saved=await snapshot();
       if(!frame){
-        frame=doc.createElement('iframe');frame.id='publishedAtlas';frame.title='Published Fog of Knowledge';
+        frame=doc.createElement('iframe');frame.id='publishedAtlas';frame.title='Published Fog of Knowledge';frame.allowFullscreen=true;
         doc.querySelector('.sync-error')?.remove();doc.getElementById('researchProgress').after(frame);
       }
       const activeFrame=frame;

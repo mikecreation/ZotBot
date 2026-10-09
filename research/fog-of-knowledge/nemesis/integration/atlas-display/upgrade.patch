@@ -1,0 +1,49 @@
+--- a/static/github.js
++++ b/static/github.js
+@@ -232,7 +232,7 @@
+       </header>
+       ${notice ? `<p class="gh-atlas-notice" role="status" ${noticeConnectionError?'data-gh-connection-notice':''}>${E(notice)}</p>` : ''}
+       <div class="gh-evidence-progress" role="status">${crewProgress()}</div>
+-      <iframe class="gh-atlas-frame" src="${E(src)}" title="${E(title)}"></iframe>
++      <iframe class="gh-atlas-frame" allowfullscreen src="${E(src)}" title="${E(title)}"></iframe>
+     </div>`;
+   }
+   function paint(opts){
+@@ -971,4 +971,9 @@
+   window.NemesisGitHub = { render, refresh, softRefreshWorkspace, ensure, tryOpenFromText, parseHash };
+   document.addEventListener('click', onClick);
+   document.addEventListener('submit', onSubmit);
++  window.addEventListener('message', event => {
++    const root=host?.querySelector('.gh-atlas-full'), frame=root?.querySelector('.gh-atlas-frame');
++    if(!frame || event.source!==frame.contentWindow || event.origin!==location.origin || event.data?.type!=='fog-atlas-display')return;
++    root.classList.toggle('atlas-shell-hidden',event.data.shellHidden===true);
++  });
+ })();
+--- a/static/github.css
++++ b/static/github.css
+@@ -67,3 +67,5 @@
+ button.workspace-primary:disabled, button.workspace-primary[disabled]{
+   opacity:.45; filter:grayscale(.7); cursor:not-allowed; pointer-events:none;
+ }
++
++.gh-atlas-full.atlas-shell-hidden .gh-atlas-bar,.gh-atlas-full.atlas-shell-hidden .gh-evidence-progress,.gh-atlas-full.atlas-shell-hidden .gh-atlas-notice{display:none}
+--- a/static/index.html
++++ b/static/index.html
+@@ -13,7 +13,7 @@
+ <link rel="stylesheet" href="/static/frontier.css">
+ <link rel="stylesheet" href="/static/workspace.css">
+ <link rel="stylesheet" href="/static/social.css?v=eureka1">
+-<link rel="stylesheet" href="/static/github.css?v=gh-evidence-4">
++<link rel="stylesheet" href="/static/github.css?v=gh-atlas-display-1">
+ </head>
+ <body class="workspace-mode">
+ <div id="research-workspace">
+@@ -277,7 +277,7 @@
+ <script src="/static/brain.js?v=20261004-ready-state"></script>
+ <script src="/static/frontier.js" defer></script>
+ <script src="/static/social.js?v=eureka2" defer></script>
+-<script src="/static/github.js?v=gh-evidence-5" defer></script>
++<script src="/static/github.js?v=gh-atlas-display-1" defer></script>
+ <script src="/static/workspace.js?v=ws14" defer></script>
+ </body>
+ </html>
