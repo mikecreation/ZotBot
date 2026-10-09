@@ -31,6 +31,7 @@ async function main(){
     reloads++;attachBridge();frame.dispatchEvent(new win.Event('load'));
   }});observer.observe(frame,{attributes:true});
   const controller=create(win,{autoStart:false});
+  assert.equal(frame.allowFullscreen,true);
   const display=(source,origin,hidden)=>win.dispatchEvent(new win.MessageEvent('message',{source,origin,data:{type:'fog-atlas-display',shellHidden:hidden}}));
   display(frame.contentWindow,'http://evil.invalid',true);assert(!doc.body.classList.contains('atlas-shell-hidden'));
   display(win,'http://127.0.0.1:8000',true);assert(!doc.body.classList.contains('atlas-shell-hidden'));
