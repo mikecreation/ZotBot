@@ -13,7 +13,9 @@ async function main(){
     {url:'http://127.0.0.1:8097/',pretendToBeVisual:true});
   const win=dom.window, doc=win.document, frame=doc.getElementById('publishedAtlas');
   let value={sha:a,url:url(a),counts:{discoverable:710},checked_at:new Date().toISOString(),
-    research:{running:true,states:{REVIEW:3,BLOCKED:1},batches:[{batch_id:'<script>unsafe</script>',state:'BLOCKED',error:'Missing evidence'}]}};
+    research:{running:true,states:{REVIEW:3,BLOCKED:1},totals:{new_nodes:134},
+      active_tasks:[{batch_id:'<script>unsafe</script>',label:'Current superconductivity investigation'}],
+      batches:[{batch_id:'<script>unsafe</script>',state:'BLOCKED',error:'Missing evidence'}]}};
   let calls=0, reloads=0, fail=false, release=null, restored=null, active=0,maxActive=0;
   win.fetch=async()=>{calls++;active++;maxActive=Math.max(maxActive,active);
     if(release===true)await new Promise(resolve=>{release=resolve});
@@ -33,6 +35,8 @@ async function main(){
     await controller.poll();await controller.poll();
     assert.equal(reloads,0);assert.match(doc.getElementById('liveNodeCount').textContent,/710/);
     assert.match(doc.getElementById('researchSummary').textContent,/Reviewing 3/);
+    assert.match(doc.getElementById('researchSummary').textContent,/134 published additions/);
+    assert.match(doc.getElementById('researchBatches').textContent,/Current superconductivity investigation.*Missing evidence/);
     assert.equal(doc.querySelectorAll('script').length,0); // untrusted status is text only
     value={...value,sha:b,url:url(b),counts:{discoverable:711}};
     await controller.poll();

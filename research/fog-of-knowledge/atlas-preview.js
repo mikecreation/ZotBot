@@ -13,11 +13,15 @@
       batches.replaceChildren();
       if(!research||research.unavailable){summary.textContent='Research progress unavailable · map sync still active';return;}
       const parts=Object.entries(research.states||{}).map(([state,n])=>(labels[state]||state)+' '+n);
-      summary.textContent=(research.running?'Research active':'Research paused')+' · '+(parts.join(' · ')||'No retained batches yet');
+      const additions=research.totals?.new_nodes;
+      summary.textContent=(research.running?'Research active':'Research paused')+
+        (Number.isSafeInteger(additions)?' · '+additions+' published additions':'')+
+        ' · '+(parts.join(' · ')||'No retained batches yet');
+      const taskNames=new Map((research.active_tasks||[]).map(task=>[task.batch_id,task.label]));
       for(const row of research.batches||[]){
         const item=doc.createElement('li'), yielded=row.yield_counts;
         const yieldText=yielded?' · '+(yielded.new_nodes||0)+' new nodes, '+(yielded.updated_nodes||0)+' updates':'';
-        item.textContent=(row.batch_id||'Batch')+' — '+(labels[row.state]||row.state)+yieldText+
+        item.textContent=(taskNames.get(row.batch_id)||row.batch_id||'Batch')+' — '+(labels[row.state]||row.state)+yieldText+
           (row.error?' · '+row.error:'')+(row.publication_wait?' · '+row.publication_wait:'');
         batches.append(item);
       }
