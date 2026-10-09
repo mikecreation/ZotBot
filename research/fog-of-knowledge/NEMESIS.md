@@ -188,6 +188,10 @@ The machine does the volume. The human resolves the genuinely ambiguous decision
 
 ## Navigation and strict ingestion
 
+Brain 6.2.11 bounds status-notice scans before layout-sensitive reads. See
+[status scan verification](nemesis/integration/STATUS_SCAN.md); the complete
+research prompts and retained evidence remain unchanged.
+
 New Native scientific decisions use a catalog and exact snapshot-pinned retrieval
 turns instead of sending the whole graph into each Brain prompt. See
 [paged planning deployment](nemesis/integration/PAGED_PLANNING.md) for the read
