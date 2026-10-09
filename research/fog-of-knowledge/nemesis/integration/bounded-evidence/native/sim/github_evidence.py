@@ -15,7 +15,7 @@ from .fog_evidence_reads import EvidenceReads,author_frames,review_frame,bounded
 
 VERSION='fog-evidence-crew/1'
 CLIENT_REVISION='gh-evidence-5'
-RUNTIME_REVISION='crew-bounded-evidence/2'
+RUNTIME_REVISION='crew-bounded-evidence/3'
 TERMINAL={'MERGED','PR_OPEN','READY','BLOCKED','STALE'}
 MAX_PACKET=300_000
 MAX_AUTHOR_ATTEMPTS=8
@@ -715,24 +715,29 @@ class FogEvidenceCrew:
                 if not flow.pop('reuse_author_result',False):self.prepare_author_jobs(flow,folder)
                 flow.update(state='AUTHOR',error=None,failure_kind=None,retry=None,operational_attempts=0);self.save(folder,flow);return
             if flow['state']=='AUTHOR':
-                if 'author' not in flow['jobs'] or flow.get('author_units'):
+                if 'author' not in flow['jobs'] and not flow.get('author_units'):
                     self.prepare_author_jobs(flow,folder)
                     self.save(folder,flow)
                 if flow.get('author_units'):
                     packets=[]
                     for unit in flow['author_units']:
-                        if not unit.get('job_id'):return
+                        if not unit.get('job_id'):continue
                         unit_job=self.job(unit['job_id'])
-                        if unit_job['status'] in {'QUEUED','CLAIMED','SENT'}:return
+                        if unit_job['status'] in {'QUEUED','CLAIMED','SENT'}:continue
                         write(folder/('author-unit-'+str(unit['index'])+'-result.json'),unit_job)
                         self.require_complete_job(unit_job,'Author unit')
-                        original=json.loads((folder/'author-unit-original.json').read_text()) if (folder/'author-unit-original.json').exists() else json.loads(self.author_goal(flow,folder))
+                        original=json.loads((folder/'author-unit-original.json').read_text(encoding='utf8')) if (folder/'author-unit-original.json').exists() else json.loads(self.author_goal(flow,folder))
                         frame=json.loads(unit['goal'])
                         response,next_job=self.evidence_response(folder,flow,'author:unit:'+str(unit['index']),AUTHOR_SYSTEM,original,lambda:author_frames(frame)[0] if size(frame)>FRAME_LIMIT else frame,unit_job,'author:'+bid+':unit:'+str(unit['index']))
                         if response is None:
                             if next_job:unit['job_id']=next_job;flow['jobs']['author']=next_job
-                            self.save(folder,flow);return
+                            self.save(folder,flow);continue
                         packets.append(response)
+                    # Serve completed units' reads before filling free author
+                    # slots. One old/uncertain delivery cannot starve another
+                    # unit's context, and reads keep the same two-job capacity.
+                    self.prepare_author_jobs(flow,folder);self.save(folder,flow)
+                    if len(packets)!=len(flow['author_units']):return
                     from .fog_packet_units import merge_authored
                     try:combined=merge_authored(packets)
                     except ValueError as exc:raise CrewFailure(str(exc),'scientific','author-evidence-limitation') from exc

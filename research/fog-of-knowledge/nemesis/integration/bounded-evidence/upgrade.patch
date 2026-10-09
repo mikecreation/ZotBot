@@ -259,7 +259,7 @@ index 7d35041..50d4273 100644
      if not result:raise ValueError('No assertions to partition')
      return result
 diff --git a/native/sim/github_evidence.py b/native/sim/github_evidence.py
-index e59fb0f..6932aad 100644
+index e59fb0f..66f7469 100644
 --- a/native/sim/github_evidence.py
 +++ b/native/sim/github_evidence.py
 @@ -11,10 +11,11 @@ from fastapi import Request,HTTPException
@@ -271,7 +271,7 @@ index e59fb0f..6932aad 100644
  VERSION='fog-evidence-crew/1'
  CLIENT_REVISION='gh-evidence-5'
 -RUNTIME_REVISION='crew-cancellation-recovery/1'
-+RUNTIME_REVISION='crew-bounded-evidence/2'
++RUNTIME_REVISION='crew-bounded-evidence/3'
  TERMINAL={'MERGED','PR_OPEN','READY','BLOCKED','STALE'}
  MAX_PACKET=300_000
  MAX_AUTHOR_ATTEMPTS=8
@@ -493,22 +493,41 @@ index e59fb0f..6932aad 100644
              decisions=bind_review_response(response,packet)
              if any(d.get('outcome')!='supported' or not all(d.get('checks',{}).get(k) is True for k in ('exact_support','scope_preserved','no_strengthening','relation_direction','representation_justified')) for d in decisions):
                  raise CrewFailure('Reviewer '+role+' found unsupported or uncertain representation','scientific','review-rejection',{'role':role,'job_id':job['id'],'decisions':decisions})
-@@ -595,7 +726,13 @@ class FogEvidenceCrew:
-                         if unit_job['status'] in {'QUEUED','CLAIMED','SENT'}:return
+@@ -584,18 +715,29 @@ class FogEvidenceCrew:
+                 if not flow.pop('reuse_author_result',False):self.prepare_author_jobs(flow,folder)
+                 flow.update(state='AUTHOR',error=None,failure_kind=None,retry=None,operational_attempts=0);self.save(folder,flow);return
+             if flow['state']=='AUTHOR':
+-                if 'author' not in flow['jobs'] or flow.get('author_units'):
++                if 'author' not in flow['jobs'] and not flow.get('author_units'):
+                     self.prepare_author_jobs(flow,folder)
+                     self.save(folder,flow)
+                 if flow.get('author_units'):
+                     packets=[]
+                     for unit in flow['author_units']:
+-                        if not unit.get('job_id'):return
++                        if not unit.get('job_id'):continue
+                         unit_job=self.job(unit['job_id'])
+-                        if unit_job['status'] in {'QUEUED','CLAIMED','SENT'}:return
++                        if unit_job['status'] in {'QUEUED','CLAIMED','SENT'}:continue
                          write(folder/('author-unit-'+str(unit['index'])+'-result.json'),unit_job)
                          self.require_complete_job(unit_job,'Author unit')
 -                        packets.append(result_object(unit_job['result']))
-+                        original=json.loads((folder/'author-unit-original.json').read_text()) if (folder/'author-unit-original.json').exists() else json.loads(self.author_goal(flow,folder))
++                        original=json.loads((folder/'author-unit-original.json').read_text(encoding='utf8')) if (folder/'author-unit-original.json').exists() else json.loads(self.author_goal(flow,folder))
 +                        frame=json.loads(unit['goal'])
 +                        response,next_job=self.evidence_response(folder,flow,'author:unit:'+str(unit['index']),AUTHOR_SYSTEM,original,lambda:author_frames(frame)[0] if size(frame)>FRAME_LIMIT else frame,unit_job,'author:'+bid+':unit:'+str(unit['index']))
 +                        if response is None:
 +                            if next_job:unit['job_id']=next_job;flow['jobs']['author']=next_job
-+                            self.save(folder,flow);return
++                            self.save(folder,flow);continue
 +                        packets.append(response)
++                    # Serve completed units' reads before filling free author
++                    # slots. One old/uncertain delivery cannot starve another
++                    # unit's context, and reads keep the same two-job capacity.
++                    self.prepare_author_jobs(flow,folder);self.save(folder,flow)
++                    if len(packets)!=len(flow['author_units']):return
                      from .fog_packet_units import merge_authored
                      try:combined=merge_authored(packets)
                      except ValueError as exc:raise CrewFailure(str(exc),'scientific','author-evidence-limitation') from exc
-@@ -603,9 +740,16 @@ class FogEvidenceCrew:
+@@ -603,9 +745,16 @@ class FogEvidenceCrew:
                  else:job=self.job(flow['jobs']['author'])
                  if job['status'] in {'QUEUED','CLAIMED','SENT'}:return
                  self.require_complete_job(job,'Candidate author')
@@ -526,7 +545,7 @@ index e59fb0f..6932aad 100644
                  packet=result_object(job['result']);write(folder/'author-result.json',packet)
                  write(batch/'author-output.json',{'job_id':job['id'],'raw_result':job['result'],'output':packet})
                  if packet.get('blocked_reason'):
-@@ -633,7 +777,9 @@ class FogEvidenceCrew:
+@@ -633,7 +782,9 @@ class FogEvidenceCrew:
              if flow['state']=='REVIEW':
                  packet=json.loads((batch/'.nemesis-control/packet.json').read_text(encoding='utf-8'))
                  from .fog_packet_units import review_units,size
@@ -537,7 +556,7 @@ index e59fb0f..6932aad 100644
                      if not self.review_partitioned(flow,folder,packet):return
                      self.export(folder,flow)
                      check=self.ws.check_batch(flow['owner'],flow['repo'],flow['path'],bid)
-@@ -772,6 +918,14 @@ def install_evidence_routes(app,crew):
+@@ -772,6 +923,14 @@ def install_evidence_routes(app,crew):
              body=json.loads(raw)
              return await asyncio.to_thread(crew.coverage.resume_retrieval,owner,repo,body['path'],body['plan_id'],body['additional_turns'])
          except (ValueError,KeyError,OSError) as exc:raise HTTPException(400,str(exc))
@@ -554,10 +573,10 @@ index e59fb0f..6932aad 100644
          guard(request);raw=await request.body()
 diff --git a/native/tests/test_evidence_reads.py b/native/tests/test_evidence_reads.py
 new file mode 100644
-index 0000000..8895d19
+index 0000000..f52aaa9
 --- /dev/null
 +++ b/native/tests/test_evidence_reads.py
-@@ -0,0 +1,231 @@
+@@ -0,0 +1,254 @@
 +"""Bounded delivery must preserve evidence access and the real compiler gate."""
 +import copy,hashlib,json,sys
 +from pathlib import Path
@@ -789,3 +808,26 @@ index 0000000..8895d19
 +    assert view['records']['nodes.jsonl']==original['records']['nodes.jsonl']
 +    assert crew.load(folder)['retained_roles']==['entailment'] and crew.load(folder)['candidate_sha256']==original['candidate_sha256']
 +    store.db.close()
++
++def test_completed_parallel_author_read_is_served_while_other_unit_is_sent(rig):
++    from sim.github_evidence import AUTHOR_SYSTEM,write
++    from sim.fog_evidence_reads import encode
++    author(rig);flow=rig.crew.load(rig.folder);old=flow['jobs']['author']
++    rig.brain.rows[old]['status']='SENT';old_packet=rig.brain.rows[old]['packet']
++    original=json.loads(rig.crew.author_goal(flow,rig.folder));frame=author_frames(original)[0]
++    write(rig.folder/'author-unit-original.json',original)
++    second=rig.crew.evidence_enqueue(rig.folder,flow,'author:unit:1',AUTHOR_SYSTEM,original,frame,'author:test-evidence:unit:1')
++    flow['author_units']=[{'index':0,'job_id':old,'goal':encode(frame)},
++                          {'index':1,'job_id':second,'goal':encode(frame)},
++                          {'index':2,'goal':encode(frame)}]
++    rig.crew.save(rig.folder,flow)
++    src=original['sources'][0]
++    rig.brain.complete(second,{'decision':'retrieve','request':{'operation':'source','source_id':src['id'],'start':0,'end':8}})
++    rig.crew.advance(rig.folder);updated=rig.crew.load(rig.folder)
++    continuation=updated['author_units'][1]['job_id'];assert continuation!=second
++    reply=json.loads(rig.brain.rows[continuation]['goal'])['current_reply']['data']['window']
++    assert reply['text']==src['text'][:8] and reply['start']==0 and reply['end']==8
++    assert updated['author_units'][0]['job_id']==old and rig.brain.rows[old]['packet']==old_packet
++    assert rig.brain.rows[old]['status']=='SENT' and not updated['author_units'][2].get('job_id')
++    assert updated['state']=='AUTHOR' and not rig.ws.publications
++    count=len(rig.brain.rows);rig.crew.advance(rig.folder);assert len(rig.brain.rows)==count

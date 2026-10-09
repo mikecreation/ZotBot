@@ -34,7 +34,10 @@ filesystem path, SQL, shell, or source rewriting. PDF windows retain page locati
 Each author unit or review role has its own durable input, frame, request/result
 journal and job history. Enqueue-before-checkpoint recovery reuses the same
 deterministic job; prior replies remain replayable without accumulating full
-papers in later prompts. Reviewer conclusions are not passed to the other role.
+papers in later prompts. A completed author unit's context requests are processed
+even while another unit is still queued or delivery-uncertain. Continuations take
+precedence over filling free author slots; the candidate is assembled only after
+every author unit completes. Reviewer conclusions are not passed to the other role.
 
 After 64 reads a stream waits, preserving its candidate, job and reviews. This is
 a resource wait, not scientific exhaustion. An explicit additional grant resumes
@@ -53,7 +56,7 @@ to claim them. Original envelopes are archived before replacement, and request
 IDs, tags, candidate hashes and completed reviews stay unchanged. Claimed or sent
 jobs are never rewritten; an already sent giant message and its conversation
 history are not erased. Activation requires loading Native runtime revision
-`crew-bounded-evidence/2`; no extension update is required. Offline tests cover
+`crew-bounded-evidence/3`; no extension update is required. Offline tests cover
 large sources, Unicode/page offsets, late counterevidence, immutable identities,
 journal recovery, independent reviews, the real compiler/apply/validator and
 exact-head CI. Those tests do not establish live scientific publication or guarantee

@@ -229,3 +229,26 @@ def test_legacy_review_upgrade_preserves_approved_role_and_exact_candidate(tmp_p
     assert view['records']['nodes.jsonl']==original['records']['nodes.jsonl']
     assert crew.load(folder)['retained_roles']==['entailment'] and crew.load(folder)['candidate_sha256']==original['candidate_sha256']
     store.db.close()
+
+def test_completed_parallel_author_read_is_served_while_other_unit_is_sent(rig):
+    from sim.github_evidence import AUTHOR_SYSTEM,write
+    from sim.fog_evidence_reads import encode
+    author(rig);flow=rig.crew.load(rig.folder);old=flow['jobs']['author']
+    rig.brain.rows[old]['status']='SENT';old_packet=rig.brain.rows[old]['packet']
+    original=json.loads(rig.crew.author_goal(flow,rig.folder));frame=author_frames(original)[0]
+    write(rig.folder/'author-unit-original.json',original)
+    second=rig.crew.evidence_enqueue(rig.folder,flow,'author:unit:1',AUTHOR_SYSTEM,original,frame,'author:test-evidence:unit:1')
+    flow['author_units']=[{'index':0,'job_id':old,'goal':encode(frame)},
+                          {'index':1,'job_id':second,'goal':encode(frame)},
+                          {'index':2,'goal':encode(frame)}]
+    rig.crew.save(rig.folder,flow)
+    src=original['sources'][0]
+    rig.brain.complete(second,{'decision':'retrieve','request':{'operation':'source','source_id':src['id'],'start':0,'end':8}})
+    rig.crew.advance(rig.folder);updated=rig.crew.load(rig.folder)
+    continuation=updated['author_units'][1]['job_id'];assert continuation!=second
+    reply=json.loads(rig.brain.rows[continuation]['goal'])['current_reply']['data']['window']
+    assert reply['text']==src['text'][:8] and reply['start']==0 and reply['end']==8
+    assert updated['author_units'][0]['job_id']==old and rig.brain.rows[old]['packet']==old_packet
+    assert rig.brain.rows[old]['status']=='SENT' and not updated['author_units'][2].get('job_id')
+    assert updated['state']=='AUTHOR' and not rig.ws.publications
+    count=len(rig.brain.rows);rig.crew.advance(rig.folder);assert len(rig.brain.rows)==count
