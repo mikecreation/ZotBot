@@ -1,0 +1,834 @@
+diff --git a/extension/brain-background.js b/extension/brain-background.js
+index 23405ca..fd378f6 100644
+--- a/extension/brain-background.js
++++ b/extension/brain-background.js
+@@ -1,18 +1,50 @@
+-/* NEMESIS Brain 6.2.5 — bounded messages and durable delivery ambiguity. */
++/* NEMESIS Brain 6.2.13 — exact completed-fence reconciliation. */
+ (() => {
+   const KEY='nb.config';
+   const STATUS_KEY='nb.status';
+   const POOL_STATUS_KEY='nb.poolStatus';
+   const SLOT_NAMES=['primary','worker_1','worker_2','worker_3','worker_4'];
+-  const TRANSPORT_REVISION='6.2.3-editor-transaction';
++  const TRANSPORT_REVISION='6.2.11-status-scan';
++  const BACKGROUND_BUILD='6.2.13-fresh-chat';
+   const polling=new Set();
+   const lastTick=new Map();
+   const fenceKey=tabId=>'nb.deliveryFence.'+tabId;
+   const lifecycleKey=tabId=>'nb.tabLifecycle.'+tabId;
++  const healthKey=tabId=>'nb.pageHealth.'+tabId;
++  const recoveryKey=name=>'nb.recovery.'+name;
++  const watchdogKey=name=>'nb.watchdog.'+name;
++  const streamKey=name=>'nb.streamRecovery.'+name;
++  const recovering=new Set();
++  const bridgeInjectedAt=new Map();
++  let configWrites=Promise.resolve();
++  let statusWrites=Promise.resolve();
++  const HANG_AFTER_MS=120000, MIN_HANG_FAILURES=3, RECOVERY_WINDOW_MS=900000;
++  // Both the slot lease and the page's real receipt survive renderer replacement.
++  // A fence is ambiguity, never proof that a submission was or wasn't clicked.
++  function retainedReceipt(value,id){
++    if(!value || value.id!==id || JSON.stringify(value).length>1100000)return null;
++    const out={id};
++    for(const key of ['state','phase','clicked','safeUnsent','transportRetries','formatAttempts','priorUserCount','at','responseOwnership','transport','promptChars'])
++      if(key in value)out[key]=value[key];
++    if(typeof value.error==='string')out.error=value.error.slice(0,2000);
++    if(value.state==='COMPLETE' && value.result?.protocol==='pandora-language/1' && value.result.request_id===id &&
++       value.result.RETURN?.status==='complete' && typeof value.result.RETURN.text==='string' && value.result.RETURN.text.trim())out.result=value.result;
++    if(out.state==='COMPLETE'&&!out.result)return null;
++    return out;
++  }
++  async function cacheHealth(tabId,report){
++    const c=await config(),name=SLOT_NAMES.find(n=>c.slots?.[n]?.tabId===tabId);
++    if(!name)return;
++    const prior=(await chrome.storage.local.get(healthKey(tabId)))[healthKey(tabId)]||{};
++    const id=c.slots[name].activeJobId,receipt=retainedReceipt(report.recoveryReceipt,id);
++    await chrome.storage.local.set({[healthKey(tabId)]:{at:Date.now(),state:report.state,detail:report.detail||'',receipt:receipt||prior.receipt||null}});
++    const w=(await chrome.storage.local.get(watchdogKey(name)))[watchdogKey(name)]||{};
++    await chrome.storage.local.set({[watchdogKey(name)]:{...w,tabId,failures:0,firstFailure:null,lastHealthy:Date.now()}});
++  }
+ 
+   // A timeout ends our wait, not the operation in the page. Never infer "unsent"
+   // from it. The fence survives service-worker termination and extension reload.
+-  async function contentMessage(tabId,message){
++  async function contentMessage(tabId,message,{injected=false}={}){
+     const mutation=['NB_CONTENT_SEND','NB_CONTENT_REPAIR_FORMAT'].includes(message.type);
+     let fence=null;
+     if(mutation){
+@@ -26,11 +58,28 @@
+     try {
+       const result=await Promise.race([
+         Promise.resolve().then(()=>chrome.tabs.sendMessage(tabId,message)),
+-        new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('ChatGPT page did not answer '+message.type+' within '+limit/1000+'s. Delivery state preserved; no resend.')),limit);})
++        new Promise((_,reject)=>{timer=setTimeout(()=>{const e=Error('ChatGPT page did not answer '+message.type+' within '+limit/1000+'s. Delivery state preserved; no resend.');e.pageUnresponsive=true;e.tabId=tabId;reject(e);},limit);})
+       ]);
+       if(fence && (result?.sent===true || result?.state==='COMPLETE' || result?.safeUnsent===true))
+         await clearFence(tabId,fence);
++      if(message.type==='NB_CONTENT_STATUS' && result?.state)await cacheHealth(tabId,result);
+       return result;
++    }catch(e){
++      const missing=/Receiving end does not exist|Could not establish connection/i.test(String(e.message||e));
++      if(missing && !mutation && !injected && message.type==='NB_CONTENT_STATUS' &&
++         Date.now()-(bridgeInjectedAt.get(tabId)||0)>=60000){
++        // An extension reload can invalidate an otherwise healthy page bridge.
++        // Repair that bridge before treating the renderer as hung. Never repeat
++        // a SEND message, and bound injection itself in case the renderer froze.
++        bridgeInjectedAt.set(tabId,Date.now());let injectionTimer;
++        try{
++          await Promise.race([chrome.scripting.executeScript({target:{tabId},files:['contentScript.js']}),
++            new Promise((_,reject)=>{injectionTimer=setTimeout(()=>{const failure=Error('Page bridge injection did not respond');failure.pageUnresponsive=true;failure.tabId=tabId;reject(failure);},8000);})]);
++          return await contentMessage(tabId,message,{injected:true});
++        }finally{clearTimeout(injectionTimer);}
++      }
++      if(missing || /message port closed|channel closed/i.test(String(e.message||e))){e.pageUnresponsive=true;e.tabId=tabId;}
++      throw e;
+     }finally{clearTimeout(timer);}
+   }
+   async function clearFence(tabId,fence){
+@@ -40,8 +89,18 @@
+   async function reconcileFence(tabId,report){
+     const key=fenceKey(tabId),fence=(await chrome.storage.local.get(key))[key];
+     if(!fence)return null;
++    // Once the server accepts a result, its active lease disappears. A generic
++    // READY page report does not inspect the retained request. Probe that exact
++    // fence ID before declaring this slot ambiguous forever. Status only: no
++    // editor changes, replay, format send, lease reset, or server result write.
++    if(report?.state==='READY' || report?.delivery?.requestId!==fence.id)
++      report=await contentMessage(tabId,{type:'NB_CONTENT_STATUS',id:fence.id});
+     const d=report?.delivery;
+-    if(d?.requestId===fence.id && (d.userTurnConfirmed || (!d.sending && d.safeUnsent===true)) &&
++    const ownedResponse=report?.state==='COMPLETE' && d?.responseConfirmed===true &&
++      d.receiptId===fence.id && d.clicked===true && !d.sending &&
++      report.result?.protocol==='pandora-language/1' && report.result.request_id===fence.id &&
++      report.result.RETURN?.status==='complete' && typeof report.result.RETURN.text==='string' && report.result.RETURN.text.trim();
++    if(d?.requestId===fence.id && (d.userTurnConfirmed || ownedResponse || (!d.sending && d.safeUnsent===true)) &&
+        (fence.type!=='NB_CONTENT_REPAIR_FORMAT' || !d.sending && d.formatDeliveryConfirmed)){
+       await clearFence(tabId,fence);return null;
+     }
+@@ -53,7 +112,7 @@
+       if(!(await chrome.storage.local.get(key))[key])await chrome.storage.local.set({[key]:{autoDiscardable:true}});
+       await chrome.tabs.update(tab.id,{autoDiscardable:false});
+     }
+-    if(tab.discarded)throw Error('ChatGPT tab was discarded. Restore its conversation before collecting; no automatic reload or resend.');
++    if(tab.discarded){const e=Error('ChatGPT tab was discarded; watchdog is preserving the job before replacement.');e.pageUnresponsive=true;e.tabId=tab.id;throw e;}
+     // Activation unfreezes an existing tab without focusing its browser window.
+     // Never reload a page which may still contain a generating answer or draft.
+     if(tab.frozen)await chrome.tabs.update(tab.id,{active:true});
+@@ -88,9 +147,16 @@
+     return c;
+   }
+   async function config(){const raw=(await chrome.storage.local.get(KEY))[KEY]||{};return normalize(raw);}
+-  async function save(c){await chrome.storage.local.set({[KEY]:normalize(c)});}
++  function editConfig(edit){
++    const run=configWrites.then(async()=>{const current=await config();const value=await edit(current);current.revision=Number(current.revision||0)+1;await chrome.storage.local.set({[KEY]:normalize(current)});return value;});
++    configWrites=run.catch(()=>{});return run;
++  }
++  async function save(c){return editConfig(current=>{if(Number(current.revision||0)!==Number(c.revision||0))throw Error('Brain binding changed concurrently; retry using current configuration');Object.assign(current,normalize(c));});}
++  async function updateSlot(name,expectedTabId,changes){
++    return editConfig(c=>{if(!c.enabled || c.slots?.[name]?.tabId!==expectedTabId)throw Error('Brain slot binding changed; old poll retired');Object.assign(c.slots[name],changes);});
++  }
+   async function api(c,path,body){
+-    if(path==='poll')body={...body,extension_build:'6.2.5-paged-planning'};
++    if(path==='poll')body={...body,extension_build:BACKGROUND_BUILD};
+     const r=await fetch(baseURL(c.base)+'/api/brain/'+path,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+c.token},body:JSON.stringify(body),signal:AbortSignal.timeout(15000)});
+     const data=await r.json();if(!r.ok)throw Error(data.detail||data.error||'NEMESIS HTTP '+r.status);return data;
+   }
+@@ -105,13 +171,15 @@
+       const sc=c.slots?.[name];let tab=null;
+       try{tab=await chrome.tabs.get(sc.tabId);}catch{}
+       if(tab)continue;
+-      delete c.slots[name];changed=true;
++      const journal=(await chrome.storage.local.get(recoveryKey(name)))[recoveryKey(name)];
++      if(journal && !['DONE','CANCELLED'].includes(journal.phase))continue;
++      await editConfig(current=>{if(current.slots?.[name]?.tabId===sc.tabId)delete current.slots[name];});changed=true;
+       await slotState(name,{state:'UNBOUND',detail:'Bound ChatGPT tab was closed; slot released automatically.',url:sc.url||''});
+     }
+-    if(changed)await save(c);
+-    return c;
++    return changed?config():c;
+   }
+-  async function slotState(slot,state){
++  function slotState(slot,state){
++    const run=statusWrites.then(async()=>{
+     const obj=(await chrome.storage.local.get(POOL_STATUS_KEY))[POOL_STATUS_KEY]||{};
+     obj[slot]={...state,slot,updated:Date.now()};
+     await chrome.storage.local.set({[POOL_STATUS_KEY]:obj});
+@@ -120,6 +188,7 @@
+     const busy=bound.filter(x=>['COMPOSING','SUBMITTING','GENERATING','BUSY','SENT','WAITING','COLLECTING'].includes(x.state)).length;
+     const overall={state:primary.state|| (busy?'BUSY':'READY'),detail:`Brain pool · ${bound.length}/5 bound · ${busy} busy`,pool:obj,updated:Date.now()};
+     await chrome.storage.local.set({[STATUS_KEY]:overall});
++    });statusWrites=run.catch(()=>{});return run;
+   }
+ 
+   function provisionalChatIdentity(value){
+@@ -133,26 +202,229 @@
+     // first user turn. That is the SAME tab/conversation bootstrap, not a user
+     // navigation. Promote it only while this slot owns an active NEMESIS job.
+     if(provisionalChatIdentity(saved)&&current.startsWith('c:')&&slot.activeJobId){
+-      slot.url=tab.url;await save(c);return current;
++      slot.url=tab.url;await updateSlot(slotName,slot.tabId,{url:tab.url});return current;
+     }
+-    if(saved==='root'&&current.startsWith('c:')){slot.url=tab.url;await save(c);return current;}
++    if(saved==='root'&&current.startsWith('c:')){slot.url=tab.url;await updateSlot(slotName,slot.tabId,{url:tab.url});return current;}
+     if(saved.startsWith('c:')&&current.startsWith('c:')){
+       if(saved!==current)throw Error('Bound tab changed to a different ChatGPT conversation. Restore it or explicitly rebind this slot.');
+-      if(slot.url!==tab.url){slot.url=tab.url;await save(c);}return current;
++      if(slot.url!==tab.url){slot.url=tab.url;await updateSlot(slotName,slot.tabId,{url:tab.url});}return current;
+     }
+     if(saved!=='root'&&saved!==current)throw Error('Bound tab left the bound ChatGPT conversation. Restore it or explicitly rebind this slot.');
+     return current;
+   }
+ 
++  async function recoveryState(name,j,detail){
++    await slotState(name,{state:'RECOVERING',detail,job:j.jobId,url:j.url,recovery:{phase:j.phase,oldTabId:j.oldTabId,newTabId:j.newTabId,started:j.at}});
++  }
++  async function retireForFreshChat(c,name,j){
++    if(j.retired)return;
++    if(j.jobId){
++      // RECOVERING cannot claim a new queued request. It only returns the
++      // existing lease; use that exact lease, never invent a replacement.
++      let job=j.job;
++      if(!job){const r=await api(c,'poll',{client_id:c.clientId,worker_slot:name,role:roleFor(name),state:'RECOVERING',recovery_request_id:j.jobId});job=r.job;}
++      if(job?.id===j.jobId){
++        j.job=job;await chrome.storage.local.set({[recoveryKey(name)]:j});
++        if(j.receipt?.state==='COMPLETE' && j.receipt.result){
++          const accepted=await api(c,'jobs/'+job.id+'/result',{client_id:c.clientId,lease:job.lease,result:j.receipt.result});
++          if(!accepted.ok || accepted.status!=='COMPLETE')throw Error('Native did not accept the retained completed reply');
++        }
++        const result=await api(c,'jobs/'+job.id+'/retire-conversation',{client_id:c.clientId,lease:job.lease,worker_slot:name,recovery_id:j.nonce,old_url:j.oldUrl});
++        if(!result.ok || !result.retired)throw Error('Native did not acknowledge conversation retirement');
++      }else if(job){throw Error('Slot lease changed during recovery; preserving both conversations');}
++      else throw Error('Native cannot locate the exact old request; retirement remains pending');
++    }
++    j.retired=true;await chrome.storage.local.set({[recoveryKey(name)]:j});
++  }
++
++  async function finishRecovery(name,j){
++    // Migrate unfinished journals from the same-URL recovery build.
++    j.oldUrl=j.oldUrl||j.url;j.url='https://chatgpt.com/';j.mode='FRESH_CHAT';
++    let c=await config(),slot=c.slots?.[name];
++    if(!c.enabled || !slot || (slot.bindingToken||null)!==j.bindingToken || ![j.oldTabId,j.newTabId].includes(slot.tabId)){
++      j.phase='CANCELLED';j.detail='Paused or explicitly rebound; recovery cancelled';
++      await chrome.storage.local.set({[recoveryKey(name)]:j});
++      if(j.newTabId){try{const tab=await chrome.tabs.get(j.newTabId);if(tab?.url===j.placeholder)await chrome.tabs.remove(j.newTabId);}catch{}}
++      return false;
++    }
++    if(!j.newTabId){
++      // First open an extension-owned placeholder. Its nonce lets a restarted
++      // service worker find the same tab after create() but before journaling.
++      const candidates=await chrome.tabs.query({});
++      const existing=candidates.find(t=>t.url===j.placeholder);
++      const made=existing||await chrome.tabs.create({url:j.placeholder,active:false,...(j.windowId?{windowId:j.windowId}:{})});
++      j.newTabId=made.id;j.phase='CREATED';await chrome.storage.local.set({[recoveryKey(name)]:j});
++      c=await config();slot=c.slots?.[name];
++      if(!c.enabled || !slot || (slot.bindingToken||null)!==j.bindingToken || slot.tabId!==j.oldTabId){
++        j.phase='CANCELLED';j.detail='Pool paused or rebound while opening replacement';await chrome.storage.local.set({[recoveryKey(name)]:j});
++        const tab=await chrome.tabs.get(j.newTabId);if(tab?.url===j.placeholder)await chrome.tabs.remove(j.newTabId);return false;
++      }
++    }
++    if(slot.tabId===j.oldTabId){
++      let old=null;try{old=await chrome.tabs.get(j.oldTabId);}catch{}
++      if(old && (!chat(old.url)||chatIdentity(old.url)!==chatIdentity(j.oldUrl))){
++        j.phase='CANCELLED';j.detail='User navigated the old tab; it was preserved';await chrome.storage.local.set({[recoveryKey(name)]:j});
++        try{await chrome.tabs.remove(j.newTabId);}catch{}return false;
++      }
++      // Fence the old renderer before asking Native to detach its lease.
++      await updateSlot(name,j.oldTabId,{recoveryPending:j.nonce});
++      await retireForFreshChat(c,name,j);
++      await chrome.storage.local.set({[fenceKey(j.newTabId)]:null});
++      await editConfig(current=>{
++        const bound=current.slots?.[name];
++        if(!current.enabled || bound?.tabId!==j.oldTabId || (bound.bindingToken||null)!==j.bindingToken || (bound.activeJobId||null)!==j.jobId)throw Error('Recovery cancelled by a changed binding or lease');
++        current.slots[name]={...bound,tabId:j.newTabId,url:j.url,activeJobId:null,recoveryPending:j.nonce,completedTurns:0,conversationChars:0,lastCompletedJob:null};
++      });
++      j.phase='COMMITTED';await chrome.storage.local.set({[recoveryKey(name)]:j});
++    }
++    c=await config();slot=c.slots?.[name];
++    if(!c.enabled || slot?.tabId!==j.newTabId)return false;
++    if(!j.retired){await retireForFreshChat(c,name,j);await updateSlot(name,j.newTabId,{activeJobId:null});}
++    await chrome.storage.local.set({[fenceKey(j.newTabId)]:null});
++    // Bind the replacement first. Late authorization from the retired renderer
++    // is now denied. Closing that renderer does not authorize replay of its job.
++    let old=null;try{old=await chrome.tabs.get(j.oldTabId);}catch{}
++    if(old){
++      if(chatIdentity(old.url)!==chatIdentity(j.oldUrl))throw Error('Old tab navigated during recovery; refusing to close it');
++      await chrome.tabs.remove(j.oldTabId);
++    }
++    await chrome.storage.local.set({[fenceKey(j.oldTabId)]:null,[lifecycleKey(j.oldTabId)]:null,[healthKey(j.oldTabId)]:null});
++    let replacement=await chrome.tabs.get(j.newTabId);
++    if(replacement.url===j.placeholder || chatIdentity(replacement.url)===chatIdentity(j.oldUrl) && j.oldUrl!==j.url){
++      j.phase='LOADING';await chrome.storage.local.set({[recoveryKey(name)]:j});
++      replacement=await chrome.tabs.update(j.newTabId,{url:j.url});
++    }
++    if(!chat(replacement.url) || chatIdentity(replacement.url)!==chatIdentity(j.url))throw Error('Replacement has not reached the fresh chat');
++    await recoveryState(name,j,'Opened a fresh chat; old delivery retained in Native quarantine. No request replay.');
++    if(replacement.status==='loading'){
++      if(Date.now()-j.at>=180000)throw Error('Replacement page loading exceeded three minutes');
++      return false;
++    }
++    await keepBoundTabAlive(replacement);
++    const report=await contentMessage(j.newTabId,{type:'NB_CONTENT_STATUS'});
++    if(report?.bridgeBuild!=='6.2.11' || report?.transportRevision!==TRANSPORT_REVISION)throw Error('Replacement page has not loaded the tested recovery collector');
++    await updateSlot(name,j.newTabId,{recoveryPending:null});
++    j.phase='DONE';j.finished=Date.now();j.detail='Fresh chat ready; old request retained without replay';
++    await chrome.storage.local.set({[recoveryKey(name)]:j});
++    await slotState(name,{...report,job:null,retiredJob:j.jobId,url:j.url,recoveredAt:j.finished,detail:j.detail+'. '+(report.detail||report.state)});
++    return true;
++  }
++  async function resumeRecovery(name){
++    const j=(await chrome.storage.local.get(recoveryKey(name)))[recoveryKey(name)];
++    if(!j || ['DONE','CANCELLED'].includes(j.phase))return true;
++    if(recovering.has(name))return false;
++    recovering.add(name);
++    try{return await finishRecovery(name,j);}catch(e){
++      j.error=String(e.message||e);await chrome.storage.local.set({[recoveryKey(name)]:j});
++      await recoveryState(name,j,'Tab replacement is pending: '+j.error);
++      // A hung replacement must not trap the watchdog in LOADING forever.
++      // Retain the original receipt/fence for the next bounded recovery attempt.
++      if(Date.now()-j.at>=180000 && j.newTabId){
++        const c=await config();if(c.enabled && c.slots?.[name]?.tabId===j.newTabId){
++          await updateSlot(name,j.newTabId,{recoveryPending:null});j.phase='DONE';j.detail='Replacement load did not respond; watchdog will retry with backoff';await chrome.storage.local.set({[recoveryKey(name)]:j});
++        }
++      }
++      return false;
++    }finally{recovering.delete(name);}
++  }
++  async function cancelRecovery(name){
++    const j=(await chrome.storage.local.get(recoveryKey(name)))[recoveryKey(name)];
++    if(!j || ['DONE','CANCELLED'].includes(j.phase))return;
++    j.phase='CANCELLED';j.detail='Pool paused or slot unbound';await chrome.storage.local.set({[recoveryKey(name)]:j});
++    if(j.newTabId){try{const tab=await chrome.tabs.get(j.newTabId);if(tab?.url===j.placeholder)await chrome.tabs.remove(j.newTabId);}catch{}}
++    await editConfig(c=>{const slot=c.slots?.[name];if(slot?.recoveryPending===j.nonce)slot.recoveryPending=null;});
++  }
++  async function noteHang(name,expectedTabId,error){
++    const c=await config(),slot=c.slots?.[name];
++    if(!c.enabled || slot?.tabId!==expectedTabId)return false;
++    let tab;try{tab=await chrome.tabs.get(expectedTabId);}catch{return false;}
++    if(!chat(tab?.url) || chatIdentity(tab.url)!==chatIdentity(slot.url))return false;
++    const key=watchdogKey(name),prior=(await chrome.storage.local.get(key))[key]||{};
++    const w={...prior,tabId:expectedTabId,failures:prior.tabId===expectedTabId?Number(prior.failures||0)+1:1,
++      firstFailure:prior.tabId===expectedTabId&&prior.firstFailure?prior.firstFailure:Date.now(),lastFailure:Date.now(),error:String(error.message||error),recoveries:(prior.recoveries||[]).filter(t=>Date.now()-t<RECOVERY_WINDOW_MS)};
++    await chrome.storage.local.set({[key]:w});
++    if(w.failures<MIN_HANG_FAILURES || Date.now()-w.firstFailure<HANG_AFTER_MS)return false;
++    if(w.recoveries.length>=2){
++      await slotState(name,{state:'RECOVERY_BACKOFF',detail:'Page remains unresponsive. Automatic tab recovery is cooling down after two replacements in 15 minutes; original job and evidence retained.',retryAfter:w.recoveries[0]+RECOVERY_WINDOW_MS,url:slot.url});return true;
++    }
++    const health=(await chrome.storage.local.get(healthKey(expectedTabId)))[healthKey(expectedTabId)]||{};
++    if(health.state==='BLOCKED' && /Existing draft preserved|Existing attachments preserved/.test(health.detail))return false;
++    // While the first turn bootstraps, / is not a recoverable conversation ID.
++    // Preserve that uncertain job rather than turn replacement into a new send.
++    // A hung root also gets a fresh renderer; uncertain first sends are quarantined.
++    const previous=(await chrome.storage.local.get(recoveryKey(name)))[recoveryKey(name)];
++    const receipt=retainedReceipt(health.receipt,slot.activeJobId)||retainedReceipt(previous?.receipt,slot.activeJobId);
++    const fence=(await chrome.storage.local.get(fenceKey(expectedTabId)))[fenceKey(expectedTabId)]||
++      (slot.activeJobId?{id:slot.activeJobId,type:'NB_CONTENT_SEND',nonce:crypto.randomUUID(),at:Date.now(),source:'TAB_RECOVERY_COLLECTION_ONLY'}:null);
++    const nonce=crypto.randomUUID(),j={nonce,phase:'OPENING',at:Date.now(),oldTabId:expectedTabId,newTabId:null,
++      placeholder:chrome.runtime.getURL('recovery.html')+'#'+nonce,url:tab.url,windowId:tab.windowId,jobId:slot.activeJobId||null,bindingToken:slot.bindingToken||null,receipt,fence,reason:w.error};
++    w.recoveries.push(Date.now());await chrome.storage.local.set({[key]:w,[recoveryKey(name)]:j});
++    await recoveryState(name,j,'ChatGPT stopped answering page checks for two minutes. Opening a fresh chat; old job retained without replay.');
++    await resumeRecovery(name);return true;
++  }
++  async function refreshStreamError(name,slot,tab,job,report){
++    if(report.phase!=='STREAM_ERROR' || !report.delivery?.userTurnConfirmed)return false;
++    const key=streamKey(name),old=(await chrome.storage.local.get(key))[key];
++    const record=old?.jobId===job.id?old:{jobId:job.id,count:0,at:0};
++    if(record.count>=2)return false; // expose the real terminal error after bounded recovery
++    if(record.at && Date.now()-record.at<60000){
++      await slotState(name,{state:'RECOVERING',detail:'Current response reported a stream error. Waiting for the same-conversation refresh cooldown; no request replay.',job:job.id,url:tab.url});return true;
++    }
++    const c=await config(),current=c.slots?.[name];
++    if(!c.enabled || current?.tabId!==tab.id || current.activeJobId!==job.id)return true;
++    const latest=await chrome.tabs.get(tab.id);
++    if(chatIdentity(latest.url)!==chatIdentity(slot.url))return true;
++    const existing=(await chrome.storage.local.get(fenceKey(tab.id)))[fenceKey(tab.id)];
++    if(!existing)await chrome.storage.local.set({[fenceKey(tab.id)]:{id:job.id,type:'NB_CONTENT_SEND',nonce:crypto.randomUUID(),at:Date.now(),source:'STREAM_ERROR_COLLECTION_ONLY'}});
++    const next={...record,count:record.count+1,at:Date.now(),phase:'REQUESTED',url:tab.url,reason:report.error};
++    await chrome.storage.local.set({[key]:next});
++    if(report.sent && job.status!=='SENT')await api(c,'jobs/'+job.id+'/result',{client_id:c.clientId,lease:job.lease,sent:true});
++    await slotState(name,{state:'RECOVERING',detail:'Refreshing this conversation after its visible stream error. Original request retained; no resend.',job:job.id,url:tab.url});
++    const beforeReload=await config();
++    if(!beforeReload.enabled || beforeReload.slots?.[name]?.tabId!==tab.id)return true;
++    await chrome.tabs.reload(tab.id);
++    next.phase='RELOADED';await chrome.storage.local.set({[key]:next});return true;
++  }
++
++  async function routePendingJob(slotName,slot,tab,identity,job,report,fence){
++    const key='nb.jobConversation.'+job.id;
++    let route=(await chrome.storage.local.get(key))[key];
++    const resume=job.status==='SENT'||JSON.parse(job.packet||'{}').STATE?.resume_only;
++    const exactTurn=report.delivery?.requestId===job.id && report.delivery?.userTurnConfirmed===true;
++    if(identity.startsWith('c:') && ((!route && (!resume || exactTurn)) || (!resume && Number(job.transport_retries||0)>Number(route?.transportRetries||0)))){
++      if(route)await chrome.storage.local.set({[key+'.attempt.'+Number(route.transportRetries||0)]:route});
++      route={id:job.id,url:tab.url,identity,transportRetries:Number(job.transport_retries||0),at:Date.now()};await chrome.storage.local.set({[key]:route});
++    }
++    if(route?.identity===identity)return false;
++    if(resume && identity==='root' && report.state==='READY' && !report.delivery?.sending && (!fence || fence.id===job.id)){
++      const current=await config();
++      if(!current.enabled || current.slots?.[slotName]?.tabId!==tab.id)return true;
++      const nonce=crypto.randomUUID();
++      await updateSlot(slotName,tab.id,{recoveryPending:nonce});
++      const j={nonce,jobId:job.id,oldUrl:route?.url||slot.url||tab.url,job,fence,phase:'DONE'};
++      try{await retireForFreshChat(current,slotName,j);}
++      finally{await updateSlot(slotName,tab.id,{recoveryPending:null});}
++      if(fence)await clearFence(tab.id,fence);
++      await updateSlot(slotName,tab.id,{activeJobId:null});
++      await slotState(slotName,{state:'READY',retiredJob:job.id,url:tab.url,detail:'Keeping this fresh chat. Old uncertain request quarantined; no replay.'});
++      return true;
++    }
++    if(!route)return false;
++    await slotState(slotName,{state:'DELIVERY_UNCONFIRMED',job:job.id,url:tab.url,detail:'Pending job belongs to '+route.url+'. Current conversation/draft preserved; no resend.'});
++    return true;
++  }
++
+   async function pollSlot(slotName,{force=false}={}){
+     const now=Date.now();if(polling.has(slotName)||(!force&&now-(lastTick.get(slotName)||0)<900))return;
+     polling.add(slotName);lastTick.set(slotName,now);
+     let c,slot,tab;
+     try{
+       c=await config();if(!c.enabled)return;slot=c.slots?.[slotName];if(!slot?.tabId)return;
++      if(!await resumeRecovery(slotName))return;
++      c=await config();slot=c.slots?.[slotName];if(!c.enabled||!slot?.tabId)return;
+       try{tab=await chrome.tabs.get(slot.tabId);}catch{}
+       if(!tab){
+-        delete c.slots[slotName];await save(c);
++        await editConfig(current=>{if(current.slots?.[slotName]?.tabId===slot.tabId)delete current.slots[slotName];});
+         await slotState(slotName,{state:'UNBOUND',detail:'Bound ChatGPT tab was closed; slot released automatically.',url:slot.url||''});
+         return;
+       }
+@@ -165,12 +437,18 @@
+       await keepBoundTabAlive(tab);
+       let content=await contentMessage(slot.tabId,{type:'NB_CONTENT_STATUS',id:slot.activeJobId});
+       const previousFence=await reconcileFence(slot.tabId,content);
+-      if(content?.collectorVersion!=='6.2.0')throw Error('ChatGPT has an old reply collector. Refresh this ChatGPT tab. Expected 6.2.0; received '+(content?.collectorVersion||'unversioned')+'.');
++      if(content?.collectorVersion!=='6.2.11')throw Error('ChatGPT has an old reply collector. Refresh this ChatGPT tab. Expected 6.2.11; received '+(content?.collectorVersion||'unversioned')+'.');
+       if(content?.transportRevision!==TRANSPORT_REVISION)throw Error('Refresh this ChatGPT tab to load transport '+TRANSPORT_REVISION+'.');
+-      if(content?.bridgeBuild!=='6.2.5')throw Error('Refresh this ChatGPT tab to load Brain 6.2.5 packet-file and rejection detection.');
++      if(content?.bridgeBuild!=='6.2.11')throw Error('Refresh this ChatGPT tab to load Brain 6.2.11 completed-response ownership and rejection detection.');
++      if(!slot.activeJobId && !previousFence && content.state==='READY' &&
++         (Number(slot.completedTurns||0)>=4 || Number(slot.conversationChars||0)>=120000)){
++        const nonce=crypto.randomUUID(),j={nonce,phase:'OPENING',at:Date.now(),oldTabId:tab.id,newTabId:null,
++          placeholder:chrome.runtime.getURL('recovery.html')+'#'+nonce,url:tab.url,oldUrl:tab.url,windowId:tab.windowId,jobId:null,bindingToken:slot.bindingToken||null,reason:'Completed conversation size checkpoint'};
++        await chrome.storage.local.set({[recoveryKey(slotName)]:j});await resumeRecovery(slotName);return;
++      }
+       const response=await api(c,'poll',{client_id:c.clientId,worker_slot:slotName,role:roleFor(slotName),state:previousFence?'DELIVERY_UNCONFIRMED':content.state,detail:content.detail||'',url:tab.url,tab_id:tab.id,conversation_id:identity,tab_count:boundSlots(c).length});
+       const job=response.job;
+-      if((slot.activeJobId||null)!==(job?.id||null)){slot.activeJobId=job?.id||null;c.slots[slotName]=slot;await save(c);}
++      if((slot.activeJobId||null)!==(job?.id||null)){slot.activeJobId=job?.id||null;await updateSlot(slotName,slot.tabId,{activeJobId:slot.activeJobId});}
+       // A server-side Primary review hold outranks the local composer state. Do not
+       // show READY below a global PRIMARY_PAUSED_REVIEW banner.
+       if(slotName==='primary' && response.hold){
+@@ -182,6 +460,8 @@
+ 
+       let s=await contentMessage(slot.tabId,{type:'NB_CONTENT_STATUS',id:job.id});
+       const pendingFence=await reconcileFence(slot.tabId,s);
++      if(await routePendingJob(slotName,slot,tab,identity,job,s,pendingFence))return;
++      if(await refreshStreamError(slotName,slot,tab,job,s))return;
+       // A FAILED receipt is normally terminal for this tab because replay after an
+       // unknown click could duplicate a user turn. The one exception is a newer
+       // server transport attempt that both sides know was never sent. The server
+@@ -199,6 +479,9 @@
+       if(s.state==='COMPLETE'){
+         const accepted=await api(c,'jobs/'+job.id+'/result',{...lease,result:s.result});
+         if(!accepted.ok||accepted.status!=='COMPLETE')throw Error('NEMESIS did not accept collected reply: '+(accepted.status||'unknown')+'.');
++        if(slot.lastCompletedJob!==job.id)await updateSlot(slotName,slot.tabId,{
++          lastCompletedJob:job.id,completedTurns:Number(slot.completedTurns||0)+1,
++          conversationChars:Number(slot.conversationChars||0)+String(job.packet||'').length+JSON.stringify(s.result).length});
+       }else if(s.state==='FAILED' || (s.state==='TRANSPORT_BLOCKED' && s.safeUnsent===true)){
+         const safeUnsent=s.safeUnsent===true;
+         const clicked=s.clicked===true;
+@@ -212,7 +495,8 @@
+       await api(c,'poll',{client_id:c.clientId,worker_slot:slotName,role:roleFor(slotName),state:s.state,detail:s.detail||s.error||'',request_id:job.id,url:tab.url,tab_id:tab.id,conversation_id:identity,tab_count:boundSlots(c).length});
+       await slotState(slotName,{...s,job:job.id,url:tab.url,conversation_id:identity,serverEnabled:response.enabled});
+     }catch(e){
+-      const failure={state:'ERROR',detail:'Brain pool 6.2.5: '+String(e.message||e),url:tab?.url||slot?.url||''};await slotState(slotName,failure);
++      if(e.pageUnresponsive && e.tabId===slot?.tabId && await noteHang(slotName,slot.tabId,e))return;
++      const failure={state:'ERROR',detail:'Brain pool 6.2.12: '+String(e.message||e),url:tab?.url||slot?.url||''};await slotState(slotName,failure);
+       if(c?.enabled&&slot){try{await api(c,'poll',{...failure,client_id:c.clientId,worker_slot:slotName,role:roleFor(slotName),tab_id:slot.tabId,conversation_id:chatIdentity(slot.url),tab_count:boundSlots(c).length});}catch{}}
+     }finally{polling.delete(slotName);}
+   }
+@@ -221,20 +505,35 @@
+   chrome.alarms.create('nb-heartbeat',{periodInMinutes:.5});
+   chrome.alarms.onAlarm.addListener(a=>{if(a.name==='nb-heartbeat')void pollAll();});
+   chrome.tabs.onRemoved.addListener(tabId=>{void (async()=>{
+-    const c=await config();let changed=false;
++    const c=await config();
+     for(const name of SLOT_NAMES){
+       if(c.slots?.[name]?.tabId!==tabId)continue;
+-      delete c.slots[name];changed=true;
++      const journal=(await chrome.storage.local.get(recoveryKey(name)))[recoveryKey(name)];
++      if(journal && !['DONE','CANCELLED'].includes(journal.phase) && journal.oldTabId===tabId)continue;
++      if(journal && journal.newTabId===tabId && !['DONE','CANCELLED'].includes(journal.phase)){
++        journal.phase='CANCELLED';journal.detail='Replacement tab was closed';await chrome.storage.local.set({[recoveryKey(name)]:journal});
++      }
++      await editConfig(current=>{if(current.slots?.[name]?.tabId===tabId)delete current.slots[name];});
+       await slotState(name,{state:'UNBOUND',detail:'Bound ChatGPT tab was closed; slot released automatically.'});
+     }
+-    if(changed)await save(c);
+   })();});
++  chrome.tabs.onUpdated.addListener((tabId,changes)=>{if(changes.status==='complete')config().then(c=>{const name=SLOT_NAMES.find(n=>c.slots?.[n]?.tabId===tabId);if(name)void pollSlot(name,{force:true});});});
+   chrome.runtime.onMessage.addListener((m,sender,reply)=>{
+     if(!m?.type?.startsWith('NB_'))return false;
++    if(m.type==='NB_DELIVERY_CHECKPOINT'){
++      (async()=>{
++        const c=await config(),name=SLOT_NAMES.find(n=>c.slots?.[n]?.tabId===sender.tab?.id);
++        if(!c.enabled || !name || c.slots[name].recoveryPending || c.slots[name].activeJobId!==m.id)return {ok:false};
++        const receipt=retainedReceipt(m.receipt,m.id),fence=(await chrome.storage.local.get(fenceKey(sender.tab.id)))[fenceKey(sender.tab.id)];
++        if(!receipt || fence?.id!==m.id)return {ok:false};
++        const old=(await chrome.storage.local.get(healthKey(sender.tab.id)))[healthKey(sender.tab.id)]||{};
++        await chrome.storage.local.set({[healthKey(sender.tab.id)]:{...old,receipt}});return {ok:true,slot:name,tabId:sender.tab.id};
++      })().then(reply).catch(()=>reply({ok:false}));return true;
++    }
+     if(m.type==='NB_AUTHORIZE_SEND'){
+       (async()=>{
+         const c=await config(),name=SLOT_NAMES.find(n=>c.slots?.[n]?.tabId===sender.tab?.id);
+-        if(!c.enabled || !name || !m.job?.id)return {ok:false};
++        if(!c.enabled || !name || c.slots[name].recoveryPending || !m.job?.id)return {ok:false};
+         const tab=await chrome.tabs.get(sender.tab.id);
+         await validateConversation(c,name,c.slots[name],tab);
+         return api(c,'jobs/'+m.job.id+'/authorize-send',{client_id:c.clientId,lease:m.job.lease,worker_slot:name});
+@@ -252,7 +551,7 @@
+         const c=await dropClosedSlots(await config());const slots={};
+         for(const name of boundSlots(c)){
+           const sc=c.slots[name];let tab=null,content=null;try{tab=await chrome.tabs.get(sc.tabId);if(tab&&chat(tab.url))content=await contentMessage(sc.tabId,{type:'NB_CONTENT_DIAGNOSTICS'});}catch(e){content={error:String(e.message||e)}}
+-          slots[name]={role:roleFor(name),tabId:sc.tabId,savedIdentity:chatIdentity(sc.url),currentIdentity:chatIdentity(tab?.url||''),sameConversation:!!tab&&chatIdentity(sc.url)===chatIdentity(tab.url),url:tab?.url||sc.url,frozen:tab?.frozen,discarded:tab?.discarded,autoDiscardable:tab?.autoDiscardable,deliveryFence:(await chrome.storage.local.get(fenceKey(sc.tabId)))[fenceKey(sc.tabId)]||null,collector:content};
++          slots[name]={role:roleFor(name),tabId:sc.tabId,savedIdentity:chatIdentity(sc.url),currentIdentity:chatIdentity(tab?.url||''),sameConversation:!!tab&&chatIdentity(sc.url)===chatIdentity(tab.url),url:tab?.url||sc.url,frozen:tab?.frozen,discarded:tab?.discarded,autoDiscardable:tab?.autoDiscardable,deliveryFence:(await chrome.storage.local.get(fenceKey(sc.tabId)))[fenceKey(sc.tabId)]||null,watchdog:(await chrome.storage.local.get(watchdogKey(name)))[watchdogKey(name)]||null,recovery:(await chrome.storage.local.get(recoveryKey(name)))[recoveryKey(name)]||null,collector:content};
+         }
+         let research=null,pool=null;try{research=await api(c,'research/status',{});}catch(e){research={error:String(e.message||e)}}try{pool=await apiGet(c,'pool');}catch(e){pool={error:String(e.message||e)}}
+         return {ok:true,diagnostics:{at:Date.now(),bridgeStatus:(await chrome.storage.local.get(STATUS_KEY))[STATUS_KEY]||null,poolStatus:(await chrome.storage.local.get(POOL_STATUS_KEY))[POOL_STATUS_KEY]||{},slots,research,serverPool:pool}};
+@@ -264,16 +563,22 @@
+         for(const other of SLOT_NAMES){if(other!==name&&old.slots?.[other]?.tabId===tab.id)throw Error('That ChatGPT tab is already bound to '+other+'.');}
+         old.base=baseURL(m.base||old.base);old.token=String(m.token||old.token).trim();old.enabled=true;old.clientId=old.clientId||crypto.randomUUID();old.slots=old.slots||{};old.slots[name]={tabId:tab.id,url:tab.url,enabled:true,role:roleFor(name),activeJobId:null};
+         await chrome.scripting.executeScript({target:{tabId:tab.id},files:['contentScript.js']}).catch(()=>{});
+-        const ts=await contentMessage(tab.id,{type:'NB_CONTENT_STATUS'});if(ts?.collectorVersion!=='6.2.0')throw Error('Refresh this ChatGPT tab to load reply collector 6.2.0, then bind again.');if(!ts?.state)throw Error('ChatGPT content bridge did not respond.');
++        const ts=await contentMessage(tab.id,{type:'NB_CONTENT_STATUS'});if(ts?.collectorVersion!=='6.2.11')throw Error('Refresh this ChatGPT tab to load reply collector 6.2.11, then bind again.');if(!ts?.state)throw Error('ChatGPT content bridge did not respond.');
+         await api(old,'poll',{client_id:old.clientId,worker_slot:name,role:roleFor(name),state:'PAIRING',tab_id:tab.id,url:tab.url,conversation_id:chatIdentity(tab.url),tab_count:boundSlots(old).length});
+         if(previousTabId&&previousTabId!==tab.id)await restoreBoundTab(previousTabId);
+-        await save(old);await pollSlot(name,{force:true});return {ok:true,slot:name,status:ts};
++        await cancelRecovery(name);
++        await editConfig(current=>{
++          if(current.slots?.[name]?.tabId!==previousTabId)throw Error('Slot binding changed while pairing; choose it again');
++          if(SLOT_NAMES.some(n=>n!==name&&current.slots?.[n]?.tabId===tab.id))throw Error('Tab was bound to another slot while pairing');
++          current.base=old.base;current.token=old.token;current.enabled=true;
++          current.slots[name]={...old.slots[name],bindingToken:crypto.randomUUID()};
++        });await pollSlot(name,{force:true});return {ok:true,slot:name,status:ts};
+       }
+       if(m.type==='NB_UNBIND'){
+-        const c=await config();const name=SLOT_NAMES.includes(m.slot)?m.slot:'worker_1';if(c.slots?.[name]){await restoreBoundTab(c.slots[name].tabId);delete c.slots[name];}await save(c);await slotState(name,{state:'UNBOUND',detail:'Slot unbound'});return {ok:true};
++        const name=SLOT_NAMES.includes(m.slot)?m.slot:'worker_1';await editConfig(async c=>{if(c.slots?.[name]){await restoreBoundTab(c.slots[name].tabId);delete c.slots[name];}});await cancelRecovery(name);await slotState(name,{state:'UNBOUND',detail:'Slot unbound'});return {ok:true};
+       }
+-      if(m.type==='NB_PAUSE'){const c=await config();c.enabled=false;await save(c);await Promise.allSettled(boundSlots(c).map(n=>restoreBoundTab(c.slots[n].tabId)));return {ok:true};}
+-      if(m.type==='NB_RESUME'){const c=await config();c.enabled=true;await save(c);void pollAll();return {ok:true};}
++      if(m.type==='NB_PAUSE'){await editConfig(c=>{c.enabled=false;});await Promise.allSettled(SLOT_NAMES.map(cancelRecovery));const c=await config();await Promise.allSettled(boundSlots(c).map(n=>restoreBoundTab(c.slots[n].tabId)));return {ok:true};}
++      if(m.type==='NB_RESUME'){await editConfig(c=>{c.enabled=true;});void pollAll();return {ok:true};}
+       if(m.type==='NB_TRANSPORT_RETRY'){
+         const c=await config(),name=SLOT_NAMES.includes(m.slot)?m.slot:null;
+         if(!name || !c.slots[name]?.tabId)throw Error('Choose a bound slot');
+diff --git a/extension/manifest.json b/extension/manifest.json
+index e9656e6..ee0be1b 100644
+--- a/extension/manifest.json
++++ b/extension/manifest.json
+@@ -1,7 +1,7 @@
+ {
+   "manifest_version": 3,
+   "name": "NEMESIS Brain + zotX Capture",
+-  "version": "6.2.5",
++  "version": "6.2.13",
+   "description": "Brain transport with bounded page messages, persistent delivery fences, bound-tab lifecycle recovery and verified editor commits.",
+   "permissions": [
+     "activeTab",
+diff --git a/extension/tests/brain_liveness_v626.test.cjs b/extension/tests/brain_liveness_v626.test.cjs
+index 5fccb56..bb814d1 100644
+--- a/extension/tests/brain_liveness_v626.test.cjs
++++ b/extension/tests/brain_liveness_v626.test.cjs
+@@ -76,6 +76,6 @@ const ready={state:'READY',bridgeBuild:'6.2.11',collectorVersion:'6.2.11',transp
+   assert.equal(f.sends.filter(s=>s.type==='NB_CONTENT_SEND').length,2,'independent exact known-unsent receipt and newer lease permit retry');
+   f=fixture();f.jobs[1].packet=JSON.stringify({STATE:{resume_only:true}});await f.tick(1);
+   assert(!f.sends.some(s=>s.type==='NB_CONTENT_SEND'),'restart ambiguity must never send a new turn');
+-  assert(f.polls.every(p=>p.extension_build==='6.2.12-completed-fence'),'server must observe loaded background revision');
++  assert(f.polls.every(p=>p.extension_build==='6.2.13-fresh-chat'),'server must observe loaded background revision');
+   console.log('PASS bounded hung status/send, independent slots, heartbeat, restart fence, exact receipt reconciliation, lifecycle wake/restore, discarded-page preservation, safe retry, and collection-only server restart. Offline fault injection; live acceptance remains separate.');
+ })().catch(e=>{console.error(e);process.exitCode=1;});
+diff --git a/extension/tests/tab_recovery.test.cjs b/extension/tests/tab_recovery.test.cjs
+index 8cc7367..dd6624b 100644
+--- a/extension/tests/tab_recovery.test.cjs
++++ b/extension/tests/tab_recovery.test.cjs
+@@ -4,7 +4,7 @@ const flush=async()=>{for(let i=0;i<100;i++)await new Promise(r=>setImmediate(r)
+ const ready={state:'READY',bridgeBuild:'6.2.11',collectorVersion:'6.2.11',transportRevision:'6.2.11-status-scan'};
+ function fixture(options={}){
+   let now=options.now||100000,nextTimer=0,nextTab=100,handler=options.handler;
+-  const timers=new Map(),listeners=[],removedListeners=[],updatedListeners=[],alarms=[],messages=[],creates=[],removes=[],reloads=[],results=[],restores=[];
++  const retirements=[];const timers=new Map(),listeners=[],removedListeners=[],updatedListeners=[],alarms=[],messages=[],creates=[],removes=[],reloads=[],results=[],restores=[];
+   const names=options.names||['worker_1','worker_2'];
+   const store=options.store||{'nb.config':{base:'http://127.0.0.1:8000',token:'fixture',enabled:true,clientId:'fixture-client',slots:Object.fromEntries(names.map((n,i)=>[n,{tabId:i+1,url:'https://chatgpt.com/c/'+(i+1),activeJobId:'job-'+(i+1)}]))}};
+   const tabs=options.tabs||{1:{id:1,url:'https://chatgpt.com/c/1',windowId:10,status:'complete'},2:{id:2,url:'https://chatgpt.com/c/2',windowId:10,status:'complete'}};
+@@ -21,9 +21,9 @@ function fixture(options={}){
+   const fixtureOptions=options;
+   const ctx={console,URL,AbortSignal,crypto:require('node:crypto').webcrypto,Date:class extends Date{static now(){return now;}},
+     setTimeout:(fn,ms)=>{const id=++nextTimer;timers.set(id,{fn,at:now+ms});return id;},clearTimeout:id=>timers.delete(id),chrome,
+-    fetch:async(url,o)=>{if(options.apiFailure)throw Error('Native server is offline');const body=JSON.parse(o.body);if(url.endsWith('/poll'))return {ok:true,json:async()=>({enabled:true,job:jobs[body.worker_slot],hold:''})};results.push({url,body});return {ok:true,json:async()=>({ok:true,status:body.sent?'SENT':'COMPLETE'})};}};
++    fetch:async(url,o)=>{if(options.apiFailure)throw Error('Native server is offline');const body=JSON.parse(o.body);if(url.endsWith('/poll'))return {ok:true,json:async()=>({enabled:true,job:jobs[body.worker_slot],hold:''})};if(url.endsWith('/retire-conversation')){retirements.push({url,body});for(const n of names)if(jobs[n]?.id===url.split('/').at(-2))delete jobs[n];return {ok:true,json:async()=>({ok:true,retired:true,status:'QUARANTINED'})};}results.push({url,body});return {ok:true,json:async()=>({ok:true,status:body.sent?'SENT':'COMPLETE'})};}};
+   vm.createContext(ctx);vm.runInContext(source,ctx);
+-  const f={store,tabs,jobs,messages,creates,removes,reloads,restores,results,now:()=>now,
++  const f={store,tabs,jobs,retirements,messages,creates,removes,reloads,restores,results,now:()=>now,
+     handler:fn=>handler=fn,
+     advance:async ms=>{now+=ms;for(const [id,t] of [...timers])if(t.at<=now){timers.delete(id);t.fn();}await flush();},
+     tick:async id=>{now+=2000;listeners[0]({type:'NB_TICK'},{tab:{id}},()=>{});await flush();},
+@@ -41,13 +41,14 @@ async function prolongedHang(f){for(let i=0;i<3;i++){await f.hang();if(i<2)await
+     await f.hang();assert.equal(f.creates.length,0,'one timeout is not a freeze');await f.advance(65000);
+     await f.hang();assert.equal(f.creates.length,0,'two checks still do not replace');await f.advance(65000);
+     await f.hang();assert.equal(f.creates.length,1);assert.deepEqual(f.removes,[1]);
+-    const id=f.store['nb.config'].slots[name].tabId;assert.equal(f.tabs[id].url,'https://chatgpt.com/c/1');assert.equal(f.store['nb.config'].slots[name].activeJobId,'job-1');
+-    assert.equal(f.store['nb.deliveryFence.'+id].nonce,'original-ambiguity');assert.equal(f.restores[0].journal.receipt.clicked,true);
+-    assert.equal(f.store['nb.recovery.'+name].phase,'DONE');assert(!f.messages.some(m=>m.id===id&&m.type==='NB_CONTENT_SEND'),'replacement collects without replay');
+-    await f.tick(id);assert(!f.messages.some(m=>m.id===id&&m.type==='NB_CONTENT_SEND'),'persisted ambiguity remains after next heartbeat');
+-    const owned={protocol:'pandora-language/1',request_id:'job-1',RETURN:{status:'complete',text:'Recovered original answer',evidence:[]}};
+-    f.handler((_id,m)=>({...ready,state:'COMPLETE',result:owned,delivery:{requestId:m.id,receiptId:m.id,clicked:true,responseConfirmed:true,sending:false}}));
+-    await f.tick(id);assert(f.results.some(r=>r.body.result?.request_id==='job-1'&&r.body.lease==='original-lease-1'),'same original lease receives collected response');
++    const id=f.store['nb.config'].slots[name].tabId;assert.equal(f.tabs[id].url,'https://chatgpt.com/');assert.equal(f.store['nb.config'].slots[name].activeJobId,null);
++    assert.equal(f.store['nb.deliveryFence.'+id],null);assert.equal(f.restores.length,0,'old receipt never transplanted into fresh chat');
++    assert.equal(f.store['nb.recovery.'+name].receipt.clicked,true,'exact old receipt retained in journal');
++    assert.equal(f.store['nb.recovery.'+name].phase,'DONE');assert(!f.messages.some(m=>m.id===id&&m.type==='NB_CONTENT_SEND'),'old request never replayed');
++    assert.equal(f.retirements[0].body.lease,'original-lease-1');assert.equal(f.retirements[0].body.old_url,'https://chatgpt.com/c/1');
++    await f.tick(id);assert(!f.messages.some(m=>m.id===id&&m.type==='NB_CONTENT_SEND'),'next heartbeat never repeats quarantined job');
++    f.jobs[name]={id:'independent-new-job',status:'CLAIMED',lease:'new-lease',packet:'{}'};
++    await f.tick(id);assert(f.messages.some(m=>m.id===id&&m.type==='NB_CONTENT_SEND'),'fresh worker can accept independent new work');
+   }
+   let f=fixture({handler:()=>({...ready,state:'GENERATING',sent:true})});
+   for(let i=0;i<6;i++){await f.tick(1);await f.advance(60000);}assert.equal(f.creates.length,0,'long responsive thinking is never treated as a freeze');
+@@ -61,7 +62,7 @@ async function prolongedHang(f){for(let i=0;i<3;i++){await f.hang();if(i<2)await
+   f=fixture({stallCreate:true,handler:()=>new Promise(()=>{})});await prolongedHang(f);assert.equal(f.creates.length,1);assert.equal(f.store['nb.recovery.worker_1'].newTabId,null,'simulated worker termination immediately after tab creation');
+   const restart=fixture({store:f.store,tabs:f.tabs,jobs:f.jobs,now:f.now()});await restart.alarm();
+   assert.equal(restart.creates.length,0,'restart finds the nonce-owned placeholder without a duplicate tab');assert.deepEqual(restart.removes,[1]);assert.equal(restart.store['nb.recovery.worker_1'].phase,'DONE');
+-  assert(restart.store['nb.deliveryFence.'+restart.store['nb.config'].slots.worker_1.tabId],'unknown submission gets a collection-only guard, not fabricated unsent proof');
++  assert.equal(restart.tabs[restart.store['nb.config'].slots.worker_1.tabId].url,'https://chatgpt.com/');assert.equal(restart.retirements.length,1,'restart retires exact old request once');
+   f=fixture({onCreate:async store=>{store['nb.config'].enabled=false;},handler:()=>new Promise(()=>{})});await prolongedHang(f);assert(!f.removes.includes(1),'pause during handoff preserves old page');
+   f=fixture({handler:()=>new Promise(()=>{})});f.store['nb.watchdog.worker_1']={tabId:1,recoveries:[f.now()-1000,f.now()-500]};await prolongedHang(f);assert.equal(f.creates.length,0);assert.equal(f.store['nb.poolStatus'].worker_1.state,'RECOVERY_BACKOFF');
+   const stream={...ready,state:'FAILED',phase:'STREAM_ERROR',error:'ChatGPT error in message stream',sent:true,delivery:{requestId:'job-1',userTurnConfirmed:true,clicked:true}};
+@@ -77,10 +78,27 @@ async function prolongedHang(f){for(let i=0;i<3;i++){await f.hang();if(i<2)await
+   f=fixture();f.jobs.worker_1.status='SENT';f.jobs.worker_1.packet=JSON.stringify({STATE:{resume_only:true}});
+   f.tabs[1].url='https://chatgpt.com/';f.store['nb.config'].slots.worker_1.url=f.tabs[1].url;
+   f.store['nb.jobConversation.job-1']={id:'job-1',identity:'c:original',url:'https://chatgpt.com/c/original',transportRetries:0};
+-  await f.tick(1);assert.equal(f.tabs[1].url,'https://chatgpt.com/c/original');assert.equal(f.store['nb.config'].slots.worker_1.url,f.tabs[1].url);assert(!f.messages.some(m=>m.type==='NB_CONTENT_SEND'),'restoring original conversation never replays a sent request');
++  await f.tick(1);assert.equal(f.tabs[1].url,'https://chatgpt.com/');assert.equal(f.store['nb.config'].slots.worker_1.url,f.tabs[1].url);assert(!f.messages.some(m=>m.type==='NB_CONTENT_SEND'),'restoring fresh conversation never replays a sent request');
+   f=fixture({handler:()=>({...ready,state:'BLOCKED',detail:'Existing draft preserved'})});f.jobs.worker_1.status='SENT';f.tabs[1].url='https://chatgpt.com/';f.store['nb.config'].slots.worker_1.url=f.tabs[1].url;f.store['nb.jobConversation.job-1']={identity:'c:original',url:'https://chatgpt.com/c/original'};
+   await f.tick(1);assert.equal(f.tabs[1].url,'https://chatgpt.com/','human draft is never navigated away');
+   f=fixture();f.jobs.worker_1.status='SENT';f.store['nb.jobConversation.job-1']={identity:'c:original',url:'https://chatgpt.com/c/original'};await f.tick(1);assert.equal(f.tabs[1].url,'https://chatgpt.com/c/1','another conversation is never silently replaced');assert(!f.messages.some(m=>m.type==='NB_CONTENT_SEND'));
+   f=fixture();f.store['nb.jobConversation.job-1']={identity:'c:previous',url:'https://chatgpt.com/c/previous',transportRetries:0};f.jobs.worker_1.transport_retries=1;await f.tick(1);assert.equal(f.store['nb.jobConversation.job-1'].identity,'c:1','server-known-unsent retry may use a different worker conversation');assert.equal(f.store['nb.jobConversation.job-1.attempt.0'].identity,'c:previous');assert(f.messages.some(m=>m.type==='NB_CONTENT_SEND'));
+-  console.log('PASS primary/worker hang replacement, threshold, independent slots, real receipt/fence migration, original-lease collection, responsive thinking/network exclusion, pause/navigation/draft protection, interrupted-create restart, bounded recovery rate, exact stream-error refresh/cooldown, no duplicate sends and durable pre-click checkpoint. OFFLINE FAULT INJECTION.');
++  // Resume-only jobs without an old URL must not trap a fresh root either.
++  f=fixture();f.jobs.worker_1.status='SENT';f.jobs.worker_1.packet=JSON.stringify({STATE:{resume_only:true}});f.tabs[1].url='https://chatgpt.com/';f.store['nb.config'].slots.worker_1.url=f.tabs[1].url;
++  await f.tick(1);assert.equal(f.tabs[1].url,'https://chatgpt.com/');assert.equal(f.retirements.length,1);assert(!f.messages.some(m=>m.type==='NB_CONTENT_SEND'));
++  // Completed conversation rollover never occurs mid-generation or over a draft.
++  f=fixture();delete f.jobs.worker_1;Object.assign(f.store['nb.config'].slots.worker_1,{activeJobId:null,completedTurns:4});
++  await f.tick(1);assert.equal(f.creates.length,1);assert.equal(f.tabs[f.store['nb.config'].slots.worker_1.tabId].url,'https://chatgpt.com/');assert.equal(f.retirements.length,0);
++  f=fixture({handler:()=>({...ready,state:'GENERATING'})});Object.assign(f.store['nb.config'].slots.worker_1,{activeJobId:null,completedTurns:4});await f.tick(1);assert.equal(f.creates.length,0);
++  f=fixture({handler:()=>({...ready,state:'BLOCKED',detail:'Existing draft preserved'})});Object.assign(f.store['nb.config'].slots.worker_1,{activeJobId:null,completedTurns:4});await f.tick(1);assert.equal(f.creates.length,0);
++  // A server that cannot acknowledge retirement never authorizes a fresh send.
++  f=fixture({apiFailure:true,handler:()=>new Promise(()=>{})});await prolongedHang(f);assert.equal(f.removes.length,0);assert.equal(f.tabs[1].url,'https://chatgpt.com/c/1');
++  // An old build may have copied its ambiguity fence onto an empty root.
++  f=fixture();f.jobs.worker_1.status='SENT';f.tabs[1].url='https://chatgpt.com/';f.store['nb.config'].slots.worker_1.url=f.tabs[1].url;
++  f.store['nb.deliveryFence.1']={id:'job-1',nonce:'old-fence'};f.store['nb.jobConversation.job-1']={identity:'c:original',url:'https://chatgpt.com/c/original'};
++  await f.tick(1);assert.equal(f.retirements.length,1);assert.equal(f.store['nb.deliveryFence.1'],null);assert.equal(f.tabs[1].url,'https://chatgpt.com/');
++  // An unfinished old journal that already committed its replacement migrates.
++  f=fixture();f.store['nb.recovery.worker_1']={nonce:'journal-old-123456',phase:'LOADING',at:f.now(),oldTabId:50,newTabId:1,jobId:'job-1',url:'https://chatgpt.com/c/1',bindingToken:null,placeholder:'chrome-extension://fixture/recovery.html#journal-old-123456'};
++  await f.alarm();assert.equal(f.tabs[1].url,'https://chatgpt.com/');assert.equal(f.retirements.length,1);assert.equal(f.store['nb.config'].slots.worker_1.activeJobId,null);
++  console.log('PASS primary/worker fresh-chat replacement, independent next-job delivery, exact lease retirement, journal/legacy-fence migration, completed-turn rollover, restart idempotency, generation/draft/navigation protections and bounded recovery. OFFLINE FAULT INJECTION.');
+ })().catch(e=>{console.error(e);process.exitCode=1;});
+diff --git a/native/sim/brain_bridge.py b/native/sim/brain_bridge.py
+index 67fe259..b231902 100644
+--- a/native/sim/brain_bridge.py
++++ b/native/sim/brain_bridge.py
+@@ -14,8 +14,8 @@ import uuid
+ from urllib.parse import urlparse
+ 
+ PROTOCOL = 'pandora-language/1'
+-BRIDGE_VERSION = '14.14.2-fog-pause-preservation'
+-TERMINAL = ('COMPLETE', 'FAILED', 'CANCELLED', 'INTERRUPTED')
++BRIDGE_VERSION = '14.14.3-fresh-chat-recovery'
++TERMINAL = ('COMPLETE', 'FAILED', 'CANCELLED', 'INTERRUPTED', 'QUARANTINED')
+ 
+ 
+ def packed(value):
+@@ -420,6 +420,7 @@ class BrainBridge:
+                 'active_status': active['status'] if active else None,
+                 'last_seen': info.get('last_seen', 0),
+                 'extension_build': info.get('extension_build'),
++                'quarantined_deliveries': self.store.query("SELECT id,error,updated FROM brain_jobs WHERE worker_slot=? AND status='QUARANTINED' ORDER BY updated DESC LIMIT 10",(slot,)),
+             }
+         return out
+ 
+@@ -678,6 +679,13 @@ class BrainBridge:
+         
+         if not self.enabled:
+             return {'job': None, 'enabled': self.enabled, 'hold': ''}
++        # A held Primary may read its exact retained lease for retirement.
++        # This grants no new send and does not clear the hold.
++        if body.get('recovery_request_id'):
++            with self.store.lock, self.store.db:
++                row=self.store.db.execute('SELECT * FROM brain_jobs WHERE id=? AND owner=? AND worker_slot=?',
++                    (body['recovery_request_id'],owner,worker_slot)).fetchone()
++                return {'job':dict(row) if row else None,'enabled':True,'hold':self.hold}
+         if self.hold and role == 'primary':
+             return {'job': None, 'enabled': self.enabled, 'hold': self.hold}
+             
+@@ -764,6 +772,47 @@ class BrainBridge:
+             )
+             return {'job': dict(row, status='CLAIMED', owner=owner, worker_slot=worker_slot, lease=lease), 'enabled': True}
+ 
++    def retire_conversation(self, jid, body):
++        """Detach an uncertain delivery, never replay it into a fresh conversation.
++
++        The original packet/lease/result remain intact. The existing crew's
++        operational-blocked gate preserves the affected candidate/review. Other
++        independent queued jobs can use the slot. Exact late results remain valid.
++        """
++        nonce=body.get('recovery_id')
++        url=body.get('old_url')
++        if not isinstance(nonce,str) or not 16 <= len(nonce) <= 100:
++            raise ValueError('Invalid recovery identity')
++        try:
++            parsed=urlparse(url)
++            if parsed.scheme!='https' or parsed.hostname not in ('chatgpt.com','chat.openai.com') or parsed.username or parsed.password:
++                raise ValueError()
++        except (ValueError,TypeError):
++            raise ValueError('Invalid retired conversation URL')
++        with self.store.lock, self.store.db:
++            raw=self.store.db.execute('SELECT * FROM brain_jobs WHERE id=?',(jid,)).fetchone()
++            row=dict(raw) if raw else None
++            if not row or row['owner']!=body.get('client_id') or not secrets.compare_digest(str(row['lease'] or ''),str(body.get('lease') or '')) or row['worker_slot']!=body.get('worker_slot'):
++                raise ValueError('Retirement owner / lease / slot mismatch')
++            packet=json.loads(row['packet']);state=packet.setdefault('STATE',{})
++            prior=state.get('retired_conversation')
++            if prior:
++                if prior['recovery_id']!=nonce or prior['url']!=url:
++                    raise ValueError('Different recovery already owns this retirement')
++                return {'ok':True,'status':row['status'],'retired':True,'recovery_id':nonce}
++            if row['status']=='COMPLETE':
++                return {'ok':True,'status':'COMPLETE','retired':True,'recovery_id':nonce}
++            if row['status'] not in ('CLAIMED','SENT','INTERRUPTED','FAILED'):
++                raise ValueError('Only an owned delivery can be retired')
++            state['retired_conversation']={'recovery_id':nonce,'url':url,'at':time.time(),'prior_status':row['status'],'policy':'FRESH_CHAT_NO_REPLAY'}
++            state['resume_only']=True
++            error='Old conversation retired; delivery uncertain and quarantined. No automatic resend.'
++            self.store.db.execute("UPDATE brain_jobs SET status='QUARANTINED',packet=?,error=?,updated=? WHERE id=?",(packed(packet),error,time.time(),jid))
++            self.store.db.execute("UPDATE brain_research_assignments SET status='QUARANTINED',updated=? WHERE job_id=?",(time.time(),jid))
++            # Preserve any existing Primary authority/review hold. This API
++            # releases a delivery slot, not scientific or SYSTEM authority.
++            return {'ok':True,'status':'QUARANTINED','retired':True,'recovery_id':nonce}
++
+     def authorize_send(self, jid, body):
+         """Read-only last-moment gate. Does not mark SENT or release a lease."""
+         row=self.store.one('SELECT status,owner,lease,packet,worker_slot FROM brain_jobs WHERE id=?',(jid,))
+@@ -828,8 +877,10 @@ class BrainBridge:
+                     return {'ok': row.get('status')=='COMPLETE', 'status': row.get('status'),
+                             'policy':'LEASE_RACE_ALREADY_RESOLVED','global_hold':False}
+             raise ValueError('Request / lease / owner mismatch')
+-        if row['status'] in TERMINAL:
++        if row['status'] in TERMINAL and row['status']!='QUARANTINED':
+             return {'ok': row['status'] == 'COMPLETE', 'status': row['status']}
++        if row['status']=='QUARANTINED' and (body.get('error') or body.get('sent') or not body.get('result')):
++            return {'ok':False,'status':'QUARANTINED','policy':'FRESH_CHAT_NO_REPLAY'}
+         if body.get('error'):
+             error=str(body['error'])[:2000]
+             packet={}
+@@ -911,7 +962,7 @@ class BrainBridge:
+             raise ValueError('Invalid RETURN schema')
+         if len(packed(result)) > 1000000:
+             raise ValueError('RETURN too large')
+-        self.store.execute("UPDATE brain_jobs SET status='COMPLETE',result=?,updated=? WHERE id=? AND status IN ('CLAIMED','SENT')", (packed(result), time.time(), jid))
++        self.store.execute("UPDATE brain_jobs SET status='COMPLETE',result=?,updated=? WHERE id=? AND status IN ('CLAIMED','SENT','QUARANTINED')", (packed(result), time.time(), jid))
+         try:
+             packet=json.loads(row.get('packet') or '{}')
+             tag=str((packet.get('STATE') or {}).get('tag') or '')
+@@ -1004,6 +1055,12 @@ def install_routes(app, brain):
+         try: return await asyncio.to_thread(brain.result, jid, await body(request, 1_100_000))
+         except ValueError as e: raise HTTPException(409, str(e))
+ 
++    @app.post('/api/brain/jobs/{jid}/retire-conversation')
++    async def retire_conversation(jid: str, request: Request):
++        auth(request)
++        try: return await asyncio.to_thread(brain.retire_conversation, jid, await body(request, 4000))
++        except ValueError as e: raise HTTPException(409, str(e))
++
+     @app.post('/api/brain/jobs/{jid}/authorize-send')
+     async def authorize_send(jid: str, request: Request):
+         auth(request)
+diff --git a/native/tests/test_crew_cancellation.py b/native/tests/test_crew_cancellation.py
+index 3825d7e..3b4682e 100644
+--- a/native/tests/test_crew_cancellation.py
++++ b/native/tests/test_crew_cancellation.py
+@@ -12,7 +12,7 @@ def fingerprint(folder):
+             and '/.nemesis-control/review-input.json' not in p.as_posix()}
+ 
+ @pytest.mark.parametrize('stage',['author','author-unit','review','review-unit'])
+-@pytest.mark.parametrize('status',['CANCELLED','FAILED','INTERRUPTED'])
++@pytest.mark.parametrize('status',['CANCELLED','FAILED','INTERRUPTED','QUARANTINED'])
+ def test_transport_termination_never_reauthors_or_spends_revision(rig,monkeypatch,stage,status):
+     author(rig)
+     if stage.startswith('review'):
+diff --git a/native/tests/test_fresh_chat.py b/native/tests/test_fresh_chat.py
+new file mode 100644
+index 0000000..714c398
+--- /dev/null
++++ b/native/tests/test_fresh_chat.py
+@@ -0,0 +1,59 @@
++import json, time
++import pytest
++from test_brain_bridge_v14 import b, poll, result
++from sim.brain_bridge import BrainBridge, install_routes
++from fastapi import FastAPI
++from fastapi.testclient import TestClient
++
++def retire(job, **extra):
++    return dict(client_id=job['owner'],lease=job['lease'],worker_slot=job['worker_slot'],
++                recovery_id='recovery-nonce-123456',old_url='https://chatgpt.com/c/frozen',**extra)
++
++@pytest.mark.parametrize('status',['CLAIMED','SENT'])
++def test_uncertainty_detaches_but_never_replays(b,status):
++    first=b.enqueue('s','retained original scientific input',tag='fog-crew:evidence:first')
++    second=b.enqueue('s','independent next bounded task',tag='fog-crew:evidence:second')
++    j=poll(b);original=j['packet']
++    if status=='SENT':b.result(first,{**result(j), 'sent':True})
++    r=b.retire_conversation(first,retire(j));assert r['status']=='QUARANTINED'
++    saved=b.store.one('SELECT * FROM brain_jobs WHERE id=?',(first,))
++    assert saved['lease']==j['lease'] and saved['owner']==j['owner']
++    assert json.loads(saved['packet'])['GOAL']==json.loads(original)['GOAL']
++    assert b.authorize_send(first,retire(j))['ok'] is False
++    assert poll(b)['id']==second
++    assert b.retire_conversation(first,retire(j))['status']=='QUARANTINED'
++    assert b.result(first,{**result(j),'sent':True})['status']=='QUARANTINED'
++    b.store.execute('UPDATE brain_jobs SET deadline=? WHERE id=?',(time.time()-1,first))
++    b.expire();assert b.store.one('SELECT status FROM brain_jobs WHERE id=?',(first,))['status']=='QUARANTINED'
++    # Exact retained late result can complete the SAME request, never a new job.
++    assert b.result(first,result(j))['status']=='COMPLETE'
++    assert b.store.one('SELECT COUNT(*) AS n FROM brain_jobs')['n']==2
++
++def test_restart_and_pool_disclose_quarantine(b):
++    b.enqueue('s','u',tag='fog-crew:evidence:test');j=poll(b)
++    b.retire_conversation(j['id'],retire(j));restarted=BrainBridge(b.store)
++    assert poll(restarted) is None
++    assert restarted.pool_status()['primary']['quarantined_deliveries'][0]['id']==j['id']
++    assert restarted.result(j['id'],result(j))['status']=='COMPLETE'
++
++@pytest.mark.parametrize('field,value',[('client_id','wrong-owner'),('lease','wrong'),('worker_slot','worker_2'),('old_url','https://evil.invalid/'),('recovery_id','short')])
++def test_retirement_rejects_invalid_authority(b,field,value):
++    b.enqueue('s','u');j=poll(b);body=retire(j);body[field]=value
++    with pytest.raises(ValueError):b.retire_conversation(j['id'],body)
++    assert b.store.one('SELECT status FROM brain_jobs')['status']=='CLAIMED'
++
++def test_hold_and_idempotency_are_not_bypassed(b):
++    b.enqueue('s','u');j=poll(b);b.store.kv_set('brain_hold','Independent Primary review required')
++    recovered=b.poll({'client_id':j['owner'],'worker_slot':'primary','state':'RECOVERING','recovery_request_id':j['id']})
++    assert recovered['job']['lease']==j['lease'] and recovered['hold']==b.hold
++    b.retire_conversation(j['id'],retire(j))
++    assert b.hold=='Independent Primary review required'
++    changed=retire(j);changed['recovery_id']='different-nonce-123456'
++    with pytest.raises(ValueError):b.retire_conversation(j['id'],changed)
++
++def test_authenticated_http_route(b):
++    app=FastAPI();install_routes(app,b);client=TestClient(app)
++    b.enqueue('s','u');j=poll(b)
++    url='/api/brain/jobs/'+j['id']+'/retire-conversation'
++    assert client.post(url,json=retire(j)).status_code==401
++    assert client.post(url,json=retire(j),headers={'Authorization':'Bearer '+b.token}).json()['status']=='QUARANTINED'
