@@ -378,6 +378,8 @@ def main() -> int:
             "compiled_nodes": len(compiled["nodes"]),
             "compiled_edges": len(compiled["edges"]),
             "compiled_reviews": len(compiled.get("reviews", [])),
+            "taxonomy_in_batch": len(candidate["taxonomy.jsonl"]),
+            "compiled_taxonomy": len(compiled.get("taxonomy", [])),
             "evidence_reviewed_targets": proof["reviewed_targets"],
         },
     }

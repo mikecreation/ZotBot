@@ -39,7 +39,7 @@ nemesis/batches/<batch_id>/
   reviews.jsonl
   sources.jsonl
   assertions.jsonl
-  taxonomy.jsonl       # optional reviewed placements
+  taxonomy.jsonl       # optional placement candidates (fog-placement-candidate/1; see SCIENTIFIC_COMPILER.md)
   identities.jsonl     # optional reviewed concept links
 ```
 

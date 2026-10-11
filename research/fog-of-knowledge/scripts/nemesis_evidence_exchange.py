@@ -4,7 +4,7 @@ import argparse,json,os,sys
 from pathlib import Path
 from urllib.error import HTTPError
 sys.path.insert(0,str(Path(__file__).resolve().parent))
-from evidence_compiler import ROOT,EvidenceError,candidate_digest,context_digest,digest,load_candidate,review_packet,rows,storage_record,unique,validate_assertions,validate_dag,validate_public_frontier,validate_sources
+from evidence_compiler import ROOT,EvidenceError,candidate_digest,context_digest,digest,load_candidate,review_packet,rows,storage_record,unique,validate_assertions,validate_dag,validate_placements,validate_public_frontier,validate_sources
 from evidence_pipeline import graph,retain_decisions
 from source_capture import capture_source,validate_captures
 from nemesis_apply import BatchError,compile_batch,edge_key,unique_records,validate_edges,validate_invalidation_reviews,validate_manifest,validate_nodes,validate_reviews
@@ -182,8 +182,7 @@ def preflight(candidate,g,sources):
                 raise EvidenceError('existing relationship differs; use an explicit reviewed revision')
             elif kind=='review' and any(r.get('id')==record['id'] and r!=record for r in g.get('reviews',[])):
                 raise EvidenceError('existing review ID differs; retain a new review revision')
-    ids=set(future)|{'family:'+d['id'] for d in g['domains']}
-    validate_dag(g.get('taxonomy',[])+candidate['taxonomy.jsonl'],ids)
+    validate_placements(g.get('taxonomy',[]),candidate['taxonomy.jsonl'],future,[d['id'] for d in g['domains']],assertions)
     for ident in candidate['identities.jsonl']:
         left,right=future.get(ident.get('left')),future.get(ident.get('right'))
         if not left or not right or left==right:raise EvidenceError('invalid identity endpoints')

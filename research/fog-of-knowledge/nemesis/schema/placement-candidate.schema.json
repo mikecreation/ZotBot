@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "fog-placement-candidate/1",
+  "title": "Fog of Knowledge placement candidate (one line of taxonomy.jsonl)",
+  "description": "Worker-proposed 'child is narrower than parent'. Becomes canonical taxonomy only after scripts/evidence_compiler.py validates it (same family, existing endpoints, DAG, no duplicates) and distinct entailment and adversarial reviewers approve its own target_kind=taxonomy assertion. Evidence and confidence live in assertions.jsonl, not here.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "parent", "child", "type"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "parent": {"type": "string", "description": "Existing node id in the child's domain, or family:<child domain>."},
+    "child": {"type": "string", "description": "Existing canonical node id."},
+    "type": {"const": "narrower"}
+  },
+  "$defs": {
+    "placement_assertion": {
+      "type": "object",
+      "required": ["id", "target_kind", "target_sha256", "canonical_record", "statement", "scope", "support", "confidence"],
+      "properties": {
+        "target_kind": {"const": "taxonomy"},
+        "target_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "canonical_record": {"$ref": "#"},
+        "statement": {"type": "string", "minLength": 1},
+        "scope": {"type": "object", "required": ["population", "time", "assumptions", "uncertainty", "units", "quantifiers"]},
+        "support": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["source_id", "source_sha256", "start", "end", "quote"]}},
+        "confidence": {"type": "number", "exclusiveMinimum": 0, "maximum": 1}
+      }
+    }
+  }
+}
