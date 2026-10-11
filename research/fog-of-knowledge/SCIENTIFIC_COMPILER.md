@@ -26,7 +26,7 @@ Keep the existing `manifest.json`, `nodes.jsonl`, `edges.jsonl`, and `reviews.js
 
 - `sources.jsonl`: each record has `id`, `url`, `title`, `retrieved_at`, `source_kind` (`primary`, `secondary`, `unknown`), `text`, and the SHA-256 of the exact UTF-8 text. Retain an authorized source extract or snapshot; do not invent inaccessible text. Identify publication/version and extraction method in optional metadata when available.
 - `assertions.jsonl`: `id`, `target_kind` (`node`, `edge`, `review`, `taxonomy`, `identity`), `target_sha256`, `canonical_record`, `statement`, `scope`, and `support`. A support entry contains `source_id`, `source_sha256`, `start`, `end`, `quote`. Offsets are Python Unicode code points into the retained text, with an exclusive end. Quote equality and source revision are checked exactly.
-- `taxonomy.jsonl`, optional: `id`, `parent`, `child`, `type: narrower`. Multiple reviewed parents are allowed; cycles are rejected. Family roots use `family:<domain>`. The display chooses one compatible parent deterministically and exposes the others.
+- `taxonomy.jsonl`, optional: `id`, `parent`, `child`, `type: narrower` (the placement candidate lane below). Multiple reviewed same-family parents are allowed; cycles are rejected. Family roots use `family:<domain>`. The display chooses one compatible parent deterministically and exposes the others.
 - `identities.jsonl`, optional: `id`, `left`, `right`, `type` (`same_concept`, `about`, `related_concept`). Records remain intact; a question is never collapsed into a field. Matching names only generate review candidates.
 
 Scope explicitly names `population`, `time`, `assumptions`, `uncertainty`, `units`, and `quantifiers`; unknown values may be null. Put limitations in the assertion rather than allowing a scoped experimental result to become a universal claim. Every scientific relationship needs its own assertion and review, even when both endpoints have sources.
@@ -36,6 +36,29 @@ Scope explicitly names `population`, `time`, `assumptions`, `uncertainty`, `unit
 Neutral scientific metadata keeps unresolved questions explicit. `status: reported` means a source-attributed result or proposal; it does not assert acceptance, validation or current consensus. `era: undated` means chronology is unresolved and provides no basis for chronological or current-frontier placement. `frontier: false` makes no affirmative claim that this is the current frontier; it does not establish that an open question is settled or a result is obsolete. A publication date alone does not establish current scientific standing.
 
 These values are author proposals, not compiler defaults or automatic downgrades. Replacing unsupported metadata requires a new candidate revision, with its complete representation bound to the source-supported assertion and reviewed by both independent roles. The compiler must not change retained source captures, summaries or assertion scopes to accommodate the revision. Neutral metadata does not waive source support, review checks or justification of other classifications and placements.
+
+## Placement candidate lane (`fog-placement-candidate/1`)
+
+Placement-pending atlas nodes are resolved only through reviewed taxonomy, never through inferred lineage, heuristics or support/test relations. A worker proposes "child is narrower than parent" as a candidate; it becomes canonical only through this compiler.
+
+A placement batch is `nemesis/batches/<batch_id>/` with `manifest.json`, `sources.jsonl`, `assertions.jsonl` and `taxonomy.jsonl`; node, edge and review files may be empty or absent. Each `taxonomy.jsonl` line follows `nemesis/schema/placement-candidate.schema.json`:
+
+```json
+{"id":"taxonomy.<child>.narrower.<parent>","parent":"<same-family node id or family:<domain>>","child":"<existing canonical node id>","type":"narrower"}
+```
+
+Only these four fields are allowed. The citation and worker confidence belong to the record's own assertion: `target_kind: "taxonomy"`, `target_sha256` = `digest(record)`, `canonical_record` = the exact record, `statement`, full `scope`, exact `support` excerpts from captured sources, and `confidence` in (0, 1]. Confidence is informational; it never substitutes for review.
+
+The compiler (`validate_placements` in `scripts/evidence_compiler.py`, used by `nemesis_apply.py` and the exchange preflight) rejects the whole candidate into quarantine when:
+
+- the child is not a canonical node, or the parent is neither an existing node nor `family:<child domain>`;
+- the parent node is in another family (cross-family links belong in reviewed identities or scientific relationships);
+- the record is a self-placement or the combined existing and candidate taxonomy has a cycle;
+- a `(parent, child)` pair repeats within the batch or already exists under another ID (an identical record re-applies idempotently);
+- the record carries extra fields, a non-`narrower` type, or no bound assertion with valid confidence;
+- distinct, non-author `entailment` and `adversarial` reviewers have not both approved that exact record, candidate hash and endpoint context.
+
+Reviewers accept a placement only when the cited excerpt itself classifies the child under the parent. Name similarity, co-occurrence, supports/tests/contradicts relations, cross-domain lineage, heuristic suggestions and worker confidence are not placement evidence. The live lane, including this schema, is emitted by `python scripts/nemesis_worker_contract.py` (`placement_lane`, also in `--prompt`). Regressions: `scripts/test_placement_lane.py`.
 
 For an executable example, see `fixture()` in `scripts/test_evidence_compiler.py`. It is deliberately synthetic and never inserted into the real knowledge graph.
 

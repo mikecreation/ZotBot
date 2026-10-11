@@ -29,6 +29,37 @@ def _load_apply_sets():
     return ns
 
 
+def placement_lane(domains: list[str]) -> dict:
+    """Source-backed PLACEMENT CANDIDATE lane ("X is narrower than Y")."""
+    return {
+        "protocol": "fog-placement-candidate/1",
+        "purpose": "Resolve 'placement pending' atlas nodes with reviewed taxonomy, never by inference.",
+        "batch_layout": "nemesis/batches/<batch_id>/{manifest.json,sources.jsonl,assertions.jsonl,taxonomy.jsonl}; nodes/edges/reviews files may be empty or absent",
+        "candidate_file": "taxonomy.jsonl",
+        "candidate_schema": "nemesis/schema/placement-candidate.schema.json",
+        "candidate_record": {"id": "stable id, e.g. taxonomy.<child>.narrower.<parent>", "parent": "existing same-family node id or family:<child domain>",
+                             "child": "existing canonical node id (the pending node)", "type": "narrower"},
+        "candidate_record_fields_only": ["id", "parent", "child", "type"],
+        "assertion_record": {"target_kind": "taxonomy", "target_sha256": "sha256 of the canonical taxonomy record (sorted keys, compact JSON)",
+                             "canonical_record": "the exact taxonomy.jsonl record", "statement": "the placement claim as the source supports it",
+                             "scope": "population/time/assumptions/uncertainty/units/quantifiers (null when unknown)",
+                             "support": "exact excerpt(s) from captured sources classifying child under parent",
+                             "confidence": "worker confidence in (0,1]; informational only, never passes review"},
+        "family_roots": ["family:" + d for d in domains],
+        "compiler_checks": [
+            "child is an existing canonical node; parent exists (node or family root)",
+            "same family: parent node domain == child domain, or parent == family:<child domain>",
+            "taxonomy (existing + candidate) remains a DAG: no cycles, no self-placement",
+            "dedupe: no repeated (parent, child) pair in the batch; an existing pair with another id is rejected; an identical record re-applies idempotently",
+            "immutable taxonomy ids; only id/parent/child/type in the canonical record",
+            "per-record entailment AND adversarial review by distinct non-author reviewers bound to the exact candidate and context hashes",
+        ],
+        "on_failure": "the whole candidate stays in nemesis/quarantine; nothing is written to knowledge.json",
+        "multi_parent": "several reviewed same-family parents are allowed; navigation picks one deterministically and exposes the others as alternative_parents",
+        "not_placement_evidence": ["name similarity", "co-occurrence", "supports/tests/contradicts/cites relations", "cross-domain lineage", "heuristic parent suggestions", "worker confidence"],
+    }
+
+
 def build_contract() -> dict:
     ns = _load_apply_sets()
     graph = json.loads(GRAPH.read_text(encoding="utf-8"))
@@ -56,10 +87,12 @@ def build_contract() -> dict:
         ],
         "compiler_decides": [
             "reject_unsupported_or_uncertain_representation",
+            "taxonomy_placement_from_reviewed_placement_candidates_only",
             "publish_reviewed_records_without_semantic_coercion",
             "deterministic_visual_projection_separate_from_evidence",
         ],
         "evidence_files": ["sources.jsonl","assertions.jsonl","taxonomy.jsonl","identities.jsonl"],
+        "placement_lane": placement_lane(domains),
         "review_policy": review_policy,
         "representation_policy": review_policy.get("representation_policy", {}),
         "review_example": "scripts/test_evidence_compiler.py:fixture (synthetic example, not real scientific evidence)",
@@ -83,6 +116,7 @@ def build_contract() -> dict:
             "Unsupported or uncertain candidates stay in quarantine. Classification, placement and identity cannot be invented by a formatting normalizer.",
             "Optional node.public_frontier metadata uses category open-question/public-result/company-tool; capability_status publicly-described/undisclosed; disclosed_at exact YYYY-MM-DD or null; source_ids identifying captured supporting sources. Company/tool names and each claimed capability must be publicly supported. Private or undisclosed capabilities remain unknown. A disclosure date never establishes world-leading currency.",
             "Taxonomy is not a scientific relationship; UI parent is not an epistemic edge.",
+            "To resolve a placement-pending node, propose a placement candidate in taxonomy.jsonl ({id,parent,child,type:narrower}) with its own target_kind taxonomy assertion carrying exact source excerpts and confidence in (0,1]. Parent must be a same-family node or family:<domain>. The compiler rejects cycles, missing endpoints, cross-family and duplicate placements, and publishes only after entailment and adversarial review.",
             "Propose an explicit relation type only when justified; unknown types remain unresolved candidates, never default to related/soft.",
         ],
     }
@@ -102,6 +136,7 @@ def prompt_block(contract: dict | None = None) -> str:
             "worker_must_not": c["worker_must_not"],
             "compiler_decides": c["compiler_decides"],
             "evidence_files": c["evidence_files"],
+            "placement_lane": c["placement_lane"],
             "review_policy": c["review_policy"],
             "representation_policy": c["representation_policy"],
             "prompt_rules": c["prompt_rules"],

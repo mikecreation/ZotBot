@@ -74,6 +74,53 @@ def validate_dag(links,ids):
     if visited!=len(ids):raise EvidenceError("taxonomy cycle")
 
 
+PLACEMENT_FIELDS={"id","parent","child","type"}
+
+
+def validate_placements(existing,proposed,nodes,domains,assertions=None):
+    """Source-backed placement lane: a candidate 'child is narrower than parent'.
+
+    Taxonomy is navigation ancestry, not a scientific relationship. The compiler
+    checks the hierarchy mechanically (shape, endpoints, same family, duplicates,
+    DAG); whether the cited source actually establishes the placement is left to
+    the required entailment and adversarial reviews enforced per record.
+    """
+    import re
+    id_re=re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]*$")
+    families={"family:"+d for d in domains}
+    by_pair={}
+    for record in existing:by_pair.setdefault((record.get("parent"),record.get("child")),record)
+    seen={}
+    for record in proposed:
+        rid=record.get("id")
+        if not isinstance(rid,str) or not id_re.match(rid):raise EvidenceError("placement candidate needs a stable id")
+        extra=set(record)-PLACEMENT_FIELDS
+        if extra:raise EvidenceError(rid+": placement candidate carries only id/parent/child/type; evidence and confidence belong to its assertion, not "+",".join(sorted(extra)))
+        if record.get("type")!="narrower":raise EvidenceError(rid+": taxonomy requires explicit narrower semantics")
+        parent,child=record.get("parent"),record.get("child")
+        if child not in nodes:raise EvidenceError(rid+": placement child must be a canonical node")
+        if parent==child:raise EvidenceError(rid+": a node cannot be narrower than itself")
+        domain=nodes[child].get("domain")
+        if parent in families:
+            if parent!="family:"+str(domain):raise EvidenceError(rid+": family root "+parent+" is not the child's family family:"+str(domain))
+        elif parent not in nodes:raise EvidenceError(rid+": placement parent does not exist: "+str(parent))
+        elif nodes[parent].get("domain")!=domain:
+            raise EvidenceError(rid+": cross-family placement "+parent+" -> "+child+"; taxonomy stays within one family (use a reviewed identity or relationship candidate instead)")
+        pair=(parent,child)
+        if pair in seen:raise EvidenceError(rid+": duplicate placement of "+child+" under "+parent+" (also "+seen[pair]+")")
+        seen[pair]=rid
+        prior=by_pair.get(pair)
+        if prior is not None and prior!=record:raise EvidenceError(rid+": duplicate placement; "+child+" is already narrower than "+parent+" as "+str(prior.get("id")))
+        if assertions is not None:
+            bound=[a for a in assertions.values() if a.get("target_kind")=="taxonomy" and a.get("target_sha256")==digest(record)]
+            if not bound:raise EvidenceError(rid+": placement candidate needs its own source-backed assertion")
+            for a in bound:
+                c=a.get("confidence")
+                if isinstance(c,bool) or not isinstance(c,(int,float)) or not 0<c<=1:
+                    raise EvidenceError(rid+": placement assertion needs worker confidence in (0,1]; confidence never substitutes for review")
+    validate_dag(list(existing)+list(proposed),set(nodes)|families)
+
+
 def validate_sources(candidate):
     sources=unique(candidate["sources.jsonl"],"source")
     for sid,s in sources.items():
@@ -126,6 +173,7 @@ def review_packet(candidate,graph):
                             "Apply the supplied representation_policy exactly: reported is source attribution, undated is unresolved chronology, and frontier:false makes no positive currency claim. These neutral meanings do not waive evidence or representation checks.",
                             "Two sourced endpoints do not prove a relationship; review its direction and dependency independently.",
                             "Do not equate a question with a field or infer identity from a matching name.",
+                            "A taxonomy (narrower) candidate is supported only when the cited excerpt itself classifies the child as a subfield, kind or part of the parent; name similarity, co-occurrence, support/test relations or worker confidence are not placement evidence. Adversarially check for a better or competing parent and for scope strengthening.",
                             "Return decisions with target_kind,target_sha256,assertion_id,outcome,rationale,checks and limitations.",
                             "outcome: supported|unsupported|uncertain. Checks: exact_support,scope_preserved,no_strengthening,relation_direction,representation_justified.",
                             "Uncertainty or inaccessible evidence must remain quarantined. Model confidence is not a scientific certificate."]}
@@ -193,8 +241,7 @@ def enforce(candidate,graph,decisions,policy):
         if any(edge_key(e)==edge_key(record) and e!=record for e in graph["edges"]):raise EvidenceError("existing relationship differs; use an explicit reviewed revision")
     for record in candidate["reviews.jsonl"]:
         if any(r.get("id")==record["id"] and r!=record for r in graph.get("reviews",[])):raise EvidenceError("existing review ID differs; retain a new review revision")
-    ids=set(future)|{"family:"+d["id"] for d in graph["domains"]}
-    validate_dag(graph.get("taxonomy",[])+candidate["taxonomy.jsonl"],ids)
+    validate_placements(graph.get("taxonomy",[]),candidate["taxonomy.jsonl"],future,[d["id"] for d in graph["domains"]],assertions)
     for ident in candidate["identities.jsonl"]:
         left,right=future.get(ident.get("left")),future.get(ident.get("right"))
         if not left or not right or left==right:raise EvidenceError("invalid identity endpoints")
