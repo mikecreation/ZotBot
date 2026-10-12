@@ -1595,9 +1595,10 @@ function syncExpandButtons(){
 }
 function observeLayout(){
   const apply=()=>{
-    const w=mapShell?.clientWidth||window.innerWidth;
-    const h=mapShell?.clientHeight||window.innerHeight;
-    const next=w<820||h<560||window.innerWidth<900;
+    // Decide from the window, not the map shell: the compact layout changes the
+    // shell's size, so measuring it oscillates. Collapsible chrome gives the map
+    // room on laptops; the list remains the phone fallback.
+    const next=window.innerWidth<640||window.innerHeight<360;
     if(next===layoutCompact)return;
     layoutCompact=next;
     document.body.classList.toggle("layout-compact",layoutCompact);
