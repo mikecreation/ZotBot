@@ -1665,3 +1665,48 @@ body.publicFrontierOpen main,body.publicFrontierOpen .toolbar,body.publicFrontie
 body{display:flex;flex-direction:column;height:100vh;overflow:hidden}.topbar,.toolbar{flex-shrink:0}main{flex:1;min-height:0;height:auto!important}#mapShell{height:100%;min-height:0}#publicFrontier{flex:1;min-height:0;height:auto}
 
 @media(min-width:1201px){.topbar{grid-template-columns:minmax(330px,1fr) auto;min-height:125px}.brand{grid-column:1;grid-row:1/span 2}.atlasTabs{grid-column:2;grid-row:1;margin-right:120px}.viewnav{grid-column:2;grid-row:2;align-self:center}}
+
+/* ---- Collapsible atlas chrome (atlas-chrome.js) ---- */
+/* Drawing geometry must never create an internal scroll offset (bottom clipping). */
+body{height:100dvh}
+main{overflow:clip;grid-template-columns:minmax(0,1fr) 22px clamp(240px,26vw,350px)}
+#mapShell{overflow:clip}
+#graph{display:block;position:absolute;inset:0;width:100%;height:100%}
+.chromeControls{position:absolute;top:16px;right:150px;display:flex;gap:6px;z-index:30}
+.chromeBtn{height:28px;min-width:28px;padding:0 10px;border:1px solid #305267;border-radius:6px;background:#0c1a28;color:#c6e9f6;font:600 10px system-ui;letter-spacing:.06em;cursor:pointer}
+.chromeBtn:hover,.detailEdgeTab:hover{border-color:#67d8ff;color:#fff}
+.chromeBtn[aria-pressed=true]{background:#1b4052;border-color:#67d8ff}
+.chromeChevron{font-size:14px;padding:0 8px}
+#chromeSearchBtn{display:none;font-size:14px}
+.detailEdgeTab{grid-column:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:0;margin:0;border:0;border-left:1px solid var(--line);background:#060b15;color:#92edff;cursor:pointer;z-index:13;min-width:0}
+.detailEdgeTab .edgeArrow{font:700 16px system-ui}
+.detailEdgeTab .edgeLabel{writing-mode:vertical-rl;font:600 9px system-ui;letter-spacing:.2em;color:#7f93a8;display:none}
+.detail{grid-column:3;min-width:0}
+body.chrome-panel-collapsed main{grid-template-columns:minmax(0,1fr) 26px 0}
+body.chrome-panel-collapsed .detail{display:none}
+body.chrome-panel-collapsed .detailEdgeTab .edgeLabel{display:block}
+.mapCaption .captionClose{float:right;margin:-4px -4px 0 10px;width:20px;height:20px;border:1px solid #ffffff1f;border-radius:5px;background:transparent;color:#9fb4c8;cursor:pointer;line-height:1}
+body.chrome-caption-hidden #mapCaption{display:none!important}
+.mapTools #captionToggleBtn{font-size:10px}
+.mapTools #captionToggleBtn[aria-pressed=true]{border-color:#67d8ff}
+/* Slim header: ~32px bar that keeps HUB, Expand all, Frontier lens, search and layout controls. */
+body.chrome-header-collapsed .topbar{display:flex;align-items:center;gap:8px;height:32px;min-height:32px;padding:0 10px;overflow:visible;flex-wrap:nowrap}
+body.chrome-header-collapsed .brand{display:flex;align-items:center;padding:0}
+body.chrome-header-collapsed .brand small,body.chrome-header-collapsed .brand p,body.chrome-header-collapsed .atlasTabs,body.chrome-header-collapsed .github,body.chrome-header-collapsed .crumb{display:none!important}
+body.chrome-header-collapsed .brand h1{font-size:12px;margin:0;letter-spacing:.14em;white-space:nowrap}
+body.chrome-header-collapsed .viewnav{display:flex;flex-wrap:nowrap;gap:5px;padding:0;margin:0;max-width:none}
+body.chrome-header-collapsed .viewnav>*{display:none}
+body.chrome-header-collapsed .viewnav #hubBtn,body.chrome-header-collapsed .viewnav #expandAllBtn,body.chrome-header-collapsed .viewnav #frontierLensBtn{display:inline-flex;align-items:center;height:24px;padding:0 9px;font-size:10px}
+body.chrome-header-collapsed .chromeControls{position:static;margin-left:auto;order:9}
+body.chrome-header-collapsed .chromeBtn{height:24px}
+body.chrome-header-collapsed #chromeSearchBtn{display:inline-block}
+body.chrome-header-collapsed .toolbar{display:none}
+body.chrome-header-collapsed.chrome-search-open .toolbar{display:flex;position:absolute;top:32px;left:0;right:0;z-index:40;background:#03050bf2}
+body.chrome-header-collapsed #searchResults{z-index:41}
+/* Focus map: everything collapsed at once; the slim bar keeps a restore control. */
+body.chrome-focus .mapTools span{display:none}
+
+@media(max-width:900px){.chromeControls{position:static;margin-left:auto}}
+body.layout-compact main{grid-template-columns:1fr}
+body.layout-compact .detailEdgeTab{display:none}
+body.publicFrontierOpen .chromeControls [data-chrome-focus],body.publicFrontierOpen #chromeSearchBtn{display:none}

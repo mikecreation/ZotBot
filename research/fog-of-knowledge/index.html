@@ -9,10 +9,15 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <style>html,body{background:#02040a}</style>
-<link rel="stylesheet" href="styles.css?v=0.11.4">
+<link rel="stylesheet" href="styles.css?v=0.15.0">
 </head>
 <body>
 <header class="topbar">
+  <div class="chromeControls" aria-label="Atlas layout">
+    <button id="chromeSearchBtn" class="chromeBtn" type="button" title="Search  /" aria-label="Search">⌕</button>
+    <button class="chromeBtn" type="button" data-chrome-focus aria-pressed="false">FOCUS MAP</button>
+    <button id="collapseHeaderBtn" class="chromeBtn chromeChevron" type="button" aria-expanded="true" aria-controls="atlasToolbar" title="Collapse header  [">▴</button>
+  </div>
   <div class="brand">
     <small>OPEN KNOWLEDGE ATLAS</small>
     <h1>FOG OF KNOWLEDGE</h1>
@@ -35,7 +40,7 @@
   <a class="github" href="https://github.com/mikecreation/ZotBot/tree/main/research/fog-of-knowledge" target="_blank" rel="noreferrer">Contribute ↗</a>
 </header>
 
-<section class="toolbar">
+<section id="atlasToolbar" class="toolbar">
   <div class="searchWrap">
     <span>⌕</span>
     <input id="search" type="search" autocomplete="off" placeholder="Search fields, claims, theories, questions…">
@@ -54,7 +59,7 @@
 
 <main>
   <section id="mapShell">
-    <div class="mapTools" aria-label="Map controls"><button id="zoomInBtn" title="Zoom in">+</button><button id="zoomOutBtn" title="Zoom out">−</button><button id="fitMapBtn">FIT</button><span>Scroll to zoom · drag to explore</span></div>
+    <div class="mapTools" aria-label="Map controls"><button id="zoomInBtn" title="Zoom in">+</button><button id="zoomOutBtn" title="Zoom out">−</button><button id="fitMapBtn">FIT</button><button id="captionToggleBtn" type="button" aria-pressed="true" title="Show or hide the map note  (I)">INFO</button><button type="button" data-chrome-focus data-short aria-pressed="false">⤢</button><span>Scroll to zoom · drag to explore</span></div>
     <div id="nodeHover" class="nodeHover" hidden></div>
     <div class="stars starsA"></div>
     <div class="stars starsB"></div>
@@ -99,6 +104,7 @@
     </div>
   </section>
 
+  <button id="detailEdgeTab" class="detailEdgeTab" type="button" aria-controls="detail" aria-expanded="true" title="Collapse details panel  ]"><span class="edgeArrow">›</span><span class="edgeLabel">OVERVIEW &amp; DETAILS</span></button>
   <aside id="detail" class="detail">
     <div class="detailHero">
       <div class="eyebrow">HUMAN KNOWLEDGE</div>
@@ -146,10 +152,11 @@
 <script src="circuit-spatial.js?v=0.11.4" defer></script>
 <script src="circuit-painter.js?v=0.11.4" defer></script>
 <script src="node-connections.js?v=0.11.4" defer></script>
-<script src="massive-atlas.js?v=0.11.4" defer></script>
+<script src="massive-atlas.js?v=0.15.0" defer></script>
 <script src="public-frontier.js?v=0.11.4" defer></script>
 <script src="branch-layout.js?v=0.11.4" defer></script>
 <script src="atlas-interaction.js?v=0.11.4" defer></script>
-<script src="app.js?v=0.11.4" defer></script>
+<script src="app.js?v=0.15.0" defer></script>
+<script src="atlas-chrome.js?v=0.15.0" defer></script>
 </body>
 </html>

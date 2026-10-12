@@ -35,3 +35,14 @@ October 7, 2026 local Chromium runs at 1900×1060 produced:
 | Largest observed setup timer gap | about 230 ms |
 
 These are local rendering measurements, not guaranteed FPS or zero-lag promises. Dense evidence graphs, other topologies, all-label mode, large canonical JSON parsing/transfer and different hardware can cost more. Graph loading still reads complete artifacts. Bounded revision-aware API pagination is available for further incremental loading. OffscreenCanvas-unavailable browsers fall back to main-thread canvas drawing; a worker load failure is reported visibly. No benchmark claims unlimited scale.
+
+## Collapsible chrome
+
+`atlas-chrome.js` controls presentation only. None of these controls change graph, review or worker state.
+
+- **Header:** ▴/▾ (or `[`) collapses the header to a 32px bar. The bar keeps HUB, Expand all, Frontier lens, search (⌕ or `/`), Focus map and the expand chevron.
+- **Right panel:** the edge tab (or `]`) collapses it to a 26px labeled tab. The tab is its own grid column, so it never covers the map.
+- **Focus map:** FOCUS MAP, ⤢ or `F` collapses everything at once. Esc or EXIT FOCUS restores the previous choices.
+- **Map note:** × on the note, the INFO button or `I` hides and shows it.
+
+State persists in `localStorage` (`fog:atlas-chrome:v1`). Every change refits the visible viewport through the existing FIT path, so the circle spacing is unchanged. The compact list layout is chosen from the window size, not the map's own size, which avoids a layout feedback loop. The map surface uses `overflow:clip` so hidden geometry cannot leave the bottom of the map blank. Regression test: `node scripts/test_atlas_chrome.js`.
