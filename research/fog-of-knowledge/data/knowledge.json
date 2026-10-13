@@ -11384,6 +11384,12 @@
       "parent": "field.astronomy",
       "child": "physical.exoplanet-transit-method",
       "type": "narrower"
+    },
+    {
+      "id": "taxonomy.claim.fermi-gbm-detection-coverage.narrower.field.astronomy",
+      "parent": "field.astronomy",
+      "child": "claim.fermi-gbm-detection-coverage",
+      "type": "narrower"
     }
   ],
   "identities": [],
@@ -29677,6 +29683,263 @@
           "charset": "utf-8",
           "extraction_method": "http-text/1",
           "capture_id": "b9b2d1f8242398df89404d29abb93785c24ab7af88a6b6035f3892946342c3b7"
+        }
+      ]
+    },
+    {
+      "batch_id": "fog-place-fermi-happy-20261012-a5abf7",
+      "candidate_sha256": "b48425a3983a85e04ba8dcd56432875e8af773503f084f5f16179b04bf901823",
+      "assertions": [
+        {
+          "id": "assertion.taxonomy.claim.fermi-gbm-detection-coverage.narrower.field.astronomy",
+          "target_kind": "taxonomy",
+          "canonical_record": {
+            "id": "taxonomy.claim.fermi-gbm-detection-coverage.narrower.field.astronomy",
+            "parent": "field.astronomy",
+            "child": "claim.fermi-gbm-detection-coverage",
+            "type": "narrower"
+          },
+          "statement": "The Fermi GBM burst detection measurements are presented as part of time-domain astronomy.",
+          "scope": {
+            "population": "Fermi Gamma-ray Burst Monitor observations",
+            "time": "The first eight years of operation, as described in a July 2017 NASA report",
+            "assumptions": null,
+            "uncertainty": null,
+            "units": "keV, MeV, bursts per year",
+            "quantifiers": "Over 240 bursts per year"
+          },
+          "support": [
+            {
+              "source_id": "src.place-fermi-gbm-time-domain",
+              "quote": "Time-Domain Astronomy with the Fermi GBM\nThe Fermi Gamma-ray Burst Monitor (GBM) is an all-sky monitoring instrument sensitive to energies from 8 keV to 40 MeV. Over the past 8 years of operation, the GBM has detected over 240 gamma-ray bursts per year and provided timely GCN notices with localization to few-degree accuracy for follow-up observations.",
+              "source_sha256": "682fd07d02bd672e687a596025a05d9ac68256e5ce7f8f197a1301bf7d19753a",
+              "start": 250,
+              "end": 603
+            }
+          ],
+          "confidence": 0.88,
+          "target_sha256": "b0ca4e6ce4eeaec1351cf61be38440aec54c0fb4e4be8e293b33f25ebd6d50d5"
+        }
+      ],
+      "decisions": [
+        {
+          "assertion_id": "assertion.taxonomy.claim.fermi-gbm-detection-coverage.narrower.field.astronomy",
+          "target_kind": "taxonomy",
+          "target_sha256": "b0ca4e6ce4eeaec1351cf61be38440aec54c0fb4e4be8e293b33f25ebd6d50d5",
+          "outcome": "supported",
+          "rationale": "The retained NASA report explicitly presents Fermi GBM observations under the title 'Time-Domain Astronomy with the Fermi GBM' and immediately describes its gamma-ray burst detection measurements. The exact supporting excerpt occurs at Unicode offsets 250–603. The report's subject category is Astrophysics, and its publication date is July 12, 2017. These details justify classifying the existing Fermi GBM measurement claim within astronomy. The taxonomy direction is correct: field.astronomy is the broader parent and claim.fermi-gbm-detection-coverage is the narrower observational claim. Both endpoints are existing physical-domain records. The assertion preserves the report's first-eight-years scope, 8 keV to 40 MeV energy range, and over-240-per-year detection rate. No identity merger, current-frontier classification, or scientific acceptance claim is introduced.",
+          "limitations": "The cited report establishes the astronomy placement and historical observation scope. It does not independently substantiate the existing child record's 14-detector count or unobscured-sky coverage; those details belong to the separately sourced existing record. The reported detection rate describes the first eight years of operation and must not be interpreted as a verified current rate. The source is a 2017 conference presentation, and this decision does not independently validate the instrument measurements or scientific consensus. Taxonomy approval remains subject to the separate entailment review and compiler checks.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "candidate_sha256": "b48425a3983a85e04ba8dcd56432875e8af773503f084f5f16179b04bf901823",
+          "reviewer_id": "brain:35f507f4a09a4ec1b20be26778cf7e9c",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "ef7f89212eb0b5ba9ef242041d9cbbd3a4fce9757a86d82ce25e158ea372b908",
+          "role": "adversarial",
+          "reviewed_at": "2026-10-12T21:58:21.851402+00:00"
+        },
+        {
+          "assertion_id": "assertion.taxonomy.claim.fermi-gbm-detection-coverage.narrower.field.astronomy",
+          "target_kind": "taxonomy",
+          "target_sha256": "b0ca4e6ce4eeaec1351cf61be38440aec54c0fb4e4be8e293b33f25ebd6d50d5",
+          "outcome": "supported",
+          "rationale": "The NASA Technical Reports Server explicitly presents the Fermi Gamma-ray Burst Monitor's observations under the title 'Time-Domain Astronomy with the Fermi GBM'. The cited passage directly describes the instrument's 8 keV to 40 MeV sensitivity and detection of over 240 gamma-ray bursts annually during its first eight years of operation. This establishes the observational measurements represented by the child claim as an instance of astronomical work. The source additionally categorizes the presentation under Astrophysics. The proposed taxonomy direction is correct: field.astronomy is the broader field, and claim.fermi-gbm-detection-coverage is the narrower observational claim. Both endpoints exist and belong to the physical domain. The taxonomy record introduces no identity merger, scientific causal relationship, or modification to either endpoint's scientific metadata. The existing child's reported status, undated era, and frontier=false have neutral meanings and do not claim scientific consensus, chronology, or current frontier status. The source's July 12, 2017 publication date supports the stated reporting context. The exact supporting quotation occurs at Unicode code-point offsets 250 through 603, with the exclusive end matching the supplied excerpt.",
+          "limitations": [
+            "The classification is supported for the Fermi GBM gamma-ray burst observations described in the NASA presentation. It does not classify every phenomenon observed by GBM, including terrestrial gamma-ray flashes, as astronomical.",
+            "The cited excerpt supports the energy sensitivity and historical burst detection rate, but does not independently establish the existing node's 14-detector specification. That specification is not a new assertion introduced by this taxonomy candidate.",
+            "The source is a NASA presentation record and abstract. Its classification supports placement within astronomy without establishing independent replication, continued performance, or present-day scientific currency.",
+            "The source does not establish exclusivity of field.astronomy as the only possible parent. The proposed placement does not assert exclusivity."
+          ],
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "candidate_sha256": "b48425a3983a85e04ba8dcd56432875e8af773503f084f5f16179b04bf901823",
+          "reviewer_id": "brain:6e362288f6b54b6dbb8af8f054585cee",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "ef7f89212eb0b5ba9ef242041d9cbbd3a4fce9757a86d82ce25e158ea372b908",
+          "role": "entailment",
+          "reviewed_at": "2026-10-12T21:59:56.519852+00:00"
+        }
+      ],
+      "context_nodes": [
+        {
+          "id": "field.astronomy",
+          "label": "Astronomy",
+          "kind": "field",
+          "domain": "physical",
+          "era": "agrarian",
+          "status": "active",
+          "summary": "Systematic study of celestial objects and phenomena.",
+          "tags": [],
+          "sources": [
+            {
+              "id": "oecd-frascati-2015",
+              "title": "OECD Frascati Manual 2015 — Fields of R&D classification",
+              "url": "https://www.oecd.org/en/publications/frascati-manual-2015_9789264239012-en.html"
+            }
+          ],
+          "frontier": false,
+          "aliases": []
+        },
+        {
+          "id": "claim.fermi-gbm-detection-coverage",
+          "label": "Fermi GBM detector coverage and burst detection rate",
+          "kind": "claim",
+          "domain": "physical",
+          "era": "undated",
+          "status": "reported",
+          "frontier": false,
+          "aliases": [],
+          "tags": [
+            "Fermi-GBM",
+            "gamma-ray-bursts",
+            "instrumentation"
+          ],
+          "summary": "NASA describes the Fermi Gamma-ray Burst Monitor as having 14 detectors covering the unobscured sky, detecting approximately 240 gamma-ray bursts per year across an energy range of 8 keV to 40 MeV.",
+          "sources": [
+            {
+              "id": "place-physical-005",
+              "url": "https://fermi.gsfc.nasa.gov/science/eteu/grbs/",
+              "title": "Fermi Gamma-ray Space Telescope: Gamma-ray Bursts"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "src.place-fermi-grb-science",
+          "url": "https://fermi.gsfc.nasa.gov/science/eteu/grbs/",
+          "final_url": "https://fermi.gsfc.nasa.gov/science/eteu/grbs/",
+          "title": "Fermi Gamma-ray Space Telescope: Investigating Gamma-Ray Bursts",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-12T21:13:28.758014+00:00",
+          "sha256": "c92ff0c8cfdfcde2ab156f2edd52b0c8f0a0ab6b907a091e95475110f840f64d",
+          "raw_sha256": "f029b34db975089a54a8c7dbb94667676955beb6f3cddd986bb485d8aef6eedb",
+          "content_type": "text/html",
+          "charset": "iso-8859-1",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "8bf387a1bcf965089eb28e7b11d7e2287feb609a8b81195c15a89234b7c420b0"
+        },
+        {
+          "id": "src.place-fermi-gbm-observations",
+          "url": "https://fermi.gsfc.nasa.gov/ssc/observations/types/grbs/",
+          "final_url": "https://fermi.gsfc.nasa.gov/ssc/observations/types/grbs/",
+          "title": "Fermi Science Support Center: Gamma-Ray Burst Observations",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-12T21:13:29.370586+00:00",
+          "sha256": "6315b3e0b42af723d794e4202aa3e6b9e0a2f4f9c587f44648f85dcbbabaedca",
+          "raw_sha256": "ec9c4dbe876eb15c797b2e527a3dbb2f981dc9a54a21f06db272efc9006d03ee",
+          "content_type": "text/html",
+          "charset": "iso-8859-1",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "3a1e48774daa538ce57c5316c25483879e30965bf027ffdd4eb4de2efa7a3147"
+        },
+        {
+          "id": "src.place-fermi-gbm-time-domain",
+          "url": "https://ntrs.nasa.gov/citations/20170006582",
+          "final_url": "https://ntrs.nasa.gov/citations/20170006582",
+          "title": "Time-Domain Astronomy with the Fermi GBM",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-12T21:13:30.715819+00:00",
+          "sha256": "682fd07d02bd672e687a596025a05d9ac68256e5ce7f8f197a1301bf7d19753a",
+          "raw_sha256": "64002f35cc7d645da8e9a50f8117a87f681e891579ffcd1ee44437da57869b78",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "ef6f7d45de4ab9ed639ac9ce0bd608e6771357bd38ecb1c2e52037e7f787ebfe"
+        },
+        {
+          "id": "src.place-fermi-grb090510-nasa",
+          "url": "https://www.nasa.gov/universe/fermi-telescope-caps-first-year-with-glimpse-of-space-time/",
+          "final_url": "https://www.nasa.gov/universe/fermi-telescope-caps-first-year-with-glimpse-of-space-time/",
+          "title": "Fermi Telescope Caps First Year With Glimpse of Space-Time",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-12T21:13:31.872220+00:00",
+          "sha256": "36562e0ac1ad3ba38f3fb2a032112d788354e2e998c8ced5ce83468efc78419f",
+          "raw_sha256": "46aaefc8fab953a31caa334c82669698db771e62256343206865792d57b6d4f3",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "2a510f6f8faad761e4ba3a4f39a7a27cea6d1bf3cbc116f6331b0ae918ae4f1f"
+        },
+        {
+          "id": "src.place-fermi-grb090510-relativity",
+          "url": "https://fermi.gsfc.nasa.gov/science/constellations/pages/tardis.html",
+          "final_url": "https://fermi.gsfc.nasa.gov/science/constellations/pages/tardis.html",
+          "title": "Fermi Gamma-ray Space Telescope: Lorentz Invariance and GRB 090510",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-12T21:13:39.726053+00:00",
+          "sha256": "45bc0ec5ac9cf32d54b65a4a92e9b85ec5cd8662d79b6695d0b79460f173a0b2",
+          "raw_sha256": "70124fdf5554dd8ea90aecf24d4d657613704e48a24129c624a6d6ac95072f95",
+          "content_type": "text/html",
+          "charset": "iso-8859-1",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "7618924dbe4c713a037ee7890acf4f54d6360911cd69c83f83c6badf6d2c22a8"
+        },
+        {
+          "id": "src.place-fermi-grb090510-nature",
+          "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI%3A%2210.1038%2Fnature08574%22&resultType=core&format=json",
+          "final_url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI%3A%2210.1038%2Fnature08574%22&resultType=core&format=json",
+          "title": "A limit on the variation of the speed of light arising from quantum gravity effects",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-12T21:13:40.703868+00:00",
+          "sha256": "5e98c89ffb8d98c938fff7e63db5e91bcce051cd3b2e9157bc6a46c1cd3d0f69",
+          "raw_sha256": "5e98c89ffb8d98c938fff7e63db5e91bcce051cd3b2e9157bc6a46c1cd3d0f69",
+          "content_type": "application/json",
+          "charset": "utf-8",
+          "extraction_method": "http-text/1",
+          "capture_id": "f550df208d3915f49f14138ddf2a35e5efc63355882e1f2563398856c17b3de6"
+        },
+        {
+          "id": "src.place-fermi-grb090510-arxiv",
+          "url": "https://arxiv.org/abs/0908.1832",
+          "final_url": "https://arxiv.org/abs/0908.1832",
+          "title": "Testing Einstein's special relativity with Fermi's short hard gamma-ray burst GRB090510",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-12T21:13:41.136573+00:00",
+          "sha256": "2124aedaa1205d0ea5ee57e8be64eecf2acaa081e71feefbde77b26ff5993b22",
+          "raw_sha256": "4e3f11f6983c2cbbebacf88dae20014d122187de89116c79b1795b6f0fbe869b",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "95dbf4d6d108e75c84cdfea4d2a8336147efab1c9bdbacc2425e25c8c59135f7"
+        },
+        {
+          "id": "src.place-happy-gravity-2026-arxiv",
+          "url": "https://arxiv.org/abs/2607.12047",
+          "final_url": "https://arxiv.org/abs/2607.12047",
+          "title": "Observation of gravity-like signatures in holographic codes on a quantum computer",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-12T21:13:41.655195+00:00",
+          "sha256": "71b9d8f0d112e15b9dddac700aee010000e0db753eacaf98f84166603f9fe73c",
+          "raw_sha256": "a9bc0592bdaef8f6d92b499c42d412031b8bf33d29e83cf05464ef6159b0d3d6",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "f38c5b764f0019cc335e3efa7ae592874f0d756b6410e5350ec93acb2fafead6"
+        },
+        {
+          "id": "src.place-happy-gravity-2026-umd",
+          "url": "https://qlab.umd.edu/publications/2607.12047",
+          "final_url": "https://qlab.umd.edu/publications/2607.12047",
+          "title": "Observation of gravity-like signatures in holographic codes on a quantum computer - University of Maryland QLab",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-12T21:13:48.892677+00:00",
+          "sha256": "e31921182f6153f0de8184d4c2ac1807681bf8529026f5ef2cb1da6df6ad494f",
+          "raw_sha256": "5a33192f04df926493c2aa56ffaafb8fcb2304b5f67bd868eec622fabde4ae3f",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "5ea88bb8dacb74705bfb8bcd331401fe5b84b4a32d146db6d85de004499c1e78"
         }
       ]
     }
