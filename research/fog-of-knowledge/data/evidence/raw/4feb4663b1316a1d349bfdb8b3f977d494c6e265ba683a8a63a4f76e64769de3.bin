@@ -1,0 +1,1834 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="shortcut icon"  href="/sr/favicon.ico" />
+<link href="/sr/jstree/themes/default/style.min.css" rel="stylesheet" type="text/css"><link rel="stylesheet" href="/sr/jquery-ui/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="https://static.cineca.it/jd/npm/jgrowl@1.4.9/jquery.jgrowl.min.css" />
+<link rel="stylesheet" href="https://static.cineca.it/jd/npm/select2@4.0.13/dist/css/select2.min.css" />
+<link rel="stylesheet" href="https://static.cineca.it/jd/npm/select2-bootstrap-5-theme@1.1.1/dist/select2-bootstrap-5-theme.min.css" />
+<link rel="stylesheet" href="/sr/cineca/css/bootstrap-ricerca.min.css">
+<link rel="stylesheet" href="/sr/local.css"><title>An introduction to quantum gravity</title>
+	<script src="https://static.cineca.it/jd/npm/jquery@3.7.1/dist/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/sr/jquery-ui/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/sr/jquery-ui-i18n/jquery.ui.datepicker-it.latest.js" charset="utf-8"></script>
+<script src="https://static.cineca.it/jd/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+<script src="https://static.cineca.it/jd/npm/jgrowl@1.4.9/jquery.jgrowl.min.js"></script>
+<script src="https://static.cineca.it/jd/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
+<script src="https://static.cineca.it/jd/npm/blueimp-tmpl@3.20.0/js/tmpl.min.js"></script><script type="text/javascript" src="/sr/jstree/jstree.min.js"></script><script type="text/javascript" src="/sr/jquery/js/jquery.displaytag-ajax-1.2.js"></script>
+<script src="https://static.cineca.it/jd/npm/js-cookie@3.0.5/dist/js.cookie.min.js" integrity="sha256-WCzAhd2P6gRJF9Hv3oOOd+hFJi/QJbv+Azn4CGB8gfY=" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+	var JQ = $;
+	var j = $;
+</script>
+<script type="text/javascript">
+</script>
+<script type="text/javascript" src="/sr/cineca/js/cilea.js?fwkVersion=26.10.1.0"></script>
+<script type="text/javascript" src="/sr/cineca/js/fragment.js?fwkVersion=26.10.1.0"></script>
+<script type="text/javascript" src="/sr/cineca/js/treeview.js?fwkVersion=26.10.1.0"></script>
+<script type="text/javascript" src="/sr/cineca/js/ap-tool.js?fwkVersion=26.10.1.0"></script>
+<span style="display:none;" id="rememberToSaveText">Attenzione: i dati modificati non sono ancora stati salvati. Per confermare inserimenti o cancellazioni di voci è necessario confermare con il tasto SALVA/INSERISCI in fondo alla pagina</span>
+<script type="text/javascript" src="/sr/cineca/js/print.js?fwkVersion=26.10.1.0"></script>
+<script type="text/javascript" src="/sr/cineca/js/widget.js?fwkVersion=26.10.1.0"></script>
+<script type="text/javascript" src="/sr/cineca/js/layout.js?fwkVersion=26.10.1.0"></script>
+
+
+
+
+<script type="text/javascript">
+	var authenticatedPersonId='';
+	var authenticatedUser=false;
+</script>
+<script type="text/javascript" src="https://www.iris.unina.it/static/js/utils.js"></script>
+	<script type="text/javascript" src="https://www.iris.unina.it/static/js/choice-support.js"></script>
+<script type="text/javascript">
+				j(document).ready(function() {
+					j('body').on('change','#itemxpage', function() {
+						var dspaceObjectId = $('#dspaceObjectId').val();
+						if (dspaceObjectId != null && dspaceObjectId != '') {
+							$('#modal_display_item').modal('toggle');
+							showEventLog(dspaceObjectId, '1', this.value);
+						}
+					});
+					j('body').on('click',"#modal_display_item .pagination li:not('.active') .page-link", function(event) {
+						var pagesize = $('#itemxpage').val();
+						var dspaceObjectId = $('#dspaceObjectId').val();
+						var url = new URL(this.href);
+						var page = url.searchParams.get("page");
+						if (page == null || isNaN(page)){
+							page = 1;
+						}
+						if (dspaceObjectId != null && dspaceObjectId != '') {
+							$('#modal_display_item').modal('toggle');
+							showEventLog(dspaceObjectId,page, pagesize);
+						}
+						return false;
+					});
+				});
+				function showEventLog(dsoId, page, pagesize) {
+					   var url = "/dspaceObjectEventLog/widgetSearch.modal";
+					jQuery.ajax({
+						url: url,
+						method: 'GET',
+						data: {dspaceObjectId: dsoId, posting: 1, modalSize: 'xlarge', page: page, pageSize: pagesize},
+						success: function(data) {
+			                var $modal = $(data);
+			                $modal.attr('id','modal_display_item');
+							$('body').append($modal);
+							var myModal = new bootstrap.Modal(document.getElementById('modal_display_item'), {backdrop: true});
+							myModal.show();
+			                $modal.filter('.modal').on('hidden.bs.modal', function(){
+			                	$modal.remove();
+							});
+			                
+						}
+					});
+				}
+				</script>
+<script type="text/javascript">
+$(document).ready(function() {
+	checkMoreless();
+});
+function checkMoreless() {
+	if($('.moreless-more').length) {
+		var more = $('<a class="btn-link"></a>').html('&nbsp;espandi');	
+		more.click(function(){
+			var moretext = $(this).next('.moreless-more');
+			var lesstext = $(this).prev('.moreless-fixed');		
+			lesstext.html(lesstext.html().substring(0, lesstext.html().length-3));		
+			moretext.toggleClass('hide');
+			$(this).toggleClass('hide');
+			var less = $('<a class="btn-link"></a>').html('&nbsp;comprimi');
+			less.click(function(){
+				var moretext = $(this).prev('.moreless-more');
+				moretext.toggleClass('hide');
+				$(this).toggleClass('hide');
+				moretext.prev('a').toggleClass('hide');
+				var elements = document.getElementsByTagName('span');
+				for (var i = 0; i < elements.length; i++) {				
+					if((elements[i].className).indexOf('moreless-fixed') > -1) {
+						if(elements[i].innerHTML.indexOf('...') == -1){
+							elements[i].innerHTML=elements[i].innerHTML+'...';												
+						}
+					}
+				}
+			});
+			moretext.after(less);
+		});	
+		$('.moreless-more').before(more);
+		$('.moreless-more').toggleClass('hide');
+		
+	}
+}
+</script><script>
+      window.customCookieJsonConfigPath='/sr/cookie-config.json';
+    </script>
+
+	<script src="https://static.iu.cineca.it/v1/default.js"></script>
+	<script type="text/javascript">
+	function isThirdPartyCookieEnabled() {
+	    if (window.disableCheckThirdPartyCookie === true) {
+	        return true;
+	    }
+		var cookieString = Cookies.get('cc_cookie');
+		if (cookieString==null||cookieString=="")
+			return false;
+		var cookieJson = JSON.parse(cookieString);
+		var retValue = false;
+		$.each(cookieJson.level , function (key, value) {
+			if(value == 'thirdParty')
+				retValue = true;
+		});
+		return retValue;
+	}
+	$(document).on('click', '.c-bn', function() { 
+		Cookies.set('thirdParty',isThirdPartyCookieEnabled(), { path: '/'});
+	});
+	Cookies.set('thirdParty',isThirdPartyCookieEnabled(), { path: '/' });
+	</script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		if (typeof trackEventCategoryDone === "undefined") {
+			
+			trackEvent('trackPageView');
+		}
+	});
+	</script>
+<script type="text/javascript" src="/sr/local.js?fwkVersion=26.10.1.0"></script>
+
+	
+	
+	
+	
+	
+	
+	
+	
+<link rel="schema.DCTERMS" href="http://purl.org/dc/terms/" />
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/" />
+<meta name="DC.identifier" content="MIUR-MANUAL" xml:lang="*" />
+<meta name="DC.date" content="2021-05-17T13:56:55Z" xml:lang="*" scheme="DCTERMS.W3CDTF" />
+<meta name="DC.date" content="2021-02-26T11:51:09Z" xml:lang="*" scheme="DCTERMS.W3CDTF" />
+<meta name="DC.type" content="2 Contributo in Volume::2.1 Contributo in volume (Capitolo o Saggio)" xml:lang="it" />
+<meta name="DC.description" content="reserved" xml:lang="en" />
+<meta name="DC.type" content="info:eu-repo/semantics/bookPart" />
+<meta name="DC.type" content="internazionale" xml:lang="en" />
+<meta name="DC.subject" content="Quantum gravity; gravitational instantons; zeta-function regularization; Hawking radiation" xml:lang="en" />
+<meta name="DC.description" content="1" />
+<meta name="DC.type" content="Esperti anonimi" xml:lang="en" />
+<meta name="DCTERMS.dateAccepted" content="2021-02-26T11:51:09Z" scheme="DCTERMS.W3CDTF" />
+<meta name="DC.type" content="no" xml:lang="en" />
+<meta name="DC.description" content="no" xml:lang="en" />
+<meta name="DC.identifier" content="http://hdl.handle.net/11588/841176" scheme="DCTERMS.URI" />
+<meta name="DC.language" content="eng" xml:lang="en" scheme="DCTERMS.RFC1766" />
+<meta name="DC.relation" content="6.7.17-1" xml:lang="en" />
+<meta name="DC.relation" content="UNESCO Encyclopedia of Life Support Systems" xml:lang="en" />
+<meta name="DC.relation" content="42" xml:lang="en" />
+<meta name="DCTERMS.abstract" content="Quantum gravity was born as that branch of modern theoretical physics that tries to unify its&#xD;&#xA;guiding principles, i.e., quantum mechanics and general relativity. Nowadays it is providing new&#xD;&#xA;insight into the unification of all fundamental interactions, while giving rise to new developments in&#xD;&#xA;mathematics. The various competing theories, e.g. string theory and loop quantum gravity, have still&#xD;&#xA;to be checked against observations. We review the classical and quantum foundations necessary to&#xD;&#xA;study field-theory approaches to quantum gravity, the passage from old to new unification in&#xD;&#xA;quantum field theory, canonical quantum gravity, the use of functional integrals, the properties of&#xD;&#xA;gravitational instantons, the use of spectral zeta-functions in the quantum theory of the universe,&#xD;&#xA;Hawking radiation, some theoretical achievements and some key experimental issues." xml:lang="en" />
+<meta name="DCTERMS.issued" content="2011" xml:lang="en" scheme="DCTERMS.W3CDTF" />
+<meta name="DC.type" content="268" />
+<meta name="DCTERMS.available" content="2021-02-26T11:51:09Z" scheme="DCTERMS.W3CDTF" />
+<meta name="DC.title" content="An introduction to quantum gravity" xml:lang="en" />
+<meta name="DC.relation" content="6.7.17-42" xml:lang="en" />
+<meta name="DC.description" content="mixed" xml:lang="en" />
+<meta name="DCTERMS.bibliographicCitation" content="An introduction to quantum gravity / Esposito, G.. - (2011), pp. 6.7.17-1-6.7.17-42." xml:lang="en" />
+<meta name="DC.contributor" content="DIPARTIMENTO DI FISICA &quot;ETTORE PANCINI&quot;" xml:lang="*" />
+<meta name="DC.contributor" content="726" xml:lang="*" />
+<meta name="DC.subject" content="Quantum gravity" xml:lang="*" />
+<meta name="DC.subject" content="gravitational instantons" xml:lang="*" />
+<meta name="DC.subject" content="zeta-function regularization" xml:lang="*" />
+<meta name="DC.subject" content="Hawking radiation" xml:lang="*" />
+<meta name="DC.date" content="2024/07/24 03:19:26" xml:lang="*" scheme="DCTERMS.W3CDTF" />
+<meta name="DC.date" content="1721783966734" xml:lang="*" scheme="DCTERMS.W3CDTF" />
+<meta name="DC.contributor" content="AREA MIN. 02 - Scienze fisiche" xml:lang="*" />
+<meta name="DC.description" content="EOLSS; ESPOSITO G" xml:lang="en" />
+<meta name="DC.description" content="Esposito, G" />
+
+<meta name="citation_title" content="An introduction to quantum gravity" />
+<meta name="citation_author" content="Esposito, G" />
+<meta name="citation_author_email" content="giampiero.esposito@unina.it" />
+<meta name="citation_author_orcid" content="0000-0001-5930-8366" />
+<meta name="citation_date" content="2011" />
+<meta name="citation_firstpage" content="6.7.17-1" />
+<meta name="citation_lastpage" content="6.7.17-42" />
+<meta name="citation_abstract_html_url" content="https://www.iris.unina.it/handle/11588/841176" />
+<meta name="citation_language" content="eng" />
+<meta name="citation_keywords" content="Quantum gravity; gravitational instantons; zeta-function regularization; Hawking radiation" />
+<meta name="citation_inbook_title" content="UNESCO Encyclopedia of Life Support Systems" />
+
+	
+	
+	
+	
+	<script type="text/javascript">
+	$(document).on('click', '.c-bn', function() { 
+		location.reload();
+	});
+	</script>
+
+	
+
+
+
+</head>
+<body class="body-default body-anonymous">
+	
+
+
+
+<header class="navbar navbar-expand-md navbar-dark sticky-top layout-top bg-primary iu-hide">
+	<nav class="container-fluid flex-wrap flex-md-nowrap" aria-label="menu top">
+		<a class="navbar-brand ps-0 pt-0 pb-0 pe-3" href="https://www.iris.unina.it/" aria-label="link homepage" id="uiLogoLink">
+			<img src="/sr/logo_iris.png" alt="IRIS" id="uiLogoImg" class="d-block my-1 navbar-brand-img"/>
+		</a>
+		<a class="navbar-brand ps-3 pt-0 pb-0 pe-3 me-3" href="" aria-label="link homepage università" id="customerLogoLink">
+			<img src="/sr/logo_customer.png" alt="IRIS" id="clientLogoImg" class="d-block my-1 navbar-brand-img"/>
+		</a>
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="mostra/nascondi menu">
+			<span class="fas fa-bars"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul class="navbar-nav flex-row flex-wrap pt-2 py-md-0">
+				
+
+
+
+
+
+
+
+	
+</ul>
+			<ul class="navbar-nav flex-row flex-wrap ms-md-auto">
+				<li class="nav-item col-6 col-md-auto " id="topNavHome">
+					<a class="nav-link p-2" href="https://www.iris.unina.it/">Home</a>
+				</li>
+				<li class="nav-item col-6 col-md-auto dropdown">
+					<a class="nav-link p-2 dropdown-toggle" href="#" id="navbarDropdownBrowse" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						Sfoglia</a>
+					<div class="dropdown-menu" aria-labelledby="navbarDropdownBrowse">
+						<a class="dropdown-item" href="https://www.iris.unina.it/community-list">Macrotipologie<br/>&amp;&nbsp;tipologie</a>
+							<div class="dropdown-divider"></div>
+						<a class="dropdown-item" href="https://www.iris.unina.it/browse?type=author">Autore</a>
+						<a class="dropdown-item" href="https://www.iris.unina.it/browse?type=title">Titolo</a>
+						<a class="dropdown-item" href="https://www.iris.unina.it/browse?type=relationJournal">Riviste</a>
+						<a class="dropdown-item" href="https://www.iris.unina.it/browse?type=relationSerie">Serie</a>
+						</div>
+				</li>
+			</ul>
+			<form class="navbar-search-top d-flex" action="https://www.iris.unina.it/simple-search" method="get" role="search">
+				<div class="input-group p-2">
+					<input class="form-control bg-primary layout-top-input" type="search" placeholder="Search&nbsp;IRIS" name="query" id="tequery" size="25" aria-label="Search&nbsp;IRIS">
+					<button class="btn btn-primary layout-top-input-btn" type="submit"><span class="fas fa-search"></span></button>
+				</div>
+			</form>
+			<ul class="navbar-nav flex-row flex-wrap">
+		 		<li class="nav-item col-6 col-md-auto dropdown">
+					<a class="nav-link p-2 dropdown-toggle" href="#" id="navbarDropdownLanguage" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						IT</a>
+					<div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownLanguage">
+						<a class="dropdown-item" href="javascript:reloadLanguageModuleAll('https://www.iris.unina.it',['bi','rm','gw','ma','','saiku','ap'],'/language/change.json','it');" ><img src="/sr/cineca/images/flag/flag_it.png" alt="Italiano" title=""/>&nbsp;Italiano</a>
+						<a class="dropdown-item" href="javascript:reloadLanguageModuleAll('https://www.iris.unina.it',['bi','rm','gw','ma','','saiku','ap'],'/language/change.json','en');" ><img src="/sr/cineca/images/flag/flag_en.png" alt="English" title="English"/>&nbsp;English</a>
+							</div>
+				</li>
+				<li class="nav-item col-6 col-md-auto ">
+					
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+<!-- Javascript starts here
+document.write('<a class="nav-link p-2" href="#" onClick="var popupwin = window.open(\'https://wiki.u-gov.it/confluence/x/HJEWAw\',\'dspacepopup\',\'height=600,width=850,resizable,scrollbars\');popupwin.focus();return false;"><span class="fas fa-question-circle" title="Aiuto"></span></a>');
+// -->
+</script><noscript><a href="https://wiki.u-gov.it/confluence/x/HJEWAw" target="dspacepopup"><span class="fas fa-question-circle" title="Aiuto"></span></a></noscript>
+</li>
+				<li class="nav-item col-6 col-md-auto dropdown"><a class="nav-link p-2" href="https://www.iris.unina.it/securityLanding.htm">LOGIN</a></li>
+				</ul>
+		</div>
+	</nav>
+</header>
+
+
+
+
+<div class="site-header iu-hide bg-secondary text-white">
+				<div class="site-title CinecaSiteIntroduction" id="headerText">
+					<div>
+						IRIS</div>
+				</div>
+			</div>
+		<div class="container-xxl ps-0 pe-0 layout-no-sidebar" id="mainContainerDiv">
+		
+
+
+
+<main class="layout-main" id="content">
+			<div class="container-fluid page-content">
+	        	<nav aria-label="breadcrumb" class="mt-2 iu-hide">
+	<form name="breadCrumbsForm" id="breadCrumbsForm" method="post">
+		<ol class="breadcrumb rounded">
+			<li class="breadcrumb-item"><a href="/">IRIS</a></li>
+		
+		
+			
+				<li class="breadcrumb-item"><a href="/handle/11588/611458">Catalogo Ricerca UniNA</a></li>
+			
+				<li class="breadcrumb-item"><a href="/handle/11588/611460">2 Contributo in Volume</a></li>
+			
+			<li class="breadcrumb-item"><a href="/handle/11588/611413">2.1 Contributo in volume (Capitolo o Saggio)</a></li></ol>
+	</form>
+</nav>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+		
+		
+	
+
+
+
+
+
+
+
+
+
+<p class="searchIndexItemDescription abstract">Quantum gravity was born as that branch of modern theoretical physics that tries to unify its
+guiding principles, i.e., quantum mechanics and general relativity. Nowadays it is providing new
+insight into the unification of all fundamental interactions, while giving rise to new developments in
+mathematics. The various competing theories, e.g. string theory and loop quantum gravity, have still
+to be checked against observations. We review the classical and quantum foundations necessary to
+study field-theory approaches to quantum gravity, the passage from old to new unification in
+quantum field theory, canonical quantum gravity, the use of functional integrals, the properties of
+gravitational instantons, the use of spectral zeta-functions in the quantum theory of the universe,
+Hawking radiation, some theoretical achievements and some key experimental issues.</p>
+
+
+<p class="searchIndexItemDescription citation">An introduction to quantum gravity / Esposito, G.. - (2011), pp. 6.7.17-1-6.7.17-42.</p>
+
+
+
+
+		
+	
+
+<div class="row">
+
+<div class="col-lg-12 col-xl-9">
+	<div class="card">
+	<div class="card-body">
+		<div>
+			
+			
+			
+			
+			
+			
+				
+					
+					
+				
+			
+				
+					
+					
+				
+			
+				
+					
+					
+				
+			
+				
+			
+				
+			
+				
+			
+			
+			
+			
+			
+			<h3 class="mb-1 text-secondary">An introduction to quantum gravity</h3>
+			<h5>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+
+
+	
+		
+		
+		
+		
+		
+	
+
+
+
+
+
+	
+	
+	
+	
+	
+	
+	
+		
+		
+		
+		
+		
+			
+			
+			
+		
+		
+		
+		
+			
+			
+				
+				
+					
+					
+					
+					
+						
+							
+						
+						
+					
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+			
+			
+		
+		
+		
+		
+	
+
+
+<em><span class="contributor internalContributor internalContributore268a740-b884-4c8f-e053-1705fe0a812c m-1"><a href="/cris/rp/rp15369" class="authority author">ESPOSITO G</a><sup class="ms-1"><h6 class="badge bg-dark">Primo</h6></sup></span></em>
+
+</h5>
+			<h5>2011</h5>
+			<hr/>
+			
+				<h4 class="mb-1">Abstract</h4>
+				Quantum gravity was born as that branch of modern theoretical physics that tries to unify its
+guiding principles, i.e., quantum mechanics and general relativity. Nowadays it is providing new
+insight into the unification of all fundamental interactions, while giving rise to new developments in
+mathematics. The various competing theories, e.g. string theory and loop quantum gravity, have still
+to be checked against observations. We review the classical and quantum foundations necessary to
+study field-theory approaches to quantum gravity, the passage from old to new unification in
+quantum field theory, canonical quantum gravity, the use of functional integrals, the properties of
+gravitational instantons, the use of spectral zeta-functions in the quantum theory of the universe,
+Hawking radiation, some theoretical achievements and some key experimental issues.
+			
+		</div>
+	<div class="dspace-display-item tabbable page-tabs mt-3">
+		<h5>
+		<ul class="nav nav-tabs border-bottom fw-bold">
+			<li class="nav-item"><a class="nav-link active" href="#tab_default" onclick="changeItemView('simple');" data-bs-toggle="tab">Scheda breve</a></li>
+			<li class="nav-item"><a class="nav-link " href="#tab_default" onclick="changeItemView('complete');" data-bs-toggle="tab">Scheda completa</a></li>
+			<li class="nav-item"><a class="nav-link " href="#tab_default" onclick="changeItemView('full');" data-bs-toggle="tab">Scheda completa (DC)</a></li>
+			
+			
+			
+					
+			<li class="nav-item"><a class="nav-link" onclick="location.href='/cris/item/11588/841176/statistics'" data-bs-toggle="tab"><span class="far fa-chart-bar"></span></a></li>
+			
+		</ul>
+		</h5>
+		<div class="tab-content">
+			<div class="tab-pane active fade show" id="tab_default">
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="itemDisplayTable container-fluid g-3">
+	
+		
+		
+		
+		
+		
+		
+	
+		
+		
+		
+		
+		
+		
+			
+			
+			
+			
+			
+				
+			
+			
+				
+					
+						
+						
+							 
+							 
+								
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+	
+	
+	
+	
+	<div class="line form-group row metadataFieldValue pt-2 pb-2 dc_date_issued" id="dc.date.issued_line" >
+		
+		<div class="line-label col-md-12"><label for="dc.date.issued" class="control-label   metadataFieldLabel dc_date_issued">
+	<span class="line-label-text">Anno</span>
+	
+	
+    	
+        
+        	
+			
+        
+    
+	
+	
+</label></div>
+		<div class="line-content col-sm-12" id="dc.date.issued_content">
+			
+				
+				<em>2011</em>
+			
+			
+			
+			
+		</div>
+	</div>
+
+							 
+						
+					
+				
+				
+			
+		
+	
+		
+		
+		
+		
+		
+		
+			
+			
+			
+			
+			
+				
+			
+			
+				
+					
+				
+				
+			
+		
+	
+		
+		
+		
+		
+		
+		
+			
+			
+			
+			
+			
+				
+			
+			
+				
+					
+				
+				
+			
+		
+	
+		
+		
+		
+		
+		
+		
+	
+		
+		
+		
+		
+		
+		
+	
+		
+		
+		
+		
+		
+		
+			
+			
+			
+			
+			
+				
+			
+			
+				
+					
+						
+						
+							 
+							 
+								
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+	
+	
+	
+	
+	<div class="line form-group row metadataFieldValue pt-2 pb-2 dc_identifier_citation" id="dc.identifier.citation_line" >
+		
+		<div class="line-label col-md-12"><label for="dc.identifier.citation" class="control-label   metadataFieldLabel dc_identifier_citation">
+	<span class="line-label-text">Citazione</span>
+	
+	
+    	
+        
+        	
+			
+        
+    
+	
+	
+</label></div>
+		<div class="line-content col-sm-12" id="dc.identifier.citation_content">
+			
+				
+				<em>An introduction to quantum gravity / Esposito, G.. - (2011), pp. 6.7.17-1-6.7.17-42.</em>
+			
+			
+			
+			
+		</div>
+	</div>
+
+							 
+						
+					
+				
+				
+			
+		
+	
+	
+	
+		
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+	
+	
+	
+	
+	<div class="line form-group row metadataFieldValue pt-2 pb-2 dspace_collection" id="dspace_collection_line" >
+		
+		<div class="line-label col-md-12"><label for="dspace_collection" class="control-label   metadataFieldLabel dspace_collection">
+	<span class="line-label-text">Appare nelle tipologie:</span>
+	
+	
+    	
+        
+        	
+			
+        
+    
+	
+	
+</label></div>
+		<div class="line-content col-sm-12" id="dspace_collection_content">
+			
+				
+				<a href="/handle/11588/611413">2.1 Contributo in volume (Capitolo o Saggio)</a>
+			
+			
+			
+			
+		</div>
+	</div>
+
+	
+</div>
+
+
+
+
+			</div>
+		</div>
+	</div></div>
+	</div>
+
+	
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/x-tmpl" id="tmpLicenseDetail">
+<div class="d-flex align-items-center">
+	{% if (o.licenseImage != null) { %}
+		<div class="flex-shrink-0">
+			{% if (o.licenseLegal != null) { %}
+				<a href="{%= o.licenseLegal %}" target="_blank">
+			{% } %}
+			<img src="{%= o.licenseImage %}" />
+			{%if (o.licenseLegal != null) {  %}
+				</a>
+			{% }  %}
+		</div>
+	{% } %}
+	<div class="flex-grow-1 ms-3">
+		{% if (o.licenseLegal != null) { %}
+			<a href="{%= o.licenseLegal %}" target="_blank">
+		{% } %}
+		{%# o.licenseName %}
+		{%if (o.licenseLegal != null) {  %}
+			</a>
+		{% }  %}
+	</div>
+</div>
+</script>
+
+<div id="bitstreams" class="card bg-white mt-2">
+		<div class="card-header">File in questo prodotto:</div>
+
+
+	
+	
+	
+    
+	
+	
+	
+	
+	
+	
+	
+	
+		
+		
+			
+		
+	
+	
+	
+	
+		
+		
+			<table class="table card-body">
+				<tr>
+					
+						
+					
+					<th id="t1" class="standard">File</th>
+					<th id="t3" class="standard d-none d-sm-table-cell">Dimensione</th>
+					<th id="t4" class="standard d-none d-sm-table-cell">Formato</th>
+					<th id="t5" class="standard d-none d-sm-table-cell">&nbsp;</th>
+				</tr>
+				
+				
+				
+				
+						
+						
+						
+					        
+					        	
+					        
+					    
+						
+						
+							
+							<tr>
+								
+									
+								
+								<td headers="t1" class="standard break-all">
+									
+										
+										
+										
+										
+											
+												
+												
+												    
+												
+											
+										
+									
+									
+										
+										
+											E6-07-17-00-TXTthird proof29-09-2011.pdf
+										
+																				
+									
+										
+											<p class="badge bg-info">non disponibili</p>
+										
+										
+									
+									
+									
+									
+									
+									
+									
+									<div class="col-12 mb-2 d-block d-sm-none">
+										Dimensione
+										288.54 kB
+									</div>
+									<div class="col-12 mb-2 d-block d-sm-none">
+										Formato
+										Adobe PDF
+									</div>
+										
+										<div class="col-12 mb-2 d-block d-sm-none">
+											<a class="btn btn-warning" target="_blank" rel="noopener" href="/retrieve/e268a732-79f6-4c8f-e053-1705fe0a812c/E6-07-17-00-TXTthird%20proof29-09-2011.pdf"><span class="fas fa-lock"></span>&nbsp; Visualizza/Apri</a>
+													
+												
+												
+													<a class="btn btn-warning" href="/request-item?handle=11588/841176&bitstreamId=e268a732-79f6-4c8f-e053-1705fe0a812c"><span class="fas fa-lock"></span>&nbsp; Richiedi una copia</a>
+										</div>
+								</td>
+								<td headers="t3" class="standard d-none d-sm-table-cell">288.54 kB</td>
+								<td headers="t4" class="standard d-none d-sm-table-cell">Adobe PDF</td>
+								<td class="standard d-none d-sm-table-cell">
+									
+									<a class="btn btn-warning" target="_blank" rel="noopener" href="/retrieve/e268a732-79f6-4c8f-e053-1705fe0a812c/E6-07-17-00-TXTthird%20proof29-09-2011.pdf"><span class="fas fa-lock"></span>&nbsp; Visualizza/Apri</a>
+													
+												
+												
+													<a class="btn btn-warning" href="/request-item?handle=11588/841176&bitstreamId=e268a732-79f6-4c8f-e053-1705fe0a812c"><span class="fas fa-lock"></span>&nbsp; Richiedi una copia</a>
+								</td>
+							</tr>
+							
+					
+				
+			</table>
+		
+	
+
+</div>
+
+
+
+	
+	
+	
+
+
+
+
+
+
+
+
+
+	<div class="col-lg-12 mt-2">
+		
+		
+	</div>
+	<div class="col-lg-12 mt-2">
+		
+		
+			
+			
+				<p class="submitFormHelp alert alert-info">I documenti in IRIS sono protetti da copyright e tutti i diritti sono riservati, salvo diversa indicazione.</p>
+			
+		
+	</div>
+</div>
+<div class="col-lg-12 col-xl-3" id="itemInformationsDiv">
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+	<div id="_line"  >
+		<div class="accordion" id="accordion_">
+			<div class="accordion-item">
+		    	<h5 class="accordion-header" id="heading_">
+			      	<button class="accordion-button bg-info bg-opacity-25 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_" aria-expanded="false" aria-controls="collapse_"><i class="fas fa-info-circle"></i>&nbsp;Informazioni</button>
+			    </h5>
+			    <div id="collapse_" class="accordion-collapse collapse show" aria-labelledby="heading_" data-bs-parent="#accordion_">
+			    	<div class="accordion-body">
+			        	
+
+
+
+
+
+
+
+
+
+
+	
+		
+		
+			
+			Utilizza questo identificativo per citare o creare un link a questo documento: <code>https://hdl.handle.net/11588/841176</code>
+			
+		
+	
+	
+	
+
+			      	</div>
+			    </div>
+			</div>
+		</div>
+	</div>
+
+	
+	
+	
+		
+			
+			
+		
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<script type="text/javascript">
+		runningExternal=false;
+	</script>
+	
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+	
+	
+		
+		
+	
+
+<div class="card border-white mt-2" >
+	<div class="card-header bg-white text-primary"><h5>Citazioni</h5></div>
+	
+		
+			 <ul class="list-group list-group-flush">
+			   
+			
+				
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="list-group-item d-flex justify-content-between align-items-start">
+	
+	
+	
+	<a href="#" ><img src="https://www.iris.unina.it/sr/cineca/images/thirdparty/pmc_small.png" style="height: 18px;" alt="???jsp.display-item.citation.pmc???"/></a>
+	<span class="badge bg-secondary rounded-pill" data-bs-toggle="tooltip" data-bs-placement="left" id="pmcCitedResultTotal" title="" >ND</span>
+</li>
+
+<script type="text/javascript">
+	var pmcChartData = [];
+	pmcChartData[0] = 0;
+	pmcChartData[1] = 0;
+	pmcChartData[2] = 0;
+	pmcChartData[3] = 0;
+	pmcChartData[4] = 0;
+	pmcChartData[5] = 0;
+	function pmcUpdateCitationQueue(forceUpdate) {
+		//console.log('call pmcUpdateCitation');
+		if (runningExternal) {
+			var rnd=Math.floor(Math.random() * (2000 + 1) + 1000);
+			//console.log('wait pmcUpdateCitation for '+rnd);
+			setTimeout(() => {
+				pmcUpdateCitationQueue(forceUpdate);
+			}, rnd);
+		} else {
+			//console.log('executing pmcUpdateCitation');
+			runningExternal=true;
+			pmcUpdateCitation(forceUpdate)
+		}
+	}
+	function pmcUpdateCitation(forceUpdate) {
+		$('#pmcCitedResultTotal').append('<div class="spinner-border spinner-border-sm ms-2" role="status"></div>');
+		$.ajax({
+			url: '/itemExternalCitation/pmc/get.json',
+			dataType: 'json',
+			data: { discriminator: 'pmc', itemId: 'e268a740-b884-4c8f-e053-1705fe0a812c', forceUpdate: forceUpdate }
+		}).done(function(adata) {
+			$('#pmcCitedResultTotal').tooltip('dispose');
+			$('#pmcCitedResultTotal').prop("onclick", null).off("click");
+			if (adata.total==null){
+				$('#pmcCitedResultTotal').html('ND');
+			} else {
+				$('#pmcCitedResultTotal').html(adata.total);
+			}
+			var year=new Date().getFullYear();
+			pmcChartData[0] = (adata.yearTotalMap[''+(year-5)]!=null ? adata.yearTotalMap[''+(year-5)] : 0);
+			pmcChartData[1] = (adata.yearTotalMap[''+(year-4)]!=null ? adata.yearTotalMap[''+(year-4)] : 0);
+			pmcChartData[2] = (adata.yearTotalMap[''+(year-3)]!=null ? adata.yearTotalMap[''+(year-3)] : 0);
+			pmcChartData[3] = (adata.yearTotalMap[''+(year-2)]!=null ? adata.yearTotalMap[''+(year-2)] : 0);
+			pmcChartData[4] = (adata.yearTotalMap[''+(year-1)]!=null ? adata.yearTotalMap[''+(year-1)] : 0);
+			pmcChartData[5] = (adata.yearTotalMap[''+year]!=null ? adata.yearTotalMap[''+year] : 0);
+			drawChart();
+		}).always(function(adata){
+			//console.log('end pmcUpdateCitation');
+			runningExternal=false;
+		});
+	}
+</script>
+
+			
+			
+				
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="list-group-item d-flex justify-content-between align-items-start">
+	
+	
+	
+	<a href="#" ><img src="https://www.iris.unina.it/sr/cineca/images/thirdparty/scopus_small.png" style="height: 18px;" alt="Scopus"/></a>
+	<span class="badge bg-secondary rounded-pill" data-bs-toggle="tooltip" data-bs-placement="left" id="scopusCitedResultTotal" title="" >ND</span>
+</li>
+
+<script type="text/javascript">
+	var scopusChartData = [];
+	scopusChartData[0] = 0;
+	scopusChartData[1] = 0;
+	scopusChartData[2] = 0;
+	scopusChartData[3] = 0;
+	scopusChartData[4] = 0;
+	scopusChartData[5] = 0;
+	function scopusUpdateCitationQueue(forceUpdate) {
+		//console.log('call scopusUpdateCitation');
+		if (runningExternal) {
+			var rnd=Math.floor(Math.random() * (2000 + 1) + 1000);
+			//console.log('wait scopusUpdateCitation for '+rnd);
+			setTimeout(() => {
+				scopusUpdateCitationQueue(forceUpdate);
+			}, rnd);
+		} else {
+			//console.log('executing scopusUpdateCitation');
+			runningExternal=true;
+			scopusUpdateCitation(forceUpdate)
+		}
+	}
+	function scopusUpdateCitation(forceUpdate) {
+		$('#scopusCitedResultTotal').append('<div class="spinner-border spinner-border-sm ms-2" role="status"></div>');
+		$.ajax({
+			url: '/itemExternalCitation/scopus/get.json',
+			dataType: 'json',
+			data: { discriminator: 'scopus', itemId: 'e268a740-b884-4c8f-e053-1705fe0a812c', forceUpdate: forceUpdate }
+		}).done(function(adata) {
+			$('#scopusCitedResultTotal').tooltip('dispose');
+			$('#scopusCitedResultTotal').prop("onclick", null).off("click");
+			if (adata.total==null){
+				$('#scopusCitedResultTotal').html('ND');
+			} else {
+				$('#scopusCitedResultTotal').html(adata.total);
+			}
+			var year=new Date().getFullYear();
+			scopusChartData[0] = (adata.yearTotalMap[''+(year-5)]!=null ? adata.yearTotalMap[''+(year-5)] : 0);
+			scopusChartData[1] = (adata.yearTotalMap[''+(year-4)]!=null ? adata.yearTotalMap[''+(year-4)] : 0);
+			scopusChartData[2] = (adata.yearTotalMap[''+(year-3)]!=null ? adata.yearTotalMap[''+(year-3)] : 0);
+			scopusChartData[3] = (adata.yearTotalMap[''+(year-2)]!=null ? adata.yearTotalMap[''+(year-2)] : 0);
+			scopusChartData[4] = (adata.yearTotalMap[''+(year-1)]!=null ? adata.yearTotalMap[''+(year-1)] : 0);
+			scopusChartData[5] = (adata.yearTotalMap[''+year]!=null ? adata.yearTotalMap[''+year] : 0);
+			drawChart();
+		}).always(function(adata){
+			//console.log('end scopusUpdateCitation');
+			runningExternal=false;
+		});
+	}
+</script>
+
+			
+			
+				
+
+
+
+
+
+
+
+
+
+
+
+
+<li class="list-group-item d-flex justify-content-between align-items-start">
+	
+	
+	
+	<a href="#" ><img src="https://www.iris.unina.it/sr/cineca/images/thirdparty/isi_small.png" style="height: 18px;" alt="???jsp.display-item.citation.isi???"/></a>
+	<span class="badge bg-secondary rounded-pill" data-bs-toggle="tooltip" data-bs-placement="left" id="isiCitedResultTotal" title="" >ND</span>
+</li>
+
+<script type="text/javascript">
+	var isiChartData = [];
+	isiChartData[0] = 0;
+	isiChartData[1] = 0;
+	isiChartData[2] = 0;
+	isiChartData[3] = 0;
+	isiChartData[4] = 0;
+	isiChartData[5] = 0;
+	function isiUpdateCitationQueue(forceUpdate) {
+		//console.log('call isiUpdateCitation');
+		if (runningExternal) {
+			var rnd=Math.floor(Math.random() * (2000 + 1) + 1000);
+			//console.log('wait isiUpdateCitation for '+rnd);
+			setTimeout(() => {
+				isiUpdateCitationQueue(forceUpdate);
+			}, rnd);
+		} else {
+			//console.log('executing isiUpdateCitation');
+			runningExternal=true;
+			isiUpdateCitation(forceUpdate)
+		}
+	}
+	function isiUpdateCitation(forceUpdate) {
+		$('#isiCitedResultTotal').append('<div class="spinner-border spinner-border-sm ms-2" role="status"></div>');
+		$.ajax({
+			url: '/itemExternalCitation/isi/get.json',
+			dataType: 'json',
+			data: { discriminator: 'isi', itemId: 'e268a740-b884-4c8f-e053-1705fe0a812c', forceUpdate: forceUpdate }
+		}).done(function(adata) {
+			$('#isiCitedResultTotal').tooltip('dispose');
+			$('#isiCitedResultTotal').prop("onclick", null).off("click");
+			if (adata.total==null){
+				$('#isiCitedResultTotal').html('ND');
+			} else {
+				$('#isiCitedResultTotal').html(adata.total);
+			}
+			var year=new Date().getFullYear();
+			isiChartData[0] = (adata.yearTotalMap[''+(year-5)]!=null ? adata.yearTotalMap[''+(year-5)] : 0);
+			isiChartData[1] = (adata.yearTotalMap[''+(year-4)]!=null ? adata.yearTotalMap[''+(year-4)] : 0);
+			isiChartData[2] = (adata.yearTotalMap[''+(year-3)]!=null ? adata.yearTotalMap[''+(year-3)] : 0);
+			isiChartData[3] = (adata.yearTotalMap[''+(year-2)]!=null ? adata.yearTotalMap[''+(year-2)] : 0);
+			isiChartData[4] = (adata.yearTotalMap[''+(year-1)]!=null ? adata.yearTotalMap[''+(year-1)] : 0);
+			isiChartData[5] = (adata.yearTotalMap[''+year]!=null ? adata.yearTotalMap[''+year] : 0);
+			drawChart();
+		}).always(function(adata){
+			//console.log('end isiUpdateCitation');
+			runningExternal=false;
+		});
+	}
+</script>
+
+			
+			
+			
+				<li class="list-group-item d-flex justify-content-between align-items-start" style="display: none;" id="citation_chart_panel">
+					<div id="citation_chart" style="width: 100%;"></div>
+					
+					
+						<script type="text/javascript">
+							$('#citation_chart').html('<span class="fas fa-shield" title="il componente non può essere visualizzato perché i cookie di terze parti sono stati disabilitati. Riabilitarli tramite il pannello Utilizzo dei cookie situato a fondo pagina"><span> ');
+						</script>
+					
+				</li>
+			
+		
+			  </ul>
+		
+		
+	
+	
+</div>
+
+
+	
+	
+	
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+	
+	
+		
+		
+	
+
+<div class="card border-white mt-2" >
+	<div class="card-header bg-white text-primary"><h5>social impact</h5></div>
+	
+		
+			 <ul class="list-group list-group-flush">
+			   
+			
+			
+				<li class="list-group-item d-flex justify-content-between align-items-start">
+					<a id="plumx" href="https://plu.mx/plum/a/?" class="plumx-plum-print-popup"></a>
+					<script type="text/javascript">
+					if (isThirdPartyCookieEnabled()) {
+						$.getScript("//cdn.plu.mx/widget-popup.js", function() {
+						});
+					}
+					else {
+						$('#plumx').attr('href','#').html('<span class="fas fa-shield" title="il componente non può essere visualizzato perché i cookie di terze parti sono stati disabilitati. Riabilitarli tramite il pannello Utilizzo dei cookie situato a fondo pagina"><span> ');
+					}
+					</script>
+				</li>
+			
+		
+			  </ul>
+		
+		
+	
+	
+</div>
+
+
+	
+</div>
+</div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="dialog-confirm-delete" class="modal">
+	<div class="modal-dialog ">
+		<div class="modal-content">
+			<div class="modal-header bg-success text-white">
+				<h5 id="dialog-confirm-delete_title" class="modal-title">
+					
+						Conferma cancellazione
+						
+					
+				</h5>
+				
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				
+			</div>
+			<div id="dialog-confirm-delete_content" class="modal-body with-padding">
+				<p class="message">Sei sicuro che questo prodotto debba essere cancellato?</p>
+			</div>
+			<div id="dialog-confirm-delete_footer" class="modal-footer bg-light">
+				
+					<button type="button" class="btn btn-secondary " data-bs-dismiss="modal">
+						
+							
+							Chiudi
+						
+					</button>
+				
+				
+				
+						<button type="button"  id="button-confirm-delete"  class="btn btn-secondary "  >
+						
+							Elimina
+							
+						
+					</button>
+				
+			</div>
+		</div>
+	</div>
+</div>
+
+	
+    <script type="text/javascript">
+    var modeNow;
+    function changeItemView(mode) {
+        $('#tab_default').html('<i class="fas fa-spinner fa-pulse fa-3x fa-fw mt-3"></i>');
+        $.ajax({
+            
+                
+                url: '/fragment/handle/11588/841176',
+                data: { mode: mode, descriptionAbstractUsedField: 'dc.description.abstract' }
+                
+                
+            
+        }).done(function(data) {
+            modeNow=mode;
+            $('#tab_default').html(data);
+            //change url
+            //var href="/handle/11588/841176";
+            var href=window.location.href;
+            if (!href.includes("mode=")) {
+                if (!href.includes("?"))
+                    href+='?mode='+mode;
+                else
+                    href+='&mode='+mode;
+            }
+            else
+                href=href.replace( /(mode=)[a-z]+/ig, '$1'+mode );
+            window.history.pushState("", "", href);          
+        });
+    }
+    function getUrlVars() {
+        var vars = {};
+        var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+            vars[key] = value;
+        });
+        return vars;
+    }
+    j('#button-confirm-delete').click(function() {
+    	location.href='/item/version/reinstateOrWithdraw.htm?itemId=' + 'e268a740-b884-4c8f-e053-1705fe0a812c';
+    });
+    j('#button-confirm-force-delete').click(function() {
+    	location.href='/item/version/reinstateOrWithdraw.htm?forceWithdraw=true&itemId=' + 'e268a740-b884-4c8f-e053-1705fe0a812c';
+    });
+    
+    function getSOLR() {
+		$('li a.nav-link active').removeClass('active');
+		$('#linkSOLR').addClass('active');
+        $('#tab_default').html('<i class="fas fa-spinner fa-pulse fa-3x fa-fw mt-3"></i>');
+    	$.ajax('/itemSolr/get.json?itemUUID=e268a740-b884-4c8f-e053-1705fe0a812c')
+		.done(function(data) {
+            $('#tab_default').html('<pre>'+JSON.stringify(data, null,'    ')+'</pre>');
+		});
+    }
+    </script>
+    
+				
+
+
+
+<script type="text/javascript">
+	function showAbout() {
+		jQuery.ajax({
+			url: "/about.modal",
+			type: 'GET',
+			success: function(data) {
+                var $modal = jQuery(data);
+				jQuery('body').append($modal);
+                $modal.filter('.modal').modal('show');
+                $modal.filter('.modal').on('hidden.bs.modal', function(){
+                	$modal.remove();
+				});
+                $modal.attr('id','modal_about');
+                $modal.modal('show')
+			},
+			error: function(data,extStatus, errorThrown) {
+				$.jGrowl('errore generico di comunicazione', { sticky: true, theme: 'bg-danger text-white' });
+			}
+		});
+	}
+	function showCookies() {
+		showCookieSettings();
+	}
+	function showPrivacyInfo() {
+		window.open('/aboutPrivacyInfo.htm', '_blank').focus();
+	}	
+</script>
+<script type="text/javascript">
+	function asn1820List() {
+		
+
+
+
+
+		jQuery('#asn1820-div').modal('show');
+			
+	}
+	</script>
+	<div class="modal fade" id="asn1820-div" tabindex="-1" role="dialog" aria-labelledby="asn1820Label" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="asn1820Label">simulazione ASN</h4>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+				</div>
+				<div class="modal-body with-padding">
+					Il report seguente simula gli indicatori relativi alla propria produzione scientifica in relazione alle soglie ASN 2023-2025 del proprio SC/SSD. Si ricorda che il superamento dei valori soglia (almeno 2 su 3) è requisito necessario ma non sufficiente al conseguimento dell'abilitazione.<br/>La simulazione si basa sui dati IRIS e sugli indicatori bibliometrici alla data indicata e non tiene conto di eventuali periodi di congedo obbligatorio, che in sede di domanda ASN danno diritto a incrementi percentuali dei valori. La simulazione può differire dall'esito di un’eventuale domanda ASN sia per errori di catalogazione e/o dati mancanti in IRIS, sia per la variabilità dei dati bibliometrici nel tempo. Si consideri che Anvur calcola i valori degli indicatori all'ultima data utile per la presentazione delle domande.<br/><br/>La presente simulazione è stata realizzata sulla base delle specifiche raccolte sul tavolo ER del Focus Group IRIS coordinato dall’Università di Modena e Reggio Emilia e delle regole riportate nel DM 589/2018 e allegata Tabella A. Cineca, l’Università di Modena e Reggio Emilia e il Focus Group IRIS non si assumono alcuna responsabilità in merito all’uso che il diretto interessato o terzi faranno della simulazione. Si specifica inoltre che la simulazione contiene calcoli effettuati con dati e algoritmi di pubblico dominio e deve quindi essere considerata come un mero ausilio al calcolo svolgibile manualmente o con strumenti equivalenti.</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+					<button type="button" class="btn btn-primary" onclick="location.href='/bi/asn1820/widgetSearch.htm?CLEAR&dataType=MV'">procedi</button>
+				</div>
+			</div>
+		</div>
+	</div>
+<div class="modal fade" id="genericFragmentErrorModal" tabindex="-1" role="dialog" aria-labelledby="modal-title" aria-hidden="true" style="z-index: 10000">
+	<div class="modal-dialog">	
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">Errore</h4>
+				<button aria-hidden="true" data-bs-dismiss="modal" class="btn-close" type="button"></button>						
+			</div>
+			<div class="modal-body with-padding">					
+				<div class="callout alert bg-danger">
+					<h5>Errore</h5>
+					<p id="genericFragmentErrorModalContent"></p>
+				</div>
+			</div>
+		</div>
+	</div>	
+</div>
+<script type="text/javascript">
+	var forceLogindModuleMap = reloadInit(['bi','rm','gw','ma','','saiku','ap']);
+	</script>
+</div>
+		</main>
+	</div>
+	<div class="clearfix"></div>
+<footer class="bd-footer py-2 mt-2 bg-light d-flex justify-content-between fw-bold iu-hide">
+	<div class="ms-2">
+		Powered by <a class="text-decoration-none" href="https://www.cineca.it/sistemi-informativi-universita/ricerca/iris-la-gestione-della-ricerca">IRIS</a>	<span style="margin-left: 10px; margin-right: 10px;">-</span>	<a class="text-decoration-none" onclick="showAbout();" href="#">about IRIS</a>	<span style="margin-left: 10px; margin-right: 10px;">-</span>	<a class="text-decoration-none" onclick="showCookies();" href="#">Utilizzo dei cookie</a>	<span style="margin-left: 10px; margin-right: 10px;">-</span>	<a class="text-decoration-none" onclick="showPrivacyInfo();" href="#">Privacy</a>	</div>
+	<div class="me-2">
+		
+
+
+
+
+
+	<a href="http://www.cineca.it" target="_blank"><img alt="Logo CINECA" height="15px;" src="/sr/cineca/images/interface/logo-cineca-small-white.png"></a>
+	
+<span>&nbsp;Copyright&nbsp;&copy;&nbsp;2026&nbsp;</span><a href="/htmlmap" style="display:none;"></a></div>
+</footer><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"55deaaaf42984e8db8c703ed1c4d39a5","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
