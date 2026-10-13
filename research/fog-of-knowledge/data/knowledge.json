@@ -11372,6 +11372,18 @@
       "parent": "field.cosmology",
       "child": "claim.des-y6-weak-evolving-dark-energy-preference-reported",
       "type": "narrower"
+    },
+    {
+      "id": "taxonomy.physical.astrophysics.narrower.field.astronomy",
+      "parent": "field.astronomy",
+      "child": "physical.astrophysics",
+      "type": "narrower"
+    },
+    {
+      "id": "taxonomy.physical.exoplanet-transit-method.narrower.field.astronomy",
+      "parent": "field.astronomy",
+      "child": "physical.exoplanet-transit-method",
+      "type": "narrower"
     }
   ],
   "identities": [],
@@ -29280,6 +29292,391 @@
           "charset": "utf-8",
           "extraction_method": "http-html-data-lines/1",
           "capture_id": "4739d04578040e31508b0ac9bce54af2808d65bae5c61d698594bd952293066f"
+        }
+      ]
+    },
+    {
+      "batch_id": "fog-place-physical-20261012-9995cdfb",
+      "candidate_sha256": "90d09fa6be56f62f37309e5d14a2eec1a4faa64478e25592b21e7b8e0cb55986",
+      "assertions": [
+        {
+          "id": "assertion.taxonomy.physical.astrophysics.narrower.field.astronomy",
+          "target_kind": "taxonomy",
+          "canonical_record": {
+            "id": "taxonomy.physical.astrophysics.narrower.field.astronomy",
+            "parent": "field.astronomy",
+            "child": "physical.astrophysics",
+            "type": "narrower"
+          },
+          "statement": "Astrophysics is a branch of astronomy concerned with the physics and physical properties of celestial objects.",
+          "scope": {
+            "population": "Celestial objects outside Earth's atmosphere",
+            "time": null,
+            "assumptions": null,
+            "uncertainty": null,
+            "units": null,
+            "quantifiers": null
+          },
+          "support": [
+            {
+              "source_id": "src.place-phys-astrophysics-umd",
+              "quote": "Astrophysics is the branch of astronomy that\ndeals with the physics and physical properties of these celestial\nobjects, such as their luminosity, age, and composition.",
+              "source_sha256": "e1c17f44efc101f8d0cff7bf11275ef04bb87dc39ea3401bc5ab790a13f85e86",
+              "start": 206,
+              "end": 373
+            }
+          ],
+          "confidence": 0.99,
+          "target_sha256": "b14e36410a15c40e54949d64db77dc9efac092da76f32a907144a649d20b0540"
+        },
+        {
+          "id": "assertion.taxonomy.physical.exoplanet-transit-method.narrower.field.astronomy",
+          "target_kind": "taxonomy",
+          "canonical_record": {
+            "id": "taxonomy.physical.exoplanet-transit-method.narrower.field.astronomy",
+            "parent": "field.astronomy",
+            "child": "physical.exoplanet-transit-method",
+            "type": "narrower"
+          },
+          "statement": "NASA explicitly identifies the transit method as one of the methods astronomers use to study exoplanets, supporting its classification as an astronomical method.",
+          "scope": {
+            "population": "Astronomical study of exoplanets",
+            "time": null,
+            "assumptions": "An exoplanet passes in front of its host star as viewed by the observer.",
+            "uncertainty": null,
+            "units": null,
+            "quantifiers": "One of the methods astronomers use"
+          },
+          "support": [
+            {
+              "source_id": "src.place-phys-exoplanet-transit-watch",
+              "quote": "One of the methods astronomers use to study exoplanets is called the transit method, because as seen from our vantage point, the exoplanet passes in front of, or transits, the star.",
+              "source_sha256": "051f85dfc34de3e59c1d319c69d3e3a0b44b03b80e638c1034ab16320f2bb8a7",
+              "start": 9203,
+              "end": 9384
+            }
+          ],
+          "confidence": 0.98,
+          "target_sha256": "22c0664405cf1e5e46f57f93606654df3df1832df48f39dead2d4dfec993db51"
+        }
+      ],
+      "decisions": [
+        {
+          "assertion_id": "assertion.taxonomy.physical.astrophysics.narrower.field.astronomy",
+          "target_kind": "taxonomy",
+          "target_sha256": "b14e36410a15c40e54949d64db77dc9efac092da76f32a907144a649d20b0540",
+          "outcome": "supported",
+          "rationale": "The retained University of Maryland passage explicitly identifies astrophysics as a branch of astronomy. This directly entails the proposed narrower relationship, with astronomy as parent and astrophysics as child. Both supplied endpoints belong to the physical domain. The assertion preserves the source's classification and its scope concerning celestial objects and their physical properties. The candidate adds no scientific status, chronology, identity merger, or current-frontier claim.",
+          "limitations": "The evidence establishes an explicit disciplinary classification, without establishing an exclusive parent or excluding additional valid taxonomy parents. The source is a secondary educational explanation. Existing endpoint status and era metadata are inherited from the atlas and are not independently validated by this taxonomy assertion. Independent adversarial review and compiler checks remain necessary.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "candidate_sha256": "90d09fa6be56f62f37309e5d14a2eec1a4faa64478e25592b21e7b8e0cb55986",
+          "reviewer_id": "brain:5fd9364844ff4217bae11783666da091",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "9a74d9a04a66b4ad84bc57817a008f20e27a93401383bd5bb7258ccdea4d9768",
+          "role": "entailment",
+          "reviewed_at": "2026-10-12T20:40:44.808890+00:00"
+        },
+        {
+          "assertion_id": "assertion.taxonomy.physical.astrophysics.narrower.field.astronomy",
+          "target_kind": "taxonomy",
+          "target_sha256": "b14e36410a15c40e54949d64db77dc9efac092da76f32a907144a649d20b0540",
+          "outcome": "supported",
+          "rationale": "The retained University of Maryland source explicitly identifies astrophysics as a branch of astronomy and describes its subject matter. The classification directly entails the proposed child-to-parent narrower relationship. Both endpoints exist in the supplied records and belong to the physical domain. The assertion preserves the source's scope without introducing unsupported exclusivity, scientific acceptance, chronology, or current-frontier claims. The quoted passage is present in the retained source window, and its 167 Unicode code points match the supplied exclusive offsets 206 through 373. The canonical taxonomy record contains only the permitted id, parent, child, and type fields. No identity merge or scientific relationship is asserted.",
+          "limitations": "The excerpt establishes disciplinary classification but does not determine the historical origin, current research status, or exclusivity of astrophysics within astronomy. Those properties are outside this taxonomy candidate. Full existing-graph cycle and duplicate checks remain compiler responsibilities.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "candidate_sha256": "90d09fa6be56f62f37309e5d14a2eec1a4faa64478e25592b21e7b8e0cb55986",
+          "reviewer_id": "brain:5a847064b846459091705a7021a01b4b",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "9a74d9a04a66b4ad84bc57817a008f20e27a93401383bd5bb7258ccdea4d9768",
+          "role": "adversarial",
+          "reviewed_at": "2026-10-12T20:41:24.336810+00:00"
+        },
+        {
+          "assertion_id": "assertion.taxonomy.physical.exoplanet-transit-method.narrower.field.astronomy",
+          "target_kind": "taxonomy",
+          "target_sha256": "22c0664405cf1e5e46f57f93606654df3df1832df48f39dead2d4dfec993db51",
+          "outcome": "supported",
+          "rationale": "The retained NASA Exoplanet Watch passage explicitly identifies the transit method as one of the methods astronomers use to study exoplanets. This supports classifying the exoplanet transit method as an astronomical method under the existing astronomy field. The proposed parent-to-child direction is consistent with the source, and the assertion preserves the observational condition that an exoplanet passes in front of its host star from the observer's vantage point. Both endpoints have the physical domain. No new scientific claim, identity merger, or positive frontier classification is introduced.",
+          "limitations": "The passage supports the method's use in astronomy for studying exoplanets. It does not establish that transit observations are exclusive to astronomy, that astronomy is the only valid parent, or that all transit detections are successful. The source does not independently justify the existing endpoint's historical era or active status. The classification remains subject to independent adversarial review and compiler validation.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "candidate_sha256": "90d09fa6be56f62f37309e5d14a2eec1a4faa64478e25592b21e7b8e0cb55986",
+          "reviewer_id": "brain:5fd9364844ff4217bae11783666da091",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "9a74d9a04a66b4ad84bc57817a008f20e27a93401383bd5bb7258ccdea4d9768",
+          "role": "entailment",
+          "reviewed_at": "2026-10-12T20:40:44.808890+00:00"
+        },
+        {
+          "assertion_id": "assertion.taxonomy.physical.exoplanet-transit-method.narrower.field.astronomy",
+          "target_kind": "taxonomy",
+          "target_sha256": "22c0664405cf1e5e46f57f93606654df3df1832df48f39dead2d4dfec993db51",
+          "outcome": "supported",
+          "rationale": "The retained NASA Exoplanet Watch passage explicitly identifies the transit method as one of the methods astronomers use to study exoplanets. It describes the specific astronomical application and the observed passage of an exoplanet in front of its host star. This directly supports classifying the exoplanet transit method within astronomical observational practice under the existing astronomy field. The claim does not depend solely on keyword similarity or source co-occurrence. The supplied parent and child are existing physical-domain records, and the placement direction proceeds from the astronomy field to the more specific exoplanet transit method. The exact 181-code-point excerpt matches the supplied exclusive offsets 9203 through 9384. No unsupported metadata or identity relationship is introduced.",
+          "limitations": "The source establishes the transit method as an astronomical method used for exoplanet study. It does not establish exclusivity to astronomy, priority over other observational methods, complete methodological coverage, or any current-frontier claim. The classification is limited to its explicitly described astronomical application. Full existing-graph cycle and duplicate checks remain compiler responsibilities.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "candidate_sha256": "90d09fa6be56f62f37309e5d14a2eec1a4faa64478e25592b21e7b8e0cb55986",
+          "reviewer_id": "brain:5a847064b846459091705a7021a01b4b",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "9a74d9a04a66b4ad84bc57817a008f20e27a93401383bd5bb7258ccdea4d9768",
+          "role": "adversarial",
+          "reviewed_at": "2026-10-12T20:41:24.336810+00:00"
+        }
+      ],
+      "context_nodes": [
+        {
+          "id": "field.astronomy",
+          "label": "Astronomy",
+          "kind": "field",
+          "domain": "physical",
+          "era": "agrarian",
+          "status": "active",
+          "summary": "Systematic study of celestial objects and phenomena.",
+          "tags": [],
+          "sources": [
+            {
+              "id": "oecd-frascati-2015",
+              "title": "OECD Frascati Manual 2015 — Fields of R&D classification",
+              "url": "https://www.oecd.org/en/publications/frascati-manual-2015_9789264239012-en.html"
+            }
+          ],
+          "frontier": false,
+          "aliases": []
+        },
+        {
+          "id": "physical.astrophysics",
+          "label": "Astrophysics",
+          "kind": "field",
+          "domain": "physical",
+          "era": "twentieth",
+          "status": "active",
+          "sources": [
+            "https://science.nasa.gov/universe/"
+          ],
+          "tags": [],
+          "aliases": [],
+          "frontier": false
+        },
+        {
+          "id": "physical.exoplanet-transit-method",
+          "label": "Exoplanet transit method",
+          "kind": "method",
+          "domain": "physical",
+          "era": "twentieth",
+          "status": "active",
+          "sources": [
+            "https://science.nasa.gov/exoplanets/"
+          ],
+          "tags": [],
+          "aliases": [],
+          "frontier": false
+        }
+      ],
+      "sources": [
+        {
+          "id": "src.place-phys-astrophysics-osu",
+          "url": "https://physics.osu.edu/ug-research",
+          "final_url": "https://physics.osu.edu/ug-research",
+          "title": "Physics Research Summary: Astrophysics",
+          "source_kind": "secondary",
+          "retrieved_at": "2026-10-12T20:25:22.546550+00:00",
+          "sha256": "15a006b0bc31449edd78be84efb920465458a520f854b954296a72df79b3c444",
+          "raw_sha256": "cff026e19a3e4595691b8e7443ae20db98af5dafc74e60d421664e6aa37c1390",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "2f298022b2c5253b76347ad5ed5918926566b77693c99eb6f8bf6a653735f3ad"
+        },
+        {
+          "id": "src.place-phys-astrophysics-umd",
+          "url": "https://pages.astro.umd.edu/~veilleux/astrophotonics.html",
+          "final_url": "https://pages.astro.umd.edu/~veilleux/astrophotonics.html",
+          "title": "Astrophotonics at Maryland: Introduction to Astronomy and Astrophysics",
+          "source_kind": "secondary",
+          "retrieved_at": "2026-10-12T20:25:23.281501+00:00",
+          "sha256": "e1c17f44efc101f8d0cff7bf11275ef04bb87dc39ea3401bc5ab790a13f85e86",
+          "raw_sha256": "6f970818161f80405a0371f4146cb1dc5a70a2cbb8db0a2ad657a7a56ab22ad8",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "84bb593660e2eab2888b9015cab8325f8bf6115bc938872c7c723049258e4dcd"
+        },
+        {
+          "id": "src.place-phys-agn-nasa-origins",
+          "url": "https://science.nasa.gov/astrophysics/programs/cosmic-origins/about/",
+          "final_url": "https://science.nasa.gov/astrophysics/programs/cosmic-origins/about/",
+          "title": "NASA Cosmic Origins: Active Galactic Nuclei as an Astrophysics Focused Topic",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-12T20:25:24.656331+00:00",
+          "sha256": "2a12a32e4007680b19756db33dc5f70f679c5804fe762e8f732ed4bc3c06917b",
+          "raw_sha256": "a83b3b0349572790ffde62c8820fb41a0e51f323cb0c6e399bff0508fab8e208",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "0e135a58d465340f39ee4d9004a56356da18b2c434538443803c5673c0147f66"
+        },
+        {
+          "id": "src.place-phys-agn-nasa-webb",
+          "url": "https://science.nasa.gov/mission/webb/science-overview/science-explainers/what-are-active-galactic-nuclei/",
+          "final_url": "https://science.nasa.gov/mission/webb/science-overview/science-explainers/what-are-active-galactic-nuclei/",
+          "title": "NASA Webb: What Are Active Galactic Nuclei?",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-12T20:25:26.181270+00:00",
+          "sha256": "2ef7a1e8113ade16a8d7821a692c0d8ebca7dd1ce1534c25b9555832957038b5",
+          "raw_sha256": "75d27c8e3378aa87a3a5edcaae371e22746b8f43e87973f06ff88d2636ccff00",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "8049638c769cec46656130d61a15eb2ef584ade7b8ad823b3841f91e800f3fad"
+        },
+        {
+          "id": "src.place-phys-galaxy-clusters-gsfc",
+          "url": "https://science.gsfc.nasa.gov/662/research/clusters.html",
+          "final_url": "https://science.gsfc.nasa.gov/662/research/clusters.html",
+          "title": "NASA Goddard X-ray Astrophysics Research: Galaxy Clusters",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-12T20:25:36.992915+00:00",
+          "sha256": "fcd35105d90f809794333f67e42a8b5db8a6cd85cceaebf6f594a6f923dbe1bc",
+          "raw_sha256": "db92a21d15d7b8bb83796531fe901b5c08ee42b28b0fe90a4846afea38542d7c",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "7aca538c091481ab92c7c00da0ceb7eca5438b7d41e41573ceaa68568643847a"
+        },
+        {
+          "id": "src.place-phys-galaxy-clusters-nasa",
+          "url": "https://science.nasa.gov/universe/galaxies/large-scale-structures/",
+          "final_url": "https://science.nasa.gov/universe/galaxies/large-scale-structures/",
+          "title": "NASA: Large Scale Structures, Galaxy Groups and Galaxy Clusters",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-12T20:25:38.245509+00:00",
+          "sha256": "73066ad9ef3bd286015b7f9ee18fc0f12ea6d39d4fbd90be07fefe7d484eac21",
+          "raw_sha256": "871cec7cde4908a92525e845a7f1ae0b249b8a0242d16a3199dc30fe07a0fe0b",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "a9314d1b42e563424bbb05663201c4bb8ca37e442003d4e5d92afe65e0f20e9b"
+        },
+        {
+          "id": "src.place-phys-exoplanet-transit-watch",
+          "url": "https://science.nasa.gov/citizen-science/exoplanet-watch/background/",
+          "final_url": "https://science.nasa.gov/citizen-science/exoplanet-watch/background/",
+          "title": "NASA Exoplanet Watch: Transit Method for Astronomers",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-12T20:25:39.674549+00:00",
+          "sha256": "051f85dfc34de3e59c1d319c69d3e3a0b44b03b80e638c1034ab16320f2bb8a7",
+          "raw_sha256": "9469ccc4ce3491b4e42b2672bd979245248756abbfa693926dc323999189b456",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "2bf43140de8f46acecffdbb1695a75c489adc8bef22bc2b14bbd7913db225a4f"
+        },
+        {
+          "id": "src.place-phys-exoplanet-transit-nasa",
+          "url": "https://science.nasa.gov/exoplanets/whats-a-transit/",
+          "final_url": "https://science.nasa.gov/exoplanets/whats-a-transit/",
+          "title": "NASA: What's a Transit?",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-12T20:25:40.240315+00:00",
+          "sha256": "2bf86c34cfc367e4c24ffa9bac7ed04db38e8dc4a94425058a90bf28aead5acb",
+          "raw_sha256": "5b4cfe21a3c1d093dff203e95899d1f06457d7aa528fc55b25326206f98945d0",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "deccfc5025d61a12c98c7d3c152c440e92b6e5027b07bf7e42186390556ba51d"
+        },
+        {
+          "id": "src.place-phys-desi-dr2-paper",
+          "url": "https://arxiv.org/abs/2503.14738",
+          "final_url": "https://arxiv.org/abs/2503.14738",
+          "title": "DESI DR2 Results II: Measurements of Baryon Acoustic Oscillations and Cosmological Constraints",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-12T20:25:48.387740+00:00",
+          "sha256": "aaec6a572b0bc71659c8d5d91ca9e17d987e6fb51518b5cecf14f127c8200148",
+          "raw_sha256": "46a596a0a221802dfbe0444bb31aa98545267424dd6b4bd16fa810a3a820c1ca",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "1c8ed44299f4c438a369c6c2b90890e1b394e9cd05f7a875b03946d6968f961c"
+        },
+        {
+          "id": "src.place-phys-desi-dr2-guide",
+          "url": "https://www.desi.lbl.gov/2025/03/19/desi-dr2-results-march-19-guide/",
+          "final_url": "https://www.desi.lbl.gov/2025/03/19/desi-dr2-results-march-19-guide/",
+          "title": "DESI DR2 Results: March 19 Guide",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-12T20:25:49.027639+00:00",
+          "sha256": "70670a260ecdac6ddcbc6a3adeed8ba7268556d0342130117583ac45e9b90388",
+          "raw_sha256": "9a044b4ae2d809a7473813c87d266ff734b7e02ace173caf2b6bffed8d3a5526",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "bf4caf9dad0b2e8ecb15902b64911879dcee5dc33ccd8091c1a4d5560b7b94a9"
+        },
+        {
+          "id": "src.place-phys-desi-cosmology-mission",
+          "url": "https://www.desi.lbl.gov/the-desi-science-mission/",
+          "final_url": "https://www.desi.lbl.gov/the-desi-science-mission/",
+          "title": "The DESI Science Mission: Cosmology and Baryon Acoustic Oscillations",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-12T20:25:49.607165+00:00",
+          "sha256": "a2aa7d26dbed1b5fa220482c3039e75a470fff505e7bbb035ba4e46e8d9ee1a7",
+          "raw_sha256": "763fdf78fe42cd06aa92055fcda30da4d0343e68c247ad3c824146d2ddbc91e9",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "d1a4daa893b46fe4f10fc787934bbdd8e2081730e7ad8a73885c35495aef059d"
+        },
+        {
+          "id": "src.place-phys-juno-sept2026",
+          "url": "https://arxiv.org/abs/2609.37895",
+          "final_url": "https://arxiv.org/abs/2609.37895",
+          "title": "Measurement of Neutrino Oscillation Parameters at JUNO and Indication of the Neutrino Mass Ordering",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-12T20:25:50.024130+00:00",
+          "sha256": "f29096ab4406799ddc78903998af93afc424dd655e6c3f780545a33df84c4f2a",
+          "raw_sha256": "7f8c831a0e8522b9442cde423e478d599c4ac7876756009b22f84605916cfe55",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "1b8f91c38e1b59adcc178838fa1e08dc2199a895dcb5417d622db4979e31de79"
+        },
+        {
+          "id": "src.place-phys-juno-nature2026",
+          "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI%3A%2210.1038%2Fs41586-026-10538-z%22&resultType=core&format=json",
+          "final_url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI%3A%2210.1038%2Fs41586-026-10538-z%22&resultType=core&format=json",
+          "title": "Measurement of Reactor Neutrino Oscillation with the First JUNO Data",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-12T20:25:59.422106+00:00",
+          "sha256": "8ea3a60f5cdc140c4b0acc4ef70c6425af2bd4e1e7a35bac0ca4ccec38b2fdb1",
+          "raw_sha256": "8ea3a60f5cdc140c4b0acc4ef70c6425af2bd4e1e7a35bac0ca4ccec38b2fdb1",
+          "content_type": "application/json",
+          "charset": "utf-8",
+          "extraction_method": "http-text/1",
+          "capture_id": "b9b2d1f8242398df89404d29abb93785c24ab7af88a6b6035f3892946342c3b7"
         }
       ]
     }
