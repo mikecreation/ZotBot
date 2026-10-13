@@ -11368,6 +11368,12 @@
   ],
   "taxonomy": [
     {
+      "id": "taxonomy.claim.des-y6-weak-evolving-dark-energy-preference-reported.narrower.field.cosmology",
+      "parent": "field.cosmology",
+      "child": "claim.des-y6-weak-evolving-dark-energy-preference-reported",
+      "type": "narrower"
+    },
+    {
       "id": "taxonomy.physical.astrophysics.narrower.field.astronomy",
       "parent": "field.astronomy",
       "child": "physical.astrophysics",
@@ -29041,6 +29047,251 @@
           "charset": "iso-8859-1",
           "extraction_method": "http-html-data-lines/1",
           "capture_id": "2841e5578a7345ab3559a953bebb8cd0ec84a18bb9682c7e5ef8b44d5c835207"
+        }
+      ]
+    },
+    {
+      "batch_id": "fog-physical-placement-542cf-7b4734ce",
+      "candidate_sha256": "faca4a21644f2b08cea05e1450425284c09133ef0e0a4680693836641ba214ff",
+      "assertions": [
+        {
+          "id": "assertion.taxonomy.des-y6-weak-preference.cosmology",
+          "target_kind": "taxonomy",
+          "canonical_record": {
+            "id": "taxonomy.claim.des-y6-weak-evolving-dark-energy-preference-reported.narrower.field.cosmology",
+            "parent": "field.cosmology",
+            "child": "claim.des-y6-weak-evolving-dark-energy-preference-reported",
+            "type": "narrower"
+          },
+          "statement": "The DES Y6 reported weak preference for evolving dark energy is a cosmology research result: the Dark Energy Survey presents the underlying study under its Y6 cosmology papers, and the study identifies its subject as cosmology.",
+          "scope": {
+            "population": "The specific DES Y6 dynamical-dark-energy analysis and its reported weak-preference finding",
+            "time": null,
+            "assumptions": "Classification concerns the research domain of the reported result, not scientific confirmation of evolving dark energy",
+            "uncertainty": "The placement is supported by explicit publication categorization; the finding remains a reported, weak preference rather than an established discovery",
+            "units": null,
+            "quantifiers": null
+          },
+          "support": [
+            {
+              "source_id": "src.physical.placement.des-y6-cosmology",
+              "quote": "DES Y6 Cosmology Papers\nConstraints on Dynamical Dark Energy from Multiple Probes in the Full Dark Energy Survey\nWe present results on dark energy evolution",
+              "source_sha256": "6181e876615dd4fe30d719b64ffaef09c1ef222e7a2bc6651d6c4403f1af8d4a",
+              "start": 822,
+              "end": 978
+            },
+            {
+              "source_id": "src.physical.placement.des-y6-dynamical-2026",
+              "quote": "These results support the weak preference for evolving dark energy reported by several recent cosmological analyses.",
+              "source_sha256": "c208671b1ff6ccbb46d32a1df04d13ee75656911dd59977ec3ab80b707e0ebf6",
+              "start": 4667,
+              "end": 4783
+            },
+            {
+              "source_id": "src.physical.placement.des-y6-dynamical-2026",
+              "quote": "Subjects:\nCosmology and Nongalactic Astrophysics (astro-ph.CO)",
+              "source_sha256": "c208671b1ff6ccbb46d32a1df04d13ee75656911dd59977ec3ab80b707e0ebf6",
+              "start": 5041,
+              "end": 5103
+            }
+          ],
+          "confidence": 0.87,
+          "target_sha256": "0ab023ba708929ea372588298f82617f8d9b5941d6799b59da96c23153367db9"
+        }
+      ],
+      "decisions": [
+        {
+          "target_kind": "taxonomy",
+          "target_sha256": "0ab023ba708929ea372588298f82617f8d9b5941d6799b59da96c23153367db9",
+          "assertion_id": "assertion.taxonomy.des-y6-weak-preference.cosmology",
+          "outcome": "supported",
+          "rationale": "The retained Dark Energy Survey publication index explicitly places the named study under DES Y6 Cosmology Papers and identifies its contents as results on dark energy evolution. The primary paper explicitly describes these findings as supporting a weak preference for evolving dark energy reported by cosmological analyses, and arXiv categorizes the paper under Cosmology and Nongalactic Astrophysics. Together these passages establish that the specific reported DES Y6 finding is a research result within cosmology. The narrower direction from the particular scientific claim to the broader field.cosmology is justified by this explicit publication classification and the identification of the finding within cosmological analyses. Both existing endpoints have physical domain; the child is correctly represented as a claim and the parent as a field. The child's reported status attributes the result to its source without asserting scientific acceptance; undated leaves chronology unresolved; frontier=false makes no claim of current frontier status. The candidate preserves the finding's weak and conditional character, introduces no identity equivalence, and asserts no experimental confirmation of evolving dark energy. The exact supplied excerpts support the scoped placement.",
+          "limitations": "Approval concerns only the classification of this specific DES Y6 reported result within cosmology. It does not establish evolving dark energy as physically real, independently replicated, or accepted scientific consensus. The 2.3 to 3.2 sigma range applies to the paper's leave-one-probe-out analyses and should not be generalized to every dataset or probe combination. The taxonomy placement does not establish a causal, evidential-support, or dependency relationship between the endpoints. Independent adversarial review and compiler validation remain required before publication.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "candidate_sha256": "faca4a21644f2b08cea05e1450425284c09133ef0e0a4680693836641ba214ff",
+          "reviewer_id": "brain:6edb6d4cec52413fae0ff2fe305c48e9",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "01ab5f865e71ece894eeeff9f9bb7df701238f7af6b22e644d2f1281754f3355",
+          "role": "entailment",
+          "reviewed_at": "2026-10-12T19:34:36.676437+00:00"
+        },
+        {
+          "target_kind": "taxonomy",
+          "target_sha256": "0ab023ba708929ea372588298f82617f8d9b5941d6799b59da96c23153367db9",
+          "assertion_id": "assertion.taxonomy.des-y6-weak-preference.cosmology",
+          "outcome": "supported",
+          "rationale": "The Dark Energy Survey explicitly categorizes the exact underlying study under DES Y6 Cosmology Papers. The study is independently categorized by its arXiv subject metadata as Cosmology and Nongalactic Astrophysics. Its abstract identifies the analyzed probe combinations and explicitly states that the results support a weak preference for evolving dark energy. These passages jointly establish that the scoped reported finding belongs to cosmology research. The proposed narrower relationship runs from the established field.cosmology parent to the specific reported research-result child. The classification follows explicit research-domain placement rather than name similarity alone. The child is a reported scientific claim in the physical domain, not a separate scientific field. Its undated era and frontier=false introduce no positive chronological or current-frontier assertion. The reported status preserves attribution and the stated weak statistical preference. No scientific confirmation of evolving dark energy is implied.",
+          "limitations": [
+            "The evidence classifies the underlying study and its reported result as cosmology research; it does not establish the physical reality of evolving dark energy.",
+            "The narrower edge is justified as topical research-domain containment, not as a claim that the finding constitutes a subfield of cosmology.",
+            "The reported significance depends on specified probe combinations and exclusions; the 2.3–3.2 sigma range cannot be generalized to all analyses or interpreted as discovery-level confirmation.",
+            "Cosmology and Nongalactic Astrophysics is a combined arXiv subject category, but the survey's own explicit cosmology-paper classification resolves the proposed parent placement.",
+            "The retained excerpts establish the proposed placement without independently validating every historical attribute of the preexisting parent record. They do not establish replication, scientific consensus, or current frontier status."
+          ],
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "candidate_sha256": "faca4a21644f2b08cea05e1450425284c09133ef0e0a4680693836641ba214ff",
+          "reviewer_id": "brain:07dbdf0362db4e79ba95f7a51c8e0e4b",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "01ab5f865e71ece894eeeff9f9bb7df701238f7af6b22e644d2f1281754f3355",
+          "role": "adversarial",
+          "reviewed_at": "2026-10-12T19:35:24.375872+00:00"
+        }
+      ],
+      "context_nodes": [
+        {
+          "id": "field.cosmology",
+          "label": "Cosmology",
+          "kind": "field",
+          "domain": "physical",
+          "era": "twentieth",
+          "status": "active",
+          "summary": "Study of the origin, structure, evolution, and large-scale dynamics of the universe.",
+          "tags": [
+            "ology"
+          ],
+          "sources": [
+            {
+              "id": "oecd-frascati-2015",
+              "title": "OECD Frascati Manual 2015 — Fields of R&D classification",
+              "url": "https://www.oecd.org/en/publications/frascati-manual-2015_9789264239012-en.html"
+            },
+            {
+              "url": "https://science.nasa.gov/universe/the-big-bang/"
+            }
+          ],
+          "frontier": false,
+          "aliases": []
+        },
+        {
+          "id": "claim.des-y6-weak-evolving-dark-energy-preference-reported",
+          "label": "DES Y6 reported weak preference for evolving dark energy",
+          "kind": "claim",
+          "domain": "physical",
+          "era": "undated",
+          "status": "reported",
+          "frontier": false,
+          "aliases": [],
+          "tags": [],
+          "summary": "The DES Collaboration reported that its analyzed probe combinations supported a weak preference for evolving dark energy, with the significance of deviation from a cosmological constant ranging from 2.3 to 3.2 sigma when individual probes were left out.",
+          "sources": [
+            {
+              "id": "src.physical.des-y6-dynamical-dark-energy-2026",
+              "url": "https://arxiv.org/abs/2605.27221",
+              "title": "Constraints on Dynamical Dark Energy from Multiple Probes in the Full Dark Energy Survey"
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "src.physical.placement.axion-castcapp-2022",
+          "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI%3A%2210.1038%2Fs41467-022-33913-6%22&resultType=core&format=json",
+          "final_url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI%3A%2210.1038%2Fs41467-022-33913-6%22&resultType=core&format=json",
+          "title": "Search for Dark Matter Axions with CAST-CAPP",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-12T18:55:32.174734+00:00",
+          "sha256": "523d81d08dbfc5ca58e682247e7287c4b8a753f31f59d105f4ef53608b31b184",
+          "raw_sha256": "523d81d08dbfc5ca58e682247e7287c4b8a753f31f59d105f4ef53608b31b184",
+          "content_type": "application/json",
+          "charset": "utf-8",
+          "extraction_method": "http-text/1",
+          "capture_id": "441557dce0692465c45db386882ae69ef3eecfd58f5a85c9291f660a5bf9d4b2"
+        },
+        {
+          "id": "src.physical.placement.desi-science-mission",
+          "url": "https://www.desi.lbl.gov/the-desi-science-mission/",
+          "final_url": "https://www.desi.lbl.gov/the-desi-science-mission/",
+          "title": "The DESI Science Mission",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-12T18:55:34.212516+00:00",
+          "sha256": "a2aa7d26dbed1b5fa220482c3039e75a470fff505e7bbb035ba4e46e8d9ee1a7",
+          "raw_sha256": "dff204825c62da9f7d52c813ac82eb6c11a9101bbdf7475df95e1cb2899d974c",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "fd240011d08d7c415ed5e9ee45ac0048fc7c7cdd5d1d587ae37b26d8a693ccc2"
+        },
+        {
+          "id": "src.physical.placement.desi-instrument-design",
+          "url": "https://www.desi.lbl.gov/for-scientists/instrument-design/",
+          "final_url": "https://www.desi.lbl.gov/for-scientists/instrument-design/",
+          "title": "DESI Instrument Design",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-12T18:55:42.254968+00:00",
+          "sha256": "f03e89a3ee1c6f9828636f5ee9a777e7a5dc3f711b07aa695a43a16137f61bd7",
+          "raw_sha256": "b21bae0a9be28829016f3b12fe7608f517d8c6c438247fd5c69ab53ec8b7fe50",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "9a4e15fefc2c2d97c9ba9d0e0e524ea15eb0b01ef7639e8221cdf3877f3c0e44"
+        },
+        {
+          "id": "src.physical.placement.desi-dr2-2025",
+          "url": "https://arxiv.org/abs/2503.14738",
+          "final_url": "https://arxiv.org/abs/2503.14738",
+          "title": "DESI DR2 Results II: Measurements of Baryon Acoustic Oscillations and Cosmological Constraints",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-12T18:55:43.063311+00:00",
+          "sha256": "aaec6a572b0bc71659c8d5d91ca9e17d987e6fb51518b5cecf14f127c8200148",
+          "raw_sha256": "46a596a0a221802dfbe0444bb31aa98545267424dd6b4bd16fa810a3a820c1ca",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "7e0c1d3a22533557abd29f1ccf3ad303d238069a2ac438584b952a7b2a3670dc"
+        },
+        {
+          "id": "src.physical.placement.des-y6-cosmology",
+          "url": "https://www.darkenergysurvey.org/des-y6-cosmology-results-papers/",
+          "final_url": "https://www.darkenergysurvey.org/des-y6-cosmology-results-papers/",
+          "title": "DES Y6 Cosmology Papers",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-12T18:55:44.117173+00:00",
+          "sha256": "6181e876615dd4fe30d719b64ffaef09c1ef222e7a2bc6651d6c4403f1af8d4a",
+          "raw_sha256": "b3f36e2f315f24b0bd784714d4462159735896b3c64844cd0ea9f700085ca21e",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "84ea86080d4e8f5a06c0f9e381e2da2831e0a6869853d90391c8ea2ffae7d25e"
+        },
+        {
+          "id": "src.physical.placement.des-y6-dynamical-2026",
+          "url": "https://arxiv.org/abs/2605.27221",
+          "final_url": "https://arxiv.org/abs/2605.27221",
+          "title": "Constraints on Dynamical Dark Energy from Multiple Probes in the Full Dark Energy Survey",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-12T18:55:44.609210+00:00",
+          "sha256": "c208671b1ff6ccbb46d32a1df04d13ee75656911dd59977ec3ab80b707e0ebf6",
+          "raw_sha256": "85d5bc8c8ab25fa01b6bbc341bdc756234f6a5eef4bd35c04307938a2bdb1a36",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "172ebbc4fefe0ea9f12f952245841bd23938cebcb6d7feabc662404f30e0ecb0"
+        },
+        {
+          "id": "src.physical.placement.lz-publications",
+          "url": "https://lz.lbl.gov/publications/",
+          "final_url": "https://lz.lbl.gov/publications/",
+          "title": "LZ Dark Matter Experiment Publications",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-12T18:55:53.079176+00:00",
+          "sha256": "a485d3afed37e326df320da54addb37d48ade2042ad13e4a41b9cefd984812d3",
+          "raw_sha256": "c7ea7cd3ebbc49d40b7e78572ff989fde9753742795501984918045ffa79e7c7",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "4739d04578040e31508b0ac9bce54af2808d65bae5c61d698594bd952293066f"
         }
       ]
     },
