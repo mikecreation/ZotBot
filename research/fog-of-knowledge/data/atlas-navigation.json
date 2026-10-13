@@ -1,6 +1,6 @@
 {
   "protocol": "fog-atlas-navigation/1",
-  "input_sha256": "6c0850f54b7d2c8c3f7536e4e841ebcb4a9a4889a73c833b73fee28a473d1d54",
+  "input_sha256": "9ed5367dd35018ec5d1140e45bd74c2cb0ff4b6d717e9149437e531ba29e70d3",
   "registry_nodes": [
     {
       "id": "ology.geobiology",
@@ -4353,6 +4353,20 @@
       "placement_pending": false
     },
     {
+      "source": "field.astronomy",
+      "target": "physical.astrophysics",
+      "type": "reviewed_taxonomy",
+      "taxonomy_id": "taxonomy.physical.astrophysics.narrower.field.astronomy",
+      "placement_pending": false
+    },
+    {
+      "source": "field.astronomy",
+      "target": "physical.exoplanet-transit-method",
+      "type": "reviewed_taxonomy",
+      "taxonomy_id": "taxonomy.physical.exoplanet-transit-method.narrower.field.astronomy",
+      "placement_pending": false
+    },
+    {
       "source": "field.cosmology",
       "target": "claim.des-y6-weak-evolving-dark-energy-preference-reported",
       "type": "reviewed_taxonomy",
@@ -5246,12 +5260,6 @@
     },
     {
       "source": "family:physical",
-      "target": "physical.astrophysics",
-      "type": "placement_pending",
-      "placement_pending": true
-    },
-    {
-      "source": "family:physical",
       "target": "physical.atlas-detector",
       "type": "placement_pending",
       "placement_pending": true
@@ -5541,12 +5549,6 @@
     {
       "source": "family:physical",
       "target": "physical.evolving-dark-energy",
-      "type": "placement_pending",
-      "placement_pending": true
-    },
-    {
-      "source": "family:physical",
-      "target": "physical.exoplanet-transit-method",
       "type": "placement_pending",
       "placement_pending": true
     },
@@ -8647,7 +8649,6 @@
     "paper.bose-spin-entanglement-witness-2017",
     "physical.accretion-disks",
     "physical.active-galactic-nuclei",
-    "physical.astrophysics",
     "physical.atlas-detector",
     "physical.atomic-clocks",
     "physical.atomic-physics",
@@ -8694,7 +8695,6 @@
     "physical.elementary-charge",
     "physical.equivalence-principle",
     "physical.evolving-dark-energy",
-    "physical.exoplanet-transit-method",
     "physical.first-law-thermodynamics",
     "physical.fluctuation-dissipation",
     "physical.fluid-dynamics",
@@ -8859,8 +8859,8 @@
     },
     "physical": {
       "total": 327,
-      "connected_before_inventory": 26,
-      "placement_pending": 301
+      "connected_before_inventory": 28,
+      "placement_pending": 299
     },
     "earth": {
       "total": 58,
@@ -8906,6 +8906,18 @@
       "type": "narrower"
     },
     {
+      "id": "taxonomy.physical.astrophysics.narrower.field.astronomy",
+      "parent": "field.astronomy",
+      "child": "physical.astrophysics",
+      "type": "narrower"
+    },
+    {
+      "id": "taxonomy.physical.exoplanet-transit-method.narrower.field.astronomy",
+      "parent": "field.astronomy",
+      "child": "physical.exoplanet-transit-method",
+      "type": "narrower"
+    },
+    {
       "id": "taxonomy.claim.des-y6-weak-evolving-dark-energy-preference-reported.narrower.field.cosmology",
       "parent": "field.cosmology",
       "child": "claim.des-y6-weak-evolving-dark-energy-preference-reported",
@@ -8918,6 +8930,6 @@
     "canonical": 500,
     "registry_added": 225,
     "discoverable": 725,
-    "placement_pending": 446
+    "placement_pending": 444
   }
 }
