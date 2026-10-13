@@ -211,10 +211,12 @@ class PlacementLaneTests(unittest.TestCase):
             review=target/"nemesis/adjudications";review.mkdir(parents=True,exist_ok=True)
             receipt=review/(candidate_digest(c)+".json")
             receipt.write_text(json.dumps({"decisions":decide(c,graph,roles=("entailment",))}),encoding="utf-8")
+            # Main may already carry reviewed taxonomy rows; the rejected apply must leave them unchanged.
+            taxonomy_before=json.loads((target/"data/knowledge.json").read_text(encoding="utf-8"))["taxonomy"]
             result=subprocess.run(command+["--apply"],cwd=target,capture_output=True,text=True)
             self.assertEqual(result.returncode,2,result.stdout+result.stderr)
             self.assertIn("missing evidence review roles",result.stdout)
-            self.assertEqual(json.loads((target/"data/knowledge.json").read_text(encoding="utf-8"))["taxonomy"],[])
+            self.assertEqual(json.loads((target/"data/knowledge.json").read_text(encoding="utf-8"))["taxonomy"],taxonomy_before)
             receipt.write_text(json.dumps({"decisions":decide(c,graph)}),encoding="utf-8")
             first=None
             for _ in range(2):
