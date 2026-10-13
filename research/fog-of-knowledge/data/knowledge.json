@@ -11374,6 +11374,18 @@
       "type": "narrower"
     },
     {
+      "id": "taxonomy.claim.fermi-gbm-detection-coverage.narrower.field.astronomy",
+      "parent": "field.astronomy",
+      "child": "claim.fermi-gbm-detection-coverage",
+      "type": "narrower"
+    },
+    {
+      "id": "taxonomy.field.quantum-gravity.narrower.field.physics",
+      "parent": "field.physics",
+      "child": "field.quantum-gravity",
+      "type": "narrower"
+    },
+    {
       "id": "taxonomy.physical.astrophysics.narrower.field.astronomy",
       "parent": "field.astronomy",
       "child": "physical.astrophysics",
@@ -11383,12 +11395,6 @@
       "id": "taxonomy.physical.exoplanet-transit-method.narrower.field.astronomy",
       "parent": "field.astronomy",
       "child": "physical.exoplanet-transit-method",
-      "type": "narrower"
-    },
-    {
-      "id": "taxonomy.claim.fermi-gbm-detection-coverage.narrower.field.astronomy",
-      "parent": "field.astronomy",
-      "child": "claim.fermi-gbm-detection-coverage",
       "type": "narrower"
     }
   ],
@@ -29940,6 +29946,245 @@
           "charset": "utf-8",
           "extraction_method": "http-html-data-lines/1",
           "capture_id": "5ea88bb8dacb74705bfb8bcd331401fe5b84b4a32d146db6d85de004499c1e78"
+        }
+      ]
+    },
+    {
+      "batch_id": "fog-place-physical-c442f0bc17084a34",
+      "candidate_sha256": "0d2c41d989cb341d9413782fd00dda42ac6af20f8cd553bc79f6321b7725052c",
+      "assertions": [
+        {
+          "id": "assertion.taxonomy.field.quantum-gravity.narrower.field.physics",
+          "target_kind": "taxonomy",
+          "canonical_record": {
+            "id": "taxonomy.field.quantum-gravity.narrower.field.physics",
+            "parent": "field.physics",
+            "child": "field.quantum-gravity",
+            "type": "narrower"
+          },
+          "statement": "Quantum gravity is described as a branch of modern theoretical physics.",
+          "scope": {
+            "population": null,
+            "time": null,
+            "assumptions": null,
+            "uncertainty": null,
+            "units": null,
+            "quantifiers": null
+          },
+          "support": [
+            {
+              "source_id": "plph6-02",
+              "quote": "Quantum gravity was born as that branch of modern theoretical physics",
+              "start": 416,
+              "end": 485,
+              "source_sha256": "09df5742ad04cc4e27322fd8390d5dc84909790b4d99bda74d1879feb9d354a9"
+            }
+          ],
+          "confidence": 0.98,
+          "target_sha256": "37e7c0d9ad85101fd0b0142de6cbbacfe27e850374b70f68032a3ba858ce0f12"
+        }
+      ],
+      "decisions": [
+        {
+          "target_kind": "taxonomy",
+          "target_sha256": "37e7c0d9ad85101fd0b0142de6cbbacfe27e850374b70f68032a3ba858ce0f12",
+          "assertion_id": "assertion.taxonomy.field.quantum-gravity.narrower.field.physics",
+          "outcome": "supported",
+          "rationale": "The retained institutional-repository excerpt explicitly calls quantum gravity 'that branch of modern theoretical physics.' The exact quotation is present once at Unicode offsets 416–485. Both existing endpoints are fields in the physical domain, and the proposed child-to-parent narrower placement follows the stated branch relationship without relying on subject tags or inferred topic similarity.",
+          "limitations": "This supports only the taxonomy placement of field.quantum-gravity under field.physics. It does not validate any quantum-gravity theory, observational test, or the existing endpoints' active/frontier-era metadata. The source is a secondary introduction, not a claim of current consensus or an exhaustive taxonomy.",
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "candidate_sha256": "0d2c41d989cb341d9413782fd00dda42ac6af20f8cd553bc79f6321b7725052c",
+          "reviewer_id": "brain:cacb8814ceeb4ca09056297d8eaa0d6f",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "0c0a4b30c74a41f32faaec5d7f2fc582efc3b418fb5618cc2c98f0daab00da80",
+          "role": "entailment",
+          "reviewed_at": "2026-10-13T03:49:22.049644+00:00"
+        },
+        {
+          "assertion_id": "assertion.taxonomy.field.quantum-gravity.narrower.field.physics",
+          "target_kind": "taxonomy",
+          "target_sha256": "37e7c0d9ad85101fd0b0142de6cbbacfe27e850374b70f68032a3ba858ce0f12",
+          "outcome": "supported",
+          "rationale": "The retained source explicitly describes quantum gravity as a branch of modern theoretical physics. This directly supports placing the existing field.quantum-gravity node under the existing field.physics node through the narrower taxonomy relationship. The quoted passage is present in the captured source window, and its wording establishes the proposed parent-child direction without relying on keyword similarity or co-occurrence. Both endpoints are existing field records in the physical domain. The candidate introduces no additional scientific assertion, identity merge, or unsupported classification. The secondary source's historical wording does not invalidate the explicitly stated disciplinary relationship.",
+          "limitations": [
+            "The supporting source is secondary and describes quantum gravity's disciplinary origin; it does not independently establish the present scientific acceptance or empirical success of particular quantum-gravity theories.",
+            "The review supports only the specified taxonomy placement. It does not validate either endpoint's broader summary, chronological metadata, scientific status, or other relationships.",
+            "The retained excerpt identifies quantum gravity as a branch of theoretical physics without claiming that physics is its only possible disciplinary parent.",
+            "The evidence does not justify placing quantum gravity under quantum mechanics, general relativity, cosmology, or a similarly named question node without separate explicit support.",
+            "Support for the taxonomy proposal does not constitute authorization to publish it without the required independent reviews and compiler checks."
+          ],
+          "checks": {
+            "exact_support": true,
+            "scope_preserved": true,
+            "no_strengthening": true,
+            "relation_direction": true,
+            "representation_justified": true
+          },
+          "candidate_sha256": "0d2c41d989cb341d9413782fd00dda42ac6af20f8cd553bc79f6321b7725052c",
+          "reviewer_id": "brain:ea1794e887bb4973a51414daee0c804b",
+          "model": "Nemesis Brain; provider model unavailable",
+          "context_sha256": "0c0a4b30c74a41f32faaec5d7f2fc582efc3b418fb5618cc2c98f0daab00da80",
+          "role": "adversarial",
+          "reviewed_at": "2026-10-13T03:49:28.547466+00:00"
+        }
+      ],
+      "context_nodes": [
+        {
+          "id": "field.physics",
+          "label": "Physics",
+          "kind": "field",
+          "domain": "physical",
+          "era": "early-modern",
+          "status": "active",
+          "summary": "Study of matter, energy, motion, interactions, space, and time.",
+          "tags": [],
+          "sources": [
+            {
+              "id": "oecd-frascati-2015",
+              "title": "OECD Frascati Manual 2015 — Fields of R&D classification",
+              "url": "https://www.oecd.org/en/publications/frascati-manual-2015_9789264239012-en.html"
+            }
+          ],
+          "frontier": false,
+          "aliases": []
+        },
+        {
+          "id": "field.quantum-gravity",
+          "label": "Quantum gravity",
+          "kind": "field",
+          "domain": "physical",
+          "era": "frontier",
+          "status": "active",
+          "summary": "Gravity-quantum unification and tests.",
+          "sources": [
+            {
+              "id": "nature:s41586-025-09595-7",
+              "url": "https://www.nature.com/articles/s41586-025-09595-7"
+            }
+          ],
+          "tags": [],
+          "aliases": [],
+          "frontier": false
+        }
+      ],
+      "sources": [
+        {
+          "id": "plph6-02",
+          "url": "https://www.iris.unina.it/handle/11588/841176",
+          "final_url": "https://www.iris.unina.it/handle/11588/841176",
+          "title": "An introduction to quantum gravity",
+          "source_kind": "secondary",
+          "retrieved_at": "2026-10-13T03:10:24.769329+00:00",
+          "sha256": "09df5742ad04cc4e27322fd8390d5dc84909790b4d99bda74d1879feb9d354a9",
+          "raw_sha256": "4feb4663b1316a1d349bfdb8b3f977d494c6e265ba683a8a63a4f76e64769de3",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "1708a10bad2154ce0d617df0812accf787ba562135ea9b813af7bafc00dede31"
+        },
+        {
+          "id": "plph6-03",
+          "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI%3A%2210.12942%2Flrr-1998-1%22&resultType=core&format=json",
+          "final_url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI%3A%2210.12942%2Flrr-1998-1%22&resultType=core&format=json",
+          "title": "Loop Quantum Gravity",
+          "source_kind": "secondary",
+          "retrieved_at": "2026-10-13T03:10:25.805295+00:00",
+          "sha256": "0f9c7625eef64cdc0550831a651b76c70afa4c599848823a7780d0c7a1337d87",
+          "raw_sha256": "0f9c7625eef64cdc0550831a651b76c70afa4c599848823a7780d0c7a1337d87",
+          "content_type": "application/json",
+          "charset": "utf-8",
+          "extraction_method": "http-text/1",
+          "capture_id": "af0179540816384f05618398009fc370f3f13903376408b8ed21852b37a8342f"
+        },
+        {
+          "id": "plph6-04",
+          "url": "https://arxiv.org/abs/2104.04394",
+          "final_url": "https://arxiv.org/abs/2104.04394",
+          "title": "A Short Review of Loop Quantum Gravity",
+          "source_kind": "secondary",
+          "retrieved_at": "2026-10-13T03:10:26.354347+00:00",
+          "sha256": "14ba46e9b0e024bb4b2a716781a288df743315cd2a6d74fddd50165f92e99cc9",
+          "raw_sha256": "37708b857a748c0865d652a9b41e9339a0d992016418abbed20ab5f8c3d75b67",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "09ac5b171c4a07ecf6f4887fd309d858203978ee5a06f7930b16bbac44fcf9ad"
+        },
+        {
+          "id": "plph6-05",
+          "url": "https://arxiv.org/abs/2410.17036",
+          "final_url": "https://arxiv.org/abs/2410.17036",
+          "title": "Dark Matter Search Results from 4.2 Tonne-Years of Exposure of the LUX-ZEPLIN (LZ) Experiment",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-13T03:10:33.647740+00:00",
+          "sha256": "7c4029200d8f192120bb03557a8a9661ba2b9f8110e3589538dc7629590b8e00",
+          "raw_sha256": "3cfd55774be0d393479effc742b9cf23c55aa0712da793045e6476a86ba4f05f",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "5cce8eff731a1ccb5ff303c2255245fd5a7770c03a1905a6bcb6c86e195972dd"
+        },
+        {
+          "id": "plph6-06",
+          "url": "https://arxiv.org/abs/1901.07120",
+          "final_url": "https://arxiv.org/abs/1901.07120",
+          "title": "Constraints on Earth-mass primordial black holes from OGLE 5-year microlensing events",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-13T03:10:34.194130+00:00",
+          "sha256": "4c805dcdc536480875a1ef19e5f5fd2763f564151abc0cf6de509c22dc76e336",
+          "raw_sha256": "7326d8f6b3e92bfcb6ddf68fc84b57767a221ddb5c9a4b741adfdd68b2e445d4",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "04d92827a7b7e684d82a05f0b4dea9425a75c334b9ff0cc779459c02728e68af"
+        },
+        {
+          "id": "plph6-07",
+          "url": "https://arxiv.org/abs/1305.3463",
+          "final_url": "https://arxiv.org/abs/1305.3463",
+          "title": "Constraints on Lorentz Invariance Violation from Fermi-Large Area Telescope Observations of Gamma-Ray Bursts",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-13T03:10:34.705268+00:00",
+          "sha256": "9022428cd3d10a0174c4a0c9984680aa15399ad1c3380bb51f160180e4b2dfc4",
+          "raw_sha256": "553093dee3e9eef1ef5073d6e1f8ca47eb8a4cc1716c867abf57506d092cc1fa",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "310363b0c9c21089b844ba3f597e8f0439ecc7d25c1b4b88518363cbecd10be0"
+        },
+        {
+          "id": "plph6-08",
+          "url": "https://arxiv.org/abs/2010.00169",
+          "final_url": "https://arxiv.org/abs/2010.00169",
+          "title": "Axion Dark Matter eXperiment: Detailed Design and Operations",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-13T03:10:35.239850+00:00",
+          "sha256": "7c0fb69bc741c6c33187130211456c7735b162e622df1e78060d4bd4af88d639",
+          "raw_sha256": "8f49ab3a41681d6baff94cb614dc3ddd6f52d2f58da6687ca2e664426536e13b",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "11954a4006563ce346dcbb34c6579c88d8c2329d70a731b784925f14d507998a"
+        },
+        {
+          "id": "plph6-10",
+          "url": "https://arxiv.org/abs/2010.06183",
+          "final_url": "https://arxiv.org/abs/2010.06183",
+          "title": "Axion Dark Matter eXperiment: Run 1B Analysis Details",
+          "source_kind": "primary",
+          "retrieved_at": "2026-10-13T03:10:42.727224+00:00",
+          "sha256": "d040c43aeb2195a4cc068db7180ad40616e71beba2f01d8e729ae07353636430",
+          "raw_sha256": "2166f9d06589ca0db3394b138f805b602d3dfa9f6d77b854b8a3d50f04c69412",
+          "content_type": "text/html",
+          "charset": "utf-8",
+          "extraction_method": "http-html-data-lines/1",
+          "capture_id": "ef823cf8db11ce04fc9c04d723da51c89892c58b3efc2d3e7fe286b4383681ec"
         }
       ]
     }
