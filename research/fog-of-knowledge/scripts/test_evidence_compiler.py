@@ -286,4 +286,56 @@ class EvidenceCompilerTests(unittest.TestCase):
             self.assertIn('unreviewed new or changed',result.stdout+result.stderr)
 
 
+
+PROV_POLICY={"required_roles":["entailment","adversarial"],"required_role_sets":[["entailment","adversarial"],["provenance","adversarial"]],
+             "review_roles":["entailment","adversarial","provenance"]}
+
+
+class ProvenanceRoleTests(unittest.TestCase):
+    def setUp(self):
+        self.c,self.g,d=fixture()
+        self.adv=d[1];self.ent=d[0]
+        self.prov=deepcopy(d[0]);self.prov.update(role="provenance",reviewer_id="code:nemesis-provenance/1",model="nemesis-provenance/1 (deterministic code)",
+            rationale="Quote verbatim at retained offsets; source is not an access page.",limitations="Certifies quotation and source integrity only; no semantics.",
+            checks={"exact_quote_verbatim":True,"source_not_botcheck":True})
+    def check(self,decisions,policy=PROV_POLICY):return enforce(self.c,self.g,decisions,policy)
+    def test_code_provenance_plus_adversarial_passes(self):self.assertEqual(self.check([self.prov,self.adv])["reviewed_targets"],1)
+    def test_legacy_pair_still_passes(self):self.assertEqual(self.check([self.ent,self.adv])["reviewed_targets"],1)
+    def test_legacy_policy_rejects_provenance(self):
+        with self.assertRaises(EvidenceError):self.check([self.prov,self.adv],POLICY)
+    def test_provenance_alone_never_passes(self):
+        with self.assertRaises(EvidenceError):self.check([self.prov])
+    def test_provenance_cannot_replace_adversarial(self):
+        with self.assertRaises(EvidenceError):self.check([self.prov,self.ent])
+    def test_adversarial_still_needs_all_semantic_checks(self):
+        self.adv["checks"]["no_strengthening"]=False
+        with self.assertRaises(EvidenceError):self.check([self.prov,self.adv])
+    def test_provenance_requires_code_reviewer(self):
+        self.prov["reviewer_id"]="model-x"
+        with self.assertRaises(EvidenceError):self.check([self.prov,self.adv])
+    def test_provenance_cannot_claim_semantic_checks(self):
+        self.prov["checks"]["scope_preserved"]=True
+        with self.assertRaises(EvidenceError):self.check([self.prov,self.adv])
+    def test_code_reviewer_cannot_issue_semantic_role(self):
+        self.ent["reviewer_id"]="code:nemesis-provenance/1"
+        with self.assertRaises(EvidenceError):self.check([self.ent,self.adv])
+    def test_botcheck_source_rejected_by_recomputation(self):
+        import evidence_compiler as ec
+        text="Just a moment... Checking your browser before accessing example.org. Verify you are human."
+        c,g,d=fixture();src=c["sources.jsonl"][0];src.update(text=text,sha256=hashlib.sha256(text.encode()).hexdigest())
+        node=c["nodes.jsonl"][0];node["summary"]=text;a=c["assertions.jsonl"][0]
+        a.update(statement=text,canonical_record=node,target_sha256=digest(node),support=[{"source_id":src["id"],"source_sha256":src["sha256"],"start":0,"end":len(text),"quote":text}])
+        self.assertTrue(ec.botcheck_markers(text))
+        p=deepcopy(self.prov);adv=d[1]
+        for x in (p,adv):x.update(candidate_sha256=candidate_digest(c),target_sha256=digest(node),context_sha256=context_digest(c,g))
+        with self.assertRaises(EvidenceError):enforce(c,g,[p,adv],PROV_POLICY)
+    def test_long_article_mentioning_captcha_once_is_not_botcheck(self):
+        import evidence_compiler as ec
+        self.assertEqual(ec.botcheck_markers("We study CAPTCHA solving. "+"x"*5000),[])
+    def test_live_policy_accepts_both_sets(self):
+        live=json.loads((ROOT/"data/evidence-policy.json").read_text(encoding="utf-8"))
+        self.assertEqual(self.check([self.prov,self.adv],live)["reviewed_targets"],1)
+        self.assertEqual(self.check([self.ent,self.adv],live)["reviewed_targets"],1)
+
+
 if __name__=="__main__":unittest.main()

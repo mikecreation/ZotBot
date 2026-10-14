@@ -1,7 +1,9 @@
 {
   "protocol": "fog-evidence-policy/1",
   "required_roles": ["entailment", "adversarial"],
-  "review_roles": ["entailment", "adversarial"],
+  "required_role_sets": [["entailment", "adversarial"], ["provenance", "adversarial"]],
+  "review_roles": ["entailment", "adversarial", "provenance"],
+  "provenance_rule": "A provenance decision is a deterministic code receipt (reviewer_id code:*) that the compiler recomputes: every support quote is verbatim at its retained offsets and no retained source is a bot-check or access-wall page. It certifies no semantics; the adversarial model review must still pass all five semantic checks for the same scoped assertion.",
   "representation_policy": {
     "protocol": "fog-representation-policy/1",
     "status": {
