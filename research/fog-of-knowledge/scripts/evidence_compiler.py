@@ -208,14 +208,53 @@ def context_digest(candidate,graph):
     return digest(context)
 
 
+PROVENANCE_CHECKS=("exact_quote_verbatim","source_not_botcheck")
+SEMANTIC_CHECKS=("exact_support","scope_preserved","no_strengthening","relation_direction","representation_justified")
+# Interstitial / access-wall pages are never scientific sources. Matched on
+# case-folded text; a short page with any marker (or a long page with two) is rejected.
+BOTCHECK_MARKERS=("verify you are human","verifying you are human","checking your browser","just a moment...",
+    "enable javascript and cookies to continue","attention required! | cloudflare","cf-chl-","captcha",
+    "are you a robot","unusual traffic from your computer","access denied","request unsuccessful. incapsula",
+    "please complete the security check","ddos protection by","press & hold to confirm you are")
+
+
+def botcheck_markers(text):
+    folded=str(text or "").casefold()
+    hits=[m for m in BOTCHECK_MARKERS if m in folded]
+    if not hits:return []
+    return hits if len(folded)<4000 or len(hits)>=2 else []
+
+
+def role_sets(policy):
+    """Accepted reviewer-role combinations. Legacy policies list one required_roles set."""
+    sets=policy.get("required_role_sets") or [policy.get("required_roles",["entailment"])]
+    return [set(s) for s in sets]
+
+
+def verify_provenance(decision,assertion,sources):
+    """A provenance decision is a deterministic code receipt: the compiler recomputes
+    it from the retained captures, so the receipt can never certify more than code checked.
+    It certifies only verbatim quotation and source integrity, never semantics."""
+    if not str(decision.get("reviewer_id","")).startswith("code:"):raise EvidenceError("provenance receipts come only from a code: reviewer")
+    checks=decision.get("checks",{})
+    if not all(checks.get(k) is True for k in PROVENANCE_CHECKS):raise EvidenceError("provenance checks not satisfied")
+    if any(checks.get(k) is True for k in SEMANTIC_CHECKS):raise EvidenceError("a provenance receipt cannot certify semantic checks")
+    for span in assertion["support"]:
+        source=sources[span["source_id"]]
+        if source["text"][span["start"]:span["end"]]!=span["quote"]:raise EvidenceError("provenance recomputation: quote not verbatim")
+        if botcheck_markers(source["text"]):raise EvidenceError(span["source_id"]+": retained source looks like a bot-check/access page")
+
+
 def verify_decision(decision,policy):
     if decision.get("role") not in policy.get("review_roles",["entailment","adversarial"]):raise EvidenceError("unsupported review role")
     if not decision.get("reviewer_id"):raise EvidenceError("reviewer identity required")
     if decision.get("outcome")!="supported":raise EvidenceError("review outcome remains unsupported or uncertain")
     if not decision.get("rationale") or "limitations" not in decision:raise EvidenceError("review rationale and limitations required")
     if not decision.get("model") or not decision.get("reviewed_at"):raise EvidenceError("review model/version and timestamp required")
+    if decision["role"]=="provenance":return {"actor_id":decision["reviewer_id"]}  # recomputed in enforce()
+    if str(decision["reviewer_id"]).startswith("code:"):raise EvidenceError("a code reviewer cannot issue a semantic review role")
     checks=decision.get("checks",{})
-    if not all(checks.get(k) is True for k in ("exact_support","scope_preserved","no_strengthening","relation_direction","representation_justified")):raise EvidenceError("support and representation checks not satisfied")
+    if not all(checks.get(k) is True for k in SEMANTIC_CHECKS):raise EvidenceError("support and representation checks not satisfied")
     return {"actor_id":decision["reviewer_id"]}
 
 
@@ -268,17 +307,21 @@ def enforce(candidate,graph,decisions,policy):
                         sid=span["source_id"]
                         if sid not in listed or listed[sid].get("url")!=sources[sid]["url"]:raise EvidenceError("reviewed source missing or URL differs from canonical provenance")
                 reviewer=verify_decision(decision,policy)
+                if decision.get("role")=="provenance":verify_provenance(decision,assertion,sources)
                 if reviewer.get("actor_id")==candidate["manifest.json"].get("agent"):raise EvidenceError("candidate author cannot review their own record")
                 matches.append(decision)
         roles={d["role"] for d in matches}
-        required=set(policy.get("required_roles",["entailment"]))
-        if not required<=roles:raise EvidenceError(f"{kind} {record.get('id',record_hash[:12])}: missing evidence review roles {sorted(required-roles)}")
+        sets=role_sets(policy)
+        present=[r for r in sets if r<=roles]
+        if not present:raise EvidenceError(f"{kind} {record.get('id',record_hash[:12])}: missing evidence review roles {sorted(sets[0]-roles)}")
         # Separate reviewer identities are needed; two roles on one identity are not two checks.
-        if len({d["reviewer_id"] for d in matches})<len(required):raise EvidenceError("distinct reviewer identities required")
+        if len({d["reviewer_id"] for d in matches})<min(len(r) for r in present):raise EvidenceError("distinct reviewer identities required")
         coherent=False
         for aid in {d['assertion_id'] for d in matches}:
             subset=[d for d in matches if d['assertion_id']==aid]
-            if required<={d['role'] for d in subset} and len({d['reviewer_id'] for d in subset})>=len(required):coherent=True
+            for required in present:
+                chosen=[d for d in subset if d['role'] in required]
+                if required<={d['role'] for d in chosen} and len({d['reviewer_id'] for d in chosen})>=len(required):coherent=True
         if not coherent:raise EvidenceError("required review roles must cover the same scoped assertion")
         accepted.extend(matches)
     return {"candidate_sha256":batch_hash,"source_count":len(sources),"assertion_count":len(assertions),

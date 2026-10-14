@@ -52,7 +52,7 @@ def placement_lane(domains: list[str]) -> dict:
             "taxonomy (existing + candidate) remains a DAG: no cycles, no self-placement",
             "dedupe: no repeated (parent, child) pair in the batch; an existing pair with another id is rejected; an identical record re-applies idempotently",
             "immutable taxonomy ids; only id/parent/child/type in the canonical record",
-            "per-record entailment AND adversarial review by distinct non-author reviewers bound to the exact candidate and context hashes",
+            "per-record review by distinct non-author reviewers bound to the exact candidate and context hashes: entailment AND adversarial, or a compiler-recomputed code provenance receipt (verbatim quotes, no bot-check source) AND adversarial (see review_policy.required_role_sets)",
         ],
         "on_failure": "the whole candidate stays in nemesis/quarantine; nothing is written to knowledge.json",
         "multi_parent": "several reviewed same-family parents are allowed; navigation picks one deterministically and exposes the others as alternative_parents",
