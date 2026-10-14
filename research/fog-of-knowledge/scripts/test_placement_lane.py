@@ -240,4 +240,49 @@ class PlacementLaneTests(unittest.TestCase):
             self.assertNotEqual(result.returncode,0)
 
 
+
+class PlacementOfferTests(unittest.TestCase):
+    """Optional fog-placement-offer/1 batch mode: offers constrain, never prove."""
+    def setUp(self):self.c,self.g=placement_fixture()
+    def check(self):
+        return enforce(self.c,self.g,decide(self.c,self.g),POLICY)
+    def offer(self,o,none_fit=None):
+        self.c["manifest.json"]["placement_offer"]=o
+        if none_fit is not None:self.c["manifest.json"]["placement_none_fit"]=none_fit
+    def test_offered_parent_passes(self):
+        self.offer({"test.sub":["test.field","test.other","family:physical"]})
+        self.assertEqual(self.check()["reviewed_targets"],1)
+    def test_unoffered_parent_rejected(self):
+        self.offer({"test.sub":["test.other"]})
+        with self.assertRaisesRegex(EvidenceError,"not an offered candidate"):self.check()
+    def test_child_outside_offer_rejected(self):
+        self.offer({"test.other":["test.field"]})
+        with self.assertRaisesRegex(EvidenceError,"outside the offered batch"):self.check()
+    def test_more_than_three_or_duplicate_candidates_rejected(self):
+        self.g["nodes"].append(node("test.extra"))
+        self.offer({"test.sub":["test.field","test.other","test.extra","family:physical"]})
+        with self.assertRaises(EvidenceError):self.check()
+        self.offer({"test.sub":["test.field","test.field"]})
+        with self.assertRaises(EvidenceError):self.check()
+    def test_cross_family_offer_rejected(self):
+        self.offer({"test.sub":["test.field","life.field"]})
+        with self.assertRaisesRegex(EvidenceError,"cross-family"):self.check()
+        self.offer({"test.sub":["test.field","family:life"]})
+        with self.assertRaisesRegex(EvidenceError,"cross-domain"):self.check()
+    def test_none_fit_child_cannot_also_be_placed(self):
+        self.offer({"test.sub":["test.field"],"test.other":["test.field"]},["test.sub"])
+        with self.assertRaisesRegex(EvidenceError,"NONE_FIT"):self.check()
+    def test_none_fit_only_batch_with_other_placement_passes(self):
+        self.offer({"test.sub":["test.field"],"test.other":["test.field"]},["test.other"])
+        self.assertEqual(self.check()["reviewed_targets"],1)
+    def test_offer_still_needs_both_reviews(self):
+        self.offer({"test.sub":["test.field"]})
+        with self.assertRaises(EvidenceError):enforce(self.c,self.g,decide(self.c,self.g,roles=("adversarial",)),POLICY)
+    def test_no_offer_keeps_legacy_behaviour(self):self.assertEqual(self.check()["reviewed_targets"],1)
+    def test_contract_documents_offer_mode(self):
+        lane=build_contract()["placement_lane"]
+        self.assertEqual(lane["placement_batch_mode"]["protocol"],"fog-placement-offer/1")
+        self.assertIn("NONE_FIT",json.dumps(lane["placement_batch_mode"]["worker_rules"]))
+
+
 if __name__=="__main__":unittest.main()

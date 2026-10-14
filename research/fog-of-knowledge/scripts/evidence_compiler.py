@@ -121,6 +121,38 @@ def validate_placements(existing,proposed,nodes,domains,assertions=None):
     validate_dag(list(existing)+list(proposed),set(nodes)|families)
 
 
+def validate_placement_offer(manifest,taxonomy,future,domains):
+    """Optional placement-batch mode. Nemesis offers at most three code-ranked same-family
+    parent candidates per pending child (manifest.placement_offer {child:[parent,...]}).
+    An offer only CONSTRAINS the worker's choice; it is never placement evidence. Each
+    proposed parent must be one of its child's offered candidates, and the placement still
+    needs exact source support plus both reviews. A child the worker answered NONE_FIT is
+    listed in manifest.placement_none_fit and must not be placed in the same batch."""
+    offer=manifest.get("placement_offer")
+    none_fit=manifest.get("placement_none_fit",[])
+    if offer is None:
+        if none_fit:raise EvidenceError("placement_none_fit requires placement_offer")
+        return
+    if not isinstance(offer,dict) or not offer:raise EvidenceError("placement_offer must map pending child ids to candidate parents")
+    families={"family:"+d for d in domains}
+    for child,parents in offer.items():
+        node=future.get(child)
+        if not node:raise EvidenceError(child+": offered child is not a canonical node")
+        if not isinstance(parents,list) or not 1<=len(parents)<=3 or len(set(parents))!=len(parents) or child in parents:
+            raise EvidenceError(child+": placement_offer needs 1-3 distinct candidate parents")
+        for parent in parents:
+            if parent in families:
+                if parent!="family:"+str(node.get("domain")):raise EvidenceError(child+": offered family root is cross-domain")
+            elif not future.get(parent) or future[parent].get("domain")!=node.get("domain"):
+                raise EvidenceError(child+": offered parent "+str(parent)+" is missing or cross-family")
+    if not isinstance(none_fit,list) or not set(none_fit)<=set(offer):raise EvidenceError("placement_none_fit must list offered children only")
+    for record in taxonomy:
+        child,parent=record.get("child"),record.get("parent")
+        if child not in offer:raise EvidenceError(str(child)+": placement outside the offered batch")
+        if parent not in offer[child]:raise EvidenceError(str(child)+": parent "+str(parent)+" was not an offered candidate")
+        if child in none_fit:raise EvidenceError(str(child)+": answered NONE_FIT and placed in the same batch")
+
+
 def validate_sources(candidate):
     sources=unique(candidate["sources.jsonl"],"source")
     for sid,s in sources.items():
@@ -242,6 +274,7 @@ def enforce(candidate,graph,decisions,policy):
     for record in candidate["reviews.jsonl"]:
         if any(r.get("id")==record["id"] and r!=record for r in graph.get("reviews",[])):raise EvidenceError("existing review ID differs; retain a new review revision")
     validate_placements(graph.get("taxonomy",[]),candidate["taxonomy.jsonl"],future,[d["id"] for d in graph["domains"]],assertions)
+    validate_placement_offer(candidate["manifest.json"],candidate["taxonomy.jsonl"],future,[d["id"] for d in graph["domains"]])
     for ident in candidate["identities.jsonl"]:
         left,right=future.get(ident.get("left")),future.get(ident.get("right"))
         if not left or not right or left==right:raise EvidenceError("invalid identity endpoints")

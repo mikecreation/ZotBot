@@ -56,6 +56,16 @@ def placement_lane(domains: list[str]) -> dict:
         ],
         "on_failure": "the whole candidate stays in nemesis/quarantine; nothing is written to knowledge.json",
         "multi_parent": "several reviewed same-family parents are allowed; navigation picks one deterministically and exposes the others as alternative_parents",
+        "placement_batch_mode": {
+            "protocol": "fog-placement-offer/1",
+            "manifest_fields": {"placement_offer": "{child_id: [1-3 code-ranked same-family candidate parent ids]} supplied by Nemesis",
+                                "placement_none_fit": "[child_id, ...] the worker answered NONE_FIT for"},
+            "ranking": "Nemesis ranks candidates by shared source URLs/DOIs, then term overlap, among same-domain nodes and the family root; ranking is a shortlist, never evidence",
+            "worker_rules": ["for each offered child choose exactly one offered candidate parent id or NONE_FIT",
+                             "a choice needs an exact retained source quote that classifies the child under that parent; otherwise NONE_FIT",
+                             "never place under a parent that was not offered; never author new nodes in a placement batch"],
+            "compiler_enforces": ["every taxonomy parent is in its child's offer", "offers are 1-3 distinct same-family parents", "NONE_FIT children are not placed"],
+        },
         "not_placement_evidence": ["name similarity", "co-occurrence", "supports/tests/contradicts/cites relations", "cross-domain lineage", "heuristic parent suggestions", "worker confidence"],
     }
 
