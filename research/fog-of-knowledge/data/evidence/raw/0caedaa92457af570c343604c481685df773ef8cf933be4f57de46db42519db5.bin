@@ -1,0 +1,250 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="generator" content="HTML Tidy, see www.w3.org">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Apostolico-Giancarlo algorithm</title>
+<meta name="generator" content="Microsoft XSLT (msxml3 golden/ msxml4), see http://www.microsoft.com">
+<meta name="robots" content="index, follow">
+<meta name="description" content="EXACT STRING MATCHING ALGORITHMS Animation in Java, Apostolico-Giancarlo algorithm">
+<meta name="keywords" content="string matching, algorithm, Java, C">
+<meta name="resource-type" content="document">
+<meta name="Author-Corporate" content="Chistian.Charras@dir.univ-rouen.fr">
+<meta name="Content-Language" content="en">
+<meta name="distribution" content="global">
+<link type="text/css" rel="stylesheet" href="string.css">
+</head>
+<body bgcolor="white">
+<a href="node17.html#SECTION00170"><img alt="Reverse Colussi algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node15.html#SECTION00150"><img alt="Turbo Boyer-Moore algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="node17.html#SECTION00170">Reverse Colussi algorithm</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Prev:</b> <a href="node15.html#SECTION00150">Turbo-BM algorithm</a> 
+
+<hr>
+<h1 align="center"><a name="SECTION00160">Apostolico-Giancarlo algorithm</a></h1>
+
+<hr color="#F0F0FC" size="3">
+<applet codebase="../spm/ApostolicoGiancarlo" archive="ApostolicoGiancarlo.zip" code="AppletButtonText2.class" width="230" height="63"><param name="windowTitle" value="Apostolico-Giancarlo algorithm">
+<param name="windowClass" value="ProgramTextWindow2">
+<param name="buttonText" value="visualization">
+<param name="windowwidth" value="375">
+<param name="windowheight" value="560">
+<param name="label1" value="Pattern:">
+<param name="input1" value="gcagagag">
+<param name="label2" value="String:">
+<param name="input2" value="gcatcgcagagagtatacagtacg">
+<param name="program" value="ApostolicoGiancarlo">
+</applet> 
+
+<div class="bar"><a name="SECTION00161">Main features</a></div>
+
+<div class="mf">
+<ul>
+<li>variant of the <a href="node14.html#SECTION00140">Boyer-Moore</a> algorithm;</li>
+
+<li>preprocessing phase in <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<i>m</i>+<img alt="sigma" src="images/psigma.gif">)</span> time and space complexity;</li>
+
+<li>searching phase in <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<i>n</i>)</span> time complexity;</li>
+
+<li><img alt="3/2" align="MIDDLE" src="images/troisdemi.gif"><i>n</i> comparisons in the worst case;</li>
+</ul>
+</div>
+
+<div class="bar"><a name="SECTION00162">Description</a></div>
+
+<div class="desc">
+<p align="justify">The <a href="node14.html#SECTION00140">Boyer-Moore</a> algorithm is difficult to analyze because after each attempt it forgets all the characters it has already matched. Apostolico and Giancarlo designed an algorithm which remembers the length of the longest suffix of the pattern ending at the right position of the window at the end of each attempt. These information are stored in a table <em>skip</em>.</p>
+
+<p align="justify">Let us assume that during an attempt at a position less than <i>j</i> the algorithm has matched a suffix of <i>x</i> of length <i>k</i> at position <span style="white-space: nowrap"><i>i</i>+<i>j</i></span> with <span style="white-space: nowrap">0 &lt; <i>i</i> &lt; <i>m</i></span> then <span style="white-space: nowrap"><em>skip</em>[<i>i</i>+<i>j</i>]</span> is equal to <i>k</i>. Let <span style="white-space: nowrap"><em>suff</em>[<i>i</i>]</span>, for <span style="white-space: nowrap">0&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>i</i> &lt; <i>m</i></span> be equal to the length of the longest suffix of <i>x</i> ending at the position <i>i</i> in <i>x</i> (see chapter <a href="node14.html#SECTION00140">Boyer-Moore</a> algorithm).</p>
+
+<p align="justify">During the attempt at position <i>j</i>, if the algorithm compares successfully the factor of the text <span style="white-space: nowrap"><i>y</i>[<i>i</i>+<i>j</i>+1 .. <i>j</i>+<i>m</i>-1]</span></p>
+
+<dl>
+<dt>then four cases arise:</dt>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP">Case 1: <span style="white-space: nowrap"><i>k</i> &gt; <em>suff</em>[<i>i</i>]</span> and <span style="white-space: nowrap"><em>suff</em>[<i>i</i>]=<i>i</i>+1</span>. It means that an occurrence of <i>x</i> is found at position <i>j</i> and <span style="white-space: nowrap"><em>skip</em>[j+m-1]</span> is set to <i>m</i> (see figure 15.1). A shift of length <span style="white-space: nowrap"><em>per</em>(<i>x</i>)</span> is performed. 
+
+<p><img alt="ag1" src="images/ag1.gif"></p>
+
+<p><b>Figure 15.1</b>, an occurrence of <i>x</i> is found.</p>
+</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP">Case 2: <span style="white-space: nowrap"><i>k</i> &gt; <em>suff</em>[<i>i</i>]</span> and <span style="white-space: nowrap"><em>suff</em>[<i>i</i>]&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>i</i></span>. It means that a mismatch occurs between characters <span style="white-space: nowrap">x[<i>i</i>-<em>suff</em>[<i>i</i>]]</span> and <span style="white-space: nowrap">y[<i>i</i>+<i>j</i>-<em>suff</em>[<i>i</i>]]</span> and <span style="white-space: nowrap"><em>skip</em>[<i>j</i>+<i>m</i>-1]</span> is set to <span style="white-space: nowrap"><i>m</i>-1-<i>i</i>+<em>suff</em>[i]</span> (see figure 15.2). A shift is performed using <span style="white-space: nowrap"><em>bmBc</em>[y[<i>i</i>+<i>j</i>-<em>suff</em>[<i>i</i>]]]</span> and <span style="white-space: nowrap"><em>bmGs</em>[<i>i</i>-<em>suff</em>[<i>i</i>]+1]</span>. 
+
+<p><img alt="ag2" src="images/ag2.gif"></p>
+
+<p><b>Figure 15.2</b>, a mismatch occurs between <i>y</i>[<i>i</i>+<i>j</i>-<em>suff</em>[<i>i</i>]] and <i>x</i>[<i>i</i>-<em>suff</em>[<i>i</i>]].</p>
+</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP">Case 3: <span style="white-space: nowrap"><i>k</i> &lt; <em>suff</em>[<i>i</i>]</span>. It means that a mismatch occurs between characters <span style="white-space: nowrap"><i>x</i>[<i>i</i>-<i>k</i>]</span> and <span style="white-space: nowrap"><i>y</i>[<i>i</i>+<i>j</i>-<i>k</i>]</span> and <span style="white-space: nowrap"><em>skip</em>[<i>j</i>+<i>m</i>-1]</span> is set to <span style="white-space: nowrap"><i>m</i>-1-<i>i</i>+<i>k</i></span> (see figure 15.3). A shift is performed using <span style="white-space: nowrap"><em>bmBc</em>[<i>y</i>[<i>i</i>+<i>j</i>-<i>k</i>]]</span> and <span style="white-space: nowrap"><em>bmGs</em>[<i>i</i>-<i>k</i>+1]</span>. 
+
+<p><img alt="ag3" src="images/ag3.gif"></p>
+
+<p><b>Figure 15.3</b>, a mismatch occurs between <i>y</i>[<i>i</i>+<i>j</i>-<i>k</i>] and <i>x</i>[<i>i</i>-<i>k</i>].</p>
+</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP">Case 4: <span style="white-space: nowrap"><i>k</i>=<em>suff</em>[<i>i</i>]</span>. This is the only case where a "jump" has to be done over the text factor <span style="white-space: nowrap"><i>y</i>[<i>i</i>+<i>j</i>-<i>k</i>+1 .. <i>i</i>+<i>j</i>]</span> in order to resume the comparisons between the characters <span style="white-space: nowrap"><i>y</i>[<i>i</i>+<i>j</i>-<i>k</i>]</span> and <span style="white-space: nowrap"><i>x</i>[<i>i</i>-<i>k</i>]</span> (see figure 15.4). 
+
+<p><img alt="ag4" src="images/ag4.gif"></p>
+
+<p><b>Figure 15.4</b>, <i>a</i>&nbsp;<img alt="neq" src="images/neq.gif">&nbsp;<i>b</i>.</p>
+</td>
+</tr>
+</table>
+</dd>
+</dl>
+
+<p align="justify">In each case the only information which is needed is the length of the longest suffix of <i>x</i> ending at position <i>i</i> on <i>x</i>.</p>
+
+<dl>
+<dt>The Apostolico-Giancarlo algorithm use two data structures:</dt>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP">a table <em>skip</em> which is updated at the end of each attempt <i>j</i> in the following way: <span style="white-space: nowrap"><em>skip</em>[<i>j</i>+<i>m</i>-1]=max{ k&nbsp;<big>:</big>&nbsp;<i>x</i>[<i>m</i>-<i>k</i> .. m-1]=y[<i>j</i>+<i>m</i>-<i>k</i> .. <i>j</i>+<i>m</i>-1]}</span></td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP">the table <em>suff</em> used during the computation of the table <em>bmGs</em>: <span style="white-space: nowrap">for 1&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>i</i> &lt; <i>m</i></span><span style="white-space: nowrap"><em>suff</em>[<i>i</i>]=max{<i>k</i>&nbsp;<big>:</big>&nbsp;<i>x</i>[<i>i</i>-<i>k</i>+1 .. <i>i</i>]=<i>x</i>[<i>m</i>-<i>k</i> .. <i>m</i>-1]}</span></td>
+</tr>
+</table>
+</dd>
+</dl>
+
+<p align="justify">The complexity in space and time of the preprocessing phase of the Apostolico-Giancarlo algorithm is the same than for the Boyer-Moore algorithm: <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<i>m</i>+<img alt="sigma" src="images/psigma.gif">)</span>.</p>
+
+<p align="justify">During the search phase only the last <i>m</i> informations of the table <em>skip</em> are needed at each attempt so the size of the table <em>skip</em> can be reduced to <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<i>m</i>)</span>.</p>
+
+<p align="justify">The Apostolico-Giancarlo algorithm performs in the worst case at most <span style="white-space: nowrap"><img alt="3/2" align="MIDDLE" src="images/troisdemi.gif"><i>n</i></span> text character comparisons.</p>
+</div>
+
+<div class="bar"><a name="SECTION00163">The C code</a></div>
+
+<p align="justify">The functions <tt><big><tt>preBmBc</tt></big></tt> and <tt><big><tt>preBmGs</tt></big></tt> are given chapter <a href="node14.html#SECTION00140">Boyer-Moore</a> algorithm. It is enough to add the table <em>suff</em> as a parameter to the function <tt><big><tt>preBmGs</tt></big></tt> to get the correct values in the function <tt><big><tt>AG</tt></big></tt>.</p>
+
+<div class="pre">
+<pre>
+void AG(char *x, int m, char *y, int n) {
+   int i, j, k, s, shift,
+       bmGs[XSIZE], skip[XSIZE], suff[XSIZE], bmBc[ASIZE];
+  
+   /* Preprocessing */
+   preBmGs(x, m, bmGs, suff);
+   preBmBc(x, m, bmBc);
+   memset(skip, 0, m*sizeof(int));
+  
+   /* Searching */
+   j = 0;
+   while (j &lt;= n - m) {
+      i = m - 1;
+      while (i &gt;= 0) {
+         k = skip[i];
+         s = suff[i];
+         if (k &gt; 0)
+            if (k &gt; s) {
+               if (i + 1 == s)
+                  i = (-1);
+               else
+                  i -= s;
+               break;
+            }
+            else {
+               i -= k;
+               if (k &lt; s)
+                  break;
+            }
+         else {
+            if (x[i] == y[i + j])
+               --i;
+            else
+               break;
+         }
+      }
+      if (i &lt; 0) {
+         OUTPUT(j);
+         skip[m - 1] = m;
+         shift = bmGs[0];
+      }
+      else {
+         skip[m - 1] = m - 1 - i;
+         shift = MAX(bmGs[i], bmBc[y[i + j]] - m + 1 + i);
+      }
+      j += shift;
+      memcpy(skip, skip + shift, (m - shift)*sizeof(int));
+      memset(skip + m - shift, 0, shift*sizeof(int));
+   }
+}
+
+</pre>
+</div>
+
+<div class="bar"><a name="SECTION00164" style="color: teal">The example</a></div>
+
+<p>Preprocessing phase</p>
+
+<p align="center"><img alt="Boyer-Moore bmBc and bmGs tables" align="BOTTOM" src="images/bmtab1.png"><br clear="all">
+<span style="white-space: nowrap"><em>bmBc</em> and <em>bmGs</em> tables used by Apostolico-Giancarlo algorithm</span></p>
+
+<p><a name="search" href="examples/exp16.html" style="text-decoration: underline">Searching</a> phase</p>
+
+<br>
+<div class="bar"><a name="SECTION00165">References</a></div>
+
+<div class="ref">
+<ul style="text-align: justify ">
+<li><strong>A<small>POSTOLICO</small> A.</strong>, <strong>G<small>IANCARLO</small> R.</strong>, 1986, The Boyer-Moore-Galil string searching strategies revisited, <em>SIAM Journal on Computing</em> 15(1):98-105.</li>
+
+<li>C<small>ROCHEMORE</small>, M., L<small>ECROQ</small>, T., 1997, Tight bounds on the complexity of the Apostolico-Giancarlo algorithm, <em>Information Processing Letters</em> 63(4):195-203.</li>
+
+<li>C<small>ROCHEMORE</small>, M., R<small>YTTER</small>, W., 1994, Text Algorithms, <em>Oxford University Press</em>.</li>
+
+<li>G<small>USFIELD</small>, D., 1997, <cite>Algorithms on strings, trees, and sequences: Computer Science and Computational Biology</cite>, Cambridge University Press.</li>
+
+<li>L<small>ECROQ</small>, T., 1992, <em>Recherches de mot</em>, Ph. D. Thesis, University of Orl&eacute;ans, France.</li>
+
+<li>L<small>ECROQ</small>, T., 1995, Experimental results on string matching algorithms, <em>Software - Practice &amp; Experience</em> 25(7):727-765.</li>
+</ul>
+</div>
+
+<br>
+<hr color="#F0F0FC" size="2">
+<a href="node17.html#SECTION00170"><img alt="Reverse Colussi algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node15.html#SECTION00150"><img alt="Turbo Boyer-Moore algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="node17.html#SECTION00170">Reverse Colussi algorithm</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Prev:</b> <a href="node15.html#SECTION00150">Turbo-BM algorithm</a> 
+
+<hr>
+<br>
+<div align="right"><em><small><small>e-mails: {<a href="mailto:Christian.Charras@laposte.net">Christian.Charras</a>, <a href="mailto:Thierry.Lecroq@laposte.net">Thierry.Lecroq</a> }@laposte.net</small><br>
+ Tue Jan 14 15:03:31 MET 1997</small></em></div>
+</body>
+</html>
+

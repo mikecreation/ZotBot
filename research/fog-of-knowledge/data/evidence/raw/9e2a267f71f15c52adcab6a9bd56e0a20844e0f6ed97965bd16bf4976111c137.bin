@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>2-choice hashing</title>
+<meta name="description"
+  content="Definition of 2-choice hashing,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="2-choice hashing">
+<meta name="type" content="data structure">
+<meta name="area" content="Searching">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>2-choice hashing</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A variant of a <a href="hashtab.html"><em>hash table</em></a> in which <a href="key.html"><em>keys</em></a> are added by hashing with two <a href="hash.html"><em>hash functions</em></a>.  The key is put in the <a href="array.html"><em>array</em></a> position with the fewer (colliding) keys.   Some <a href="collisionres.html"><em>collision resolution scheme</em></a> is needed, unless keys are kept in <a href="bucket.html"><em>buckets</em></a>.  The <a href="averageCaseCost.html"><em>average-case cost</em></a> of a successful search is <a href="bigOnotation.html"><em>O(2 + (m-1)/n)</em></a>, where m is the number of keys and n is the size of the array. The most collisions is log<sub>2</sub> ln n + <a href="theta.html"><em>&Theta;</em></a>(m/n) with high probability.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="hashtab.html"><em>hash table</em></a>.
+</p>
+<p>
+<strong>Aggregate parent</strong> (I am a part of or used in ...)<br>
+<a href="dictionary.html"><em>dictionary</em></a>.
+</p>
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="array.html"><em>array</em></a>, <a href="hash.html"><em>hash function</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="twoLeftHashing.html"><em>2-left hashing</em></a>.
+</p>
+
+<p>
+<em>Note:
+Called "2-way chaining" in the paper.<br /> Although the average lookup time is similar to a table with a single hash function, the maximum number of collisions is exponentially smaller.  This make using buckets or use in real-time systems far more practical.  Additional hash functions only decrease the maximum by a constant factor.<br /> Buckets or lists can be searched in parallel. </p> 
+<p> Michael Mitzenmacher extensively studied and analyzed 2-left and 2-choice hashing.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>More information</h2>
+<p>
+<strong>Yossi Azar</strong>, <strong>Andrei Z. Broder</strong>,  <strong>Anna R. Karlin</strong>, <strong>Eli Upfal</strong>,  <em>Balanced Allocations</em>, SIAM J. Comput. 29(1):180-200, 1999.<br /> An earlier version appeared in STOC 1994.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#374756425b19555b56545c77595e444319505841">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 14 August 2008.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "2-choice hashing", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 14 August 2008. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/twoChoiceHashing.html">https://www.nist.gov/dads/HTML/twoChoiceHashing.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a9176e0fdc8f51',t:'MTc5MjAwNzIwMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

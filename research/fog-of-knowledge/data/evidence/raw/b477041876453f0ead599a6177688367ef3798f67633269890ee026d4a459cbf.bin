@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>Fisher-Yates shuffle</title>
+<meta name="description"
+  content="Definition of Fisher-Yates shuffle,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="Fisher-Yates shuffle">
+<meta name="type" content="algorithm">
+<meta name="area" content="Combinatorics">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>Fisher-Yates shuffle</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+Randomly permute N elements by exchanging each element e<sub>i</sub> with a random element from i to N. It consumes <a href="theta.html"><em>&Theta;(N log N)</em></a> bits and runs in <a href="linear.html"><em>linear</em></a> time.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="idealRandomShuffle.html"><em>ideal random shuffle</em></a>, <a href="permutation.html"><em>permutation</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="johnsonTrotter.html"><em>Johnson-Trotter</em></a>, <a href="pseudorandomNumberGen.html"><em>pseudo-random number generator</em></a>.
+</p>
+
+<p>
+<em>Note:
+The algorithm can be viewed as a reverse <a href="selectionSort.html"><em>selection sort</em></a>.  It is described in some detail as algorithm 3.4.2P in  <a href="../terms.html#Knuth97">[Knuth97, 2:145]</a>. </p> 
+<p> For even a rather small number of elements (or cards), the total number of permutations is far larger than the period of most pseudo-random number generators.  This implies that most permutations will never be generated.  (After documentation for random.shuffle() in Python, particularly v2.6.1.)</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+Ben Pfaff's answer to <a href="https://benpfaff.org/writings/clc/shuffle.html" target="_blank">how can I shuffle the contents of an array? (C)</a>. Mike Bostock's <a href="https://bost.ocks.org/mike/shuffle/" target="_blank">animations with code (JavaScript)</a>. An  <a href="http://introcs.cs.princeton.edu/java/14array/" target="_blank">implementation (Java)</a> due to Sedgewick and Wayne (search for Shuffling).
+<h2>More information</h2>
+<p>
+Fisher-Yates shuffle <a href="https://www.youtube.com/watch?v=bfzYj-qGw7U&t=2345" target="_blank">illustrated</a> with argument for correctness and error of naive shuffle. <br /> <iframe src="https://www.youtube.com/embed/bfzYj-qGw7U?start=2345" frameborder="0" allowfullscreen></iframe>
+</p>
+<p>
+<strong>R. A. Fisher</strong> and <strong>F. Yates</strong>, Example 12, Statistical Tables, London, 1938.<br /> <strong>Richard Durstenfeld</strong>, <em>Algorithm 235: Random permutation</em>, CACM 7(7):420, July 1964.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#cabaabbfa6e4a8a6aba9a18aa4a3b9bee4ada5bc">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 5 April 2023.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "Fisher-Yates shuffle", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 5 April 2023. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/fisherYatesShuffle.html">https://www.nist.gov/dads/HTML/fisherYatesShuffle.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a916948ea31b3c',t:'MTc5MjAwNzE2Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

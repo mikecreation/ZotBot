@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>binary GCD</title>
+<meta name="description"
+  content="Definition of binary GCD,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="binary GCD">
+<meta name="type" content="algorithm">
+<meta name="area" content="Numeric Computation">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>binary GCD</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+Compute the <a href="greatestCommonDivisor.html"><em>greatest common divisor</em></a> of two integers, u and v, expressed in binary.  The run time complexity is <a href="bigOnotation.html"><em>O((log<sub>2</sub> u v)&sup2;)</em></a> bit operations.
+</p>
+
+<p>
+<strong>See also</strong>
+<a href="euclidalgo.html"><em>Euclid's algorithm</em></a>.
+</p>
+
+<p>
+<em>Note:
+Discovered by J. Stein in 1967.  Another source says discovered by R. Silver and J. Tersian in 1962 and published by G. Stein in 1967. 
+<p> The algorithm uses the following observations. <ul> 
+<li>If u and v are both even, gcd(u,v) = 2 gcd(u/2, v/2). 
+<li>If u is even and v is odd, gcd(u,v) = gcd(u/2, v). 
+<li>Otherwise both are odd, and gcd(u,v) = gcd(|u-v|/2, v).  (Euclid's algorithm with a division by 2 since the difference of two odd numbers is even.) </ul> </p> 
+<p> Here is the algorithm.  It is especially efficient for operations on binary representations. <ol> 
+<li> g = 1 
+<li> while u is even and v is even <ul> 
+<li> u = u/2 (right shift) 
+<li> v = v/2 
+<li> g = 2*g (left shift) </ul> now u or v (or both) are odd 
+<li> while u &gt; 0 <ul> 
+<li> if u is even, u = u/2 
+<li> else if v is even, v = v/2 
+<li> else <ul> 
+<li> t = |u-v|/2 
+<li> if u < v, then v = t else u = t </ul> </ul> 
+<li> return v*g </ol> </p> 
+<p> Knuth calls this algorithm 4.5.2B in <a href="../terms.html#Knuth97">[Knuth97, 2:338]</a>. Torsten Eichst&auml;dt suggested incrementing g in step 2.3 (g++) and  returning v left shifted g times in step 4 (return v&lt;&lt;g). 4 April 2006.  </em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>More information</h2>
+<p>
+<a href="http://www.cut-the-knot.org/blue/binary.shtml" target="_blank">Binary Euclid's Algorithm</a> including examples and references.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#403021352c6e222c21232b002e2933346e272f36">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 2 November 2020.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "binary GCD", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 2 November 2020. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/binaryGCD.html">https://www.nist.gov/dads/HTML/binaryGCD.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a91648db955c91',t:'MTc5MjAwNzE1NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

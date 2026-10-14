@@ -1,0 +1,262 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+
+<!--Converted with LaTeX2HTML 2K.1beta (1.47)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>Deterministic PDAs</TITLE>
+<META NAME="description" CONTENT="Deterministic PDAs">
+<META NAME="keywords" CONTENT="notes">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="Generator" CONTENT="LaTeX2HTML v2K.1beta">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="notes.css">
+
+<LINK REL="next" HREF="node34.html">
+<LINK REL="previous" HREF="node32.html">
+<LINK REL="up" HREF="node29.html">
+<LINK REL="next" HREF="node34.html">
+</HEAD>
+
+<BODY >
+<!--Navigation Panel-->
+<A NAME="tex2html410"
+  HREF="node34.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/local/lib/latex2html/icons/next.png"></A> 
+<A NAME="tex2html408"
+  HREF="node29.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/local/lib/latex2html/icons/up.png"></A> 
+<A NAME="tex2html402"
+  HREF="node32.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/local/lib/latex2html/icons/prev.png"></A>   
+<BR>
+<B> Next:</B> <A NAME="tex2html411"
+  HREF="node34.html">Context free grammars and</A>
+<B> Up:</B> <A NAME="tex2html409"
+  HREF="node29.html">Pushdown automata</A>
+<B> Previous:</B> <A NAME="tex2html403"
+  HREF="node32.html">The language of a</A>
+<BR>
+<BR>
+<!--End of Navigation Panel-->
+
+<H2><A NAME="SECTION00064000000000000000">
+Deterministic PDAs</A>
+</H2>
+
+<P>
+We have introduced PDAs as nondeterministic machines which may have
+several possibilities how to continue. We now define deterministic
+pushdown automata (DPDA) as those which never have a choice. 
+
+<P>
+To be precise we say that a PDA <!-- MATH
+ $P=(Q,\Sigma,\Gamma,\delta,q_0,Z_0,F)$
+ -->
+<IMG
+ WIDTH="178" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img445.png"
+ ALT="$ P=(Q,\Sigma,\Gamma,\delta,q_0,Z_0,F)$">
+is deterministic (is a DPDA) iff
+<!-- MATH
+ \begin{displaymath}
+|\delta(q,x,z)|+|\delta(q,\epsilon,z)| \leq 1
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="186" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img491.png"
+ ALT="$\displaystyle \vert\delta(q,x,z)\vert+\vert\delta(q,\epsilon,z)\vert \leq 1 $">
+</DIV><P></P>
+Remember, that <IMG
+ WIDTH="27" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img492.png"
+ ALT="$ \vert X\vert$"> stands for the number of elements in a finite
+set <IMG
+ WIDTH="19" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
+ SRC="img493.png"
+ ALT="$ X$">.
+
+<P>
+That is: a DPDA may get stuck but it has never any choice.
+
+<P>
+In our example the automaton <IMG
+ WIDTH="21" HEIGHT="29" ALIGN="MIDDLE" BORDER="0"
+ SRC="img494.png"
+ ALT="$ P_0$"> is not deterministic, e.g. we have
+<!-- MATH
+ $\delta(q_0,0,\#)=\{(q_0,0\#)\}$
+ -->
+<IMG
+ WIDTH="166" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img495.png"
+ ALT="$ \delta(q_0,0,\char93 )=\{(q_0,0\char93 )\}$"> and
+<!-- MATH
+ $\delta(q_0,\epsilon,\#)=\{(q_1,\#)\}$
+ -->
+<IMG
+ WIDTH="156" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img496.png"
+ ALT="$ \delta(q_0,\epsilon,\char93 )=\{(q_1,\char93 )\}$"> and hence 
+<!-- MATH
+ $|\delta(q_0,0,\#)|+|\delta(q_0,\epsilon,\#)| = 2$
+ -->
+<IMG
+ WIDTH="208" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img497.png"
+ ALT="$ \vert\delta(q_0,0,\char93 )\vert+\vert\delta(q_0,\epsilon,\char93 )\vert = 2$">.
+
+<P>
+Unlike the situation for finite automata, there is in general no way
+to translate a nondeterministic PDA into a deterministic one. Indeed,
+there is no DPDA which recognizes the language <IMG
+ WIDTH="15" HEIGHT="14" ALIGN="BOTTOM" BORDER="0"
+ SRC="img152.png"
+ ALT="$ L$"> !
+<B>Nondeterministic PDAs are more powerful than deterministic
+ PDAs.</B>
+
+<P>
+However, we can define a similar language <IMG
+ WIDTH="19" HEIGHT="15" ALIGN="BOTTOM" BORDER="0"
+ SRC="img498.png"
+ ALT="$ L'$"> over
+<!-- MATH
+ $\Sigma=\{0,1,\$\}$
+ -->
+<IMG
+ WIDTH="91" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img499.png"
+ ALT="$ \Sigma=\{0,1,\$\}$"> which can be recognized
+by a deterministic PDA:
+<!-- MATH
+ \begin{displaymath}
+L' = \{ w\$w^R \mid w \in \{0,1\}^* \}
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="189" HEIGHT="36" ALIGN="MIDDLE" BORDER="0"
+ SRC="img500.png"
+ ALT="$\displaystyle L' = \{ w\$w^R \mid w \in \{0,1\}^* \}$">
+</DIV><P></P>
+That is <IMG
+ WIDTH="19" HEIGHT="15" ALIGN="BOTTOM" BORDER="0"
+ SRC="img498.png"
+ ALT="$ L'$"> contains palindroms with a marker <IMG
+ WIDTH="12" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img501.png"
+ ALT="$ \$$"> in the middle,
+e.g. <!-- MATH
+ $01\$10 \in L'$
+ -->
+<IMG
+ WIDTH="79" HEIGHT="31" ALIGN="MIDDLE" BORDER="0"
+ SRC="img502.png"
+ ALT="$ 01\$10 \in L'$">.
+
+<P>
+We define a DPDA <IMG
+ WIDTH="21" HEIGHT="29" ALIGN="MIDDLE" BORDER="0"
+ SRC="img503.png"
+ ALT="$ P_1$"> for <IMG
+ WIDTH="19" HEIGHT="15" ALIGN="BOTTOM" BORDER="0"
+ SRC="img498.png"
+ ALT="$ L'$">:
+<!-- MATH
+ \begin{displaymath}
+{P_1} = (\{ q_0,q_1,q_2 \}, \{0,1,\$\},\{0,1,\#\},\delta',q_0,\#,\{q_2\})
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="353" HEIGHT="33" ALIGN="MIDDLE" BORDER="0"
+ SRC="img504.png"
+ ALT="$\displaystyle {P_1} = (\{ q_0,q_1,q_2 \}, \{0,1,\$\},\{0,1,\char93 \},\delta',q_0,\char93 ,\{q_2\})
+$">
+</DIV><P></P>
+where <IMG
+ WIDTH="12" HEIGHT="15" ALIGN="BOTTOM" BORDER="0"
+ SRC="img15.png"
+ ALT="$ \delta$"> is given by:
+<!-- MATH
+ \begin{displaymath}
+\begin{array}{lcl}
+\delta(q_0,x,z) & = & \{(q_0,xz)\} \\
+\delta(q_0,\$,z) & = & \{(q_1,z)\} \\
+\delta(q_1,x,x) & = & \{(q_1,\epsilon)\} \\
+\delta(q_1,\epsilon,\#) & = & \{(q_2,\epsilon)\} \\
+\delta(q,x,z) & = & \{\} \qquad \textrm{everywhere else}
+\end{array}
+\end{displaymath}
+ -->
+<P></P>
+<DIV ALIGN="CENTER">
+<IMG
+ WIDTH="267" HEIGHT="102" BORDER="0"
+ SRC="img454.png"
+ ALT="\begin{displaymath}
+\begin{array}{lcl}
+\delta(q_0,x,z) &amp; = &amp; \{(q_0,xz)\} \\
+\...
+...a(q,x,z) &amp; = &amp; \{\} \qquad \textrm{everywhere else}
+\end{array}\end{displaymath}">
+</DIV><P></P>
+We can check that this automaton is deterministic. In particular
+the 3rd and 4th line cannot overlap because <IMG
+ WIDTH="17" HEIGHT="29" ALIGN="MIDDLE" BORDER="0"
+ SRC="img505.png"
+ ALT="$ \char93 $"> is not an input
+symbol. 
+
+<P>
+Different to PDAs in general the two acceptance methods are not
+equivalent for DPDAs -- acceptance by final state makes it possible
+to define a bigger class of langauges. hence, we shall always use
+acceptance by final state for DPDAs.
+
+<P>
+
+<HR>
+<!--Navigation Panel-->
+<A NAME="tex2html410"
+  HREF="node34.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next"
+ SRC="file:/usr/local/lib/latex2html/icons/next.png"></A> 
+<A NAME="tex2html408"
+  HREF="node29.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up"
+ SRC="file:/usr/local/lib/latex2html/icons/up.png"></A> 
+<A NAME="tex2html402"
+  HREF="node32.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous"
+ SRC="file:/usr/local/lib/latex2html/icons/prev.png"></A>   
+<BR>
+<B> Next:</B> <A NAME="tex2html411"
+  HREF="node34.html">Context free grammars and</A>
+<B> Up:</B> <A NAME="tex2html409"
+  HREF="node29.html">Pushdown automata</A>
+<B> Previous:</B> <A NAME="tex2html403"
+  HREF="node32.html">The language of a</A>
+<!--End of Navigation Panel-->
+<ADDRESS>
+Thorsten Altenkirch
+2001-05-08
+</ADDRESS>
+</BODY>
+</HTML>

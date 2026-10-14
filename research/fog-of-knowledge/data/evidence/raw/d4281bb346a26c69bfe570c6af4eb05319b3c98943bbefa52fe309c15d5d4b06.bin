@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>adjacency-matrix representation</title>
+<meta name="description"
+  content="Definition of adjacency-matrix representation,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="adjacency-matrix representation">
+<meta name="type" content="data structure">
+<meta name="area" content="Graphs">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>adjacency-matrix representation</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A representation of a <a href="directedGraph.html"><em>directed graph</em></a> with n <a href="vertex.html"><em>vertices</em></a> using an n &times; n <a href="matrix.html"><em>matrix</em></a>, where the entry at (i,j) is 1 if there is an <a href="edge.html"><em>edge</em></a> from vertex i to vertex j; otherwise the entry is 0.  A <a href="weightedGraph.html"><em>weighted graph</em></a> may be represented using the weight as the entry.  An <a href="undirectedGraph.html"><em>undirected graph</em></a> may be represented using the same entry in both (i,j) and (j,i) or using an <a href="upperTriangularMatrix.html"><em>upper triangular matrix</em></a>.
+</p>
+
+<p>
+<strong>Aggregate parent</strong> (I am a part of or used in ...)<br>
+<a href="graph.html"><em>graph</em></a>, <a href="k2tree.html"><em>k&sup2;-tree</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="adjacencyListRep.html"><em>adjacency-list representation</em></a>, <a href="densegraph.html"><em>dense graph</em></a>.
+</p>
+
+<p>
+<em>Note:
+Suppose we have a directed graph with four vertices.  Here are adjacency-matrix and adjacency-list representations.  The arrow (-&gt;) means a link in a list. 
+<p> 
+<pre>    1 2 3 4<br /> 1  1 1 1 1<br /> 2  1 0 0 0<br /> 3  0 1 0 1<br /> 4  0 1 1 0<br /> </pre> </p> 
+<p> 
+<pre> 1  -&gt; 1 -&gt; 2 -&gt; 3 -&gt; 4<br /> 2  -&gt; 1<br /> 3  -&gt; 2 -&gt; 4<br /> 4  -&gt; 2 -&gt; 3<br /> </pre> </p> 
+<p> The adjacency-list representation is more compact for a <a href="sparsematrix.html"><em>sparse matrix</em></a>, although a <a href="k2tree.html"><em>k&sup2;-tree</em></a> can represent a sparse matrix very efficiently.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorSKS">SKS</a></p>
+<h2>Implementation</h2>
+Algorithms and Data Structures' <a href="https://www.algolist.net/Data_structures/Graph/Internal_representation" target="_blank">implementation (Java and C++)</a>. Sedgewick and Wayne "Algorithms" 4th edition's <a href="https://algs4.cs.princeton.edu/42digraph/" target="_blank">implementation (Java)</a>.
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#7a0a1b0f165418161b19113a1413090e541d150c">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 8 June 2023.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Sandeep Kumar Shukla, "adjacency-matrix representation", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 8 June 2023. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/adjacencyMatrixRep.html">https://www.nist.gov/dads/HTML/adjacencyMatrixRep.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a916349cb41103',t:'MTc5MjAwNzE1MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

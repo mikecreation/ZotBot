@@ -1,0 +1,269 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="generator" content="HTML Tidy, see www.w3.org">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Galil-Seiferas algorithm</title>
+<meta name="generator" content="Microsoft XSLT (msxml3 golden/ msxml4), see http://www.microsoft.com">
+<meta name="robots" content="index, follow">
+<meta name="description" content="EXACT STRING MATCHING ALGORITHMS Animation in Java, Galil-Seiferas algorithm">
+<meta name="keywords" content="string matching, algorithm, Java, C">
+<meta name="resource-type" content="document">
+<meta name="Author-Corporate" content="Chistian.Charras@dir.univ-rouen.fr">
+<meta name="Content-Language" content="en">
+<meta name="distribution" content="global">
+<link type="text/css" rel="stylesheet" href="string.css">
+</head>
+<body bgcolor="white">
+<a href="node26.html#SECTION00260"><img alt="Two Way algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="bom.html#SECTION00245"><img alt="Backward Oracle Matching algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="node26.html#SECTION00260">Two Way algorithm</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Prev:</b> <a href="bom.html#SECTION00245">Backward Oracle Matching algorithm</a> 
+
+<hr>
+<h1 align="center"><a id="SECTION00250" name="SECTION00250">Galil-Seiferas algorithm</a></h1>
+
+<hr color="#F0F0FC" size="3">
+<applet codebase="../spm/GalilSeiferas" archive="GalilSeiferas.zip" code="AppletButtonText2.class" width="230" height="63"><param name="windowTitle" value="Galil-Seiferas algorithm">
+<param name="windowClass" value="ProgramTextWindow2">
+<param name="buttonText" value="visualization">
+<param name="windowwidth" value="375">
+<param name="windowheight" value="560">
+<param name="label1" value="Pattern:">
+<param name="input1" value="gcagagag">
+<param name="label2" value="String:">
+<param name="input2" value="gcatcgcagagagtatacagtacg">
+<param name="program" value="GalilSeiferas">
+</applet> 
+
+<div class="bar"><a name="SECTION00251">Main features</a></div>
+
+<div class="mf">
+<ul>
+<li>constant extra space complexity;</li>
+
+<li>preprocessing phase in <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<i>m</i>)</span> time and constant space complexity;</li>
+
+<li>searching phase in <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<i>n</i>)</span> time complexity;</li>
+
+<li>performs <span style="white-space: nowrap">5<i>n</i></span> text character comparisons in the worst case.</li>
+</ul>
+</div>
+
+<div class="bar"><a name="SECTION00252">Description</a></div>
+
+<div class="desc">
+<p align="justify">Throughout this section we will use a constant <i>k</i>. Galil and Seiferas suggest that practically this constant could be equal to 4.</p>
+
+<p align="justify">Let us define the function <em>reach</em> for <span style="white-space: nowrap">0&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>i</i> &lt; <i>m</i></span> as follows: <span style="white-space: nowrap"><em>reach</em>(<i>i</i>)=<i>i</i>+<em>max</em>{<i>i</i>&rsquo;&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>m</i>-<i>i</i>&nbsp;<big>:</big>&nbsp;<i>x</i>[0 .. <i>i</i>&rsquo;]=<i>x</i>[<i>i</i>+1 .. <i>i</i>&rsquo;+<i>i</i>+1]}</span></p>
+
+<p align="justify">Then a prefix <i>x</i>[0 .. <i>p</i>] of <i>x</i> is a <em><b>prefix period</b></em> if it is basic and <em>reach</em>(<i>p</i>) &nbsp;<img alt="geq" src="images/geq.gif">&nbsp;<i>kp</i>.</p>
+
+<p align="justify">The preprocessing phase of the Galil-Seiferas algorithm consists in finding a decomposition <i>uv</i> of <i>x</i> such that <i>v</i> has at most one prefix period and |<i>u</i>|=<big><i><b>O</b></i></big>(<em>per</em>(<i>v</i>)). Such a decomposition is called a <em><b>perfect factorization</b></em>.</p>
+
+<p align="justify">Then the searching phase consists in scanning the text <i>y</i> for every occurrences of <i>v</i> and when <i>v</i> occurs to check naively if <i>u</i> occurs just before in <i>y</i>.</p>
+
+<p align="justify">In the implementation below the aim of the preprocessing phase (functions <tt><big><tt>newP1</tt></big></tt>, <tt><big><tt>newP2</tt></big></tt> and <tt><big><tt>parse</tt></big></tt>) is to find a perfect factorization <i>uv</i> of <i>x</i> where <i>u</i>=<i>x</i>[0 .. <i>s</i>-1] and <i>v</i>=<i>x</i>[<i>s</i> .. <i>m</i>-1]. Function <tt><big><tt>newP1</tt></big></tt> finds the shortest prefix period of<i>x</i>[<i>s</i> .. <i>m</i>-1]. Function <tt><big><tt>newP2</tt></big></tt> finds the second shortest prefix period of <i>x</i>[<i>s</i> .. <i>m</i>-1] and function <tt><big><tt>parse</tt></big></tt> increments <i>s</i>.</p>
+
+<dl>
+<dt>Before calling function <em>search</em> we have:</dt>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP"><i>x</i>[<i>s</i> .. <i>m</i>-1] has at most one prefix period;</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP">if <i>x</i>[<i>s</i> .. <i>m</i>-1] does have a prefix period, then its length is <i>p</i><sub>1</sub>;</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP"><i>x</i>[<i>s</i> .. <i>s</i>+<i>p</i><sub>1</sub>+<i>q</i><sub>1</sub>-1] has shortest period of length <i>p</i><sub>1</sub>;</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP"><i>x</i>[<i>s</i> .. <i>s</i>+<i>p</i><sub>1</sub>+<i>q</i><sub>1</sub>] does not have period of length <i>p</i><sub>1</sub>.</td>
+</tr>
+</table>
+</dd>
+</dl>
+
+<p align="justify">The pattern <i>x</i> is of the form <i>x</i>[0 .. <i>s</i>-1]<i>x</i>[<i>s</i> .. <i>m</i>-1] where <i>x</i>[<i>s</i> .. <i>m</i>-1] is of the form <i>z</i><sup><img alt="ell" align="BASELINE" src="images/ell.gif"></sup><i>z</i>&rsquo;<i>a</i><i>z</i>&rdquo; with <i>z</i> basic, |<i>z</i>|=<i>p</i><sub>1</sub>, <i>z</i>&rsquo; prefix of <i>z</i>, <i>z</i>&rsquo;<i>a</i> not a prefix of <i>z</i> and |<i>z</i><sup><img alt="ell" align="BASELINE" src="images/ell.gif"></sup><i>z</i>&rsquo;| =<i>p</i><sub>1</sub>+<i>q</i><sub>1</sub> (see figure&nbsp;<a href="node25.html#figgs">24.1</a>).</p>
+
+<p align="center"><a id="figgs" name="figgs">&nbsp;</a> <img align="BOTTOM" alt="figure 24.1" src="images/gs1.gif"><br clear="all">
+<strong>Figure 24.1:</strong>&nbsp;A perfect factorization of <i>x</i>.</p>
+
+<dl>
+<dt>It means that when searching for <i>x</i>[<i>s</i> .. <i>m</i>-1] in <i>y</i>:</dt>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP">if <i>x</i>[<i>s</i> .. <i>s</i>+<i>p</i><sub>1</sub>+<i>q</i><sub>1</sub>-1] has been matched a shift of length <i>p</i><sub>1</sub> can be performed and the comparisons are resumed with <i>x</i>[<i>s</i>+<i>q</i><sub>1</sub>];</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP">otherwise if a mismatch occurs with <i>x</i>[<i>s</i>+<i>q</i>] with <i>q</i>&nbsp;<img alt="neq" src="images/neq.gif">&nbsp;<i>p</i><sub>1</sub>+<i>q</i><sub>1</sub> then a shift of length <i>q</i>/<i>k</i>+1 can be performed and the comparisons are resumed with <i>x</i>[0].</td>
+</tr>
+</table>
+</dd>
+</dl>
+
+<p align="justify">This gives an overall linear number of text character comparisons.</p>
+
+<p align="justify">The preprocessing phase of the Galil-Seiferas algorithm is in <big><i><b>O</b></i></big>(<i>m</i>) time and constant space complexity. The searching phase is in <big><i><b>O</b></i></big>(<i>n</i>) time complexity. At most 5<i>n</i> text character comparisons can be done during this phase.</p>
+</div>
+
+<div class="bar"><a name="SECTION00253">The C code</a></div>
+
+<p>All the variables are global.</p>
+
+<div class="pre">
+<pre>
+char *x, *y;
+int k, m, n, p, p1, p2, q, q1, q2, s;
+
+
+void search() {
+   while (p &lt;= n - m) {
+      while (p + s + q < n &amp;&amp; x[s + q] == y[p + s + q])
+         ++q;
+      if (q == m - s &amp;&amp; memcmp(x, y + p, s + 1) == 0)
+         OUTPUT(p);
+      if (q == p1 + q1) {
+         p += p1;
+         q -= p1;
+      }
+      else {
+         p += (q/k + 1);
+         q = 0;
+      }
+   }
+}
+
+
+void parse() {
+   while (1) {
+      while (x[s + q1] == x[s + p1 + q1])
+         ++q1;
+      while (p1 + q1 &gt;= k*p1) {
+         s += p1;
+         q1 -= p1;
+      }
+      p1 += (q1/k + 1);
+      q1 = 0;
+      if (p1 &gt;= p2)
+         break;
+   }
+   newP1();
+}
+ 
+
+void newP2() {
+   while (x[s + q2] == x[s + p2 + q2] &amp;&amp; p2 + q2 &lt; k*p2)
+      ++q2;
+   if (p2 + q2 == k*p2)
+      parse();
+   else
+      if (s + p2 + q2 == m)
+         search();
+      else {
+         if (q2 == p1 + q1) {
+            p2 += p1;
+            q2 -= p1;
+         }
+         else {
+            p2 += (q2/k + 1);
+            q2 = 0;
+         }
+         newP2();
+      }
+}
+ 
+
+void newP1() {
+   while (x[s + q1] == x[s + p1 + q1])
+      ++q1;
+   if (p1 + q1 &gt;= k*p1) {
+      p2 = q1;
+      q2 = 0;
+      newP2();
+   }
+   else {
+      if (s + p1 + q1 == m)
+         search();
+      else {
+         p1 += (q1/k + 1);
+         q1 = 0;
+         newP1();
+      }
+   }
+}
+
+
+void GS(char *argX, int argM, char *argY, int argN) {
+   x = argX;
+   m = argM;
+   y = argY;
+   n = argN;
+   k = 4;
+   p = q = s = q1 = p2 = q2 = 0;
+   p1 = 1;
+   newP1();
+}
+
+</pre>
+</div>
+
+<div class="bar"><a name="SECTION00254" style="color: teal">The example</a></div>
+
+<p>Preprocessing phase</p>
+
+<p align="center"><i>p</i>=0,&nbsp;&nbsp;<i>q</i>=0,&nbsp;&nbsp;<i>s</i>=0,&nbsp;&nbsp;<i>p</i><sub>1</sub>=7,&nbsp;&nbsp;<i>q</i><sub>1</sub>=1.</p>
+
+<p><a name="search" href="examples/exp25.html" style="text-decoration: underline">Searching</a> phase</p>
+
+<br>
+<div class="bar"><a name="SECTION00255">References</a></div>
+
+<div class="ref">
+<ul style="text-align: justify ">
+<li>C<small>ROCHEMORE</small>, M., R<small>YTTER</small>, W., 1994, Text Algorithms, <em>Oxford University Press</em>.</li>
+
+<li><strong>G<small>ALIL</small> Z.</strong>, <strong>S<small>EIFERAS</small> J.</strong>, 1983, Time-space optimal string matching, <em>Journal of Computer and System Science</em> 26(3):280-294.</li>
+</ul>
+</div>
+
+<br>
+<hr color="#F0F0FC" size="2">
+<a href="node26.html#SECTION00260"><img alt="Two Way algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="bom.html#SECTION00245"><img alt="Backward Oracle Matching algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="node26.html#SECTION00260">Two Way algorithm</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Prev:</b> <a href="bom.html#SECTION00245">Backward Oracle Matching algorithm</a> 
+
+<hr>
+<br>
+<div align="right"><em><small><small>e-mails: {<a href="mailto:Christian.Charras@laposte.net">Christian.Charras</a>, <a href="mailto:Thierry.Lecroq@laposte.net">Thierry.Lecroq</a> }@laposte.net</small><br>
+ Tue Jan 14 15:03:31 MET 1997</small></em></div>
+</body>
+</html>
+

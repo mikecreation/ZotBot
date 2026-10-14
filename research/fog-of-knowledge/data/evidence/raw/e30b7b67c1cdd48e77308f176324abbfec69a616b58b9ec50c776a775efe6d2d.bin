@@ -1,0 +1,534 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+	<TITLE>23</TITLE>
+	<META NAME="GENERATOR" CONTENT="OpenOffice.org 1.0  (Linux)">
+	<META NAME="AUTHOR" CONTENT="daniel kleitman">
+	<META NAME="CREATED" CONTENT="20021104;11470000">
+	<META NAME="CHANGEDBY" CONTENT="daisymae">
+	<META NAME="CHANGED" CONTENT="20021104;11470000">
+	<STYLE>
+	<!--
+		@page { size: 21.59cm 27.94cm; margin-right: 3.18cm; margin-top: 2.54cm; margin-bottom: 2.54cm }
+		P { margin-bottom: 0cm; color: #000000; widows: 2; orphans: 2 }
+		P.western { font-family: "Times New Roman", serif; font-size: 16pt; so-language: en-US; font-weight: bold }
+		P.cjk { font-family: "Times New Roman", serif; font-size: 16pt; font-weight: bold }
+	-->
+	</STYLE>
+</HEAD>
+<BODY LANG="en-US" TEXT="#000000">
+<P CLASS="western">23. The Finite Fourier Transform and the Fast
+Fourier Transform Algorithm</P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P ALIGN=CENTER><FONT SIZE=3><B>1. Introduction: Fourier Series</B></FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	Early in the Nineteenth
+Century, Fourier, in studying sound and oscillatory motion conceived
+of the idea of representing periodic functions by their coefficients
+in an expansion as a sum of sines and cosines rather than their
+values.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	He noticed that if, for
+example, you represented the shape of a vibrating string of length L,
+fixed at its ends as</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P ALIGN=CENTER STYLE="font-weight: medium"><FONT SIZE=3><FONT SIZE=4>y(x)
+= <FONT FACE="Symbol, serif">&#61523;</FONT> a<SUB>k </SUB>sin
+2<FONT FACE="Symbol, serif">&#61552;</FONT>kx/L</FONT>,</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>the coefficients, a<SUB>k</SUB>,
+contained important and useful information about the quality of the
+sound that the string produces that was not easily accessible from
+the ordinary y=f(x) representation of the shape of the string.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	This kind of
+representation of a function is called a Fourier Series, and there is
+a tremendous amount of mathematical lore about properties of such
+series and for what classes of functions they can be shown to exist.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	One particularly useful
+fact about them is how we can obtain the coefficients a<SUB>k</SUB>
+from the function. </FONT>
+</P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="text-indent: 1.27cm; font-weight: medium"><FONT SIZE=3>This
+follows from the orthogonality property of sines:</FONT></P>
+<P STYLE="text-indent: 1.27cm; font-weight: medium"><BR>
+</P>
+<P ALIGN=CENTER STYLE="text-indent: 1.27cm; font-weight: medium"><FONT SIZE=3><B><FONT SIZE=4><FONT FACE="Symbol, serif">&#61682;</FONT></FONT></B>
+<FONT SIZE=4>sin 2<FONT FACE="Symbol, serif">&#61552;</FONT>kx/L sin
+2<FONT FACE="Symbol, serif">&#61552;</FONT>jx/L dx</FONT></FONT></P>
+<P ALIGN=CENTER STYLE="text-indent: 1.27cm; font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>if the integral has
+limits 0 and L, is 0 if k is different from j and is <FONT FACE="Symbol, serif">&#61552;</FONT>
+when k is j.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>(To see this notice that
+the product of these sines can be written as a constant multiple of
+the difference between cosines  of 2<FONT FACE="Symbol, serif">p</FONT>(k+j)x/L
+and 2<FONT FACE="Symbol, serif">p</FONT>(k-j)x/L, and each of these
+cosines has 0 integral over this range.) </FONT>
+</P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="text-indent: 1.27cm; font-weight: medium"><BR>
+</P>
+<P STYLE="text-indent: 1.27cm; font-weight: medium"><FONT SIZE=3>By
+multiplying the expression for y(x) above by 2<FONT FACE="Symbol, serif">p</FONT>jx/L
+and integrating the result from 0 to L we get then the expression</FONT></P>
+<P STYLE="text-indent: 1.27cm; font-weight: medium"><BR>
+</P>
+<P ALIGN=CENTER STYLE="text-indent: 1.27cm; font-weight: medium"><FONT SIZE=3><FONT SIZE=4>a<SUB>j</SUB>
+= (1/<FONT FACE="Symbol, serif">p</FONT>)<B><FONT FACE="Symbol, serif">&ograve;</FONT></B>
+f(x) sin 2<FONT FACE="Symbol, serif">p</FONT>jx/L dx</FONT>.</FONT></P>
+<P ALIGN=CENTER STYLE="text-indent: 1.27cm; font-weight: medium"><BR>
+</P>
+<P STYLE="text-indent: 1.27cm; font-weight: medium"><FONT SIZE=3>Fourier
+series represent only one of many alternate ways we can represent a
+function. Whenever we can, by introducing an appropriate weight
+function in the integral, obtain a similar orthogonality relation
+among functions, we can derive similar formulae for coefficients in a
+series.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P ALIGN=CENTER><FONT SIZE=3><B>2. The Fourier Transform</B></FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	Given a function f
+defined for all real arguments, we can give an alternative
+representation to it as an integral rather than as an infinite
+series, as follows.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P ALIGN=CENTER STYLE="font-weight: medium"><FONT SIZE=3><FONT SIZE=4>f(x)
+ =  <B><FONT FACE="Symbol, serif">&ograve;</FONT></B> exp(ikx) g(k)
+dk</FONT></FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>where the integral is
+over all real values of k.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	The representation of f
+by the function g is called a Fourier transform of f, and it is very
+important tool in physics. </FONT>
+</P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	One reason for this is
+that exponential functions e<SUP>ikx</SUP>, which f is written as an
+integral which is a sort of a sum of are eigenfunctions of the
+derivative. That is, the derivative, acting on an exponential, merely
+multiplies the exponential by ik. This makes the Fourier transform a
+useful tool in investigating differential equations.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	Another example of it&rsquo;s
+application: In quantum mechanics, we represent the  state of a
+particle in a physical system has wave function, <FONT FACE="Symbol, serif">&#61546;</FONT>(x),
+and |<FONT FACE="Symbol, serif">&#61546;</FONT>(x)|<SUP>2</SUP> dx 
+represents the probability that the particle in this state has
+position that lies between x and x+dx.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	The same state can also
+be represented by its wave function in momentum space, and that wave
+function of the variable p, is a constant multiple of the Fourier
+transform of <FONT FACE="Symbol, serif">j</FONT>(x):    </FONT>
+</P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P ALIGN=CENTER STYLE="font-weight: medium"><FONT SIZE=3><FONT SIZE=4><FONT FACE="Symbol, serif">&#61561;</FONT>(p)
+= c <B><FONT FACE="Symbol, serif">&ograve;</FONT> </B>exp(ipx)<FONT FACE="Symbol, serif">j</FONT>(x)dx.</FONT></FONT></P>
+<P ALIGN=CENTER STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	We can invert the
+Fourier Transform in much the same way that we can invert Fourier
+Series. The resulting formula is</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P ALIGN=CENTER STYLE="font-weight: medium"><FONT SIZE=3><FONT SIZE=4>g(k)
+ = (1/2<FONT FACE="Symbol, serif">p</FONT>) <B><FONT FACE="Symbol, serif">&ograve;</FONT></B>
+exp(-ikx) f(x) dx</FONT></FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>again the integration is
+over all real values of x.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P ALIGN=CENTER><FONT SIZE=3><B>3.  The Finite Fourier Transform</B></FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	Given a finite sequence
+consisting of n numbers, for example the ccoefficients of a
+polynomial of degree n-1, we can define a Finite Fourier Transform 
+that produces a different set of n numbers, in a way that has a close
+relationship to the Fourier Transform just mentioned.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	I like to look at it
+backwards. </FONT>
+</P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	Suppose we have a
+polynomial p of degree n-1. It can be described by its coefficients,
+{a<SUB>j</SUB>}: with</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P ALIGN=CENTER STYLE="font-weight: medium"><FONT SIZE=3><FONT SIZE=4>p(x)
+= <FONT FACE="Symbol, serif">&#61523;</FONT><SUB>j=</SUB> <SUB>0 to
+n-1</SUB> a<SUB>j</SUB> x<SUP>j</SUP> .</FONT></FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	We can also represent p
+by giving its values at any n arguments {p(x<SUB>k</SUB>)}.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	This can be done as
+follows. Observe first that the polynomial of degree n-1</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P ALIGN=CENTER STYLE="font-weight: medium"><FONT SIZE=3><FONT SIZE=4>f(x<SUB>j</SUB>)((x-x<SUB>1</SUB>)
+/(x<SUB>j</SUB>-x<SUB>1</SUB>))*. . .(</FONT>exclude <FONT SIZE=4>(x-x<SUB>j</SUB>)
+/(x<SUB>j</SUB>-x<SUB>j</SUB>)) . . . *((x-x<SUB>n</SUB>)/ (x<SUB>j</SUB>-x<SUB>n</SUB>))</FONT></FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>takes the value f(x<SUB>j</SUB>)
+at x=x<SUB>j</SUB> and is 0 at all other of our arguments x<SUB>k</SUB>.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	We can recover p from
+its values by summing similar terms over all j.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	To evaluate a polynomial
+of degree n-1 at n values appears to require n<SUP>2</SUP> actions: n
+evaluations each of n terms. Similarly the procedure just described
+for recovering p from its values requires at least n<SUP>2 </SUP>operations
+to obtain all the coefficients of p.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	When you evaluate a
+polynomial at an argument x whose magnitude is not close to 1, the
+powers of x that are big dominate those that are small by so much
+that you have to worry about losing the smaller terms entirely from
+round off errors.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	<B>The finite Fourier
+transform can be defined as the act of evaluating a polynomial of
+degree n-1 at n roots of unity, that is, at n solutions to the
+equation x<SUP>n</SUP>=1.</B></FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	This transform can be
+performed upon polynomials with coefficients in any field in which
+this equation has n solutions, which will happen when there is <B>a
+primitive n-th root of unity</B> in the field. (This means a number
+such that x<SUP>n</SUP>=1 but x<SUP>k</SUP> is not 1 for any k
+between 1 and n-1.) The n roots of unity are then the various powers
+of the primitive root.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	<B>When does this
+happen</B>? It does for complex numbers, in which case we have </FONT>
+</P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P ALIGN=CENTER STYLE="font-weight: medium"><FONT SIZE=3><B><FONT SIZE=4>exp(2<FONT FACE="Symbol, serif">p</FONT>i/n)</FONT>
+which is<FONT SIZE=4> cos(2<FONT FACE="Symbol, serif">p</FONT>/n)+isin(2<FONT FACE="Symbol, serif">p</FONT>/n).</FONT></B></FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>as primitive n-th root of
+unity. </FONT>
+</P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	<B>But it also happens
+for remainders on dividing by a prime number of the form kn+1</B>. In
+such fields there is a primitive kn-th root of unity and hence a
+primitive n-th root of unity (such as the k-th power of the former.)</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	The analogy between this
+finite transform and the Fourier transform is mnost apparent when we
+use complex numbers. Then, if the coefficients of the polynomial are
+{a<SUB>j</SUB>}, the evaluations become</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P ALIGN=CENTER STYLE="font-weight: medium"><FONT SIZE=3><FONT SIZE=4>p(exp(2<FONT FACE="Symbol, serif">p</FONT>ik/n))
+=  <FONT FACE="Symbol, serif">&#61523;</FONT><SUB>j</SUB> a<SUB>j</SUB>
+(cos(2<FONT FACE="Symbol, serif">p</FONT>jk/n)) +  i<FONT FACE="Symbol, serif">&#61523;</FONT><SUB>j</SUB>
+a<SUB>j</SUB> (sin(2<FONT FACE="Symbol, serif">p</FONT>jk/n)).</FONT></FONT></P>
+<P ALIGN=CENTER STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	(This is why we say that
+we are doing things backwards. It is the a<SUB>j</SUB> which are
+analogous to the Fourier coefficients for the function p.)</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	In general, if we let z
+be our primitive n-th root of unity, the same expression becomes</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	</FONT></P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	Transforms of this kind
+can be defined for any value of n. And there is a symmetric form for
+the inverse transformation which takes the values </FONT>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>{p(z<SUP>k</SUP>)}, which
+we shall abbreviate as {p<SUB>k</SUB>}, and produces the a<SUB>j</SUB>,
+so there is no significant difference between defining this transform
+forward or backward.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	We can obtain the
+inverse transformation by multiplying each p<SUB>k</SUB> by z<SUP>-sk</SUP>,</FONT></P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>and summing over the n
+values of k.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	We get   <FONT SIZE=4><FONT FACE="Symbol, serif">&#61523;</FONT></FONT><SUB>j,k</SUB>
+a<SUB>j</SUB> z<SUP>jk</SUP>*z<SUP>-sk </SUP> or  <FONT SIZE=4><FONT FACE="Symbol, serif">&#61523;</FONT></FONT><SUB>j</SUB>
+a<SUB>j</SUB>  (<FONT SIZE=4><FONT FACE="Symbol, serif">S</FONT></FONT><SUB>k</SUB>
+z<SUP>(j-s)k</SUP>) <SUP> </SUP> or <FONT SIZE=4><FONT FACE="Symbol, serif">S</FONT></FONT><SUB>j</SUB>
+a<SUB>j</SUB> t<SUB>s-j</SUB>, where t<SUB>r</SUB> is our old friend
+the sum of the r-th powers of the n roots, z<SUP>k</SUP>, of the
+equation z<SUP>n</SUP> &ndash;1.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	Recall please, that this
+equation, z<SUP>n</SUP> &ndash; 1 = 0 has the form  <FONT SIZE=4><FONT FACE="Symbol, serif">S</FONT></FONT><SUB>k</SUB>
+z<SUP>k</SUP>s<SUB>k</SUB> = 0, where s<SUB>k</SUB><SUP> </SUP> is
+the k-th elementary symmetric function of the roots of the equation.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	This implies that the s<SUB>k</SUB>
+are all 0, for k=1 up to n-1 for our equation, while s<SUB>0</SUB> is
+1.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	Recall also that the the
+t&rsquo;s and the s&rsquo;s are linearly dependent according to  the
+relations, for each k</FONT></P>
+<P ALIGN=CENTER STYLE="font-weight: medium"><FONT SIZE=3><FONT SIZE=4><FONT FACE="Symbol, serif">S</FONT><SUB>j=0
+to k-1</SUB><SUP> </SUP> s<SUB>j</SUB>t<SUB>k-j</SUB>(-<SUB> </SUB>1)<SUP>j</SUP>
+ + ks<SUB>k</SUB>(-1)<SUP>k</SUP> =0,</FONT></FONT></P>
+<P ALIGN=CENTER STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>from which we can deduce
+that the t<SUB>s-j</SUB> here are all 0, unless s=j.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	When s=j, the sum that
+forms t<SUB>0</SUB>, or t<SUB>n</SUB>, which is n, so that we get</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3><FONT SIZE=4>            
+                     <FONT FACE="Symbol, serif">S</FONT><SUB>k</SUB>
+p<SUB>k </SUB>z<SUP>-k</SUP> =<SUP> </SUP>&nbsp;<FONT FACE="Symbol, serif">S</FONT><SUB>j,k</SUB>
+a<SUB>j</SUB> z<SUP>jk</SUP>*z<SUP>-sk </SUP> = na<SUB>s</SUB>,</FONT></FONT></P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>and </FONT>
+</P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P ALIGN=CENTER STYLE="font-weight: medium"><FONT SIZE=3><FONT SIZE=4>a<SUB>s</SUB>
+= (1/n) <FONT FACE="Symbol, serif">S</FONT><SUB> k</SUB> p<SUB>k</SUB>z<SUP>-k</SUP></FONT>.</FONT></P>
+<P STYLE="font-weight: medium"><FONT SIZE=3><SUP> </SUP> </FONT>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3><FONT SIZE=4>	</FONT>Since
+z<SUP>-1 </SUP> is another primitive n-th root of 1 the only
+difference in this equation, and the inverse equation for evaluations
+is in the factor 1/n.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P ALIGN=CENTER><FONT SIZE=3><B>4. The Cooley-Tukey Fast Fourier
+Transform Algorithm</B></FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3> 	Suppose n is even, so
+that n can be written as 2s. Then this algorithm is a procedure for
+reducing  2s evaluations of polynomials of degree 2s  to 2s
+evaluations of polynomials of degree s, upon making a total of s
+additions, s subtractions and s multiplications. Moreover the
+evaluations consist of evaluating the FFT&rsquo;s of two polynomials,
+each  of degree s-1, at primitive s-th roots of unity.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	To keep things straight
+let us describe the evaluations of a polynomial of degree at most n-1
+at n n-th roots of unity.as an nFFT.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	<B>If n is a power of 2,
+we can iterate this procedure n times, until we reduce the problem to
+n evaluations of polynomials of degree 0, which is a weird way to say
+that we will have obtained our n evaluations.</B></FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	The reduction that is
+the heart of this algorithm is based upon the following observations.
+To perform an nFFT require evaluating our polynomial of degree up to
+n-1 at the n powers of a primitive n-th root of unity, z. </FONT>
+</P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>1. If we consider the
+evaluations we seek at the even powers of z, (1, z<SUP>2</SUP>, z<SUP>4</SUP>,
+. . . ), these powers are the powers 0 to s-1 of the s-th root of
+unity z<SUP>2</SUP>. </FONT>
+</P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3><B>Thus, these
+evaluations are exactly what is involved in an sFFT</B>; the only
+difference being that we are here evaluating a polynomial of degree
+up to n-1, not up to s-1.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>2. In every even power
+evaluation, say at z<SUP>2k</SUP>, the term in our polynomial a<SUB>j</SUB>x<SUP>j</SUP>
+contributes a<SUB>j</SUB>z<SUP>2kj</SUP>. Thus, the contribution from
+the j-th and (s+j)-th terms together are </FONT>
+</P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P ALIGN=CENTER STYLE="font-weight: medium"><FONT SIZE=3>a<SUB>j</SUB>z<SUP>2kj</SUP>
++<SUB> </SUB>a<SUB>j+s</SUB>z<SUP>2kj+2sk</SUP>.</FONT></P>
+<P ALIGN=CENTER STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>But, z<SUP>2sk</SUP> is
+z<SUP>nk</SUP> which is 1, so that the a<SUB>j+s </SUB>contribution
+here is multiplied by the same power of z as the a<SUB>j</SUB>
+contribution, and can be added to it instead of being treated as a
+separate term.</FONT></P>
+<P STYLE="font-weight: medium"><FONT SIZE=3> </FONT>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>3. <B>But this means that
+the z<SUP>2k</SUP> evaluations here are exactly those of
+sFFT({a<SUB>j</SUB>+a<SUB>j+s</SUB>}).</B></FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>4.  The odd power
+evaluations, (at z, z<SUP>3</SUP>, . . .) each gets a contribution 
+from a<SUB>j </SUB> of the form a<SUB>j</SUB>z<SUP>(2k+1)j</SUP>
+which we can write as (a<SUB>j</SUB>z<SUP>j</SUP>)z<SUP>2jk</SUP>. 
+Notice <B>that these evaluations can be considered evaluations at
+even roots of unity of a polynomial whose coefficients are given by
+the products (a<SUB>j</SUB>z<SUP>j</SUP>).</B></FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>5. <SUP>&nbsp;</SUP> In
+every odd power evalution, say at z<SUP>2k+1</SUP>, the term in our
+polynomial a<SUB>j</SUB>x<SUP>j</SUP> contributes a<SUB>j</SUB>z<SUP>j</SUP>z<SUP>2kj</SUP>
+while the term a<SUB>j+s</SUB>x<SUP>j+s </SUP> contributes
+a<SUB>j+s</SUB>z<SUP>j</SUP>z<SUP>s</SUP>z<SUP>2kj +2ks</SUP>. As in
+our second observation we have z<SUP>2ks</SUP>=1, but now we have an
+additional factor of z<SUP>s</SUP>, which is a primitive square root
+of 1, which is &ndash;1. In other words the contributions from a<SUB>j</SUB>
+and (&ndash;a<SUB>j+s</SUB>) are the same here.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>6. We conclude that <B>we
+can combine the j and s+j terms by subtraction in the odd power
+evaluations and these become exactly those of sFFT({(a<SUB>j</SUB>-a<SUB>j+s</SUB>)z<SUP>j</SUP>}).</B></FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="text-indent: 1.27cm; font-weight: medium"><FONT SIZE=3>You
+will notice that we make an addition for each of our even power
+evaluations in making these reductions, and a subtraction and a
+multiplication for each of the odd powers reductions, and this means
+that we must perform s of each of these operations to reduce the
+problem by a factor of two.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	The remaining task in
+completing our evaluations after this reduction consists of repeating
+it in parallel for the even and odd evaluations. After a second
+reduction, we perform 4 reductions in parallel for the even-even,
+odd-even even-odd and odd-odd evaluations (starting in positions
+z<SUP>0</SUP>,z<SUP>1</SUP>, z<SUP>2</SUP>,z<SUP>4</SUP>), and so on.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	And that is the
+algorithm.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	We illustrate it by
+starting with 4  coefficients 1,3,2,5 (of powers 0 through 3) and do
+our calculations mod 17. 4 is a primitive 4<SUP>th</SUP> root of 1
+whose inverse is &ndash;4 or 13.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	In the first step we
+replace the even power entries, which are the first and third here, 
+by 1+2  and 3+5  respectively, and the second and fourth entries by
+(1-2)*4<SUP>0</SUP> and (3-5)*4<SUP>1</SUP> which produces the
+sequence 3,16,8,9 mod 17.</FONT></P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	In the second step we
+replace the first <B>and second </B>entries by 3+8 or 11 and 16+9 or
+8, and the third and fourth by 3-8 or 12 and 16-9 or 7, for an answer
+of (11,8,12,7) as the result of evaluating the polynomial
+1+3x+2x<SUP>2</SUP>+5x<SUP>3</SUP> at x= 1,4,16 and 13 mod 17. </FONT>
+</P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	It is instructive to see
+what happens when we apply the same procedure again to the sequence
+obtained here, namely (11,8,12,7).  </FONT>
+</P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3> 	In the first step this
+becomes (6,16,15,4) (the last value comes from (8-7)*4 mod 17). And
+in the last step we get (4,3,8,12). </FONT>
+</P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="font-weight: medium"><FONT SIZE=3>	Notice that if we divide
+this result by 4 we get (1,5,2,3)  (to divide 3 by 4 you can add 17
+to the 3, divide 20 by 4 and get 5). </FONT>
+</P>
+<P STYLE="font-weight: medium"><BR>
+</P>
+<P STYLE="text-indent: 1.27cm; font-weight: medium"><FONT SIZE=3>These
+are the original coefficients of our polynomial, in the order
+0,3,2,1.</FONT></P>
+<P STYLE="text-indent: 1.27cm; font-weight: medium"><BR>
+</P>
+<P STYLE="text-indent: 1.27cm; font-weight: medium"><FONT SIZE=3>The
+reason for this is that the formula for the inverse of our
+transformation requires dividing by n and also using z<SUP>-1</SUP>
+in place of z as the primitive n-th root of unity at whose powers the
+evaluations are made. </FONT>
+</P>
+<P STYLE="text-indent: 1.27cm; font-weight: medium"><BR>
+</P>
+<P STYLE="text-indent: 1.27cm; font-weight: medium"><FONT SIZE=3>And
+of course evaluating at z<SUP>-k</SUP> is the same thing as
+evaluating<SUP> </SUP> at z<SUP>(n-k)</SUP>, which means the k-th
+power evaluation for z<SUP>-1</SUP> is the n-k-th for z.</FONT></P>
+<P STYLE="text-indent: 1.27cm; font-weight: medium"><BR>
+</P>
+<P STYLE="text-indent: 1.27cm; font-weight: medium"><FONT SIZE=3> </FONT>
+</P>
+</BODY>
+</HTML>

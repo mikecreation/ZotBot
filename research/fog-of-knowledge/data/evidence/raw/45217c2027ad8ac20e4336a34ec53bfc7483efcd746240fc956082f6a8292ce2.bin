@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="generator" content="HTML Tidy, see www.w3.org">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Maximal Shift algorithm</title>
+<meta name="generator" content="Microsoft XSLT (msxml3 golden/ msxml4), see http://www.microsoft.com">
+<meta name="robots" content="index, follow">
+<meta name="description" content="EXACT STRING MATCHING ALGORITHMS Animation in Java, Maximal Shift algorithm">
+<meta name="keywords" content="string matching, algorithm, Java, C">
+<meta name="resource-type" content="document">
+<meta name="Author-Corporate" content="Chistian.Charras@dir.univ-rouen.fr">
+<meta name="Content-Language" content="en">
+<meta name="distribution" content="global">
+<link type="text/css" rel="stylesheet" href="string.css">
+</head>
+<body bgcolor="white">
+<a href="node31.html#SECTION00310"><img alt="Skip Search algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node28.html#SECTION00280"><img alt="Optimal Mismatch algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="node31.html#SECTION00310">Skip Search algorithm</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Previous:</b> <a href="node28.html#SECTION00280">Optimal Mismatch algorithm</a> 
+
+<hr>
+<h1 align="center"><a id="SECTION00290" name="SECTION00290">Maximal Shift algorithm</a></h1>
+
+<hr color="#F0F0FC" size="3">
+<applet codebase="../spm/MaximalShift" archive="MaximalShift.zip" code="AppletButtonText2.class" width="230" height="63"><param name="windowTitle" value="Maximal Shift algorithm">
+<param name="windowClass" value="ProgramTextWindow2">
+<param name="buttonText" value="visualization">
+<param name="windowwidth" value="375">
+<param name="windowheight" value="560">
+<param name="label1" value="Pattern:">
+<param name="input1" value="gcagagag">
+<param name="label2" value="String:">
+<param name="input2" value="gcatcgcagagagtatacagtacg">
+<param name="program" value="MaximalShift">
+</applet> 
+
+<div class="bar"><a name="SECTION00291">Main features</a></div>
+
+<div class="mf">
+<ul>
+<li>variant of the <a href="node19.html#SECTION00190">Quick Search</a> algorithm;</li>
+
+<li>quadratic worst case time complexity;</li>
+
+<li>preprocessing phase in <big><i><b>O</b></i></big>(<i>m</i><sup>2</sup>+<img alt="sigma" src="images/psigma.gif">) time and <big><i><b>O</b></i></big>(<i>m</i>+<img alt="sigma" src="images/psigma.gif">) space complexity;</li>
+
+<li>searching phase in <big><i><b>O</b></i></big>(<i>m</i><i>n</i>) time complexity.</li>
+</ul>
+</div>
+
+<div class="bar"><a name="SECTION00292">Description</a></div>
+
+<div class="desc">
+<p align="justify">Sunday designed an algorithm where the pattern characters are scanned from the one which will lead to a larger shift to the one which will lead to a shorter shift. Doing so one may hope to maximize the lengths of the shifts.</p>
+
+<p align="justify">The preprocessing phase of the Maximal Shift algorithm consists in sorting the pattern characters in decreasing order of their shift and then in building the Quick Search bad-character shift function (see chapter <a href="node19.html#SECTION00190">Quick Search</a> algorithm) and a good-suffix shift function adapted to the scanning order of the pattern characters. It can be done in <big><i><b>O</b></i></big>(<i>m</i><sup>2</sup>+<img alt="sigma" src="images/psigma.gif">) time and <big><i><b>O</b></i></big>(<i>m</i>+<img alt="sigma" src="images/psigma.gif">) space complexity.</p>
+
+<p align="justify">The searching phase of the Maximal Shift algorithm has a quadratic worst case time complexity.</p>
+</div>
+
+<div class="bar"><a name="SECTION00293">The C code</a></div>
+
+<p align="justify">The function <tt><big><tt>preQsBc</tt></big></tt> is given chapter <a href="node19.html#SECTION00190">Quick Search</a> algorithm. The functions <tt><big><tt>orderPattern</tt></big></tt>, <tt><big><tt>matchShift</tt></big></tt> and <tt><big><tt>preAdaptedGs</tt></big></tt> are given chapter <a href="node28.html#SECTION00280">Optimal Mismatch</a> algorithm.</p>
+
+<div class="pre">
+<pre>
+typedef struct patternScanOrder {
+   int loc;
+   char c;
+} pattern;
+
+int minShift[XSIZE];
+
+/* Computation of the MinShift table values. */
+void computeMinShift(char *x, int m) {
+   int i, j;
+
+   for (i = 0; i &lt; m; ++i) {
+      for (j = i - 1; j &gt;= 0; --j)
+          if (x[i] == x[j])
+             break;
+      minShift[i] = i - j;
+   }
+}
+
+
+/* Maximal Shift pattern comparison function. */
+int maxShiftPcmp(pattern *pat1, pattern *pat2) {
+   int dsh;
+
+   dsh = minShift[pat2-&gt;loc] - minShift[pat1-&gt;loc];
+   return(dsh ? dsh : (pat2-&gt;loc - pat1-&gt;loc));
+}
+
+
+/* Maximal Shift string matching algorithm. */
+void MS(char *x, int m, char *y, int n) {
+   int i, j, qsBc[ASIZE], adaptedGs[XSIZE];
+   pattern pat[XSIZE];
+
+   /* Preprocessing */
+   computeMinShift(x ,m);
+   orderPattern(x, m, maxShiftPcmp, pat);
+   preQsBc(x, m, qsBc);
+   preAdaptedGs(x, m, adaptedGs, pat);
+
+   /* Searching */
+   j = 0;
+   while (j &lt;= n - m) {
+      i = 0;
+      while (i &lt; m &amp;&amp; pat[i].c == y[j + pat[i].loc])
+         ++i;
+      if (i &gt;= m)
+         OUTPUT(j);
+      j += MAX(adaptedGs[i], qsBc[y[j + m]]);
+   }
+}
+
+</pre>
+</div>
+
+<div class="bar"><a name="SECTION00294" style="color: teal">The example</a></div>
+
+<p>Preprocessing phase</p>
+
+<p align="center"><img alt="Maximal Shift algorithm tables" align="BOTTOM" src="images/mstab1.png"><br clear="all">
+<span style="white-space: nowrap">Tables used by Maximal Shift algorithm.</span></p>
+
+<p><a name="search" href="examples/exp29.html" style="text-decoration: underline">Searching</a> phase</p>
+
+<br>
+<div class="bar"><a name="SECTION00295">References</a></div>
+
+<div class="ref">
+<ul style="text-align: justify ">
+<li><strong>S<small>UNDAY</small> D.M.</strong>, 1990, A very fast substring search algorithm, Communications of the ACM . 33(8):132-142.</li>
+</ul>
+</div>
+
+<br>
+<hr color="#F0F0FC" size="2">
+<a href="node31.html#SECTION00310"><img alt="Skip Search algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node28.html#SECTION00280"><img alt="Optimal Mismatch algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="node31.html#SECTION00310">Skip Search algorithm</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Previous:</b> <a href="node28.html#SECTION00280">Optimal Mismatch algorithm</a> 
+
+<hr>
+<br>
+<div align="right"><em><small><small>e-mails: {<a href="mailto:Christian.Charras@laposte.net">Christian.Charras</a>, <a href="mailto:Thierry.Lecroq@laposte.net">Thierry.Lecroq</a> }@laposte.net</small><br>
+ Tue Jan 14 15:03:31 MET 1997</small></em></div>
+</body>
+</html>
+

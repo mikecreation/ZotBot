@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>huge sparse array</title>
+<meta name="description"
+  content="Definition of huge sparse array,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="huge sparse array">
+<meta name="type" content="data structure">
+<meta name="area" content="Theory">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>huge sparse array</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+Let N be the number of items to store and R be the size of the <a href="range.html"><em>range</em></a> of <a href="key.html"><em>key</em></a> values; R &gt;&gt; N.   Allocate, but don't initialize, two arrays: an item array I, where |I|&ge;N, and a location array L, where |L|=R. Initialize a variable, next, the number of items, to zero (with <a href="zeroBasedIndexing.html"><em>0-based indexing</em></a>). To insert an item, put it in the next place in the item array and save where to find it in the location array. <pre>   I[next] = item;<br />   L[item.key] = next;<br />   next++; </pre> To look up an item by key, get the index from the location array.  If the index is invalid or refers to the wrong item, the item is not found. <pre>   index = L[key];<br />   if (index &lt; 0 OR index &gt;= next) return NOTFOUND;<br />   if (I[index].key != key) return NOTFOUND;<br />   return I[index]; </pre> Inserting N items takes <a href="theta.html"><em>&Theta;(N)</em></a> total time, assuming allocation takes constant time. Retrieving an item by key (or responding "not found") takes constant time. Listing all items takes &Theta;(N) time using I.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="array.html"><em>array</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="sparsematrix.html"><em>sparse matrix</em></a>, <a href="hashtab.html"><em>hash table</em></a>.
+</p>
+
+<p>
+<em>Note:
+Keys must be unique.  Duplicate keys could be handled with <a href="collisionres.html"><em>collision resolution schemes</em></a>.   This data structure is usually impractical since the range is enormous. </p> 
+<p> This effectively allocates a huge array without explicitly initializing it, at the cost of &Theta;(N) space and a little time for each access. </p> 
+<p> This is what <a href="hashtab.html"><em>hash tables</em></a> want to be: constant time for insertion and look up.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>More information</h2>
+<p>
+<strong>Historical Note</strong><br>
+Motivating problem first posed as exercise 2.12 in <strong>Alfred V. Aho,  John E. Hopcroft</strong>, and <strong>Jeffrey D. Ullman</strong>, <em>The Design and Analysis of Computer Algorithms</em>, page 71, Addison-Wesley, 1974.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#ccbcadb9a0e2aea0adafa78ca2a5bfb8e2aba3ba">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 14 August 2008.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "huge sparse array", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 14 August 2008. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/hugeSparseArray.html">https://www.nist.gov/dads/HTML/hugeSparseArray.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a916ac5f1d381e',t:'MTc5MjAwNzE2OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

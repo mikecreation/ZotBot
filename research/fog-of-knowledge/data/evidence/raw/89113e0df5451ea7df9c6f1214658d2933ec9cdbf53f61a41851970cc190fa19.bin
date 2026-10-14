@@ -1,0 +1,193 @@
+<html>
+<head>
+<title>Mutli-way Trees</title>
+</head>
+
+<body>
+
+<h1>Multiway Trees</h1>
+<p>A <b>multiway tree</b> is a tree that can have more than two children. A <b>
+multiway tree of order m</b> (or an <b>m-way tree</b>) is one in which a tree 
+can have m children.</p>
+<p>As with the other trees that have been studied, the nodes in an m-way tree 
+will be made up of  key fields, in this case m-1 key fields, and pointers to 
+children.</p>
+<p>multiway tree of order 5</p>
+<p><img border="0" src="gifImages/340multi1.gif" width="772" height="243"></p>
+<p>To make the processing of m-way trees easier some type of order will be 
+imposed on the keys within each node, resulting in a <b>multiway search tree of 
+order m</b> ( or an <b>m-way search tree</b>). By definition an m-way search 
+tree is a m-way tree in which:</p>
+<ul>
+  <li>Each node has m children and m-1 key fields</li>
+  <li>The keys in each node are in ascending order.</li>
+  <li>The keys in the first i children are smaller than the ith key</li>
+  <li>The keys in the last m-i children are larger than the ith key</li>
+</ul>
+<p>4-way search tree</p>
+<p><img border="0" src="gifImages/340multi2.gif" width="532" height="435"></p>
+<p>M-way search trees give the same advantages to m-way trees that binary search 
+trees gave to binary trees - they provide fast information retrieval and update. 
+However, they also have the same problems that binary search trees had - they 
+can become unbalanced, which means that the construction of the tree becomes of 
+vital importance.</p>
+<h2>B-Trees</h2>
+<p>An extension of a multiway search tree of order m is a <b>B-tree of order m</b>. 
+This type of tree will be used when the data to be accessed/stored is located on 
+secondary storage devices because they allow for large amounts of data to be stored in a node.</p>
+<p>A B-tree of order m is a multiway search tree in which:</p>
+<ol>
+  <li>The root has at least two subtrees unless it is the only node in the tree.</li>
+  <li>Each nonroot and each nonleaf node have at most m nonempty children and at 
+  least m/2 nonempty children.</li>
+  <li>The number of keys in each nonroot and each nonleaf node is one less than 
+  the number of its nonempty children.</li>
+  <li>All leaves are on the same level.</li>
+</ol>
+<p>These restrictions make B-trees always at least half full, have few levels, 
+and remain perfectly balanced.</p>
+<p>The nodes in a B-tree are usually implemented as a class that contains an 
+array of m-l cells for keys, an array of m pointers to other nodes, and whatever 
+other information is required in order to facilitate tree maintenance.</p>
+
+<pre>template &lt;class T, int M&gt;
+class BTreeNode
+{
+public:
+  BTreeNode();
+  BTreeNode( const T & );
+
+private:
+  T keys[M-1];
+  BTreeNode *pointers[M];
+  ...
+};
+</pre>
+
+<h3>Searching a B-tree</h3>
+
+<p>An algorithm for finding a key in B-tree is simple. Start at the root and 
+determine which pointer to follow based on a comparison between the search value 
+and key fields in the root node. Follow the appropriate pointer to a child node. 
+Examine the key fields in the child node and continue to follow the appropriate 
+pointers until the search value is found or a leaf node is reached that doesn't 
+contain the desired search value.</p>
+
+<h3>Insertion into a B-tree</h3>
+<p>The condition that all leaves must be on the same level forces a 
+characteristic behavior of B-trees, namely that B-trees are not allowed to grow 
+at the their leaves; instead they are forced to grow at the root.</p>
+<p>When inserting into a B-tree, a value is inserted directly into a leaf. This 
+leads to three common situations that can occur:</p>
+<ol>
+  <li>A key is placed into a leaf that still has room.</li>
+  <li>The leaf in which a key is to be placed is full.</li>
+  <li>The root of the B-tree is full.</li>
+</ol>
+<p><b>Case 1: A key is placed into a leaf that still has room</b></p>
+<p>This is the easiest of the cases to solve because the value is simply 
+inserted into the correct sorted position in the leaf node.</p>
+<p><img border="0" src="gifImages/340multi3.gif" width="436" height="147"></p>
+<p>Inserting the number 7 results in:</p>
+<p><img border="0" src="gifImages/340multi4.gif" width="436" height="147"></p>
+<p><b>Case 2: The leaf in which a key is to be placed is full</b></p>
+<p>In this case, the leaf node where the value should be inserted is split in 
+two, resulting in a new leaf node. Half of the keys will be moved from the full 
+leaf to the new leaf. The new leaf is then incorporated into the B-tree.</p>
+<p>The new leaf is incorporated by moving the middle value to the parent and a 
+pointer to the new leaf is also added to the parent. This process is continues 
+up the tree until all of the values have &quot;found&quot; a location.</p>
+<p>Insert 6 into the following B-tree:</p>
+<p><img border="0" src="gifImages/340multi5.gif" width="436" height="147"></p>
+<p>results in a split of the first leaf node:</p>
+<p><img border="0" src="gifImages/340multi6.gif" width="688" height="147"></p>
+<p><img border="0" src="gifImages/340multi7.gif" width="688" height="147"></p>
+<p>The new node needs to be incorporated into the tree - this is accomplished by 
+taking the middle value and inserting it in the parent:</p>
+<p><img border="0" src="gifImages/340multi8.gif" width="688" height="147"></p>
+<p><b>Case 3: The root of the B-tree is full</b></p>
+<p>The upward movement of values from case 2 means that it's possible that a 
+value could move up to the root of the B-tree. If the root is full, the same 
+basic process from case 2 will be applied and a new root will be created. This 
+type of split results in 2 new nodes being added to the B-tree.</p>
+<p>Inserting 13 into the following tree:</p>
+<p><img border="0" src="gifImages/340multi9.gif" width="1156" height="147"></p>
+<p>Results in:</p>
+<p><img border="0" src="gifImages/340multi10.gif" width="1397" height="147"></p>
+<p>The 15 needs to be moved to the root node but it is full. This means that the 
+root needs to be divided:</p>
+<p><img border="0" src="gifImages/340multi11.gif" width="1397" height="147"></p>
+<p>The 15 is inserted into the parent, which means that it becomes the new root 
+node:</p>
+<p><img border="0" src="gifImages/340multi12.gif" width="1397" height="243"></p>
+<h3>Deleting from a B-tree</h3>
+<p>As usual, this is the hardest of the processes to apply. The deletion process 
+will basically be a reversal of the insertion process - rather than splitting 
+nodes, it's possible that nodes will be merged so that B-tree properties, namely 
+the requirement that a node must be at least half full, can be maintained.</p>
+<p>There are two main cases to be considered:</p>
+<ol>
+  <li>Deletion from a leaf</li>
+  <li>Deletion from a non-leaf</li>
+</ol>
+<p><b>Case 1: Deletion from a leaf</b></p>
+<p>1a) If the leaf is at least half full after deleting the desired value, the 
+remaining larger values are moved to &quot;fill the gap&quot;.</p>
+<p>Deleting 6 from the following tree:</p>
+<p><img border="0" src="gifImages/340multi13.gif" width="1397" height="243"></p>
+<p>results in:</p>
+<p><img border="0" src="gifImages/340multi14.gif" width="1397" height="243"></p>
+<p>1b) If the leaf is less than half full after deleting the desired value 
+(known as underflow), two things could happen:</p>
+<p>Deleting 7 from the tree above results in:</p>
+<p><img border="0" src="gifImages/340multi15.gif" width="1397" height="243"></p>
+<p>1b-1) If there is a left or right sibling with the number of keys exceeding 
+the minimum requirement, all of the keys from the leaf and sibling will be 
+redistributed between them by moving the separator key from the parent to the 
+leaf and moving the middle key from the node and the sibling combined to the 
+parent.</p>
+<p><img border="0" src="gifImages/340multi16.gif" width="1397" height="243"></p>
+<p>&nbsp;</p>
+<p>Now delete 8 from the tree:</p>
+<p><img border="0" src="gifImages/340multi17.gif" width="1397" height="243"></p>
+<p>1b-2) If the number of keys in the sibling does not exceed the minimum 
+requirement, then the leaf and sibling are merged by putting the keys from the 
+leaf, the sibling, and the separator from the parent into the leaf. The sibling 
+node is discarded and the keys in the parent are moved to &quot;fill the gap&quot;. It's 
+possible that this will cause the parent to underflow. If that is the case, 
+treat the parent as a leaf and continue repeating step 1b-2 until the minimum 
+requirement is met or the root of the tree is reached.</p>
+<p><b>Special Case for 1b-2:</b> When merging nodes, if the parent is the root 
+with only one key, the keys from the node, the sibling, and the only key of the 
+root are placed into a node and this will become the new root for the B-tree. 
+Both the sibling and the old root will be discarded.</p>
+
+<p><img border="0" src="gifImages/340multi18.gif" width="1397" height="243"></p>
+<p><img border="0" src="gifImages/340multi19.gif" width="1156" height="147"></p>
+<p><b>Case 2: Deletion from a non-leaf</b></p>
+<p>This case can lead to problems with tree reorganization but it will be solved 
+in a manner similar to deletion from a binary search tree.</p>
+<p>The key to be deleted will be replaced by its immediate predecessor (or 
+successor) and then the predecessor (or successor) will be deleted since it can 
+only be found in a leaf node.</p>
+
+<p>Deleting 16 from the tree above results in:</p>
+
+<p><img border="0" src="gifImages/340multi20.gif" width="1156" height="147"></p>
+
+<p>The &quot;gap&quot; is filled in with the immediate predecessor:</p>
+<p><img border="0" src="gifImages/340multi21.gif" width="1156" height="147"></p>
+<p>and then the immediate predecessor is deleted:</p>
+<p><img border="0" src="gifImages/340multi22.gif" width="1156" height="147"></p>
+<p>If the immediate successor had been chosen as the replacement:</p>
+<p><img border="0" src="gifImages/340multi23.gif" width="1156" height="147"></p>
+<p>Deleting the successor results in:</p>
+<p><img border="0" src="gifImages/340multi24.gif" width="1156" height="147"></p>
+<p>The vales in the left sibling are combined with the separator key (18) and 
+the remaining values. They are divided between the 2 nodes:</p>
+<p><img border="0" src="gifImages/340multi25.gif" width="1156" height="147"></p>
+<p>and then the middle value is moved to the parent:</p>
+<p><img border="0" src="gifImages/340multi26.gif" width="1156" height="147"></p>
+
+</body>
+</html>

@@ -1,0 +1,845 @@
+<!DOCTYPE html><html>
+<head>
+<title>Classical Dynamics by David Tong</title>
+<!--Generated on Thu Mar 24 09:29:54 2022 by LaTeXML (version 0.8.5) http://dlmf.nist.gov/LaTeXML/.-->
+<!--Document created on March 24, 2022.-->
+
+
+<!-- Start of StatCounter Code -->
+<script type="text/javascript" language="javascript">
+var sc_project=467961;
+var sc_partition=2;
+var sc_invisible=1;
+</script>
+
+<script type="text/javascript" language="javascript"
+src="http://www.statcounter.com/counter/counter.js"></script><noscript><a
+href="http://www.statcounter.com/" target="_blank"><img
+src="http://c3.statcounter.com/counter.php?sc_project=467961&amp;java=0&amp;inv$
+alt="" border="0"></a> </noscript>
+<!-- End of StatCounter Code -->
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="LaTeXML.css" type="text/css">
+<link rel="stylesheet" href="ltx-article.css" type="text/css">
+<link rel="up" href="mydoc.html" title="Classical Dynamics University of Cambridge Part II Mathematical Tripos">
+<link rel="start" href="mydoc.html" title="Classical Dynamics University of Cambridge Part II Mathematical Tripos">
+<link rel="prev" href="mydoc.html" title="Classical Dynamics University of Cambridge Part II Mathematical Tripos">
+<link rel="next" href="S2.html" title="2 The Lagrangian Formalism ‣ Classical Dynamics University of Cambridge Part II Mathematical Tripos">
+<link rel="section" href="S2.html" title="2 The Lagrangian Formalism ‣ Classical Dynamics University of Cambridge Part II Mathematical Tripos">
+<link rel="section" href="S3.html" title="3 The Motion of Rigid Bodies ‣ Classical Dynamics University of Cambridge Part II Mathematical Tripos">
+<link rel="section" href="S4.html" title="4 The Hamiltonian Formalism ‣ Classical Dynamics University of Cambridge Part II Mathematical Tripos">
+</head>
+<body>
+<nav class="ltx_page_navbar"><a href="mydoc.html" title="Classical Dynamics  by David Tong" class="ltx_ref" rel="start"><span class="ltx_text ltx_ref_title"><span class="ltx_text" style="font-size:298%;">Classical Dynamics</span> <span class="ltx_text"> </span><span class="ltx_text" style="font-size:120%;">by David Tong</span></span></a>
+<div class="ltx_TOC">
+<ul class="ltx_toclist">
+<li class="ltx_tocentry ltx_tocentry_section ltx_ref_self">
+<span class="ltx_ref ltx_ref_self"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">1 </span>Newton’s Laws of Motion</span></span>
+<ul class="ltx_toclist ltx_toclist_section">
+<li class="ltx_tocentry ltx_tocentry_subsection">
+<a href="#SS1" title="1.1 Introduction ‣ 1 Newton’s Laws of Motion ‣ Classical Dynamics University of Cambridge Part II Mathematical Tripos" class="ltx_ref"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">1.1 </span>Introduction</span></a>
+</li>
+<li class="ltx_tocentry ltx_tocentry_subsection">
+<a href="#SS2" title="1.2 Newtonian Mechanics: A Single Particle ‣ 1 Newton’s Laws of Motion ‣ Classical Dynamics University of Cambridge Part II Mathematical Tripos" class="ltx_ref"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">1.2 </span>Newtonian Mechanics: A Single Particle</span></a>
+<ul class="ltx_toclist ltx_toclist_subsection">
+<li class="ltx_tocentry ltx_tocentry_subsubsection"><a href="#SS2.SSS1" title="1.2.1 Angular Momentum ‣ 1.2 Newtonian Mechanics: A Single Particle ‣ 1 Newton’s Laws of Motion ‣ Classical Dynamics University of Cambridge Part II Mathematical Tripos" class="ltx_ref"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">1.2.1 </span>Angular Momentum</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_subsubsection"><a href="#SS2.SSS2" title="1.2.2 Conservation Laws ‣ 1.2 Newtonian Mechanics: A Single Particle ‣ 1 Newton’s Laws of Motion ‣ Classical Dynamics University of Cambridge Part II Mathematical Tripos" class="ltx_ref"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">1.2.2 </span>Conservation Laws</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_subsubsection"><a href="#SS2.SSS3" title="1.2.3 Energy ‣ 1.2 Newtonian Mechanics: A Single Particle ‣ 1 Newton’s Laws of Motion ‣ Classical Dynamics University of Cambridge Part II Mathematical Tripos" class="ltx_ref"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">1.2.3 </span>Energy</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_subsubsection"><a href="#SS2.SSS4" title="1.2.4 Examples ‣ 1.2 Newtonian Mechanics: A Single Particle ‣ 1 Newton’s Laws of Motion ‣ Classical Dynamics University of Cambridge Part II Mathematical Tripos" class="ltx_ref"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">1.2.4 </span>Examples</span></a></li>
+</ul>
+</li>
+<li class="ltx_tocentry ltx_tocentry_subsection">
+<a href="#SS3" title="1.3 Newtonian Mechanics: Many Particles ‣ 1 Newton’s Laws of Motion ‣ Classical Dynamics University of Cambridge Part II Mathematical Tripos" class="ltx_ref"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">1.3 </span>Newtonian Mechanics: Many Particles</span></a>
+<ul class="ltx_toclist ltx_toclist_subsection">
+<li class="ltx_tocentry ltx_tocentry_subsubsection">
+<a href="#SS3.SSS1" title="1.3.1 Momentum Revisited ‣ 1.3 Newtonian Mechanics: Many Particles ‣ 1 Newton’s Laws of Motion ‣ Classical Dynamics University of Cambridge Part II Mathematical Tripos" class="ltx_ref"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">1.3.1 </span>Momentum Revisited</span></a>
+</li>
+<li class="ltx_tocentry ltx_tocentry_subsubsection"><a href="#SS3.SSS2" title="1.3.2 Energy Revisited ‣ 1.3 Newtonian Mechanics: Many Particles ‣ 1 Newton’s Laws of Motion ‣ Classical Dynamics University of Cambridge Part II Mathematical Tripos" class="ltx_ref"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">1.3.2 </span>Energy Revisited</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_subsubsection"><a href="#SS3.SSS3" title="1.3.3 An Example ‣ 1.3 Newtonian Mechanics: Many Particles ‣ 1 Newton’s Laws of Motion ‣ Classical Dynamics University of Cambridge Part II Mathematical Tripos" class="ltx_ref"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">1.3.3 </span>An Example</span></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="ltx_tocentry ltx_tocentry_section"><a href="S2.html" title="2 The Lagrangian Formalism ‣ Classical Dynamics University of Cambridge Part II Mathematical Tripos" class="ltx_ref"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">2 </span>The Lagrangian Formalism</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_section"><a href="S3.html" title="3 The Motion of Rigid Bodies ‣ Classical Dynamics University of Cambridge Part II Mathematical Tripos" class="ltx_ref"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">3 </span>The Motion of Rigid Bodies</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_section"><a href="S4.html" title="4 The Hamiltonian Formalism ‣ Classical Dynamics University of Cambridge Part II Mathematical Tripos" class="ltx_ref"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">4 </span>The Hamiltonian Formalism</span></a></li>
+</ul>
+</div>
+</nav>
+<div class="ltx_page_main">
+<header class="ltx_page_header">
+<div>
+<a href="S2.html" title="2 The Lagrangian Formalism ‣ Classical Dynamics University of Cambridge Part II Mathematical Tripos" class="ltx_ref" rel="next"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">2 </span>The Lagrangian Formalism</span></a>
+</div></header>
+<div class="ltx_page_content">
+<section class="ltx_section">
+<h1 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">1 </span>Newton's Laws of Motion</h1>
+
+
+<div id="p1" class="ltx_para">
+<blockquote class="ltx_quote">
+<p class="ltx_p">"So few went to hear him, and fewer understood him, that oftimes
+he did, for want of hearers, read to the walls. He usually
+stayed about half an hour; when he had no auditors he commonly
+returned in a quarter of that time."</p>
+</blockquote>
+<blockquote class="ltx_quote">
+<p class="ltx_p"><span class="ltx_text ltx_font_italic">Appraisal of a Cambridge lecturer in classical
+mechanics, circa 1690</span></p>
+</blockquote>
+</div>
+<section id="SS1" class="ltx_subsection">
+<h2 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">1.1 </span>Introduction</h2>
+
+<div id="SS1.p1" class="ltx_para">
+<p class="ltx_p">The fundamental principles of classical mechanics were laid down by
+Galileo and Newton in the 16<math id="SS1.p1.m1" class="ltx_Math" alttext="{}^{\rm th}" display="inline"><msup><mi></mi><mi>th</mi></msup></math> and 17<math id="SS1.p1.m2" class="ltx_Math" alttext="{}^{\rm th}" display="inline"><msup><mi></mi><mi>th</mi></msup></math>
+centuries. In 1686, Newton wrote the <span class="ltx_text ltx_font_italic">Principia</span> where he
+gave us three laws of motion, one law of gravity and pretended he
+didn’t know calculus. Probably the single greatest scientific
+achievement in history, you might think this pretty much wraps it up
+for classical mechanics. And, in a sense, it does. Given a
+collection of particles, acted upon by a collection of forces, you
+have to draw a nice diagram, with the particles as points and the
+forces as arrows. The forces are then added up and Newton’s famous
+“<math id="SS1.p1.m3" class="ltx_Math" alttext="F=ma" display="inline"><mrow><mi>F</mi><mo>=</mo><mrow><mi>m</mi><mo>⁢</mo><mi>a</mi></mrow></mrow></math>” is employed to figure out where the particle’s velocities
+are heading next. All you need is enough patience and a big enough
+computer and you’re done.</p>
+</div>
+<section id="SS1.SSS0.Px1" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph"></h4>
+
+<div id="SS1.SSS0.Px1.p1" class="ltx_para">
+<p class="ltx_p">From a modern perspective this is a little unsatisfactory on several
+levels: it’s messy and inelegant; it’s hard to deal with
+problems that involve extended objects rather than point particles;
+it obscures certain features of dynamics so that concepts such as chaos
+theory took over 200 years to discover; and it’s not at all clear what
+the relationship is between Newton’s classical laws and quantum physics.</p>
+</div>
+</section>
+<section id="SS1.SSS0.Px2" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph"></h4>
+
+<div id="SS1.SSS0.Px2.p1" class="ltx_para">
+<p class="ltx_p">The purpose of this course is to resolve these issues by presenting
+new perspectives on Newton’s ideas. We shall describe the
+advances that took place during the 150 years after Newton when the
+laws of motion were reformulated using more powerful techniques and
+ideas developed by some of the giants of mathematical physics:
+people such as Euler, Lagrange, Hamilton and Jacobi. This will give
+us an immediate practical advantage, allowing us to solve certain
+complicated problems with relative ease (the strange motion of
+spinning tops is a good example). But, perhaps more importantly, it
+will provide an elegant viewpoint from which we’ll see the profound
+basic principles which underlie Newton’s familiar laws of motion.
+We shall prise open “<math id="SS1.SSS0.Px2.p1.m1" class="ltx_Math" alttext="F=ma" display="inline"><mrow><mi>F</mi><mo>=</mo><mrow><mi>m</mi><mo>⁢</mo><mi>a</mi></mrow></mrow></math>” to reveal the structures and
+symmetries that lie beneath.</p>
+</div>
+</section>
+<section id="SS1.SSS0.Px3" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph"></h4>
+
+<div id="SS1.SSS0.Px3.p1" class="ltx_para">
+<p class="ltx_p">Moreover, the formalisms that we’ll develop here are the basis for
+<span class="ltx_text ltx_font_italic">all</span> of fundamental modern physics. Every theory of Nature, from
+electromagnetism and general relativity, to the standard model of
+particle physics and more speculative pursuits such as string
+theory, is best described in the language we shall develop in this
+course. The new formalisms that we’ll see here also provide the
+bridge between the classical world and the quantum world.</p>
+</div>
+</section>
+<section id="SS1.SSS0.Px4" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph"></h4>
+
+<div id="SS1.SSS0.Px4.p1" class="ltx_para">
+<p class="ltx_p">There are phenomena in Nature for which these formalisms are not
+particularly useful. Systems which are dissipative, for example,
+are not so well suited to these new techniques.
+But if you want to understand
+the dynamics of planets and stars and galaxies as they orbit and
+spin, or you want to understand what’s happening at the LHC where
+protons are collided at unprecedented energies, or you want
+to know how
+electrons meld together in
+solids to form new states of matter, then the foundations that we’ll lay
+in in
+this course are a must.</p>
+</div>
+</section>
+</section>
+<section id="SS2" class="ltx_subsection">
+<h2 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">1.2 </span>Newtonian Mechanics: A Single Particle</h2>
+
+<div id="SS2.p1" class="ltx_para">
+<p class="ltx_p">In the rest of this section, we’ll take a flying tour through the
+basic ideas of classical mechanics handed down to us by Newton.
+More details can be found in the <a href="http://www.damtp.cam.ac.uk/user/tong/relativity.html" title="" class="ltx_ref">lectures on Dynamics and Relativity</a>.</p>
+</div>
+<section id="SS2.SSS0.Px1" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph"></h4>
+
+<div id="SS2.SSS0.Px1.p1" class="ltx_para">
+<p class="ltx_p">We’ll start with a single particle.. A <span class="ltx_text ltx_font_italic">particle</span> is defined to be an object of insignificant size.
+e.g. an electron, a tennis ball or a planet. Obviously the validity
+of this statement depends on the context: to first approximation,
+the earth can be treated as a particle when computing its orbit
+around the sun. But if you want to understand its spin, it must be
+treated as an extended object.</p>
+</div>
+</section>
+<section id="SS2.SSS0.Px2" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph"></h4>
+
+<div id="SS2.SSS0.Px2.p1" class="ltx_para">
+<p class="ltx_p">The motion of a particle of mass <math id="SS2.SSS0.Px2.p1.m1" class="ltx_Math" alttext="m" display="inline"><mi>m</mi></math>
+at the position <math id="SS2.SSS0.Px2.p1.m2" class="ltx_Math" alttext="{\bf r}" display="inline"><mi>𝐫</mi></math> is governed by <span class="ltx_text ltx_font_italic">Newton’s Second Law</span>
+<math id="SS2.SSS0.Px2.p1.m3" class="ltx_Math" alttext="{\bf F}=m{\bf a}" display="inline"><mrow><mi>𝐅</mi><mo>=</mo><mrow><mi>m</mi><mo>⁢</mo><mi>𝐚</mi></mrow></mrow></math> or, more precisely,</p>
+<table id="S4.EGx1" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="E1"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="E1.m1" class="ltx_Math" alttext="\displaystyle{\bf F}({\bf r},\dot{{\bf r}})=\dot{\bf p}" display="inline"><mrow><mrow><mi>𝐅</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>𝐫</mi><mo>,</mo><mover accent="true"><mi>𝐫</mi><mo>˙</mo></mover><mo stretchy="false">)</mo></mrow></mrow><mo>=</mo><mover accent="true"><mi>𝐩</mi><mo>˙</mo></mover></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1.1)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">where <math id="SS2.SSS0.Px2.p1.m4" class="ltx_Math" alttext="{\bf F}" display="inline"><mi>𝐅</mi></math> is the force
+which, in general, can depend on both the position <math id="SS2.SSS0.Px2.p1.m5" class="ltx_Math" alttext="{\bf r}" display="inline"><mi>𝐫</mi></math> as well as
+the velocity <math id="SS2.SSS0.Px2.p1.m6" class="ltx_Math" alttext="\dot{{\bf r}}" display="inline"><mover accent="true"><mi>𝐫</mi><mo>˙</mo></mover></math> (for example, friction forces depend on
+<math id="SS2.SSS0.Px2.p1.m7" class="ltx_Math" alttext="\dot{{\bf r}}" display="inline"><mover accent="true"><mi>𝐫</mi><mo>˙</mo></mover></math>) and <math id="SS2.SSS0.Px2.p1.m8" class="ltx_Math" alttext="{\bf p}=m\dot{{\bf r}}" display="inline"><mrow><mi>𝐩</mi><mo>=</mo><mrow><mi>m</mi><mo>⁢</mo><mover accent="true"><mi>𝐫</mi><mo>˙</mo></mover></mrow></mrow></math> is the momentum. Both <math id="SS2.SSS0.Px2.p1.m9" class="ltx_Math" alttext="{\bf F}" display="inline"><mi>𝐅</mi></math> and
+<math id="SS2.SSS0.Px2.p1.m10" class="ltx_Math" alttext="{\bf p}" display="inline"><mi>𝐩</mi></math> are 3-vectors which we denote by the bold font. Equation
+(<a href="#E1" title="(1.1) ‣ 1.2 Newtonian Mechanics: A Single Particle ‣ 1 Newton’s Laws of Motion ‣ Classical Dynamics University of Cambridge Part II Mathematical Tripos" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1.1</span></a>) reduces to <math id="SS2.SSS0.Px2.p1.m11" class="ltx_Math" alttext="{\bf F}=m{\bf a}" display="inline"><mrow><mi>𝐅</mi><mo>=</mo><mrow><mi>m</mi><mo>⁢</mo><mi>𝐚</mi></mrow></mrow></math> if <math id="SS2.SSS0.Px2.p1.m12" class="ltx_Math" alttext="\dot{m}=0" display="inline"><mrow><mover accent="true"><mi>m</mi><mo>˙</mo></mover><mo>=</mo><mn>0</mn></mrow></math>. But if
+<math id="SS2.SSS0.Px2.p1.m13" class="ltx_Math" alttext="m=m(t)" display="inline"><mrow><mi>m</mi><mo>=</mo><mrow><mi>m</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>t</mi><mo stretchy="false">)</mo></mrow></mrow></mrow></math> (e.g. in rocket science) then the form with <math id="SS2.SSS0.Px2.p1.m14" class="ltx_Math" alttext="\dot{{\bf p}}" display="inline"><mover accent="true"><mi>𝐩</mi><mo>˙</mo></mover></math> is
+correct.</p>
+</div>
+</section>
+<section id="SS2.SSS0.Px3" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph"></h4>
+
+<div id="SS2.SSS0.Px3.p1" class="ltx_para">
+<p class="ltx_p">General theorems governing differential equations guarantee that if
+we are given <math id="SS2.SSS0.Px3.p1.m1" class="ltx_Math" alttext="{\bf r}" display="inline"><mi>𝐫</mi></math> and <math id="SS2.SSS0.Px3.p1.m2" class="ltx_Math" alttext="\dot{{\bf r}}" display="inline"><mover accent="true"><mi>𝐫</mi><mo>˙</mo></mover></math> at an initial time <math id="SS2.SSS0.Px3.p1.m3" class="ltx_Math" alttext="t=t_{0}" display="inline"><mrow><mi>t</mi><mo>=</mo><msub><mi>t</mi><mn>0</mn></msub></mrow></math>, we
+can integrate equation (<a href="#E1" title="(1.1) ‣ 1.2 Newtonian Mechanics: A Single Particle ‣ 1 Newton’s Laws of Motion ‣ Classical Dynamics University of Cambridge Part II Mathematical Tripos" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1.1</span></a>) to determine <math id="SS2.SSS0.Px3.p1.m4" class="ltx_Math" alttext="{\bf r}(t)" display="inline"><mrow><mi>𝐫</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>t</mi><mo stretchy="false">)</mo></mrow></mrow></math> for all
+<math id="SS2.SSS0.Px3.p1.m5" class="ltx_Math" alttext="t" display="inline"><mi>t</mi></math> (as long as <math id="SS2.SSS0.Px3.p1.m6" class="ltx_Math" alttext="{\bf F}" display="inline"><mi>𝐅</mi></math> remains finite). This is the goal of classical
+dynamics.</p>
+</div>
+</section>
+<section id="SS2.SSS0.Px4" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph"></h4>
+
+<div id="SS2.SSS0.Px4.p1" class="ltx_para">
+<p class="ltx_p">Equation (<a href="#E1" title="(1.1) ‣ 1.2 Newtonian Mechanics: A Single Particle ‣ 1 Newton’s Laws of Motion ‣ Classical Dynamics University of Cambridge Part II Mathematical Tripos" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1.1</span></a>) is not quite correct as stated: we must add
+the caveat that it holds only in an <span class="ltx_text ltx_font_italic">inertial frame</span>. This is
+defined to be a frame in which a free particle with <math id="SS2.SSS0.Px4.p1.m1" class="ltx_Math" alttext="\dot{m}=0" display="inline"><mrow><mover accent="true"><mi>m</mi><mo>˙</mo></mover><mo>=</mo><mn>0</mn></mrow></math>
+travels in a straight line,</p>
+<table id="S4.EGx2" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="E2"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="E2.m1" class="ltx_Math" alttext="\displaystyle{\bf r}={\bf r}_{0}+{\bf v}t" display="inline"><mrow><mi>𝐫</mi><mo>=</mo><mrow><msub><mi>𝐫</mi><mn>0</mn></msub><mo>+</mo><mrow><mi>𝐯</mi><mo>⁢</mo><mi>t</mi></mrow></mrow></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1.2)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p"><span class="ltx_text ltx_font_italic">Newtons’s first law</span> is the statement that such frames exist.</p>
+</div>
+</section>
+<section id="SS2.SSS0.Px5" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph"></h4>
+
+<div id="SS2.SSS0.Px5.p1" class="ltx_para">
+<p class="ltx_p">An inertial frame is not unique. In fact, there are an infinite
+number of inertial frames. Let <math id="SS2.SSS0.Px5.p1.m1" class="ltx_Math" alttext="S" display="inline"><mi>S</mi></math> be an inertial frame. Then
+there are 10 linearly independent transformations <math id="SS2.SSS0.Px5.p1.m2" class="ltx_Math" alttext="S\rightarrow S^{\prime}" display="inline"><mrow><mi>S</mi><mo>→</mo><msup><mi>S</mi><mo>′</mo></msup></mrow></math> such that <math id="SS2.SSS0.Px5.p1.m3" class="ltx_Math" alttext="S^{\prime}" display="inline"><msup><mi>S</mi><mo>′</mo></msup></math> is also an inertial frame (i.e. if
+(<a href="#E2" title="(1.2) ‣ 1.2 Newtonian Mechanics: A Single Particle ‣ 1 Newton’s Laws of Motion ‣ Classical Dynamics University of Cambridge Part II Mathematical Tripos" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1.2</span></a>) holds in <math id="SS2.SSS0.Px5.p1.m4" class="ltx_Math" alttext="S" display="inline"><mi>S</mi></math>, then it also holds in <math id="SS2.SSS0.Px5.p1.m5" class="ltx_Math" alttext="S^{\prime}" display="inline"><msup><mi>S</mi><mo>′</mo></msup></math>).
+These are</p>
+</div>
+<div id="SS2.SSS0.Px5.p2" class="ltx_para">
+<ul id="I1" class="ltx_itemize">
+<li id="I1.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="I1.i1.p1" class="ltx_para">
+<p class="ltx_p">3 Rotations:    <math id="I1.i1.p1.m1" class="ltx_Math" alttext="{\bf r}^{\prime}=O{\bf r}" display="inline"><mrow><msup><mi>𝐫</mi><mo>′</mo></msup><mo>=</mo><mrow><mi>O</mi><mo>⁢</mo><mi>𝐫</mi></mrow></mrow></math>   where <math id="I1.i1.p1.m2" class="ltx_Math" alttext="O" display="inline"><mi>O</mi></math> is a <math id="I1.i1.p1.m3" class="ltx_Math" alttext="3\times 3" display="inline"><mrow><mn>3</mn><mo>×</mo><mn>3</mn></mrow></math> orthogonal matrix.</p>
+</div>
+</li>
+<li id="I1.i2" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="I1.i2.p1" class="ltx_para">
+<p class="ltx_p">3 Translations:     <math id="I1.i2.p1.m1" class="ltx_Math" alttext="{\bf r}^{\prime}={\bf r}+{\bf c}" display="inline"><mrow><msup><mi>𝐫</mi><mo>′</mo></msup><mo>=</mo><mrow><mi>𝐫</mi><mo>+</mo><mi>𝐜</mi></mrow></mrow></math>   for a
+constant vector <math id="I1.i2.p1.m2" class="ltx_Math" alttext="{\bf c}" display="inline"><mi>𝐜</mi></math>.</p>
+</div>
+</li>
+<li id="I1.i3" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="I1.i3.p1" class="ltx_para">
+<p class="ltx_p">3 Boosts:       <math id="I1.i3.p1.m1" class="ltx_Math" alttext="{\bf r}^{\prime}={\bf r}+{\bf u}t" display="inline"><mrow><msup><mi>𝐫</mi><mo>′</mo></msup><mo>=</mo><mrow><mi>𝐫</mi><mo>+</mo><mrow><mi>𝐮</mi><mo>⁢</mo><mi>t</mi></mrow></mrow></mrow></math>  for a
+constant velocity <math id="I1.i3.p1.m2" class="ltx_Math" alttext="{\bf u}" display="inline"><mi>𝐮</mi></math>.</p>
+</div>
+</li>
+<li id="I1.i4" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="I1.i4.p1" class="ltx_para">
+<p class="ltx_p">1 Time Translation:       <math id="I1.i4.p1.m1" class="ltx_Math" alttext="t^{\prime}=t+c" display="inline"><mrow><msup><mi>t</mi><mo>′</mo></msup><mo>=</mo><mrow><mi>t</mi><mo>+</mo><mi>c</mi></mrow></mrow></math>   for a
+constant real number <math id="I1.i4.p1.m2" class="ltx_Math" alttext="c" display="inline"><mi>c</mi></math></p>
+</div>
+</li>
+</ul>
+<p class="ltx_p">If motion is uniform in <math id="SS2.SSS0.Px5.p2.m1" class="ltx_Math" alttext="S" display="inline"><mi>S</mi></math>, it will also be uniform in <math id="SS2.SSS0.Px5.p2.m2" class="ltx_Math" alttext="S^{\prime}" display="inline"><msup><mi>S</mi><mo>′</mo></msup></math>.
+These transformations make up the <span class="ltx_text ltx_font_italic">Galilean Group</span> under which
+Newton’s laws are invariant. They will be important in section 2.4
+where we will see that these symmetries of space and time are the
+underlying reason for conservation laws. As a parenthetical remark,
+recall from <a href="http://www.damtp.cam.ac.uk/user/tong/relativity.html" title="" class="ltx_ref">special relativity</a> that Einstein’s laws of motion are
+invariant under Lorentz transformations which, together with
+translations, make up the Poincaré group. We can recover the
+Galilean group from the Poincaré group by taking the speed of
+light to infinity.</p>
+</div>
+</section>
+<section id="SS2.SSS1" class="ltx_subsubsection">
+<h3 class="ltx_title ltx_title_subsubsection">
+<span class="ltx_tag ltx_tag_subsubsection">1.2.1 </span>Angular Momentum</h3>
+
+<div id="SS2.SSS1.p1" class="ltx_para">
+<p class="ltx_p">We define the <span class="ltx_text ltx_font_italic">angular momentum</span> <math id="SS2.SSS1.p1.m1" class="ltx_Math" alttext="{\bf L}" display="inline"><mi>𝐋</mi></math> of a particle and the
+<span class="ltx_text ltx_font_italic">torque</span> <span class="ltx_text ltx_markedasmath"><math id="SS2.SSS1.p1.m2.m1" class="ltx_Math" alttext="\tau" display="inline"><mi>𝝉</mi></math></span> acting upon it as</p>
+<table id="S4.EGx3" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="E3"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="E3.m1" class="ltx_Math" alttext="\displaystyle{\bf L}={\bf r}\times{\bf p}\ \ \ \ \ \ ,\ \ \ \ \ \ \ \mbox{%
+\boldmath$\tau$}={\bf r}\times{\bf F}" display="inline"><mrow><mi>𝐋</mi><mo>=</mo><mi>𝐫</mi><mo>×</mo><mi>𝐩</mi><mo mathvariant="italic" separator="true">   </mo><mo rspace="37.5pt">,</mo><mi>𝝉</mi><mo>=</mo><mi>𝐫</mi><mo>×</mo><mi>𝐅</mi></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1.3)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">Note that, unlike
+linear momentum <math id="SS2.SSS1.p1.m3" class="ltx_Math" alttext="{\bf p}" display="inline"><mi>𝐩</mi></math>, both <math id="SS2.SSS1.p1.m4" class="ltx_Math" alttext="{\bf L}" display="inline"><mi>𝐋</mi></math> and <span class="ltx_text ltx_markedasmath"><math id="SS2.SSS1.p1.m5.m1" class="ltx_Math" alttext="\tau" display="inline"><mi>𝝉</mi></math></span> depend on where we
+take the origin: we measure angular momentum with respect to a
+particular point. Let us cross both sides of equation (<a href="#E1" title="(1.1) ‣ 1.2 Newtonian Mechanics: A Single Particle ‣ 1 Newton’s Laws of Motion ‣ Classical Dynamics University of Cambridge Part II Mathematical Tripos" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1.1</span></a>)
+with <math id="SS2.SSS1.p1.m6" class="ltx_Math" alttext="{\bf r}" display="inline"><mi>𝐫</mi></math>. Using the fact that <math id="SS2.SSS1.p1.m7" class="ltx_Math" alttext="\dot{{\bf r}}" display="inline"><mover accent="true"><mi>𝐫</mi><mo>˙</mo></mover></math> is parallel to <math id="SS2.SSS1.p1.m8" class="ltx_Math" alttext="{\bf p}" display="inline"><mi>𝐩</mi></math>, we
+can write <math id="SS2.SSS1.p1.m9" class="ltx_Math" alttext="\frac{d}{dt}({\bf r}\times{\bf p})={\bf r}\times\dot{{\bf p}}" display="inline"><mrow><mrow><mfrac><mi>d</mi><mrow><mi>d</mi><mo>⁢</mo><mi>t</mi></mrow></mfrac><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mrow><mi>𝐫</mi><mo>×</mo><mi>𝐩</mi></mrow><mo stretchy="false">)</mo></mrow></mrow><mo>=</mo><mrow><mi>𝐫</mi><mo>×</mo><mover accent="true"><mi>𝐩</mi><mo>˙</mo></mover></mrow></mrow></math>. Then we
+get a version of Newton’s second law that holds for angular
+momentum:</p>
+<table id="S4.EGx4" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="E4"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="E4.m1" class="ltx_Math" alttext="\displaystyle\mbox{\boldmath$\tau$}=\dot{{\bf L}}" display="inline"><mrow><mi>𝝉</mi><mo>=</mo><mover accent="true"><mi>𝐋</mi><mo>˙</mo></mover></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1.4)</span></td>
+</tr></tbody>
+</table>
+</div>
+</section>
+<section id="SS2.SSS2" class="ltx_subsubsection">
+<h3 class="ltx_title ltx_title_subsubsection">
+<span class="ltx_tag ltx_tag_subsubsection">1.2.2 </span>Conservation Laws</h3>
+
+<div id="SS2.SSS2.p1" class="ltx_para">
+<p class="ltx_p">From (<a href="#E1" title="(1.1) ‣ 1.2 Newtonian Mechanics: A Single Particle ‣ 1 Newton’s Laws of Motion ‣ Classical Dynamics University of Cambridge Part II Mathematical Tripos" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1.1</span></a>) and (<a href="#E4" title="(1.4) ‣ 1.2.1 Angular Momentum ‣ 1.2 Newtonian Mechanics: A Single Particle ‣ 1 Newton’s Laws of Motion ‣ Classical Dynamics University of Cambridge Part II Mathematical Tripos" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1.4</span></a>), two important conservation laws follow
+immediately.</p>
+<ul id="I2" class="ltx_itemize">
+<li id="I2.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="I2.i1.p1" class="ltx_para">
+<p class="ltx_p">If <math id="I2.i1.p1.m1" class="ltx_Math" alttext="{\bf F}=0" display="inline"><mrow><mi>𝐅</mi><mo>=</mo><mn>0</mn></mrow></math> then <math id="I2.i1.p1.m2" class="ltx_Math" alttext="{\bf p}" display="inline"><mi>𝐩</mi></math> is constant throughout the motion</p>
+</div>
+</li>
+<li id="I2.i2" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="I2.i2.p1" class="ltx_para">
+<p class="ltx_p">If <math id="I2.i2.p1.m1" class="ltx_Math" alttext="\mbox{\boldmath$\tau$}=0" display="inline"><mrow><mi>𝝉</mi><mo>=</mo><mn>0</mn></mrow></math> then <math id="I2.i2.p1.m2" class="ltx_Math" alttext="{\bf L}" display="inline"><mi>𝐋</mi></math> is constant throughout the motion</p>
+</div>
+</li>
+</ul>
+<p class="ltx_p">Notice that <math id="SS2.SSS2.p1.m1" class="ltx_Math" alttext="\mbox{\boldmath$\tau$}=0" display="inline"><mrow><mi>𝝉</mi><mo>=</mo><mn>0</mn></mrow></math> does not require <math id="SS2.SSS2.p1.m2" class="ltx_Math" alttext="{\bf F}=0" display="inline"><mrow><mi>𝐅</mi><mo>=</mo><mn>0</mn></mrow></math>, but only <math id="SS2.SSS2.p1.m3" class="ltx_Math" alttext="{\bf r}\times{\bf F}=0" display="inline"><mrow><mrow><mi>𝐫</mi><mo>×</mo><mi>𝐅</mi></mrow><mo>=</mo><mn>0</mn></mrow></math>. This means that <math id="SS2.SSS2.p1.m4" class="ltx_Math" alttext="{\bf F}" display="inline"><mi>𝐅</mi></math> must be parallel to <math id="SS2.SSS2.p1.m5" class="ltx_Math" alttext="{\bf r}" display="inline"><mi>𝐫</mi></math>. This is the
+definition of a <span class="ltx_text ltx_font_italic">central force</span>. An example is given by the
+gravitational force between the earth and the sun: the earth’s
+angular momentum about the sun is constant. As written above in
+terms of forces and torques, these conservation laws appear trivial.
+In section 2.4, we’ll see how they arise as a property of the
+symmetry of space as encoded in the Galilean group.</p>
+</div>
+</section>
+<section id="SS2.SSS3" class="ltx_subsubsection">
+<h3 class="ltx_title ltx_title_subsubsection">
+<span class="ltx_tag ltx_tag_subsubsection">1.2.3 </span>Energy</h3>
+
+<div id="SS2.SSS3.p1" class="ltx_para">
+<p class="ltx_p">Let’s now recall the definitions of energy. We firstly define the
+<span class="ltx_text ltx_font_italic">kinetic energy</span> <math id="SS2.SSS3.p1.m1" class="ltx_Math" alttext="T" display="inline"><mi>T</mi></math> as</p>
+<table id="S4.EGx5" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="E5"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="E5.m1" class="ltx_Math" alttext="\displaystyle T={\textstyle\frac{1}{2}}m\,\dot{{\bf r}}\cdot{\dot{{\bf r}}}" display="inline"><mrow><mi>T</mi><mo>=</mo><mrow><mrow><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>⁢</mo><mpadded width="+1.7pt"><mi>m</mi></mpadded><mo>⁢</mo><mover accent="true"><mi>𝐫</mi><mo>˙</mo></mover></mrow><mo>⋅</mo><mover accent="true"><mi>𝐫</mi><mo>˙</mo></mover></mrow></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1.5)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">Suppose from now on that the mass is constant. We can compute the
+change of kinetic energy with time:
+<math id="SS2.SSS3.p1.m2" class="ltx_Math" alttext="\frac{dT}{dt}=\dot{{\bf p}}\cdot\dot{{\bf r}}={\bf F}\cdot\dot{{\bf r}}" display="inline"><mrow><mfrac><mrow><mi>d</mi><mo>⁢</mo><mi>T</mi></mrow><mrow><mi>d</mi><mo>⁢</mo><mi>t</mi></mrow></mfrac><mo>=</mo><mrow><mover accent="true"><mi>𝐩</mi><mo>˙</mo></mover><mo>⋅</mo><mover accent="true"><mi>𝐫</mi><mo>˙</mo></mover></mrow><mo>=</mo><mrow><mi>𝐅</mi><mo>⋅</mo><mover accent="true"><mi>𝐫</mi><mo>˙</mo></mover></mrow></mrow></math>. If the
+particle travels from position <math id="SS2.SSS3.p1.m3" class="ltx_Math" alttext="{\bf r}_{1}" display="inline"><msub><mi>𝐫</mi><mn>1</mn></msub></math> at time <math id="SS2.SSS3.p1.m4" class="ltx_Math" alttext="t_{1}" display="inline"><msub><mi>t</mi><mn>1</mn></msub></math> to position
+<math id="SS2.SSS3.p1.m5" class="ltx_Math" alttext="{\bf r}_{2}" display="inline"><msub><mi>𝐫</mi><mn>2</mn></msub></math> at time <math id="SS2.SSS3.p1.m6" class="ltx_Math" alttext="t_{2}" display="inline"><msub><mi>t</mi><mn>2</mn></msub></math> then this change in kinetic energy is given by</p>
+<table id="S4.EGx6" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="E6"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="E6.m1" class="ltx_Math" alttext="\displaystyle T(t_{2})-T(t_{1})=\int_{t_{1}}^{t_{2}}\,\frac{dT}{dt}\,dt=\int_{%
+t_{1}}^{t_{2}}\,{\bf F}\cdot\dot{{\bf r}}\,dt=\int_{{\bf r}_{1}}^{{\bf r}_{2}}%
+\,{\bf F}\cdot d{\bf r}" display="inline"><mrow><mrow><mrow><mi>T</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><msub><mi>t</mi><mn>2</mn></msub><mo stretchy="false">)</mo></mrow></mrow><mo>-</mo><mrow><mi>T</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><msub><mi>t</mi><mn>1</mn></msub><mo stretchy="false">)</mo></mrow></mrow></mrow><mo>=</mo><mrow><mpadded width="+1.7pt"><mstyle displaystyle="true"><msubsup><mo largeop="true" symmetric="true">∫</mo><msub><mi>t</mi><mn>1</mn></msub><msub><mi>t</mi><mn>2</mn></msub></msubsup></mstyle></mpadded><mrow><mpadded width="+1.7pt"><mstyle displaystyle="true"><mfrac><mrow><mi>d</mi><mo>⁢</mo><mi>T</mi></mrow><mrow><mi>d</mi><mo>⁢</mo><mi>t</mi></mrow></mfrac></mstyle></mpadded><mo>⁢</mo><mrow><mo rspace="0pt">𝑑</mo><mi>t</mi></mrow></mrow></mrow><mo>=</mo><mrow><mpadded width="+1.7pt"><mstyle displaystyle="true"><msubsup><mo largeop="true" symmetric="true">∫</mo><msub><mi>t</mi><mn>1</mn></msub><msub><mi>t</mi><mn>2</mn></msub></msubsup></mstyle></mpadded><mrow><mrow><mi>𝐅</mi><mo>⋅</mo><mpadded width="+1.7pt"><mover accent="true"><mi>𝐫</mi><mo>˙</mo></mover></mpadded></mrow><mo>⁢</mo><mrow><mo rspace="0pt">𝑑</mo><mi>t</mi></mrow></mrow></mrow><mo>=</mo><mrow><mpadded width="+1.7pt"><mstyle displaystyle="true"><msubsup><mo largeop="true" symmetric="true">∫</mo><msub><mi>𝐫</mi><mn>1</mn></msub><msub><mi>𝐫</mi><mn>2</mn></msub></msubsup></mstyle></mpadded><mrow><mi>𝐅</mi><mo>⋅</mo><mrow><mo rspace="0pt">𝑑</mo><mi>𝐫</mi></mrow></mrow></mrow></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1.6)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">where the
+final expression involving the integral of the force over the path
+is called the <span class="ltx_text ltx_font_italic">work done</span> by the force. So we see that the work
+done is equal to the change in kinetic energy. From now on we will
+mostly focus on a very special type of force known as a <span class="ltx_text ltx_font_italic">conservative</span> force. Such a force depends only on position <math id="SS2.SSS3.p1.m7" class="ltx_Math" alttext="{\bf r}" display="inline"><mi>𝐫</mi></math>
+rather than velocity <math id="SS2.SSS3.p1.m8" class="ltx_Math" alttext="\dot{{\bf r}}" display="inline"><mover accent="true"><mi>𝐫</mi><mo>˙</mo></mover></math> and is such that the work done is
+independent of the path taken. In particular, for a closed path, the
+work done vanishes.</p>
+<table id="S4.EGx7" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="E7"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="E7.m1" class="ltx_Math" alttext="\displaystyle\oint\,{\bf F}\cdot d{\bf r}=0\ \ \ \ \Leftrightarrow\ \ \ \ \ %
+\nabla\times{\bf F}=0" display="inline"><mrow><mrow><mstyle displaystyle="true"><mrow><mo largeop="true" rspace="4.2pt" symmetric="true">∮</mo><mrow><mi>𝐅</mi><mo>⋅</mo><mrow><mo rspace="0pt">𝑑</mo><mi>𝐫</mi></mrow></mrow></mrow></mstyle><mo>=</mo><mrow><mn>0</mn><mo mathvariant="italic" separator="true">  </mo><mo>⇔</mo></mrow></mrow><mo mathvariant="italic" separator="true">    </mo><mrow><mrow><mo>∇</mo><mo>×</mo><mi>𝐅</mi></mrow><mo>=</mo><mn>0</mn></mrow></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1.7)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">It is a deep
+property of flat space <math id="SS2.SSS3.p1.m9" class="ltx_Math" alttext="{\bf R}^{3}" display="inline"><msup><mi>𝐑</mi><mn>3</mn></msup></math> that this property implies we may
+write the force as</p>
+<table id="S4.EGx8" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="E8"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="E8.m1" class="ltx_Math" alttext="\displaystyle{\bf F}=-\nabla V({\bf r})" display="inline"><mrow><mi>𝐅</mi><mo>=</mo><mrow><mo>-</mo><mrow><mrow><mo>∇</mo><mo>⁡</mo><mi>V</mi></mrow><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>𝐫</mi><mo stretchy="false">)</mo></mrow></mrow></mrow></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1.8)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">for some <span class="ltx_text ltx_font_italic">potential</span> <math id="SS2.SSS3.p1.m10" class="ltx_Math" alttext="V({\bf r})" display="inline"><mrow><mi>V</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>𝐫</mi><mo stretchy="false">)</mo></mrow></mrow></math>. Systems which admit a potential of this form
+include gravitational, electrostatic and interatomic forces. When we
+have a conservative force, we necessarily have a conservation law
+for energy. To see this, return to equation (<a href="#E6" title="(1.6) ‣ 1.2.3 Energy ‣ 1.2 Newtonian Mechanics: A Single Particle ‣ 1 Newton’s Laws of Motion ‣ Classical Dynamics University of Cambridge Part II Mathematical Tripos" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1.6</span></a>) which now
+reads</p>
+<table id="S4.EGx9" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="E9"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="E9.m1" class="ltx_Math" alttext="\displaystyle T(t_{2})-T(t_{1})=-\int_{{\bf r}_{1}}^{{\bf r}_{2}}\,\nabla V%
+\cdot d{\bf r}=-V(t_{2})+V(t_{1})" display="inline"><mrow><mrow><mrow><mi>T</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><msub><mi>t</mi><mn>2</mn></msub><mo stretchy="false">)</mo></mrow></mrow><mo>-</mo><mrow><mi>T</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><msub><mi>t</mi><mn>1</mn></msub><mo stretchy="false">)</mo></mrow></mrow></mrow><mo>=</mo><mrow><mo>-</mo><mrow><mpadded width="+1.7pt"><mstyle displaystyle="true"><msubsup><mo largeop="true" symmetric="true">∫</mo><msub><mi>𝐫</mi><mn>1</mn></msub><msub><mi>𝐫</mi><mn>2</mn></msub></msubsup></mstyle></mpadded><mrow><mo>∇</mo><mo>⁡</mo><mrow><mrow><mi>V</mi><mo>⋅</mo><mi>d</mi></mrow><mo>⁢</mo><mi>𝐫</mi></mrow></mrow></mrow></mrow><mo>=</mo><mrow><mrow><mo>-</mo><mrow><mi>V</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><msub><mi>t</mi><mn>2</mn></msub><mo stretchy="false">)</mo></mrow></mrow></mrow><mo>+</mo><mrow><mi>V</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><msub><mi>t</mi><mn>1</mn></msub><mo stretchy="false">)</mo></mrow></mrow></mrow></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1.9)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">or, rearranging things,</p>
+<table id="S4.EGx10" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="E10"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="E10.m1" class="ltx_Math" alttext="\displaystyle T(t_{1})+V(t_{1})=T(t_{2})+V(t_{2})\equiv E" display="inline"><mrow><mrow><mrow><mi>T</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><msub><mi>t</mi><mn>1</mn></msub><mo stretchy="false">)</mo></mrow></mrow><mo>+</mo><mrow><mi>V</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><msub><mi>t</mi><mn>1</mn></msub><mo stretchy="false">)</mo></mrow></mrow></mrow><mo>=</mo><mrow><mrow><mi>T</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><msub><mi>t</mi><mn>2</mn></msub><mo stretchy="false">)</mo></mrow></mrow><mo>+</mo><mrow><mi>V</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><msub><mi>t</mi><mn>2</mn></msub><mo stretchy="false">)</mo></mrow></mrow></mrow><mo>≡</mo><mi>E</mi></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1.10)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">So <math id="SS2.SSS3.p1.m11" class="ltx_Math" alttext="E=T+V" display="inline"><mrow><mi>E</mi><mo>=</mo><mrow><mi>T</mi><mo>+</mo><mi>V</mi></mrow></mrow></math> is also a
+constant of motion. It is the energy. When the energy is considered to be a
+function of position <math id="SS2.SSS3.p1.m12" class="ltx_Math" alttext="{\bf r}" display="inline"><mi>𝐫</mi></math> and momentum <math id="SS2.SSS3.p1.m13" class="ltx_Math" alttext="{\bf p}" display="inline"><mi>𝐩</mi></math> it is referred to as
+the <span class="ltx_text ltx_font_italic">Hamiltonian</span> <math id="SS2.SSS3.p1.m14" class="ltx_Math" alttext="H" display="inline"><mi>H</mi></math>. In section 4 we will be seeing much more of
+the Hamiltonian.
+</p>
+</div>
+</section>
+<section id="SS2.SSS4" class="ltx_subsubsection">
+<h3 class="ltx_title ltx_title_subsubsection">
+<span class="ltx_tag ltx_tag_subsubsection">1.2.4 </span>Examples</h3>
+
+<div id="SS2.SSS4.p1" class="ltx_para">
+<ul id="I3" class="ltx_itemize">
+<li id="I3.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="I3.i1.p1" class="ltx_para">
+<p class="ltx_p">Example 1: The Simple Harmonic Oscillator</p>
+</div>
+</li>
+</ul>
+<p class="ltx_p">This is a one-dimensional system with a force proportional to the
+distance <math id="SS2.SSS4.p1.m1" class="ltx_Math" alttext="x" display="inline"><mi>x</mi></math> to the origin: <math id="SS2.SSS4.p1.m2" class="ltx_Math" alttext="F(x)=-kx" display="inline"><mrow><mrow><mi>F</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></mrow></mrow><mo>=</mo><mrow><mo>-</mo><mrow><mi>k</mi><mo>⁢</mo><mi>x</mi></mrow></mrow></mrow></math>. This force arises from a
+potential <math id="SS2.SSS4.p1.m3" class="ltx_Math" alttext="V={\textstyle\frac{1}{2}}kx^{2}" display="inline"><mrow><mi>V</mi><mo>=</mo><mrow><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>⁢</mo><mi>k</mi><mo>⁢</mo><msup><mi>x</mi><mn>2</mn></msup></mrow></mrow></math>. Since <math id="SS2.SSS4.p1.m4" class="ltx_Math" alttext="F\neq 0" display="inline"><mrow><mi>F</mi><mo>≠</mo><mn>0</mn></mrow></math>, momentum is not
+conserved (the object oscillates backwards and forwards) and,
+since the system lives in only one dimension, angular momentum is
+not defined. But energy <math id="SS2.SSS4.p1.m5" class="ltx_Math" alttext="E={\textstyle\frac{1}{2}}m\dot{x}^{2}+{\textstyle\frac{1}{2}}kx^{2}" display="inline"><mrow><mi>E</mi><mo>=</mo><mrow><mrow><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>⁢</mo><mi>m</mi><mo>⁢</mo><msup><mover accent="true"><mi>x</mi><mo>˙</mo></mover><mn>2</mn></msup></mrow><mo>+</mo><mrow><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>⁢</mo><mi>k</mi><mo>⁢</mo><msup><mi>x</mi><mn>2</mn></msup></mrow></mrow></mrow></math> is
+conserved.</p>
+<ul id="I4" class="ltx_itemize">
+<li id="I4.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="I4.i1.p1" class="ltx_para">
+<p class="ltx_p">Example 2: The Damped Simple Harmonic Oscillator</p>
+</div>
+</li>
+</ul>
+<p class="ltx_p">We now include a friction term so that
+<math id="SS2.SSS4.p1.m6" class="ltx_Math" alttext="F(x,\dot{x})=-kx-\gamma\dot{x}" display="inline"><mrow><mrow><mi>F</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>x</mi><mo>,</mo><mover accent="true"><mi>x</mi><mo>˙</mo></mover><mo stretchy="false">)</mo></mrow></mrow><mo>=</mo><mrow><mrow><mo>-</mo><mrow><mi>k</mi><mo>⁢</mo><mi>x</mi></mrow></mrow><mo>-</mo><mrow><mi>γ</mi><mo>⁢</mo><mover accent="true"><mi>x</mi><mo>˙</mo></mover></mrow></mrow></mrow></math>. Since <math id="SS2.SSS4.p1.m7" class="ltx_Math" alttext="F" display="inline"><mi>F</mi></math> is not conservative,
+energy is not conserved. This system loses energy until it
+comes to rest.</p>
+<ul id="I5" class="ltx_itemize">
+<li id="I5.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="I5.i1.p1" class="ltx_para">
+<p class="ltx_p">Example 3: Particle Moving Under Gravity</p>
+</div>
+</li>
+</ul>
+<p class="ltx_p">Consider a particle of mass <math id="SS2.SSS4.p1.m8" class="ltx_Math" alttext="m" display="inline"><mi>m</mi></math> moving in 3 dimensions under the
+gravitational pull of a much larger particle of mass <math id="SS2.SSS4.p1.m9" class="ltx_Math" alttext="M" display="inline"><mi>M</mi></math>. The force
+is <math id="SS2.SSS4.p1.m10" class="ltx_Math" alttext="{\bf F}=-(GMm/r^{2})\hat{{\bf r}}" display="inline"><mrow><mi>𝐅</mi><mo>=</mo><mrow><mo>-</mo><mrow><mrow><mo stretchy="false">(</mo><mrow><mrow><mi>G</mi><mo>⁢</mo><mi>M</mi><mo>⁢</mo><mi>m</mi></mrow><mo>/</mo><msup><mi>r</mi><mn>2</mn></msup></mrow><mo stretchy="false">)</mo></mrow><mo>⁢</mo><mover accent="true"><mi>𝐫</mi><mo stretchy="false">^</mo></mover></mrow></mrow></mrow></math> which arises from the potential
+<math id="SS2.SSS4.p1.m11" class="ltx_Math" alttext="V=-GMm/r" display="inline"><mrow><mi>V</mi><mo>=</mo><mrow><mo>-</mo><mrow><mrow><mi>G</mi><mo>⁢</mo><mi>M</mi><mo>⁢</mo><mi>m</mi></mrow><mo>/</mo><mi>r</mi></mrow></mrow></mrow></math>. Again, the linear momentum <math id="SS2.SSS4.p1.m12" class="ltx_Math" alttext="{\bf p}" display="inline"><mi>𝐩</mi></math> of the smaller particle
+is not conserved, but the force is both central and conservative,
+ensuring the particle’s total energy <math id="SS2.SSS4.p1.m13" class="ltx_Math" alttext="E" display="inline"><mi>E</mi></math> and the angular momentum
+<math id="SS2.SSS4.p1.m14" class="ltx_Math" alttext="{\bf L}" display="inline"><mi>𝐋</mi></math> are conserved.</p>
+</div>
+</section>
+</section>
+<section id="SS3" class="ltx_subsection">
+<h2 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">1.3 </span>Newtonian Mechanics: Many Particles</h2>
+
+<div id="SS3.p1" class="ltx_para">
+<p class="ltx_p">It’s easy to generalise the above discussion to many particles: we
+simply add an index to everything in sight! Let particle <math id="SS3.p1.m1" class="ltx_Math" alttext="i" display="inline"><mi>i</mi></math> have
+mass <math id="SS3.p1.m2" class="ltx_Math" alttext="m_{i}" display="inline"><msub><mi>m</mi><mi>i</mi></msub></math> and position <math id="SS3.p1.m3" class="ltx_Math" alttext="{\bf r}_{i}" display="inline"><msub><mi>𝐫</mi><mi>i</mi></msub></math> where <math id="SS3.p1.m4" class="ltx_Math" alttext="i=1,\ldots,N" display="inline"><mrow><mi>i</mi><mo>=</mo><mrow><mn>1</mn><mo>,</mo><mi mathvariant="normal">…</mi><mo>,</mo><mi>N</mi></mrow></mrow></math> is the number
+of particles. Newton’s law now reads</p>
+<table id="S4.EGx11" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="E11"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="E11.m1" class="ltx_Math" alttext="\displaystyle{\bf F}_{i}=\dot{{\bf p}}_{i}" display="inline"><mrow><msub><mi>𝐅</mi><mi>i</mi></msub><mo>=</mo><msub><mover accent="true"><mi>𝐩</mi><mo>˙</mo></mover><mi>i</mi></msub></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1.11)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">where <math id="SS3.p1.m5" class="ltx_Math" alttext="{\bf F}_{i}" display="inline"><msub><mi>𝐅</mi><mi>i</mi></msub></math> is the force on the <math id="SS3.p1.m6" class="ltx_Math" alttext="i^{\rm th}" display="inline"><msup><mi>i</mi><mi>th</mi></msup></math>
+particle. The subtlety is that forces can now be working between
+particles. In general, we can decompose the force in the following
+way:</p>
+<table id="S4.EGx12" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="E12"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="E12.m1" class="ltx_Math" alttext="\displaystyle{\bf F}_{i}=\sum_{j\neq i}{\bf F}_{ij}+{\bf F}_{i}^{\rm ext}" display="inline"><mrow><msub><mi>𝐅</mi><mi>i</mi></msub><mo>=</mo><mrow><mrow><mstyle displaystyle="true"><munder><mo largeop="true" movablelimits="false" symmetric="true">∑</mo><mrow><mi>j</mi><mo>≠</mo><mi>i</mi></mrow></munder></mstyle><msub><mi>𝐅</mi><mrow><mi>i</mi><mo>⁢</mo><mi>j</mi></mrow></msub></mrow><mo>+</mo><msubsup><mi>𝐅</mi><mi>i</mi><mi>ext</mi></msubsup></mrow></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1.12)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">where
+<math id="SS3.p1.m7" class="ltx_Math" alttext="{\bf F}_{ij}" display="inline"><msub><mi>𝐅</mi><mrow><mi>i</mi><mo>⁢</mo><mi>j</mi></mrow></msub></math> is the force acting on the <math id="SS3.p1.m8" class="ltx_Math" alttext="i^{\rm th}" display="inline"><msup><mi>i</mi><mi>th</mi></msup></math> particle due to
+the <math id="SS3.p1.m9" class="ltx_Math" alttext="j^{\rm th}" display="inline"><msup><mi>j</mi><mi>th</mi></msup></math> particle, while <math id="SS3.p1.m10" class="ltx_Math" alttext="{\bf F}_{i}^{\rm ext}" display="inline"><msubsup><mi>𝐅</mi><mi>i</mi><mi>ext</mi></msubsup></math> is the external
+force on the <math id="SS3.p1.m11" class="ltx_Math" alttext="i^{\rm th}" display="inline"><msup><mi>i</mi><mi>th</mi></msup></math> particle. We now sum over all <math id="SS3.p1.m12" class="ltx_Math" alttext="N" display="inline"><mi>N</mi></math>
+particles</p>
+<table id="S4.EGx13" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="E13">
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="Ex1.m1" class="ltx_Math" alttext="\displaystyle\sum_{i}{\bf F}_{i}" display="inline"><mrow><mstyle displaystyle="true"><munder><mo largeop="true" movablelimits="false" symmetric="true">∑</mo><mi>i</mi></munder></mstyle><msub><mi>𝐅</mi><mi>i</mi></msub></mrow></math></td>
+<td class="ltx_td ltx_align_center ltx_eqn_cell"><math id="Ex1.m2" class="ltx_Math" alttext="\displaystyle=" display="inline"><mo>=</mo></math></td>
+<td class="ltx_td ltx_align_left ltx_eqn_cell"><math id="Ex1.m3" class="ltx_Math" alttext="\displaystyle\sum_{i,j\,{\rm with}\,j\neq i}{\bf F}_{ij}+\sum_{i}{\bf F}_{i}^{%
+\rm ext}" display="inline"><mrow><mrow><mstyle displaystyle="true"><munder><mo largeop="true" movablelimits="false" symmetric="true">∑</mo><mrow><mrow><mi>i</mi><mo>,</mo><mrow><mpadded width="+1.7pt"><mi>j</mi></mpadded><mo>⁢</mo><mpadded width="+1.7pt"><mi>with</mi></mpadded><mo>⁢</mo><mi>j</mi></mrow></mrow><mo>≠</mo><mi>i</mi></mrow></munder></mstyle><msub><mi>𝐅</mi><mrow><mi>i</mi><mo>⁢</mo><mi>j</mi></mrow></msub></mrow><mo>+</mo><mrow><mstyle displaystyle="true"><munder><mo largeop="true" movablelimits="false" symmetric="true">∑</mo><mi>i</mi></munder></mstyle><msubsup><mi>𝐅</mi><mi>i</mi><mi>ext</mi></msubsup></mrow></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="2" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1.13)</span></td>
+</tr>
+<tr class="ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"></td>
+<td class="ltx_td ltx_align_center ltx_eqn_cell"><math id="E13.m2" class="ltx_Math" alttext="\displaystyle=" display="inline"><mo>=</mo></math></td>
+<td class="ltx_td ltx_align_left ltx_eqn_cell"><math id="E13.m3" class="ltx_Math" alttext="\displaystyle\sum_{i&lt;j}({\bf F}_{ij}+{\bf F}_{ji})+\sum_{i}{\bf F}_{i}^{\rm ext}" display="inline"><mrow><mrow><mstyle displaystyle="true"><munder><mo largeop="true" movablelimits="false" symmetric="true">∑</mo><mrow><mi>i</mi><mo>&lt;</mo><mi>j</mi></mrow></munder></mstyle><mrow><mo stretchy="false">(</mo><mrow><msub><mi>𝐅</mi><mrow><mi>i</mi><mo>⁢</mo><mi>j</mi></mrow></msub><mo>+</mo><msub><mi>𝐅</mi><mrow><mi>j</mi><mo>⁢</mo><mi>i</mi></mrow></msub></mrow><mo stretchy="false">)</mo></mrow></mrow><mo>+</mo><mrow><mstyle displaystyle="true"><munder><mo largeop="true" movablelimits="false" symmetric="true">∑</mo><mi>i</mi></munder></mstyle><msubsup><mi>𝐅</mi><mi>i</mi><mi>ext</mi></msubsup></mrow></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+</tr>
+</tbody>
+</table>
+<p class="ltx_p">where, in the second line, we’ve re-written the sum to be over all pairs <math id="SS3.p1.m13" class="ltx_Math" alttext="i&lt;j" display="inline"><mrow><mi>i</mi><mo>&lt;</mo><mi>j</mi></mrow></math>. At this
+stage we make use of <span class="ltx_text ltx_font_italic">Newton’s third law of motion</span>: every action has an
+equal and opposite reaction. Or, in other words, <math id="SS3.p1.m14" class="ltx_Math" alttext="{\bf F}_{ij}=-{\bf F}_{ji}" display="inline"><mrow><msub><mi>𝐅</mi><mrow><mi>i</mi><mo>⁢</mo><mi>j</mi></mrow></msub><mo>=</mo><mrow><mo>-</mo><msub><mi>𝐅</mi><mrow><mi>j</mi><mo>⁢</mo><mi>i</mi></mrow></msub></mrow></mrow></math>. We see that
+the first term vanishes and we are left simply with</p>
+<table id="S4.EGx14" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="E14"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="E14.m1" class="ltx_Math" alttext="\displaystyle\sum_{i}{\bf F}_{i}={\bf F}^{\rm ext}" display="inline"><mrow><mrow><mstyle displaystyle="true"><munder><mo largeop="true" movablelimits="false" symmetric="true">∑</mo><mi>i</mi></munder></mstyle><msub><mi>𝐅</mi><mi>i</mi></msub></mrow><mo>=</mo><msup><mi>𝐅</mi><mi>ext</mi></msup></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1.14)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">where we’ve defined the total external force to be <math id="SS3.p1.m15" class="ltx_Math" alttext="{\bf F}^{\rm ext}=\sum_{i}{\bf F}_{i}^{\rm ext}" display="inline"><mrow><msup><mi>𝐅</mi><mi>ext</mi></msup><mo>=</mo><mrow><msub><mo largeop="true" symmetric="true">∑</mo><mi>i</mi></msub><msubsup><mi>𝐅</mi><mi>i</mi><mi>ext</mi></msubsup></mrow></mrow></math>.
+We now define the total mass of the system <math id="SS3.p1.m16" class="ltx_Math" alttext="M=\sum_{i}m_{i}" display="inline"><mrow><mi>M</mi><mo>=</mo><mrow><msub><mo largeop="true" symmetric="true">∑</mo><mi>i</mi></msub><msub><mi>m</mi><mi>i</mi></msub></mrow></mrow></math> as well as the
+<span class="ltx_text ltx_font_italic">centre of mass</span> <math id="SS3.p1.m17" class="ltx_Math" alttext="{\bf R}" display="inline"><mi>𝐑</mi></math></p>
+<table id="S4.EGx15" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="E15"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="E15.m1" class="ltx_Math" alttext="\displaystyle{\bf R}=\frac{\sum_{i}m_{i}{\bf r}_{i}}{M}" display="inline"><mrow><mi>𝐑</mi><mo>=</mo><mstyle displaystyle="true"><mfrac><mrow><msub><mo largeop="true" symmetric="true">∑</mo><mi>i</mi></msub><mrow><msub><mi>m</mi><mi>i</mi></msub><mo>⁢</mo><msub><mi>𝐫</mi><mi>i</mi></msub></mrow></mrow><mi>M</mi></mfrac></mstyle></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1.15)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">Then using (<a href="#E11" title="(1.11) ‣ 1.3 Newtonian Mechanics: Many Particles ‣ 1 Newton’s Laws of Motion ‣ Classical Dynamics University of Cambridge Part II Mathematical Tripos" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1.11</span></a>), and summing over all particles, we arrive at the simple
+formula,</p>
+<table id="S4.EGx16" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="E16"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="E16.m1" class="ltx_Math" alttext="\displaystyle{\bf F}^{\rm ext}=M\ddot{\bf R}" display="inline"><mrow><msup><mi>𝐅</mi><mi>ext</mi></msup><mo>=</mo><mrow><mi>M</mi><mo>⁢</mo><mover accent="true"><mi>𝐑</mi><mo>¨</mo></mover></mrow></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1.16)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">which is identical to that of a single particle. This is an important formula. It tells
+that the centre of mass of a system of particles acts just as if all the mass were concentrated
+there. In other words, it doesn’t matter if you throw a tennis ball or a very lively cat:
+the center of mass of each traces the same path.</p>
+</div>
+<section id="SS3.SSS1" class="ltx_subsubsection">
+<h3 class="ltx_title ltx_title_subsubsection">
+<span class="ltx_tag ltx_tag_subsubsection">1.3.1 </span>Momentum Revisited</h3>
+
+<div id="SS3.SSS1.p1" class="ltx_para">
+<p class="ltx_p">The <span class="ltx_text ltx_font_italic">total momentum</span> is defined to be <math id="SS3.SSS1.p1.m1" class="ltx_Math" alttext="{\bf P}=\sum_{i}{\bf p}_{i}" display="inline"><mrow><mi>𝐏</mi><mo>=</mo><mrow><msub><mo largeop="true" symmetric="true">∑</mo><mi>i</mi></msub><msub><mi>𝐩</mi><mi>i</mi></msub></mrow></mrow></math> and,
+from the formulae above, it is simple to derive <math id="SS3.SSS1.p1.m2" class="ltx_Math" alttext="\dot{{\bf P}}={\bf F}^{\rm ext}" display="inline"><mrow><mover accent="true"><mi>𝐏</mi><mo>˙</mo></mover><mo>=</mo><msup><mi>𝐅</mi><mi>ext</mi></msup></mrow></math>. So we find the conservation law of total linear momentum for
+a system of many particles: <math id="SS3.SSS1.p1.m3" class="ltx_Math" alttext="{\bf P}" display="inline"><mi>𝐏</mi></math> is constant if <math id="SS3.SSS1.p1.m4" class="ltx_Math" alttext="{\bf F}^{\rm ext}" display="inline"><msup><mi>𝐅</mi><mi>ext</mi></msup></math>
+vanishes.</p>
+</div>
+<section id="SS3.SSS1.Px1" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph"></h4>
+
+<div id="SS3.SSS1.Px1.p1" class="ltx_para">
+<p class="ltx_p">Similarly, we define <span class="ltx_text ltx_font_italic">total angular momentum</span> to be <math id="SS3.SSS1.Px1.p1.m1" class="ltx_Math" alttext="{\bf L}=\sum_{i}{\bf L}_{i}" display="inline"><mrow><mi>𝐋</mi><mo>=</mo><mrow><msub><mo largeop="true" symmetric="true">∑</mo><mi>i</mi></msub><msub><mi>𝐋</mi><mi>i</mi></msub></mrow></mrow></math>. Now let’s
+see what happens when we compute the time derivative.</p>
+<table id="S4.EGx17" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="E17">
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="Ex2.m1" class="ltx_Math" alttext="\displaystyle\dot{{\bf L}}" display="inline"><mover accent="true"><mi>𝐋</mi><mo>˙</mo></mover></math></td>
+<td class="ltx_td ltx_align_center ltx_eqn_cell"><math id="Ex2.m2" class="ltx_Math" alttext="\displaystyle=" display="inline"><mo>=</mo></math></td>
+<td class="ltx_td ltx_align_left ltx_eqn_cell"><math id="Ex2.m3" class="ltx_Math" alttext="\displaystyle\sum_{i}{\bf r}_{i}\times\dot{{\bf p}}_{i}" display="inline"><mrow><mstyle displaystyle="true"><munder><mo largeop="true" movablelimits="false" symmetric="true">∑</mo><mi>i</mi></munder></mstyle><mrow><msub><mi>𝐫</mi><mi>i</mi></msub><mo>×</mo><msub><mover accent="true"><mi>𝐩</mi><mo>˙</mo></mover><mi>i</mi></msub></mrow></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="2" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1.17)</span></td>
+</tr>
+<tr class="ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"></td>
+<td class="ltx_td ltx_align_center ltx_eqn_cell"><math id="E17.m2" class="ltx_Math" alttext="\displaystyle=" display="inline"><mo>=</mo></math></td>
+<td class="ltx_td ltx_align_left ltx_eqn_cell"><math id="E17.m3" class="ltx_Math" alttext="\displaystyle\sum_{i}{\bf r}_{i}\times\left(\sum_{j\neq i}{\bf F}_{ij}+{\bf F}%
+_{i}^{\rm ext}\right)" display="inline"><mrow><mstyle displaystyle="true"><munder><mo largeop="true" movablelimits="false" symmetric="true">∑</mo><mi>i</mi></munder></mstyle><mrow><msub><mi>𝐫</mi><mi>i</mi></msub><mo>×</mo><mrow><mo>(</mo><mrow><mrow><mstyle displaystyle="true"><munder><mo largeop="true" movablelimits="false" symmetric="true">∑</mo><mrow><mi>j</mi><mo>≠</mo><mi>i</mi></mrow></munder></mstyle><msub><mi>𝐅</mi><mrow><mi>i</mi><mo>⁢</mo><mi>j</mi></mrow></msub></mrow><mo>+</mo><msubsup><mi>𝐅</mi><mi>i</mi><mi>ext</mi></msubsup></mrow><mo>)</mo></mrow></mrow></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+</tr>
+</tbody>
+<tbody id="E18"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"></td>
+<td class="ltx_td ltx_align_center ltx_eqn_cell"><math id="E18.m2" class="ltx_Math" alttext="\displaystyle=" display="inline"><mo>=</mo></math></td>
+<td class="ltx_td ltx_align_left ltx_eqn_cell"><math id="E18.m3" class="ltx_Math" alttext="\displaystyle\sum_{i,j\,{\rm with}\,i\neq j}{\bf r}_{i}\times{\bf F}_{ji}+\sum%
+_{i}{\bf r}_{i}\times{\bf F}_{i}^{\rm ext}" display="inline"><mrow><mrow><mstyle displaystyle="true"><munder><mo largeop="true" movablelimits="false" symmetric="true">∑</mo><mrow><mrow><mi>i</mi><mo>,</mo><mrow><mpadded width="+1.7pt"><mi>j</mi></mpadded><mo>⁢</mo><mpadded width="+1.7pt"><mi>with</mi></mpadded><mo>⁢</mo><mi>i</mi></mrow></mrow><mo>≠</mo><mi>j</mi></mrow></munder></mstyle><mrow><msub><mi>𝐫</mi><mi>i</mi></msub><mo>×</mo><msub><mi>𝐅</mi><mrow><mi>j</mi><mo>⁢</mo><mi>i</mi></mrow></msub></mrow></mrow><mo>+</mo><mrow><mstyle displaystyle="true"><munder><mo largeop="true" movablelimits="false" symmetric="true">∑</mo><mi>i</mi></munder></mstyle><mrow><msub><mi>𝐫</mi><mi>i</mi></msub><mo>×</mo><msubsup><mi>𝐅</mi><mi>i</mi><mi>ext</mi></msubsup></mrow></mrow></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1.18)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">The last term in
+this expression is the definition of <span class="ltx_text ltx_font_italic">total external torque</span>:
+<math id="SS3.SSS1.Px1.p1.m2" class="ltx_Math" alttext="\mbox{\boldmath$\tau$}^{\rm ext}=\sum_{i}{\bf r}_{i}\times{\bf F}_{i}^{\rm ext}" display="inline"><mrow><msup><mi>𝝉</mi><mi>ext</mi></msup><mo>=</mo><mrow><msub><mo largeop="true" symmetric="true">∑</mo><mi>i</mi></msub><mrow><msub><mi>𝐫</mi><mi>i</mi></msub><mo>×</mo><msubsup><mi>𝐅</mi><mi>i</mi><mi>ext</mi></msubsup></mrow></mrow></mrow></math>. But what are we
+going to do with the first term on the right hand side? Ideally we
+would like it to vanish! Let’s look at the circumstances under which
+this will happen. We can again rewrite it as a sum over pairs <math id="SS3.SSS1.Px1.p1.m3" class="ltx_Math" alttext="i&lt;j" display="inline"><mrow><mi>i</mi><mo>&lt;</mo><mi>j</mi></mrow></math>
+to get</p>
+<table id="S4.EGx18" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="E19"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="E19.m1" class="ltx_Math" alttext="\displaystyle\sum_{i&lt;j}({\bf r}_{i}-{\bf r}_{j})\times{\bf F}_{ij}" display="inline"><mrow><mstyle displaystyle="true"><munder><mo largeop="true" movablelimits="false" symmetric="true">∑</mo><mrow><mi>i</mi><mo>&lt;</mo><mi>j</mi></mrow></munder></mstyle><mrow><mrow><mo stretchy="false">(</mo><mrow><msub><mi>𝐫</mi><mi>i</mi></msub><mo>-</mo><msub><mi>𝐫</mi><mi>j</mi></msub></mrow><mo stretchy="false">)</mo></mrow><mo>×</mo><msub><mi>𝐅</mi><mrow><mi>i</mi><mo>⁢</mo><mi>j</mi></mrow></msub></mrow></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1.19)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">which will
+vanish if and only if the force <math id="SS3.SSS1.Px1.p1.m4" class="ltx_Math" alttext="{\bf F}_{ij}" display="inline"><msub><mi>𝐅</mi><mrow><mi>i</mi><mo>⁢</mo><mi>j</mi></mrow></msub></math> is parallel to the line
+joining to two particles <math id="SS3.SSS1.Px1.p1.m5" class="ltx_Math" alttext="({\bf r}_{i}-{\bf r}_{j})" display="inline"><mrow><mo stretchy="false">(</mo><mrow><msub><mi>𝐫</mi><mi>i</mi></msub><mo>-</mo><msub><mi>𝐫</mi><mi>j</mi></msub></mrow><mo stretchy="false">)</mo></mrow></math>. This is the strong form of Newton’s
+third law. If this is true, then we
+have a statement about the conservation of total angular momentum,
+namely <math id="SS3.SSS1.Px1.p1.m6" class="ltx_Math" alttext="{\bf L}" display="inline"><mi>𝐋</mi></math> is constant if <math id="SS3.SSS1.Px1.p1.m7" class="ltx_Math" alttext="\mbox{\boldmath$\tau$}^{\rm ext}=0" display="inline"><mrow><msup><mi>𝝉</mi><mi>ext</mi></msup><mo>=</mo><mn>0</mn></mrow></math>.
+</p>
+</div>
+<figure id="F1" class="ltx_figure ltx_align_floatleft"><img src="x1.png" id="F1.g1" class="ltx_graphics" width="125" height="227" alt="The magnetic field for two particles.">
+<figcaption class="ltx_caption"><span class="ltx_tag ltx_tag_figure">Figure 1: </span>The magnetic field for two particles.</figcaption>
+</figure>
+</section>
+<section id="SS3.SSS1.Px2" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph"></h4>
+
+<div id="SS3.SSS1.Px2.p1" class="ltx_para">
+<p class="ltx_p">Most forces do indeed obey both forms of Newton’s third law:
+<math id="SS3.SSS1.Px2.p1.m1" class="ltx_Math" alttext="{\bf F}_{ij}=-{\bf F}_{ji}" display="inline"><mrow><msub><mi>𝐅</mi><mrow><mi>i</mi><mo>⁢</mo><mi>j</mi></mrow></msub><mo>=</mo><mrow><mo>-</mo><msub><mi>𝐅</mi><mrow><mi>j</mi><mo>⁢</mo><mi>i</mi></mrow></msub></mrow></mrow></math> and <math id="SS3.SSS1.Px2.p1.m2" class="ltx_Math" alttext="{\bf F}_{ij}" display="inline"><msub><mi>𝐅</mi><mrow><mi>i</mi><mo>⁢</mo><mi>j</mi></mrow></msub></math> is parallel to <math id="SS3.SSS1.Px2.p1.m3" class="ltx_Math" alttext="({\bf r}_{i}-{\bf r}_{j})" display="inline"><mrow><mo stretchy="false">(</mo><mrow><msub><mi>𝐫</mi><mi>i</mi></msub><mo>-</mo><msub><mi>𝐫</mi><mi>j</mi></msub></mrow><mo stretchy="false">)</mo></mrow></math>. For
+example, gravitational and electrostatic forces have this property.
+And the total momentum and angular momentum are both conserved in
+these systems. But some forces don’t have these properties! The most
+famous example is the Lorentz force on two moving particles with
+electric charge <math id="SS3.SSS1.Px2.p1.m4" class="ltx_Math" alttext="Q" display="inline"><mi>Q</mi></math>. This is given by,</p>
+<table id="S4.EGx19" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="E20"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="E20.m1" class="ltx_Math" alttext="\displaystyle{\bf F}_{ij}=Q{\bf v}_{i}\times{\bf B}_{j}" display="inline"><mrow><msub><mi>𝐅</mi><mrow><mi>i</mi><mo>⁢</mo><mi>j</mi></mrow></msub><mo>=</mo><mrow><mrow><mi>Q</mi><mo>⁢</mo><msub><mi>𝐯</mi><mi>i</mi></msub></mrow><mo>×</mo><msub><mi>𝐁</mi><mi>j</mi></msub></mrow></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1.20)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">where <math id="SS3.SSS1.Px2.p1.m5" class="ltx_Math" alttext="{\bf v}_{i}" display="inline"><msub><mi>𝐯</mi><mi>i</mi></msub></math> is the velocity of the <math id="SS3.SSS1.Px2.p1.m6" class="ltx_Math" alttext="i^{\rm th}" display="inline"><msup><mi>i</mi><mi>th</mi></msup></math>
+particle and <math id="SS3.SSS1.Px2.p1.m7" class="ltx_Math" alttext="{\bf B}_{j}" display="inline"><msub><mi>𝐁</mi><mi>j</mi></msub></math> is the magnetic field generated by the
+<math id="SS3.SSS1.Px2.p1.m8" class="ltx_Math" alttext="j^{\rm th}" display="inline"><msup><mi>j</mi><mi>th</mi></msup></math> particle. Consider two particles crossing each other in
+a “T” as shown in the diagram. The force on particle 1 from
+particle 2 vanishes.
+Meanwhile, the force on particle 2 from particle 1 is non-zero, and in the
+direction</p>
+<table id="S4.EGx20" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="E21"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="E21.m1" class="ltx_Math" alttext="\displaystyle{\bf F}_{21}\ \sim\ \uparrow\times\otimes\ \sim\ \leftarrow" display="inline"><mrow><mpadded width="+5pt"><msub><mi>𝐅</mi><mn>21</mn></msub></mpadded><mo rspace="7.5pt">∼</mo><mo>↑</mo><mo>×</mo><mo rspace="7.5pt">⊗</mo><mo rspace="7.5pt">∼</mo><mo>←</mo></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1.21)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">Does this mean that conservation of
+total linear and angular momentum is violated? Thankfully, no! We
+need to realise that the electromagnetic field itself carries
+angular momentum which restores the conservation law. Once we realise
+this, it becomes a rather cheap counterexample to Newton’s third law, little
+different from an underwater swimmer who can appear to violate Newton’s third
+law if we don’t take into account the momentum of the water.</p>
+</div>
+</section>
+</section>
+<section id="SS3.SSS2" class="ltx_subsubsection">
+<h3 class="ltx_title ltx_title_subsubsection">
+<span class="ltx_tag ltx_tag_subsubsection">1.3.2 </span>Energy Revisited</h3>
+
+<div id="SS3.SSS2.p1" class="ltx_para">
+<p class="ltx_p">The total kinetic energy of a system of many particles is
+<math id="SS3.SSS2.p1.m1" class="ltx_Math" alttext="T={\textstyle\frac{1}{2}}\sum_{i}m_{i}\dot{{\bf r}}_{i}^{2}" display="inline"><mrow><mi>T</mi><mo>=</mo><mrow><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>⁢</mo><mrow><msub><mo largeop="true" symmetric="true">∑</mo><mi>i</mi></msub><mrow><msub><mi>m</mi><mi>i</mi></msub><mo>⁢</mo><msubsup><mover accent="true"><mi>𝐫</mi><mo>˙</mo></mover><mi>i</mi><mn>2</mn></msubsup></mrow></mrow></mrow></mrow></math>. Let us decompose the position
+vector <math id="SS3.SSS2.p1.m2" class="ltx_Math" alttext="{\bf r}_{i}" display="inline"><msub><mi>𝐫</mi><mi>i</mi></msub></math> as</p>
+<table id="S4.EGx21" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="E22"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="E22.m1" class="ltx_Math" alttext="\displaystyle{\bf r}_{i}={\bf R}+\tilde{{\bf r}}_{i}" display="inline"><mrow><msub><mi>𝐫</mi><mi>i</mi></msub><mo>=</mo><mrow><mi>𝐑</mi><mo>+</mo><msub><mover accent="true"><mi>𝐫</mi><mo stretchy="false">~</mo></mover><mi>i</mi></msub></mrow></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1.22)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">where
+<math id="SS3.SSS2.p1.m3" class="ltx_Math" alttext="\tilde{{\bf r}}_{i}" display="inline"><msub><mover accent="true"><mi>𝐫</mi><mo stretchy="false">~</mo></mover><mi>i</mi></msub></math> is the distance from the centre of mass to the
+particle <math id="SS3.SSS2.p1.m4" class="ltx_Math" alttext="i" display="inline"><mi>i</mi></math>. Then we can write the total kinetic energy as</p>
+<table id="S4.EGx22" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="E23"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="E23.m1" class="ltx_Math" alttext="\displaystyle T={\textstyle\frac{1}{2}}M\dot{{\bf R}}^{2}+{\textstyle\frac{1}{%
+2}}\sum_{i}m_{i}\dot{\tilde{{\bf r}}}^{2}_{i}" display="inline"><mrow><mi>T</mi><mo>=</mo><mrow><mrow><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>⁢</mo><mi>M</mi><mo>⁢</mo><msup><mover accent="true"><mi>𝐑</mi><mo>˙</mo></mover><mn>2</mn></msup></mrow><mo>+</mo><mrow><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>⁢</mo><mrow><mstyle displaystyle="true"><munder><mo largeop="true" movablelimits="false" symmetric="true">∑</mo><mi>i</mi></munder></mstyle><mrow><msub><mi>m</mi><mi>i</mi></msub><mo>⁢</mo><msubsup><mover accent="true"><mover accent="true"><mi>𝐫</mi><mo stretchy="false">~</mo></mover><mo>˙</mo></mover><mi>i</mi><mn>2</mn></msubsup></mrow></mrow></mrow></mrow></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1.23)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">Which shows us that the kinetic energy splits up into the kinetic
+energy of the centre of mass, together with an <span class="ltx_text ltx_font_italic">internal energy</span>
+describing how the system is moving around its centre of mass. As
+for a single particle, we may calculate the change in the total
+kinetic energy,</p>
+<table id="S4.EGx23" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="E24"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="E24.m1" class="ltx_Math" alttext="\displaystyle T(t_{2})-T(t_{1})=\sum_{i}\int\,{\bf F}_{i}^{\rm ext}\cdot d{\bf
+r%
+}_{i}+\sum_{i\neq j}\int\,{\bf F}_{ij}\cdot d{\bf r}_{i}" display="inline"><mrow><mrow><mrow><mi>T</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><msub><mi>t</mi><mn>2</mn></msub><mo stretchy="false">)</mo></mrow></mrow><mo>-</mo><mrow><mi>T</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><msub><mi>t</mi><mn>1</mn></msub><mo stretchy="false">)</mo></mrow></mrow></mrow><mo>=</mo><mrow><mrow><mstyle displaystyle="true"><munder><mo largeop="true" movablelimits="false" symmetric="true">∑</mo><mi>i</mi></munder></mstyle><mstyle displaystyle="true"><mrow><mo largeop="true" rspace="4.2pt" symmetric="true">∫</mo><mrow><msubsup><mi>𝐅</mi><mi>i</mi><mi>ext</mi></msubsup><mo>⋅</mo><mrow><mo rspace="0pt">𝑑</mo><msub><mi>𝐫</mi><mi>i</mi></msub></mrow></mrow></mrow></mstyle></mrow><mo>+</mo><mrow><mstyle displaystyle="true"><munder><mo largeop="true" movablelimits="false" symmetric="true">∑</mo><mrow><mi>i</mi><mo>≠</mo><mi>j</mi></mrow></munder></mstyle><mstyle displaystyle="true"><mrow><mo largeop="true" rspace="4.2pt" symmetric="true">∫</mo><mrow><msub><mi>𝐅</mi><mrow><mi>i</mi><mo>⁢</mo><mi>j</mi></mrow></msub><mo>⋅</mo><mrow><mo rspace="0pt">𝑑</mo><msub><mi>𝐫</mi><mi>i</mi></msub></mrow></mrow></mrow></mstyle></mrow></mrow></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1.24)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">Like before,
+we need to consider conservative forces to get energy conservation.
+But now we need both</p>
+<ul id="I6" class="ltx_itemize">
+<li id="I6.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="I6.i1.p1" class="ltx_para">
+<p class="ltx_p">Conservative external forces: <math id="I6.i1.p1.m1" class="ltx_Math" alttext="{\bf F}_{i}^{\rm ext}=-\nabla_{i}V_{i}({\bf r}_{1},\ldots,{\bf r}_{N})" display="inline"><mrow><msubsup><mi>𝐅</mi><mi>i</mi><mi>ext</mi></msubsup><mo>=</mo><mrow><mo>-</mo><mrow><mrow><msub><mo>∇</mo><mi>i</mi></msub><mo>⁡</mo><msub><mi>V</mi><mi>i</mi></msub></mrow><mo>⁢</mo><mrow><mo stretchy="false">(</mo><msub><mi>𝐫</mi><mn>1</mn></msub><mo>,</mo><mi mathvariant="normal">…</mi><mo>,</mo><msub><mi>𝐫</mi><mi>N</mi></msub><mo stretchy="false">)</mo></mrow></mrow></mrow></mrow></math></p>
+</div>
+</li>
+<li id="I6.i2" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="I6.i2.p1" class="ltx_para">
+<p class="ltx_p">Conservative internal forces: <math id="I6.i2.p1.m1" class="ltx_Math" alttext="{\bf F}_{ij}=-\nabla_{i}V_{ij}({\bf r}_{1},\ldots,{\bf r}_{N})" display="inline"><mrow><msub><mi>𝐅</mi><mrow><mi>i</mi><mo>⁢</mo><mi>j</mi></mrow></msub><mo>=</mo><mrow><mo>-</mo><mrow><mrow><msub><mo>∇</mo><mi>i</mi></msub><mo>⁡</mo><msub><mi>V</mi><mrow><mi>i</mi><mo>⁢</mo><mi>j</mi></mrow></msub></mrow><mo>⁢</mo><mrow><mo stretchy="false">(</mo><msub><mi>𝐫</mi><mn>1</mn></msub><mo>,</mo><mi mathvariant="normal">…</mi><mo>,</mo><msub><mi>𝐫</mi><mi>N</mi></msub><mo stretchy="false">)</mo></mrow></mrow></mrow></mrow></math></p>
+</div>
+</li>
+</ul>
+<p class="ltx_p">where <math id="SS3.SSS2.p1.m5" class="ltx_Math" alttext="\nabla_{i}\equiv\partial/\partial{\bf r}_{i}" display="inline"><mrow><msub><mo>∇</mo><mi>i</mi></msub><mo>≡</mo><mrow><mo>∂</mo><mo>/</mo><mrow><mo>∂</mo><mo>⁡</mo><msub><mi>𝐫</mi><mi>i</mi></msub></mrow></mrow></mrow></math>.
+To get Newton’s third law <math id="SS3.SSS2.p1.m6" class="ltx_Math" alttext="{\bf F}_{ij}=-{\bf F}_{ji}" display="inline"><mrow><msub><mi>𝐅</mi><mrow><mi>i</mi><mo>⁢</mo><mi>j</mi></mrow></msub><mo>=</mo><mrow><mo>-</mo><msub><mi>𝐅</mi><mrow><mi>j</mi><mo>⁢</mo><mi>i</mi></mrow></msub></mrow></mrow></math> together with the requirement
+that this is parallel to <math id="SS3.SSS2.p1.m7" class="ltx_Math" alttext="({\bf r}_{i}-{\bf r}_{j})" display="inline"><mrow><mo stretchy="false">(</mo><mrow><msub><mi>𝐫</mi><mi>i</mi></msub><mo>-</mo><msub><mi>𝐫</mi><mi>j</mi></msub></mrow><mo stretchy="false">)</mo></mrow></math>, we should take the internal potentials
+to satisfy <math id="SS3.SSS2.p1.m8" class="ltx_Math" alttext="V_{ij}=V_{ji}" display="inline"><mrow><msub><mi>V</mi><mrow><mi>i</mi><mo>⁢</mo><mi>j</mi></mrow></msub><mo>=</mo><msub><mi>V</mi><mrow><mi>j</mi><mo>⁢</mo><mi>i</mi></mrow></msub></mrow></math> with</p>
+<table id="S4.EGx24" class="ltx_equationgroup ltx_eqn_eqnarray ltx_eqn_table">
+
+<tbody id="E25"><tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_td ltx_align_right ltx_eqn_cell"><math id="E25.m1" class="ltx_Math" alttext="\displaystyle V_{ij}({\bf r}_{1},\ldots{\bf r}_{N})=V_{ij}(|{\bf r}_{i}-{\bf r%
+}_{j}|)" display="inline"><mrow><mrow><msub><mi>V</mi><mrow><mi>i</mi><mo>⁢</mo><mi>j</mi></mrow></msub><mo>⁢</mo><mrow><mo stretchy="false">(</mo><msub><mi>𝐫</mi><mn>1</mn></msub><mo>,</mo><mrow><mi mathvariant="normal">…</mi><mo>⁢</mo><msub><mi>𝐫</mi><mi>N</mi></msub></mrow><mo stretchy="false">)</mo></mrow></mrow><mo>=</mo><mrow><msub><mi>V</mi><mrow><mi>i</mi><mo>⁢</mo><mi>j</mi></mrow></msub><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mrow><mo stretchy="false">|</mo><mrow><msub><mi>𝐫</mi><mi>i</mi></msub><mo>-</mo><msub><mi>𝐫</mi><mi>j</mi></msub></mrow><mo stretchy="false">|</mo></mrow><mo stretchy="false">)</mo></mrow></mrow></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1.25)</span></td>
+</tr></tbody>
+</table>
+<p class="ltx_p">so that <math id="SS3.SSS2.p1.m9" class="ltx_Math" alttext="V_{ij}" display="inline"><msub><mi>V</mi><mrow><mi>i</mi><mo>⁢</mo><mi>j</mi></mrow></msub></math> depends only on the distance between the <math id="SS3.SSS2.p1.m10" class="ltx_Math" alttext="i^{\rm th}" display="inline"><msup><mi>i</mi><mi>th</mi></msup></math> and
+<math id="SS3.SSS2.p1.m11" class="ltx_Math" alttext="j^{\rm th}" display="inline"><msup><mi>j</mi><mi>th</mi></msup></math> particles. We also insist on a restriction for the external forces,
+<math id="SS3.SSS2.p1.m12" class="ltx_Math" alttext="V_{i}({\bf r}_{1},\ldots,{\bf r}_{N})=V_{i}({\bf r}_{i})" display="inline"><mrow><mrow><msub><mi>V</mi><mi>i</mi></msub><mo>⁢</mo><mrow><mo stretchy="false">(</mo><msub><mi>𝐫</mi><mn>1</mn></msub><mo>,</mo><mi mathvariant="normal">…</mi><mo>,</mo><msub><mi>𝐫</mi><mi>N</mi></msub><mo stretchy="false">)</mo></mrow></mrow><mo>=</mo><mrow><msub><mi>V</mi><mi>i</mi></msub><mo>⁢</mo><mrow><mo stretchy="false">(</mo><msub><mi>𝐫</mi><mi>i</mi></msub><mo stretchy="false">)</mo></mrow></mrow></mrow></math>, so that the force on particle <math id="SS3.SSS2.p1.m13" class="ltx_Math" alttext="i" display="inline"><mi>i</mi></math> does not depend
+on the positions of the other particles. Then, following the steps we took in the single
+particle case, we can define the <span class="ltx_text ltx_font_italic">total potential energy</span> <math id="SS3.SSS2.p1.m14" class="ltx_Math" alttext="V=\sum_{i}V_{i}+\sum_{i&lt;j}V_{ij}" display="inline"><mrow><mi>V</mi><mo>=</mo><mrow><mrow><msub><mo largeop="true" symmetric="true">∑</mo><mi>i</mi></msub><msub><mi>V</mi><mi>i</mi></msub></mrow><mo>+</mo><mrow><msub><mo largeop="true" symmetric="true">∑</mo><mrow><mi>i</mi><mo>&lt;</mo><mi>j</mi></mrow></msub><msub><mi>V</mi><mrow><mi>i</mi><mo>⁢</mo><mi>j</mi></mrow></msub></mrow></mrow></mrow></math>
+and we can show that <math id="SS3.SSS2.p1.m15" class="ltx_Math" alttext="H=T+V" display="inline"><mrow><mi>H</mi><mo>=</mo><mrow><mi>T</mi><mo>+</mo><mi>V</mi></mrow></mrow></math> is conserved.</p>
+</div>
+</section>
+<section id="SS3.SSS3" class="ltx_subsubsection">
+<h3 class="ltx_title ltx_title_subsubsection">
+<span class="ltx_tag ltx_tag_subsubsection">1.3.3 </span>An Example</h3>
+
+<div id="SS3.SSS3.p1" class="ltx_para">
+<p class="ltx_p">Let us return to the case of gravitational attraction between two
+bodies but, unlike in Section 1.2.4, now including both particles.
+We have <math id="SS3.SSS3.p1.m1" class="ltx_Math" alttext="T={\textstyle\frac{1}{2}}m_{1}\dot{{\bf r}}_{1}^{2}+{\textstyle\frac{1}{2}}m_{%
+2}\dot{{\bf r}}_{2}^{2}" display="inline"><mrow><mi>T</mi><mo>=</mo><mrow><mrow><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>⁢</mo><msub><mi>m</mi><mn>1</mn></msub><mo>⁢</mo><msubsup><mover accent="true"><mi>𝐫</mi><mo>˙</mo></mover><mn>1</mn><mn>2</mn></msubsup></mrow><mo>+</mo><mrow><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>⁢</mo><msub><mi>m</mi><mn>2</mn></msub><mo>⁢</mo><msubsup><mover accent="true"><mi>𝐫</mi><mo>˙</mo></mover><mn>2</mn><mn>2</mn></msubsup></mrow></mrow></mrow></math>. The
+potential is <math id="SS3.SSS3.p1.m2" class="ltx_Math" alttext="V=-Gm_{1}m_{2}/|{\bf r}_{1}-{\bf r}_{2}|" display="inline"><mrow><mi>V</mi><mo>=</mo><mrow><mo>-</mo><mrow><mrow><mi>G</mi><mo>⁢</mo><msub><mi>m</mi><mn>1</mn></msub><mo>⁢</mo><msub><mi>m</mi><mn>2</mn></msub></mrow><mo>/</mo><mrow><mo stretchy="false">|</mo><mrow><msub><mi>𝐫</mi><mn>1</mn></msub><mo>-</mo><msub><mi>𝐫</mi><mn>2</mn></msub></mrow><mo stretchy="false">|</mo></mrow></mrow></mrow></mrow></math>. This system has total linear
+momentum and total angular mometum conserved, as well as the total energy <math id="SS3.SSS3.p1.m3" class="ltx_Math" alttext="H=T+V" display="inline"><mrow><mi>H</mi><mo>=</mo><mrow><mi>T</mi><mo>+</mo><mi>V</mi></mrow></mrow></math>.</p>
+</div>
+<div class="ltx_pagination ltx_role_newpage"></div>
+</section>
+</section>
+</section>
+</div>
+<footer class="ltx_page_footer">
+<div>
+<a href="S2.html" title="2 The Lagrangian Formalism ‣ Classical Dynamics University of Cambridge Part II Mathematical Tripos" class="ltx_ref" rel="next"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">2 </span>The Lagrangian Formalism</span></a>
+</div>
+<div class="ltx_page_logo">Generated  on Thu Mar 24 09:29:54 2022 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
+</div></footer>
+</div>
+</body>
+</html>

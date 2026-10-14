@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="generator" content="HTML Tidy, see www.w3.org">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Galil-Giancarlo algorithm</title>
+<meta name="generator" content="Microsoft XSLT (msxml3 golden/ msxml4), see http://www.microsoft.com">
+<meta name="robots" content="index, follow">
+<meta name="description" content="EXACT STRING MATCHING ALGORITHMS Animation in Java, Galil-Giancarlo algorithm">
+<meta name="keywords" content="string matching, algorithm, Java, C">
+<meta name="resource-type" content="document">
+<meta name="Author-Corporate" content="Chistian.Charras@dir.univ-rouen.fr">
+<meta name="Content-Language" content="en">
+<meta name="distribution" content="global">
+<link type="text/css" rel="stylesheet" href="string.css">
+</head>
+<body bgcolor="white">
+<a href="node12.html#SECTION00120"><img alt="Apostolico-Crochemore algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node10.html#SECTION00100"><img alt="Colussi algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="node12.html#SECTION00120">Apostolico-Crochemore algorithm</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Prev:</b> <a href="node10.html#SECTION00100">Colussi algorithm</a> 
+
+<hr>
+<h1 align="center"><a name="SECTION00110">Galil-Giancarlo algorithm</a></h1>
+
+<hr color="#F0F0FC" size="3">
+<applet codebase="../spm/GalilGiancarlo" archive="GalilGiancarlo.zip" code="AppletButtonText2.class" width="230" height="63"><param name="windowTitle" value="Galil-Giancarlo algorithm">
+<param name="windowClass" value="ProgramTextWindow2">
+<param name="buttonText" value="visualization">
+<param name="windowwidth" value="375">
+<param name="windowheight" value="560">
+<param name="label1" value="Pattern:">
+<param name="input1" value="gcagagag">
+<param name="label2" value="String:">
+<param name="input2" value="gcatcgcagagagtatacagtacg">
+<param name="program" value="GalilGiancarlo">
+</applet> 
+
+<div class="bar"><a name="SECTION00111">Main features</a></div>
+
+<div class="mf">
+<ul>
+<li>refinement of <a href="node10.html#SECTION00100">Colussi</a> algorithm;</li>
+
+<li>preprocessing phase in <big><i><b>O</b></i></big>(<i>m</i>) time and space complexity;</li>
+
+<li>searching phase in <big><i><b>O</b></i></big>(<i>n</i>) time complexity;</li>
+
+<li>performs <img alt="4/3" align="MIDDLE" src="images/quattiers.gif"><i>n</i> text character comparisons in the worst case.</li>
+</ul>
+</div>
+
+<div class="bar"><a name="SECTION00112">Description</a></div>
+
+<div class="desc">
+<p align="justify">The Galil-Giancarlo algorithm is a variant of the <a href="node10.html#SECTION00100">Colussi</a> algorithm. The change intervenes in the searching phase. The method applies when <i>x</i> is not a power of a single character. Thus <span style="white-space: nowrap"><i>x</i>&nbsp;<img alt="neq" src="images/neq.gif">&nbsp;c<sup><i>m</i></sup></span> with <span style="white-space: nowrap">c in <img alt="Sigma" src="images/gsigma.gif"></span>.</p>
+
+<p align="justify">Let <img alt="ell" align="BASELINE" src="images/ell.gif"> be the last index in the pattern such that for <span style="white-space: nowrap">0&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>i</i>&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<img alt="ell" align="BASELINE" src="images/ell.gif"></span>, <span style="white-space: nowrap"><i>x</i>[0]=<i>x</i>[<i>i</i>]</span> and <span style="white-space: nowrap"><i>x</i>[0]&nbsp;<img alt="neq" src="images/neq.gif">&nbsp;<i>x</i>[<img alt="ell" align="BASELINE" src="images/ell.gif">+1]</span>. Assume that during the previous attempt all the noholes have been matched and a suffix of the pattern has been matched meaning that after the corresponding shift a prefix of the pattern will still match a part of the text. Thus the window is positioned on the text factor <span style="white-space: nowrap"><i>y</i>[j .. <i>j</i>+<i>m</i>-1]</span> and the portion <span style="white-space: nowrap"><i>y</i>[<i>j</i> .. <i>last</i>]</span> matches <span
+style="white-space: nowrap"><i>x</i>[0 .. <i>last</i>-<i>j</i>]</span>. Then during the next attempt the algorithm will scanned the text character beginning with <span style="white-space: nowrap">y[<i>last</i>+1]</span> until either the end of the text is reached or a character <span style="white-space: nowrap">x[0]&nbsp;<img alt="neq" src="images/neq.gif">&nbsp;<i>y</i>[<i>j</i>+<i>k</i>]</span> is found.</p>
+
+<dl>
+<dt>In this latter case two subcases can arise:</dt>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP"><span style="white-space: nowrap"><i>x</i>[<img alt="ell" align="BASELINE" src="images/ell.gif">+1]&nbsp;<img alt="neq" src="images/neq.gif">&nbsp;y[<i>j</i>+<i>k</i>]</span> or too less <span style="white-space: nowrap"><i>x</i>[0]</span> have been found (<span style="white-space: nowrap"><i>k</i>&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<img alt="ell" align="BASELINE" src="images/ell.gif"></span>) then the window is shifted and positioned on the text factor <span style="white-space: nowrap"><i>y</i>[<i>k</i>+1 .. <i>k</i>+<i>m</i>]</span>, the scanning of the text is resumed (as in the Colussi algorithm) with the first nohole and the memorized prefix of the pattern is the empty word.</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP"><span style="white-space: nowrap"><i>x</i>[<img alt="ell" align="BASELINE" src="images/ell.gif">+1]=y[<i>j</i>+<i>k</i>]</span> and enough of <span style="white-space: nowrap"><i>x</i>[0]</span> has been found (<span style="white-space: nowrap"><i>k</i> &gt; <img alt="ell" align="BASELINE" src="images/ell.gif"></span>) then the window is shifted and positioned on the text factor <span style="white-space: nowrap"><i>y</i>[<i>k</i>-<img alt="ell" align="BASELINE" src="images/ell.gif">-1 .. <i>k</i>-<img alt="ell" align="BASELINE" src="images/ell.gif">+<i>m</i>-2]</span>, the scanning of the text is resumed (as in the Colussi algorithm) with the second nohole (<span style="white-space: nowrap"><i>x</i>[<img alt="ell" align="BASELINE" src="images/ell.gif">+1]</span> is the first one) and the memorized prefix of the pattern is <span style="white-space: nowrap"><i>x</i>[0 .. <img alt="ell" align="BASELINE" src="images/ell.gif">+1]</span>.</td>
+</tr>
+</table>
+</dd>
+</dl>
+
+<p align="justify">The preprocessing phase is exactly the same as in the Colussi algorithm and can be done in <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<i>m</i>)</span> space and time.</p>
+
+<p align="justify">The searching phase can then be done in <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<i>n</i>)</span> time complexity and furthermore at most <span style="white-space: nowrap"><img alt="4/3" align="MIDDLE" src="images/quattiers.gif"><i>n</i></span> text character comparisons are performed during the searching phase.</p>
+</div>
+
+<div class="bar"><a name="SECTION00113">The C code</a></div>
+
+<div class="pre">
+<pre>
+void GG(char *x, int m, char *y, int n) {
+   int i, j, k, ell, last, nd;
+   int h[XSIZE], next[XSIZE], shift[XSIZE];
+   char heavy;
+ 
+   for (ell = 0; x[ell] == x[ell + 1]; ell++);
+   if (ell == m - 1)
+      /* Searching for a power of a single character */
+      for (j = ell = 0; j &lt; n; ++j)
+          if (x[0] == y[j]) {
+             ++ell;
+             if (ell &gt;= m)
+                OUTPUT(j - m + 1);
+          }
+          else
+             ell = 0;
+   else {
+      /* Preprocessing */
+      nd = preCOLUSSI(x, m, h, next, shift);
+
+      /* Searching */
+      i = j = heavy = 0;
+      last = -1;
+      while (j &lt;= n - m) {
+         if (heavy &amp;&amp; i == 0) {
+            k = last - j + 1;
+            while (x[0] == y[j + k])
+               k++;
+            if (k &lt;= ell || x[ell + 1] != y[j + k]) {
+               i = 0;
+               j += (k + 1);
+               last = j - 1;
+            }
+            else {
+               i = 1;
+               last = j + k;
+               j = last - (ell + 1);
+            }
+            heavy = 0;
+         }
+         else {
+            while (i &lt; m &amp;&amp; last &lt; j + h[i] &amp;&amp;
+                            x[h[i]] == y[j + h[i]])
+               ++i;
+            if (i &gt;= m || last &gt;= j + h[i]) {
+               OUTPUT(j);
+               i = m;
+            }
+            if (i &gt; nd)
+               last = j + m - 1;
+            j += shift[i];
+            i = next[i];
+         }
+         heavy = (j &gt; last ? 0 : 1);
+      }
+   }
+}
+
+</pre>
+</div>
+
+<div class="bar"><a name="SECTION00114" style="color: teal">The example</a></div>
+
+<p>Preprocessing phase</p>
+
+<p align="center"><img alt="Galil-Giancarlo algorithm tables" align="BOTTOM" src="images/ggtables1.png"><br clear="all">
+<span style="white-space: nowrap">Tables used by Galil-Giancarlo algorithm</span></p>
+
+<p><a name="search" href="examples/exp11.html" style="text-decoration: underline">Searching</a> phase</p>
+
+<br>
+<div class="bar"><a name="SECTION00115">References</a></div>
+
+<div class="ref">
+<ul style="text-align: justify ">
+<li>B<small>RESLAUER</small>, D., 1992, <cite>Efficient String Algorithmics</cite>, Ph. D. Thesis, Report CU-024-92, Computer Science Department, Columbia University, New York, NY.</li>
+
+<li><strong>G<small>ALIL</small> Z.</strong>, <strong>G<small>IANCARLO</small> R.</strong>, 1992, On the exact complexity of string matching: upper bounds, <em>SIAM Journal on Computing</em>, 21(3):407-437.</li>
+</ul>
+</div>
+
+<br>
+<hr color="#F0F0FC" size="2">
+<a href="node12.html#SECTION00120"><img alt="Apostolico-Crochemore algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node10.html#SECTION00100"><img alt="Colussi algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="node12.html#SECTION00120">Apostolico-Crochemore algorithm</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Prev:</b> <a href="node10.html#SECTION00100">Colussi algorithm</a> 
+
+<hr>
+<br>
+<div align="right"><em><small><small>e-mails: {<a href="mailto:Christian.Charras@laposte.net">Christian.Charras</a>, <a href="mailto:Thierry.Lecroq@laposte.net">Thierry.Lecroq</a> }@laposte.net</small><br>
+ Tue Jan 14 15:03:31 MET 1997</small></em></div>
+</body>
+</html>
+

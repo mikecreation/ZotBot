@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>cube root</title>
+<meta name="description"
+  content="Definition of cube root,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="cube root">
+<meta name="type" content="algorithm">
+<meta name="area" content="Numeric Computation">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>cube root</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+This describes a "long hand" or manual method of calculating or extracting cube roots.  Calculation of a cube root by hand is similar to long-hand division or manual <a href="squareRoot.html"><em>square root</em></a>. </p> <p> Suppose you need to find the cube root of 55,742,968. Set up a "division" with the number under the radical. Mark off triples of digits, starting from the decimal point and working left.  (The decimal point is a period (.), and commas (,) mark triples of digits.) <pre>          ____________	<br />        \/ 55,742,968.	<br /> </pre> Look at the leftmost digit(s) (55 in this case).  What is the largest number whose cube is less than or equal to it?  It is 3, whose cube is 27.  Write 3 above, write the cube below and subtract. <pre>          __3_________	<br />        \/ 55,742,968.	<br />          -27		<br />          ----		<br />           28		<br /> </pre> Now bring down the next three digits (742). <pre>          __3_________	<br />        \/ 55,742,968.	<br />          -27		<br />          ----		<br />            28742	<br /> </pre> Coming up with the next "divisor" is more involved than for  <a href="squareRoot.html"><em>square roots</em></a>.  First bring down 3 times the square of the number on top (3 &times; 3&sup2;=27) leaving room for two more digits (27_ _). <pre>          __3_________	<br />        \/ 55,742,968.	<br />          -27		<br />          ----		<br />     27_ _) 28742	<br /> </pre> What is the largest number that we can put in the next position and multiply times the divisor and still be less than or equal to what we have? (Algebraically, what is d such that d &times; 2700 &le; 28742?) 10 might work (since 10 &times; 2700 = 27000), but we can only use a single digit, so we'll try 9. <pre>          __3___9_____	<br />        \/ 55,742,968.	<br />          -27		<br />          ----		<br />     27_ _) 28742	<br /> </pre> The second step in making the divisor is adding 3 times the previous number on top (3) times the last digit (9) times 10 (3 &times; 3 &times; 9 = 81 &times; 10 = 810) and the square of the last digit (9&sup2; = 81). <pre>      2700	<br />       810	<br />     +  81	<br />     -----	<br />      3591	<br /> </pre> Our new divisor is 3591.   <pre>          __3___9_____	<br />        \/ 55,742,968.	<br />          -27		<br />          ----		<br />      3591) 28742	<br /> </pre> Multiply by the last digit (9 &times; 3591 = 32319) and subtract.  But that is too big!  So we'll try 8 as the next digit instead. <pre>          __3___8_____	<br />        \/ 55,742,968.	<br />          -27		<br />          ----		<br />     27_ _) 28742	<br /> </pre> We repeat the second step of adding 3 times the previous number on top (3) times the last digit (8) times 10 (3 &times; 3 &times; 8 = 72 &times; 10 = 720) and the square of the last digit (8&sup2; = 64). <pre>      2700	<br />       720	<br />     +  64	<br />     -----	<br />      3484	<br /> </pre> Our new divisor is 3484. <pre>          __3___8_____	<br />        \/ 55,742,968.	<br />          -27		<br />          ----		<br />      3484) 28742	<br /> </pre> Now multiply by the last digit (8 &times; 3484 = 27872) and subtract. <pre>          __3___8_____	<br />        \/ 55,742,968.	<br />          -27		<br />          ----		<br />      3484) 28742	<br />           -27872	<br />           ------	<br />              870	<br /> </pre> We are ready to start over on the next digit.  Bring down the next three digits.  The divisor starts as 3 times the square of the number on top (3 &times; 38&sup2;=4332) leaving room for two more digits (4332_ _). <pre>          __3___8_____	<br />        \/ 55,742,968.	<br />          -27		<br />          ----		<br />      3484) 28742	<br />           -27872	<br />           ------	<br />     4332_ _) 870968	<br /> </pre> It looks like 2 is the next digit. <pre>          __3___8___2_	<br />        \/ 55,742,968.	<br />          -27		<br />          ----		<br />      3484) 28742	<br />           -27872	<br />           ------	<br />     4332_ _) 870968	<br /> </pre> Add 3 times the previous number on top (38) times the last digit (2) times 10 (3 &times; 38 &times; 2 = 228 &times; 10 = 2280) and the square of the last digit (2&sup2; = 4). <pre>      433200	<br />        2280	<br />     +     4	<br />     -------	<br />      435484	<br /> </pre> Our new divisor is 435484. <pre>          __3___8___2_	<br />        \/ 55,742,968.	<br />          -27		<br />          ----		<br />      3484) 28742	<br />           -27872	<br />           ------	<br />     435484 ) 870968	<br /> </pre> Now multiply by the last digit (2 &times; 435484 = 870968) and subtract. <pre>          __3___8___2_	<br />        \/ 55,742,968.	<br />          -27		<br />          ----		<br />      3484) 28742	<br />           -27872	<br />           ------	<br />     435484 ) 870968	<br />             -870968	<br />             -------	<br />                   0	<br /> </pre> </p> <p> So the cube root of 55742968 is 382.  You can continue to get as many decimal places as you need: just bring down more triples of zeros. </p> <p> <strong>Why does this work?</strong> </p> <p> Consider (10A + B)&sup3; = 1000A&sup3; + 3 &times; 100A&sup2;B + 3 &times; 10AB&sup2; + B&sup3; and think about finding the volume of a cube. </p> <p> The volume of the three thin plates is 3 &times; 100A&sup2;B. The volume of the three skinny sticks is 3 &times; 10AB&sup2;. The tiny cube is B&sup3;. If we know A and the volume of the cube, S, what B should we choose?   </p> <p> We previously subtracted A&sup3; from S.  To scale to 1000A&sup3;, we bring down three more digits  (a factor of 1000) of the length of S.  We write down 3 times A squared (3A&sup2;), but shifted two places (100 &times; 3A&sup2; or  3 &times; 100A&sup2;).  We estimate B.  We add 30 times A times B (30 &times; AB or 3 &times; 10AB) and B squared. Multiplying that by B gives us  3 &times; 100A&sup2;B + 3 &times; 10AB&sup2; + B&sup3;. When we subtract that from the remainder (remember we already subtracted A&sup3;), we have subtracted exactly (10A + B)&sup3;.  That is, we have improved our knowledge of the cube root by one digit, B. </p> <p> We take whatever remains, scale again by 1000, by bringing down three more digits, and repeat the process. </p>
+</p>
+
+<p>
+<strong>See also</strong>
+<a href="squareRoot.html"><em>square root</em></a>.
+</p>
+
+<p>
+<em>Note:
+In computers and hand-held calculators, square root, sine, cosine, and other transcendental functions are calculated with sophisticated functions, such as Taylor series, <a href="cordic.html"><em>CORDIC</em></a>, or <a href="http://www.sosmath.com/calculus/diff/der07/der07.html" target="_blank">Newton-Raphson method</a>, sometimes called Newton's method.  </em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+<a href="https://gams.nist.gov/" target="_blank">GAMS</a> Class C2 has many implementations of <a href="http://gams.nist.gov/serve.cgi/Class/C2/" target="_blank">powers, roots, and reciprocals (C and Fortran)</a>.
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#e494859188ca868885878fa48a8d9790ca838b92">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 6 May 2019.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "cube root", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 6 May 2019. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/cubeRoot.html">https://www.nist.gov/dads/HTML/cubeRoot.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a9166efb8aacb1',t:'MTc5MjAwNzE2MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

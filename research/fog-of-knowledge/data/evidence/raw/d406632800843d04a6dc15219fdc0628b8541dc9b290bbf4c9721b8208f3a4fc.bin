@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>twisted tabulation hashing</title>
+<meta name="description"
+  content="Definition of twisted tabulation hashing,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="twisted tabulation hashing">
+<meta name="type" content="algorithm">
+<meta name="area" content="Searching">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>twisted tabulation hashing</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+Similar to <a href="tabulationHashing.html"><em>tabulation hashing</em></a>, except that the last table is indexed by the xor of the last character and a twister value from the rest of the string.
+</p>
+
+<p>
+<strong>Formal Definition:</strong> <br /> (t, h<sub>r</sub>(c)) = &oplus;<sup>n</sup><sub>i=2</sub> 	T*<sub>i</sub>[c<sub>i</sub>]  <br /> h(c) = h<sub>r</sub>(c) &oplus;  	T<sub>1</sub>[c<sub>1</sub> &oplus; t] <br /> where &oplus; is the <a href="xor.html"><em>xor</em></a> operation, T*<sub>i</sub> is the i<sup>th</sup> table, and c<sub>i</sub> is the i<sup>th</sup> character.
+</p>
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="tabulationHashing.html"><em>tabulation hashing</em></a>.
+</p>
+
+<p>
+<em>Note:
+The twister value and the intermediate hash value can be accumulated in the same integer, since the combining operation is xor. </p> 
+<p> The tables have additional twister values, compared to tables used in <a href="tabulationHashing.html"><em>tabulation hashing</em></a>. </p> 
+<p> It doesn't matter whether it is the first or the last character that is treated specially.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>More information</h2>
+<p>
+<strong>Mihai P&abreve;tra&scedil;cu</strong> and <strong>Mikkel Thorup</strong>, <em>Twisted Tabulation Hashing</em>, Proc. 24th annual ACM-SIAM Symposium On Discrete Algorithms (SODA '13), Pages 209-228, 2013.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#f18190849ddf939d90929ab19f988285df969e87">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 7 June 2018.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "twisted tabulation hashing", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 7 June 2018. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/twistedTabulationHashing.html">https://www.nist.gov/dads/HTML/twistedTabulationHashing.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a9176d781be24b',t:'MTc5MjAwNzIwMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

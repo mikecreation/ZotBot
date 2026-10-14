@@ -1,0 +1,15 @@
+{
+  "id": "nist-dads.parallelprefix",
+  "url": "https://xlinux.nist.gov/dads/HTML/parallelPrefix.html",
+  "final_url": "https://xlinux.nist.gov/dads/HTML/parallelPrefix.html",
+  "title": "NIST Dictionary of Algorithms and Data Structures: parallelPrefix",
+  "source_kind": "secondary",
+  "retrieved_at": "2026-10-14T19:46:22.242423+00:00",
+  "text": "parallel prefix computation\nparallel prefix computation\n(algorithm)\nDefinition:\nCalculate an\nassociative\nfunction, f, on all prefixes of an n-element array, that is, s[0], f(s[0], s[1]), f(s[0], f(s[1], s[2])), …, f(s[0], f(s[1], … f(s[n-2], s[n-1])…)),  using\nΘ(n)\nprocessors in Θ(log n) time. The algorithm is\nfor j := 0 to lg(n)-1 do\nfor i := 2\nj\nto n-1 parallel-do\ns[i] := f(s[i-2\nj\n], s[i])\nwhere lg is the logarithm base 2, and parallel-do does the innermost computations in parallel.\nNote:\nIn particular, this calculates any associative function, such as sum, maximum, or concatenate, over a list of values in\nlogarithmic\ntime.  Note the write-after-read hazards in the parallel-do loop: old values of s[2\nj\n] to s[n-1-2\nj\n] must be read before being overwritten.   Since this algorithm overwrites the initial values, the n processors can copy input values to a result array in parallel in one additional step.\nFrom Yair Tuaff (\n[email protected]\n), 29 December 1999.\nAuthor:\nPEB\nGo to the\nDictionary of Algorithms and Data\nStructures\nhome page.\nIf you have suggestions, corrections, or comments, please get in touch\nwith\nPaul Black\n.\nEntry modified 25 January 2010.\nHTML page formatted Wed Oct 30 12:15:31 2024.\nCite this as:\nPaul E. Black, \"parallel prefix computation\", in\nDictionary of Algorithms and Data Structures\n[online], Paul E. Black, ed. 25 January 2010. (accessed TODAY)\nAvailable from:\nhttps://www.nist.gov/dads/HTML/parallelPrefix.html",
+  "sha256": "2e1924e029c092a16ac4dd2fb8e44ffe58b3dcb9cd6e91b82e1cb454ea439994",
+  "raw_sha256": "40e2a478ad23e340f4f2101f0ce965eca38bf78537e9d807f636ecccaf9bc8ad",
+  "content_type": "text/html",
+  "charset": "utf-8",
+  "extraction_method": "http-html-data-lines/1",
+  "capture_id": "e6dcb2baae27282d3384378391373e41da3a59986b3b4b590b0d74e4de5411ab"
+}

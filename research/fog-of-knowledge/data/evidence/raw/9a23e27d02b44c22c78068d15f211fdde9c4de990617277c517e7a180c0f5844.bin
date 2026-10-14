@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>binary tree representation of trees</title>
+<meta name="description"
+  content="Definition of binary tree representation of trees,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="binary tree representation of trees">
+<meta name="type" content="data structure">
+<meta name="area" content="Trees">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>binary tree representation of trees</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A way to represent a <a href="multiwaytree.html"><em>multiway tree</em></a> as a <a href="binarytree.html"><em>binary tree</em></a>.  The leftmost <a href="child.html"><em>child</em></a>, c, of a <a href="node.html"><em>node</em></a>, n, in the multiway tree is the left child, c', of the corresponding node, n', in the binary tree. The immediately right <a href="sibling.html"><em>sibling</em></a> of c is the right child of c'.
+</p>
+
+<p>
+<strong>Formal Definition:</strong> A multiway tree T can be represented by a corresponding binary tree B. Let {n<sub>1</sub>,&hellip;, n<sub>k</sub>} be nodes of the multiway tree, T.  Let {n'<sub>1</sub>,&hellip;, n'<sub>k</sub>} be nodes of the corresponding binary tree B.   Node n<sub>k</sub> corresponds to n'<sub>k</sub>.  In particular,  nodes n<sub>k</sub> and n'<sub>k</sub> have the same labels and if n<sub>k</sub> is the root of T, n'<sub>k</sub> is the root of B. Connections correspond as follows: </p> <ul> <li>If n<sub>l</sub> is the leftmost child of n<sub>k</sub>, n'<sub>l</sub> is the left child of n'<sub>k</sub>. (If n<sub>k</sub> has no children, n'<sub>k</sub> has no left child.) <li>If n<sub>s</sub> is the next (immediately right) sibling of n<sub>k</sub>, n'<sub>s</sub> is the right child of n'<sub>k</sub>. </ul>
+</p>
+<p>
+<strong>Also known as</strong> first child-next sibling binary tree, doubly-chained tree, filial-heir chain.
+</p>
+
+<p>
+<strong>Aggregate parent</strong> (I am a part of or used in ...)<br>
+<a href="multiwaytree.html"><em>multiway tree</em></a>, <a href="karyTree.html"><em>k-ary tree</em></a>, <a href="SchorrWaiteGraphMarking.html"><em>Schorr-Waite graph marking algorithm</em></a>.
+</p>
+
+<p>
+<em>Note:
+See <a href="../terms.html#Knuth97">[Knuth97, 1:333, Sect. 2.3.2]</a>. </p> 
+<p> The <a href="binarytree.html"><em>binary tree</em></a> representation of a <a href="multiwaytree.html"><em>multiway tree</em></a> or <a href="karyTree.html"><em>k-ary tree</em></a> is based on first child-next sibling representation of the tree. In this representation every node is linked with its leftmost child and its next (right nearest) sibling.  </p> 
+<p> Let us see one example.  Consider the following multiway tree 
+<pre>                  1           <br />                 /|\          <br />                / | \         <br />               /  |  \        <br />              2   3   4       <br />             / \      |       <br />            5   6     7       <br />                     / \      <br />                    8   9     <br /> </pre> This tree can be represented in first child-next sibling manner as follows 
+<pre>                  1           <br />                 /            <br />                /             <br />               /              <br />              2---3---4       <br />             /       /        <br />            5---6   7         <br />                   /          <br />                  8---9       <br /> </pre> Now, if we look at the first child-next sibling representation of the tree closely, we will see that it forms a binary tree.  To see this better, we can rotate every next-sibling edge 45 degrees  clockwise.  After that we get the following binary tree: 
+<pre>                1             <br />               /              <br />              2               <br />             / \              <br />            5   3             <br />             \   \            <br />              6   4           <br />                 /            <br />                7             <br />               /              <br />              8               <br />               \              <br />                9             <br /> </pre> This is binary tree representation of the given (multiway) tree.</em>
+</p>
+
+<p>Authors: <a href="../Other/contrib.html#authorAL">AL</a>,<a href="../Other/contrib.html#authorPEB">PEB</a></p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#a6d6c7d3ca88c4cac7c5cde6c8cfd5d288c1c9d0">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 20 November 2008.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Alen Lovrencic and Paul E. Black, "binary tree representation of trees", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 20 November 2008. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/binaryTreeRepofTree.html">https://www.nist.gov/dads/HTML/binaryTreeRepofTree.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a916499b7445e6',t:'MTc5MjAwNzE1NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

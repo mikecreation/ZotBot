@@ -1,0 +1,233 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="generator" content="HTML Tidy, see www.w3.org">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Reverse Colussi algorithm</title>
+<meta name="generator" content="Microsoft XSLT (msxml3 golden/ msxml4), see http://www.microsoft.com">
+<meta name="robots" content="index, follow">
+<meta name="description" content="EXACT STRING MATCHING ALGORITHMS Animation in Java, Reverse Colussi algorithm">
+<meta name="keywords" content="string matching, algorithm, Java, C">
+<meta name="resource-type" content="document">
+<meta name="Author-Corporate" content="Chistian.Charras@dir.univ-rouen.fr">
+<meta name="Content-Language" content="en">
+<meta name="distribution" content="global">
+<link type="text/css" rel="stylesheet" href="string.css">
+</head>
+<body bgcolor="white">
+<a href="node18.html#SECTION00180"><img alt="Horspool algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node16.html#SECTION00160"><img alt="Apostolico-Giancarlo algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="node18.html#SECTION00180">Horspool algorithm</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Prev:</b> <a href="node16.html#SECTION00160">Apostolico-Giancarlo algorithm</a> 
+
+<hr>
+<h1 align="center"><a name="SECTION00170">Reverse Colussi algorithm</a></h1>
+
+<hr color="#F0F0FC" size="3">
+<applet codebase="../spm/ReverseColussi" archive="ReverseColussi.zip" code="AppletButtonText2.class" width="230" height="63"><param name="windowTitle" value="Reverse Colussi algorithm">
+<param name="windowClass" value="ProgramTextWindow2">
+<param name="buttonText" value="visualization">
+<param name="windowwidth" value="375">
+<param name="windowheight" value="560">
+<param name="label1" value="Pattern:">
+<param name="input1" value="gcagagag">
+<param name="label2" value="String:">
+<param name="input2" value="gcatcgcagagagtatacagtacg">
+<param name="program" value="ReverseColussi">
+</applet> 
+
+<div class="bar"><a name="SECTION00171">Main features</a></div>
+
+<div class="mf">
+<ul>
+<li>refinement of the <a href="node14.html#SECTION00140">Boyer-Moore</a> algorithm;</li>
+
+<li>partitions the set of pattern positions into two disjoint subsets;</li>
+
+<li>preprocessing phase in <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<i>m</i><sup>2</sup>)</span> time and <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<i>m</i><img alt="sigma" src="images/psigma.gif">)</span> space;</li>
+
+<li>searching phase in <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<i>n</i>)</span> time complexity;</li>
+
+<li><span style="white-space: nowrap">2<i>n</i></span> text character comparisons in the worst case.</li>
+</ul>
+</div>
+
+<div class="bar"><a name="SECTION00172">Description</a></div>
+
+<div class="desc">
+<p align="justify">The character comparisons are done using a specific order given by a table <i>h</i>.</p>
+
+<dl>
+<dt>For each integer <i>i</i> such that <span style="white-space: nowrap">0&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;i&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>m</i></span> we define two disjoint sets:</dt>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP"><big><em>Pos</em></big>(<i>i</i>)={<i>k</i>&nbsp;<big>:</big>&nbsp; 0&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>k</i>&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>i</i> and <i>x</i>[<i>i</i>] = <i>x</i>[<i>i</i>-<i>k</i>]}</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP"><big><em>Neg</em></big>(<i>i</i>)={<i>k</i>&nbsp;<big>:</big>&nbsp; 0&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>k</i>&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>i</i> and <i>x</i>[<i>i</i>]&nbsp;<img alt="neq" src="images/neq.gif">&nbsp;<i>x</i>[<i>i</i>-<i>k</i>]}</td>
+</tr>
+</table>
+</dd>
+</dl>
+
+<p align="justify">For <span style="white-space: nowrap">1&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>k</i>&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>m</i></span>, let <span style="white-space: nowrap"><em>hmin</em>[<i>k</i>]</span> be the minimum integer <img alt="ell" align="BASELINE" src="images/ell.gif"> such that <span style="white-space: nowrap"><img alt="ell" align="BASELINE" src="images/ell.gif">&nbsp;<img alt="geq" src="images/geq.gif">&nbsp;<i>k</i>-1</span> and <span style="white-space: nowrap"><i>k</i> not in <em>Neg</em>(<i>i</i>)</span> for all <i>i</i> such that <span style="white-space: nowrap"><img alt="ell" align="BASELINE" src="images/ell.gif"> &lt; <i>i</i>&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>m</i>-1</span>.</p>
+
+<p align="justify">For <span style="white-space: nowrap">0&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<img alt="ell" align="BASELINE" src="images/ell.gif">&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>m</i>-1</span>, let <span style="white-space: nowrap"><em>kmin</em>[<img alt="ell" align="BASELINE" src="images/ell.gif">]</span> be the minimum integer <i>k</i> such that <span style="white-space: nowrap"><em>hmin</em>[<i>k</i>]=<img alt="ell" align="BASELINE" src="images/ell.gif">&nbsp;<img alt="geq" src="images/geq.gif">&nbsp;<i>k</i></span> if any such <i>k</i> exists and <span style="white-space: nowrap"><em>kmin</em>[<img alt="ell" align="BASELINE" src="images/ell.gif">]=0</span> otherwise.</p>
+
+<p align="justify">For <span style="white-space: nowrap">0&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<img alt="ell" align="BASELINE" src="images/ell.gif">&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>m</i>-1</span>, let <span style="white-space: nowrap"><em>rmin</em>[<img alt="ell" align="BASELINE" src="images/ell.gif">]</span> be the minimum integer <i>k</i> such that <span style="white-space: nowrap"><i>r</i> &gt; <img alt="ell" align="BASELINE" src="images/ell.gif"></span> and <span style="white-space: nowrap"><em>hmin</em>[<i>r</i>]=<i>r</i>-1</span>.</p>
+
+<p align="justify">The value of <span style="white-space: nowrap"><i>h</i>[0]</span> is set to <span style="white-space: nowrap"><i>m</i>-1</span>. After that we choose in increasing order of <span style="white-space: nowrap"><em>kmin</em>[<img alt="ell" align="BASELINE" src="images/ell.gif">]</span>, all the indexes <span style="white-space: nowrap"><i>h</i>[1], ... , <i>h</i>[<i>d</i>]</span> such that <span style="white-space: nowrap"><em>kmin</em>[<i>h</i>[<i>i</i>]]&nbsp;<img alt="neq" src="images/neq.gif">&nbsp;0</span> and we set <span style="white-space: nowrap"><em>rcGs</em>[<i>i</i>]</span> to <span style="white-space: nowrap"><em>kmin</em>[<i>h</i>[<i>i</i>]]</span> for <span style="white-space: nowrap">1&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>i</i>&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>d</i></span>. Then we choose the indexes <span style="white-space: nowrap"><i>h</i>[<i>d</i>+1], ... , <i>h</i>[<i>m</i>-1]</span> in increasing order and we set <span style=
+"white-space: nowrap"><em>rcGs</em>[<i>i</i>]</span> to <span style="white-space: nowrap"><em>rmin</em>[<i>h</i>[<i>i</i>]]</span> for <span style="white-space: nowrap"><i>d</i> &lt; <i>i</i> &lt; <i>m</i></span>.</p>
+
+<p align="justify">The value of <span style="white-space: nowrap"><em>rcGs</em>[<i>m</i>]</span> is set to the period of <i>x</i>.</p>
+
+<p align="justify">The table <em>rcBc</em> is defined as follows: <em>rcBc</em>[<i>a</i>, <i>s</i>]=<em>min</em>{<i>k</i>&nbsp;<big>:</big>&nbsp; (<i>k</i>=<i>m</i> or <i>x</i>[<i>m</i>-<i>k</i>-1]=<i>a</i>) and (<i>k</i> &gt; <i>m</i>-<i>s</i>-1 or <i>x</i>[<i>m</i>-<i>k</i>-<i>s</i>-1]=<i>x</i>[<i>m</i>-<i>s</i>-1])} To compute the table <em>rcBc</em> we define: for each <span style="white-space: nowrap">c in <img alt="Sigma" src="images/gsigma.gif"></span>, <span style="white-space: nowrap"><em>locc</em>[<i>c</i>]</span> is the index of the rightmost occurrence of <i>c</i> in <span style="white-space: nowrap"><i>x</i>[0 .. <i>m</i>-2]</span> (<span style="white-space: nowrap"><em>locc</em>[<i>c</i>]</span> is set to <span style="white-space: nowrap">-1</span> if <i>c</i> does not occur in <span style="white-space: nowrap"><i>x</i>[0 .. <i>m</i>-2])</span>.</p>
+
+<p align="justify">A table <em>link</em> is used to link downward all the occurrences of each pattern character.</p>
+
+<p align="justify">The preprocessing phase can be performed in <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<i>m</i><sup>2</sup>)</span> time and <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<i>m</i><img alt="sigma" src="images/psigma.gif">)</span> space complexity. The searching phase is in <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<i>n</i>)</span> time complexity.</p>
+</div>
+
+<div class="bar"><a name="SECTION00173">The C code</a></div>
+
+<div class="pre">
+<pre>
+void preRc(char *x, int m, int h[],
+           int rcBc[ASIZE][XSIZE], int rcGs[]) {
+   int a, i, j, k, q, r, s,
+       hmin[XSIZE], kmin[XSIZE], link[XSIZE],
+       locc[ASIZE], rmin[XSIZE];
+ 
+   /* Computation of link and locc */
+   for (a = 0; a &lt; ASIZE; ++a)
+      locc[a] = -1;
+   link[0] = -1;
+   for (i = 0; i &lt; m - 1; ++i) {
+      link[i + 1] = locc[x[i]];
+      locc[x[i]] = i;
+   }
+ 
+   /* Computation of rcBc */
+   for (a = 0; a &lt; ASIZE; ++a)
+      for (s = 1; s &lt;= m; ++s) {
+         i = locc[a];
+         j = link[m - s];
+         while (i - j != s &amp;&amp; j &gt;= 0)
+            if (i - j &gt; s)
+               i = link[i + 1];
+            else
+               j = link[j + 1];
+         while (i - j &gt; s)
+            i = link[i + 1];
+         rcBc[a][s] = m - i - 1;
+      }
+ 
+   /* Computation of hmin */
+   k = 1;
+   i = m - 1;
+   while (k &lt;= m) {
+      while (i - k &gt;= 0 &amp;&amp; x[i - k] == x[i])
+         --i;
+      hmin[k] = i;
+      q = k + 1;
+      while (hmin[q - k] - (q - k) &gt; i) {
+         hmin[q] = hmin[q - k];
+         ++q;
+      }
+      i += (q - k);
+      k = q;
+      if (i == m)
+         i = m - 1;
+   }
+ 
+   /* Computation of kmin */
+   memset(kmin, 0, m * sizeof(int));
+   for (k = m; k &gt; 0; --k)
+      kmin[hmin[k]] = k;
+ 
+   /* Computation of rmin */
+   for (i = m - 1; i &gt;= 0; --i) {
+      if (hmin[i + 1] == i)
+         r = i + 1;
+      rmin[i] = r;
+   }
+ 
+   /* Computation of rcGs */
+   i = 1;
+   for (k = 1; k &lt;= m; ++k)
+      if (hmin[k] != m - 1 &amp;&amp; kmin[hmin[k]] == k) {
+         h[i] = hmin[k];
+         rcGs[i++] = k;
+      }
+   i = m-1;
+   for (j = m - 2; j &gt;= 0; --j)
+      if (kmin[j] == 0) {
+         h[i] = j;
+         rcGs[i--] = rmin[j];
+      }
+   rcGs[m] = rmin[0];
+}
+ 
+ 
+void RC(char *x, int m, char *y, int n) {
+   int i, j, s, rcBc[ASIZE][XSIZE], rcGs[XSIZE], h[XSIZE];
+ 
+   /* Preprocessing */
+   preRc(x, m, h, rcBc, rcGs);
+ 
+   /* Searching */
+   j = 0;
+   s = m;
+   while (j &lt;= n - m) {
+      while (j &lt;= n - m &amp;&amp; x[m - 1] != y[j + m - 1]) {
+         s = rcBc[y[j + m - 1]][s];
+         j += s;
+      }
+      for (i = 1; i &lt; m &amp;&amp; x[h[i]] == y[j + h[i]]; ++i);
+      if (i &gt;= m)
+         OUTPUT(j);
+      s = rcGs[i];
+      j += s;
+   }
+}
+
+</pre>
+</div>
+
+<div class="bar"><a name="SECTION00174" style="color: teal">The example</a></div>
+
+<p>Preprocessing phase</p>
+
+<p align="center"><img alt="Reverse Colussi algorithm tables" align="BOTTOM" src="images/rctab1.png"><br clear="all">
+<span style="white-space: nowrap">Tables used by Reverse Colussi algorithm</span></p>
+
+<p><a name="search" href="examples/exp17.html" style="text-decoration: underline">Searching</a> phase</p>
+
+<br>
+<div class="bar"><a name="SECTION00175">References</a></div>
+
+<div class="ref">
+<ul style="text-align: justify ">
+<li><strong>C<small>OLUSSI</small> L.</strong>, 1994, Fastest pattern matching in strings, <em>Journal of Algorithms</em>. 16(2):163-189.</li>
+</ul>
+</div>
+
+<br>
+<hr color="#F0F0FC" size="2">
+<a href="node18.html#SECTION00180"><img alt="Horspool algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node16.html#SECTION00160"><img alt="Apostolico-Giancarlo algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="node18.html#SECTION00180">Horspool algorithm</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Prev:</b> <a href="node16.html#SECTION00160">Apostolico-Giancarlo algorithm</a> 
+
+<hr>
+<br>
+<div align="right"><em><small><small>e-mails: {<a href="mailto:Christian.Charras@laposte.net">Christian.Charras</a>, <a href="mailto:Thierry.Lecroq@laposte.net">Thierry.Lecroq</a> }@laposte.net</small><br>
+ Tue Jan 14 15:03:31 MET 1997</small></em></div>
+</body>
+</html>
+

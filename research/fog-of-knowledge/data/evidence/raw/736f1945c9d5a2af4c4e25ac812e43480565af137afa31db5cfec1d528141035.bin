@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>Patricia tree</title>
+<meta name="description"
+  content="Definition of Patricia tree,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="Patricia tree">
+<meta name="type" content="data structure">
+<meta name="area" content="Trees">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>Patricia tree</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A compact representation of a <a href="trie.html"><em>trie</em></a> in which any <a href="node.html"><em>node</em></a> that is an only <a href="child.html"><em>child</em></a> is merged with its  <a href="parent.html"><em>parent</em></a>.
+</p>
+
+<p>
+<strong>Also known as</strong> radix tree.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="trie.html"><em>trie</em></a>.
+</p>
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="suffixtree.html"><em>suffix tree</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="compactDAWG.html"><em>compact DAWG</em></a>.
+</p>
+
+<p>
+<em>Note:
+A compact <a href="directedAcyclicWordGraph.html"><em>directed acyclic word graph</em></a> (DAWG) merges common suffix trees to save additional space. </p> 
+<p> A radix tree is taken to be a binary Patricia tree.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorSE">SE</a></p>
+<h2>Implementation</h2>
+<a href="https://metacpan.org/dist/Net-Patricia" target="_blank">Net-Patricia (Perl and C)</a> is a C implementation with a Perl API. C prototyping tools, <a href="http://cprops.sourceforge.net/" target="_blank">cprops (C)</a>, is a threaded implementation (find trie.c). <a href="https://code.google.com/archive/p/py-radix/" target="_blank">py-radix (Python)</a>. <a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/3/3445.ins.c" target="_blank">insert (C)</a>, <a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/3/3445.srch.c" target="_blank">search (C)</a>. 
+<h2>More information</h2>
+<p>
+<strong>Donald R. Morrison</strong>, <em>PATRICIA - Practical Algorithm to Retrieve Information Coded in Alphanumeric</em>,  Journal of the ACM, 15(4):514-534, October 1968.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#c6b6a7b3aae8a4aaa7a5ad86a8afb5b2e8a1a9b0">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 15 November 2021.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Stefan Edelkamp, "Patricia tree", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 15 November 2021. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/patriciatree.html">https://www.nist.gov/dads/HTML/patriciatree.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a916fdfb12e207',t:'MTc5MjAwNzE4Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

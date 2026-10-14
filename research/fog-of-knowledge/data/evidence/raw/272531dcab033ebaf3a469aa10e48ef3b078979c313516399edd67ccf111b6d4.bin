@@ -1,0 +1,214 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="generator" content="HTML Tidy, see www.w3.org">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Alpha Skip Search algorithm</title>
+<meta name="generator" content="Microsoft XSLT (msxml3 golden/ msxml4), see http://www.microsoft.com">
+<meta name="robots" content="index, follow">
+<meta name="description" content="EXACT STRING MATCHING ALGORITHMS Animation in Java, Alpha Skip Search algorithm">
+<meta name="keywords" content="string matching, algorithm, Java, C">
+<meta name="resource-type" content="document">
+<meta name="Author-Corporate" content="Chistian.Charras@dir.univ-rouen.fr">
+<meta name="Content-Language" content="en">
+<meta name="distribution" content="global">
+<link type="text/css" rel="stylesheet" href="string.css">
+</head>
+<body bgcolor="white">
+<a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node32.html#SECTION00320"><img alt="KmpSkip Search algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Up:</b> <a href="index.html">ESMAJ</a> <b>Prev:</b> <a href="node32.html#SECTION00320">KmpSkip Search algorithm</a> 
+
+<hr>
+<h1 align="center"><a id="SECTION00330" name="SECTION00330">Alpha Skip Search algorithm</a></h1>
+
+<hr color="#F0F0FC" size="3">
+<applet codebase="../spm/LSkipV2" archive="LSkipV2.zip" code="AppletButtonText2.class" width="230" height="63"><param name="windowTitle" value="Alpha Skip Search algorithm">
+<param name="windowClass" value="ProgramTextWindow2">
+<param name="buttonText" value="visualization">
+<param name="windowwidth" value="375">
+<param name="windowheight" value="560">
+<param name="label1" value="Pattern:">
+<param name="input1" value="gcagagag">
+<param name="label2" value="String:">
+<param name="input2" value="gcatcgcagagagtatacagtacg">
+<param name="program" value="LSkipV2">
+</applet> 
+
+<div class="bar"><a name="SECTION00331">Main features</a></div>
+
+<div class="mf">
+<ul>
+<li>improvement of the <a href="node31.html#SECTION00310">Skip Search</a> algorithm;</li>
+
+<li>uses buckets of positions for each factor of length log<sub><img alt="sigma" src="images/psigma.gif"></sub>(<i>m</i>) of the pattern;</li>
+
+<li>preprocessing phase in <big><i><b>O</b></i></big>(<i>m</i>) time and space complexity;</li>
+
+<li>searching phase in <big><i><b>O</b></i></big>(<i>m</i><i>n</i>) time complexity;</li>
+
+<li><big><i><b>O</b></i></big>(log<sub><img alt="sigma" src="images/psigma.gif"></sub>(<i>m</i>).(<i>n</i> / (<i>m</i>-log<sub><img alt="sigma" src="images/psigma.gif"></sub>(<i>m</i>)))) expected text character comparisons.</li>
+</ul>
+</div>
+
+<div class="bar"><a name="SECTION00332">Description</a></div>
+
+<div class="desc">
+<p align="justify">The preprocessing phase of the Alpha Skip Search algorithm consists in building a trie <em><b>T</b></em>(<i>x</i>) of all the factors of the length <img alt="ell" align="BASELINE" src="images/ell.gif">=log<sub><img alt="sigma" src="images/psigma.gif"></sub><i>m</i> occurring in the word <i>x</i>. The leaves of <em><b>T</b></em>(<i>x</i>) represent all the factors of length <img alt="ell" align="BASELINE" src="images/ell.gif"> of <i>x</i>. There is then one bucket for each leaf of <em><b>T</b></em>(<i>x</i>) in which is stored the list of positions where the factor, associated to the leaf, occurs in <i>x</i>.</p>
+
+<p align="justify">The worst case time of this preprocessing phase is linear if the alphabet size is considered to be a constant.</p>
+
+<p align="justify">The searching phase consists in looking into the buckets of the text factors <i>y</i>[<i>j</i> .. <i>j</i>+<img alt="ell" align="BASELINE" src="images/ell.gif">-1] for all <i>j</i> = <i>k</i>.(<i>m</i>-<img alt="ell" align="BASELINE" src="images/ell.gif">+1)-1 with the integer <i>k</i> in the interval <i>y</i>[1,<img alt="lfloor" align="MIDDLE" src="images/lfloor.gif">(<i>n</i>-<img alt="ell" align="BASELINE" src="images/ell.gif">) / <i>m</i><img alt="rfloor" align="MIDDLE" src="images/rfloor.gif">].</p>
+
+<p align="justify">The worst case time complexity of the searching phase is quadratic but the expected number of text character comparisons is <big><i><b>O</b></i></big>(log<sub><img alt="sigma" src="images/psigma.gif"></sub>(<i>m</i>).(<i>n</i> / (<i>m</i>-log<sub><img alt="sigma" src="images/psigma.gif"></sub>(<i>m</i>)))).</p>
+</div>
+
+<div class="bar"><a name="SECTION00333">The C code</a></div>
+
+<p align="justify">The description of a linked list <tt><big><tt>List</tt></big></tt> can be found in the introduction section <a href="node2.html#SECTION0026"><i>implementation</i></a>.</p>
+
+<div class="pre">
+<pre>
+List *z;
+ 
+#define getZ(i) z[(i)]
+ 
+void setZ(int node, int i) {
+   List cell;
+ 
+   cell = (List)malloc(sizeof(struct _cell));
+   if (cell == NULL)
+      error("ALPHASKIP/setZ");
+   cell-&gt;element = i;
+   cell-&gt;next = z[node];
+   z[node] = cell;
+}
+ 
+ 
+/* Create the transition labelled by the
+    character c from node node.
+   Maintain the suffix links accordingly. */
+int addNode(Graph trie, int art, int node, char c) {
+   int childNode, suffixNode, suffixChildNode;
+ 
+   childNode = newVertex(trie);
+   setTarget(trie, node, c, childNode);
+   suffixNode = getSuffixLink(trie, node);
+   if (suffixNode == art)
+      setSuffixLink(trie, childNode, node);
+   else {
+      suffixChildNode = getTarget(trie, suffixNode, c);
+      if (suffixChildNode == UNDEFINED)
+         suffixChildNode = addNode(trie, art,
+                                   suffixNode, c);
+      setSuffixLink(trie, childNode, suffixChildNode);
+   }
+   return(childNode);
+}
+
+
+void ALPHASKIP(char *x, int m, char *y, int n, int a) {
+   int b, i, j, k, logM, temp, shift, size, pos;
+   int art, childNode, node, root, lastNode;
+   List current;
+   Graph trie;
+ 
+   logM = 0;
+   temp = m;
+   while (temp &gt; a) {
+      ++logM;
+      temp /= a;
+   }
+   if (logM == 0) logM = 1;
+   <!-- else if (logM > m/2) logM = m/2; -->
+ 
+   /* Preprocessing */
+   size = 2 + (2*m - logM + 1)*logM;
+   trie = newTrie(size, size*ASIZE);
+   z = (List *)calloc(size, sizeof(List));
+   if (z == NULL)
+      error("ALPHASKIP");
+ 
+   root = getInitial(trie);
+   art = newVertex(trie);
+   setSuffixLink(trie, root, art);
+   node = newVertex(trie);
+   setTarget(trie, root, x[0], node);
+   setSuffixLink(trie, node, root);
+   for (i = 1; i &lt; logM; ++i)
+      node = addNode(trie, art, node, x[i]);
+   pos = 0;
+   setZ(node, pos);
+   pos++;
+   for (i = logM; i &lt; m - 1; ++i) {
+      node = getSuffixLink(trie, node);
+      childNode = getTarget(trie, node, x[i]);
+      if (childNode == UNDEFINED)
+         node = addNode(trie, art, node, x[i]);
+      else
+         node = childNode;
+      setZ(node, pos);
+      pos++;
+   }
+   node = getSuffixLink(trie, node);
+   childNode = getTarget(trie, node, x[i]);
+   if (childNode == UNDEFINED) {
+      lastNode = newVertex(trie);
+      setTarget(trie, node, x[m - 1], lastNode);
+      node = lastNode;
+   }
+   else
+      node = childNode;
+   setZ(node, pos);
+ 
+   /* Searching */
+   shift = m - logM + 1;
+   for (j = m + 1 - logM; j &lt; n - logM; j += shift) {
+      node = root;
+      for (k = 0; node != UNDEFINED &amp;&amp; k &lt; logM; ++k)
+         node = getTarget(trie, node, y[j + k]);
+      if (node != UNDEFINED)
+         for (current = getZ(node);
+              current != NULL;
+              current = current-&gt;next) {
+            b = j - current-&gt;element;
+            if (x[0] == y[b] &amp;&amp;
+                memcmp(x + 1, y + b + 1, m - 1) == 0)
+               OUTPUT(b);
+         }
+   }
+   free(z);
+}
+
+</pre>
+</div>
+
+<div class="bar"><a name="SECTION00334" style="color: teal">The example</a></div>
+
+<p>Preprocessing phase</p>
+
+<p align="center"><img alt="Alpha skip search Z table" align="BOTTOM" src="images/lsksztab1.png"><br clear="all">
+<span style="white-space: nowrap">Z table used by Alpha Skip Search algorithm.</span></p>
+
+<p><a name="search" href="examples/exp33.html" style="text-decoration: underline">Searching</a> phase</p>
+
+<br>
+<div class="bar"><a name="SECTION00335">References</a></div>
+
+<div class="ref">
+<ul style="text-align: justify ">
+<li><strong>C<small>HARRAS</small> C</strong>., <strong>L<small>ECROQ</small> T.</strong>, <strong>P<small>EHOUSHEK</small> J.D.</strong>, 1998, A very fast string matching algorithm for small alphabets and long patterns, in <em>Proceedings of the 9th Annual Symposium on Combinatorial Pattern Matching</em> , M. Farach-Colton ed., Piscataway, New Jersey, Lecture Notes in Computer Science 1448, pp 55-64, Springer-Verlag, Berlin.</li>
+</ul>
+</div>
+
+<br>
+<hr color="#F0F0FC" size="2">
+<a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node32.html#SECTION00320"><img alt="KmpSkip Search algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Up:</b> <a href="index.html">ESMAJ</a> <b>Prev:</b> <a href="node32.html#SECTION00320">KmpSkip Search algorithm</a> 
+
+<hr>
+<br>
+<div align="right"><em><small><small>e-mails: {<a href="mailto:Christian.Charras@laposte.net">Christian.Charras</a>, <a href="mailto:Thierry.Lecroq@laposte.net">Thierry.Lecroq</a> }@laposte.net</small><br>
+ Tue Jan 14 15:03:31 MET 1997</small></em></div>
+</body>
+</html>
+

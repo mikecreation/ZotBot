@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>jump list</title>
+<meta name="description"
+  content="Definition of jump list,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="jump list">
+<meta name="type" content="data structure">
+<meta name="area" content="Searching">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>jump list</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A variant of <a href="doublyLinkedList.html"><em>doubly linked list</em></a> with items in sorted order and having two levels of additional links that span geometrically increasing distances.  For a  list with n items, the next level is a link from item i,  1 &le; i &le; n - &lfloor; n <sup>1/3</sup>&rfloor;, to  item i + &lfloor; i <sup>1/3</sup>&rfloor;.  At the top level, items 1&sup3;, 2&sup3;, 3&sup3;, &hellip;,  &lfloor; n <sup>1/3</sup>&rfloor; &sup3; have backward links, that is, there is a link from item i&sup3;,  1 &lt; i &le; &lfloor; n <sup>1/3</sup>&rfloor; &sup3;, to  item (i-1)&sup3;.   Search, insert, and delete are <a href="bigOnotation.html"><em>O(n<sup>1/3</sup>)</em></a> worst case.
+</p>
+
+<p>
+<strong>See also</strong>
+<a href="skiplist.html"><em>skip list</em></a>, <a href="dictionary.html"><em>dictionary</em></a>.
+</p>
+
+<p>
+<em>Note:
+The data structure can also be seen as a <a href="binarySearchTree.html"><em>binary search tree</em></a> with additional links.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>More information</h2>
+<p>
+<strong>Arne Andersson</strong> and <strong>Thomas Ottmann</strong>, <em>New Tight Bounds on Uniquely Represented Dictionaries</em>, SIAM Journal of Computing, 24(5):1091-1103, 1995.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#c5b5a4b0a9eba7a9a4a6ae85abacb6b1eba2aab3">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 17 December 2004.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "jump list", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 17 December 2004. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/jumpList.html">https://www.nist.gov/dads/HTML/jumpList.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a916ba5ce0112e',t:'MTc5MjAwNzE3Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

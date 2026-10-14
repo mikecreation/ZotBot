@@ -1,0 +1,153 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="generator" content="HTML Tidy, see www.w3.org">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Morris-Pratt algorithm</title>
+<meta name="generator" content="Microsoft XSLT (msxml3 golden/ msxml4), see http://www.microsoft.com">
+<meta name="robots" content="index, follow">
+<meta name="description" content="EXACT STRING MATCHING ALGORITHMS Animation in Java, Morris-Pratt algorithm">
+<meta name="keywords" content="string matching, algorithm, Java, C">
+<meta name="resource-type" content="document">
+<meta name="Author-Corporate" content="Chistian.Charras@dir.univ-rouen.fr">
+<meta name="Content-Language" content="en">
+<meta name="distribution" content="global">
+<link type="text/css" rel="stylesheet" href="string.css">
+</head>
+<body bgcolor="white">
+<a href="node8.html#SECTION0080"><img alt="Knuth-Morris-Pratt algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node6.html#SECTION0060"><img alt="Shift Or algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="node8.html#SECTION0080">Knuth-Morris-Pratt algorithm</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Prev:</b> <a href="node6.html#SECTION0060">Shift Or algorithm</a> 
+
+<hr>
+<h1 align="center"><a name="SECTION0070">Morris-Pratt algorithm</a></h1>
+
+<hr color="#F0F0FC" size="3">
+<applet codebase="../spm/MorrisPratt" archive="MorrisPratt.zip" code="AppletButtonText2.class" width="230" height="63"><param name="windowTitle" value="Morris-Pratt algorithm">
+<param name="windowClass" value="ProgramTextWindow2">
+<param name="buttonText" value="visualization">
+<param name="windowwidth" value="375">
+<param name="windowheight" value="560">
+<param name="label1" value="Pattern:">
+<param name="input1" value="gcagagag">
+<param name="label2" value="String:">
+<param name="input2" value="gcatcgcagagagtatacagtacg">
+<param name="program" value="MorrisPratt">
+</applet> 
+
+<div class="bar"><a name="SECTION0071">Main features</a></div>
+
+<div class="mf">
+<ul>
+<li>performs the comparisons from left to right;</li>
+
+<li>preprocessing phase in <big><i><b>O</b></i></big>(<i>m</i>) space and time complexity;</li>
+
+<li>searching phase in <big><i><b>O</b></i></big>(<i>n</i>+<i>m</i>) time complexity (independent from the alphabet size);</li>
+
+<li>performs at most 2<i>n</i>-1 information gathered during the scan of the text;</li>
+
+<li>delay bounded by <i>m</i>.</li>
+</ul>
+</div>
+
+<div class="bar"><a name="SECTION0072">Description</a></div>
+
+<div class="desc">
+<p align="justify">The design of the Morris-Pratt algorithm follows a tight analysis of the <a href="node3.html#SECTION0030">Brute Force</a> algorithm, and especially on the way this latter wastes the information gathered during the scan of the text.</p>
+
+<p align="justify">Let us look more closely at the brute force algorithm. It is possible to improve the length of the shifts and simultaneously remember some portions of the text that match the pattern. This saves comparisons between characters of the pattern and characters of the text and consequently increases the speed of the search.</p>
+
+<p align="justify">Consider an attempt at a left position <i>j</i> on <i>y</i>, that is when the window is positioned on the text factor <span style="white-space: nowrap"><i>y</i>[<i>j</i> .. <i>j</i>+<i>m</i>-1]</span>. Assume that the first mismatch occurs between <i>x</i>[<i>i</i>] and <span style="white-space: nowrap"><i>y</i>[<i>i</i>+<i>j</i>]</span> with <span style="white-space: nowrap">0 &lt; <i>i</i> &lt; <i>m</i></span>. Then, <span style="white-space: nowrap"><i>x</i>[0..<i>i</i>-1] = <i>y</i>[<i>j</i> .. <i>i</i>+<i>j</i>-1] = <i>u</i></span> and <span style="white-space: nowrap"><i>a</i> = x[<i>i</i>]&nbsp;<img alt="neq" src="images/neq.gif">&nbsp;<i>y</i>[<i>i</i>+<i>j</i>]=<i>b</i>.</span></p>
+
+<p align="justify">When shifting, it is reasonable to expect that a prefix <i>v</i> of the pattern matches some suffix of the portion <i>u</i> of the text. The longest such prefix <i>v</i> is called the <em><b>border</b></em> of <i>u</i> (it occurs at both ends of <i>u</i>). This introduces the notation: let <em>mpNext</em>[<i>i</i>] be the length of the longest border of <i>x</i>[0 .. <i>i</i>-1] for 0 &lt; <i>i</i>&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>m</i>. Then, after a shift, the comparisons can resume between characters <span style="white-space: nowrap"><i>c</i>=<i>x</i>[<em>mpNext</em>[<i>i</i>]]</span> and <span style="white-space: nowrap"><i>y</i>[<i>i</i>+<i>j</i>]=<i>b</i></span> without missing any occurrence of <i>x</i> in <i>y</i>, and avoiding a backtrack on the text (see figure&nbsp;6.1). The value of <em>mpNext</em>[0] is set to -1.</p>
+
+<div align="center">
+<p><img alt="figure 6.1" src="images/mp.gif"><br clear="ALL">
+<b>Figure 6.1:</b>&nbsp; Shift in the Morris-Pratt algorithm (<i>v</i> border of <i>u</i>).</p>
+</div>
+
+<p align="justify">The table <em>mpNext</em> can be computed in <big><i><b>O</b></i></big>(<i>m</i>) space and time before the searching phase, applying the same searching algorithm to the pattern itself, as if <i>x</i>=<i>y</i>.</p>
+
+<p align="justify">Then the searching phase can be done in <big><i><b>O</b></i></big>(<i>m</i>+<i>n</i>) time. The Morris-Pratt algorithm performs at most 2<i>n</i>-1 text character comparisons during the searching phase. The <b>delay</b> (maximal number of comparisons for a single text character) is bounded by <i>m</i>.</p>
+</div>
+
+<div class="bar"><a name="SECTION0073">The C code</a></div>
+
+<div class="pre">
+<pre>
+void preMp(char *x, int m, int mpNext[]) {
+   int i, j;
+
+   i = 0;
+   j = mpNext[0] = -1;
+   while (i &lt; m) {
+      while (j &gt; -1 &amp;&amp; x[i] != x[j])
+         j = mpNext[j];
+      mpNext[++i] = ++j;
+   }
+}
+
+
+void MP(char *x, int m, char *y, int n) {
+   int i, j, mpNext[XSIZE];
+
+   /* Preprocessing */
+   preMp(x, m, mpNext);
+
+   /* Searching */
+   i = j = 0;
+   while (j &lt; n) {
+      while (i &gt; -1 &amp;&amp; x[i] != y[j])
+         i = mpNext[i];
+      i++;
+      j++;
+      if (i &gt;= m) {
+         OUTPUT(j - i);
+         i = mpNext[i];
+      }
+   }
+}
+
+</pre>
+</div>
+
+<div class="bar"><a name="SECTION0074" style="color: teal">The example</a></div>
+
+<p>Preprocessing phase</p>
+
+<p align="center"><img alt="Morris-Pratt mpNext table" align="BOTTOM" src="images/mptab1.png"><br clear="all">
+The <em>mpNext</em> table.</p>
+
+<p><a name="search" href="examples/exp7.html" style="text-decoration: underline">Searching</a> phase</p>
+
+<br>
+<div class="bar"><a name="SECTION0075">References</a></div>
+
+<div class="ref">
+<ul style="text-align: justify ">
+<li>A<small>HO</small>, A.V., H<small>OPCROFT</small>, J.E., U<small>LLMAN</small>, J.D., 1974, <cite>The design and analysis of computer algorithms</cite>, 2nd Edition, Chapter 9, pp. 317--361, Addison-Wesley Publishing Company.</li>
+
+<li>B<small>EAUQUIER</small>, D., B<small>ERSTEL</small>, J., C<small>HR&Eacute;TIENNE</small>, P., 1992, <em>&Eacute;l&eacute;ments d'algorithmique</em>, Chapter 10, pp 337-377, Masson, Paris.</li>
+
+<li>C<small>ROCHEMORE</small>, M., 1997. Off-line serial exact string searching, in <cite>Pattern Matching Algorithms</cite>, ed. A. Apostolico and Z. Galil, Chapter 1, pp 1-53, Oxford University Press.</li>
+
+<li>H<small>ANCART</small>, C., 1992, Une analyse en moyenne de l'algorithme de Morris et Pratt et de ses raffinements, in <em>Th&eacute;orie des Automates et Applications, Actes des 2<sup><i>e</i></sup> Journ&eacute;es Franco-Belges</em>, D. Krob ed., Rouen, France, 1991, PUR 176, Rouen, France, 99-110.</li>
+
+<li>H<small>ANCART</small>, C., 1993. <cite>Analyse exacte et en moyenne d'algorithmes de recherche d'un motif dans un texte</cite>, Ph. D. Thesis, University Paris 7, France.</li>
+
+<li><strong>M<small>ORRIS</small></strong> (<small>Jr</small>) <strong>J.H.</strong>, <strong>P<small>RATT</small> V.R.</strong>, 1970, <em>A linear pattern-matching algorithm</em>, Technical Report 40, University of California, Berkeley.</li>
+</ul>
+</div>
+
+<br>
+<hr color="#F0F0FC" size="2">
+<a href="node8.html#SECTION0080"><img alt="Knuth-Morris-Pratt algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node6.html#SECTION0060"><img alt="Shift Or algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="node8.html#SECTION0080">Knuth-Morris-Pratt algorithm</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Prev:</b> <a href="node6.html#SECTION0060">Shift Or algorithm</a> 
+
+<hr>
+<br>
+<div align="right"><em><small><small>e-mails: {<a href="mailto:Christian.Charras@laposte.net">Christian.Charras</a>, <a href="mailto:Thierry.Lecroq@laposte.net">Thierry.Lecroq</a>}@laposte.net</small><br>
+Tue Jan 14 15:03:31 MET 1997</small></em></div>
+</body>
+</html>
+

@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>parallel prefix computation</title>
+<meta name="description"
+  content="Definition of parallel prefix computation,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="parallel prefix computation">
+<meta name="type" content="algorithm">
+<meta name="area" content="Parallel">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>parallel prefix computation</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+Calculate an <a href="associative.html"><em>associative</em></a> function, f, on all prefixes of an n-element array, that is, s[0], f(s[0], s[1]), f(s[0], f(s[1], s[2])), &hellip;, f(s[0], f(s[1], &hellip; f(s[n-2], s[n-1])&hellip;)),  using <a href="theta.html"><em>&Theta;(n)</em></a> processors in &Theta;(log n) time. The algorithm is <pre> for j := 0 to lg(n)-1 do <br />     for i := 2<sup>j</sup> to n-1 parallel-do<br />         s[i] := f(s[i-2<sup>j</sup>], s[i]) </pre> where lg is the logarithm base 2, and parallel-do does the innermost computations in parallel.
+</p>
+
+
+<p>
+<em>Note:
+In particular, this calculates any associative function, such as sum, maximum, or concatenate, over a list of values in <a href="logarithmic.html"><em>logarithmic</em></a> time.  Note the write-after-read hazards in the parallel-do loop: old values of s[2<sup>j</sup>] to s[n-1-2<sup>j</sup>] must be read before being overwritten.   Since this algorithm overwrites the initial values, the n processors can copy input values to a result array in parallel in one additional step. <br /> From Yair Tuaff (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d6a4e3e0e2e6ef96b3bbb7bfbaf8a5a6a5f8bbb9a2f8b5b9bb">[email&#160;protected]</a>), 29 December 1999.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#265647534a08444a47454d66484f555208414950">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 25 January 2010.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "parallel prefix computation", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 25 January 2010. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/parallelPrefix.html">https://www.nist.gov/dads/HTML/parallelPrefix.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a916f898a89bf6',t:'MTc5MjAwNzE4Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

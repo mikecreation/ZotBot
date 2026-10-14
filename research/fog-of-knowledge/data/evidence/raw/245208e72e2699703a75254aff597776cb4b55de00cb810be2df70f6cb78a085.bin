@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>Schorr-Waite graph marking algorithm</title>
+<meta name="description"
+  content="Definition of Schorr-Waite graph marking algorithm,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="Schorr-Waite graph marking algorithm">
+<meta name="type" content="algorithm">
+<meta name="area" content="Graphs">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>Schorr-Waite graph marking algorithm</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A class of algorithms to mark all reachable <a href="node.html"><em>nodes</em></a> in a <a href="directedGraph.html"><em>directed graph</em></a> by reversing pointers on the way down, then restoring them upon leaving.  It uses only a few bits of extra space per node and a few work pointers.
+</p>
+
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="directedGraph.html"><em>directed graph</em></a>, <a href="binaryTreeRepofTree.html"><em>binary tree representation of trees</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="depthfirst.html"><em>depth-first search</em></a>.
+</p>
+
+<p>
+<em>Note:
+The graph must be a binary graph, that is, nodes have <a href="outdegree.html"><em>out-degree</em></a> at most two.  Any graph may be represented as a binary graph using a technique like <a href="binaryTreeRepofTree.html"><em>binary tree representation of trees</em></a>. This algorithm works for graphs with <a href="cycle.html"><em>cycles</em></a>, so is not limited to <a href="binarytree.html"><em>binary trees</em></a>. </p> 
+<p> This is used in garbage collection to mark all nodes in use.  Any node still unmarked after the algorithm finishes is unused and may be collected. </p> 
+<p> Although a depth-first search to mark nodes is easy to write, it takes extra space proportional to the maximum search depth, which could be all nodes.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>More information</h2>
+<p>
+<strong>Herbert Schorr and William M. Waite</strong>, <em>An efficient machine-independent procedure for garbage collection in various list structures</em>, CACM, 10(8):501-506, August 1967. </p> <p> There are many variants, better presentations, and proofs of correctness.
+</p>
+<p>
+<strong>Historical Note</strong><br>
+Knuth says this method was "discovered independently by Peter Deutsch and by Herbert Schorr and W. M. Waite in 1965" <a href="../terms.html#Knuth97">[Knuth97, 1:418, Sect. 2.3.5]</a>, but I cannot find any other documentation crediting Deutsch.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#f484958198da969895979fb49a9d8780da939b82">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 28 May 2019.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "Schorr-Waite graph marking algorithm", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 28 May 2019. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/SchorrWaiteGraphMarking.html">https://www.nist.gov/dads/HTML/SchorrWaiteGraphMarking.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a916306a32a68b',t:'MTc5MjAwNzE1MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

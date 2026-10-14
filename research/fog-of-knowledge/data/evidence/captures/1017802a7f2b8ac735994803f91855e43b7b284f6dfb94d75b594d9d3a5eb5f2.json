@@ -1,0 +1,15 @@
+{
+  "id": "nist-dads.binarygcd",
+  "url": "https://xlinux.nist.gov/dads/HTML/binaryGCD.html",
+  "final_url": "https://xlinux.nist.gov/dads/HTML/binaryGCD.html",
+  "title": "NIST Dictionary of Algorithms and Data Structures: binaryGCD",
+  "source_kind": "secondary",
+  "retrieved_at": "2026-10-14T19:45:54.130202+00:00",
+  "text": "binary GCD\nbinary GCD\n(algorithm)\nDefinition:\nCompute the\ngreatest common divisor\nof two integers, u and v, expressed in binary.  The run time complexity is\nO((log\n2\nu v)²)\nbit operations.\nSee also\nEuclid's algorithm\n.\nNote:\nDiscovered by J. Stein in 1967.  Another source says discovered by R. Silver and J. Tersian in 1962 and published by G. Stein in 1967.\nThe algorithm uses the following observations.\nIf u and v are both even, gcd(u,v) = 2 gcd(u/2, v/2).\nIf u is even and v is odd, gcd(u,v) = gcd(u/2, v).\nOtherwise both are odd, and gcd(u,v) = gcd(|u-v|/2, v).  (Euclid's algorithm with a division by 2 since the difference of two odd numbers is even.)\nHere is the algorithm.  It is especially efficient for operations on binary representations.\ng = 1\nwhile u is even and v is even\nu = u/2 (right shift)\nv = v/2\ng = 2*g (left shift)\nnow u or v (or both) are odd\nwhile u > 0\nif u is even, u = u/2\nelse if v is even, v = v/2\nelse\nt = |u-v|/2\nif u\n<\nv, then v = t else u = t\nreturn v*g\nKnuth calls this algorithm 4.5.2B in\n[Knuth97, 2:338]\n. Torsten Eichstädt suggested incrementing g in step 2.3 (g++) and  returning v left shifted g times in step 4 (return v<<g). 4 April 2006.\nAuthor:\nPEB\nMore information\nBinary Euclid's Algorithm\nincluding examples and references.\nGo to the\nDictionary of Algorithms and Data\nStructures\nhome page.\nIf you have suggestions, corrections, or comments, please get in touch\nwith\nPaul Black\n.\nEntry modified 2 November 2020.\nHTML page formatted Wed Oct 30 12:15:30 2024.\nCite this as:\nPaul E. Black, \"binary GCD\", in\nDictionary of Algorithms and Data Structures\n[online], Paul E. Black, ed. 2 November 2020. (accessed TODAY)\nAvailable from:\nhttps://www.nist.gov/dads/HTML/binaryGCD.html",
+  "sha256": "ee1d3eb1c7d9d89b7d9f708784234688f8e1eeaa80776c53d2609de3d043d2b7",
+  "raw_sha256": "a5b0b4fd18cbf91a31f29c3dd8c3a3085d167b38770506591614e4a269f75e0f",
+  "content_type": "text/html",
+  "charset": "utf-8",
+  "extraction_method": "http-html-data-lines/1",
+  "capture_id": "1017802a7f2b8ac735994803f91855e43b7b284f6dfb94d75b594d9d3a5eb5f2"
+}
