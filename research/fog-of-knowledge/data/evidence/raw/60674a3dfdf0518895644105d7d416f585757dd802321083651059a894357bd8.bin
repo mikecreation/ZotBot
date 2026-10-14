@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>knapsack problem</title>
+<meta name="description"
+  content="Definition of knapsack problem,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="knapsack problem">
+<meta name="type" content="classic problem">
+<meta name="area" content="Combinatorics">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>knapsack problem</h1>
+<p>
+(classic problem)
+</p>
+
+<p>
+<strong>Definition:</strong>
+Given items of different values and volumes, find the most valuable set of items that fit in a knapsack of fixed volume.
+</p>
+
+<p>
+<strong>Formal Definition:</strong> There is a knapsack of capacity c &gt; 0 and N items.  Each item has value v<sub>i</sub> &gt; 0 and weight w<sub>i</sub> &gt; 0.   Find the selection of items (&delta;<sub>i</sub> = 1 if selected, 0 if not) that fit, &sum;<sub>i=1</sub><sup>N</sup> &delta;<sub>i</sub>w<sub>i</sub> &le; c, and the total value, &sum;<sub>i=1</sub><sup>N</sup> &delta;<sub>i</sub>v<sub>i</sub>, is maximized.
+</p>
+<p>
+<strong>Also known as</strong> 0-1 knapsack problem, binary knapsack problem.
+</p>
+
+<p>
+<strong>See also</strong>
+<a href="fractionalKnapsack.html"><em>fractional knapsack problem</em></a>, <a href="unboundedKnapsack.html"><em>unbounded knapsack problem</em></a>, <a href="binpacking.html"><em>bin packing problem</em></a>, <a href="cuttingStock.html"><em>cutting stock problem</em></a>, <a href="npcomplete.html"><em>NP-complete</em></a>.
+</p>
+
+<p>
+<em>Note:
+Also called 0-1 or binary knapsack (each item may be taken (1) or not (0)), in contrast to the <a href="fractionalKnapsack.html"><em>fractional knapsack problem</em></a>.  Also called bounded knapsack (BKP) because there are a limited number of items, in contrast to the <a href="unboundedKnapsack.html"><em>unbounded knapsack problem</em></a>. The <a href="decisionProblem.html"><em>decision problem</em></a> is, given items of different values and volumes and a knapsack, is there a subset that exceeds a certain value?  The decision problem is <a href="npcomplete.html"><em>NP-complete</em></a>.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+Steven Skiena's Stony Brook Algorithm Repository <a href="https://algorist.com/problems/Knapsack_Problem.html" target="_blank">(Fortran and Pascal)</a>. GAMS <a href="http://gams.nist.gov/serve.cgi/Class/G2c3/" target="_blank">Class G2c3 (Fortran)</a>.
+<h2>More information</h2>
+<p>
+<img src="../Images/xkcd 0287 np_complete.png"><br /> From <a href="https://xkcd.com/287/" target="_blank">xkcd 287</a> by Randall Munroe. <a href="https://xkcd.com/license.html" target="_blank">Creative Commons Attribution-NonCommercial 2.5 License</a>.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#4f3f2e3a23612d232e2c240f21263c3b61282039">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 26 July 2021.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "knapsack problem", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 26 July 2021. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/knapsackProblem.html">https://www.nist.gov/dads/HTML/knapsackProblem.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a916bffa698c0a',t:'MTc5MjAwNzE3Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

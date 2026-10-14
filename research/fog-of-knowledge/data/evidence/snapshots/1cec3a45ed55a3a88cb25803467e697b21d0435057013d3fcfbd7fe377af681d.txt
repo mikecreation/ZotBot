@@ -1,0 +1,71 @@
+twisted tabulation hashing
+twisted tabulation hashing
+(algorithm)
+Definition:
+Similar to
+tabulation hashing
+, except that the last table is indexed by the xor of the last character and a twister value from the rest of the string.
+Formal Definition:
+(t, h
+r
+(c)) = ⊕
+n
+i=2
+T*
+i
+[c
+i
+]
+h(c) = h
+r
+(c) ⊕  	T
+1
+[c
+1
+⊕ t]
+where ⊕ is the
+xor
+operation, T*
+i
+is the i
+th
+table, and c
+i
+is the i
+th
+character.
+Aggregate child
+(... is a part of or used in me.)
+tabulation hashing
+.
+Note:
+The twister value and the intermediate hash value can be accumulated in the same integer, since the combining operation is xor.
+The tables have additional twister values, compared to tables used in
+tabulation hashing
+.
+It doesn't matter whether it is the first or the last character that is treated specially.
+Author:
+PEB
+More information
+Mihai Pătraşcu
+and
+Mikkel Thorup
+,
+Twisted Tabulation Hashing
+, Proc. 24th annual ACM-SIAM Symposium On Discrete Algorithms (SODA '13), Pages 209-228, 2013.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 7 June 2018.
+HTML page formatted Wed Oct 30 12:15:31 2024.
+Cite this as:
+Paul E. Black, "twisted tabulation hashing", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 7 June 2018. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/twistedTabulationHashing.html

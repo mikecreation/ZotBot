@@ -1,0 +1,66 @@
+huge sparse array
+huge sparse array
+(data structure)
+Definition:
+Let N be the number of items to store and R be the size of the
+range
+of
+key
+values; R >> N.   Allocate, but don't initialize, two arrays: an item array I, where |I|≥N, and a location array L, where |L|=R. Initialize a variable, next, the number of items, to zero (with
+0-based indexing
+). To insert an item, put it in the next place in the item array and save where to find it in the location array.
+I[next] = item;
+L[item.key] = next;
+next++;
+To look up an item by key, get the index from the location array.  If the index is invalid or refers to the wrong item, the item is not found.
+index = L[key];
+if (index < 0 OR index >= next) return NOTFOUND;
+if (I[index].key != key) return NOTFOUND;
+return I[index];
+Inserting N items takes
+Θ(N)
+total time, assuming allocation takes constant time. Retrieving an item by key (or responding "not found") takes constant time. Listing all items takes Θ(N) time using I.
+Generalization
+(I am a kind of ...)
+array
+.
+See also
+sparse matrix
+,
+hash table
+.
+Note:
+Keys must be unique.  Duplicate keys could be handled with
+collision resolution schemes
+.   This data structure is usually impractical since the range is enormous.
+This effectively allocates a huge array without explicitly initializing it, at the cost of Θ(N) space and a little time for each access.
+This is what
+hash tables
+want to be: constant time for insertion and look up.
+Author:
+PEB
+More information
+Historical Note
+Motivating problem first posed as exercise 2.12 in
+Alfred V. Aho,  John E. Hopcroft
+, and
+Jeffrey D. Ullman
+,
+The Design and Analysis of Computer Algorithms
+, page 71, Addison-Wesley, 1974.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 14 August 2008.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "huge sparse array", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 14 August 2008. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/hugeSparseArray.html

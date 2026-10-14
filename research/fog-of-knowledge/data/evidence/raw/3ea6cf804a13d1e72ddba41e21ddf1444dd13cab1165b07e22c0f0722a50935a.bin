@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>square root</title>
+<meta name="description"
+  content="Definition of square root,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="square root">
+<meta name="type" content="algorithm">
+<meta name="area" content="Numeric Computation">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>square root</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+This describes a "long hand" or manual method of calculating or extracting square roots.  Calculation of a square root by hand is a little like long-hand division. </p> <p> Suppose you need to find the square root of 66564. Set up a "division" with the number under the radical. Mark off pairs of digits, starting from the decimal point and working left.   (Here the decimal point is a period (.) and commas (,) mark pairs of digits.) <pre>               ___________	<br />             \/  6,65,64.	<br /> </pre> Look at the leftmost digit(s) (6 in this case).  What is the largest number whose square is less than or equal to it?  It is 2, whose square is 4.  Write 2 above, write the square below and subtract. <pre>               __2________	<br />             \/  6,65,64.	<br />                -4		<br />               ----		<br />                 2		<br /> </pre> Now bring down the next two digits (65).  The next "divisor" is double the number on top (2x2=4) and some other digit in the units position (4_). <pre>               __2________	<br />             \/  6,65,64.	<br />                -4		<br />                -----		<br />             4_ ) 265		<br /> </pre> What is the largest number that we can put in the units <em>and</em> also multiply times the divisor such that the result is still be less than or equal to what we have? (Algebraically, what is d such that d &times; (40+d) &le; 265?) It looks like 6 might work (since 6 &times; 40 = 240), but 6 is too big, since 6 &times; 46 = 276: <pre>               __2__<strong>6</strong>_____	<br />             \/  6,65,64.	<br />                -4		<br />                -----		<br />             4<strong>6</strong> ) 265		<br />                 -276   TOO BIG	<br /> </pre> So try 5 instead. <pre>               __2__<strong>5</strong>_____	<br />             \/  6,65,64.	<br />                -4		<br />                -----		<br />             4<strong>5</strong> ) 265		<br />                 -225		<br />                 -------		<br />                   40		<br /> </pre> Repeat: bring down the next two digits, and double the number on top (2 &times; 25 = 50) to make a "divisor", with another unit. <pre>               __2__5_____	<br />             \/  6,65,64.	<br />                -4		<br />                -----		<br />             45 ) 265		<br />                 -225		<br />                 -------		<br />             50_ ) 4064		<br /> </pre> It looks like 8 would work.  Let's see. <pre>               __2__5__<strong>8</strong>__	<br />             \/  6,65,64.	<br />                -4		<br />                -----		<br />             45 ) 265		<br />                 -225		<br />                 -------		<br />             50<strong>8</strong> ) 4064		<br />                  -4064		<br />                  ------		<br />                      0		<br /> </pre> </p> <p> So the square root of 66564 is 258.  You can continue for as many decimal places as you need: just bring down more pairs of zeros. </p> <p> Here is an example spanning the decimal point.  When a number does not have a rational square root, you can continue calculating (significant) digits as long as you wish. <pre>       __1__6.8_4_0_4_2_7_5_...<br />     \/  2,83.6		<br />        -1		<br />        -----		<br />     26 ) 183		<br />         -156		<br />         ------		<br />     328 ) 2760		<br />          -2624		<br />          -------	<br />     3364 ) 13600	<br />           -13456	<br />           --------	<br />     33680 )  14400	<br />                 -0	<br />            ---------	<br />     336804 ) 1440000	<br />             -1347216	<br />             ----------	<br />     3368082 )  9278400	<br />               -6736164	<br />              -----------	<br />     33680847 ) 254223600	<br />               -235765929	<br />               ------------	<br />     336808545 ) 1845767100	<br />                -1684042725	<br />                -----------	<br />                  161724375	<br /> </pre> </p> <p> <strong>Why does this work?</strong> </p> <p> Consider (10A + B)&sup2; = 100A&sup2; + 2 &times; 10AB + B&sup2; and think about finding the area of a square. Remember that 10A + B is just the numeral with B in the units place and A in the higher position.  For 42, A=4 and B=2, so 10 &times; 4 + 2 = 42. </p> <p> <img src="../Images/squareRoot.gif" height="205" width="190" alt="diagram of a square that is 10A + B on a side showing a 100A squared  rectangle, two 10AB rectangles, and a B squared rectangle"> </p> <p> The area of the two skinny rectangles is  2 &times; 10A &times; B.  The tiny square is B&sup2;. If we know A and the area of the square, S, what B should we choose?   </p> <p> We previously subtracted A&sup2; from S.  To scale to 100A&sup2;, we bring down two more digits (a factor of 100) of the size of S.  We write down twice A (2A), but shifted one place to leave room for B (10 &times; 2A or 2 &times; 10A).  Now we add B to get  2 &times; 10A + B.  Multiplying by B gives us 2 &times; 10AB +  B&sup2;.  When we subtract that from the remainder (remember we already subtracted A&sup2;), we have subtracted exactly (10A + B)&sup2;.  That is, we have improved our knowledge of the square root by one digit, B. </p> <p> We take whatever remains, scale again by 100, by bringing down two more digits, and repeat the process. </p>
+</p>
+
+<p>
+<strong>See also</strong>
+<a href="cubeRoot.html"><em>cube root</em></a>.
+</p>
+
+<p>
+<em>Note:
+In computers and hand-held calculators, square root, sine, cosine, and other transcendental functions are calculated with sophisticated functions, such as Taylor series, <a href="cordic.html"><em>CORDIC</em></a>, or <a href="http://www.sosmath.com/calculus/diff/der07/der07.html" target="_blank">Newton-Raphson method</a>, sometimes called Newton's method.  </em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+<a href="https://gams.nist.gov/" target="_blank">GAMS</a> Class C2 has many implementations of <a href="http://gams.nist.gov/serve.cgi/Class/C2/" target="_blank">powers, roots, and reciprocals (C and Fortran)</a>. Many  <a href="http://www.azillionmonkeys.com/qed/sqroot.html" target="_blank">variations (C and Assembler)</a> for caching, pipelined processing, etc.
+<h2>More information</h2>
+<p>
+Another <a href="http://mathcentral.uregina.ca/RR/database/RR.09.95/grzesina1.html" target="_blank">geometric justification</a>.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#037362766f2d616f626068436d6a70772d646c75">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 6 May 2019.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "square root", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 6 May 2019. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/squareRoot.html">https://www.nist.gov/dads/HTML/squareRoot.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a91748db8e6212',t:'MTc5MjAwNzE5NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

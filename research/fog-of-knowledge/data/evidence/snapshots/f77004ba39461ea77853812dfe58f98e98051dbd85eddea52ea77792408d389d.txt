@@ -1,0 +1,396 @@
+Turbo Reverse Factor algorithm
+Next:
+Forward Dawg Matching algorithm
+Up:
+ESMAJ
+Prev:
+Reverse Factor algorithm
+Turbo Reverse Factor algorithm
+Main features
+refinement of the
+Reverse Factor
+algorithm;
+preprocessing phase in
+O
+(
+m
+)
+time and space complexity;
+searching phase in
+O
+(
+n
+)
+time complexity;
+performs 2
+n
+text characters inspections in the worst case;
+optimal in the average.
+Description
+It is possible to make the
+Reverse Factor
+algorithm linear. It is in fact enough to remember the prefix
+u
+of
+x
+matched during the last attempt. Then during the current attempt when reaching the right end of
+u
+, it is easy to show that it is sufficient to read again at most the rightmost half of
+u
+. This is made by the Turbo Reverse Factor algorithm.
+If a word
+z
+is a factor of a word
+w
+we define
+disp
+(
+z
+,
+w
+) the displacement of
+z
+in
+w
+to be the least integer
+d
+>0 such that
+w
+[
+m
+-
+d
+-|
+z
+|-1 ..
+m
+-
+d
+]=
+z
+.
+The general situation of the Turbo Reverse Factor algorithm is when a prefix
+u
+is found in the text during the last attempt and for the current attempt the algorithm tries to match the factor
+v
+of length
+m
+-|
+u
+| in the text immediately at the right of
+u
+. If
+v
+is not a factor of
+x
+then the shift is computed as in the Reverse Factor algorithm. If
+v
+is a suffix of
+x
+then an occurrence of
+x
+has been found. If
+v
+is not a suffix but a factor of
+x
+then it is sufficient to scan again the
+min
+(
+per
+(
+u
+),|
+u
+|/2) rightmost characters of
+u
+. If
+u
+is periodic (i.e.
+per
+(
+u
+)
+|
+u
+|/2) let
+z
+be the suffix of
+u
+of length
+per
+(
+u
+). By definition of the period
+z
+is an acyclic word and then an overlap such as shown in Figure
+23.1
+is impossible.
+Figure 23.1:
+Impossible overlap if
+z
+is an acyclic word.
+Thus
+z
+can only occur in
+u
+at distances multiple of
+per
+(
+u
+) which implies that the smallest proper suffix of
+uv
+which is a prefix of
+x
+has a length equal to |
+uv
+|-
+disp
+(
+zv
+,
+x
+)=
+m
+-
+disp
+(
+zv
+,
+x
+). Thus the length of the shift to perform is
+disp
+(
+zv
+,
+x
+)
+.
+If
+u
+is not periodic (
+per
+(
+u
+)>|
+u
+|/2), it is obvious that
+x
+can not reoccur in the left part of
+u
+of length
+per
+(
+u
+). It is then sufficient to scan the right part of
+u
+of length |
+u
+|-
+per
+(
+u
+) < |
+u
+|/2 to find a non defined transition in the automaton.
+The function
+disp
+is implemented directly in the automaton
+S
+(
+x
+)
+without changing the complexity of its construction.
+The preprocessing phase consists in building the suffix automaton of
+x
+R
+. It can be done in
+O
+(
+m
+)
+time complexity.
+The searching phase is in
+O
+(
+n
+)
+time complexity. The Turbo Reverse Factor performs at most 2
+n
+inspections of text characters and it is also optimal in average performing
+O
+(
+n
+.log
+(
+m
+) /
+m
+)
+inspections of text characters on the average reaching the best bound shown by Yao in 1979. .
+The C code
+The function
+preMp
+is given chapter
+Morris and Pratt
+algorithm. The functions
+reverse
+and
+buildSuffixAutomaton
+are given chapter
+Reverse Factor
+algoritm. All the other functions to create and manipulate a data structure suitable for a suffix automaton are given in the introduction section
+implementation
+.
+void TRF(char *x, int m, char *y, int n) {
+   int period, i, j, shift, u, periodOfU, disp, init,
+       state, mu, mpNext[XSIZE + 1];
+   char *xR;
+   Graph aut;
+  
+   /* Preprocessing */
+   aut = newSuffixAutomaton(2*(m + 2), 2*(m + 2)*ASIZE);
+   xR = reverse(x, m);
+   buildSuffixAutomaton(xR, m, aut);
+   init = getInitial(aut);
+   preMp(x, m, mpNext);
+   period = m - mpNext[m];
+   i = 0;
+   shift = m;
+  
+   /* Searching */
+   j = 0;
+   while (j <= n - m) {
+      i = m - 1;
+      state = init;
+      u = m - 1 - shift;
+      periodOfU = (shift != m ?
+                   m - shift - mpNext[m - shift] : 0);
+      shift = m;
+      disp = 0;
+      while (i > u &&
+             getTarget(aut, state, y[i + j]) !=
+             UNDEFINED) {
+         disp += getShift(aut, state, y[i + j]);
+         state = getTarget(aut, state, y[i + j]);
+         if (isTerminal(aut, state))
+            shift = i;
+         --i;
+      }
+      if (i <= u)
+         if (disp == 0) {
+            OUTPUT(j);
+            shift = period;
+         }
+         else {
+            mu = (u + 1)/2;
+            if (periodOfU <= mu) {
+               u -= periodOfU;
+               while (i > u &&
+                      getTarget(aut, state, y[i + j]) !=
+                      UNDEFINED) {
+                  disp += getShift(aut, state, y[i + j]);
+                  state = getTarget(aut, state, y[i + j]);
+                  if (isTerminal(aut, state))
+                     shift = i;
+                  --i;
+               }
+               if (i <= u)
+                  shift = disp;
+            }
+            else {
+               u = u - mu - 1;
+               while (i > u &&
+                      getTarget(aut, state, y[i + j]) !=
+                      UNDEFINED) {
+                  disp += getShift(aut, state, y[i + j]);
+                  state = getTarget(aut, state, y[i + j]);
+                  if (isTerminal(aut, state))
+                     shift = i;
+                  --i;
+               }
+            }
+         }
+      j += shift;
+   }
+}
+The example
+Preprocessing phase
+Suffix automaton used by Turbo Reverse Factor algorithm.
+Searching
+phase
+References
+C
+ROCHEMORE
+, M., 1997. Off-line serial exact string searching, in
+Pattern Matching Algorithms
+, ed. A. Apostolico and Z. Galil, Chapter 1, pp 1-53, Oxford University Press.
+C
+ROCHEMORE
+, M., C
+ZUMAJ
+, A., G
+ASIENIEC
+, L., J
+AROMINEK
+, S., L
+ECROQ
+, T., P
+LANDOWSKI
+, W., R
+YTTER
+, W., 1992, Deux méthodes pour accélérer l'algorithme de Boyer-Moore, in
+Théorie des Automates et Applications, Actes des 2
+e
+Journées Franco-Belges
+, D. Krob ed., Rouen, France, 1991, pp 45-63, PUR 176, Rouen, France.
+C
+ROCHEMORE
+, M., C
+ZUMAJ
+, A., G
+ASIENIEC
+, L., J
+AROMINEK
+, S., L
+ECROQ
+, T., P
+LANDOWSKI
+, W., R
+YTTER
+, W., 1994, Speeding up two string matching algorithms,
+Algorithmica
+12(4/5):247-267.
+C
+ROCHEMORE
+, M., R
+YTTER
+, W., 1994, Text Algorithms,
+Oxford University Press
+.
+L
+ECROQ
+, T., 1992,
+Recherches de mot
+, Ph. D. Thesis, University of Orléans, France.
+L
+ECROQ
+, T., 1995, Experimental results on string matching algorithms,
+Software - Practice & Experience
+25(7):727-765.
+Y
+AO
+, A.C., 1979, The complexity of pattern matching for a random string,
+SIAM Journal on Computing
+, 8 (3):368--387.
+Next:
+Forward Dawg Matching algorithm
+Up:
+ESMAJ
+Prev:
+Reverse Factor algorithm
+e-mails: {
+Christian.Charras
+,
+Thierry.Lecroq
+}@laposte.net
+Tue Jan 14 15:03:31 MET 1997

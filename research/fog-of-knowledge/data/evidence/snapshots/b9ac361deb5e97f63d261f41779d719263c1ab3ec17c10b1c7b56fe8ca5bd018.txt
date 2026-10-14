@@ -1,0 +1,5949 @@
+2 Classical Gases‣ Statistical Physics by David Tong
+Statistical Physics
+by David Tong
+1
+The Fundamentals of Statistical Mechanics
+2
+Classical Gases
+2.1
+The Classical Partition Function
+2.1.1
+From Quantum to Classical
+2.2
+Ideal Gas
+2.2.1
+Equipartition of Energy
+2.2.2
+The Sociological Meaning of Boltzmann’s Constant
+2.2.3
+Entropy and Gibbs’s Paradox
+2.2.4
+The Ideal Gas in the Grand Canonical Ensemble
+2.3
+Maxwell Distribution
+2.3.1
+A History of Kinetic Theory
+2.4
+Diatomic Gas
+2.5
+Interacting Gas
+2.5.1
+The Mayer f Function and the Second Virial Coefficient
+2.5.2
+van der Waals Equation of State
+2.5.3
+The Cluster Expansion
+2.6
+Screening and the Debye-Hückel Model of a Plasma
+3
+Quantum Gases
+4
+Classical Thermodynamics
+5
+Phase Transitions
+1
+The Fundamentals of Statistical Mechanics
+3
+Quantum Gases
+2
+Classical Gases
+Our goal in this section is to use the techniques of statistical mechanics to describe the dynamics of the simplest system: a gas. This means a bunch of particles, flying around in a box. Although much of the last section was formulated in the language of quantum mechanics, here we will revert back to classical mechanics. Nonetheless, a recurrent theme will be that the quantum world is never far behind: we’ll see several puzzles, both theoretical and experimental, which can only truly be resolved by turning on
+ℏ
+.
+2.1
+The Classical Partition Function
+For most of this section we will work in the canonical ensemble. We start by reformulating the idea of a partition function in classical mechanics. We’ll consider a simple system – a single particle of mass
+m
+moving in three dimensions in a potential
+V
+⁢
+(
+q
+→
+)
+. The classical Hamiltonian of the system
+3
+3
+3
+If you haven’t taken the
+Classical Dynamics
+course, you should think of the Hamiltonian as the energy of the system expressed in terms of the position and momentum of the particle.
+is the sum of kinetic and potential energy,
+H
+=
+p
+→
+2
+2
+⁢
+m
++
+V
+⁢
+(
+q
+→
+)
+We earlier defined the partition function (
+1.21
+) to be the sum over all quantum states of the system. Here we want to do something similar. In classical mechanics, the state of a system is determined by a point in
+phase space
+. We must specify both the position and momentum of each of the particles — only then do we have enough information to figure out what the system will do for all times in the future. This motivates the definition of the partition function for a single classical particle as the integration over phase space,
+Z
+1
+=
+1
+h
+3
+⁢
+∫
+d
+3
+⁢
+q
+⁢
+d
+3
+⁢
+p
+⁢
+e
+-
+β
+⁢
+H
+⁢
+(
+p
+,
+q
+)
+(2.49)
+The only slightly odd thing is the factor of
+1
+/
+h
+3
+that sits out front. It is a quantity that needs to be there simply on dimensional grounds:
+Z
+should be dimensionless so
+h
+must have dimension
+(
+length
+×
+momentum
+)
+or, equivalently, Joules-seconds
+(
+J
+⁢
+s
+)
+. The actual value of
+h
+won’t matter for any physical observable, like heat capacity, because we always take
+log
+⁡
+Z
+and then differentiate. Despite this, there is actually a correct value for
+h
+: it is Planck’s constant,
+h
+=
+2
+⁢
+π
+⁢
+ℏ
+≈
+6.6
+×
+10
+-
+34
+⁢
+J
+⁢
+s
+.
+It is very strange to see Planck’s constant in a formula that is supposed to be classical. What’s it doing there? In fact, it is a vestigial object, like the male nipple. It is redundant, serving only as a reminder of where we came from. And the classical world came from the quantum.
+2.1.1
+From Quantum to Classical
+It is possible to derive the classical partition function (
+2.49
+) directly from the quantum partition function (
+1.21
+) without resorting to hand-waving. It will also show us why the factor of
+1
+/
+h
+sits outside the partition function. The derivation is a little tedious, but worth seeing. (Similar techniques are useful in later courses when you first meet the path integral). To make life easier, let’s consider a single particle moving in one spatial dimension. It has position operator
+q
+^
+, momentum operator
+p
+^
+and Hamiltonian,
+H
+^
+=
+p
+^
+2
+2
+⁢
+m
++
+V
+⁢
+(
+q
+^
+)
+If
+|
+n
+⟩
+is the energy eigenstate with energy
+E
+n
+, the quantum partition function is
+Z
+1
+=
+∑
+n
+e
+-
+β
+⁢
+E
+n
+=
+∑
+n
+⟨
+n
+|
+e
+-
+β
+⁢
+H
+^
+|
+n
+⟩
+(2.50)
+In what follows, we’ll make liberal use of the fact that we can insert the identity operator anywhere in this expression. Identity operators can be constructed by summing over any complete basis of states. We’ll need two such constructions, using the position eigenvectors
+|
+q
+⟩
+and the momentum eigenvectors
+|
+p
+⟩
+,
+𝟏
+=
+∫
+d
+q
+|
+q
+⟩
+⟨
+q
+|
+,
+1
+=
+∫
+d
+p
+|
+p
+⟩
+⟨
+p
+|
+We start by inserting two copies of the identity built from position eigenstates,
+Z
+1
+=
+∑
+n
+⟨
+n
+|
+∫
+𝑑
+q
+|
+q
+⟩
+⁢
+⟨
+q
+|
+e
+-
+β
+⁢
+H
+^
+⁢
+∫
+𝑑
+q
+′
+|
+q
+′
+⟩
+⁢
+⟨
+q
+′
+|
+n
+⟩
+=
+∫
+𝑑
+q
+⁢
+𝑑
+q
+′
+⁢
+⟨
+q
+|
+e
+-
+β
+⁢
+H
+^
+|
+q
+′
+⟩
+⁢
+∑
+n
+⟨
+q
+′
+|
+n
+⟩
+⁢
+⟨
+n
+|
+q
+⟩
+But now we can replace
+∑
+n
+|
+n
+⟩
+⁢
+⟨
+n
+|
+with the identity matrix and use the fact that
+⟨
+q
+′
+|
+q
+⟩
+=
+δ
+⁢
+(
+q
+′
+-
+q
+)
+, to get
+Z
+1
+=
+∫
+𝑑
+q
+⁢
+⟨
+q
+|
+e
+-
+β
+⁢
+H
+^
+|
+q
+⟩
+(2.51)
+We see that the result is to replace the sum over energy eigenstates in (
+2.50
+) with a sum (or integral) over position eigenstates in (
+2.51
+). If you wanted, you could play the same game and get the sum over any complete basis of eigenstates of your choosing. As an aside, this means that we can write the partition function in a basis independent fashion as
+Z
+1
+=
+Tr
+⁢
+e
+-
+β
+⁢
+H
+^
+So far, our manipulations could have been done for any quantum system. Now we want to use the fact that we are taking the classical limit. This comes about when we try to factorize
+e
+-
+β
+⁢
+H
+^
+into a momentum term and a position term. The trouble is that this isn’t always possible when there are matrices (or operators) in the exponent. Recall that,
+e
+A
+^
+⁢
+e
+B
+^
+=
+e
+A
+^
++
+B
+^
++
+1
+2
+⁢
+[
+A
+^
+,
+B
+^
+]
++
+…
+For us
+[
+q
+^
+,
+p
+^
+]
+=
+i
+⁢
+ℏ
+. This means that if we’re willing to neglect terms of order
+ℏ
+— which is the meaning of taking the classical limit — then we can write
+e
+-
+β
+⁢
+H
+^
+=
+e
+-
+β
+⁢
+p
+^
+2
+/
+2
+⁢
+m
+⁢
+e
+-
+β
+⁢
+V
+⁢
+(
+q
+^
+)
++
+𝒪
+⁢
+(
+ℏ
+)
+We can now start to replace some of the operators in the exponent, like
+V
+⁢
+(
+q
+^
+)
+, with functions
+V
+⁢
+(
+q
+)
+. (The notational difference is subtle, but important, in the expressions below!),
+Z
+1
+=
+∫
+𝑑
+q
+⁢
+⟨
+q
+|
+e
+-
+β
+⁢
+p
+^
+2
+/
+2
+⁢
+m
+⁢
+e
+-
+β
+⁢
+V
+⁢
+(
+q
+^
+)
+|
+q
+⟩
+=
+∫
+𝑑
+q
+⁢
+e
+-
+β
+⁢
+V
+⁢
+(
+q
+)
+⁢
+⟨
+q
+|
+e
+-
+β
+⁢
+p
+^
+2
+/
+2
+⁢
+m
+|
+q
+⟩
+=
+∫
+𝑑
+q
+⁢
+𝑑
+p
+⁢
+𝑑
+p
+′
+⁢
+e
+-
+β
+⁢
+V
+⁢
+(
+q
+)
+⁢
+⟨
+q
+|
+p
+⟩
+⁢
+⟨
+p
+|
+e
+-
+β
+⁢
+p
+^
+2
+/
+2
+⁢
+m
+|
+p
+′
+⟩
+⁢
+⟨
+p
+′
+|
+q
+⟩
+=
+1
+2
+⁢
+π
+⁢
+ℏ
+⁢
+∫
+𝑑
+q
+⁢
+𝑑
+p
+⁢
+e
+-
+β
+⁢
+H
+⁢
+(
+p
+,
+q
+)
+where, in the final line, we’ve used the identity
+⟨
+q
+|
+p
+⟩
+=
+1
+2
+⁢
+π
+⁢
+ℏ
+⁢
+e
+i
+⁢
+p
+⁢
+q
+/
+ℏ
+This completes the derivation.
+2.2
+Ideal Gas
+The first classical gas that we’ll consider consists of
+N
+particles trapped inside a box of volume
+V
+. The gas is “ideal”. This simply means that the particles do not interact with each other. For now, we’ll also assume that the particles have no internal structure, so no rotational or vibrational degrees of freedom. This situation is usually referred to as the monatomic ideal gas. The Hamiltonian for each particle is simply the kinetic energy,
+H
+=
+p
+→
+2
+2
+⁢
+m
+And the partition function for a single particle is
+Z
+1
+⁢
+(
+V
+,
+T
+)
+=
+1
+(
+2
+⁢
+π
+⁢
+ℏ
+)
+3
+⁢
+∫
+d
+3
+⁢
+q
+⁢
+d
+3
+⁢
+p
+⁢
+e
+-
+β
+⁢
+p
+→
+2
+/
+2
+⁢
+m
+(2.52)
+The integral over position is now trivial and gives
+∫
+d
+3
+⁢
+q
+=
+V
+, the volume of the box. The integral over momentum is also straightforward since it factorizes into separate integrals over
+p
+x
+,
+p
+y
+and
+p
+z
+, each of which is a Gaussian of the form,
+∫
+𝑑
+x
+⁢
+e
+-
+a
+⁢
+x
+2
+=
+π
+a
+So we have
+Z
+1
+=
+V
+⁢
+(
+m
+⁢
+k
+B
+⁢
+T
+2
+⁢
+π
+⁢
+ℏ
+2
+)
+3
+/
+2
+We’ll meet the combination of factors in the brackets a lot in what follows, so it is useful to give it a name. We’ll write
+Z
+1
+=
+V
+λ
+3
+(2.53)
+The quantity
+λ
+goes by the name of the
+thermal de Broglie wavelength
+,
+λ
+=
+2
+⁢
+π
+⁢
+ℏ
+2
+m
+⁢
+k
+B
+⁢
+T
+(2.54)
+λ
+has the dimensions of length. We will see later that you can think of
+λ
+as something like the average de Broglie wavelength of a particle at temperature
+T
+. Notice that it is a quantum object – it has an
+ℏ
+sitting in it – so we expect that it will drop out of any genuinely classical quantity that we compute. The partition function itself (
+2.53
+) is counting the number of these thermal wavelengths that we can fit into volume
+V
+.
+Figure 8:
+Deviations from ideal gas law at sensible densities
+Figure 9:
+Deviations from ideal gas law at extreme densities
+Z
+1
+is the partition function for a single particle. We have
+N
+, non-interacting, particles in the box so the partition function of the whole system is
+Z
+⁢
+(
+N
+,
+V
+,
+T
+)
+=
+Z
+1
+N
+=
+V
+N
+λ
+3
+⁢
+N
+(2.55)
+(Full disclosure: there’s a slightly subtle point that we’re brushing under the carpet here and this equation isn’t quite right. This won’t affect our immediate discussion and we’ll explain the issue in more detail in Section
+2.2.3
+.)
+Armed with the partition function
+Z
+, we can happily calculate anything that we like. Let’s start with the pressure, which can be extracted from the partition function by first computing the free energy (
+1.36
+) and then using (
+1.35
+). We have
+p
+=
+-
+∂
+⁡
+F
+∂
+⁡
+V
+(2.56)
+=
+∂
+∂
+⁡
+V
+⁢
+(
+k
+B
+⁢
+T
+⁢
+log
+⁡
+Z
+)
+=
+N
+⁢
+k
+B
+⁢
+T
+V
+This equation is an old friend – it is the ideal gas law,
+p
+⁢
+V
+=
+N
+⁢
+k
+B
+⁢
+T
+, that we all met in kindergarten. Notice that the thermal wavelength
+λ
+has indeed disappeared from the discussion as expected. Equations of this form, which link pressure, volume and temperature, are called
+equations of state
+. We will meet many throughout this course.
+As the plots above show
+4
+4
+4
+Both figures are taken from the web textbook “
+General Chemistry
+” and credited to John Hutchinson.
+, the ideal gas law is an extremely good description of gases at low densities. Gases deviate from this ideal behaviour as the densities increase and the interactions between atoms becomes important. We will see how this comes about from the viewpoint of microscopic forces in Section
+2.5
+.
+It is worth pointing out that this derivation should calm any lingering fears that you had about the definition of temperature given in (
+1.7
+). The object that we call
+T
+really does coincide with the familiar notion of temperature applied to gases. But the key property of the temperature is that if two systems are in equilibrium then they have the same
+T
+. That’s enough to ensure that equation (
+1.7
+) is the right definition of temperature for
+all
+systems because we can always put any system in equilibrium with an ideal gas.
+2.2.1
+Equipartition of Energy
+The partition function (
+2.55
+) has more in store for us. We can compute the average energy of the ideal gas,
+E
+=
+-
+∂
+∂
+⁡
+β
+⁢
+log
+⁡
+Z
+=
+3
+2
+⁢
+N
+⁢
+k
+B
+⁢
+T
+(2.57)
+There’s an important, general lesson lurking in this formula. To highlight this, it is worth repeating our analysis for an ideal gas in arbitrary number of spatial dimensions,
+D
+. A simple generalization of the calculations above shows that
+Z
+=
+V
+N
+λ
+D
+⁢
+N
+⇒
+E
+=
+D
+2
+⁢
+N
+⁢
+k
+B
+⁢
+T
+Each particle has
+D
+degrees of freedom (because it can move in one of
+D
+spatial directions). And each particle contributes
+1
+2
+⁢
+D
+⁢
+k
+B
+⁢
+T
+towards the average energy. This is a general rule of thumb, which holds for all classical systems: the average energy of each free degree of freedom in a system at temperature
+T
+is
+1
+2
+⁢
+k
+B
+⁢
+T
+. This is called the
+equipartition of energy
+. As stated, it holds only for degrees of freedom in the absence of a potential. (There is a modified version if you include a potential). Moreover, it holds only for classical systems or quantum systems at suitably high temperatures.
+We can use the result above to see why the thermal de Broglie wavelength (
+2.54
+) can be thought of as roughly equal to the average de Broglie wavelength of a particle. Equating the average energy (
+2.57
+) to the kinetic energy
+E
+=
+p
+2
+/
+2
+⁢
+m
+tells us that the average (root mean square) momentum carried by each particle is
+p
+∼
+m
+⁢
+k
+B
+⁢
+T
+. In quantum mechanics, the de Broglie wavelength of a particle is
+λ
+d
+⁢
+B
+=
+h
+/
+p
+, which (up to numerical factors of
+2
+and
+π
+) agrees with our formula (
+2.54
+).
+Finally, returning to the reality of
+d
+=
+3
+dimensions, we can compute the heat capacity for a monatomic ideal gas. It is
+C
+V
+=
+∂
+⁡
+E
+∂
+⁡
+T
+|
+V
+=
+3
+2
+⁢
+N
+⁢
+k
+B
+(2.58)
+2.2.2
+The Sociological Meaning of Boltzmann’s Constant
+We introduced Boltzmann’s constant
+k
+B
+in our original the definition of entropy (
+1.2
+). It has the value,
+k
+B
+=
+1.381
+×
+10
+-
+23
+⁢
+J
+⁢
+K
+-
+1
+In some sense, there is no deep physical meaning to Boltzmann’s constant. It is merely a conversion factor that allows us to go between temperature and energy, as reflected in (
+1.7
+). It is necessary to include it in the equations only for historical reasons: our ancestors didn’t realise that temperature and energy were closely related and measured them in different units.
+Nonetheless, we could ask why does
+k
+B
+have the value above? It doesn’t seem a particularly natural number. The reason is that both the units of temperature (Kelvin) and energy (Joule) are picked to reflect the conditions of human life. In the everyday world around us, measurements of temperature and energy involve fairly ordinary numbers: room temperature is roughly
+300
+⁢
+K
+; the energy required to lift an apple back up to the top of the tree is a few Joules. Similarly, in an everyday setting, all the measurable quantities —
+p
+,
+V
+and
+T
+— in the ideal gas equation are fairly normal numbers when measured in SI units. The only way this can be true is if the combination
+N
+⁢
+k
+B
+is a fairly ordinary number, of order one. In other words the number of atoms must be huge,
+N
+∼
+10
+23
+(2.59)
+This then is the real meaning of the value of Boltzmann’s constant:
+atoms are small
+.
+It’s worth stressing this point. Atoms aren’t just small: they’re really really small.
+10
+23
+is an astonishingly large number. The number of grains of sand in all the beaches in the world is around
+10
+18
+. The number of stars in our galaxy is about
+10
+11
+. The number of stars in the entire visible Universe is probably around
+10
+22
+. And yet the number of water molecules in a cup of tea is more than
+10
+23
+.
+Chemist Notation
+While we’re talking about the size of atoms, it is probably worth reminding you of the notation used by chemists. They too want to work with numbers of order one. For this reason, they define a
+mole
+to be the number of atoms in one gram of Hydrogen. (Actually, it is the number of atoms in 12 grams of Carbon-12, but this is roughly the same thing). The mass of Hydrogen is
+1.6
+×
+10
+-
+27
+⁢
+K
+⁢
+g
+, so the number of atoms in a mole is Avogadro’s number,
+N
+A
+≈
+6
+×
+10
+23
+The number of moles in our gas is then
+n
+=
+N
+/
+N
+A
+and the ideal gas law can be written as
+p
+⁢
+V
+=
+n
+⁢
+R
+⁢
+T
+where
+R
+=
+N
+A
+⁢
+k
+B
+is the called the Universal gas constant. Its value is a nice sensible number with no silly power in the exponent:
+R
+≈
+8
+⁢
+J
+⁢
+K
+-
+1
+⁢
+mol
+-
+1
+.
+2.2.3
+Entropy and Gibbs’s Paradox
+“It has always been believed that Gibbs’s paradox embodied profound thought. That it was intimately linked up with
+something so important and entirely new could hardly have been foreseen.”
+Erwin Schrödinger
+We said earlier that the formula for the partition function (
+2.55
+) isn’t quite right. What did we miss? We actually missed a subtle point from quantum mechanics: quantum particles are indistinguishable. If we take two identical atoms and swap their positions, this doesn’t give us a new state of the system – it is the same state that we had before. (Up to a sign that depends on whether the atoms are bosons or fermions – we’ll discuss this aspect in more detail in Sections
+3.5
+and
+3.6
+). However, we haven’t taken this into account – we wrote the expression
+Z
+=
+Z
+1
+N
+which would be true if all the
+N
+particles in the were distinguishable — for example, if each of the particles were of a different type. But this naive partition function overcounts the number of states in the system when we’re dealing with indistinguishable particles.
+It is a simple matter to write down the partition function for
+N
+indistinguishable particles. We simply need to divide by the number of ways to permute the particles. In other words, for the ideal gas the partition function is
+Z
+ideal
+⁢
+(
+N
+,
+V
+,
+T
+)
+=
+1
+N
+!
+⁢
+Z
+1
+N
+=
+V
+N
+N
+!
+⁢
+λ
+3
+⁢
+N
+(2.60)
+The extra factor of
+N
+!
+doesn’t change the calculations of pressure or energy since, for each, we had to differentiate
+log
+⁡
+Z
+and any overall factor drops out. However, it does change the entropy since this is given by,
+S
+=
+∂
+∂
+⁡
+T
+⁢
+(
+k
+B
+⁢
+T
+⁢
+log
+⁡
+Z
+ideal
+)
+which includes a factor of
+log
+⁡
+Z
+without any derivative. Of course, since the entropy is counting the number of underlying microstates, we would expect it to know about whether particles are distinguishable or indistinguishable. Using the correct partition function (
+2.60
+) and Stirling’s formula, the entropy of an ideal gas is given by,
+S
+=
+N
+⁢
+k
+B
+⁢
+[
+log
+⁡
+(
+V
+N
+⁢
+λ
+3
+)
++
+5
+2
+]
+(2.61)
+This result is known as the
+Sackur-Tetrode
+equation. Notice that not only is the entropy sensitive to the indistinguishability of the particles, but it also depends on
+λ
+. However, the entropy is not directly measurable classically. We can only measure entropy differences by the integrating the heat capacity as in (
+1.10
+).
+The benefit of adding an extra factor of
+N
+!
+was noticed before the advent of quantum mechanics by Gibbs. He was motivated by the change in entropy of mixing between two gases. Suppose that we have two different gases, say red and blue. Each has the same number of particles
+N
+and sits in a volume V, separated by a partition. When the partition is removed the gases mix and we expect the entropy to increase. But if the gases are of the same type, removing the partition shouldn’t change the macroscopic state of the gas. So why should the entropy increase? This is referred to as the
+Gibb’s paradox
+. Including the factor of
+N
+!
+in the partition function ensures that the entropy does not increase when identical atoms are mixed
+5
+5
+5
+Be warned however: a closer look shows that the Gibbs paradox is rather toothless and, in the classical world, there is no real necessity to add the
+N
+!
+. A clear discussion of these issues can be found in E.T. Jaynes’ article “
+The Gibbs Paradox
+” which you can download from the
+course website
+.
+2.2.4
+The Ideal Gas in the Grand Canonical Ensemble
+It is worth briefly looking at the ideal gas in the grand canonical ensemble. Recall that in such an ensemble, the gas is free to exchange both energy and particles with the outside reservoir. You could think of the system as some fixed subvolume inside a much larger gas. If there are no walls to define this subvolume then particles, and hence energy, can happily move in and out. We can ask how many particles will, on average, be inside this volume and what fluctuations in particle number will occur. More importantly, we can also start to gain some intuition for this strange quantity called the chemical potential,
+μ
+.
+The grand partition function (
+1.39
+) for the ideal gas is
+𝒵
+ideal
+⁢
+(
+μ
+,
+V
+,
+T
+)
+=
+∑
+N
+=
+0
+∞
+e
+β
+⁢
+μ
+⁢
+N
+⁢
+Z
+ideal
+⁢
+(
+N
+,
+V
+,
+T
+)
+=
+exp
+⁡
+(
+e
+β
+⁢
+μ
+⁢
+V
+λ
+3
+)
+From this we can determine the average particle number,
+N
+=
+1
+β
+⁢
+∂
+∂
+⁡
+μ
+⁢
+log
+⁡
+𝒵
+=
+e
+β
+⁢
+μ
+⁢
+V
+λ
+3
+Which, rearranging, gives
+μ
+=
+k
+B
+⁢
+T
+⁢
+log
+⁡
+(
+λ
+3
+⁢
+N
+V
+)
+(2.62)
+If
+λ
+3
+<
+V
+/
+N
+then the chemical potential is negative. Recall that
+λ
+is roughly the average de Broglie wavelength of each particle, while
+V
+/
+N
+is the average volume taken up by each particle. But whenever the de Broglie wavelength of particles becomes comparable to the inter-particle separation, then quantum effects become important. In other words, to trust our classical calculation of the ideal gas, we must have
+λ
+3
+≪
+V
+/
+N
+and, correspondingly,
+μ
+<
+0
+.
+At first sight, it is slightly strange that
+μ
+is negative. When we introduced
+μ
+in Section
+1.4.1
+, we said that it should be thought of as the energy cost of adding an extra particle to the system. Surely that energy should be positive! To see why this isn’t the case, we should look more closely at the definition. From the energy variation (
+1.38
+), we have
+μ
+=
+∂
+⁡
+E
+∂
+⁡
+N
+|
+S
+,
+V
+So the chemical potential should be thought of as the energy cost of adding an extra particle
+at fixed entropy and volume
+. But adding a particle will give more ways to share the energy around and so increase the entropy. If we insist on keeping the entropy fixed, then we will need to reduce the energy when we add an extra particle. This is why we have
+μ
+<
+0
+for the classical ideal gas.
+There are situations where
+μ
+>
+0
+. This can occur if we have a suitably strong repulsive interaction between particles so that there’s a large energy cost associated to throwing in one extra. We also have
+μ
+>
+0
+for fermion systems at low temperatures as we will see in Section
+3.6
+.
+We can also compute the fluctuation in the particle number,
+Δ
+⁢
+N
+2
+=
+1
+β
+2
+⁢
+∂
+2
+∂
+⁡
+μ
+2
+⁢
+log
+⁡
+𝒵
+ideal
+=
+N
+As promised in Section
+1.4.1
+, the relative fluctuations
+Δ
+⁢
+N
+/
+⟨
+N
+⟩
+=
+1
+/
+N
+are vanishingly small in the thermodynamic
+N
+→
+∞
+limit.
+Finally, it is very easy to compute the equation of state in the grand canonical ensemble because (
+1.45
+) and (
+1.48
+) tell us that
+p
+⁢
+V
+=
+k
+B
+⁢
+T
+⁢
+log
+⁡
+𝒵
+=
+k
+B
+⁢
+T
+⁢
+e
+β
+⁢
+μ
+⁢
+V
+λ
+3
+=
+k
+B
+⁢
+T
+⁢
+N
+(2.63)
+which gives us back the ideal gas law.
+2.3
+Maxwell Distribution
+Figure 10:
+Maxwell distribution for Noble gases:
+H
+⁢
+e
+,
+N
+⁢
+e
+,
+A
+⁢
+r
+and
+X
+⁢
+e
+.
+Our discussion above focusses on understanding macroscopic properties of the gas such as pressure or heat capacity. But we can also use the methods of statistical mechanics to get a better handle on the microscopic properties of the gas. Like everything else, the information is hidden in the partition function. Let’s return to the form of the single particle partition function (
+2.52
+) before we do the integrals. We’ll still do the trivial spatial integral
+∫
+d
+3
+⁢
+q
+=
+V
+, but we’ll hold off on the momentum integral and instead change variables from momentum to velocity,
+p
+→
+=
+m
+⁢
+v
+→
+. Then the single particle partition function is
+Z
+1
+=
+m
+3
+⁢
+V
+(
+2
+⁢
+π
+⁢
+ℏ
+)
+3
+⁢
+∫
+d
+3
+⁢
+v
+⁢
+e
+-
+β
+⁢
+m
+⁢
+v
+→
+2
+/
+2
+=
+4
+⁢
+π
+⁢
+m
+3
+⁢
+V
+(
+2
+⁢
+π
+⁢
+ℏ
+)
+3
+⁢
+∫
+𝑑
+v
+⁢
+v
+2
+⁢
+e
+-
+β
+⁢
+m
+⁢
+v
+2
+/
+2
+We can compare this to the original definition of the partition function: the sum over states of the probability of that state. But here too, the partition function is written as a sum, now over speeds. The integrand must therefore have the interpretation as the probability distribution over speeds. The probability that the atom has speed between
+v
+and
+v
++
+d
+⁢
+v
+is
+f
+⁢
+(
+v
+)
+⁢
+d
+⁢
+v
+=
+𝒩
+⁢
+v
+2
+⁢
+e
+-
+m
+⁢
+v
+2
+/
+2
+⁢
+k
+B
+⁢
+T
+⁢
+d
+⁢
+v
+(2.64)
+where the normalization factor
+𝒩
+can be determined by insisting that probabilities sum to one,
+∫
+0
+∞
+f
+⁢
+(
+v
+)
+⁢
+𝑑
+v
+=
+1
+, which gives
+𝒩
+=
+4
+⁢
+π
+⁢
+(
+m
+2
+⁢
+π
+⁢
+k
+B
+⁢
+T
+)
+3
+/
+2
+This is the
+Maxwell distribution
+. It is sometimes called the Maxwell-Boltzmann distribution. Figure
+10
+shows this distribution for a variety of gases with different masses at the same temperature, from the slow heavy Xenon (purple) to light, fast Helium (blue). We can use it to determine various average properties of the speeds of atoms in a gas. For example, the mean square speed is
+⟨
+v
+2
+⟩
+=
+∫
+0
+∞
+𝑑
+v
+⁢
+v
+2
+⁢
+f
+⁢
+(
+v
+)
+=
+3
+⁢
+k
+B
+⁢
+T
+m
+This is in agreement with the equipartition of energy: the average kinetic energy of the gas is
+E
+=
+1
+2
+⁢
+m
+⁢
+⟨
+v
+2
+⟩
+=
+3
+2
+⁢
+k
+B
+⁢
+T
+.
+Maxwell’s Argument
+The above derivation tells us the distribution of velocities in a non-interacting gas of particles. Remarkably, the Maxwell distribution also holds in the presence of any interactions. In fact, Maxwell’s original derivation of the distribution makes no reference to any properties of the gas. It is very slick!
+Let’s first think about the distribution of velocities in the
+x
+direction; we’ll call this distribution
+ϕ
+⁢
+(
+v
+x
+)
+. Rotational symmetry means that we must have the same distribution of velocities in both the
+y
+and
+z
+directions. However, rotational invariance also requires that the full distribution can’t depend on the direction of the velocity; it can only depend on the speed
+v
+=
+v
+x
+2
++
+v
+y
+2
++
+v
+z
+2
+. This means that we need to find functions
+F
+⁢
+(
+v
+)
+and
+ϕ
+⁢
+(
+v
+x
+)
+such that
+F
+⁢
+(
+v
+)
+⁢
+d
+⁢
+v
+x
+⁢
+d
+⁢
+v
+y
+⁢
+d
+⁢
+v
+z
+=
+ϕ
+⁢
+(
+v
+x
+)
+⁢
+ϕ
+⁢
+(
+v
+y
+)
+⁢
+ϕ
+⁢
+(
+v
+z
+)
+⁢
+d
+⁢
+v
+x
+⁢
+d
+⁢
+v
+y
+⁢
+d
+⁢
+v
+z
+It doesn’t look as if we possibly have enough information to solve this equation for both
+F
+and
+ϕ
+. But, remarkably, there is only one solution. The only function which satisfies this equation is
+ϕ
+⁢
+(
+v
+x
+)
+=
+A
+⁢
+e
+-
+B
+⁢
+v
+x
+2
+for some constants
+A
+and
+B
+. Thus the distribution over speeds must be
+F
+⁢
+(
+v
+)
+⁢
+d
+⁢
+v
+x
+⁢
+d
+⁢
+v
+y
+⁢
+d
+⁢
+v
+z
+=
+4
+⁢
+π
+⁢
+v
+2
+⁢
+F
+⁢
+(
+v
+)
+⁢
+d
+⁢
+v
+=
+4
+⁢
+π
+⁢
+A
+3
+⁢
+v
+2
+⁢
+e
+-
+B
+⁢
+v
+2
+⁢
+d
+⁢
+v
+We see that the functional form of the distribution arises from rotational invariance alone. To
+determine the coefficient
+B
+=
+m
+/
+2
+⁢
+k
+B
+⁢
+T
+we need the more elaborate techniques of statistical mechanics
+that we saw above. (In fact, one can derive it just from equipartition of energy).
+2.3.1
+A History of Kinetic Theory
+The name
+kinetic theory
+refers to the understanding the properties of gases through their underlying atomic constituents. The discussion given above barely scratches the surface of this important subject.
+Kinetic theory traces its origin to the work of Daniel Bernoulli in 1738. He was the first to argue that the phenomenon that we call pressure is due to the constant bombardment of tiny atoms. His calculation is straightforward. Consider a cubic box with sides of length
+L
+. Suppose that an atom travelling with momentum
+v
+x
+in the
+x
+direction bounces elastically off a wall so that it returns with velocity
+-
+v
+x
+. The particle experiences a
+change in momentum is
+Δ
+⁢
+p
+x
+=
+2
+⁢
+m
+⁢
+v
+x
+. Since the particle is trapped in a box, it will next hit the wall at a time
+Δ
+⁢
+t
+=
+2
+⁢
+L
+/
+v
+x
+later. This means that the force on the wall due to this atom is
+F
+=
+Δ
+⁢
+p
+x
+Δ
+⁢
+t
+=
+m
+⁢
+v
+x
+2
+L
+Summing over all the atoms which hit the wall, the force is
+F
+=
+N
+⁢
+m
+⁢
+⟨
+v
+x
+2
+⟩
+L
+where
+⟨
+v
+x
+2
+⟩
+is the average velocity in the
+x
+-direction. Using the same argument as we gave in Maxwell’s derivation above, we must have
+⟨
+v
+x
+2
+⟩
+=
+⟨
+v
+2
+⟩
+/
+3
+. Thus
+F
+=
+N
+⁢
+m
+⁢
+⟨
+v
+⟩
+2
+/
+3
+⁢
+L
+and the pressure, which is force per area, is given be
+p
+=
+N
+⁢
+m
+⁢
+⟨
+v
+2
+⟩
+3
+⁢
+L
+3
+=
+N
+⁢
+m
+⁢
+⟨
+v
+2
+⟩
+3
+⁢
+V
+If this equation is compared to the ideal gas law (which, at the time, had only experimental basis) one concludes that the phenomenon of temperature must arise from the kinetic energy of the gas. Or, more precisely, one finds the equipartition result that we derived previously:
+1
+2
+⁢
+m
+⁢
+⟨
+v
+2
+⟩
+=
+3
+2
+⁢
+k
+B
+⁢
+T
+.
+After Bernoulli’s pioneering work, kinetic theory languished. No one really knew what to do with his observation nor how to test the underlying atomic hypothesis. Over the next century, Bernouilli’s result was independently rediscovered by a number of people, all of whom were ignored by the scientific community. One of the more interesting attempts was by John Waterson, a Scottish engineer and naval instructor working for the East India Company in Bombay. Waterson was considered a crackpot. His 1843 paper was rejected by the Royal Society as “nothing but nonsense” and he wrote up his results in a self-published book with the wonderfully crackpot title “Thoughts on Mental Functions”.
+The results of Bernouilli and Waterson finally became accepted only after they were re-rediscovered by more established scientists, most notably Rudolph Clausius who, in 1857, extended these ideas to rotating and vibrating molecules. Soon afterwards, in 1859, Maxwell gave the derivation of the distribution of velocities that we saw above. This is often cited as the first statistical law of physics. But Maxwell was able to take things further. He used kinetic theory to derive the first genuinely new prediction of the atomic hypothesis: that the viscosity of a gas is independent of its density. Maxwell himself wrote,
+”Such a consequence of the mathematical theory is very startling and the only experiment I have met with on the subject does not seem to confirm it.”
+Maxwell decided to rectify the situation. With help from his wife, he spent several years constructing an experimental apparatus in his attic which was capable of providing the first accurate measurements of viscosity of gases
+6
+6
+6
+You can see the original apparatus down the road in the corridor of the Cavendish lab. Or, if you don’t fancy the walk, you can simply click here:
+http://www-outreach.phy.cam.ac.uk/camphy/museum/area1/exhibit1.htm
+. His surprising theoretical prediction was confirmed by his own experiment.
+There are many further developments in kinetic theory which we will not cover in this course. Perhaps the most important is the Boltzmann equation. This describes the evolution of a particle’s probability distribution in position and momentum space as it collides with other particles. Stationary, unchanging, solutions bring you back to the Maxwell-Boltzmann distribution, but the equation also provides a framework to go beyond the equilibrium description of a gas. You can read about this in the lecture notes on Kinetic Theory.
+2.4
+Diatomic Gas
+“I must now say something about these internal motions, because the greatest difficulty which the kinetic theory of gases has yet encountered belongs to this part of the subject”.
+James Clerk Maxwell
+, 1875
+Consider a molecule that consists of two atoms in a bound state. We’ll construct a very simple physicist’s model of this molecule: two masses attached to a spring. As well as the translational degrees of freedom, there are two further ways in which the molecule can move
+•
+Rotation: the molecule can rotate rigidly about the two axes perpendicular to the axis of symmetry, with moment of inertia
+I
+. (For now, we will neglect the rotation about the axis of symmetry. It has very low moment of inertia which will ultimately mean that it is unimportant).
+•
+Vibration: the molecule can oscillate along the axis of symmetry
+We’ll work under the assumption that the rotation and vibration modes are independent. In this case, the partition function for a single molecule factorises into the product of the translation partition function
+Z
+trans
+that we have already calculated (
+2.53
+) and the rotational and vibrational contributions,
+Z
+1
+=
+Z
+trans
+⁢
+Z
+rot
+⁢
+Z
+vib
+We will now deal with
+Z
+rot
+and
+Z
+vib
+in turn.
+Rotation
+The Lagrangian for the rotational degrees of freedom is
+7
+7
+7
+See, for example, Section 3.6 of the lecture notes on Classical Dynamics
+L
+rot
+=
+1
+2
+⁢
+I
+⁢
+(
+θ
+˙
+2
++
+sin
+2
+⁡
+θ
+⁢
+ϕ
+˙
+2
+)
+(2.65)
+The conjugate momenta are therefore
+p
+θ
+=
+∂
+⁡
+L
+rot
+∂
+⁡
+θ
+˙
+=
+I
+θ
+˙
+,
+p
+ϕ
+=
+∂
+⁡
+L
+rot
+∂
+⁡
+ϕ
+˙
+=
+I
+sin
+2
+θ
+ϕ
+˙
+from which we get the Hamiltonian for the rotating diatomic molecule,
+H
+rot
+=
+θ
+˙
+⁢
+p
+θ
++
+ϕ
+˙
+⁢
+p
+ϕ
+-
+L
+=
+p
+θ
+2
+2
+⁢
+I
++
+p
+ϕ
+2
+2
+⁢
+I
+⁢
+sin
+2
+⁡
+θ
+(2.66)
+The rotational contribution to the partition function is then
+Z
+rot
+=
+1
+(
+2
+⁢
+π
+⁢
+ℏ
+)
+2
+⁢
+∫
+𝑑
+θ
+⁢
+𝑑
+ϕ
+⁢
+𝑑
+p
+θ
+⁢
+𝑑
+p
+ϕ
+⁢
+e
+-
+β
+⁢
+H
+rot
+(2.67)
+=
+1
+(
+2
+⁢
+π
+⁢
+ℏ
+)
+2
+⁢
+2
+⁢
+π
+⁢
+I
+β
+⁢
+∫
+0
+π
+𝑑
+θ
+⁢
+2
+⁢
+π
+⁢
+I
+⁢
+sin
+2
+⁡
+θ
+β
+⁢
+∫
+0
+2
+⁢
+π
+𝑑
+ϕ
+=
+2
+⁢
+I
+⁢
+k
+B
+⁢
+T
+ℏ
+2
+From this we can compute the average rotational energy of each molecule,
+E
+rot
+=
+k
+B
+⁢
+T
+If we now include the translational contribution (
+2.53
+), the partition function for a
+diatomic molecule that can spin and move, but can’t vibrate, is given by
+Z
+1
+=
+Z
+trans
+⁢
+Z
+rot
+∼
+(
+k
+B
+⁢
+T
+)
+5
+/
+2
+, and the partition function for a gas of these object
+Z
+=
+Z
+1
+N
+/
+N
+!
+, from which we compute the energy
+E
+=
+5
+2
+⁢
+N
+⁢
+k
+B
+⁢
+T
+and the heat capacity,
+C
+V
+=
+5
+2
+⁢
+k
+B
+⁢
+N
+In fact we can derive this result simply from equipartition of energy: there are 3 translational
+modes and 2 rotational modes, giving a contribution of
+5
+⁢
+N
+×
+1
+2
+⁢
+k
+B
+⁢
+T
+to the energy.
+Vibrations
+The Hamiltonian for the vibrating mode is simply a harmonic oscillator. We’ll denote the displacement away from the equilibrium position by
+ζ
+. The molecule vibrates with some frequency
+ω
+which is determined by the strength of the atomic bond. The Hamiltonian is then
+H
+vib
+=
+p
+ζ
+2
+2
+⁢
+m
++
+1
+2
+⁢
+m
+⁢
+ω
+2
+⁢
+ζ
+2
+from which we can compute the partition function
+Z
+vib
+=
+1
+2
+⁢
+π
+⁢
+ℏ
+⁢
+∫
+𝑑
+ζ
+⁢
+𝑑
+p
+ζ
+⁢
+e
+-
+β
+⁢
+H
+vib
+=
+k
+B
+⁢
+T
+ℏ
+⁢
+ω
+(2.68)
+The average vibrational energy of each molecule is now
+E
+vib
+=
+k
+B
+⁢
+T
+(You may have anticipated
+1
+2
+⁢
+k
+B
+⁢
+T
+since the harmonic oscillator has just a single degree of freedom,
+but equipartition works slightly differently when there is a potential energy. You will see another example on the problem sheet from which it is simple to deduce the general form).
+Figure 11:
+The heat capacity of Hydrogen gas
+H
+2
+. The graph was created by P. Eyland.
+Putting together all the ingredients, the contributions from translational motion, rotation and vibration give the heat capacity
+C
+V
+=
+7
+2
+⁢
+N
+⁢
+k
+B
+This result depends on neither the moment of inertia,
+I
+, nor the stiffness of the molecular bond,
+ω
+. A molecule with large
+I
+will simply spin more slowly so that the average rotational kinetic energy is
+k
+B
+⁢
+T
+; a molecule attached by a stiff spring with high
+ω
+will vibrate with smaller amplitude
+so that the average vibrational energy is
+k
+B
+⁢
+T
+. This ensures that the heat capacity is constant.
+Great! So the heat capacity of a diatomic gas is
+7
+2
+⁢
+N
+⁢
+k
+B
+. Except it’s not! An idealised graph of the heat capacity for
+H
+2
+, the simplest diatomic gas, is shown in Figure
+11
+. At suitably high temperatures, around
+5000
+⁢
+K
+, we do see the full heat capacity that we expect. But at low temperatures, the heat capacity is that of monatomic gas. And, in the middle, it seems to rotate, but not vibrate. What’s going on? Towards the end of the nineteenth century, scientists were increasingly bewildered about this behaviour.
+What’s missing in the discussion above is something
+very
+important:
+ℏ
+. The successive
+freezing out of vibrational and rotational modes as the temperature is lowered is a quantum effect.
+In fact, this behaviour of the heat capacities of gases was the first time that
+quantum mechanics revealed itself in experiment. We’re used to thinking of quantum mechanics as
+being relevant on small scales, yet here we see that affects the physics of gases at temperatures
+of
+2000
+⁢
+K
+. But then, that is the theme of this course: how the microscopic determines the
+macroscopic.
+We will return to the diatomic gas in Section
+3.4
+and understand its heat capacity
+including the relevant quantum effects.
+2.5
+Interacting Gas
+Until now, we’ve only discussed free systems; particles moving around unaware of each other. Now we’re going to turn on interactions. Here things get much more interesting. And much more difficult. Many of the most important unsolved problems in physics are to do with the interactions between large number of particles. Here we’ll be gentle. We’ll describe a simple approximation scheme that will allow us to begin to understand the effects of interactions between particles.
+We’ll focus once more on the monatomic gas. The ideal gas law is exact in the limit of no interactions between atoms. This is a good approximation when the density of atoms
+N
+/
+V
+is small. Corrections to the ideal gas law are often expressed in terms of a density expansion, known as the
+virial expansion
+. The most general equation of state is,
+p
+k
+B
+⁢
+T
+=
+N
+V
++
+B
+2
+⁢
+(
+T
+)
+⁢
+N
+2
+V
+2
++
+B
+3
+⁢
+(
+T
+)
+⁢
+N
+3
+V
+3
++
+…
+(2.69)
+where the functions
+B
+j
+⁢
+(
+T
+)
+are known as virial coefficients.
+Our goal is to compute the virial coefficients from first principles, starting from a knowledge of the
+underlying potential energy
+U
+⁢
+(
+r
+)
+between two neutral atoms separated by a distance
+r
+. This potential has two important features:
+•
+An attractive
+1
+/
+r
+6
+force. This arises from fluctuating dipoles of the neutral atoms. Recall that two
+permanent dipole moments,
+p
+1
+and
+p
+2
+, have a potential energy which scales as
+p
+1
+⁢
+p
+2
+/
+r
+3
+. Neutral
+atoms don’t have permanent dipoles, but they can acquire a temporary dipole due to quantum fluctuations.
+Suppose that the first atom has an instantaneous dipole
+p
+1
+. This will induce an electric field which
+is proportional to
+E
+∼
+p
+1
+/
+r
+3
+which, in turn, will induce a dipole of the second atom
+p
+2
+∼
+E
+∼
+p
+1
+/
+r
+3
+. The resulting potential energy between the atoms scales as
+p
+1
+⁢
+p
+2
+/
+r
+3
+∼
+1
+/
+r
+6
+. This
+is sometimes called the
+van der Waals
+interaction.
+•
+A rapidly rising repulsive interaction at short distances, arising from the Pauli exclusion principle that prevents two atoms from occupying the same space. For our purposes, the exact form of this repulsion is not so relevant: just as long as it’s big. (The Pauli exclusion principle is a quantum effect. If the exact form of the potential is important then we really need to be dealing with quantum mechanics all along. We will do this in the next section).
+One very common potential that is often used to model the force between atoms is the
+Lennard-Jones potential
+,
+U
+⁢
+(
+r
+)
+∼
+(
+r
+0
+r
+)
+12
+-
+(
+r
+0
+r
+)
+6
+(2.70)
+The exponent
+12
+is chosen only for convenience: it simplifies certain calculations because
+12
+=
+2
+×
+6
+.
+An even simpler form of the potential incorporates a
+hard core repulsion
+, in which
+Figure 12:
+the particles are simply forbidden from closer than a fixed distance by imposing an infinite potential,
+U
+⁢
+(
+r
+)
+=
+{
+∞
+r
+<
+r
+0
+-
+U
+0
+⁢
+(
+r
+0
+r
+)
+6
+r
+≥
+r
+0
+(2.71)
+The hard-core potential with van der Waals attraction is sketched to the right. We will see shortly
+that the virial coefficients are determined by increasingly difficult integrals involving
+the potential
+U
+⁢
+(
+r
+)
+. For this reason, it’s best to work with a potential that’s as simple as possible.
+When we come to do some actual calculations we will use the form (
+2.71
+).
+2.5.1
+The Mayer f Function and the Second Virial Coefficient
+We’re going to change notation and call the positions of the particles
+r
+→
+instead of
+q
+→
+. (The latter notation was useful to stress the connection to quantum mechanics at the beginning of this Section, but we’ve now left that behind!). The Hamiltonian of the gas is
+H
+=
+∑
+i
+=
+1
+N
+p
+i
+2
+2
+⁢
+m
++
+∑
+i
+>
+j
+U
+⁢
+(
+r
+i
+⁢
+j
+)
+where
+r
+i
+⁢
+j
+=
+|
+r
+→
+i
+-
+r
+→
+j
+|
+is the separation between particles. The restriction
+i
+>
+j
+on the final sum ensures that we sum over each pair of particles exactly once. The partition function is then
+Z
+⁢
+(
+N
+,
+V
+,
+T
+)
+=
+1
+N
+!
+⁢
+1
+(
+2
+⁢
+π
+⁢
+ℏ
+)
+3
+⁢
+N
+⁢
+∫
+∏
+i
+=
+1
+N
+d
+3
+⁢
+p
+i
+⁢
+d
+3
+⁢
+r
+i
+⁢
+e
+-
+β
+⁢
+H
+=
+1
+N
+!
+⁢
+1
+(
+2
+⁢
+π
+⁢
+ℏ
+)
+3
+⁢
+N
+⁢
+[
+∫
+∏
+i
+d
+3
+⁢
+p
+i
+⁢
+e
+-
+β
+⁢
+∑
+j
+p
+j
+2
+/
+2
+⁢
+m
+]
+×
+[
+∫
+∏
+i
+d
+3
+⁢
+r
+i
+⁢
+e
+-
+β
+⁢
+∑
+j
+<
+k
+U
+⁢
+(
+r
+j
+⁢
+k
+)
+]
+=
+1
+N
+!
+⁢
+λ
+3
+⁢
+N
+⁢
+∫
+∏
+i
+d
+3
+⁢
+r
+i
+⁢
+e
+-
+β
+⁢
+∑
+j
+<
+k
+U
+⁢
+(
+r
+j
+⁢
+k
+)
+where
+λ
+is the thermal wavelength that we met in (
+2.54
+). We still need to do the integral over positions. And that looks hard! The interactions mean that the integrals don’t factor in any obvious way. What to do? One obvious way thing to try is to Taylor expand (which is closely related to the so-called
+cumulant expansion
+in this context)
+e
+-
+β
+⁢
+∑
+j
+<
+k
+U
+⁢
+(
+r
+j
+⁢
+k
+)
+=
+1
+-
+β
+⁢
+∑
+j
+<
+k
+U
+⁢
+(
+r
+j
+⁢
+k
+)
++
+β
+2
+2
+⁢
+∑
+j
+<
+k
+,
+l
+<
+m
+U
+⁢
+(
+r
+j
+⁢
+k
+)
+⁢
+U
+⁢
+(
+r
+l
+⁢
+m
+)
++
+…
+Unfortunately, this isn’t so useful. We want each term to be smaller than the preceding one. But as
+r
+i
+⁢
+j
+→
+0
+, the potential
+U
+⁢
+(
+r
+i
+⁢
+j
+)
+→
+∞
+, which doesn’t look promising for an expansion parameter.
+Instead of proceeding with the naive Taylor expansion, we will instead choose to work with the following quantity, usually called the
+Mayer f function
+,
+f
+⁢
+(
+r
+)
+=
+e
+-
+β
+⁢
+U
+⁢
+(
+r
+)
+-
+1
+(2.72)
+This is a nicer expansion parameter. When the particles are far separated at
+r
+→
+∞
+,
+f
+⁢
+(
+r
+)
+→
+0
+. However, as the particles come close and
+r
+→
+0
+, the Mayer function approaches
+f
+⁢
+(
+r
+)
+→
+-
+1
+. We’ll proceed by trying to construct a suitable expansion in terms of
+f
+. We define
+f
+i
+⁢
+j
+=
+f
+⁢
+(
+r
+i
+⁢
+j
+)
+Then we can write the partition function as
+Z
+⁢
+(
+N
+,
+V
+,
+T
+)
+=
+1
+N
+!
+⁢
+λ
+3
+⁢
+N
+⁢
+∫
+∏
+i
+d
+3
+⁢
+r
+i
+⁢
+∏
+j
+>
+k
+(
+1
++
+f
+j
+⁢
+k
+)
+(2.73)
+=
+1
+N
+!
+⁢
+λ
+3
+⁢
+N
+⁢
+∫
+∏
+i
+d
+3
+⁢
+r
+i
+⁢
+(
+1
++
+∑
+j
+>
+k
+f
+j
+⁢
+k
++
+∑
+j
+>
+k
+,
+l
+>
+m
+f
+j
+⁢
+k
+⁢
+f
+l
+⁢
+m
++
+…
+)
+The first term simply gives a factor of the volume
+V
+for each integral, so we get
+V
+N
+. The second term has a sum, each element of which is the same. They all look like
+∫
+∏
+i
+=
+1
+N
+d
+3
+⁢
+r
+i
+⁢
+f
+12
+=
+V
+N
+-
+2
+⁢
+∫
+d
+3
+⁢
+r
+1
+⁢
+d
+3
+⁢
+r
+2
+⁢
+f
+⁢
+(
+r
+12
+)
+=
+V
+N
+-
+1
+⁢
+∫
+d
+3
+⁢
+r
+⁢
+f
+⁢
+(
+r
+)
+where, in the last equality, we’ve simply changed integration variables from
+r
+→
+1
+and
+r
+→
+2
+to the centre of mass
+R
+→
+=
+1
+2
+⁢
+(
+r
+→
+1
++
+r
+→
+2
+)
+and the separation
+r
+→
+=
+r
+→
+1
+-
+r
+→
+2
+. (You might worry that the limits of integration change in the integral over
+r
+→
+, but the integral over
+f
+⁢
+(
+r
+)
+only picks up contributions from atomic size distances and this is only actually a problem close to the boundaries of the system where it is negligible).
+There is a term like this for each pair of particles – that is
+1
+2
+⁢
+N
+⁢
+(
+N
+-
+1
+)
+such terms. For
+N
+∼
+10
+23
+, we can just call this a round
+1
+2
+⁢
+N
+2
+. Then, ignoring terms quadratic in
+f
+and higher, the partition function is approximately
+Z
+⁢
+(
+N
+,
+V
+,
+T
+)
+=
+V
+N
+N
+!
+⁢
+λ
+3
+⁢
+N
+⁢
+(
+1
++
+N
+2
+2
+⁢
+V
+⁢
+∫
+d
+3
+⁢
+r
+⁢
+f
+⁢
+(
+r
+)
++
+…
+)
+=
+Z
+ideal
+⁢
+(
+1
++
+N
+2
+⁢
+V
+⁢
+∫
+d
+3
+⁢
+r
+⁢
+f
+⁢
+(
+r
+)
++
+…
+)
+N
+where we’ve used our previous result that
+Z
+ideal
+=
+V
+N
+/
+N
+!
+⁢
+λ
+3
+⁢
+N
+. We’ve also engaged in
+something of a sleight of hand in this last line, promoting one power of
+N
+from in front of the integral
+to an overall exponent. Massaging the expression in this way ensures that the free energy is
+proportional to the number of particles as one would expect:
+F
+=
+-
+k
+B
+⁢
+T
+⁢
+log
+⁡
+Z
+=
+F
+ideal
+-
+N
+⁢
+k
+B
+⁢
+T
+⁢
+log
+⁡
+(
+1
++
+N
+2
+⁢
+V
+⁢
+∫
+d
+3
+⁢
+r
+⁢
+f
+⁢
+(
+r
+)
+)
+(2.74)
+However, if you’re uncomfortable with this little trick, it’s not hard to convince yourself that the result
+(
+2.75
+) below for the equation of state doesn’t depend on it. We will also look at the expansion more
+closely in the following section and see how all the higher order terms work out.
+From the expression (
+2.74
+) for the free energy, it is clear that we are indeed performing an expansion in density of the gas since the correction term is proportional to
+N
+/
+V
+. This form of the free energy will give us the second virial coefficient
+B
+2
+⁢
+(
+T
+)
+.
+We can be somewhat more precise about what it means to be at low density.
+The exact form of the integral
+∫
+d
+3
+⁢
+r
+⁢
+f
+⁢
+(
+r
+)
+depends on the potential, but for both the Lennard-Jones potential (
+2.70
+) and the hard-core repulsion (
+2.71
+), the integral is approximately
+∫
+d
+3
+⁢
+r
+⁢
+f
+⁢
+(
+r
+)
+∼
+r
+0
+3
+, where
+r
+0
+is roughly the minimum of the potential. (We’ll compute the integral exactly below for the hard-core potential). For the expansion to be valid, we want each term with an extra power of
+f
+to be smaller than the preceding one. (This statement is actually only approximately true. We’ll be more precise below when we develop the cluster expansion). That means that the second term in the argument of the
+log
+should be smaller than 1. In other words,
+N
+V
+≪
+1
+r
+0
+3
+The left-hand side is the density of the gas. The right-hand side is atomic density. Or, equivalently, the density of a substance in which the atoms are packed closely together. But we have a name for such substances – we call them liquids! Our expansion is valid for densities of the gas that are much lower than that of the liquid state.
+2.5.2
+van der Waals Equation of State
+We can use the free energy (
+2.74
+) to compute the pressure of the gas. Expanding the logarithm as
+log
+⁡
+(
+1
++
+x
+)
+≈
+x
+we get
+p
+=
+-
+∂
+⁡
+F
+∂
+⁡
+V
+=
+N
+⁢
+k
+B
+⁢
+T
+V
+⁢
+(
+1
+-
+N
+2
+⁢
+V
+⁢
+∫
+d
+3
+⁢
+r
+⁢
+f
+⁢
+(
+r
+)
++
+…
+)
+As expected, the pressure deviates from that of an ideal gas. We can characterize this by writing
+p
+⁢
+V
+N
+⁢
+k
+B
+⁢
+T
+=
+1
+-
+N
+2
+⁢
+V
+⁢
+∫
+d
+3
+⁢
+r
+⁢
+f
+⁢
+(
+r
+)
+(2.75)
+To understand what this is telling us, we need to compute
+∫
+d
+3
+⁢
+r
+⁢
+f
+⁢
+(
+r
+)
+. Firstly let’s look at two trivial examples:
+Repulsion:
+Suppose that
+U
+⁢
+(
+r
+)
+>
+0
+for all separations
+r
+with
+U
+(
+r
+=
+∞
+)
+=
+0
+. Then
+f
+=
+e
+-
+β
+⁢
+U
+-
+1
+<
+0
+and the pressure increases, as we’d expect for a repulsive interaction.
+Attraction:
+If
+U
+⁢
+(
+r
+)
+<
+0
+, we have
+f
+>
+0
+and the pressure decreases, as we’d expect for an attractive interaction.
+What about a more realistic interaction that is attractive at long distances and repulsive at short? We will compute the equation of state of a gas using the hard-core potential with van der Waals attraction (
+2.71
+). The integral of the Mayer
+f
+function is
+∫
+d
+3
+⁢
+r
+⁢
+f
+⁢
+(
+r
+)
+=
+∫
+0
+r
+0
+d
+3
+⁢
+r
+⁢
+(
+-
+1
+)
++
+∫
+r
+0
+∞
+d
+3
+⁢
+r
+⁢
+(
+e
++
+β
+⁢
+U
+0
+⁢
+(
+r
+0
+/
+r
+)
+6
+-
+1
+)
+(2.76)
+We’ll approximate the second integral in the high temperature limit,
+β
+⁢
+U
+0
+≪
+1
+, where
+e
++
+β
+⁢
+U
+0
+⁢
+(
+r
+0
+/
+r
+)
+6
+≈
+1
++
+β
+⁢
+U
+0
+⁢
+(
+r
+0
+/
+r
+)
+6
+. Then
+∫
+d
+3
+⁢
+r
+⁢
+f
+⁢
+(
+r
+)
+=
+-
+4
+⁢
+π
+⁢
+∫
+0
+r
+0
+𝑑
+r
+⁢
+r
+2
++
+4
+⁢
+π
+⁢
+U
+0
+k
+B
+⁢
+T
+⁢
+∫
+r
+0
+∞
+𝑑
+r
+⁢
+r
+0
+6
+r
+4
+=
+4
+⁢
+π
+⁢
+r
+0
+3
+3
+⁢
+(
+U
+0
+k
+B
+⁢
+T
+-
+1
+)
+Inserting this into (
+2.75
+) gives us an expression for the equation of state,
+p
+⁢
+V
+N
+⁢
+k
+B
+⁢
+T
+=
+1
+-
+N
+V
+⁢
+(
+a
+k
+B
+⁢
+T
+-
+b
+)
+We recognise this expansion as capturing the second virial coefficient in (
+2.69
+) as promised. The constants
+a
+and
+b
+are defined by
+a
+=
+2
+⁢
+π
+⁢
+r
+0
+3
+⁢
+U
+0
+3
+,
+b
+=
+2
+⁢
+π
+⁢
+r
+0
+3
+3
+It is actually slightly more useful to write this in the form
+k
+B
+⁢
+T
+=
+…
+. We can multiply through by
+k
+B
+⁢
+T
+then, rearranging we have
+k
+B
+⁢
+T
+=
+V
+N
+⁢
+(
+p
++
+N
+2
+V
+2
+⁢
+a
+)
+⁢
+(
+1
++
+N
+V
+⁢
+b
+)
+-
+1
+Since we’re working in an expansion in density,
+N
+/
+V
+, we’re at liberty to Taylor expand the last bracket, keeping only the first two terms. We get
+k
+B
+⁢
+T
+=
+(
+p
++
+N
+2
+V
+2
+⁢
+a
+)
+⁢
+(
+V
+N
+-
+b
+)
+(2.78)
+This is the famous
+van der Waals equation of state
+for a gas. We stress again the limitations of our analysis: it is valid only at low densities and (because of our approximation when performing the integral (
+2.76
+)) at high temperatures.
+We will return to the van der Waals equation in Section
+5
+where we’ll explore many of its interesting features. For now, we can get a feeling for the physics behind this equation of state by rewriting it in yet another way,
+p
+=
+N
+⁢
+k
+B
+⁢
+T
+V
+-
+b
+⁢
+N
+-
+a
+⁢
+N
+2
+V
+2
+(2.79)
+Figure 13:
+The constant
+a
+contains a factor of
+U
+0
+and so capures the effect of the attractive interaction at large distances. We see that its role is to reduce the pressure of the gas. The reduction in pressure is proportional to the density squared because this is, in turn, proportional to the number of
+pairs
+of particles which feel the attractive force.
+In contrast,
+b
+only contains
+r
+0
+and arises due to the hard-core repulsion in the potential. Its effect is the reduce the effective volume of the gas because of the space taken up by the particles.
+It is worth pointing out where some quizzical factors of two come from in
+b
+=
+2
+⁢
+π
+⁢
+r
+0
+3
+/
+3
+. Recall that
+r
+0
+is the minimum distance that two atoms can approach. If we think of the each atom as a hard sphere, then they have radius
+r
+0
+/
+2
+and volume
+4
+⁢
+π
+⁢
+(
+r
+0
+/
+2
+)
+3
+/
+3
+. Which isn’t equal to
+b
+. However, as illustrated in the figure, the excluded volume around each atom is actually
+Ω
+=
+4
+⁢
+π
+⁢
+r
+0
+3
+/
+3
+=
+2
+⁢
+b
+. So why don’t we have
+Ω
+sitting in the denominator of the van der Waals equation rather than
+b
+=
+Ω
+/
+2
+? Think about adding the atoms one at a time. The first guy can move in volume
+V
+; the second in volume
+V
+-
+Ω
+; the third in volume
+V
+-
+2
+⁢
+Ω
+and so on. For
+Ω
+≪
+V
+, the total configuration space available to the atoms is
+1
+N
+!
+⁢
+∏
+m
+=
+1
+N
+(
+V
+-
+m
+⁢
+Ω
+)
+≈
+V
+N
+N
+!
+⁢
+(
+1
+-
+N
+2
+2
+⁢
+Ω
+V
++
+…
+)
+≈
+1
+N
+!
+⁢
+(
+V
+-
+N
+⁢
+Ω
+2
+)
+N
+And there’s that tricky factor of
+1
+/
+2
+.
+Above we computed the equation of state for the dipole van der Waals interaction with
+hard core potential. But our expression (
+2.75
+) can seemingly be used to compute the equation
+of state for any potential between atoms. However, there are limitations. Looking
+back to the integral (
+2.5.2
+), we see that a long-range force of the form
+1
+/
+r
+n
+will only give rise to a convergent integral for
+n
+≥
+4
+. This means that the techniques
+described above do not work for
+long-range
+potentials with fall-off
+1
+/
+r
+3
+or slower.
+This includes the important case of
+1
+/
+r
+Coulomb interactions.
+2.5.3
+The Cluster Expansion
+Above we computed the leading order correction to the ideal gas law. In terms of the virial expansion (
+2.69
+) this corresponds to the second virial coefficient
+B
+2
+. We will now develop the full expansion and explain how to compute the higher virial coefficients.
+Let’s go back to equation (
+2.73
+) where we first expressed the partition function in terms of
+f
+,
+Z
+⁢
+(
+N
+,
+V
+,
+T
+)
+=
+1
+N
+!
+⁢
+λ
+3
+⁢
+N
+⁢
+∫
+∏
+i
+d
+3
+⁢
+r
+i
+⁢
+∏
+j
+>
+k
+(
+1
++
+f
+j
+⁢
+k
+)
+(2.80)
+=
+1
+N
+!
+⁢
+λ
+3
+⁢
+N
+⁢
+∫
+∏
+i
+d
+3
+⁢
+r
+i
+⁢
+(
+1
++
+∑
+j
+>
+k
+f
+j
+⁢
+k
++
+∑
+j
+>
+k
+,
+l
+>
+m
+f
+j
+⁢
+k
+⁢
+f
+l
+⁢
+m
++
+…
+)
+Above we effectively related the second virial coefficient to the term linear in
+f
+: this is the essence of the equation of state (
+2.75
+). One might think that terms quadratic in
+f
+give rise to the third virial coefficient and so on. But, as we’ll now see, the expansion is somewhat more subtle than that.
+The expansion in (
+2.80
+) includes terms of the form
+f
+i
+⁢
+j
+⁢
+f
+k
+⁢
+l
+⁢
+f
+m
+⁢
+n
+⁢
+…
+where the indices denote pairs of atoms,
+(
+i
+,
+j
+)
+and
+(
+k
+,
+l
+)
+and so on. These pairs may have atoms in common or they may all be different. However, the same pair never appears twice in a given term as you may check by going back to the first line in (
+2.80
+).
+We’ll introduce a diagrammatic method to keep track of all the terms in the sum. To each term of the form
+f
+i
+⁢
+j
+⁢
+f
+k
+⁢
+l
+⁢
+f
+m
+⁢
+n
+⁢
+…
+we associate a picture using the following rules
+•
+Draw
+N
+atoms. (This gets tedious for
+N
+∼
+10
+23
+but, as we’ll soon see, we will actually only need pictures with small subset of atoms).
+•
+Draw a line between each pair of atoms that appear as indices. So for
+f
+i
+⁢
+j
+⁢
+f
+k
+⁢
+l
+⁢
+f
+m
+⁢
+n
+⁢
+…
+, we draw a line between atom
+i
+and atom
+j
+; a line between atom
+k
+and atom
+l
+; and so on.
+For example, if we have just
+N
+=
+4
+, we have the following pictures for different terms in the expansion,
+f
+12
+=
+f
+12
+⁢
+f
+34
+=
+f
+12
+⁢
+f
+23
+=
+f
+21
+⁢
+f
+23
+⁢
+f
+31
+=
+We call these diagrams
+graphs
+. Each possible graph appears exactly once in the partition function (
+2.80
+). In other words, the partition function is a sum over all graphs. We still have to do the integrals over all positions
+r
+→
+i
+. We will denote the integral over graph
+G
+to be
+W
+⁢
+[
+G
+]
+. Then the partition function is
+Z
+⁢
+(
+N
+,
+V
+,
+T
+)
+=
+1
+N
+!
+⁢
+λ
+3
+⁢
+N
+⁢
+∑
+G
+W
+⁢
+[
+G
+]
+Nearly all the graphs that we can draw will have disconnected components. For example, those graphs that correspond to just a single
+f
+i
+⁢
+j
+will have two atoms connected and the remaining
+N
+-
+2
+sitting alone. Those graphs that correspond to
+f
+i
+⁢
+j
+⁢
+f
+k
+⁢
+l
+fall into two categories: either they consist of two pairs of atoms (like the second example above) or, if
+(
+i
+,
+j
+)
+shares an atom with
+(
+k
+,
+l
+)
+, there are three linked atoms (like the third example above). Importantly, the integral over positions
+r
+→
+i
+then factorises into a product of integrals over the positions of atoms in disconnected components. This is illustrated by an example with
+N
+=
+5
+atoms,
+W
+⁢
+[
+]
+=
+(
+∫
+d
+3
+⁢
+r
+1
+⁢
+d
+3
+⁢
+r
+2
+⁢
+d
+3
+⁢
+r
+3
+⁢
+f
+12
+⁢
+f
+23
+⁢
+f
+31
+)
+⁢
+(
+∫
+d
+3
+⁢
+r
+4
+⁢
+d
+3
+⁢
+r
+5
+⁢
+f
+45
+)
+We call the disconnected components of the graph
+clusters
+. If a cluster has
+l
+atoms, we will call it an
+l
+-cluster. The
+N
+=
+5
+example above has a single 3-cluster and a single 2-cluster. In general, a graph
+G
+will split into
+m
+l
+l
+-clusters. Clearly, we must have
+∑
+l
+=
+1
+N
+m
+l
+⁢
+l
+=
+N
+(2.81)
+Of course, for a graph with only a few lines and lots of atoms, nearly all the atoms will be in lonely 1-clusters.
+We can now make good on the promise above that we won’t have to draw all
+N
+∼
+10
+23
+atoms. The key idea is that we can focus on clusters of
+l
+-atoms. We will organise the expansion in such a way that the
+(
+l
++
+1
+)
+-clusters are less important than the
+l
+-clusters. To see how this works, let’s focus on
+3
+-clusters for now. There are four different ways that we can have a
+3
+-cluster,
+Each of these 3-clusters will appear in a graph with any other combination of clusters among the remaining
+N
+-
+3
+atoms. But since clusters factorise in the partition function, we know that
+Z
+must include a factor
+U
+3
+≡
+∫
+d
+3
+⁢
+r
+1
+⁢
+d
+3
+⁢
+r
+2
+⁢
+d
+3
+⁢
+r
+3
+⁢
+(
+)
+U
+3
+contains terms of order
+f
+2
+and
+f
+3
+. It turns out that this is the correct way to arrange the expansion: not in terms of the number of lines in the diagram, which is equal to the power of
+f
+, but instead in terms of the number of atoms that they connect. The partition function will similarly contain factors associated to all other
+l
+-clusters. We define the corresponding integrals as
+U
+l
+≡
+∫
+∏
+i
+=
+1
+l
+d
+3
+⁢
+r
+i
+⁢
+∑
+G
+∈
+{
+l
+-cluster
+}
+G
+(2.82)
+Notice that
+U
+1
+is simply the integral over space, namely
+U
+1
+=
+V
+.
+The full partition function must be a product of
+U
+l
+’s. The tricky part is to get all the combinatoric factors right to make sure that you count each graph exactly once. The sum over graphs
+G
+that appears in the partition function turns out to be
+∑
+G
+W
+⁢
+[
+G
+]
+=
+N
+!
+⁢
+∑
+{
+m
+l
+}
+∏
+l
+U
+l
+m
+l
+(
+l
+!
+)
+m
+l
+⁢
+m
+l
+!
+(2.83)
+The product
+N
+!
+/
+∏
+l
+m
+l
+!
+⁢
+(
+l
+!
+)
+m
+l
+counts the number of ways to split the particles into
+m
+l
+l
+-clusters, while ignoring the different ways to internally connect each cluster. This is the right thing to do since the different internal connections are taken into account in the integral
+U
+l
+.
+Combinatoric arguments are not always transparent. Let’s do a couple of checks to make sure that this is indeed the right answer. Firstly, consider
+N
+=
+4
+atoms split into two 2-clusters (i.e
+m
+2
+=
+2
+). There are three such diagrams,
+f
+12
+⁢
+f
+34
+=
+,
+f
+13
+⁢
+f
+24
+=
+, and
+f
+14
+⁢
+f
+23
+=
+. Each of these gives the same answer when integrated, namely
+U
+2
+2
+so the final result should be
+3
+⁢
+U
+2
+2
+.
+We can check this against the relevant terms in (
+2.83
+) which are
+4
+!
+⁢
+U
+2
+2
+/
+2
+!
+2
+⁢
+2
+!
+=
+3
+⁢
+U
+2
+2
+as expected.
+Another check:
+N
+=
+5
+atoms with
+m
+2
+=
+m
+3
+=
+1
+. All diagrams come in the combinations
+U
+3
+⁢
+U
+2
+=
+∫
+∏
+i
+=
+1
+5
+d
+3
+⁢
+r
+i
+⁢
+(
+)
+together with graphs that are related by permutations. The permutations are fully determined by the choice of the two atoms that sit in the pair: there are 10 such choices. The answer should therefore be
+10
+⁢
+U
+3
+⁢
+U
+2
+. Comparing to (
+2.83
+), we have
+5
+!
+⁢
+U
+3
+⁢
+U
+2
+/
+3
+!
+⁢
+2
+!
+=
+10
+⁢
+U
+3
+⁢
+U
+2
+as required.
+Hopefully you are now convinced that (
+2.83
+) counts the graphs correctly. The end result for the partition function is therefore
+Z
+⁢
+(
+N
+,
+V
+,
+T
+)
+=
+1
+λ
+3
+⁢
+N
+⁢
+∑
+{
+m
+l
+}
+∏
+l
+U
+l
+m
+l
+(
+l
+!
+)
+m
+l
+⁢
+m
+l
+!
+The problem with computing this sum is that we still have to work out the different ways that we can split
+N
+atoms into different clusters. In other words, we still have to obey the constraint (
+2.81
+). Life would be very much easier if we didn’t have to worry about this. Then we could just sum over any
+m
+l
+, regardless. Thankfully, this is exactly what we can do if we work in the grand canonical ensemble where
+N
+is not fixed! The grand canonical ensemble is
+𝒵
+⁢
+(
+μ
+,
+V
+,
+T
+)
+=
+∑
+N
+e
+β
+⁢
+μ
+⁢
+N
+⁢
+Z
+⁢
+(
+N
+,
+V
+,
+T
+)
+We define the
+fugacity
+as
+z
+=
+e
+β
+⁢
+μ
+.
+Then we can write
+𝒵
+⁢
+(
+μ
+,
+V
+,
+T
+)
+=
+∑
+N
+z
+n
+⁢
+Z
+⁢
+(
+N
+,
+V
+,
+T
+)
+=
+∑
+m
+l
+=
+0
+∞
+∏
+l
+=
+1
+∞
+(
+z
+λ
+3
+)
+m
+l
+⁢
+l
+⁢
+1
+m
+l
+!
+⁢
+(
+U
+l
+l
+!
+)
+m
+l
+=
+∏
+l
+=
+1
+∞
+exp
+⁡
+(
+U
+l
+⁢
+z
+l
+λ
+3
+⁢
+l
+⁢
+l
+!
+)
+One usually defines
+b
+l
+=
+λ
+3
+V
+⁢
+U
+l
+l
+!
+⁢
+λ
+3
+⁢
+l
+(2.84)
+Notice in particular that
+U
+1
+=
+V
+so this definition gives
+b
+1
+=
+1
+. Then we can write the grand partition function as
+𝒵
+⁢
+(
+μ
+,
+V
+,
+T
+)
+=
+∏
+l
+=
+1
+∞
+exp
+⁡
+(
+V
+λ
+3
+⁢
+b
+l
+⁢
+z
+l
+)
+=
+exp
+⁡
+(
+V
+λ
+3
+⁢
+∑
+l
+=
+1
+∞
+b
+l
+⁢
+z
+l
+)
+(2.85)
+Something rather cute happened here. The sum over all diagrams got rewritten as the exponential over the sum of all
+connected
+diagrams, meaning all clusters. This is a general lesson which also carries over to quantum field theory where the diagrams in question are Feynman diagrams.
+Back to the main plot of our story, we can now compute the pressure
+p
+⁢
+V
+k
+B
+⁢
+T
+=
+log
+⁡
+𝒵
+=
+V
+λ
+3
+⁢
+∑
+l
+=
+1
+∞
+b
+l
+⁢
+z
+l
+and the number of particles
+N
+V
+=
+z
+V
+⁢
+∂
+∂
+⁡
+z
+⁢
+log
+⁡
+𝒵
+=
+1
+λ
+3
+⁢
+∑
+l
+=
+1
+∞
+l
+⁢
+b
+l
+⁢
+z
+l
+(2.86)
+Dividing the two gives us the equation of state,
+p
+⁢
+V
+N
+⁢
+k
+B
+⁢
+T
+=
+∑
+l
+b
+l
+⁢
+z
+l
+∑
+l
+l
+⁢
+b
+l
+⁢
+z
+l
+(2.87)
+The only downside is that the equation of state is expressed in terms of
+z
+. To massage it into the form of the virial expansion (
+2.69
+), we need to invert (
+2.86
+) to get
+z
+in terms of the particle density
+N
+/
+V
+. Equating (
+2.87
+) with (
+2.69
+) (and defining
+B
+1
+=
+1
+), we have
+∑
+l
+=
+1
+∞
+b
+l
+⁢
+z
+l
+=
+∑
+l
+=
+1
+∞
+B
+l
+⁢
+(
+N
+V
+)
+l
+-
+1
+⁢
+∑
+m
+=
+1
+∞
+m
+⁢
+b
+m
+⁢
+z
+m
+=
+∑
+l
+=
+1
+∞
+B
+l
+λ
+3
+⁢
+(
+l
+-
+1
+)
+⁢
+(
+∑
+n
+=
+1
+∞
+n
+⁢
+b
+n
+⁢
+z
+n
+)
+l
+-
+1
+⁢
+∑
+m
+=
+1
+∞
+m
+⁢
+b
+m
+⁢
+z
+m
+=
+[
+1
++
+B
+2
+λ
+3
+⁢
+(
+z
++
+2
+⁢
+b
+2
+⁢
+z
+2
++
+3
+⁢
+b
+3
+⁢
+z
+3
++
+…
+)
++
+B
+3
+λ
+6
+⁢
+(
+z
++
+2
+⁢
+b
+2
+⁢
+z
+2
++
+3
+⁢
+b
+3
+⁢
+z
+3
++
+…
+)
+2
++
+…
+]
+×
+[
+z
++
+2
+b
+2
+z
+2
++
+3
+b
+3
+z
+3
++
+…
+]
+where we’ve used both
+B
+1
+=
+1
+and
+b
+1
+=
+1
+. Expanding out the left- and right-hand sides to order
+z
+3
+gives
+z
++
+b
+2
+⁢
+z
+2
++
+b
+3
+⁢
+z
+3
++
+…
+=
+z
++
+(
+B
+2
+λ
+3
++
+2
+⁢
+b
+2
+)
+⁢
+z
+2
++
+(
+3
+⁢
+b
+3
++
+4
+⁢
+b
+2
+⁢
+B
+2
+λ
+3
++
+B
+3
+λ
+3
+)
+⁢
+z
+3
++
+…
+Comparing terms, and recollecting the definitions of
+b
+l
+(
+2.84
+) in terms of
+U
+l
+(
+2.82
+) in terms of graphs, we find the second virial coefficient is given by
+B
+2
+=
+-
+λ
+3
+⁢
+b
+2
+=
+-
+U
+2
+2
+⁢
+V
+=
+-
+1
+2
+⁢
+V
+⁢
+∫
+d
+3
+⁢
+r
+1
+⁢
+d
+3
+⁢
+r
+2
+⁢
+f
+⁢
+(
+r
+→
+1
+-
+r
+→
+2
+)
+=
+-
+1
+2
+⁢
+∫
+d
+3
+⁢
+r
+⁢
+f
+⁢
+(
+r
+)
+which reproduces the result (
+2.75
+) that we found earlier using slightly simpler methods. We now also have an expression for the third coefficient,
+B
+3
+=
+λ
+6
+⁢
+(
+4
+⁢
+b
+2
+2
+-
+2
+⁢
+b
+3
+)
+although admittedly we still have a nasty integral to do before we have a concrete result. More importantly, the cluster expansion gives us the technology to perform a systematic perturbation expansion to any order we wish.
+2.6
+Screening and the Debye-Hückel Model of a Plasma
+There are many other applications of the classical statistical methods that we saw in this
+chapter. Here we use them to derive the important phenomenon of
+screening
+. The
+problem we will consider, which sometimes goes by the name of a “one-component plasma”,
+is the following: a gas of electrons, each with charge
+-
+q
+, moves in a fixed background of
+uniform positive charge density
++
+q
+⁢
+ρ
+. The charge density is such that the overall
+system is neutral which means that
+ρ
+is also the average charge density of the electrons.
+This is the Debye-Hückel model.
+In the absence of the background charge density, the interaction between electons is given by
+the Coulomb potential
+U
+⁢
+(
+r
+)
+=
+q
+2
+r
+where we’re using units in which
+4
+⁢
+π
+⁢
+ϵ
+0
+=
+1
+. How does the fixed background charge
+affect the potential between electrons? The clever trick of the Debye-Hückel model
+is to use statistical methods to figure out the answer to this question. Consider
+placing one electron at the origin. Let’s try to work out the electrostatic potential
+ϕ
+⁢
+(
+r
+→
+)
+due to this electron. It is not obvious how to do this because
+ϕ
+will also depend on the positions of all the other electrons. In general we can write,
+∇
+2
+⁡
+ϕ
+⁢
+(
+r
+→
+)
+=
+-
+4
+⁢
+π
+⁢
+(
+-
+q
+⁢
+δ
+⁢
+(
+r
+→
+)
++
+q
+⁢
+ρ
+-
+q
+⁢
+ρ
+⁢
+g
+⁢
+(
+r
+→
+)
+)
+(2.88)
+where the first term on the right-hand side is due to the electron at the origin; the second term is due to the background positive charge density; and the third term is due to the other electrons whose average charge density close to the first electron is
+ρ
+⁢
+g
+⁢
+(
+r
+→
+)
+. The trouble is that we don’t know the function
+g
+. If we were sitting at zero temperature, the electrons would try to move apart as much as possible. But at non-zero temperatures, their thermal energy will allow them
+to approach each other. This is the clue that we need. The energy cost for an electron
+to approach the origin is, of course,
+E
+⁢
+(
+r
+→
+)
+=
+-
+q
+⁢
+ϕ
+⁢
+(
+r
+→
+)
+. We will
+therefore assume that the charge density near the origin is given by the Boltzmann factor,
+g
+⁢
+(
+r
+→
+)
+≈
+e
+β
+⁢
+q
+⁢
+ϕ
+⁢
+(
+r
+→
+)
+For high temperatures,
+β
+⁢
+q
+⁢
+ϕ
+≪
+1
+, we can write
+e
+β
+⁢
+q
+⁢
+ϕ
+≈
+1
++
+β
+⁢
+q
+⁢
+ϕ
+and the Poisson equation (
+2.88
+) becomes
+(
+∇
+2
++
+1
+λ
+D
+2
+)
+⁢
+ϕ
+⁢
+(
+r
+→
+)
+=
+4
+⁢
+π
+⁢
+q
+⁢
+δ
+⁢
+(
+r
+→
+)
+where
+λ
+D
+2
+=
+1
+/
+4
+⁢
+π
+⁢
+β
+⁢
+ρ
+⁢
+q
+2
+. This equation has the solution,
+ϕ
+⁢
+(
+r
+→
+)
+=
+-
+q
+⁢
+e
+-
+r
+/
+λ
+D
+r
+(2.89)
+which immediately translates into an effective potential energy between electrons,
+U
+eff
+⁢
+(
+r
+)
+=
+q
+2
+⁢
+e
+-
+r
+/
+λ
+D
+r
+We now see that the effect of the plasma is to introduce the exponential factor in the numerator, causing the potential to decay very quickly at distances
+r
+>
+λ
+D
+. This effect is called
+screening
+and
+λ
+D
+is known as the
+Debye screening length
+.
+The derivation of (
+2.89
+) is self-consistent if we have a large
+number of electrons within a distance
+λ
+D
+of the origin so that
+we can happily talk about average charge density. This means that we need
+ρ
+⁢
+λ
+D
+3
+≫
+1
+.
+1
+The Fundamentals of Statistical Mechanics
+3
+Quantum Gases
+Generated  on Mon Oct 18 13:32:42 2021 by
+LaTeXML

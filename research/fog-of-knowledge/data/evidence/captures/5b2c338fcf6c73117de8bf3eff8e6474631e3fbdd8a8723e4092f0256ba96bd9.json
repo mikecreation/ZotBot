@@ -1,0 +1,15 @@
+{
+  "id": "nist-dads.hyperloglog",
+  "url": "https://xlinux.nist.gov/dads/HTML/hyperloglog.html",
+  "final_url": "https://xlinux.nist.gov/dads/HTML/hyperloglog.html",
+  "title": "NIST Dictionary of Algorithms and Data Structures: hyperloglog",
+  "source_kind": "secondary",
+  "retrieved_at": "2026-10-14T19:46:10.318236+00:00",
+  "text": "HyperLogLog\nHyperLogLog\n(algorithm)\nDefinition:\nEstimate the number of unique items by setting m = 2\nb\ncounters to maximum value (e.g. all 1 bits).\nHash\neach item to get an L bit result. The first b bits of the result indicate a counter.  Set that counter to the minimum of the remaining L-b bits and the counter value. When finished with all items, compute the harmonic mean of the number of leading zeros in each counter's value, Z.  The estimate of the number of distinct items is α m² Z.\nAggregate child\n(... is a part of or used in me.)\nhash function\n.\nSee also\ncount-distinct problem [Wikipedia]\n.\nNote:\nThis can estimate cardinalities of more than a billion items with a 2% standard error using only 1 500 bytes of memory.\nThe number of counters, m, is small, usually less than 2\n8\n= 256. The approximation factor, α, is about 0.7. It is tedious to compute exactly.\nCounting the number of unique items in a (large) collection is the Count-distinct problem in Computer Science or Cardinality estimation problem in Applied Mathematics.\nAuthor:\nPEB\nMore information\nPhilippe Flajolet\n,\nÉric Fusy\n,\nOlivier Gandouet\n, and\nFrédéric Meunier\n,\nHyperLogLog: the analysis of a near-optimal cardinality estimation algorithm\n, Proc. 2007 Intern'l Conf. on Analysis of Algorithms (AOFA '07).\nCheng-Wei Hu\n,\nHyperLogLog: A Simple but Powerful Algorithm for Data Scientists\n, January 2021.\nGo to the\nDictionary of Algorithms and Data\nStructures\nhome page.\nIf you have suggestions, corrections, or comments, please get in touch\nwith\nPaul Black\n.\nEntry modified 10 August 2023.\nHTML page formatted Wed Oct 30 12:15:30 2024.\nCite this as:\nPaul E. Black, \"HyperLogLog\", in\nDictionary of Algorithms and Data Structures\n[online], Paul E. Black, ed. 10 August 2023. (accessed TODAY)\nAvailable from:\nhttps://www.nist.gov/dads/HTML/hyperloglog.html",
+  "sha256": "d0ae16f70693a340989a5776f808a6c0454c7fdc1e82086fde1e77524746d758",
+  "raw_sha256": "8621c14c1c6c221a4eb87950013649aefb5e957eac1e462703c1fe23de075765",
+  "content_type": "text/html",
+  "charset": "utf-8",
+  "extraction_method": "http-html-data-lines/1",
+  "capture_id": "5b2c338fcf6c73117de8bf3eff8e6474631e3fbdd8a8723e4092f0256ba96bd9"
+}

@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>spiral storage</title>
+<meta name="description"
+  content="Definition of spiral storage,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="spiral storage">
+<meta name="type" content="data structure">
+<meta name="area" content="Searching">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>spiral storage</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A <a href="dynamicHashing.html"><em>dynamic hashing</em></a> table that grows a few slots at a time.  It uses a <a href="hash.html"><em>hash function</em></a>, h, with a <a href="range.html"><em>range</em></a> of [0,1).  For a key, k, an intermediate value, x=&lceil; S-h(k)&rceil; +h(k), is computed to find the final slot, &lfloor; d<sup>x</sup>&rfloor;, where d&gt;1 is called the growth factor.  To increase the number of slots, increase S to S' and rehash any keys from  &lfloor; d<sup>S</sup>&rfloor; to &lfloor; d<sup>S'</sup>&rfloor;-1.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="dynamicHashing.html"><em>dynamic hashing</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="linearHashing.html"><em>linear hashing</em></a>.
+</p>
+
+<p>
+<em>Note:
+Choosing d=2 and S=log<sub>2</sub>N, the number of slots, every expansion retires one slot and creates two new slots.  Since slots in use go from &lfloor; d<sup>S</sup>&rfloor; to  &lfloor; d<sup>S+1</sup>&rfloor;-1, they are usually remapped to physical storage.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>More information</h2>
+<p>
+<strong>G. N. N. Martin</strong>, <em>Spiral storage: Incrementally augmentable hash addressed storage</em>, Theory of Computation Rep. 27, Univ. of Warwick, England, 1979. </p> <p> <strong>Per-&Aring;ke Larson</strong>, <em>Dynamic Hash Tables</em>, CACM 31(4):446-457, April 1988.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#0a7a6b7f662468666b69614a6463797e246d657c">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 25 July 2006.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "spiral storage", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 25 July 2006. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/spiralStorage.html">https://www.nist.gov/dads/HTML/spiralStorage.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a917485d20c0b2',t:'MTc5MjAwNzE5NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

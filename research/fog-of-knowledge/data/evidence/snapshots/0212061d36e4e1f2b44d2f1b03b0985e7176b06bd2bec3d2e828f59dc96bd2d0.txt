@@ -1,0 +1,59 @@
+Deterministic PDAs
+Next:
+Context free grammars and
+Up:
+Pushdown automata
+Previous:
+The language of a
+Deterministic PDAs
+We have introduced PDAs as nondeterministic machines which may have
+several possibilities how to continue. We now define deterministic
+pushdown automata (DPDA) as those which never have a choice.
+To be precise we say that a PDA
+is deterministic (is a DPDA) iff
+Remember, that
+stands for the number of elements in a finite
+set
+.
+That is: a DPDA may get stuck but it has never any choice.
+In our example the automaton
+is not deterministic, e.g. we have
+and
+and hence
+.
+Unlike the situation for finite automata, there is in general no way
+to translate a nondeterministic PDA into a deterministic one. Indeed,
+there is no DPDA which recognizes the language
+!
+Nondeterministic PDAs are more powerful than deterministic
+ PDAs.
+However, we can define a similar language
+over
+which can be recognized
+by a deterministic PDA:
+That is
+contains palindroms with a marker
+in the middle,
+e.g.
+.
+We define a DPDA
+for
+:
+where
+is given by:
+We can check that this automaton is deterministic. In particular
+the 3rd and 4th line cannot overlap because
+is not an input
+symbol.
+Different to PDAs in general the two acceptance methods are not
+equivalent for DPDAs -- acceptance by final state makes it possible
+to define a bigger class of langauges. hence, we shall always use
+acceptance by final state for DPDAs.
+Next:
+Context free grammars and
+Up:
+Pushdown automata
+Previous:
+The language of a
+Thorsten Altenkirch
+2001-05-08

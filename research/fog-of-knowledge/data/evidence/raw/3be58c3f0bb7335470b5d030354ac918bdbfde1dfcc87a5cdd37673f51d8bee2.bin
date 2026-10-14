@@ -1,0 +1,200 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="generator" content="HTML Tidy, see www.w3.org">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Turbo Reverse Factor algorithm</title>
+<meta name="generator" content="Microsoft XSLT (msxml3 golden/ msxml4), see http://www.microsoft.com">
+<meta name="robots" content="index, follow">
+<meta name="description" content="EXACT STRING MATCHING ALGORITHMS Animation in Java, Turbo Reverse Factor algorithm">
+<meta name="keywords" content="string matching, algorithm, Java, C">
+<meta name="resource-type" content="document">
+<meta name="Author-Corporate" content="Chistian.Charras@dir.univ-rouen.fr">
+<meta name="Content-Language" content="en">
+<meta name="distribution" content="global">
+<link type="text/css" rel="stylesheet" href="string.css">
+</head>
+<body bgcolor="white">
+<a href="fdm.html#SECTION00220"><img alt="Forward Dawg Matching algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node23.html#SECTION00230"><img alt="Reverse Factor algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="fdm.html#SECTION00220">Forward Dawg Matching algorithm</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Prev:</b> <a href="node23.html#SECTION00230">Reverse Factor algorithm</a> 
+
+<hr>
+<h1 align="center"><a id="SECTION00240" name="SECTION00240">Turbo Reverse Factor algorithm</a></h1>
+
+<hr color="#F0F0FC" size="3">
+<applet codebase="../spm/TurboReverseFactorV2" archive="TurboReverseFactorV2.zip" code="AppletButtonText2.class" width="230" height="63"><param name="windowTitle" value="Turbo Reverse Factor algorithm">
+<param name="windowClass" value="ProgramTextWindow2">
+<param name="buttonText" value="visualization">
+<param name="windowwidth" value="375">
+<param name="windowheight" value="560">
+<param name="label1" value="Pattern:">
+<param name="input1" value="gcagagag">
+<param name="label2" value="String:">
+<param name="input2" value="gcatcgcagagagtatacagtacg">
+<param name="program" value="TurboReverseFactorV2">
+</applet> 
+
+<div class="bar"><a name="SECTION00241">Main features</a></div>
+
+<div class="mf">
+<ul>
+<li>refinement of the <a href="node23.html#SECTION00230">Reverse Factor</a> algorithm;</li>
+
+<li>preprocessing phase in <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<i>m</i>)</span> time and space complexity;</li>
+
+<li>searching phase in <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<i>n</i>)</span> time complexity;</li>
+
+<li>performs 2<i>n</i> text characters inspections in the worst case;</li>
+
+<li>optimal in the average.</li>
+</ul>
+</div>
+
+<div class="bar"><a name="SECTION00242">Description</a></div>
+
+<div class="desc">
+<p align="justify">It is possible to make the <a href="node23.html#SECTION00230">Reverse Factor</a> algorithm linear. It is in fact enough to remember the prefix <i>u</i> of <i>x</i> matched during the last attempt. Then during the current attempt when reaching the right end of <i>u</i>, it is easy to show that it is sufficient to read again at most the rightmost half of <i>u</i>. This is made by the Turbo Reverse Factor algorithm.</p>
+
+<p align="justify">If a word <i>z</i> is a factor of a word <i>w</i> we define <i>disp</i>(<i>z</i>,<i>w</i>) the displacement of <i>z</i> in <i>w</i> to be the least integer <i>d</i>&gt;0 such that <i>w</i>[<i>m</i>-<i>d</i>-|<i>z</i>|-1 .. <i>m</i>-<i>d</i>]=<i>z</i>.</p>
+
+<p align="justify">The general situation of the Turbo Reverse Factor algorithm is when a prefix <i>u</i> is found in the text during the last attempt and for the current attempt the algorithm tries to match the factor <i>v</i> of length <i>m</i>-|<i>u</i>| in the text immediately at the right of <i>u</i>. If <i>v</i> is not a factor of <i>x</i> then the shift is computed as in the Reverse Factor algorithm. If <i>v</i> is a suffix of <i>x</i> then an occurrence of <i>x</i> has been found. If <i>v</i> is not a suffix but a factor of <i>x</i> then it is sufficient to scan again the <em>min</em>(<em>per</em>(<i>u</i>),|<i>u</i>|/2) rightmost characters of <i>u</i>. If <i>u</i> is periodic (i.e. <em>per</em>(<i>u</i>) &nbsp;<img alt="leq" src="images/leq.gif">&nbsp; |<i>u</i>|/2) let <i>z</i> be the suffix of <i>u</i> of length <em>per</em>(<i>u</i>). By definition of the period <i>z</i> is an acyclic word and then an overlap such as shown in Figure&nbsp;<a href="node24.html#trf">23.1</a> is impossible.</p>
+
+<p align="center"><a id="trf" name="trf">&nbsp;</a> <img align="BOTTOM" alt="figure 23.1" src="images/trf1.gif"><br clear="all">
+<strong>Figure 23.1:</strong>&nbsp;Impossible overlap if <i>z</i> is an acyclic word.</p>
+
+<p align="justify">Thus <i>z</i> can only occur in <i>u</i> at distances multiple of <em>per</em>(<i>u</i>) which implies that the smallest proper suffix of <i>uv</i> which is a prefix of <i>x</i> has a length equal to |<i>uv</i>|-<i>disp</i>(<i>zv</i>,<i>x</i>)=<i>m</i>-<i>disp</i>(<i>zv</i>,<i>x</i>). Thus the length of the shift to perform is <span style="white-space: nowrap"><i>disp</i>(<i>zv</i>,<i>x</i>)</span>.</p>
+
+<p align="justify">If <i>u</i> is not periodic (<em>per</em>(<i>u</i>)&gt;|<i>u</i>|/2), it is obvious that <i>x</i> can not reoccur in the left part of <i>u</i> of length <em>per</em>(<i>u</i>). It is then sufficient to scan the right part of <i>u</i> of length |<i>u</i>|-<em>per</em>(<i>u</i>) &lt; |<i>u</i>|/2 to find a non defined transition in the automaton.</p>
+
+<p align="justify">The function <i>disp</i> is implemented directly in the automaton <span style="white-space: nowrap"><em><big><b>S</b></big></em>(<i>x</i>)</span> without changing the complexity of its construction.</p>
+
+<p align="justify">The preprocessing phase consists in building the suffix automaton of <i>x</i><sup><i>R</i></sup>. It can be done in <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<i>m</i>)</span> time complexity.</p>
+
+<p align="justify">The searching phase is in <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<i>n</i>)</span> time complexity. The Turbo Reverse Factor performs at most 2<i>n</i> inspections of text characters and it is also optimal in average performing <span style="white-space: nowrap"><big><i><b>O</b></i></big>( <i>n</i>.log<sub><img alt="sigma" src="images/psigma.gif"></sub>(<i>m</i>) / <i>m</i> )</span> inspections of text characters on the average reaching the best bound shown by Yao in 1979. .</p>
+</div>
+
+<div class="bar"><a name="SECTION00243">The C code</a></div>
+
+<p align="justify">The function <tt><big><tt>preMp</tt></big></tt> is given chapter <a href="node7.html#SECTION0070">Morris and Pratt</a> algorithm. The functions <tt><big><tt>reverse</tt></big></tt> and <tt><big><tt>buildSuffixAutomaton</tt></big></tt> are given chapter <a href="node23.html#SECTION00230">Reverse Factor</a> algoritm. All the other functions to create and manipulate a data structure suitable for a suffix automaton are given in the introduction section <a href="node2.html#SECTION0026"><i>implementation</i></a>.</p>
+
+<div class="pre">
+<pre>
+void TRF(char *x, int m, char *y, int n) {
+   int period, i, j, shift, u, periodOfU, disp, init,
+       state, mu, mpNext[XSIZE + 1];
+   char *xR;
+   Graph aut;
+  
+   /* Preprocessing */
+   aut = newSuffixAutomaton(2*(m + 2), 2*(m + 2)*ASIZE);
+   xR = reverse(x, m);
+   buildSuffixAutomaton(xR, m, aut);
+   init = getInitial(aut);
+   preMp(x, m, mpNext);
+   period = m - mpNext[m];
+   i = 0;
+   shift = m;
+  
+   /* Searching */
+   j = 0;
+   while (j &lt;= n - m) {
+      i = m - 1;
+      state = init;
+      u = m - 1 - shift;
+      periodOfU = (shift != m ?
+                   m - shift - mpNext[m - shift] : 0);
+      shift = m;
+      disp = 0;
+      while (i &gt; u &amp;&amp;
+             getTarget(aut, state, y[i + j]) !=
+             UNDEFINED) {
+         disp += getShift(aut, state, y[i + j]);
+         state = getTarget(aut, state, y[i + j]);
+         if (isTerminal(aut, state))
+            shift = i;
+         --i;
+      }
+      if (i &lt;= u)
+         if (disp == 0) {
+            OUTPUT(j);
+            shift = period;
+         }
+         else {
+            mu = (u + 1)/2;
+            if (periodOfU &lt;= mu) {
+               u -= periodOfU;
+               while (i &gt; u &amp;&amp;
+                      getTarget(aut, state, y[i + j]) !=
+                      UNDEFINED) {
+                  disp += getShift(aut, state, y[i + j]);
+                  state = getTarget(aut, state, y[i + j]);
+                  if (isTerminal(aut, state))
+                     shift = i;
+                  --i;
+               }
+               if (i &lt;= u)
+                  shift = disp;
+            }
+            else {
+               u = u - mu - 1;
+               while (i &gt; u &amp;&amp;
+                      getTarget(aut, state, y[i + j]) !=
+                      UNDEFINED) {
+                  disp += getShift(aut, state, y[i + j]);
+                  state = getTarget(aut, state, y[i + j]);
+                  if (isTerminal(aut, state))
+                     shift = i;
+                  --i;
+               }
+            }
+         }
+      j += shift;
+   }
+}
+
+</pre>
+</div>
+
+<div class="bar"><a name="SECTION00244" style="color: teal">The example</a></div>
+
+<p>Preprocessing phase</p>
+
+<p align="center"><img alt="Langage accepted" align="BOTTOM" src="images/rfltab1.png"><br clear="all">
+<img alt="Suffix automaton" align="BOTTOM" src="images/suffixauto1.png"><br clear="all">
+<span style="white-space: nowrap">Suffix automaton used by Turbo Reverse Factor algorithm.</span></p>
+
+<p><a name="search" href="examples/exp24.html" style="text-decoration: underline">Searching</a> phase</p>
+
+<br>
+<div class="bar"><a name="SECTION00245">References</a></div>
+
+<div class="ref">
+<ul style="text-align: justify ">
+<li>C<small>ROCHEMORE</small>, M., 1997. Off-line serial exact string searching, in <cite>Pattern Matching Algorithms</cite>, ed. A. Apostolico and Z. Galil, Chapter 1, pp 1-53, Oxford University Press.</li>
+
+<li>C<small>ROCHEMORE</small>, M., C<small>ZUMAJ</small>, A., G<small>ASIENIEC</small>, L., J<small>AROMINEK</small>, S., L<small>ECROQ</small>, T., P<small>LANDOWSKI</small>, W., R<small>YTTER</small>, W., 1992, Deux m&eacute;thodes pour acc&eacute;l&eacute;rer l'algorithme de Boyer-Moore, in <em>Th&eacute;orie des Automates et Applications, Actes des 2<sup><i>e</i></sup> Journ&eacute;es Franco-Belges</em>, D. Krob ed., Rouen, France, 1991, pp 45-63, PUR 176, Rouen, France.</li>
+
+<li>C<small>ROCHEMORE</small>, M., C<small>ZUMAJ</small>, A., G<small>ASIENIEC</small>, L., J<small>AROMINEK</small>, S., L<small>ECROQ</small>, T., P<small>LANDOWSKI</small>, W., R<small>YTTER</small>, W., 1994, Speeding up two string matching algorithms, <em>Algorithmica</em> 12(4/5):247-267.</li>
+
+<li>C<small>ROCHEMORE</small>, M., R<small>YTTER</small>, W., 1994, Text Algorithms, <em>Oxford University Press</em>.</li>
+
+<li>L<small>ECROQ</small>, T., 1992, <em>Recherches de mot</em>, Ph. D. Thesis, University of Orl&eacute;ans, France.</li>
+
+<li>L<small>ECROQ</small>, T., 1995, Experimental results on string matching algorithms, <em>Software - Practice &amp; Experience</em> 25(7):727-765.</li>
+
+<li>Y<small>AO</small>, A.C., 1979, The complexity of pattern matching for a random string, <em>SIAM Journal on Computing</em>, 8 (3):368--387.</li>
+</ul>
+</div>
+
+<br>
+<hr color="#F0F0FC" size="2">
+<a href="fdm.html#SECTION00220"><img alt="Forward Dawg Matching algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node23.html#SECTION00230"><img alt="Reverse Factor algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="fdm.html#SECTION00220">Forward Dawg Matching algorithm</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Prev:</b> <a href="node23.html#SECTION00230">Reverse Factor algorithm</a> 
+
+<hr>
+<br>
+<div align="right"><em><small><small>e-mails: {<a href="mailto:Christian.Charras@laposte.net">Christian.Charras</a>, <a href="mailto:Thierry.Lecroq@laposte.net">Thierry.Lecroq</a> }@laposte.net</small><br>
+ Tue Jan 14 15:03:31 MET 1997</small></em></div>
+</body>
+</html>
+

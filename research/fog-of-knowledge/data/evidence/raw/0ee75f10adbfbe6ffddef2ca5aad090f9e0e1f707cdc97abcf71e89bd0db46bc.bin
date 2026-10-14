@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>Cupif-Giannini tree traversal</title>
+<meta name="description"
+  content="Definition of Cupif-Giannini tree traversal,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="Cupif-Giannini tree traversal">
+<meta name="type" content="algorithm">
+<meta name="area" content="Trees">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>Cupif-Giannini tree traversal</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+Visit every <a href="leaf.html"><em>leaf</em></a> of a <a href="perfectBinaryTree.html"><em>perfect binary tree</em></a> with maximum dispersion (see note).  For a tree of <a href="height.html"><em>height</em></a> n, use an n-bit "count" integer.  The least significant bit of count indicates whether to go to the left or right <a href="child.html"><em>child</em></a> from the <a href="root.html"><em>root</em></a>. Each more significant bit indicates whether to go left or right.  Regular binary counting generates the list of 2<sup>n</sup> <a href="path.html"><em>paths</em></a> to the leaves. </p> <p> To randomly <a href="permutation.html"><em>permute</em></a> the order of leaf visits, choose a random n-bit "key" at the beginning. Use the <a href="xor.html"><em>xor</em></a> of the key and the count to indicate which child to visit.
+</p>
+
+<p>
+<strong>See also</strong>
+<a href="depthfirst.html"><em>depth-first search</em></a>, <a href="treeTraversal.html"><em>tree traversal</em></a>.
+</p>
+
+<p>
+<em>Note:
+"Dispersion" means the next leaf visited is as far from other leaves visited as possible.  More formally, the next leaf has the maximum <a href="shortestpath.html"><em>shortest path</em></a> to the preceding leaf (with less importance given to be far from more distantly preceeding leaves). </p> 
+<p> It doesn't matter to the dispersion whether a 0 bit means left (and 1 means right) or 0 means right (and 1 means left).  Also the initial value of count doesn't matter, as long as overflow is handled. </p> 
+<p> To picture the algorithm, consider starting with a count of 000...00, indicating going down all left branches to the first leaf.  The next count is 000...01, which has a shortest path distance of 2n: from the first leaf, go up to the root, take the right branch, then down to the second leaf.  The next count is 000...10. This third leaf is 2n from the immediately preceding leaf (the second one) and 2n-1 from the first leaf: up to one below the root, then down to the first leaf. </p> 
+<p> Here is pseudocode for an inefficient Cupif-Giannini tree traversal with Xor "randomization" (** is the power operator, and ^ is xor): 
+<pre> visitNode(tree, nodeNumber, bitNumber)<br /> begin<br />     if isLeaf(tree), then<br />         print(tree.root);<br />     else<br />         if the bitNumber-th bit of nodeNumber is 1, then<br />             visitNode(tree.left_subtree, nodeNumber, bitNumber+1);<br />         else<br />             visitNode(tree.right_subtree, nodeNumber, bitNumber+1);<br />         endif<br />     endif<br /> end<br /> <br /> cupifGiannini(tree)<br /> begin<br />     key = random();<br />     for n = 0 to 2**height(tree)-1<br />         visitNode(tree, n ^ key, 1);<br />     endfor<br /> end </pre></em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>More information</h2>
+<p>
+<strong>J&eacute;r&ocirc;me Fran&ccedil;ois, Abdelkader Lahmadi, Valentin Giannini, Damien Cupif, Frederic Beck</strong>, and <strong>Bertrand Wallrich</strong>, <em>Optimizing internet scanning for assessing industrial systems exposure</em>, 2016 International Wireless Communications and Mobile Computing Conference (IWCMC), pp. 516-522, 2016.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#2858495d44064a44494b436846415b5c064f475e">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 4 April 2019.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "Cupif-Giannini tree traversal", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 4 April 2019. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/CupifGianniniTreeTraversal.html">https://www.nist.gov/dads/HTML/CupifGianniniTreeTraversal.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a9162a9e83e217',t:'MTc5MjAwNzE0OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

@@ -1,0 +1,220 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="generator" content="HTML Tidy, see www.w3.org">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Apostolico-Crochemore algorithm</title>
+<meta name="generator" content="Microsoft XSLT (msxml3 golden/ msxml4), see http://www.microsoft.com">
+<meta name="robots" content="index, follow">
+<meta name="description" content="EXACT STRING MATCHING ALGORITHMS Animation in Java, Apostolico-Crochemore algorithm">
+<meta name="keywords" content="string matching, algorithm, Java, C">
+<meta name="resource-type" content="document">
+<meta name="Author-Corporate" content="Chistian.Charras@dir.univ-rouen.fr">
+<meta name="Content-Language" content="en">
+<meta name="distribution" content="global">
+<link type="text/css" rel="stylesheet" href="string.css">
+</head>
+<body bgcolor="white">
+<a href="node13.html#SECTION00130"><img alt="Not So Naive algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node11.html#SECTION00110"><img alt="Galil-Giancarlo algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="node13.html#SECTION00130">Not So Naive algorithm</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Prev:</b> <a href="node11.html#SECTION00110">Galil-Giancarlo algorithm</a> 
+
+<hr>
+<h1 align="center"><a name="SECTION00120">Apostolico-Crochemore algorithm</a></h1>
+
+<hr color="#F0F0FC" size="3">
+<applet codebase="../spm/ApostolicoCrochemore" archive="ApostolicoCrochemore.zip" code="AppletButtonText2.class" width="230" height="63"><param name="windowTitle" value="Apostolico-Crochemore algorithm">
+<param name="windowClass" value="ProgramTextWindow2">
+<param name="buttonText" value="visualization">
+<param name="windowwidth" value="375">
+<param name="windowheight" value="560">
+<param name="label1" value="Pattern:">
+<param name="input1" value="gcagagag">
+<param name="label2" value="String:">
+<param name="input2" value="gcatcgcagagagtatacagtacg">
+<param name="program" value="ApostolicoCrochemore">
+</applet> 
+
+<div class="bar"><a name="SECTION00121">Main features</a></div>
+
+<div class="mf">
+<ul>
+<li>preprocessing phase in <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<i>m</i>)</span> time and space complexity;</li>
+
+<li>searching phase in <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<i>n</i>)</span> time complexity;</li>
+
+<li>performs <span style="white-space: nowrap"><img alt="3/2" align="MIDDLE" src="images/troisdemi.gif"><i>n</i></span> text character comparisons in the worst case.</li>
+</ul>
+</div>
+
+<div class="bar"><a name="SECTION00122">Description</a></div>
+
+<div class="desc">
+<p align="justify">The Apostolico-Crochemore uses the <em>kmpNext</em> shift table (see chapter <a href="node8.html#SECTION0080">Knuth, Morris and Pratt</a> algorithm) to compute the shifts.</p>
+
+<p align="justify">Let <img alt="ell" align="BASELINE" src="images/ell.gif">=0 if <i>x</i> is a power of a single character (<span style="white-space: nowrap"><i>x</i>=<i>c</i><sup><i>m</i></sup></span> with <span style="white-space: nowrap"><i>c</i> in <img alt="Sigma" src="images/gsigma.gif"></span>) and <img alt="ell" align="BASELINE" src="images/ell.gif"> be equal to the position of the first character of <i>x</i> different from <span style="white-space: nowrap"><i>x</i>[0]</span> otherwise (<span style="white-space: nowrap"><i>x</i>=<i>a</i><sup><img alt="ell" align="BASELINE" src="images/ell.gif"></sup><i>bu</i></span> for <span style="white-space: nowrap"><i>a</i>, <i>b</i> in <img alt="Sigma" src="images/gsigma.gif"></span>, <span style="white-space: nowrap"><i>u</i> in <img alt="Sigma" src="images/gsigma.gif"><sup>*</sup></span> and <span style="white-space: nowrap"><i>a</i>&nbsp;<img alt="neq" src="images/neq.gif">&nbsp;<i>b</i></span>). During each attempt the comparisons are made with pattern
+positions in the following order: <span style="white-space: nowrap"><img alt="ell" align="BASELINE" src="images/ell.gif">, <img alt="ell" align="BASELINE" src="images/ell.gif">+1, ... , <i>m</i>-2, <i>m</i>-1, 0, 1, ... , <img alt="ell" align="BASELINE" src="images/ell.gif">-1</span>.</p>
+
+<dl>
+<dt>During the searching phase we consider triple of the form <span style="white-space: nowrap">(<i>i</i>, <i>j</i>, <i>k</i>)</span> where:</dt>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP">the window is positioned on the text factor <span style="white-space: nowrap"><i>y</i>[<i>j</i> .. <i>j</i>+<i>m</i>-1]</span>;</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP"><span style="white-space: nowrap">0&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>k</i>&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<img alt="ell" align="BASELINE" src="images/ell.gif"></span> and <span style="white-space: nowrap"><i>x</i>[0 .. <i>k</i>-1]=<i>y</i>[<i>j</i> .. <i>j</i>+<i>k</i>-1]</span>;</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP"><span style="white-space: nowrap"><img alt="ell" align="BASELINE" src="images/ell.gif">&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>i</i> &lt; <i>m</i></span> and <span style="white-space: nowrap"><i>x</i>[<img alt="ell" align="BASELINE" src="images/ell.gif"> .. <i>i</i>-1]=<i>y</i>[<i>j</i>+<img alt="ell" align="BASELINE" src="images/ell.gif"> .. <i>i</i>+<i>j</i>-1]</span>.</td>
+</tr>
+</table>
+</dd>
+</dl>
+
+<p>The initial triple is <span style="white-space: nowrap">(<img alt="ell" align="BASELINE" src="images/ell.gif">,0,0)</span>.</p>
+
+<p align="center"><a name="figaxamac">&nbsp;</a> <img width="610" height="132" align="BOTTOM" alt="figure 11.1" src="images/axamac.gif"><br>
+<b>Figure 11.1:</b>&nbsp;At each attempt of the Apostolico-Crochemore algorithm we consider a triple <span style="white-space: nowrap">(<i>i</i>,<i>j</i>,<i>k</i>)</span>.</p>
+
+<p align="justify">We now explain how to compute the next triple after <span style="white-space: nowrap">(<i>i</i>,<i>j</i>,<i>k</i>)</span> has been computed.</p>
+
+<dl>
+<dt>Three cases arise depending on the value of <i>i</i>:</dt>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP"><span style="white-space: nowrap"><i>i</i> = <img alt="ell" align="BASELINE" src="images/ell.gif"></span><br>
+If <span style="white-space: nowrap"><i>x</i>[<i>i</i>] = <i>y</i>[<i>i</i>+<i>j</i>]</span> then the next triple is <span style="white-space: nowrap">(<i>i</i>+1, <i>j</i>, <i>k</i>)</span>.<br>
+If <span style="white-space: nowrap"><i>x</i>[<i>i</i>]&nbsp;<img alt="neq" src="images/neq.gif">&nbsp;<i>y</i>[<i>i</i>+<i>j</i>]</span> then the next triple is <span style="white-space: nowrap">(<img alt="ell" align="BASELINE" src="images/ell.gif">, <i>j</i>+1, <em>max</em>{0, <i>k</i>-1})</span>.</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP"><span style="white-space: nowrap"><img alt="ell" align="BASELINE" src="images/ell.gif"> &lt; <i>i</i> &lt; <i>m</i></span><br>
+If <span style="white-space: nowrap"><i>x</i>[<i>i</i>] = <i>y</i>[<i>i</i>+<i>j</i>]</span> then the next triple is <span style="white-space: nowrap">(<i>i</i>+1, <i>j</i>, <i>k</i>)</span>.<br>
+If <span style="white-space: nowrap"><i>x</i>[<i>i</i>]&nbsp;<img alt="neq" src="images/neq.gif">&nbsp;<i>y</i>[<i>i</i>+<i>j</i>]</span> then two cases arise depending on the value of <span style="white-space: nowrap"><em>kmpNext</em>[<i>i</i>]</span>: 
+
+<ul style="margin-bottom: 0; padding-bottom: 0">
+<li><span style="white-space: nowrap"><em>kmpNext</em>[<i>i</i>]&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<img alt="ell" align="BASELINE" src="images/ell.gif"></span>: then the next triple is (<img alt="ell" align="BASELINE" src="images/ell.gif">, <i>i</i>+<i>j</i>-<em>kmpNext</em>[<i>i</i>], <em>max</em>{0, <em>kmpNext</em>[<i>i</i>]})</li>
+
+<li><span style="white-space: nowrap"><em>kmpNext</em>[<i>i</i>] &gt; <img alt="ell" align="BASELINE" src="images/ell.gif"></span>: then the next triple is (<em>kmpNext</em>[<i>i</i>], <i>i</i>+<i>j</i>-<em>kmpNext</em>[<i>i</i>], <img alt="ell" align="BASELINE" src="images/ell.gif">)</li>
+</ul>
+</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP"><span style="white-space: nowrap"><i>i</i> =<i>m</i></span><br>
+If <span style="white-space: nowrap"><i>k</i> &lt; <img alt="ell" align="BASELINE" src="images/ell.gif"></span> and <span style="white-space: nowrap"><i>x</i>[<i>k</i>]=<i>y</i>[<i>j</i>+<i>k</i>]</span> then the next triple is <span style="white-space: nowrap">(<i>i</i>, <i>j</i>, <i>k</i>+1)</span>.<br>
+Otherwise either <span style="white-space: nowrap"><i>k</i> &lt; <img alt="ell" align="BASELINE" src="images/ell.gif"></span> and <span style="white-space: nowrap"><i>x</i>[<i>k</i>]&nbsp;<img alt="neq" src="images/neq.gif">&nbsp;<i>y</i>[<i>j</i>+<i>k</i>]</span>, or <span style="white-space: nowrap"><i>k</i>=<img alt="ell" align="BASELINE" src="images/ell.gif"></span>. If <span style="white-space: nowrap"><i>k</i>=<img alt="ell" align="BASELINE" src="images/ell.gif"></span> an occurrence of <i>x</i> is reported. In both cases the next triple is computed in the same manner as in the case where <span style="white-space: nowrap"><img alt="ell" align="BASELINE" src="images/ell.gif"> &lt; <i>i</i> &lt; <i>m</i></span>.</td>
+</tr>
+</table>
+</dd>
+</dl>
+
+<p align="justify">The preprocessing phase consists in computing the table <em>kmpNext</em> and the integer <img alt="ell" align="BASELINE" src="images/ell.gif">. It can be done in <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<i>m</i>)</span> space and time. The searching phase is in <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<i>n</i>)</span> time complexity and furthermore the Apostolico-Crochemore algorithm performs at most <span style="white-space: nowrap"><img alt="3/2" align="MIDDLE" src="images/troisdemi.gif"><i>n</i></span> text character comparisons in the worst case.</p>
+</div>
+
+<div class="bar"><a name="SECTION00123">The C code</a></div>
+
+<div>
+<p>The function <tt><big><tt>preKmp</tt></big></tt> is given chapter <a href="node8.html#SECTION0080">Knuth, Morris and Pratt</a> algorithm.</p>
+</div>
+
+<div class="pre">
+<pre>
+void AXAMAC(char *x, int m, char *y, int n) {
+   int i, j, k, ell, kmpNext[XSIZE];
+
+   /* Preprocessing */
+   preKmp(x, m, kmpNext);
+   for (ell = 1; x[ell - 1] == x[ell]; ell++);
+   if (ell == m)
+      ell = 0;
+
+   /* Searching */
+   i = ell;
+   j = k = 0;
+   while (j &lt;= n - m) {
+      while (i &lt; m &amp;&amp; x[i] == y[i + j])
+         ++i;
+      if (i &gt;= m) {
+         while (k &lt; ell &amp;&amp; x[k] == y[j + k])
+            ++k;
+         if (k &gt;= ell)
+            OUTPUT(j);
+      }
+      j += (i - kmpNext[i]);
+      if (i == ell)
+         k = MAX(0, k - 1);
+      else
+         if (kmpNext[i] &lt;= ell) {
+            k = MAX(0, kmpNext[i]);
+            i = ell;
+         }
+         else {
+            k = ell;
+            i = kmpNext[i];
+         }
+   }
+}
+
+</pre>
+</div>
+
+<div class="bar"><a name="SECTION00124" style="color: teal">The example</a></div>
+
+<p>Preprocessing phase</p>
+
+<p align="center"><img alt="Apostolico-Crochemore kmpNext table" align="BOTTOM" src="images/ackmptab1.png"><br clear="all">
+<span style="white-space: nowrap"><em>kmpNext</em> table used by Apostolico-Crochemore algorithm</span></p>
+
+<p><a name="search" href="examples/exp12.html" style="text-decoration: underline">Searching</a> phase</p>
+
+<br>
+<div class="bar"><a name="SECTION00125">References</a></div>
+
+<div class="ref">
+<ul style="text-align: justify ">
+<li><strong>A<small>POSTOLICO</small> A.</strong>, <strong>C<small>ROCHEMORE</small> M.</strong>, 1991, Optimal canonization of all substrings of a string, <em>Information and Computation</em> 95(1):76-95.</li>
+
+<li>H<small>ANCART</small>, C., 1993. <cite>Analyse exacte et en moyenne d'algorithmes de recherche d'un motif dans un texte</cite>, Ph. D. Thesis, University Paris 7, France.</li>
+</ul>
+</div>
+
+<br>
+<hr color="#F0F0FC" size="2">
+<a href="node13.html#SECTION00130"><img alt="Not So Naive algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node11.html#SECTION00110"><img alt="Galil-Giancarlo algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="node13.html#SECTION00130">Not So Naive algorithm</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Prev:</b> <a href="node11.html#SECTION00110">Galil-Giancarlo algorithm</a> 
+
+<hr>
+<br>
+<div align="right"><em><small><small>e-mails: {<a href="mailto:Christian.Charras@laposte.net">Christian.Charras</a>, <a href="mailto:Thierry.Lecroq@laposte.net">Thierry.Lecroq</a> }@laposte.net</small><br>
+ Tue Jan 14 15:03:31 MET 1997</small></em></div>
+</body>
+</html>
+

@@ -1,0 +1,15 @@
+{
+  "id": "nist-dads.twolefthashing",
+  "url": "https://xlinux.nist.gov/dads/HTML/twoLeftHashing.html",
+  "final_url": "https://xlinux.nist.gov/dads/HTML/twoLeftHashing.html",
+  "title": "NIST Dictionary of Algorithms and Data Structures: twoLeftHashing",
+  "source_kind": "secondary",
+  "retrieved_at": "2026-10-14T19:46:41.171053+00:00",
+  "text": "2-left hashing\n2-left hashing\n(data structure)\nDefinition:\nA\ndictionary\nimplemented with two\nhash tables\nof equal size, T\n1\nand T\n2\n, and two different\nhash functions\n, h\n1\nand h\n2\n. A new\nkey\nis put in table 2 only if there are fewer (colliding) keys at T\n2\n[h\n2\n(key)] than at T\n1\n[h\n1\n(key)], otherwise it is put in table 1. With n keys and two tables of size n/2, the most collisions is 0.69... log\n2\nln n +\nO\n(1) with high probability.\nGeneralization\n(I am a kind of ...)\nhash table\n.\nAggregate parent\n(I am a part of or used in ...)\ndictionary\n.\nAggregate child\n(... is a part of or used in me.)\narray\n,\nhash function\n.\nSee also\ncuckoo hashing\n,\n2-choice hashing\n.\nNote:\nThe name comes from the notion of dividing a single hash table in two, left and right halves of equal sizes, and always putting the key in the left half on ties.\nAlthough the average lookup time is similar to a table with a single hash function, the maximum number of collisions is exponentially smaller.  This makes using buckets or use in real-time systems far more practical.  Additional hash functions only decrease the maximum by a constant factor.\nBuckets or lists can be searched in parallel.\nWhy would breaking a single hash table into two pieces and asymmetrically resolving ties keep the maximum number of collisions lower than the single table of\n2-choice hashing\n?  Michael Mitzenmacher, who extensively studied and analyzed 2-left and 2-choice hashing, provides the intuition that no location increases the maximum number of collisions until both of the pair has the same number.  But always-go-left keeps one half more loaded.\nAuthor:\nPEB\nMore information\nBerthold Vöcking\n,\nHow Asymmetry Helps Load Balancing\n, Journal of the ACM, 50(4):568-589, July 2003.\nA preliminary version appeared in FOCS 1999.\nGo to the\nDictionary of Algorithms and Data\nStructures\nhome page.\nIf you have suggestions, corrections, or comments, please get in touch\nwith\nPaul Black\n.\nEntry modified 19 December 2012.\nHTML page formatted Wed Oct 30 12:15:31 2024.\nCite this as:\nPaul E. Black, \"2-left hashing\", in\nDictionary of Algorithms and Data Structures\n[online], Paul E. Black, ed. 19 December 2012. (accessed TODAY)\nAvailable from:\nhttps://www.nist.gov/dads/HTML/twoLeftHashing.html",
+  "sha256": "17b8dccc65592f7867e44d910331d1585ed9d301b011378857793d3b483464c7",
+  "raw_sha256": "78115aaa7e6928cf036a502386a2f0832b30cf6e971ee02971f474b857a57636",
+  "content_type": "text/html",
+  "charset": "utf-8",
+  "extraction_method": "http-html-data-lines/1",
+  "capture_id": "1d3e26ecd4707d1a9331ddae73269d02d13250ffbd42dcd8cf9e5ecf8e5cea5e"
+}

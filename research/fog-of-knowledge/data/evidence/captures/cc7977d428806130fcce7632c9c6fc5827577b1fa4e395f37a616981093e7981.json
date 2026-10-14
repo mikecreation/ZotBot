@@ -1,0 +1,15 @@
+{
+  "id": "nist-lastnine-source.qmsort-java",
+  "url": "https://cglab.ca/~morin/misc/sortalg/QMSortAlgorithm.java",
+  "final_url": "https://cglab.ca/~morin/misc/sortalg/QMSortAlgorithm.java",
+  "title": "Pat Morin: QMSortAlgorithm.java—directly linked original implementation",
+  "source_kind": "primary",
+  "retrieved_at": "2026-10-14T20:49:59.392338+00:00",
+  "text": "/*\n * QMSortAlgorithm.java\n * Patrick Morin takes no responsibility for anything. So there.\n *\n */\nimport java.util.Random;\n\n/**\n * A Randomized Sorting demonstration algorithm. In case you haven't \n * noticed, this is a good example of a bad use of randomization.  \n *\n * QMSortAlgorithm.java\n *\n * @author Patrick Morin\n */\n\nclass QMSortAlgorithm extends SortAlgorithm {\n  void sort(int a[]) throws Exception {\n    Random rand = new Random();\n    boolean change;\n\n    do {\n      change = false;\n      // Do some random comparison exchange operations\n      for (int i = 0; i < a.length/4; i++) {\n\tint j = rand.nextInt() % a.length;\n\tj = (j < 0) ? -j : j;\n\tint k = rand.nextInt() % a.length;\n\tk = (k < 0) ? -k : k;\n\tif((a[j] < a[k]) && (j > k)) {\n\t  int T = a[j];\n\t  a[j] = a[k];\n\t  a[k] = T;\n\t  i = 0;\n\t}\n\tcompex(j,k);\n\tpause();\n      }\n      // Check if it's sorted\n      for (int j = 0; !change && j < a.length-1; j++) {\n\tif (a[j] > a[j+1]) {\n\t  change = true;\n\t}\n\tcompex(j, j+1);\n\tpause();\n      } \n    } while(change);\n  }\n}\n\n\n\n\n\n\n",
+  "sha256": "f8decf97352168b073cb9c773711dae914029be19ccb8d3a5109de65ea948039",
+  "raw_sha256": "f8decf97352168b073cb9c773711dae914029be19ccb8d3a5109de65ea948039",
+  "content_type": "text/x-java",
+  "charset": "utf-8",
+  "extraction_method": "http-text/1",
+  "capture_id": "cc7977d428806130fcce7632c9c6fc5827577b1fa4e395f37a616981093e7981"
+}

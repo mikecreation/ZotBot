@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>merge</title>
+<meta name="description"
+  content="Definition of merge,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="merge">
+<meta name="type" content="definition">
+<meta name="area" content="Sorting">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>merge</h1>
+<p>
+(definition)
+</p>
+
+<p>
+<strong>Definition:</strong>
+Combine two or more sorted sequences of data into a single sorted  sequence.
+</p>
+
+<p>
+<strong>Formal Definition:</strong> For simplicity, let input be two sequences, A={a<sub>1</sub>, &hellip;, a<sub>n</sub>} and B={b<sub>1</sub>, &hellip;, b<sub>m</sub>}, each sorted according to some <a href="totalorder.html"><em>total order</em></a>, &le;.  The output is a single sequence, merge(A,B), which is a sorted <a href="permutation.html"><em>permutation</em></a> of {a<sub>1</sub>, &hellip;, a<sub>n</sub>, b<sub>1</sub>, &hellip;, b<sub>m</sub>}. </p> <p> merge(A, B) is <ol> <li> A, if B is empty,  <li> B, if A is empty,  <li> {a<sub>1</sub>}.merge({a<sub>2</sub>, &hellip;, a<sub>n</sub>}, B) if a<sub>1</sub> <= b<sub>1</sub>, and  <li> {b<sub>1</sub>}.merge(A, {b<sub>2</sub>, &hellip;, b<sub>m</sub>}) otherwise.   </ol> The symbol "." stands for concatenation, for example, {a<sub>1</sub>, &hellip;, a<sub>n</sub>}.{b<sub>1</sub>, &hellip;, b<sub>m</sub>} = {a<sub>1</sub>, &hellip;, a<sub>n</sub>, b<sub>1</sub>, &hellip;, b<sub>m</sub>}. </p> <p> Formalization by Mustafa Ege &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="60050705200514094e03034e08150e4e0504154e1412">[email&#160;protected]</a>&gt;.
+</p>
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="multiwayMerge.html"><em>multiway merge</em></a>, <a href="kwaymerge.html"><em>k-way merge</em></a>, <a href="simplemerge.html"><em>simple merge</em></a>, <a href="idealmerge.html"><em>ideal merge</em></a>, <a href="optimalMerge.html"><em>optimal merge</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="twowaymrgsrt.html"><em>two-way merge sort</em></a>, <a href="threewaymsrt.html"><em>three-way merge sort</em></a>, <a href="kwayMergeSort.html"><em>k-way merge sort</em></a>, <a href="balancmrgsrt.html"><em>balanced merge sort</em></a>, <a href="nonbalncmsrt.html"><em>nonbalanced merge sort</em></a>.
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorASK">ASK</a></p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#f989988c95d79b95989a92b997908a8dd79e968f">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 2 March 2015.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Art S. Kagel, "merge", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 2 March 2015. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/merge.html">https://www.nist.gov/dads/HTML/merge.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a916d5bb5b61cd',t:'MTc5MjAwNzE3Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

@@ -1,0 +1,276 @@
+<!DOCTYPE HTML PUBLIC "-//Netscape Corp.//DTD HTML plus Tables//EN" "html-net.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>Dominance Tree Sorts</title>
+
+	<!-- This site is optimized with the Yoast SEO plugin v15.6.2 - https://yoast.com/wordpress/plugins/seo/ -->
+	<meta name="description" content="Dominance Tree Sorts" />
+	<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+	<link rel="canonical" href="https://richardhartersworld.com/domsort/" />
+	<meta property="og:locale" content="en_US" />
+	<meta property="og:type" content="article" />
+	<meta property="og:title" content="Dominance Tree Sorts" />
+	<meta property="og:description" content="Dominance Tree Sorts" />
+	<meta property="og:url" content="https://richardhartersworld.com/domsort/" />
+	<meta property="og:site_name" content="Richard Harter&#039;s World" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:label1" content="Est. reading time">
+	<meta name="twitter:data1" content="6 minutes">
+	<script type="application/ld+json" class="yoast-schema-graph">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://richardhartersworld.com/#website","url":"https://richardhartersworld.com/","name":"Richard Harter&#039;s World","description":"Richarda Harter na svetu","potentialAction":[{"@type":"SearchAction","target":"https://richardhartersworld.com/?s={search_term_string}","query-input":"required name=search_term_string"}],"inLanguage":"en-US"},{"@type":"WebPage","@id":"https://richardhartersworld.com/domsort/#webpage","url":"https://richardhartersworld.com/domsort/","name":"Dominance Tree Sorts","isPartOf":{"@id":"https://richardhartersworld.com/#website"},"datePublished":"2020-12-08T12:07:23+00:00","dateModified":"2020-12-08T12:07:23+00:00","description":"Dominance Tree Sorts","inLanguage":"en-US","potentialAction":[{"@type":"ReadAction","target":["https://richardhartersworld.com/domsort/"]}]}]}</script>
+	<!-- / Yoast SEO plugin. -->
+
+
+<link rel='dns-prefetch' href='//cdn.jsdelivr.net' />
+<link rel='dns-prefetch' href='//s.w.org' />
+		<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/13.0.1\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/13.0.1\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/richardhartersworld.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=5.6"}};
+			!function(e,a,t){var r,n,o,i,p=a.createElement("canvas"),s=p.getContext&&p.getContext("2d");function c(e,t){var a=String.fromCharCode;s.clearRect(0,0,p.width,p.height),s.fillText(a.apply(this,e),0,0);var r=p.toDataURL();return s.clearRect(0,0,p.width,p.height),s.fillText(a.apply(this,t),0,0),r===p.toDataURL()}function l(e){if(!s||!s.fillText)return!1;switch(s.textBaseline="top",s.font="600 32px Arial",e){case"flag":return!c([127987,65039,8205,9895,65039],[127987,65039,8203,9895,65039])&&(!c([55356,56826,55356,56819],[55356,56826,8203,55356,56819])&&!c([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]));case"emoji":return!c([55357,56424,8205,55356,57212],[55357,56424,8203,55356,57212])}return!1}function d(e){var t=a.createElement("script");t.src=e,t.defer=t.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(t)}for(i=Array("flag","emoji"),t.supports={everything:!0,everythingExceptFlag:!0},o=0;o<i.length;o++)t.supports[i[o]]=l(i[o]),t.supports.everything=t.supports.everything&&t.supports[i[o]],"flag"!==i[o]&&(t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&t.supports[i[o]]);t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&!t.supports.flag,t.DOMReady=!1,t.readyCallback=function(){t.DOMReady=!0},t.supports.everything||(n=function(){t.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",n,!1),e.addEventListener("load",n,!1)):(e.attachEvent("onload",n),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&t.readyCallback()})),(r=t.source||{}).concatemoji?d(r.concatemoji):r.wpemoji&&r.twemoji&&(d(r.twemoji),d(r.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link rel='stylesheet' id='wp-block-library-css'  href='https://richardhartersworld.com/wp-includes/css/dist/block-library/style.min.css?ver=5.6' type='text/css' media='all' />
+<link rel="https://api.w.org/" href="https://richardhartersworld.com/wp-json/" /><link rel="alternate" type="application/json" href="https://richardhartersworld.com/wp-json/wp/v2/pages/1233" /><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://richardhartersworld.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://richardhartersworld.com/wp-includes/wlwmanifest.xml" /> 
+<meta name="generator" content="WordPress 5.6" />
+<link rel='shortlink' href='https://richardhartersworld.com/?p=1233' />
+<link rel="alternate" type="application/json+oembed" href="https://richardhartersworld.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Frichardhartersworld.com%2Fdomsort%2F" />
+<link rel="alternate" type="text/xml+oembed" href="https://richardhartersworld.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Frichardhartersworld.com%2Fdomsort%2F&#038;format=xml" />
+<style type="text/css">.recentcomments a{display:inline !important;padding:0 !important;margin:0 !important;}</style></head>
+<body data-rsssl=1 bgcolor="#fff0f0">		<link rel="stylesheet" type="text/css" media="all" href="https://richardhartersworld.com/wp-content/themes/wc67pzh18tum59remc4l6115256/style.css" />
+	<center>
+<table border="4" cellpadding="5" width="95%">
+<tr>
+<td bgcolor="#e0e0e0"><strong><center>
+<a href="https://richardhartersworld.com/cri/index.html">home</a>
+</center></strong></td>
+<td bgcolor="#e0e0e0"><strong><center>
+<a href="https://richardhartersworld.com/cri/toc.html">table of contents</a>
+</center></strong></td>
+<td bgcolor="#e0e0e0"><strong><center>
+<a href="https://richardhartersworld.com/cri/mathcomp.html">Comp. Sci.</a>
+</center></strong></td>
+<td bgcolor="#e0e0e0"><strong><center>
+<a href="https://richardhartersworld.com/cri/2004/toc04aug.html">August 2004</a>
+</center></strong></td>
+<td bgcolor="#e0e0e0"><strong><center>
+<a href="https://richardhartersworld.com/cri/mailpage.html">email</a>
+</center></strong></td>
+</tr></table>
+</center>
+<center>
+<table border="4" cellpadding="20" width="95%">
+<tr><td bgcolor="#fffdf0">
+<strong>
+<center><h1>Dominance Tree Sorts</h1></center>
+<p>
+&#8220;Dominance tree sorts&#8221; is a neologism.  If anyone recognizes this 
+class of sorts I would take it kindly if they would point to the 
+literature (web preferred) where this class of sorts is described 
+and named.  The idea doesn&#8217;t seem to be explored in Knuth, though 
+something may be hidden in the exercises.  Dominance tree sorts 
+aare selection sorts but not tournament sorts.  
+<p>
+Suppose we have a set S of elements and an ordering relationship 
+R defined over S.  For example, S might be an array of integers, 
+and R might be &gt;, the greater than relationship.  Let x and y be 
+two elements of S.  Element x is said to dominate y if (x R y).  
+Again from the example, let x be 8 and y be 5.  Then x dominates 
+y.
+<p>
+A dominance tree T over S is a tree such that (a) every element 
+of S appears exactly once in T, and (b) for every element (except 
+the root) the element&#8217;s parent dominates it.  Here are some 
+examples of dominance trees over the set {1,2,3,4,5}
+<pre>
+          A          B        C
+          5          5        5
+          |          |        |
+       -------     -----      4
+       | | | |     |   |      |
+       1 2 3 4     4   2      3
+                   |          |
+                  ---         2
+                  | |         |
+                  1 3         1
+</pre>
+Dominance trees satisfy the heap property; accordingly they are heaps,
+taking the term &#8220;heap&#8221; in its most general sense.
+Binary heaps are dominance trees, but not all dominance trees are binary heaps.  
+Example B is a binary heap, example C is a sorted list, and in example A 
+all we know is that &#8216;5&#8217; is maximal.  
+<p>
+A set K of comparisons (xRy) is a minimum comparison set for 
+a dominance tree T if it consists exclusively of the comparisons
+in the child/parent linkages.  Thus, in our example, the minimum 
+comparison sets are:
+<p>
+K(A):  5&gt;1, 5&gt;2, 5&gt;3, 5&gt;4<br class="csquyppdpqvnp7fui">
+K(B):  5&gt;4, 5&gt;2, 4&gt;1, 4&gt;3<br class="csquyppdpqvnp7fui">
+K(C):  5&gt;4, 4&gt;3, 3&gt;2, 2&gt;1<br class="csquyppdpqvnp7fui">
+<p>
+Note that a minimum comparison set always has n-1 members where n 
+is the cardinality of S.
+<p>
+An algorithm is an efficient dominance tree construction (EDTC) 
+algorithm if it specifies a minimum comparison sequence that in 
+turn specifies a dominance tree.
+<p>
+One of the important features of EDTC algorithms is that if an 
+element &#8216;loses&#8217; in a comparison it cannot appear in a later 
+comparison in the comparison&#8217;s sequence.  Another is that there 
+is no EDTC algorithm that can guarantee that the root element has 
+less than log2(n) children.  In particular there are no 
+EDTC algorithms for creating heaps.
+<p>
+The general plan for dominance tree sorts runs as follows:  For a 
+given set S we first construct a dominance tree T.  We then emit 
+the root of the tree.  The children of the root are compared 
+until a new root is established. In each comparison the &#8216;loser&#8217; 
+becomes a new child of the &#8216;winner&#8217;.  EDTC algorithms are used in 
+both the initial construction phase and in each emission step.  
+There are quite a number of variations depending on which EDTC 
+algorithms are used.
+<p>
+There are two major EDTC algorithms that occur to me.  The first 
+is tournament pairing, also used in the tournament sort and in 
+heapsort.  In the tournament pairing algorithm the set is divided
+into pairs that are compared.  The winners go on to the second 
+round where they are again divided into pairs that are compared.  
+This is continued until a final winner is determined.  This 
+requires n-1 comparisons, log2(n) rounds, and the winner, the 
+root of the tree, will have log2(n) children.
+<p>
+The second is sequential comparison.  The first element in a 
+list is compared with the second.  The winner is compared with 
+the third, and so on.  This also requires n-1 comparisons.  The 
+number of children of the root depends on the location of the 
+root element in the list.  If the ordering of the list elements 
+is random, the average number of children will n/2.  On the other 
+hand, the number of children will be 1 if the list is ordered.
+<p>
+It turns out that we get a very efficient (as measured by the 
+number of comparisons used) algorithm if we use tournament 
+pairing to construct the initial dominance tree and sequential 
+comparison in the update after emission of the root.  Each 
+element has a list associated with it of elements that it 
+dominates.  During construction when one element dominates 
+another the losing element is appended to the winning elements 
+list.  Here is a very simple example.  Let the set to be sorted 
+be {2,4,3,1}.  The actions are: 
+<pre>
+    Construction Phase
+        compare (2,4); append 4 to 2's list
+        compare (3,1); append 3 to 1's list
+        compare (2,1); append 2 to 1's list; 1 is the root
+    Emission Phase
+        emit (1); compare (3,2); append 3 to 2's list; 2 is root
+        emit (2); compare (3,4); append 4 to 3's list; 3 is root
+        emit (3); 4 is root
+        emit (4); done 
+</pre>
+How efficient is this sort?  The tests that I ran showed it to 
+about equivalent to merge-insert (see Knuth, Vol 3, 5.3.1).  For 
+example, sorting 32 items requires a minimum of 118 comparisons 
+on average (log2(32!)).  Merge-insert needs 121.  The number 
+needed by the above algorithm depends on the precise permutation.  
+The average number needed is about 121.5.  For large n the number 
+of comparisons required was ~ n*(log2(n) &#8211; 1.27) in the tests I 
+performed; this is not far off from the best possible of which is
+~ n*(log2(n) &#8211; log2(e)) = n*(log2(n) &#8211; 1.44).
+<p>
+Why is this sort efficient?  It has to do with an order 
+preservation property in the construction and updating of the 
+dominance lists.  In the construction phase a dominance list has 
+two special properties: (a) its length is longer than the lengths 
+of the lists of the elements in its list, and (b) the elements in 
+the list are in order of the length of their lists.  These 
+properties are almost always preserved by the above algorithm.  
+In turn this implies that the lengths of the dominance lists are 
+slightly less than O(log2(n)) on average.
+<p>
+Can this be improved upon?  Possibly.  The only 
+reference I can find to dominance tree sorts is a web article by 
+someone called Supercat.  In the web article he in effect forces 
+property (b) to hold.  (He calls it a tournament sort which is a 
+bit of a misnomer.)  He gives the following results for a test 
+case sorting one million items.
+<p>
+Number of comparisons by a perfect sort (lg(n!)) : 18,488,865<br class="csquyppdpqvnp7fui">
+Avg # of comparisons for Tournament Sort: 18,646,425 (100.85% of perfect)<br class="csquyppdpqvnp7fui">
+Avg # of comparisons for Borland C&#8217;s qsort: 22,439,507 (121.37% of perfect)
+<p>
+This gives (n = 1000000) n*(log2(n) &#8211; 1.284) which is tad better 
+than the simpler algorithm given here.  On the other hand 
+Supercat&#8217;s version requires addition comparisons of the element 
+weights (integers rather than keys).
+<p>
+Is this a practical sort?  Possibly not.  It requires extra space 
+O(n) for the lists and O(n) for the list headers.  Each 
+comparison involves adding an item to a linked list, so the 
+cost of the inner loop operations will be higher than it is in 
+simpler sorts.  On the other hand memory is often plentiful and 
+the inner loop costs should be no worse than those for an 
+ordinary tree sort.
+<p>
+Dominance tree sorts have an obvious relationship with fibonacci heaps
+and sorts based on fibonacci heaps.  However the fibonacci heapify operation
+uses in effect uses sequential comparison rather than tournament pairing
+comparison; the resulting sort is considerably less efficient. A question of
+interest is whether there is a version of fibonacci heaps that is consistent
+with tournament pairing.
+<h3>References:</h3>
+   URL:   http://www.halfbakery.com/idea/Tournament_20Sort<br class="csquyppdpqvnp7fui">
+   Title: Tournament sort
+<p>
+   URL:   http://algorithm.myrice.com/resources/technical_artile/fibonacci_heap/fibonacci.htm<br class="csquyppdpqvnp7fui">
+   Title: The Fibonacci Heap
+<p>   
+   Knuth, The Art of Computer Programming, Vol 3, Searching
+   and Sorting.
+</p>
+<hr><p>
+<i>This page was last updated August 24, 2004.</i>
+</center>
+</strong>
+</td></tr></table></center>
+<center>
+<table border="4" cellpadding="5" width="95%">
+<tr>
+<td bgcolor="#e0e0e0"><strong><center>
+<a href="https://richardhartersworld.com/cri/index.html">home</a>
+</center></strong></td>
+<td bgcolor="#e0e0e0"><strong><center>
+<a href="https://richardhartersworld.com/cri/toc.html">table of contents</a>
+</center></strong></td>
+<td bgcolor="#e0e0e0"><strong><center>
+<a href="https://richardhartersworld.com/cri/mathcomp.html">Comp. Sci.</a>
+</center></strong></td>
+<td bgcolor="#e0e0e0"><strong><center>
+<a href="https://richardhartersworld.com/cri/2004/toc04aug.html">August 2004</a>
+</center></strong></td>
+<td bgcolor="#e0e0e0"><strong><center>
+<a href="https://richardhartersworld.com/cri/mailpage.html">email</a>
+</center></strong></td>
+</tr></table>
+</center><script type='text/javascript' id='wp_slimstat-js-extra'>
+/* <![CDATA[ */
+var SlimStatParams = {"ajaxurl":"https:\/\/richardhartersworld.com\/wp-admin\/admin-ajax.php","baseurl":"\/","dnt":"noslimstat,ab-item","ci":"YToyOntzOjEyOiJjb250ZW50X3R5cGUiO3M6NDoicGFnZSI7czoxMDoiY29udGVudF9pZCI7aToxMjMzO30-.0f60575a758ef96b995f5dcd1828f7a7"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='https://cdn.jsdelivr.net/wp/wp-slimstat/tags/4.8.8.1/wp-slimstat.min.js' id='wp_slimstat-js'></script>
+<script type='text/javascript' src='https://richardhartersworld.com/wp-includes/js/wp-embed.min.js?ver=5.6' id='wp-embed-js'></script>
+</body>
+</html>

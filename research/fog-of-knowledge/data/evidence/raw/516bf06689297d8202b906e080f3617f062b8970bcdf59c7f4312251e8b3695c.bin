@@ -1,0 +1,273 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="generator" content="HTML Tidy, see www.w3.org">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>String Matching on Ordered Alphabets</title>
+<meta name="generator" content="Microsoft XSLT (msxml3 golden/ msxml4), see http://www.microsoft.com">
+<meta name="robots" content="index, follow">
+<meta name="description" content="EXACT STRING MATCHING ALGORITHMS Animation in Java, String Matching on Ordered Alphabets">
+<meta name="keywords" content="string matching, algorithm, Java, C">
+<meta name="resource-type" content="document">
+<meta name="Author-Corporate" content="Chistian.Charras@dir.univ-rouen.fr">
+<meta name="Content-Language" content="en">
+<meta name="distribution" content="global">
+<link type="text/css" rel="stylesheet" href="string.css">
+</head>
+<body bgcolor="white">
+<a href="node28.html#SECTION00280"><img alt="Optimal Mismatch algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node26.html#SECTION00260"><img alt="Two Way algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="node28.html#SECTION00280">Optimal Mismatch algorithm</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Prev:</b> <a href="node26.html#SECTION00260">Two Way algorithm</a> 
+
+<hr>
+<h1 align="center"><a id="SECTION00270" name="SECTION00270">String Matching on Ordered Alphabets</a></h1>
+
+<hr color="#F0F0FC" size="3">
+<applet codebase="../spm/Smoa" archive="Smoa.zip" code="AppletButtonText2.class" width="230" height="63"><param name="windowTitle" value="String Matching on Ordered Alphabets">
+<param name="windowClass" value="ProgramTextWindow2">
+<param name="buttonText" value="visualization">
+<param name="windowwidth" value="375">
+<param name="windowheight" value="560">
+<param name="label1" value="Pattern:">
+<param name="input1" value="gcagagag">
+<param name="label2" value="String:">
+<param name="input2" value="gcatcgcagagagtatacagtacg">
+<param name="program" value="SMOA">
+</applet> 
+
+<div class="bar"><a name="SECTION00271">Main features</a></div>
+
+<div class="mf">
+<ul>
+<li>no preprocessing phase;</li>
+
+<li>requires an ordered alphabet;</li>
+
+<li>constant extra space complexity;</li>
+
+<li>searching phase in <big><i><b>O</b></i></big>(<i>n</i>) time;</li>
+
+<li>performs 6<i>n</i>+5 text character comparisons in the worst case.</li>
+</ul>
+</div>
+
+<div class="bar"><a name="SECTION00272">Description</a></div>
+
+<div class="desc">
+<p align="justify">During an attempt where the window is positioned on the text factor <i>y</i>[<i>j</i> .. <i>j</i>+<i>m</i>-1], when a prefix <i>u</i> of <i>x</i> has been matched and a mismatch occurs between characters <i>a</i> in <i>x</i> and <i>b</i> in <i>y</i> (<i>see figure 26.1</i>), the algorithm tries to compute the period of <i>ub</i>, if it does not succeed in finding the exact period it computes an approximation of it.</p>
+
+<p align="center"><img align="BOTTOM" alt="figure 26.1" src="images/smoa1.png"><br clear="ALL">
+<strong>Figure 26.1:</strong>&nbsp;Typical attempt during the String Matching on an Ordered Alphabet algorithm.</p>
+
+<div class="bar">Definition</div>
+
+<div class="def">
+<dl>
+<dt>Let us define <i>tw</i><sup><i>e</i></sup><i>w</i>' the <em><b>Maximal-Suffix decomposition</b></em> (MS-decompostion for short) of the word <i>x</i> if:</dt>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP"><i>v</i> = <i>w</i><sup><i>e</i></sup><i>w</i>' is the maximal suffix of <i>x</i> according to the alphabetical ordering;</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP"><i>w</i> is basic;</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP"><i>e</i>&nbsp;<img alt="geq" src="images/geq.gif">&nbsp;1;</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP"><i>w</i>' is a proper prefix of <i>w</i>.</td>
+</tr>
+</table>
+</dd>
+</dl>
+
+<p>Then we have |<i>t</i>| &lt; per/&gt;(<i>x</i>).</p>
+
+<p>If <i>tw</i><sup><i>e</i></sup><i>w</i>' is the MS-decomposition of a nonempty word <i>x</i> then the four properties hold:</p>
+
+<dl>
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP">if <i>t</i> is a suffix of <i>w</i> then <em>per</em>(<i>x</i>) = <em>per</em>(<i>v</i>);</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP"><em>per</em>(<i>x</i>) &gt; |<i>t</i>|;</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP">if |<i>t</i>|&nbsp;<img alt="geq" src="images/geq.gif">&nbsp;|<i>w</i>| then <em>per</em>(<i>x</i>) &gt; |<i>v</i>| = |<i>x</i>|-|<i>t</i>|;</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP">if <i>t</i> is not a suffix of <i>w</i> and |<i>t</i>| &lt; |<i>w</i>| then <em>per</em>(<i>x</i>) &gt; <em>min</em>(|<i>v</i>,|<i>tw</i><sup><i>e</i></sup>|).</td>
+</tr>
+</table>
+</dd>
+</dl>
+
+<p align="justify">If <i>u</i> is a suffix of <i>w</i> then <em>per</em>(<i>x</i>)=<em>per</em>(<i>v</i>)=|<i>w</i>|.<br>
+ Otherwise <em>per</em>(<i>x</i>) &gt; <em>max</em>(|<i>u</i>,<em>min</em>(|<i>v</i>|, |<i>tw</i><sup><i>e</i></sup>|)) &nbsp;<img alt="geq" src="images/geq.gif">&nbsp; |<i>x</i>|/2.</p>
+
+<p align="justify">If <i>tw</i><sup><i>e</i></sup><i>w</i>' is the MS-decomposition of a nonempty word <i>x</i>, <em>per</em>(<i>x</i>) = |<i>w</i>| and <i>e</i> &gt; 1 then If <i>tw</i><sup><i>e</i>-1</sup><i>w</i>' is the MS-decomposition of <i>x</i>' = <i>uw</i><sup><i>e</i>-1</sup><i>w</i>'.</p>
+</div>
+
+<p align="justify">The algorithm computes the maximal suffix of the matched prefix of the pattern appended with the mismatched character of the text after each attempt. It avoids to compute it from scratch after a shift of length <em>per</em>(<i>w</i>)$ has been performed.</p>
+
+<p align="justify">The String Matching on Ordered Alphabets needs no preprocessing phase.</p>
+
+<p align="justify">The searching phase can be done in <big><i><b>O</b></i></big>(<i>n</i>) time complexity using a constant extra space. The algorithm performs no more than 6<i>n</i>+5 text character comparisons.</p>
+</div>
+
+<div class="bar"><a name="SECTION00273">The C code</a></div>
+
+<p align="center"><img width="527" height="115" align="BOTTOM" alt="figure 26.2" src="images/smoa2.png"><br clear="all">
+<strong>Figure 26.2:</strong>&nbsp;Meaning of the variables <i>i</i>, <i>j</i>, <i>k</i>, <i>p</i> in the function <tt><big><tt>NEXT_MAXIMAL_SUFFIX</tt></big></tt>.<br>
+</p>
+
+<div class="pre">
+<pre>
+/* Compute the next maximal suffix. */
+void nextMaximalSuffix(char *x, int m,
+                       int *i, int *j, int *k, int *p) {
+   char a, b;
+ 
+   while (*j + *k &lt; m) {
+      a = x[*i + *k];
+      b = x[*j + *k];
+      if (a == b)
+         if (*k == *p) {
+            (*j) += *p;
+            *k = 1;
+         }
+         else
+            ++(*k);
+      else
+         if (a &gt; b) {
+            (*j) += *k;
+            *k = 1;
+            *p = *j - *i;
+         }
+         else {
+            *i = *j;
+            ++(*j);
+            *k = *p = 1;
+         }
+   }
+}
+ 
+ 
+/* String matching on ordered alphabets algorithm. */
+void SMOA(char *x, int m, char *y, int n) {
+   int i, ip, j, jp, k, p;
+ 
+   /* Searching */
+   ip = -1;
+   i = j = jp = 0;
+   k = p = 1;
+   while (j &lt;= n - m) {
+      while (i + j &lt; n &amp;&amp; i &lt; m &amp;&amp; x[i] == y[i + j])
+         ++i;
+      if (i == 0) {
+         ++j;
+         ip = -1;
+         jp = 0;
+         k = p = 1;
+      }
+      else {
+         if (i &gt;= m)
+            OUTPUT(j);
+         nextMaximalSuffix(y + j, i+1, &amp;ip, &amp;jp, &amp;k, &amp;p);
+         if (ip &lt; 0 ||
+             (ip &lt; p &amp;&amp;
+              memcmp(y + j, y + j + p, ip + 1) == 0)) {
+            j += p;
+            i -= p;
+            if (i &lt; 0)
+               i = 0;
+            if (jp - ip &gt; p)
+               jp -= p;
+            else {
+               ip = -1;
+               jp = 0;
+               k = p = 1;
+            }
+         }
+         else {
+            j += (MAX(ip + 1,
+                      MIN(i - ip - 1, jp + 1)) + 1);
+            i = jp = 0;
+            ip = -1;
+            k = p = 1;
+         }
+      }
+   }
+}
+
+</pre>
+</div>
+
+<div class="bar"><a name="SECTION00274" style="color: teal">The example</a></div>
+
+<p><a name="search" href="examples/exp27.html" style="text-decoration: underline">Searching</a> phase</p>
+
+<br>
+<div class="bar"><a name="SECTION00275">References</a></div>
+
+<div class="ref">
+<ul style="text-align: justify ">
+<li><strong>C<small>ROCHEMORE</small> M.</strong>, 1992, String-matching on ordered alphabets, <em>Theoretical Computer Science</em> 92(1):33-47.</li>
+
+<li>C<small>ROCHEMORE</small>, M., R<small>YTTER</small>, W., 1994, Text Algorithms, <em>Oxford University Press</em>.</li>
+</ul>
+</div>
+
+<br>
+<hr color="#F0F0FC" size="2">
+<a href="node28.html#SECTION00280"><img alt="Optimal Mismatch algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node26.html#SECTION00260"><img alt="Two Way algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="node28.html#SECTION00280">Optimal Mismatch algorithm</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Prev:</b> <a href="node26.html#SECTION00260">Two Way algorithm</a> 
+
+<hr>
+<br>
+<div align="right"><em><small><small>e-mails: {<a href="mailto:Christian.Charras@laposte.net">Christian.Charras</a>, <a href="mailto:Thierry.Lecroq@laposte.net">Thierry.Lecroq</a> }@laposte.net</small><br>
+ Tue Jan 14 15:03:31 MET 1997</small></em></div>
+</body>
+</html>
+

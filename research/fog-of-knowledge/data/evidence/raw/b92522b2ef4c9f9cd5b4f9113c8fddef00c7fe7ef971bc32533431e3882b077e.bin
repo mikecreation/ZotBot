@@ -1,0 +1,341 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="generator" content="HTML Tidy, see www.w3.org">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Colussi algorithm</title>
+<meta name="generator" content="Microsoft XSLT (msxml3 golden/ msxml4), see http://www.microsoft.com">
+<meta name="robots" content="index, follow">
+<meta name="description" content="EXACT STRING MATCHING ALGORITHMS Animation in Java, Colussi algorithm">
+<meta name="keywords" content="string matching, algorithm, Java, C">
+<meta name="resource-type" content="document">
+<meta name="Author-Corporate" content="Chistian.Charras@dir.univ-rouen.fr">
+<meta name="Content-Language" content="en">
+<meta name="distribution" content="global">
+<link type="text/css" rel="stylesheet" href="string.css">
+</head>
+<body bgcolor="white">
+<a href="node11.html#SECTION00110"><img alt="Galil-Giancarlo algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node9.html#SECTION0090"><img alt="Simon algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="node11.html#SECTION00110">Galil-Giancarlo algorithm</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Prev:</b> <a href="node9.html#SECTION0090">Simon algorithm</a> 
+
+<hr>
+<h1 align="center"><a name="SECTION00100">Colussi algorithm</a></h1>
+
+<hr color="#F0F0FC" size="3">
+<applet codebase="../spm/Colussi" archive="Colussi.zip" code="AppletButtonText2.class" width="230" height="63"><param name="windowTitle" value="Colussi algorithm">
+<param name="windowClass" value="ProgramTextWindow2">
+<param name="buttonText" value="visualization">
+<param name="windowwidth" value="375">
+<param name="windowheight" value="560">
+<param name="label1" value="Pattern:">
+<param name="input1" value="gcagagag">
+<param name="label2" value="String:">
+<param name="input2" value="gcatcgcagagagtatacagtacg">
+<param name="program" value="Colussi">
+</applet> 
+
+<div class="bar"><a name="SECTION00101">Main features</a></div>
+
+<div class="mf">
+<ul>
+<li>refinement of the <a href="node8.html#SECTION0080">Knuth, Morris and Pratt</a> algorithm;</li>
+
+<li>partitions the set of pattern positions into two disjoint subsets; the positions in the first set are scanned from left to right and when no mismatch occurs the positions of the second subset are scanned from right to left;</li>
+
+<li>preprocessing phase in <big><i><b>O</b></i></big>(<i>m</i>) time and space complexity;</li>
+
+<li>searching phase in <big><i><b>O</b></i></big>(<i>n</i>) time complexity;</li>
+
+<li>performs <img alt="3/2" align="MIDDLE" src="images/troisdemi.gif"><i>n</i> text character comparisons in the worst case.</li>
+</ul>
+</div>
+
+<div class="bar"><a name="SECTION00102">Description</a></div>
+
+<div class="desc">
+<p align="justify">The design of the Colussi algorithm follows a tight analysis of the <a href="node8.html#SECTION0080">Knuth, Morris and Pratt</a> algorithm.</p>
+
+<dl>
+<dt>The set of pattern positions is divided into two disjoint subsets. Then each attempt consists in two phases:</dt>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP">in the first phase the comparisons are performed from left to right with text characters aligned with pattern position for which the value of the <em>kmpNext</em> function is strictly greater than <span style="white-space: nowrap">-1</span>. These positions are called <em><b>noholes</b></em>;</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP">the second phase consists in comparing the remaining positions (called <em><b>holes</b></em>) from right to left.</td>
+</tr>
+</table>
+</dd>
+</dl>
+
+<dl>
+<dt>This strategy presents two advantages:</dt>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP">when a mismatch occurs during the first phase, after the appropriate shift it is not necessary to compare the text characters aligned with noholes compared during the previous attempt;</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP">when a mismatch occurs during the second phase it means that a suffix of the pattern matches a factor of the text, after the corresponding shift a prefix of the pattern will still match a factor of the text, then it is not necessary to compare this factor again.</td>
+</tr>
+</table>
+</dd>
+</dl>
+
+<div class="bar">Definitions</div>
+
+<div class="def">
+<p>For <span style="white-space: nowrap">0&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>i</i>&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>m</i>-1</span>: <span style="white-space: nowrap"><em>kmin</em>[<i>i</i>]= d&gt;0 iff <i>x</i>[0 .. <i>i</i>-1-d]=<i>x</i>[<i>d</i> .. <i>i</i>-1]</span> and <span style="white-space: nowrap"><i>x</i>[<i>i</i>-<i>d</i>]&nbsp;<img alt="neq" src="images/neq.gif">&nbsp;<i>x</i>[<i>i</i>]</span>, 0 otherwise.</p>
+
+<p>When <span style="white-space: nowrap"><em>kmin</em>&nbsp;<img alt="neq" src="images/neq.gif">&nbsp;0</span> a periodicity ends at position <i>i</i> in <i>x</i>.</p>
+
+<p>For <span style="white-space: nowrap">0 &lt; <i>i</i> &lt; <i>m</i> if <em>kmin</em>[<i>i</i>-1]&nbsp;<img alt="neq" src="images/neq.gif">&nbsp;0</span> then <i>i</i> is a nohole otherwise <i>i</i> is a hole.</p>
+
+<p>Let <i>nd</i>+1 be the number of noholes in <i>x</i>.</p>
+
+<dl>
+<dt>The table <i>h</i> contains first the <i>nd</i>+1 noholes in increasing order and then the <span style="white-space: nowrap"><i>m</i>-<i>nd</i>-1</span> holes in decreasing order:</dt>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP">for <span style="white-space: nowrap">0&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>i</i>&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>nd</i></span>, <span style="white-space: nowrap"><i>h</i>[<i>i</i>]</span> is a nohole and <span style="white-space: nowrap"><i>h</i>[<i>i</i>] &lt; h[<i>i</i>+1]</span> for <span style="white-space: nowrap">0&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>i</i>&lt;<i>nd</i></span>;</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP">for <span style="white-space: nowrap"><i>nd</i> &lt; <i>i</i> &lt; <i>m</i></span>, <span style="white-space: nowrap"><i>h</i>[<i>i</i>]</span> is a hole and <span style="white-space: nowrap"><i>h</i>[<i>i</i>] &gt; <i>h</i>[<i>i</i>+1]</span> for <span style="white-space: nowrap"><i>nd</i> &lt; <i>i</i> &lt; <i>m</i>-1</span>.</td>
+</tr>
+</table>
+</dd>
+</dl>
+
+<p align="justify">If <i>i</i> is a hole then <span style="white-space: nowrap"><em>rmin</em>[<i>i</i>]</span> is the smallest period of <i>x</i> greater than <i>i</i>.</p>
+
+<p align="justify">The value of <span style="white-space: nowrap"><em>first</em>[<i>u</i>]</span> is the smallest integer <i>v</i> such that <span style="white-space: nowrap"><i>u</i>&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>h</i>[<i>v</i>]</span>.</p>
+</div>
+
+<p align="justify">Then assume that <i>x</i> is aligned with <span style="white-space: nowrap"><i>y</i>[<i>j</i> .. <i>j</i>+<i>m</i>-1]</span>. If <span style="white-space: nowrap"><i>x</i>[<i>h</i>[<i>k</i>]]=<i>y</i>[<i>j</i>+<i>h</i>[<i>k</i>]]</span> for <span style="white-space: nowrap">0&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>k</i> &lt; <i>r</i> &lt; <i>nd</i></span> and <span style="white-space: nowrap"><i>x</i>[<i>h</i>[<i>r</i>]]&nbsp;<img alt="neq" src="images/neq.gif">&nbsp;<i>y</i>[<i>j</i>+<i>h</i>[<i>r</i>]]</span>. Let <span style="white-space: nowrap"><i>j</i>&rsquo; = <i>j</i>+<em>kmin</em>[<i>h</i>[<i>r</i>]]</span>.<br>
+Then there is no occurrence of <i>x</i> beginning in <span style="white-space: nowrap"><i>y</i>[<i>j</i> .. <i>j</i>&rsquo;]</span> and <i>x</i> can be shifted by <span style="white-space: nowrap"><em>kmin</em>[<i>h</i>[<i>r</i>]]</span> positions to the right.<br>
+Moreover <span style="white-space: nowrap"><i>x</i>[<i>h</i>[<i>k</i>]]=<i>y</i>[<i>j</i>&rsquo;+<i>h</i>[<i>k</i>]]</span> for <span style="white-space: nowrap">0&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>k</i> &lt; <em>first</em>[<i>h</i>[<i>r</i>]-<em>kmin</em>[<i>h</i>[<i>r</i>]]]</span> meaning that the comparisons can be resume with <span style="white-space: nowrap"><i>x</i>[<i>h</i>[<em>first</em>[<i>h</i>[<i>r</i>]-<em>kmin</em>[<i>h</i>[<i>r</i>]]]]]</span> and <span style="white-space: nowrap"><i>y</i>[<i>j</i>&rsquo;+<i>h</i>[<em>first</em>[h[<i>r</i>]-<em>kmin</em>[<i>h</i>[<i>r</i>]]]]]</span>.</p>
+
+<p align="center"><a name="figcol1">&nbsp;</a> <img lt="figure 9.1" src="images/nohole.gif"></p>
+
+<div align="center">
+<p><b>Figure 9.1</b>:&nbsp;Mismatch with a nohole. Noholes are black circles and are compared from left to right.<br>
+<em>In this situation, after the shift, it is not necessary to compare the first two noholes again</em>.</p>
+</div>
+
+<p align="justify">If <span style="white-space: nowrap"><i>x</i>[<i>h</i>[<i>k</i>]]=<i>y</i>[<i>j</i>+<i>h</i>[<i>k</i>]]</span> for <span style="white-space: nowrap">0&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>k</i> &lt; <i>r</i></span> and <span style="white-space: nowrap"><i>x</i>[<i>h</i>[<i>r</i>]]&nbsp;<img alt="neq" src="images/neq.gif">&nbsp;<i>y</i>[<i>j</i>+<i>h</i>[<i>r</i>]]</span> with <span style="white-space: nowrap"><i>nd</i>&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>r</i> &lt; <i>m</i></span>. Let <span style="white-space: nowrap"><i>j</i>&rsquo;=<i>j</i>+<em>rmin</em>[<i>h</i>[<i>r</i>]]</span>. Then there is no occurrence of <i>x</i> beginning in <span style="white-space: nowrap"><i>y</i>[<i>j</i> .. <i>j</i>&rsquo;]</span> and <i>x</i> can be shifted by <span style="white-space: nowrap"><em>kmin</em>[<i>h</i>[<i>r</i>]]</span> positions to the right.<br>
+Moreover <span style="white-space: nowrap"><i>x</i>[0 .. <i>m</i>-1-<em>rmin</em>[<i>h</i>[<i>r</i>]]]</span>=<span style="white-space: nowrap"><i>y</i>[<i>j</i>&rsquo; .. <i>j</i>+<i>m</i>-1]</span> meaning that the comparisons can be resume with <span style="white-space: nowrap"><i>x</i>[<i>h</i>[<em>first</em>[<i>m</i>-1-<em>rmin</em>[<i>h</i>[<i>r</i>]]]]]</span> and <span style="white-space: nowrap"><i>y</i>[<i>j</i>&rsquo;+<i>h</i>[<em>first</em>[<i>m</i>-1-<i>r</i><em>min</em>[<i>h</i>[<i>r</i>]]]]]</span>.</p>
+
+<p align="center"><a name="figcol2">&nbsp;</a> <img alt="figure 9.2" src="images/hole.gif"></p>
+
+<div align="center"><b>Figure 9.2:</b>&nbsp;Mismatch with a hole. Noholes are black circles and are compared from left to right<br>
+ while holes are white circles and are compared from right to left.<br>
+<em>In this situation, after the shift, it is not necessary to compare the matched prefix of the pattern again</em>.</div>
+
+<p align="justify">To compute the values of <em>kmin</em>, a table <em>hmax</em> is used and defined as follows: <span style="white-space: nowrap"><em>hmax</em>[<i>k</i>]</span> is such that <span style="white-space: nowrap"><i>x</i>[<i>k</i> .. <em>hmax</em>[<i>k</i>]-1]=<i>x</i>[0 .. <em>hmax</em>[<i>k</i>]-<i>k</i>-1]</span> and <span style="white-space: nowrap"><i>x</i>[<em>hmax</em>[<i>k</i>]]&nbsp;<img alt="neq" src="images/neq.gif">&nbsp;<i>x</i>[<em>hmax</em>[<i>k</i>]-<i>k</i>]</span>.</p>
+
+<p align="justify">The value of <span style="white-space: nowrap"><em>nhd0</em>[<i>i</i>]</span> is the number of noholes strictly smaller than <i>i</i>.</p>
+
+<dl>
+<dt>We can now define two functions <em>shift</em> and <em>next</em> as follows:</dt>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP"><span style="white-space: nowrap"><em>shift</em>[<i>i</i>]=<em>kmin</em>[<i>h</i>[<i>i</i>]]</span> and <span style="white-space: nowrap"><em>next</em>[<i>i</i>]=<em>nhd0</em>[<i>h</i>[<i>i</i>]-<em>kmin</em>[h[<i>i</i>]]]</span> for <span style="white-space: nowrap"><i>i</i> &lt; <i>nd</i>;</span></td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP"><span style="white-space: nowrap"><em>shift</em>[<i>i</i>]=<em>rmin</em>[<i>h</i>[<i>i</i>]]</span> and <span style="white-space: nowrap"><em>next</em>[<i>i</i>]=<em>nhd0</em>[<i>m</i>-<em>rmin</em>[<i>h</i>[<i>i</i>]]]</span> for <span style="white-space: nowrap"><i>nd</i>&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>i</i> &lt; <i>m</i></span>;</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP"><span style="white-space: nowrap"><em>shift</em>[<i>m</i>]=<em>rmin</em>[0]</span> and <span style="white-space: nowrap"><em>next</em>[<i>m</i>]=<em>nhd0</em>[<i>m</i>-<em>rmin</em>[<i>h</i>[<i>m</i>-1]]]</span>.</td>
+</tr>
+</table>
+</dd>
+</dl>
+
+<p align="justify">Thus, during an attempt where the window is positioned on the text factor <span style="white-space: nowrap"><i>y</i>[<i>j</i> .. <i>j</i>+<i>m</i>-1]</span>, when a mismatch occurs between <span style="white-space: nowrap"><i>x</i>[<i>h</i>[<i>r</i>]]</span> and <span style="white-space: nowrap"><i>y</i>[<i>j</i>+<i>h</i>[<i>r</i>]]</span> the window must be shifted by <span style="white-space: nowrap"><em>shift</em>[<i>r</i>]</span> and the comparisons can be resume with pattern position <span style="white-space: nowrap"><i>h</i>[<em>next</em>[<i>r</i>]]</span>.</p>
+
+<p align="justify">The preprocessing phase can be done in <big><i><b>O</b></i></big>(<i>m</i>) space and time. The searching phase can then be done in <big><i><b>O</b></i></big>(<i>n</i>) time complexity and furthermore at most <img alt="3/2" align="MIDDLE" src="images/troisdemi.gif"><i>n</i> text character comparisons are performed during the searching phase.</p>
+</div>
+
+<div class="bar"><a name="SECTION00103">The C code</a></div>
+
+<div class="pre">
+<pre>
+int preColussi(char *x, int m, int h[], int next[],
+               int shift[]) {
+   int i, k, nd, q, r, s;
+   int hmax[XSIZE], kmin[XSIZE], nhd0[XSIZE], rmin[XSIZE];
+
+   /* Computation of hmax */
+   i = k = 1;
+   do {
+      while (x[i] == x[i - k])
+         i++;
+      hmax[k] = i;
+      q = k + 1;
+      while (hmax[q - k] + k &lt; i) {
+         hmax[q] = hmax[q - k] + k;
+         q++;
+      }
+      k = q;
+      if (k == i + 1)
+         i = k;
+   } while (k &lt;= m);
+
+   /* Computation of kmin */
+   memset(kmin, 0, m*sizeof(int));
+   for (i = m; i &gt;= 1; --i)
+      if (hmax[i] &lt; m)
+         kmin[hmax[i]] = i;
+
+   /* Computation of rmin */
+   for (i = m - 1; i &gt;= 0; --i) {
+      if (hmax[i + 1] == m)
+         r = i + 1;
+      if (kmin[i] == 0)
+         rmin[i] = r;
+      else
+         rmin[i] = 0;
+   }
+
+   /* Computation of h */
+   s = -1;
+   r = m;
+   for (i = 0; i &lt; m; ++i)
+      if (kmin[i] == 0)
+         h[--r] = i;
+      else
+         h[++s] = i;
+   nd = s;
+ 
+   /* Computation of shift */
+   for (i = 0; i &lt;= nd; ++i)
+      shift[i] = kmin[h[i]];
+   for (i = nd + 1; i &lt; m; ++i)
+      shift[i] = rmin[h[i]];
+   shift[m] = rmin[0];
+
+   /* Computation of nhd0 */
+   s = 0;
+   for (i = 0; i &lt; m; ++i) {
+      nhd0[i] = s;
+      if (kmin[i] &gt; 0)
+         ++s;
+   }
+
+
+   /* Computation of next */
+   for (i = 0; i &lt;= nd; ++i)
+      next[i] = nhd0[h[i] - kmin[h[i]]];
+   for (i = nd + 1; i &lt; m; ++i)
+      next[i] = nhd0[m - rmin[h[i]]];
+   next[m] = nhd0[m - rmin[h[m - 1]]];
+
+   return(nd);
+}
+
+void COLUSSI(char *x, int m, char *y, int n) {
+   int i, j, last, nd,
+       h[XSIZE], next[XSIZE], shift[XSIZE];
+
+   /* Processing */
+   nd = preColussi(x, m, h, next, shift);
+
+   /* Searching */
+   i = j = 0;
+   last = -1;
+   while (j &lt;= n - m) {
+      while (i &lt; m &amp;&amp; last &lt; j + h[i] &amp;&amp;
+                      x[h[i]] == y[j + h[i]])
+         i++;
+      if (i &gt;= m || last &gt;= j + h[i]) {
+         OUTPUT(j);
+         i = m;
+      }
+      if (i &gt; nd)
+         last = j + m - 1;
+      j += shift[i];
+      i = next[i];
+   }
+}
+
+</pre>
+</div>
+
+<div class="bar"><a name="SECTION00104" style="color: teal">The example</a></div>
+
+<p>Preprocessing phase</p>
+
+<p align="center"><img alt="Colussi algorithm tables" align="BOTTOM" src="images/colussitables1.png"></p>
+
+<div align="center"><span style="white-space: nowrap">Tables used by Colussi algorithm</span></div>
+
+<p><a name="search" href="examples/exp10.html" style="text-decoration: underline">Searching</a> phase</p>
+
+<br>
+<div class="bar"><a name="SECTION00105">References</a></div>
+
+<div class="ref">
+<ul style="text-align: justify ">
+<li>B<small>RESLAUER</small>, D., 1992, <cite>Efficient String Algorithmics</cite>, Ph. D. Thesis, Report CU-024-92, Computer Science Department, Columbia University, New York, NY.</li>
+
+<li><strong>C<small>OLUSSI</small> L.</strong>, 1991, Correctness and efficiency of the pattern matching algorithms, <em>Information and Computation</em> 95(2):225-251.</li>
+
+<li>C<small>OLUSSI</small>, L., G<small>ALIL</small>, Z., G<small>IANCARLO</small>, R., 1990, On the exact complexity of string matching, in <em>Proceedings of the 31st IEEE Annual Symposium on Foundations of Computer Science</em>, Saint Louis, MO, pp 135-144, IEEE Computer Society Press.</li>
+
+<li>G<small>ALIL</small>, Z., G<small>IANCARLO</small>, R., 1992, On the exact complexity of string matching: upper bounds, <em>SIAM Journal on Computing</em>, 21(3):407-437.</li>
+</ul>
+</div>
+
+<br>
+<hr color="#F0F0FC" size="2">
+<a href="node11.html#SECTION00110"><img alt="Galil-Giancarlo algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node9.html#SECTION0090"><img alt="Simon algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="node11.html#SECTION00110">Galil-Giancarlo algorithm</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Prev:</b> <a href="node9.html#SECTION0090">Simon algorithm</a> 
+
+<hr>
+<br>
+<div align="right"><em><small><small>e-mails: {<a href="mailto:Christian.Charras@laposte.net">Christian.Charras</a>, <a href="mailto:Thierry.Lecroq@laposte.net">Thierry.Lecroq</a> }@laposte.net</small><br>
+ Tue Jan 14 15:03:31 MET 1997</small></em></div>
+</body>
+</html>
+

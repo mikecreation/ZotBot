@@ -1,0 +1,15 @@
+{
+  "id": "nist-dads.hugesparsearray",
+  "url": "https://xlinux.nist.gov/dads/HTML/hugeSparseArray.html",
+  "final_url": "https://xlinux.nist.gov/dads/HTML/hugeSparseArray.html",
+  "title": "NIST Dictionary of Algorithms and Data Structures: hugeSparseArray",
+  "source_kind": "secondary",
+  "retrieved_at": "2026-10-14T19:46:10.085350+00:00",
+  "text": "huge sparse array\nhuge sparse array\n(data structure)\nDefinition:\nLet N be the number of items to store and R be the size of the\nrange\nof\nkey\nvalues; R >> N.   Allocate, but don't initialize, two arrays: an item array I, where |I|≥N, and a location array L, where |L|=R. Initialize a variable, next, the number of items, to zero (with\n0-based indexing\n). To insert an item, put it in the next place in the item array and save where to find it in the location array.\nI[next] = item;\nL[item.key] = next;\nnext++;\nTo look up an item by key, get the index from the location array.  If the index is invalid or refers to the wrong item, the item is not found.\nindex = L[key];\nif (index < 0 OR index >= next) return NOTFOUND;\nif (I[index].key != key) return NOTFOUND;\nreturn I[index];\nInserting N items takes\nΘ(N)\ntotal time, assuming allocation takes constant time. Retrieving an item by key (or responding \"not found\") takes constant time. Listing all items takes Θ(N) time using I.\nGeneralization\n(I am a kind of ...)\narray\n.\nSee also\nsparse matrix\n,\nhash table\n.\nNote:\nKeys must be unique.  Duplicate keys could be handled with\ncollision resolution schemes\n.   This data structure is usually impractical since the range is enormous.\nThis effectively allocates a huge array without explicitly initializing it, at the cost of Θ(N) space and a little time for each access.\nThis is what\nhash tables\nwant to be: constant time for insertion and look up.\nAuthor:\nPEB\nMore information\nHistorical Note\nMotivating problem first posed as exercise 2.12 in\nAlfred V. Aho,  John E. Hopcroft\n, and\nJeffrey D. Ullman\n,\nThe Design and Analysis of Computer Algorithms\n, page 71, Addison-Wesley, 1974.\nGo to the\nDictionary of Algorithms and Data\nStructures\nhome page.\nIf you have suggestions, corrections, or comments, please get in touch\nwith\nPaul Black\n.\nEntry modified 14 August 2008.\nHTML page formatted Wed Oct 30 12:15:30 2024.\nCite this as:\nPaul E. Black, \"huge sparse array\", in\nDictionary of Algorithms and Data Structures\n[online], Paul E. Black, ed. 14 August 2008. (accessed TODAY)\nAvailable from:\nhttps://www.nist.gov/dads/HTML/hugeSparseArray.html",
+  "sha256": "627aad6fd35dd8e70612aa290e8468728e205775321606d51ef8ca3c60a6066c",
+  "raw_sha256": "dad83bd6ec7eb359ee68542c1c8e7f94692cc39c521198672feccf69df234957",
+  "content_type": "text/html",
+  "charset": "utf-8",
+  "extraction_method": "http-html-data-lines/1",
+  "capture_id": "7f03fa372fe39ab76643643a162a81e8f8e771c91a731e8fd941024965409ab7"
+}

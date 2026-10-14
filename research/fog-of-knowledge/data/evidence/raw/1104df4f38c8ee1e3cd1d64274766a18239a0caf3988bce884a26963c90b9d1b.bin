@@ -1,0 +1,284 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="generator" content="HTML Tidy, see www.w3.org">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>KMP Skip Search algorithm</title>
+<meta name="generator" content="Microsoft XSLT (msxml3 golden/ msxml4), see http://www.microsoft.com">
+<meta name="robots" content="index, follow">
+<meta name="description" content="EXACT STRING MATCHING ALGORITHMS Animation in Java, KMP Skip Search algorithm">
+<meta name="keywords" content="string matching, algorithm, Java, C">
+<meta name="resource-type" content="document">
+<meta name="Author-Corporate" content="Chistian.Charras@dir.univ-rouen.fr">
+<meta name="Content-Language" content="en">
+<meta name="distribution" content="global">
+<link type="text/css" rel="stylesheet" href="string.css">
+</head>
+<body bgcolor="white">
+<a href="node33.html#SECTION00330"><img alt="Alpha Skip Search algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node31.html#SECTION00310"><img alt="Skip Search algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="node33.html#SECTION00330">Alpha Skip Search algorithm</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Prev:</b> <a href="node31.html#SECTION00310">Skip Search algorithm</a> 
+
+<hr>
+<h1 align="center"><a id="SECTION00320" name="SECTION00320">KMP Skip Search algorithm</a></h1>
+
+<hr color="#F0F0FC" size="3">
+<applet codebase="../spm/KmpSkipV2" archive="KmpSkipV2.zip" code="AppletButtonText2.class" width="230" height="63"><param name="windowTitle" value="KMP Skip Search algorithm">
+<param name="windowClass" value="ProgramTextWindow2">
+<param name="buttonText" value="visualization">
+<param name="windowwidth" value="375">
+<param name="windowheight" value="560">
+<param name="label1" value="Pattern:">
+<param name="input1" value="gcagagag">
+<param name="label2" value="String:">
+<param name="input2" value="gcatcgcagagagtatacagtacg">
+<param name="program" value="KmpSkipV2">
+</applet> 
+
+<div class="bar"><a name="SECTION00321">Main features</a></div>
+
+<div class="mf">
+<ul>
+<li>improvement of the Skip Search algorithm;</li>
+
+<li>uses buckets of positions for each character of the alphabet;</li>
+
+<li>preprocessing phase in <big><i><b>O</b></i></big>(<i>m</i>+<img alt="sigma" src="images/psigma.gif">) time and space complexity;</li>
+
+<li>searching phase in <big><i><b>O</b></i></big>(<i>n</i>) time complexity.</li>
+</ul>
+</div>
+
+<div class="bar"><a name="SECTION00322">Description</a></div>
+
+<div class="desc">
+<p align="justify">It is possible to make the Skip Search algorithm (see chapter <a href="node31.html#SECTION00310">Skip Search</a> algorithm) linear using the two shift tables of Morris-Pratt (see chapter <a href="node7.html#SECTION0070">Morris and Pratt</a> algorithm) and Knuth-Morris-Pratt (see chapter <a href="node8.html#SECTION0080">Knuth, Morris and Pratt</a> algorithm).</p>
+
+<p align="justify">For 1&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>i</i>&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>m</i>, <em>mpNext</em>[<i>i</i>] is equal to the length of the longest border of <i>x</i>[0 .. <i>i</i>-1] and <em>mpNext</em>[0]=-1.</p>
+
+<p align="justify">For 1&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>i</i> &lt; <i>m</i>, <em>kmpNext</em>[<i>i</i>] is equal to length of the longest border of <i>x</i>[0 .. <i>i</i>-1] followed by a character different from <i>x</i>[<i>i</i>], <em>kmpNext</em>[0]=-1 and <em>kmpNext</em>[<i>m</i>]=<i>m</i>-<em>per</em>(<i>x</i>).</p>
+
+<p align="justify">The lists in the buckets are explicitly stored in a table <em>list</em>.</p>
+
+<p align="justify">The preprocessing phase of the KmpSkip Search algorithm is in <big><i><b>O</b></i></big>(<i>m</i>+<img alt="sigma" src="images/psigma.gif">) time and space complexity.</p>
+
+<dl>
+<dt>A general situation for an attempt during the searching phase is the following ((see figure&nbsp;<a href="node32.html#figsit">30.1</a>):</dt>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP"><i>j</i> is the current text position;</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP"><i>x</i>[<i>i</i>] = <i>y</i>[<i>j</i>];</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP"><em>start</em> = <i>j</i>-<i>i</i> is the possible starting position of an occurrence of <i>x</i> in <i>y</i>;</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP"><em>wall</em> is the rightmost scanned text position;</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP"><i>x</i>[0 .. <em>wall</em>-<em>start</em>-1] = <i>y</i>[<em>start</em> .. <em>wall</em>-1];</td>
+</tr>
+</table>
+</dd>
+</dl>
+
+<p align="center"><a id="figsit" name="figsit">&nbsp;</a> <img width="560" height="109" align="BOTTOM" alt="figure 30.1" src="images/kmpsks1.gif"><br clear="all">
+<strong>Figure 30.1:</strong>&nbsp;General situation during the searching phase of the linear algorithm.</p>
+
+<p align="justify">The comparisons are performed from left to right between <i>x</i>[<em>wall</em>-<em>start</em> .. <i>m</i>-1] and <i>y</i>[<em>wall</em> .. <em>start</em>+<i>m</i>-1] until a mismatch or a whole match occurs. Let <i>k</i>&nbsp;<img alt="geq" src="images/geq.gif">&nbsp;<em>wall</em>-<em>start</em> be the smallest integer such that <i>x</i>[<i>k</i>]&nbsp;<img alt="neq" src="images/neq.gif">&nbsp;<i>y</i>[<em>start</em>+<i>k</i>] or <span style="white-space: nowrap"><i>k</i> = <i>m</i></span> if an occurrence of <i>x</i> starts at position <em>start</em> in <i>y</i>.</p>
+
+<p align="justify">Then <em>wall</em> takes the value of <em>start</em>+<i>k</i>.</p>
+
+<p align="justify">After that the algorithm KmpSkip computes two shifts (two new starting positions): the first one according to the skip algorithm (see algorithm <tt><big><tt>AdvanceSkip</tt></big></tt> for details), this gives us a starting position <em>skipStart</em>, the second one according to the shift table of Knuth-Morris-Pratt, which gives us another starting position <em>kmpStart</em>.</p>
+
+<dl>
+<dt>Several cases can arise:</dt>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP"><em>skipStart</em> &lt; <em>kmpStart</em> then a shift according to the skip algorithm is applied which gives a new value for <em>skipStart</em>, and we have to compare again <em>skipStart</em> and <em>kmpStart</em>;</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP"><em>kmpStart</em> &lt; <em>skipStart</em> &lt; <em>wall</em> then a shift according to the shift table of Morris-Pratt is applied. This gives a new value for <em>kmpStart</em>. We have to compare again <em>skipStart</em> and <em>kmpStart</em>;</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP"><em>skipStart</em> = <em>kmpStart</em> then another attempt can be performed with <em>start</em> = <em>skipStart</em>;</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP"><em>kmpStart</em> &lt; <em>wall</em> &lt; <em>skipStart</em> then another attempt can be performed with <em>start</em> = <em>skipStart</em>.</td>
+</tr>
+</table>
+</dd>
+</dl>
+
+<p align="justify">The searching phase of the KmpSkip Search algorithm is in <big><i><b>O</b></i></big>(<i>n</i>) time.</p>
+</div>
+
+<div class="bar"><a name="SECTION00323">The C code</a></div>
+
+<p align="justify">The function <tt><big><tt>preMp</tt></big></tt> is given chapter <a href="node7.html#SECTION0070">Morris and Pratt</a> algorithm and the function <tt><big><tt>preKmp</tt></big></tt> is given chapter <a href="node8.html#SECTION0080">Knuth, Morris and Pratt</a> algorithm.</p>
+
+<div class="pre">
+<pre>
+int attempt(char *y, char *x, int m, int start, int wall) {
+   int k;
+
+   k = wall - start;
+   while (k &lt; m &amp;&amp; x[k] == y[k + start])
+      ++k;
+   return(k);
+}
+
+
+void KMPSKIP(char *x, int m, char *y, int n) {
+   int i, j, k, kmpStart, per, start, wall;
+   int kmpNext[XSIZE], list[XSIZE], mpNext[XSIZE],
+       z[ASIZE];
+
+   /* Preprocessing */
+   preMp(x, m, mpNext);
+   preKmp(x, m, kmpNext);
+   memset(z, -1, ASIZE*sizeof(int));
+   memset(list, -1, m*sizeof(int));
+   z[x[0]] = 0;
+   for (i = 1; i &lt; m; ++i) {
+      list[i] = z[x[i]];
+      z[x[i]] = i;
+   }
+
+   /* Searching */
+   wall = 0;
+   per = m - kmpNext[m];
+   i = j = -1;
+   do {
+      j += m;
+   } while (j &lt; n &amp;&amp; z[y[j]] &lt; 0);
+   if (j &gt;= n)
+     return;
+   i = z[y[j]];
+   start = j - i;
+   while (start &lt;= n - m) {
+      if (start &gt; wall)
+         wall = start;
+      k = attempt(y, x, m, start, wall);
+      wall = start + k;
+      if (k == m) {
+         OUTPUT(start);
+         i -= per;
+      }
+      else
+         i = list[i];
+      if (i &lt; 0) {
+         do {
+            j += m;
+         } while (j &lt; n &amp;&amp; z[y[j]] &lt; 0);
+         if (j &gt;= n)
+            return;
+         i = z[y[j]];
+      }
+      kmpStart = start + k - kmpNext[k];
+      k = kmpNext[k];
+      start = j - i;
+      while (start &lt; kmpStart ||
+             (kmpStart &lt; start &amp;&amp; start &lt; wall)) {
+         if (start &lt; kmpStart) {
+            i = list[i];
+            if (i &lt; 0) {
+               do {
+                  j += m;
+               } while (j &lt; n &amp;&amp; z[y[j]] &lt; 0);
+               if (j &gt;= n)
+                  return;
+               i = z[y[j]];
+            }
+            start = j - i;
+         }
+         else {
+            kmpStart += (k - mpNext[k]);
+            k = mpNext[k];
+         }
+      }
+   }
+}
+
+</pre>
+</div>
+
+<div class="bar"><a name="SECTION00324" style="color: teal">The example</a></div>
+
+<p>Preprocessing phase</p>
+
+<p align="center"><img alt="Kmp skip search Z table" align="BOTTOM" src="images/kmpskstab1.png"><br clear="all">
+<span style="white-space: nowrap">Tables used by KMP Skip Search algorithm.</span></p>
+
+<p><a name="search" href="examples/exp32.html" style="text-decoration: underline">Searching</a> phase</p>
+
+<br>
+<div class="bar"><a id="SECTION00325" name="SECTION00325">References</a></div>
+
+<div class="ref">
+<ul style="text-align: justify ">
+<li><strong>C<small>HARRAS</small> C</strong>., <strong>L<small>ECROQ</small> T.</strong>, <strong>P<small>EHOUSHEK</small> J.D.</strong>, 1998, A very fast string matching algorithm for small alphabets and long patterns, in <em>Proceedings of the 9th Annual Symposium on Combinatorial Pattern Matching</em> , M. Farach-Colton ed., Piscataway, New Jersey, Lecture Notes in Computer Science 1448, pp 55-64, Springer-Verlag, Berlin.</li>
+</ul>
+</div>
+
+<br>
+<hr color="#F0F0FC" size="2">
+<a href="node33.html#SECTION00330"><img alt="Alpha Skip Search algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node31.html#SECTION00310"><img alt="Skip Search algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="node33.html#SECTION00330">Alpha Skip Search algorithm</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Prev:</b> <a href="node31.html#SECTION00310">Skip Search algorithm</a> 
+
+<hr>
+<br>
+<div align="right"><em><small><small>e-mails: {<a href="mailto:Christian.Charras@laposte.net">Christian.Charras</a>, <a href="mailto:Thierry.Lecroq@laposte.net">Thierry.Lecroq</a> }@laposte.net</small><br>
+ Tue Jan 14 15:03:31 MET 1997</small></em></div>
+</body>
+</html>
+

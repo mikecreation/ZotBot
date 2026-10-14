@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>optimal merge</title>
+<meta name="description"
+  content="Definition of optimal merge,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="optimal merge">
+<meta name="type" content="algorithm">
+<meta name="area" content="Sorting">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>optimal merge</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+<a href="merge.html"><em>Merge</em></a> n sorted sequences of different lengths into one output while minimizing reads.  Only two sequences can be merged at once.  At each step, the two shortest sequences are merged.
+</p>
+
+<p>
+<strong>Formal Definition:</strong> Let D={n<sub>1</sub>, &hellip; , n<sub>k</sub>} be the set of lengths  of sequences to be merged.  Take the two shortest sequences,  n<sub>i</sub>, n<sub>j</sub>&isin; D,  such that n&ge; n<sub>i</sub> and n&ge; n<sub>j</sub> &forall; n&isin; D.   Merge these two sequences.  The new set D is D' = (D - {n<sub>i</sub>, n<sub>j</sub>}) &cup; {n<sub>i</sub>+n<sub>j</sub>}.   Repeat until there is only one sequence.
+</p>
+<p>
+<strong>See also</strong>
+<a href="simplemerge.html"><em>simple merge</em></a>, <a href="idealmerge.html"><em>ideal merge</em></a>, <a href="huffmanCoding.html"><em>Huffman coding</em></a>, <a href="greedyalgo.html"><em>greedy algorithm</em></a>.
+</p>
+
+<p>
+<em>Note:
+Merging sequences by length is the same as joining trees by frequency in <a href="huffmanCoding.html"><em>Huffman coding</em></a>. For example, let there be a set of sorted sequences of the following  lengths: D={3,5,7,9,12,14,15,17}.  Building the optimal merge tree goes as follows.  Note that merged sequences are replaced by the sum of their lengths.  For instance, the first step merges the sequence of length 3 and the sequence of length 5 to get a sequence of length 8. 
+<pre> 3        5        7        9       12        14     15       17 </pre> 
+<pre>   8          7        9       12        14     15       17	<br />  / \								<br /> 3   5 </pre> 
+<pre>     15         9       12        14     15       17	<br />    /  \							<br />   8    7						<br />  / \							<br /> 3   5 </pre> 
+<pre>     15          21       14     15       17	<br />    /  \        /  \				<br />   8    7      9    12				<br />  / \						<br /> 3   5 </pre> 
+<pre>    29             21        15       17	<br />   /  \           /  \			<br /> 14    15        9    12			<br />      /  \				<br />     8    7				<br />    / \					<br />   3   5 </pre> 
+<pre>    29             21           32	<br />   /  \           /  \         /  \	<br /> 14    15        9    12     15    17	<br />      /  \				<br />     8    7				<br />    / \					<br />   3   5 </pre> 
+<pre>         50                 32		<br />       /    \              /  \		<br />      /      \           15    17	<br />    29        21				<br />   /  \      /  \			<br /> 14    15   9    12			<br />      /  \				<br />     8    7				<br />    / \					<br />   3   5 </pre> 
+<pre>               82		<br />             /    \		<br />            /      \		<br />           /        \		<br />         50          32		<br />       /    \       /  \		<br />      /      \    15    17	<br />    29        21			<br />   /  \      /  \		<br /> 14    15   9    12		<br />      /  \			<br />     8    7			<br />    / \				<br />   3   5 </pre></em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorAL">AL</a></p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#9dedfce8f1b3fff1fcfef6ddf3f4eee9b3faf2eb">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 14 August 2008.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Alen Lovrencic, "optimal merge", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 14 August 2008. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/optimalMerge.html">https://www.nist.gov/dads/HTML/optimalMerge.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a916ee4d6c1132',t:'MTc5MjAwNzE4MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

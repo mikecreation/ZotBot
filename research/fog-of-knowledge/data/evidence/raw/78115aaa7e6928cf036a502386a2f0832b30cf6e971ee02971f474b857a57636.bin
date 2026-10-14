@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>2-left hashing</title>
+<meta name="description"
+  content="Definition of 2-left hashing,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="2-left hashing">
+<meta name="type" content="data structure">
+<meta name="area" content="Searching">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>2-left hashing</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A <a href="dictionary.html"><em>dictionary</em></a> implemented with two <a href="hashtab.html"><em>hash tables</em></a> of equal size, T<sub>1</sub> and T<sub>2</sub>, and two different <a href="hash.html"><em>hash functions</em></a>, h<sub>1</sub> and h<sub>2</sub>. A new <a href="key.html"><em>key</em></a> is put in table 2 only if there are fewer (colliding) keys at T<sub>2</sub>[h<sub>2</sub>(key)] than at T<sub>1</sub>[h<sub>1</sub>(key)], otherwise it is put in table 1. With n keys and two tables of size n/2, the most collisions is 0.69... log<sub>2</sub> ln n +  <a href="bigOnotation.html"><em>O</em></a>(1) with high probability. 
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="hashtab.html"><em>hash table</em></a>.
+</p>
+<p>
+<strong>Aggregate parent</strong> (I am a part of or used in ...)<br>
+<a href="dictionary.html"><em>dictionary</em></a>.
+</p>
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="array.html"><em>array</em></a>, <a href="hash.html"><em>hash function</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="cuckooHashing.html"><em>cuckoo hashing</em></a>, <a href="twoChoiceHashing.html"><em>2-choice hashing</em></a>.
+</p>
+
+<p>
+<em>Note:
+The name comes from the notion of dividing a single hash table in two, left and right halves of equal sizes, and always putting the key in the left half on ties.<br /> Although the average lookup time is similar to a table with a single hash function, the maximum number of collisions is exponentially smaller.  This makes using buckets or use in real-time systems far more practical.  Additional hash functions only decrease the maximum by a constant factor.<br /> Buckets or lists can be searched in parallel. </p> 
+<p> Why would breaking a single hash table into two pieces and asymmetrically resolving ties keep the maximum number of collisions lower than the single table of <a href="twoChoiceHashing.html"><em>2-choice hashing</em></a>?  Michael Mitzenmacher, who extensively studied and analyzed 2-left and 2-choice hashing, provides the intuition that no location increases the maximum number of collisions until both of the pair has the same number.  But always-go-left keeps one half more loaded.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>More information</h2>
+<p>
+<strong>Berthold V&ouml;cking</strong>, <em>How Asymmetry Helps Load Balancing</em>, Journal of the ACM, 50(4):568-589, July 2003.<br /> A preliminary version appeared in FOCS 1999.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#b9c9d8ccd597dbd5d8dad2f9d7d0cacd97ded6cf">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 19 December 2012.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "2-left hashing", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 19 December 2012. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/twoLeftHashing.html">https://www.nist.gov/dads/HTML/twoLeftHashing.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a9176ebc411259',t:'MTc5MjAwNzIwMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

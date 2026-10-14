@@ -1,0 +1,193 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="generator" content="HTML Tidy, see www.w3.org">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Turbo-BM algorithm</title>
+<meta name="generator" content="Microsoft XSLT (msxml3 golden/ msxml4), see http://www.microsoft.com">
+<meta name="robots" content="index, follow">
+<meta name="description" content="EXACT STRING MATCHING ALGORITHMS Animation in Java, Turbo-BM algorithm">
+<meta name="keywords" content="string matching, algorithm, Java, C">
+<meta name="resource-type" content="document">
+<meta name="Author-Corporate" content="Chistian.Charras@dir.univ-rouen.fr">
+<meta name="Content-Language" content="en">
+<meta name="distribution" content="global">
+<link type="text/css" rel="stylesheet" href="string.css">
+</head>
+<body bgcolor="white">
+<a href="node16.html#SECTION00160"><img alt="Apostolico-Giancarlo algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node14.html#SECTION00140"><img alt="Boyer-Moore algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="node16.html#SECTION00160">Apostolico-Giancarlo algorithm</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Prev:</b> <a href="node14.html#SECTION00140">Boyer-Moore algorithm</a> 
+
+<hr>
+<h1 align="center"><a name="SECTION00150">Turbo-BM algorithm</a></h1>
+
+<hr color="#F0F0FC" size="3">
+<applet codebase="../spm/TurboBoyerMoore" archive="TurboBoyerMoore.zip" code="AppletButtonText2.class" width="230" height="63"><param name="windowTitle" value="Turbo-BM algorithm">
+<param name="windowClass" value="ProgramTextWindow2">
+<param name="buttonText" value="visualization">
+<param name="windowwidth" value="375">
+<param name="windowheight" value="560">
+<param name="label1" value="Pattern:">
+<param name="input1" value="gcagagag">
+<param name="label2" value="String:">
+<param name="input2" value="gcatcgcagagagtatacagtacg">
+<param name="program" value="TurboBoyerMoore">
+</applet> 
+
+<div class="bar"><a name="SECTION00151">Main features</a></div>
+
+<div class="mf">
+<ul>
+<li>variant of the <a href="node14.html#SECTION00140">Boyer-Moore</a>;</li>
+
+<li>no extra preprocessing needed with respect to the Boyer-Moore algorithm;</li>
+
+<li>constant extra space needed with respect to the Boyer-Moore algorithm;</li>
+
+<li>preprocessing phase in <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<i>m</i>+<img alt="sigma" src="images/psigma.gif">)</span> time and space complexity;</li>
+
+<li>searching phase in <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<i>n</i>)</span> time complexity;</li>
+
+<li><span style="white-space: nowrap">2<i>n</i></span> text character comparisons in the worst case.</li>
+</ul>
+</div>
+
+<div class="bar"><a name="SECTION00152">Description</a></div>
+
+<div class="desc">
+<p align="justify">The Turbo-BM algorithm is an amelioration of the <a href="node14.html#SECTION00140">Boyer-Moore</a> algorithm. It needs no extra preprocessing and requires only a constant extra space with respect to the original Boyer-Moore algorithm. It consists in remembering the factor of the text that matched a suffix of the pattern during the last attempt (and only if a good-suffix shift was performed).</p>
+
+<dl>
+<dt>This technique presents two advantages:</dt>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP">it is possible to jump over this factor;</td>
+</tr>
+</table>
+</dd>
+
+<dd>
+<table summary="case">
+<tr>
+<td valign="BASELINE"><img alt="" src="images/hand.gif">&nbsp;</td>
+<td valign="TOP">it can enable to perform a turbo-shift.</td>
+</tr>
+</table>
+</dd>
+</dl>
+
+<p align="justify">A turbo-shift can occur if during the current attempt the suffix of the pattern that matches the text is shorter than the one remembered from the preceding attempt. In this case let us call <i>u</i> the remembered factor and <i>v</i> the suffix matched during the current attempt such that <i>uzv</i> is a suffix of <i>x</i>. Let <i>a</i> and <i>b</i> be the characters that cause the mismatch during the current attempt in the pattern and the text respectively. Then <i>av</i> is a suffix of <i>x</i>, and thus of <i>u</i> since <span style="white-space: nowrap">|<i>v</i>| &lt; |<i>u</i>|</span>. The two characters <i>a</i> and <i>b</i> occur at distance <i>p</i> in the text, and the suffix of <i>x</i> of length <span style="white-space: nowrap">|<i>uzv</i>|</span> has a period of length <span style="white-space: nowrap"><i>p</i>=|<i>zv</i>|</span> since <i>u</i> is a border of <i>uzv</i>, thus it cannot overlap both occurrences of two different characters <i>a</i> and <i>b</i>, at distance <i>
+p</i>, in the text. The smallest shift possible has length <span style="white-space: nowrap">|<i>u</i>|-|<i>v</i>|</span>, which we call a turbo-shift (<i>see figure 14.1</i>).</p>
+
+<p align="center"><img alt="tbm1" src="images/tbm1.gif"></p>
+
+<p align="center"><b>Figure 14.1</b>. A turbo-shift can apply when <span style="white-space: nowrap">|<i>v</i>|&lt;|<i>u</i>|</span>.</p>
+
+<p align="justify">Still in the case where <span style="white-space: nowrap">|<i>v</i>|&lt;|<i>u</i>|</span> if the length of the bad-character shift is larger than the length of the good-suffix shift and the length of the turbo-shift then the length of the actual shift must be greater or equal to <span style="white-space: nowrap">|<i>u</i>|+1</span>. Indeed, in this case the two characters <i>c</i> and <i>d</i> are different since we assumed that the previous shift was a good-suffix shift. (<i>see figure 14.2</i>)</p>
+
+<p align="center"><img alt="tbm2" src="images/tbm2.gif"></p>
+
+<p align="center"><b>Figure 14.2</b>.<span style="white-space: nowrap"><i>c</i>&nbsp;<img alt="neq" src="images/neq.gif">&nbsp;<i>d</i></span> so they cannot be aligned with the same character in <i>v</i>.</p>
+
+<p align="justify">Then a shift greater than the turbo-shift but smaller than <span style="white-space: nowrap">|<i>u</i>|+1</span> would align <i>c</i> and <i>d</i> with a same character in <i>v</i>. Thus if this case the length of the actual shift must be at least equal to <span style="white-space: nowrap">|<i>u</i>|+1</span>.</p>
+
+<p align="justify">The preprocessing phase can be performed in <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<i>m</i>+<img alt="sigma" src="images/psigma.gif">)</span> time and space complexity. The searching phase is in <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<i>n</i>)</span> time complexity. The number of text character comparisons performed by the Turbo-BM algorithm is bounded by <span style="white-space: nowrap">2<i>n</i></span>.</p>
+</div>
+
+<div class="bar"><a name="SECTION00153">The C code</a></div>
+
+<div>
+<p>The functions <tt><big><tt>preBmBc</tt></big></tt> and <tt><big><tt>preBmGs</tt></big></tt> are given chapter <a href="node14.html#SECTION00140">Boyer-Moore</a> algorithm.</p>
+
+<p align="justify">In the <big><tt><big><tt>TBM</tt></big></tt></big> function, the variable <i>u</i> memorizes the length of the suffix matched during the previous attempt and the variable <i>v</i> memorizes the length of the suffix matched during the current attempt.</p>
+</div>
+
+<div class="pre">
+<pre>
+void TBM(char *x, int m, char *y, int n) {
+   int bcShift, i, j, shift, u, v, turboShift,
+       bmGs[XSIZE], bmBc[ASIZE];
+
+   /* Preprocessing */
+   preBmGs(x, m, bmGs);
+   preBmBc(x, m, bmBc);
+
+   /* Searching */
+   j = u = 0;
+   shift = m;
+   while (j &lt;= n - m) {
+      i = m - 1;
+      while (i &gt;= 0 &amp;&amp; x[i] == y[i + j]) {
+         --i;
+         if (u != 0 &amp;&amp; i == m - 1 - shift)
+            i -= u;
+      }
+      if (i &lt; 0) {
+         OUTPUT(j);
+         shift = bmGs[0];
+         u = m - shift;
+      }
+      else {
+         v = m - 1 - i;
+         turboShift = u - v;
+         bcShift = bmBc[y[i + j]] - m + 1 + i;
+         shift = MAX(turboShift, bcShift);
+         shift = MAX(shift, bmGs[i]);
+         if (shift == bmGs[i])
+            u = MIN(m - shift, v);
+         else {
+           if (turboShift &lt; bcShift)
+              shift = MAX(shift, u + 1);
+           u = 0;
+         }
+      }
+      j += shift;
+   }
+}
+
+</pre>
+</div>
+
+<div class="bar"><a name="SECTION00154" style="color: teal">The example</a></div>
+
+<p>Preprocessing phase</p>
+
+<p align="center"><img alt="Boyer-Moore bmBc and bmGs tables" align="BOTTOM" src="images/bmtab1.png"><br clear="all">
+<span style="white-space: nowrap"><em>bmBc</em> and <em>bmGs</em> tables used by Turbo Boyer-Moore algorithm</span></p>
+
+<p><a name="search" href="examples/exp15.html" style="text-decoration: underline">Searching</a> phase</p>
+
+<br>
+<div class="bar"><a name="SECTION00155">References</a></div>
+
+<div class="ref">
+<ul style="text-align: justify ">
+<li>C<small>ROCHEMORE</small>, M., 1997. Off-line serial exact string searching, in <cite>Pattern Matching Algorithms</cite>, ed. A. Apostolico and Z. Galil, Chapter 1, pp 1-53, Oxford University Press.</li>
+
+<li><strong>C<small>ROCHEMORE</small>, M.</strong>, <strong>C<small>ZUMAJ</small> A.</strong>, <strong>G<small>ASIENIEC</small> L.</strong>, <strong>J<small>AROMINEK</small> S.</strong>, <strong>L<small>ECROQ</small> T.</strong>, <strong>P<small>LANDOWSKI</small> W.</strong>, <strong>R<small>YTTER</small> W.</strong>, 1992, Deux m&eacute;thodes pour acc&eacute;l&eacute;rer l'algorithme de Boyer-Moore, in <em>Th&eacute;orie des Automates et Applications, Actes des 2<sup><i>e</i></sup> Journ&eacute;es Franco-Belges</em>, D. Krob ed., Rouen, France, 1991, pp 45-63, PUR 176, Rouen, France.</li>
+
+<li>C<small>ROCHEMORE</small>, M., C<small>ZUMAJ</small>, A., G<small>ASIENIEC</small>, L., J<small>AROMINEK</small>, S., L<small>ECROQ</small>, T., P<small>LANDOWSKI</small>, W., R<small>YTTER</small>, W., 1994, Speeding up two string matching algorithms, <em>Algorithmica</em> 12(4/5):247-267.</li>
+
+<li>C<small>ROCHEMORE</small>, M., R<small>YTTER</small>, W., 1994, Text Algorithms, <em>Oxford University Press</em>.</li>
+
+<li>L<small>ECROQ</small>, T., 1992, <em>Recherches de mot</em>, Ph. D. Thesis, University of Orl&eacute;ans, France.</li>
+
+<li>L<small>ECROQ</small>, T., 1995, Experimental results on string matching algorithms, <em>Software - Practice &amp; Experience</em> 25(7):727-765.</li>
+</ul>
+</div>
+
+<br>
+<hr color="#F0F0FC" size="2">
+<a href="node16.html#SECTION00160"><img alt="Apostolico-Giancarlo algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node14.html#SECTION00140"><img alt="Boyer-Moore algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="node16.html#SECTION00160">Apostolico-Giancarlo algorithm</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Prev:</b> <a href="node14.html#SECTION00140">Boyer-Moore algorithm</a> 
+
+<hr>
+<br>
+<div align="right"><em><small><small>e-mails: {<a href="mailto:Christian.Charras@laposte.net">Christian.Charras</a>, <a href="mailto:Thierry.Lecroq@laposte.net">Thierry.Lecroq</a> }@laposte.net</small><br>
+ Tue Jan 14 15:03:31 MET 1997</small></em></div>
+</body>
+</html>
+

@@ -1,0 +1,130 @@
+Not So Naive algorithm
+Next:
+Boyer-Moore
+Up:
+ESMAJ
+Prev:
+Apostolico-Crochemore
+Not So Naive algorithm
+Main features
+preprocessing phase in constant time and space;
+searching phase in
+O
+(
+n
+m
+) time complexity;
+slightly (
+by coefficient
+) sub-linear in the average case.
+Description
+During the searching phase of the Not So Naive algorithm the character comparisons are made with the pattern positions in the following order
+1, 2, ... ,
+m
+-2,
+m
+-1, 0
+.
+For each attempt where the window is positioned on the text factor
+y
+[
+j
+..
+j
++
+m
+-1]
+: if
+x
+[0]=
+x
+[1]
+and
+x
+[1]
+y
+[
+j
++1]
+of if
+x
+[0]
+x
+[1]
+and
+x
+[1]=
+y
+[
+j
++1]
+the pattern is shifted by 2 positions at the end of the attempt and by 1 otherwise.
+Thus the preprocessing phase can be done in constant time and space. The searching phase of the Not So Naive algorithm has a quadratic worst case but it is slightly (
+by coefficient
+) sub-linear in the average case.
+The C code
+void NSN(char *x, int m, char *y, int n) {
+   int j, k, ell;
+  
+   /* Preprocessing */
+   if (x[0] == x[1]) {
+      k = 2;
+      ell = 1;
+   }
+   else {
+      k = 1;
+      ell = 2;
+   }
+  
+   /* Searching */
+   j = 0;
+   while (j <= n - m)
+      if (x[1] != y[j + 1])
+         j += k;
+      else {
+         if (memcmp(x + 2, y + j + 2, m - 2) == 0 &&
+             x[0] == y[j])
+            OUTPUT(j);
+         j += ell;
+      }
+}
+The example
+Preprocessing phase
+k=1
+and
+=2
+Searching
+phase
+References
+C
+ARDON
+, A., C
+HARRAS
+, C., 1996,
+Introduction à l'algorithmique et à la programmation
+, Chapter 9, pp 254-279, Ellipses.
+H
+ANCART
+C.
+, 1992, Une analyse en moyenne de l'algorithme de Morris et Pratt et de ses raffinements, in
+Théorie des Automates et Applications, Actes des 2
+e
+Journées Franco-Belges
+, D. Krob ed., Rouen, France, 1991, PUR 176, Rouen, France, 99-110.
+H
+ANCART
+, C., 1993.
+Analyse exacte et en moyenne d'algorithmes de recherche d'un motif dans un texte
+, Ph. D. Thesis, University Paris 7, France.
+Next:
+Boyer-Moore
+Up:
+ESMAJ
+Prev:
+Apostolico-Crochemore
+e-mails: {
+Christian.Charras
+,
+Thierry.Lecroq
+}@laposte.net
+Tue Jan 14 15:03:31 MET 1997

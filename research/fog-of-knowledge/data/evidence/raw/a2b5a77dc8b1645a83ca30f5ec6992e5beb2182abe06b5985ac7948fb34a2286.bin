@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="generator" content="HTML Tidy, see www.w3.org">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Raita algorithm</title>
+<meta name="generator" content="Microsoft XSLT (msxml3 golden/ msxml4), see http://www.microsoft.com">
+<meta name="robots" content="index, follow">
+<meta name="description" content="EXACT STRING MATCHING ALGORITHMS Animation in Java, Raita algorithm">
+<meta name="keywords" content="string matching, algorithm, Java, C">
+<meta name="resource-type" content="document">
+<meta name="Author-Corporate" content="Chistian.Charras@dir.univ-rouen.fr">
+<meta name="Content-Language" content="en">
+<meta name="distribution" content="global">
+<link type="text/css" rel="stylesheet" href="string.css">
+</head>
+<body bgcolor="white">
+<a href="node23.html#SECTION00230"><img alt="Reverse Factor algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node21.html#SECTION00210"><img alt="Smith algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="node23.html#SECTION00230">Reverse Factor algorithm</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Prev:</b> <a href="node21.html#SECTION00210">Smith algorithm</a> 
+
+<hr>
+<h1 align="center"><a id="SECTION00220" name="SECTION00220">Raita algorithm</a></h1>
+
+<hr color="#F0F0FC" size="3">
+<applet codebase="../spm/Raita" archive="Raita.zip" code="AppletButtonText2.class" width="230" height="63"><param name="windowTitle" value="Raita algorithm">
+<param name="windowClass" value="ProgramTextWindow2">
+<param name="buttonText" value="visualization">
+<param name="windowwidth" value="375">
+<param name="windowheight" value="560">
+<param name="label1" value="Pattern:">
+<param name="input1" value="gcagagag">
+<param name="label2" value="String:">
+<param name="input2" value="gcatcgcagagagtatacagtacg">
+<param name="program" value="Raita">
+</applet> 
+
+<div class="bar"><a name="SECTION00221">Main features</a></div>
+
+<div class="mf">
+<ul>
+<li>first compares the last pattern character, then the first and finally the middle one before actually comparing the others;</li>
+
+<li>performs the shifts like the <a href="node18.html#SECTION00180">Horspool</a> algorithm;</li>
+
+<li>preprocessing phase in <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<i>m</i>+<img alt="sigma" src="images/psigma.gif">)</span> time and <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<img alt="sigma" src="images/psigma.gif">)</span> space complexity;</li>
+
+<li>searching phase in <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<i>m</i><i>n</i>)</span> time complexity.</li>
+</ul>
+</div>
+
+<div class="bar"><a name="SECTION00222">Description</a></div>
+
+<div class="desc">
+<p align="justify">Raita designed an algorithm which at each attempt first compares the last character of the pattern with the rightmost text character of the window, then if they match it compares the first character of the pattern with the leftmost text character of the window, then if they match it compares the middle character of the pattern with the middle text character of the window. And finally if they match it actually compares the other characters from the second to the last but one, possibly comparing again the middle character.</p>
+
+<p align="justify">Raita observed that its algorithm had a good behaviour in practice when searching patterns in English texts and attributed these performance to the existence of character dependencies.<br>
+Smith made some more experiments and concluded that this phenomenon may rather be due to compiler effects.</p>
+
+<p align="justify">The preprocessing phase of the Raita algorithm consists in computing the bad-character shift function (see chapter <a href="node14.html#SECTION00140">Boyer-Moore</a>). It can be done in <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<i>m</i>+<img alt="sigma" src="images/psigma.gif">)</span> time and <span style="white-space: nowrap"><big><i><b>O</b></i></big>(<img alt="sigma" src="images/psigma.gif">)</span> space complexity.</p>
+
+<p align="justify">The searching phase of the Raita algorithm has a quadratic worst case time complexity.</p>
+</div>
+
+<div class="bar"><a name="SECTION00223">The C code</a></div>
+
+<p align="justify">The function <tt><big><tt>preBmBc</tt></big></tt> is given chapter <a href="node14.html#SECTION00140">Boyer-Moore</a> algorithm.</p>
+
+<div class="pre">
+<pre>
+void RAITA(char *x, int m, char *y, int n) {
+   int j, bmBc[ASIZE];
+   char c, firstCh, *secondCh, middleCh, lastCh;
+
+   /* Preprocessing */
+   preBmBc(x, m, bmBc);
+   firstCh = x[0];
+   secondCh = x + 1;
+   middleCh = x[m/2];
+   lastCh = x[m - 1];
+
+   /* Searching */
+   j = 0;
+   while (j &lt;= n - m) {
+      c = y[j + m - 1];
+      if (lastCh == c &amp;&amp; middleCh == y[j + m/2] &amp;&amp;
+          firstCh == y[j] &amp;&amp;
+          memcmp(secondCh, y + j + 1, m - 2) == 0)
+         OUTPUT(j);
+      j += bmBc[c];
+   }
+}
+
+</pre>
+</div>
+
+<div class="bar"><a name="SECTION00224" style="color: teal">The example</a></div>
+
+<p>Preprocessing phase</p>
+
+<p align="center"><img alt="Horspool algorithm bmBc table" align="BOTTOM" src="images/hotab1.png"><br clear="all">
+<span style="white-space: nowrap"><em>bmBc</em> table used by Raita algorithm.</span></p>
+
+<p><a name="search" href="examples/exp22.html" style="text-decoration: underline">Searching</a> phase</p>
+
+<br>
+<div class="bar"><a name="SECTION00225">References</a></div>
+
+<div class="ref">
+<ul style="text-align: justify ">
+<li><strong>R<small>AITA</small> T.</strong>, 1992, Tuning the Boyer-Moore-Horspool string searching algorithm, Software - Practice &amp; Experience, 22(10):879-884.</li>
+
+<li>S<small>MITH</small>, P.D., 1994, On tuning the Boyer-Moore-Horspool string searching algorithms, Software - Practice &amp; Experience, 24(4):435-436.</li>
+</ul>
+</div>
+
+<br>
+<hr color="#F0F0FC" size="2">
+<a href="node23.html#SECTION00230"><img alt="Reverse Factor algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node21.html#SECTION00210"><img alt="Smith algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="node23.html#SECTION00230">Reverse Factor algorithm</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Prev:</b> <a href="node21.html#SECTION00210">Smith algorithm</a> 
+
+<hr>
+<br>
+<div align="right"><em><small><small>e-mails: {<a href="mailto:Christian.Charras@laposte.net">Christian.Charras</a>, <a href="mailto:Thierry.Lecroq@laposte.net">Thierry.Lecroq</a> }@laposte.net</small><br>
+ Tue Jan 14 15:03:31 MET 1997</small></em></div>
+
+<i>Tue Jan 14 15:03:31 MET 1997</i>
+</body>
+</html>
+

@@ -1,0 +1,160 @@
+
+[an error occurred while processing this directive]
+
+<center><h2>cs150: Notes 25</h2></center>
+
+<h4>Assignments Due</h4>
+
+<ul>
+<li> This week: read <a href="book/ch11-computability.pdf">Chapter 11</a>
+<li> <b>Friday, 23 March</b> (will be accepted without extension or
+penalty until Monday, 26 March): <a href="/cs150/ps/ps6/">Problem Set 6</a>
+<li> Someday next week, there will be a "surprise" quiz.  Your
+quiz grade will be the maximum of your grades on the two quizzes.  Next
+week's "surprise" quiz will cover the readings from Neil de Grasse
+Tyson; G&ouml;del, Escher, Bach; and the <a href="/cs150/readings/backus.html">article attached to today's notes</a>.
+</ul>
+
+<p>
+<center><font size=+1><b>Notes</b></font></center>
+<p>
+
+
+
+G&ouml;del's Statement:<br>
+<em>G</em>: This statment does not have any proof in the system.
+<p>
+What would it mean if <em>G</em> is true?
+<p><br><p><br><p><br>
+What would it mean if <em>G</em> is false?
+<p><br><p><br><p><br>
+
+
+<b>Proof:</b> A proof of <em>S</em> in an axiomatic system is a sequence of strings,
+T<sub>0</sub>, T<sub>1</sub>, ..., T<sub>n</sub> where:
+<ul>
+<li> The first string is the axioms
+<li> For all <em>i</em> from 1 to <em>n</em>, T<sub>n</sub> is the
+result of applying one of the inference rules to T<sub>n-1</sub>
+<li> T<sub>n</sub> is <em>S</em>
+</ul>
+
+<center>
+<h4>Computability</h4>
+</center>
+<p>
+<b>Procedure</b>: A precise (mechanizable) description of a process.
+<p>
+<b>Alrogithm</b>: A procedure that always terminates.
+<p>
+
+<p>
+Is there an algorithm (a procedure that always terminates) that solves
+the problem?
+<p>
+A problem is <b>computable</b> (decidable) is there exists an algorithm that can
+solve the problem for all possible inputs.  It is not necessary to know
+what that algorithm is to say a problem is computable, only to know that
+some algorithm to solve it must exist.  For example, chess is a
+computable problem, even if we do not yet know a practical algorithm that solves
+it (yes).
+<p>
+
+A problem is <b>uncomputable</b> if there is no algorithm that can solve
+the problem.  There might be a procedure, but it is not guaranteed to
+terminate.
+<p>
+
+What is the Halting Problem?
+
+<p><br><p><br><p><br><p><br><p><br><p><br><p><br><p><br>
+
+Is it possible to define a procedure that solves the Halting Problem?
+
+<pre>
+(define (contradict-halts)
+  (if (halts? contradict-halts) 
+      (infinite-loop) 
+</pre>
+
+<p><br><p><br><p><br><p><br><p><br>
+
+<b>Alan Turing Links</b>
+
+<ul>
+<li> <a href="http://www.turing.org.uk/turing/">Alan Turing</a>
+<li> <a href="http://www.abelard.org/turpap2/tp2-ie.asp"><em>On
+Computable Numbers, with an Application to the
+Entscheidungsproblem</em></a> &mdash; Turing's original (1936) paper
+that introduced the Halting Problem 
+<li> <a href="http://us.imdb.com/Title?0115749"><em>Breaking the
+Code</em></a> &mdash; movie about Alan Turing
+<li> <a
+href="http://www.ai.mit.edu/operations/social/sports/halting-problem-index.html">Halting
+Problem D-League Hockey Team</a> 
+(<a
+href="http://www.ai.mit.edu/operations/social/sports/halting-problem95/game5_results.html">Crushing
+defeat of the Media Lab "Freeze Frames"</a>)
+
+<li> <a
+href="http://www.time.com/time/time100/scientist/profile/turing.html">Time
+100: Alan Turing</a>
+</ul>
+
+<b>John Backus Links</b>
+<ul>
+<li> <a
+href="http://www.nytimes.com/2007/03/19/obituaries/20cnd-backus.html?ex=1332043200&en=adde3ee5a1875330&ei=5124&partner=permalink&exprod=permalink">New
+York Times</a>
+<li> <a
+href="http://www.washingtonpost.com/wp-dyn/content/article/2007/03/20/AR2007032000605.html">Washington Post</a>
+
+<li> Garrison Keillor, <a
+href="http://www.chicagotribune.com/news/columnists/chi-0703210090mar21,1,5634865.column?coll=chi-technology-hed"><em>Let
+us now heap praise on the worker ants</em></a>, March 21, 2007.
+<blockquote>
+<em>There are thousands of statues of lousy generals and blowhard statesmen
+and enormous temples erected for the worship of presidents, and not much
+recognition of people such as Mr. Backus who did the work that actually
+made life better.</em>
+</blockquote>
+<li> <a
+href="http://www-03.ibm.com/ibm/history/exhibits/builders/builders_backus.html">IBM
+Builders Page</a>
+
+<li> <a
+href="http://www.stanford.edu/class/cs242/readings/backus.pdf"><Em>Can
+Programming Be Liberated from the von Neumann Style? A Functional Style
+and Its Algebra of Programs</em></a> (Turing Award speech, 1977)
+
+<li>
+<a
+href="http://scienceblogs.com/goodmath/2007/03/backuss_idea_of_functional_pro_1.php">Backus'
+Functional Programming</a> 
+
+
+<blockquote>
+<p align=right>
+<font size="-1">
+<em>Much of my work has come from being lazy.</em><br>
+John Backus<br>
+(not a good approach for current UVa students!)
+
+<p>
+<em>You need the willingness to fail all the time.  You have to generate
+many ideas and then you have to work very hard only to discover that
+they don't work.  And you keep doing that over and over until you find
+one that does work.</em><br>
+John Backus<br>
+(better approach for current UVa students!)
+</font>
+</p>
+</blockquote>
+
+[an error occurred while processing this directive]
+
+
+
+
+
+

@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="generator" content="HTML Tidy, see www.w3.org">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Not So Naive algorithm</title>
+<meta name="generator" content="Microsoft XSLT (msxml3 golden/ msxml4), see http://www.microsoft.com">
+<meta name="robots" content="index, follow">
+<meta name="description" content="EXACT STRING MATCHING ALGORITHMS Animation in Java, Not So Naive algorithm">
+<meta name="keywords" content="string matching, algorithm, Java, C">
+<meta name="resource-type" content="document">
+<meta name="Author-Corporate" content="Chistian.Charras@dir.univ-rouen.fr">
+<meta name="Content-Language" content="en">
+<meta name="distribution" content="global">
+<link type="text/css" rel="stylesheet" href="string.css">
+</head>
+<body bgcolor="white">
+<a href="node14.html#SECTION00140"><img alt="Boyer-Moore algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node12.html#SECTION00120"><img alt="Apostolico-Crochemore algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="node14.html#SECTION00140">Boyer-Moore</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Prev:</b> <a href="node12.html#SECTION00120">Apostolico-Crochemore</a> 
+
+<hr>
+<h1 align="center"><a name="SECTION00130">Not So Naive algorithm</a></h1>
+
+<hr color="#F0F0FC" size="3">
+<applet codebase="../spm/NotSoNaive" archive="NotSoNaive.zip" code="AppletButtonText2.class" width="230" height="63"><param name="windowTitle" value="Not So Naive algorithm">
+<param name="windowClass" value="ProgramTextWindow2">
+<param name="buttonText" value="visualization">
+<param name="windowwidth" value="375">
+<param name="windowheight" value="560">
+<param name="label1" value="Pattern:">
+<param name="input1" value="gcagagag">
+<param name="label2" value="String:">
+<param name="input2" value="gcatcgcagagagtatacagtacg">
+<param name="program" value="NotSoNaive">
+</applet> 
+
+<div class="bar"><a name="SECTION00131">Main features</a></div>
+
+<div class="mf">
+<ul>
+<li>preprocessing phase in constant time and space;</li>
+
+<li>searching phase in <big><i><b>O</b></i></big>(<i>n</i><i>m</i>) time complexity;</li>
+
+<li>slightly (<i>by coefficient</i>) sub-linear in the average case.</li>
+</ul>
+</div>
+
+<div class="bar"><a name="SECTION00132">Description</a></div>
+
+<div class="desc">
+<p align="justify">During the searching phase of the Not So Naive algorithm the character comparisons are made with the pattern positions in the following order <span style="white-space: nowrap">1, 2, ... , <i>m</i>-2, <i>m</i>-1, 0</span>.</p>
+
+<p align="justify">For each attempt where the window is positioned on the text factor <span style="white-space: nowrap"><i>y</i>[<i>j</i> .. <i>j</i>+<i>m</i>-1]</span>: if <span style="white-space: nowrap"><i>x</i>[0]=<i>x</i>[1]</span> and <span style="white-space: nowrap"><i>x</i>[1]&nbsp;<img alt="neq" src="images/neq.gif">&nbsp;<i>y</i>[<i>j</i>+1]</span> of if <span style="white-space: nowrap"><i>x</i>[0]&nbsp;<img alt="neq" src="images/neq.gif">&nbsp;<i>x</i>[1]</span> and <span style="white-space: nowrap"><i>x</i>[1]=<i>y</i>[<i>j</i>+1]</span> the pattern is shifted by 2 positions at the end of the attempt and by 1 otherwise.</p>
+
+<p align="justify">Thus the preprocessing phase can be done in constant time and space. The searching phase of the Not So Naive algorithm has a quadratic worst case but it is slightly (<i>by coefficient</i>) sub-linear in the average case.</p>
+</div>
+
+<div class="bar"><a name="SECTION00133">The C code</a></div>
+
+<div class="pre">
+<pre>
+void NSN(char *x, int m, char *y, int n) {
+   int j, k, ell;
+  
+   /* Preprocessing */
+   if (x[0] == x[1]) {
+      k = 2;
+      ell = 1;
+   }
+   else {
+      k = 1;
+      ell = 2;
+   }
+  
+   /* Searching */
+   j = 0;
+   while (j &lt;= n - m)
+      if (x[1] != y[j + 1])
+         j += k;
+      else {
+         if (memcmp(x + 2, y + j + 2, m - 2) == 0 &amp;&amp;
+             x[0] == y[j])
+            OUTPUT(j);
+         j += ell;
+      }
+}
+
+</pre>
+</div>
+
+<div class="bar"><a name="SECTION00134" style="color: teal">The example</a></div>
+
+<p>Preprocessing phase</p>
+
+<p align="center"><i>k=1</i> and <img alt="ell" align="BASELINE" src="images/ell.gif">=2</p>
+
+<p><a name="search" href="examples/exp13.html" style="text-decoration: underline">Searching</a> phase</p>
+
+<br>
+<div class="bar"><a name="SECTION00135">References</a></div>
+
+<div class="ref">
+<ul style="text-align: justify ">
+<li>C<small>ARDON</small>, A., C<small>HARRAS</small>, C., 1996, <em>Introduction &agrave; l'algorithmique et &agrave; la programmation</em>, Chapter 9, pp 254-279, Ellipses.</li>
+
+<li><strong>H<small>ANCART</small> C.</strong>, 1992, Une analyse en moyenne de l'algorithme de Morris et Pratt et de ses raffinements, in <em>Th&eacute;orie des Automates et Applications, Actes des 2<sup><i>e</i></sup> Journ&eacute;es Franco-Belges</em>, D. Krob ed., Rouen, France, 1991, PUR 176, Rouen, France, 99-110.</li>
+
+<li>H<small>ANCART</small>, C., 1993. <cite>Analyse exacte et en moyenne d'algorithmes de recherche d'un motif dans un texte</cite>, Ph. D. Thesis, University Paris 7, France.</li>
+</ul>
+</div>
+
+<br>
+<hr color="#F0F0FC" size="2">
+<a href="node14.html#SECTION00140"><img alt="Boyer-Moore algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node12.html#SECTION00120"><img alt="Apostolico-Crochemore algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="node14.html#SECTION00140">Boyer-Moore</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Prev:</b> <a href="node12.html#SECTION00120">Apostolico-Crochemore</a> 
+
+<hr>
+<br>
+<div align="right"><em><small><small>e-mails: {<a href="mailto:Christian.Charras@laposte.net">Christian.Charras</a>, <a href="mailto:Thierry.Lecroq@laposte.net">Thierry.Lecroq</a> }@laposte.net</small><br>
+ Tue Jan 14 15:03:31 MET 1997</small></em></div>
+</body>
+</html>
+

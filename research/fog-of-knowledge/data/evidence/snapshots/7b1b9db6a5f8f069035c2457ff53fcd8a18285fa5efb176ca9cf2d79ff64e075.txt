@@ -1,0 +1,13640 @@
+4 The Hamiltonian Formalism
+Classical Dynamics
+by David Tong
+1
+Newton's Laws of Motion
+2
+The Lagrangian Formalism
+3
+The Motion of Rigid Bodies
+4
+The Hamiltonian Formalism
+4.1
+Hamilton's Equations
+4.1.1
+The Legendre Transform
+4.1.2
+Hamilton’s Equations
+4.1.3
+Examples
+4.1.4
+Some Conservation Laws
+4.1.5
+The Principle of Least Action
+4.1.6
+What’s Your Name, Man? William Rowan Hamilton (1805-1865)
+4.2
+Liouville's Theorem
+4.2.1
+Liouville's Equation
+4.2.2
+Time Independent Distributions
+4.2.3
+Poincare Recurrence Theorem
+4.3
+Poisson Brackets
+4.3.1
+An Example: Angular Momentum and Runge-Lenz
+4.3.2
+An Example: Magnetic Monopoles
+4.3.3
+An Example: The Motion of Vortices
+4.4
+Canonical Transformations
+4.4.1
+Infinitesimal Canonical Transformations
+4.4.2
+Noether's Theorem Revisited
+4.4.3
+Generating Functions
+4.5
+Action-Angle Variables
+4.5.1
+The Simple Harmonic Oscillator
+4.5.2
+Integrable Systems
+4.5.3
+Action-Angle Variables for 1d Systems
+4.5.4
+Action-Angle Variables for the Kepler Problem
+4.6
+Adiabatic Invariants
+4.6.1
+Adiabatic Invariants and Liouville's Theorem
+4.6.2
+An Application: A Particle in a Magnetic Field
+4.6.3
+Hannay's Angle
+4.7
+The Hamilton-Jacobi Equation
+4.7.1
+Action and Angles from Hamilton-Jacobi
+4.8
+Quantum Mechanics
+4.8.1
+Hamilton, Jacobi, Schrodinger and Feynman
+4.8.2
+Nambu Brackets
+3
+The Motion of Rigid Bodies
+4
+The Hamiltonian Formalism
+We’ll now move onto the next level in the formalism of classical
+mechanics, due initially to Hamilton around 1830. While we won’t use
+Hamilton’s approach to solve any further complicated problems, we
+will use it to reveal much more of the structure underlying
+classical dynamics. If you like, it will help us understands what
+questions we should ask.
+4.1
+Hamilton’s Equations
+Recall that in the Lagrangian formulation, we have the function
+L
+⁢
+(
+q
+i
+,
+q
+˙
+i
+,
+t
+)
+where
+q
+i
+(
+i
+=
+1
+,
+…
+,
+n
+) are
+n
+generalised
+coordinates. The equations of motion are
+d
+d
+⁢
+t
+⁢
+(
+∂
+⁡
+L
+∂
+⁡
+q
+˙
+i
+)
+-
+∂
+⁡
+L
+∂
+⁡
+q
+i
+=
+0
+(4.268)
+These are
+n
+2
+nd
+order differential equations which require
+2
+⁢
+n
+initial conditions, say
+q
+i
+(
+t
+=
+0
+)
+and
+q
+˙
+i
+(
+t
+=
+0
+)
+. The basic idea of
+Hamilton’s approach is to try and place
+q
+i
+and
+q
+˙
+i
+on a more
+symmetric footing. More precisely, we’ll work with the
+n
+generalised
+momenta
+that we introduced in section 2.3.3,
+p
+i
+=
+∂
+⁡
+L
+∂
+⁡
+q
+˙
+i
+i
+=
+1
+,
+…
+,
+n
+(4.269)
+so
+p
+i
+=
+p
+i
+⁢
+(
+q
+j
+,
+q
+˙
+j
+,
+t
+)
+. This coincides with what we usually call
+momentum only if we work in Cartesian coordinates (so the kinetic
+term is
+1
+2
+⁢
+m
+i
+⁢
+q
+˙
+i
+2
+). If we rewrite Lagrange’s equations
+(
+4.268
+) using the definition of the momentum (
+4.269
+), they
+become
+p
+˙
+i
+=
+∂
+⁡
+L
+∂
+⁡
+q
+i
+(4.270)
+The plan will be to eliminate
+q
+˙
+i
+in favour of the momenta
+p
+i
+, and then to place
+q
+i
+and
+p
+i
+on equal footing.
+Figure 50:
+Motion in configuration space on the left, and in phase
+space on the right.
+Let’s start by thinking pictorially. Recall that
+{
+q
+i
+}
+defines a
+point in
+n
+-dimensional
+configuration space
+C
+. Time
+evolution is a path in
+C
+. However, the
+state
+of the system
+is defined by
+{
+q
+i
+}
+and
+{
+p
+i
+}
+in the sense that this
+information will allow us to determine the state at all times in the
+future. The pair
+{
+q
+i
+,
+p
+i
+}
+defines a point in
+2
+⁢
+n
+-dimensional
+phase space
+. Note that since a point in phase
+space is sufficient to determine the future evolution of the system,
+paths in phase space can never cross. We say that evolution is
+governed by a
+flow
+in phase space.
+An Example: The Pendulum
+Consider a simple pendulum. The configuration space is clearly a
+circle,
+S
+1
+, parameterised by an angle
+θ
+∈
+[
+-
+π
+,
+π
+)
+. The
+phase space of the pendulum is a cylinder
+R
+×
+S
+1
+, with the
+R
+factor corresponding to the momentum. We draw this by flattening
+out the cylinder.
+Figure 51:
+Flows in the phase space of a pendulum.
+The two different types of motion are clearly visible in the phase
+space flows. For small
+θ
+and small momentum, the pendulum
+oscillates back and forth, motion which appears as an ellipse in
+phase space. But for large momentum, the pendulum swings all the way
+around, which appears as lines wrapping around the
+S
+1
+of phase
+space. Separating these two different motions is the special case
+where the pendulum starts upright, falls, and just makes it back to
+the upright position. This curve in phase space is called the
+separatix
+.
+4.1.1
+The Legendre Transform
+We want to find a function on phase space that will determine the
+unique evolution of
+q
+i
+and
+p
+i
+. This means it should be a
+function of
+q
+i
+and
+p
+i
+(and not of
+q
+˙
+i
+) but must
+contain the same information as the Lagrangian
+L
+⁢
+(
+q
+i
+,
+q
+˙
+i
+,
+t
+)
+.
+There is a mathematical trick to do this, known as the Legendre
+transform.
+To describe this, consider an arbitrary function
+f
+⁢
+(
+x
+,
+y
+)
+so that
+the total derivative is
+d
+⁢
+f
+=
+∂
+⁡
+f
+∂
+⁡
+x
+⁢
+d
+⁢
+x
++
+∂
+⁡
+f
+∂
+⁡
+y
+⁢
+d
+⁢
+y
+(4.271)
+Now define a function
+g
+⁢
+(
+x
+,
+y
+,
+u
+)
+=
+u
+⁢
+x
+-
+f
+⁢
+(
+x
+,
+y
+)
+which depends on
+three variables,
+x
+,
+y
+and also
+u
+. If we look at the total
+derivative of
+g
+, we have
+d
+⁢
+g
+=
+d
+⁢
+(
+u
+⁢
+x
+)
+-
+d
+⁢
+f
+=
+u
+⁢
+d
+⁢
+x
++
+x
+⁢
+d
+⁢
+u
+-
+∂
+⁡
+f
+∂
+⁡
+x
+⁢
+d
+⁢
+x
+-
+∂
+⁡
+f
+∂
+⁡
+y
+⁢
+d
+⁢
+y
+(4.272)
+At this point
+u
+is an independent variable. But suppose we choose it
+to be a specific function of
+x
+and
+y
+, defined by
+u
+⁢
+(
+x
+,
+y
+)
+=
+∂
+⁡
+f
+∂
+⁡
+x
+(4.273)
+Then the term proportional to
+d
+⁢
+x
+in (
+4.272
+) vanishes and we have
+d
+⁢
+g
+=
+x
+⁢
+d
+⁢
+u
+-
+∂
+⁡
+f
+∂
+⁡
+y
+⁢
+d
+⁢
+y
+(4.274)
+Or, in other words,
+g
+is to be thought of as a function of
+u
+and
+y
+:
+g
+=
+g
+⁢
+(
+u
+,
+y
+)
+. If we want an explicit expression for
+g
+⁢
+(
+u
+,
+y
+)
+, we
+must first invert (
+4.273
+) to get
+x
+=
+x
+⁢
+(
+u
+,
+y
+)
+and then insert this
+into the definition of
+g
+so that
+g
+⁢
+(
+u
+,
+y
+)
+=
+u
+⁢
+x
+⁢
+(
+u
+,
+y
+)
+-
+f
+⁢
+(
+x
+⁢
+(
+u
+,
+y
+)
+,
+y
+)
+(4.275)
+This is the Legendre transform. It takes us from one function
+f
+⁢
+(
+x
+,
+y
+)
+to a
+different function
+g
+⁢
+(
+u
+,
+y
+)
+where
+u
+=
+∂
+⁡
+f
+/
+∂
+⁡
+x
+. The key point
+is that we haven’t lost any information. Indeed, we can always recover
+f
+⁢
+(
+x
+,
+y
+)
+from
+g
+⁢
+(
+u
+,
+y
+)
+by noting that
+∂
+⁡
+g
+∂
+⁡
+u
+|
+y
+=
+x
+⁢
+(
+u
+,
+y
+)
+and
+∂
+⁡
+g
+∂
+⁡
+y
+|
+u
+=
+-
+∂
+⁡
+f
+∂
+⁡
+y
+(4.276)
+which assures us that the inverse Legendre transform
+f
+=
+(
+∂
+⁡
+g
+/
+∂
+⁡
+u
+)
+⁢
+u
+-
+g
+takes us back to the original function.
+Figure 52:
+The geometrical meaning of the Legendre transform is captured in the
+diagram. For fixed
+y
+, we draw the two curves
+f
+⁢
+(
+x
+,
+y
+)
+and
+u
+⁢
+x
+. For each
+slope
+u
+, the value of
+g
+⁢
+(
+u
+)
+is the maximal distance
+between the two curves. To see this, note that extremising this distance means
+d
+d
+⁢
+x
+⁢
+(
+u
+⁢
+x
+-
+f
+⁢
+(
+x
+)
+)
+=
+0
+⇒
+u
+=
+∂
+⁡
+f
+∂
+⁡
+x
+(4.277)
+This picture also tells us that we can only apply the Legendre transform
+to convex functions for which this maximum exists.
+Now, armed with this tool, let’s return to dynamics.
+4.1.2
+Hamilton’s Equations
+The Lagrangian
+L
+⁢
+(
+q
+i
+,
+q
+˙
+i
+,
+t
+)
+is a function of the coordinates
+q
+i
+, their time derivatives
+q
+˙
+i
+and (possibly) time.
+We define the
+Hamiltonian
+to be the Legendre
+transform of the Lagrangian with respect to the
+q
+˙
+i
+variables,
+H
+⁢
+(
+q
+i
+,
+p
+i
+,
+t
+)
+=
+∑
+i
+=
+1
+n
+p
+i
+⁢
+q
+˙
+i
+-
+L
+⁢
+(
+q
+i
+,
+q
+˙
+i
+,
+t
+)
+(4.278)
+where
+q
+˙
+i
+is eliminated from the right hand side in favour
+of
+p
+i
+by using
+p
+i
+=
+∂
+⁡
+L
+∂
+⁡
+q
+˙
+i
+=
+p
+i
+⁢
+(
+q
+j
+,
+q
+˙
+j
+,
+t
+)
+(4.279)
+and inverting to get
+q
+˙
+i
+=
+q
+˙
+i
+⁢
+(
+q
+j
+,
+p
+j
+,
+t
+)
+. Now look at
+the variation of
+H
+:
+d
+⁢
+H
+=
+(
+d
+⁢
+p
+i
+⁢
+q
+˙
+i
++
+p
+i
+⁢
+d
+⁢
+q
+˙
+i
+)
+-
+(
+∂
+⁡
+L
+∂
+⁡
+q
+i
+⁢
+d
+⁢
+q
+i
++
+∂
+⁡
+L
+∂
+⁡
+q
+˙
+i
+⁢
+d
+⁢
+q
+˙
+i
++
+∂
+⁡
+L
+∂
+⁡
+t
+⁢
+d
+⁢
+t
+)
+(4.280)
+=
+d
+⁢
+p
+i
+⁢
+q
+˙
+i
+-
+∂
+⁡
+L
+∂
+⁡
+q
+i
+⁢
+d
+⁢
+q
+i
+-
+∂
+⁡
+L
+∂
+⁡
+t
+⁢
+d
+⁢
+t
+but we know that this can be rewritten as
+d
+⁢
+H
+=
+∂
+⁡
+H
+∂
+⁡
+q
+i
+⁢
+d
+⁢
+q
+i
++
+∂
+⁡
+H
+∂
+⁡
+p
+i
+⁢
+d
+⁢
+p
+i
++
+∂
+⁡
+H
+∂
+⁡
+t
+⁢
+d
+⁢
+t
+(4.281)
+So we can equate terms. So far this is repeating the steps of the Legendre transform.
+The new ingredient that we now add is Lagrange’s equation
+which reads
+p
+˙
+i
+=
+∂
+⁡
+L
+/
+∂
+⁡
+q
+i
+. We find
+p
+˙
+i
+=
+-
+∂
+⁡
+H
+∂
+⁡
+q
+i
+q
+˙
+i
+=
+∂
+⁡
+H
+∂
+⁡
+p
+i
+(4.282)
+-
+∂
+⁡
+L
+∂
+⁡
+t
+=
+∂
+⁡
+H
+∂
+⁡
+t
+(4.283)
+These are
+Hamilton’s equations
+. We have replaced
+n
+2
+nd
+order differential equations by
+2
+⁢
+n
+1
+st
+order
+differential equations for
+q
+i
+and
+p
+i
+. In practice, for solving
+problems, this isn’t particularly helpful. But, as we shall see,
+conceptually it’s very useful!
+4.1.3
+Examples
+1) A Particle in a Potential
+Let’s start with a simple example: a particle moving in a potential in
+3-dimensional space. The Lagrangian is simply
+L
+=
+1
+2
+⁢
+m
+⁢
+𝐫
+˙
+2
+-
+V
+⁢
+(
+𝐫
+)
+(4.284)
+We calculate the momentum by taking the derivative with respect to
+𝐫
+˙
+𝐩
+=
+∂
+⁡
+L
+∂
+⁡
+𝐫
+˙
+=
+m
+⁢
+𝐫
+˙
+(4.285)
+which, in this case, coincides with what we usually call momentum.
+The Hamiltonian is then given by
+H
+=
+𝐩
+⋅
+𝐫
+˙
+-
+L
+=
+1
+2
+⁢
+m
+⁢
+𝐩
+2
++
+V
+⁢
+(
+𝐫
+)
+(4.286)
+where, in the end, we’ve eliminated
+𝐫
+˙
+in favour of
+𝐩
+and
+written the Hamiltonian as a function of
+𝐩
+and
+𝐫
+. Hamilton’s equations are simply
+𝐫
+˙
+=
+∂
+⁡
+H
+∂
+⁡
+𝐩
+=
+1
+m
+⁢
+𝐩
+𝐩
+˙
+=
+-
+∂
+⁡
+H
+∂
+⁡
+𝐫
+=
+-
+∇
+⁡
+V
+(4.287)
+which are familiar: the first is the definition of momentum in terms of velocity;
+the second is Newton’s equation for this system.
+2) A Particle in an Electromagnetic Field
+We saw in section
+2.5.7
+that the Lagrangian for a charged particle
+moving in an electromagnetic field is
+L
+=
+1
+2
+⁢
+m
+⁢
+𝐫
+˙
+2
+-
+e
+⁢
+(
+ϕ
+-
+𝐫
+˙
+⋅
+𝐀
+)
+(4.288)
+From this we compute the momentum conjugate to the position
+𝐩
+=
+∂
+⁡
+L
+∂
+⁡
+𝐫
+˙
+=
+m
+⁢
+𝐫
+˙
++
+e
+⁢
+𝐀
+(4.289)
+which now differs from what we usually call momentum by the addition
+of the vector potential
+𝐀
+. Inverting, we have
+𝐫
+˙
+=
+1
+m
+⁢
+(
+𝐩
+-
+e
+⁢
+𝐀
+)
+(4.290)
+So we calculate the Hamiltonian to be
+H
+⁢
+(
+𝐩
+,
+𝐫
+)
+=
+𝐩
+⋅
+𝐫
+˙
+-
+L
+(4.291)
+=
+1
+m
+⁢
+𝐩
+⋅
+(
+𝐩
+-
+e
+⁢
+𝐀
+)
+-
+[
+1
+2
+⁢
+m
+⁢
+(
+𝐩
+-
+e
+⁢
+𝐀
+)
+2
+-
+e
+⁢
+ϕ
++
+e
+m
+⁢
+(
+𝐩
+-
+e
+⁢
+𝐀
+)
+⋅
+𝐀
+]
+=
+1
+2
+⁢
+m
+⁢
+(
+𝐩
+-
+e
+⁢
+𝐀
+)
+2
++
+e
+⁢
+ϕ
+Now Hamilton’s equations read
+𝐫
+˙
+=
+∂
+⁡
+H
+∂
+⁡
+𝐩
+=
+1
+m
+⁢
+(
+𝐩
+-
+e
+⁢
+𝐀
+)
+(4.292)
+while the
+𝐩
+˙
+=
+-
+∂
+⁡
+H
+/
+∂
+⁡
+𝐫
+equation is best
+expressed in terms of components
+p
+˙
+a
+=
+-
+∂
+⁡
+H
+∂
+⁡
+r
+a
+=
+-
+e
+⁢
+∂
+⁡
+ϕ
+∂
+⁡
+r
+a
++
+e
+m
+⁢
+(
+p
+b
+-
+e
+⁢
+A
+b
+)
+⁢
+∂
+⁡
+A
+b
+∂
+⁡
+r
+a
+(4.293)
+To show that this is equivalent to the Lorentz force law requires
+some rearranging of the indices, but it’s not too hard.
+An Example of the Example
+Let’s illustrate the dynamics of a particle moving in a magnetic
+field by looking at a particular case. Imagine a uniform magnetic
+field pointing in the
+z
+-direction:
+𝐁
+=
+(
+0
+,
+0
+,
+B
+)
+. We can get
+this from a vector potential
+𝐁
+=
+∇
+×
+𝐀
+with
+𝐀
+=
+(
+-
+B
+⁢
+y
+,
+0
+,
+0
+)
+(4.294)
+This vector potential isn’t unique: we could choose others related
+by a gauge transform as described in section 2.5.7. But this one
+will do for our purposes. Consider a particle moving in the
+(
+x
+,
+y
+)
+-plane. Then the Hamiltonian for this system is
+H
+=
+1
+2
+⁢
+m
+⁢
+(
+p
+x
++
+e
+⁢
+B
+⁢
+y
+)
+2
++
+1
+2
+⁢
+m
+⁢
+p
+y
+2
+(4.295)
+From which we have four, first order differential equations which
+are Hamilton’s equations
+p
+˙
+x
+=
+0
+x
+˙
+=
+1
+m
+⁢
+(
+p
+x
++
+e
+⁢
+B
+⁢
+y
+)
+p
+˙
+y
+=
+-
+e
+⁢
+B
+m
+⁢
+(
+p
+x
++
+e
+⁢
+B
+⁢
+y
+)
+y
+˙
+=
+p
+y
+m
+(4.296)
+Figure 53:
+If we add these together in the right way, we find that
+p
+y
++
+e
+⁢
+B
+⁢
+x
+=
+a
+=
+const
+.
+(4.297)
+and
+p
+x
+=
+m
+⁢
+x
+˙
+-
+e
+⁢
+B
+⁢
+y
+=
+b
+=
+const
+.
+(4.298)
+which is easy to solve: we have
+x
+=
+a
+e
+⁢
+B
++
+R
+⁢
+sin
+⁡
+(
+ω
+⁢
+(
+t
+-
+t
+0
+)
+)
+y
+=
+-
+b
+e
+⁢
+B
++
+R
+⁢
+cos
+⁡
+(
+ω
+⁢
+(
+t
+-
+t
+0
+)
+)
+(4.299)
+with
+a
+,
+b
+,
+R
+and
+t
+0
+integration constants. So we see that the
+particle makes circles in the
+(
+x
+,
+y
+)
+-plane with frequency
+ω
+=
+e
+⁢
+B
+m
+(4.300)
+This is known as the
+cyclotron frequency
+.
+4.1.4
+Some Conservation Laws
+In Section 2, we saw the importance of conservation laws in solving a
+given problem. The conservation laws are often simple to see in the
+Hamiltonian formalism. For example,
+Claim:
+If
+∂
+⁡
+H
+/
+∂
+⁡
+t
+=
+0
+(i.e.
+H
+does
+not depend on time explicitly) then
+H
+itself is a constant of
+motion.
+Proof:
+d
+⁢
+H
+d
+⁢
+t
+=
+∂
+⁡
+H
+∂
+⁡
+q
+i
+⁢
+q
+˙
+i
++
+∂
+⁡
+H
+∂
+⁡
+p
+i
+⁢
+p
+˙
+i
++
+∂
+⁡
+H
+∂
+⁡
+t
+=
+-
+p
+˙
+i
+⁢
+q
+˙
+i
++
+q
+˙
+i
+⁢
+p
+˙
+i
++
+∂
+⁡
+H
+∂
+⁡
+t
+=
+∂
+⁡
+H
+∂
+⁡
+t
+Claim:
+If an ignorable coordinate
+q
+doesn’t appear in the
+Lagrangian then, by construction, it also doesn’t appear in the
+Hamiltonian. The conjugate momentum
+p
+q
+is then conserved.
+Proof
+p
+˙
+q
+=
+∂
+⁡
+H
+∂
+⁡
+q
+=
+0
+(4.302)
+4.1.5
+The Principle of Least Action
+Recall that in section 2.1 we saw the principle of least action from
+the Lagrangian perspective. This followed from defining the action
+S
+=
+∫
+t
+1
+t
+2
+L
+⁢
+(
+q
+i
+,
+q
+˙
+i
+,
+t
+)
+⁢
+𝑑
+t
+(4.303)
+Then we could derive Lagrange’s equations by insisting that
+δ
+⁢
+S
+=
+0
+for all paths with fixed end points so that
+δ
+⁢
+q
+i
+⁢
+(
+t
+1
+)
+=
+δ
+⁢
+q
+i
+⁢
+(
+t
+2
+)
+=
+0
+. How does this work in the Hamiltonian
+formalism? It’s quite simple! We define the action
+S
+=
+∫
+t
+1
+t
+2
+(
+p
+i
+⁢
+q
+˙
+i
+-
+H
+)
+⁢
+𝑑
+t
+(4.304)
+where, of course,
+q
+˙
+i
+=
+q
+˙
+i
+⁢
+(
+q
+i
+,
+p
+i
+)
+. Now we consider
+varying
+q
+i
+and
+p
+i
+independently
+. Notice that this is
+different from the Lagrangian set-up, where a variation of
+q
+i
+automatically leads to a variation of
+q
+˙
+i
+. But remember that
+the whole point of the Hamiltonian formalism is that we treat
+q
+i
+and
+p
+i
+on equal footing. So we vary both. We have
+δ
+⁢
+S
+=
+∫
+t
+1
+t
+2
+{
+δ
+⁢
+p
+i
+⁢
+q
+˙
+i
++
+p
+i
+⁢
+δ
+⁢
+q
+˙
+i
+-
+∂
+⁡
+H
+∂
+⁡
+p
+i
+⁢
+δ
+⁢
+p
+i
+-
+∂
+⁡
+H
+∂
+⁡
+q
+i
+⁢
+δ
+⁢
+q
+i
+}
+⁢
+𝑑
+t
+(4.305)
+=
+∫
+t
+1
+t
+2
+{
+[
+q
+˙
+i
+-
+∂
+⁡
+H
+∂
+⁡
+p
+i
+]
+⁢
+δ
+⁢
+p
+i
++
+[
+-
+p
+˙
+i
+-
+∂
+⁡
+H
+∂
+⁡
+q
+i
+]
+⁢
+δ
+⁢
+q
+i
+}
+⁢
+𝑑
+t
++
+[
+p
+i
+⁢
+δ
+⁢
+q
+i
+]
+t
+1
+t
+2
+and there are Hamilton’s equations waiting for us in the square
+brackets. If we look for extrema
+δ
+⁢
+S
+=
+0
+for all
+δ
+⁢
+p
+i
+and
+δ
+⁢
+q
+i
+we get Hamilton’s equations
+q
+˙
+i
+=
+∂
+⁡
+H
+∂
+⁡
+p
+i
+and
+p
+˙
+i
+=
+-
+∂
+⁡
+H
+∂
+⁡
+q
+i
+(4.306)
+Except there’s a very slight subtlety with the boundary conditions.
+We need the last term in (
+4.305
+) to vanish, and so require
+only that
+δ
+⁢
+q
+i
+⁢
+(
+t
+1
+)
+=
+δ
+⁢
+q
+i
+⁢
+(
+t
+2
+)
+=
+0
+(4.307)
+while
+δ
+⁢
+p
+i
+can be free at the end points
+t
+=
+t
+1
+and
+t
+=
+t
+2
+. So, despite
+our best efforts,
+q
+i
+and
+p
+i
+are not quite symmetric in this
+formalism.
+Note that we could simply impose
+δ
+⁢
+p
+i
+⁢
+(
+t
+1
+)
+=
+δ
+⁢
+p
+i
+⁢
+(
+t
+2
+)
+=
+0
+if we really wanted to and the above derivation still holds. It
+would mean we were being more restrictive on the types of paths we
+considered. But it does have the advantage that it keeps
+q
+i
+and
+p
+i
+on a symmetric footing. It also means that we have the freedom
+to add a function to consider actions of the form
+S
+=
+∫
+t
+1
+t
+2
+(
+p
+i
+⁢
+q
+˙
+i
+-
+H
+⁢
+(
+q
+,
+p
+)
++
+d
+⁢
+F
+⁢
+(
+q
+,
+p
+)
+d
+⁢
+t
+)
+(4.308)
+so that what sits in the integrand differs from the Lagrangian. For
+some situations this may be useful.
+4.1.6
+What’s Your Name, Man? William Rowan Hamilton (1805-1865)
+The formalism described above arose out of Hamilton’s interest in
+the theory of optics. The ideas were published in a series of
+books entitled “Theory of Systems of Rays”, the first of which
+appeared while Hamilton was still an undergraduate at Trinity
+College, Dublin. They also contain the first application of the
+Hamilton-Jacobi formulation (which we shall see in Section 4.7)
+and the first general statement of the principal of least action,
+which sometimes goes by the name of “Hamilton’s Principle”.
+Hamilton’s genius was recognised early. His capacity to soak up
+classical languages and to find errors in famous works of mathematics
+impressed many. In an unprecedented move, he was offered a full professorship
+in Dublin while still an undergraduate. He also held the position of
+‘‘Royal Astronomer of Ireland’’, allowing him to live at Dunsink Observatory
+even though he rarely did any observing. Unfortunately, the later years
+of Hamilton’s life were not happy ones. The woman he loved married another and
+he spent much time depressed, mired in drink, bad poetry and quaternions
+5
+5
+5
+The ”What’s your name, man?” joke is not mine. I stole it from the outrageously talented Tim Blais, whose entertaining and scholarly account of the life of Hamilton can be seen on
+YouTube
+.
+.
+4.2
+Liouville’s Theorem
+We’ve succeeded in rewriting classical dynamics in terms of first
+order differential equations in which each point in phase space
+follows a unique path under time evolution. We speak of a
+flow
+on phase space. In this section, we’ll look at some of the
+properties of these flows
+Figure 54:
+An infinitesimal volume element of phase space evolving in time.
+Liouville’s Theorem:
+Consider a region in phase space
+and watch it evolve over time. Then the shape of the region will
+generically change, but Liouville’s theorem states that the volume
+remains the same.
+Proof:
+Let’s consider an infinitesimal volume moving for an
+infinitesimal time. We start in a neighbourhood of the point
+(
+q
+i
+,
+p
+i
+)
+in phase space, with volume
+V
+=
+d
+⁢
+q
+1
+⁢
+…
+⁢
+d
+⁢
+q
+n
+⁢
+d
+⁢
+p
+1
+⁢
+…
+⁢
+d
+⁢
+p
+n
+(4.309)
+Then in time
+d
+⁢
+t
+, we know that
+q
+i
+→
+q
+i
++
+q
+˙
+i
+⁢
+d
+⁢
+t
+=
+q
+i
++
+∂
+⁡
+H
+∂
+⁡
+p
+i
+⁢
+d
+⁢
+t
+≡
+q
+~
+i
+(4.310)
+and
+p
+i
+→
+p
+i
++
+p
+˙
+i
+⁢
+d
+⁢
+t
+=
+p
+i
+-
+∂
+⁡
+H
+∂
+⁡
+q
+i
+⁢
+d
+⁢
+t
+≡
+p
+~
+i
+(4.311)
+So the new volume in phase space is
+V
+~
+=
+d
+⁢
+q
+~
+1
+⁢
+…
+⁢
+d
+⁢
+q
+~
+n
+⁢
+d
+⁢
+p
+~
+1
+⁢
+…
+⁢
+d
+⁢
+p
+~
+n
+=
+(
+det
+⁡
+𝒥
+)
+⁢
+V
+(4.312)
+where
+det
+⁡
+𝒥
+is the Jacobian of the transformation defined by
+the determinant of the
+2
+⁢
+n
+×
+2
+⁢
+n
+matrix
+𝒥
+=
+(
+∂
+⁡
+q
+~
+i
+/
+∂
+⁡
+q
+j
+∂
+⁡
+q
+~
+i
+/
+∂
+⁡
+p
+j
+∂
+⁡
+p
+~
+i
+/
+∂
+⁡
+q
+j
+∂
+⁡
+p
+~
+i
+/
+∂
+⁡
+p
+j
+)
+(4.313)
+To prove the theorem, we need to show that
+det
+⁡
+𝒥
+=
+1
+. First
+consider a single degree of freedom (i.e.
+n
+=
+1
+). Then we have
+det
+⁡
+𝒥
+=
+det
+⁡
+(
+1
++
+(
+∂
+2
+⁡
+H
+/
+∂
+⁡
+p
+⁢
+∂
+⁡
+q
+)
+⁢
+d
+⁢
+t
+(
+∂
+2
+⁡
+H
+/
+∂
+⁡
+p
+2
+)
+⁢
+d
+⁢
+t
+-
+(
+∂
+2
+⁡
+H
+/
+∂
+⁡
+q
+2
+)
+⁢
+d
+⁢
+t
+1
+-
+(
+∂
+2
+⁡
+H
+/
+∂
+⁡
+q
+⁢
+∂
+⁡
+p
+)
+⁢
+d
+⁢
+t
+)
+=
+1
++
+𝒪
+⁢
+(
+d
+⁢
+t
+2
+)
+(4.314)
+which means that
+d
+⁢
+(
+det
+⁡
+𝒥
+)
+d
+⁢
+t
+=
+0
+(4.315)
+so that the volume remains constant for all time. Now to generalise
+this to arbitrary
+n
+, we have
+det
+⁡
+𝒥
+=
+det
+⁡
+(
+δ
+i
+⁢
+j
++
+(
+∂
+2
+⁡
+H
+/
+∂
+⁡
+p
+i
+⁢
+∂
+⁡
+q
+j
+)
+⁢
+d
+⁢
+t
+(
+∂
+2
+⁡
+H
+/
+∂
+⁡
+p
+i
+⁢
+∂
+⁡
+p
+j
+)
+⁢
+d
+⁢
+t
+-
+(
+∂
+2
+⁡
+H
+/
+∂
+⁡
+q
+i
+⁢
+∂
+⁡
+q
+j
+)
+⁢
+d
+⁢
+t
+δ
+i
+⁢
+j
+-
+(
+∂
+2
+⁡
+H
+/
+∂
+⁡
+q
+i
+⁢
+∂
+⁡
+p
+j
+)
+⁢
+d
+⁢
+t
+)
+(4.316)
+To compute the determinant, we need the result that
+det
+⁡
+(
+1
++
+ϵ
+⁢
+M
+)
+=
+1
++
+ϵ
+⁢
+Tr
+⁢
+M
++
+𝒪
+⁢
+(
+ϵ
+2
+)
+for any matrix
+M
+and small
+ϵ
+. Then we have
+det
+⁡
+𝒥
+=
+1
++
+∑
+i
+(
+∂
+2
+⁡
+H
+∂
+⁡
+p
+i
+⁢
+∂
+⁡
+q
+i
+-
+∂
+2
+⁡
+H
+∂
+⁡
+q
+i
+⁢
+∂
+⁡
+p
+i
+)
+⁢
+d
+⁢
+t
++
+𝒪
+⁢
+(
+d
+⁢
+t
+2
+)
+=
+1
++
+𝒪
+⁢
+(
+d
+⁢
+t
+2
+)
+(4.317)
+and we’re done.
+□
+4.2.1
+Liouville’s Equation
+So how should we think about
+the volume of phase space? We could consider an ensemble (or
+collection) of systems with some density function
+ρ
+⁢
+(
+p
+,
+q
+,
+t
+)
+. We
+might want to do this because
+•
+We have a single system but don’t know the exact state very
+well. Then
+ρ
+is understood as a probability parameterising our
+ignorance and
+∫
+ρ
+⁢
+(
+q
+,
+p
+,
+t
+)
+⁢
+∏
+i
+d
+⁢
+p
+i
+⁢
+d
+⁢
+q
+i
+=
+1
+(4.318)
+•
+We may have a large number
+N
+of identical, non-interacting
+systems (e.g.
+N
+=
+10
+23
+gas molecules in a jar) and we really only
+care about the averaged behaviour. Then the distribution
+ρ
+satisfies
+∫
+ρ
+⁢
+(
+q
+,
+p
+,
+t
+)
+⁢
+∏
+i
+d
+⁢
+q
+i
+⁢
+d
+⁢
+p
+i
+=
+N
+(4.319)
+In the latter case, we know that particles in phase space (i.e. dynamical systems)
+are neither created nor destroyed, so the number of particles in a given “comoving”
+volume is conserved. Since Liouville tells us that the volume
+elements
+d
+⁢
+p
+⁢
+d
+⁢
+q
+are preserved, we have
+d
+⁢
+ρ
+/
+d
+⁢
+t
+=
+0
+. We write this as
+d
+⁢
+ρ
+d
+⁢
+t
+=
+∂
+⁡
+ρ
+∂
+⁡
+t
++
+∂
+⁡
+ρ
+∂
+⁡
+q
+i
+⁢
+q
+˙
+i
++
+∂
+⁡
+ρ
+∂
+⁡
+p
+i
+⁢
+p
+˙
+i
+(4.320)
+=
+∂
+⁡
+ρ
+∂
+⁡
+t
++
+∂
+⁡
+ρ
+∂
+⁡
+q
+i
+⁢
+∂
+⁡
+H
+∂
+⁡
+p
+i
+-
+∂
+⁡
+ρ
+∂
+⁡
+p
+i
+⁢
+∂
+⁡
+H
+∂
+⁡
+q
+i
+=
+0
+Rearranging the terms, we have,
+∂
+⁡
+ρ
+∂
+⁡
+t
+=
+∂
+⁡
+ρ
+∂
+⁡
+p
+i
+⁢
+∂
+⁡
+H
+∂
+⁡
+q
+i
+-
+∂
+⁡
+ρ
+∂
+⁡
+q
+i
+⁢
+∂
+⁡
+H
+∂
+⁡
+p
+i
+(4.321)
+which is
+Liouville’s equation
+.
+Notice that Liouville’s theorem holds whether or not the system
+conserves energy. (i.e. whether or not
+∂
+⁡
+H
+/
+∂
+⁡
+t
+=
+0
+).
+But the system must be described by a Hamiltonian. For example,
+systems with dissipation typically head to regions of phase space
+with
+q
+˙
+i
+=
+0
+and so do not preserve phase space volume.
+The central idea of Liouville’s theorem – that volume of phase space
+is constant – is somewhat reminiscent of quantum mechanics. Indeed, this
+is the first of several occasions where we shall see ideas of quantum physics
+creeping into the classical world. Suppose we have a system of particles
+distributed randomly within a square
+Δ
+⁢
+q
+⁢
+Δ
+⁢
+p
+in phase space.
+Liouville’s theorem implies that if we evolve the system in any Hamiltonian
+manner, we can cut down the spread of positions of the particles only at the
+cost of increasing the spread of momentum. We’re reminded strongly
+of Heisenberg’s uncertainty relation, which is
+also written
+Δ
+⁢
+q
+⁢
+Δ
+⁢
+p
+=
+constant
+.
+While Liouville and Heisenberg seem to be talking the same language, there
+are very profound differences between them. The distribution in the classical picture
+reflects our ignorance of the system rather than any intrinsic uncertainty. This is perhaps
+best illustrated by the fact that we can evade Liouville’s theorem in a real system!
+The crucial point is that a system of classical particles is really described by collection of
+points in phase space rather than a continuous distribution
+ρ
+⁢
+(
+q
+,
+p
+)
+as we modelled it
+above. This means that if we’re clever we can evolve the system with a Hamiltonian so that
+the points get closer together, while the spaces between the points get pushed away.
+A method for achieving this is known as stochastic cooling and is an important part
+of particle collider technology. In 1984 van der Meer won the the Nobel prize for pioneering this
+method.
+4.2.2
+Time Independent Distributions
+Often in physics we’re interested in probability distributions that
+don’t change explicitly in time (i.e.
+∂
+⁡
+ρ
+/
+∂
+⁡
+t
+=
+0
+). There’s an
+important class of these of the form,
+ρ
+=
+ρ
+⁢
+(
+H
+⁢
+(
+q
+,
+p
+)
+)
+(4.322)
+To see that these are indeed time independent, look at
+∂
+⁡
+ρ
+∂
+⁡
+t
+=
+∂
+⁡
+ρ
+∂
+⁡
+p
+i
+⁢
+∂
+⁡
+H
+∂
+⁡
+q
+i
+-
+∂
+⁡
+ρ
+∂
+⁡
+q
+i
+⁢
+∂
+⁡
+H
+∂
+⁡
+p
+i
+(4.323)
+=
+∂
+⁡
+ρ
+∂
+⁡
+H
+⁢
+∂
+⁡
+H
+∂
+⁡
+p
+i
+⁢
+∂
+⁡
+H
+∂
+⁡
+q
+i
+-
+∂
+⁡
+ρ
+∂
+⁡
+H
+⁢
+∂
+⁡
+H
+∂
+⁡
+q
+i
+⁢
+∂
+⁡
+H
+∂
+⁡
+p
+i
+=
+0
+A very famous example of this type is the
+Boltzmann
+distribution
+ρ
+=
+exp
+⁡
+(
+-
+H
+⁢
+(
+q
+,
+p
+)
+k
+⁢
+T
+)
+(4.324)
+for systems at a temperature
+T
+. Here
+k
+is the Boltzmann
+constant.
+For example, for a free particle with
+H
+=
+𝐩
+2
+/
+2
+⁢
+m
+, the Boltzmann
+distribution is
+ρ
+=
+exp
+⁡
+(
+-
+m
+⁢
+𝐫
+˙
+2
+/
+2
+⁢
+k
+⁢
+T
+)
+which is a Gaussian
+distribution in velocities.
+An historically more interesting example comes from looking at a
+free particle in a magnetic field, so
+H
+=
+(
+𝐩
+-
+e
+⁢
+𝐀
+)
+2
+/
+2
+⁢
+m
+(where
+we’ve set the speed of light
+c
+=
+1
+for simplicity). Then the
+Boltzmann distribution is
+ρ
+=
+exp
+⁡
+(
+-
+H
+⁢
+(
+q
+,
+p
+)
+k
+⁢
+T
+)
+=
+exp
+⁡
+(
+-
+m
+⁢
+𝐫
+˙
+2
+2
+⁢
+k
+⁢
+T
+)
+(4.325)
+which is again a Gaussian distribution of velocities. In other
+words, the distribution in velocities is independent of the magnetic
+field. But this is odd: the magnetism of solids is all about how the
+motion of electrons is affected by magnetic fields. Yet we’ve seen that
+the magnetic field doesn’t affect the velocities of electrons. This is known as
+the Bohr-van Leeuwen paradox: there can be no magnetism in classical
+physics! This was one of the motivations for the development of
+quantum theory.
+4.2.3
+Poincaré Recurrence Theorem
+We now turn to work of Poincaré from around 1890. The following
+theorem applies to systems with a
+bounded
+phase space (i.e. of
+finite volume). This is not an uncommon occurrence. For example, if
+we have a conserved energy
+E
+=
+T
++
+V
+with
+T
+>
+0
+and
+V
+>
+0
+then the
+accessible phase space is bounded by the spatial region
+V
+⁢
+(
+𝐫
+)
+≤
+E
+. With this in mind, we have
+Theorem:
+Consider an initial point
+P
+in phase space. Then
+for any neighbourhood
+D
+0
+of
+P
+, there exists a point
+P
+′
+∈
+D
+0
+that will return to
+D
+0
+in a finite time.
+Figure 55:
+The Hamiltonian map in a time step
+T
+.
+Proof:
+Consider the evolution of
+D
+0
+over a finite time
+interval
+T
+. Hamilton’s equations provide a map
+D
+0
+↦
+D
+1
+shown
+in figure
+55
+.
+By Liouville’s theorem, we know that
+Vol
+⁢
+(
+D
+0
+)
+=
+Vol
+⁢
+(
+D
+1
+)
+, although
+the shapes of these two regions will in general be different. Let
+D
+k
+be the region after time
+k
+⁢
+T
+where
+k
+is an integer. Then
+there must exist integers
+k
+and
+k
+′
+such that the
+intersection of
+D
+k
+and
+D
+k
+′
+is not empty:
+D
+k
+∩
+D
+k
+′
+≠
+ϕ
+(4.326)
+(If this isn’t true then the
+total volume
+⋃
+k
+=
+0
+∞
+D
+k
+→
+∞
+but, by
+assumption, the phase space volume is finite). Take
+k
+′
+>
+k
+such that
+ω
+k
+,
+k
+′
+=
+D
+k
+∩
+D
+k
+′
+≠
+ϕ
+. But
+since the Hamiltonian mapping
+D
+k
+→
+D
+k
++
+1
+is
+invertible, we can track backwards to find
+ω
+0
+,
+k
+′
+-
+k
+=
+D
+0
+∩
+D
+k
+′
+-
+k
+≠
+0
+.
+Figure 56:
+Figure 57:
+So some point
+P
+′
+∈
+D
+0
+has returned to
+D
+in
+k
+′
+-
+k
+time steps
+T
+.
+□
+What does the Poincaré recurrence theorem mean? Consider gas
+molecules all in one corner of the room. If we let them go, they
+fill the room. But this theorem tells us that if we wait long
+enough, they will all return once more to the corner of the room.
+The trick is that the Poincaré recurrence time for this to happen
+can easily be longer than the lifetime of the universe!
+Figure 58:
+Eventually all the air molecules in a room will return to one corner.
+Question:
+Where’s your second law of thermodynamics now?!
+4.3
+Poisson Brackets
+In this section, we’ll present a rather formal, algebraic
+description of classical dynamics which makes it look almost
+identical to quantum mechanics! We’ll return to this analogy later
+in the course.
+We start with a definition. Let
+f
+⁢
+(
+q
+,
+p
+)
+and
+g
+⁢
+(
+q
+,
+p
+)
+be two
+functions on phase space. Then the
+Poisson bracket
+is defined
+to be
+{
+f
+,
+g
+}
+=
+∂
+⁡
+f
+∂
+⁡
+q
+i
+∂
+⁡
+g
+∂
+⁡
+p
+i
+-
+∂
+⁡
+f
+∂
+⁡
+p
+i
+∂
+⁡
+g
+∂
+⁡
+q
+i
+(4.327)
+Since this is a kind of weird definition, let’s look at some of the
+properties of the Poisson bracket to get a feel for it. We have
+•
+{
+f
+,
+g
+}
+=
+-
+{
+g
+,
+f
+}
+.
+•
+linearity:
+{
+α
+⁢
+f
++
+β
+⁢
+g
+,
+h
+}
+=
+α
+⁢
+{
+f
+,
+h
+}
++
+β
+⁢
+{
+g
+,
+h
+}
+for all
+α
+,
+β
+∈
+𝐑
+.
+•
+Leibniz rule:
+{
+f
+⁢
+g
+,
+h
+}
+=
+f
+⁢
+{
+g
+,
+h
+}
++
+{
+f
+,
+h
+}
+⁢
+g
+which follows from the
+chain rule in differentiation.
+•
+Jacobi identity:
+{
+f
+,
+{
+g
+,
+h
+}
+}
++
+{
+g
+,
+{
+h
+,
+f
+}
+}
++
+{
+h
+,
+{
+f
+,
+g
+}
+}
+=
+0
+. To prove this you
+need a large piece of paper and a hot cup of coffee. Expand out all
+24 terms and watch them cancel one by one.
+What we’ve seen above is that the Poisson bracket
+{
+,
+}
+satisfies the same algebraic structure as matrix commutators
+[
+,
+]
+and the differentiation operator
+d
+. This is related to
+Heisenberg’s and Schrödinger’s viewpoints of quantum mechanics
+respectively. (You may be confused about what the Jacobi identity
+means for the derivative operator
+d
+. Strictly speaking, the
+Poisson bracket is like a “Lie derivative” found in
+differential
+geometry
+, for which there is a corresponding Jacobi identity).
+The relationship to quantum mechanics is emphasised even more if
+we calculate
+{
+q
+i
+,
+q
+j
+}
+=
+0
+{
+p
+i
+,
+p
+j
+}
+=
+0
+(4.328)
+{
+q
+i
+,
+p
+j
+}
+=
+δ
+i
+⁢
+j
+We’ll return to this in section 4.8.
+Claim:
+For any function
+f
+⁢
+(
+q
+,
+p
+,
+t
+)
+,
+d
+⁢
+f
+d
+⁢
+t
+=
+{
+f
+,
+H
+}
++
+∂
+⁡
+f
+∂
+⁡
+t
+(4.329)
+Proof:
+d
+⁢
+f
+d
+⁢
+t
+=
+∂
+⁡
+f
+∂
+⁡
+p
+i
+⁢
+p
+i
+˙
++
+∂
+⁡
+f
+∂
+⁡
+q
+i
+⁢
+q
+˙
+i
++
+∂
+⁡
+f
+∂
+⁡
+t
+=
+-
+∂
+⁡
+f
+∂
+⁡
+p
+i
+⁢
+∂
+⁡
+H
+∂
+⁡
+q
+i
++
+∂
+⁡
+f
+∂
+⁡
+q
+i
+⁢
+∂
+⁡
+H
+∂
+⁡
+p
+i
++
+∂
+⁡
+f
+∂
+⁡
+t
+=
+{
+f
+,
+H
+}
++
+∂
+⁡
+f
+∂
+⁡
+t
+Isn’t this a lovely equation! One consequence is that if we can find
+a function
+I
+⁢
+(
+p
+,
+q
+)
+which satisfy
+{
+I
+,
+H
+}
+=
+0
+(4.331)
+then
+I
+is a constant of motion. We say that
+I
+and
+H
+Poisson commute
+. As an example of this, suppose that
+q
+i
+is
+ignorable (i.e. it does not appear in
+H
+) then
+{
+p
+i
+,
+H
+}
+=
+0
+(4.332)
+which is the way to see the relationship between ignorable coordinates
+and conserved quantities in the Poisson bracket language.
+Note that if
+I
+and
+J
+are constants of motion then
+{
+{
+I
+,
+J
+}
+,
+H
+}
+=
+{
+I
+,
+{
+J
+,
+H
+}
+}
++
+{
+{
+I
+,
+H
+}
+,
+J
+}
+=
+0
+which means that
+{
+I
+,
+J
+}
+is
+also a constant of motion. We say that the constants of motion form
+a closed algebra under the Poisson bracket.
+4.3.1
+An Example: Angular Momentum and Runge-Lenz
+Consider the angular momentum
+𝐋
+=
+𝐫
+×
+𝐩
+which, in component
+form, reads
+L
+1
+=
+r
+2
+p
+3
+-
+r
+3
+p
+2
+,
+L
+2
+=
+r
+3
+p
+1
+-
+r
+1
+p
+3
+,
+L
+3
+=
+r
+1
+p
+2
+-
+r
+2
+p
+1
+(4.333)
+and let’s look at the Poisson bracket structure. We have
+{
+L
+1
+,
+L
+2
+}
+=
+{
+r
+2
+p
+3
+-
+r
+3
+p
+2
+,
+r
+3
+p
+1
+-
+r
+1
+p
+3
+}
+(4.334)
+=
+{
+r
+2
+p
+3
+,
+r
+3
+p
+1
+}
++
+{
+r
+3
+p
+2
+,
+r
+1
+p
+3
+}
+=
+-
+r
+2
+⁢
+p
+1
++
+p
+2
+⁢
+r
+1
+=
+L
+3
+So if
+L
+1
+and
+L
+2
+are conserved, we see that
+L
+3
+must also be
+conserved. Or, in other words, the whole vector
+𝐋
+is conserved
+if any two components are.
+Similarly, one can show that
+{
+L
+2
+,
+L
+i
+}
+=
+0
+(4.335)
+where
+L
+2
+=
+∑
+i
+L
+i
+2
+. This should all be looking familiar from quantum
+mechanics.
+Another interesting object is the (Hermann-Bernoulli-Laplace-Pauli-) Runge-Lenz vector,
+defined as
+𝐀
+=
+1
+m
+⁢
+𝐩
+×
+𝐋
+-
+𝐫
+^
+(4.336)
+where
+𝐫
+^
+=
+𝐫
+/
+r
+. This vector satisfies
+𝐀
+⋅
+𝐋
+=
+0
+.
+If you’re willing to spend some time playing with indices, it’s not hard to
+derive the following expressions for the Poisson bracket structure
+{
+L
+a
+,
+A
+b
+}
+=
+ϵ
+a
+⁢
+b
+⁢
+c
+A
+c
+,
+{
+A
+a
+,
+A
+b
+}
+=
+-
+2
+m
+(
+𝐩
+2
+2
+⁢
+m
+-
+1
+r
+)
+ϵ
+a
+⁢
+b
+⁢
+c
+L
+c
+(4.337)
+The last of these equations suggests something special might happen
+when we consider the familiar Hamiltonian
+H
+=
+𝐩
+2
+/
+2
+⁢
+m
+-
+1
+/
+r
+so
+that the Poisson bracket becomes
+{
+A
+a
+,
+A
+b
+}
+=
+-
+2
+⁢
+H
+m
+ϵ
+a
+⁢
+b
+⁢
+c
+L
+c
+(4.338)
+Indeed, for this choice of Hamiltonian is a rather simple to show that
+{
+H
+,
+𝐀
+}
+=
+0
+(4.339)
+So we learn that the Hamiltonian with
+-
+1
+/
+r
+potential has another constant
+of motion
+𝐀
+that we’d previously missed! The fact that
+𝐀
+is conserved can be used to immediately derive Kepler’s elliptical
+orbits: dotting
+𝐀
+with
+𝐫
+^
+yields
+𝐫
+^
+⋅
+𝐀
++
+1
+=
+𝐋
+2
+/
+r
+which is the equation for an ellipse.
+Note
+that the three constants of motion,
+𝐋
+,
+𝐀
+and
+H
+form a closed algebra under the Poisson bracket.
+Noether’s theorem tells us that the conservation of
+𝐋
+and
+H
+are related to rotational symmetry and time translation respectively.
+One might wonder whether there’s a similar symmetry responsible for the conservation
+of
+𝐀
+. It turns out that there is: the Hamiltonian has a hidden
+S
+⁢
+O
+⁢
+(
+4
+)
+symmetry group. You can read more about this in Goldstein.
+4.3.2
+An Example: Magnetic Monopoles
+We’ve seen in the example of section 4.1.3 that a particle in a magnetic
+field
+𝐁
+=
+∇
+×
+𝐀
+is described by the Hamiltonian
+H
+=
+1
+2
+⁢
+m
+⁢
+(
+𝐩
+-
+e
+⁢
+𝐀
+⁢
+(
+𝐫
+)
+)
+2
+=
+m
+2
+⁢
+𝐫
+˙
+2
+(4.340)
+where, as usual in the Hamiltonian,
+𝐫
+˙
+is to be thought of as
+a function of
+𝐫
+and
+𝐩
+. It’s a simple matter to compute
+the Poisson bracket structure for this system: it reads
+{
+m
+r
+˙
+a
+,
+m
+r
+˙
+b
+}
+=
+e
+ϵ
+a
+⁢
+b
+⁢
+c
+B
+c
+,
+{
+m
+r
+˙
+a
+,
+r
+b
+}
+=
+-
+δ
+a
+⁢
+b
+(4.341)
+Let’s now use this to describe a postulated object known as a magnetic
+monopole. It’s a fact that all magnets ever discovered are dipoles: they
+have both a north and south pole. Chop the magnet in two, and each piece
+also has a north and a south pole. Indeed, this fact is woven into the
+very heart of electromagnetism when formulated in terms of the gauge
+potential
+𝐀
+. Since we define
+𝐁
+=
+∇
+×
+𝐀
+, we
+immediately have one of Maxwell’s equations,
+∇
+⋅
+𝐁
+=
+0
+(4.342)
+which states that any flux that enters a region must also leave. Or, in
+other words, there can be no magnetic monopole. Such a monopole would
+have a radial magnetic field,
+𝐁
+=
+g
+⁢
+𝐫
+r
+3
+(4.343)
+which doesn’t satisfy (
+4.342
+) since it gives rise to a delta function
+on the right-hand side. So if magnetic monopoles have never been observed,
+and are forbidden by Maxwell’s equations, why are we interested in them?!
+The point is that every theory that goes beyond Maxwell’s equations and tries to
+unify electromagnetism with the other forces of Nature predicts magnetic
+monopoles. So there’s reason to suspect that, somewhere in the universe, there
+may be particles with a radial magnetic field given by (
+4.343
+)
+6
+6
+6
+You can read more about magnetic monopoles in the lectures on
+Electromagnetism
+, the lectures on
+Solid State Physics
+and the lectures on
+Gauge Theory
+. See, they really do get everywhere!
+.
+What happens if an electron moves in the background of a monopole? It’s
+tricky to set up the Lagrangian as we don’t have a gauge potential
+𝐀
+. (Actually, one can work with certain singular gauge potentials
+but we won’t go there). However, we can play with the Poisson brackets
+(
+4.341
+) which contain only the magnetic field. As an application,
+consider the generalised angular momentum,
+𝐉
+=
+m
+⁢
+𝐫
+×
+𝐫
+˙
+-
+g
+⁢
+e
+⁢
+𝐫
+^
+(4.344)
+where
+𝐫
+^
+=
+𝐫
+/
+r
+.
+For
+g
+=
+0
+, this expression reduces to the usual angular momentum. It is a
+simple matter to show using (
+4.341
+) that in the background of the magnetic monopole
+the Hamiltonian
+H
+=
+1
+2
+⁢
+m
+⁢
+𝐫
+˙
+2
+and
+𝐉
+satisfy
+{
+H
+,
+𝐉
+}
+=
+0
+(4.345)
+which guarantees that
+𝐉
+is a constant of motion.
+What do we learn from this? Since
+𝐉
+is conserved,
+we can look at
+𝐫
+^
+⋅
+𝐉
+=
+-
+e
+⁢
+g
+to learn that the motion of an
+electron in the background of a magnetic monopole lies on a cone of angle
+cos
+⁡
+θ
+=
+e
+⁢
+g
+/
+J
+pointing away from the vector
+𝐉
+.
+4.3.3
+An Example: The Motion of Vortices
+The formal structure of Poisson brackets that we’ve introduced here
+can be employed even when it’s not obvious that we’re talking about
+coordinates and momenta. To illustrate this, consider the rather odd
+motion of line vortices moving in a plane. For
+n
+vortices with
+positions
+𝐫
+i
+=
+(
+x
+i
+,
+y
+i
+)
+, each with strength
+γ
+i
+, the
+equations of motion are
+γ
+i
+⁢
+x
+˙
+i
+=
+-
+∑
+j
+≠
+i
+γ
+i
+⁢
+γ
+j
+⁢
+y
+i
+-
+y
+j
+|
+𝐫
+i
+-
+𝐫
+j
+|
+2
+γ
+i
+⁢
+y
+˙
+i
+=
++
+∑
+j
+≠
+i
+γ
+i
+⁢
+γ
+j
+⁢
+x
+i
+-
+x
+j
+|
+𝐫
+i
+-
+𝐫
+j
+|
+2
+(4.346)
+Figure 59:
+where there is no sum
+over
+i
+on the left hand side of these equations. Notice that these
+are first order equations for the position variables, rather than
+for position and momentum. How can we cast this dynamics in a
+Hamiltonian framework? The trick is to consider one of the positions
+as a “canonical momentum”. We consider the Hamiltonian
+H
+=
+-
+∑
+i
+<
+j
+γ
+i
+⁢
+γ
+j
+⁢
+log
+⁡
+|
+𝐫
+i
+-
+𝐫
+j
+|
+(4.347)
+which is endowed with the Poisson bracket structure
+{
+f
+,
+g
+}
+=
+∑
+i
+=
+1
+n
+1
+γ
+i
+(
+∂
+⁡
+f
+∂
+⁡
+x
+i
+∂
+⁡
+g
+∂
+⁡
+y
+i
+-
+∂
+⁡
+f
+∂
+⁡
+y
+i
+∂
+⁡
+g
+∂
+⁡
+x
+i
+)
+(4.348)
+In particular, we have
+{
+x
+i
+,
+y
+j
+}
+=
+δ
+i
+⁢
+j
+γ
+i
+(4.349)
+Using this, we can check that Hamilton’s equations reproduce the
+equations of motion,
+x
+˙
+i
+=
+{
+x
+i
+,
+H
+}
+=
+1
+γ
+i
+∂
+⁡
+H
+∂
+⁡
+y
+i
+y
+˙
+i
+=
+{
+y
+i
+,
+H
+}
+=
+-
+1
+γ
+i
+∂
+⁡
+H
+∂
+⁡
+x
+i
+(4.350)
+The system has a number of conserved quantities. Firstly, there is
+the “total momentum”,
+P
+x
+=
+∑
+i
+γ
+i
+y
+i
+,
+P
+y
+=
+-
+∑
+i
+γ
+i
+x
+i
+(4.351)
+which satisfy
+{
+P
+x
+,
+H
+}
+=
+{
+P
+y
+,
+H
+}
+=
+0
+, ensuring that they are
+conserved quantities. We also have
+{
+P
+x
+,
+P
+y
+}
+=
+∑
+i
+γ
+i
+and
+the right hand side, being constant, is trivially conserved.
+The other conserved quantity is the “total angular momentum”,
+J
+=
+-
+1
+2
+⁢
+∑
+i
+=
+1
+n
+γ
+i
+⁢
+(
+x
+i
+2
++
+y
+i
+2
+)
+(4.352)
+which again satisfies
+{
+J
+,
+H
+}
+=
+0
+, ensuring it is conserved. The
+full algebra of the conserved quantities includes
+{
+P
+x
+,
+J
+}
+=
+-
+P
+y
+and
+{
+P
+y
+,
+J
+}
+=
+P
+x
+, so the system closes (meaning we get back
+something we know on the right hand side). In fact, one can show
+that
+H
+,
+J
+and
+(
+P
+x
+2
++
+P
+y
+2
+)
+provide three mutually Poisson
+commuting conserved quantities.
+So what is the resulting motion of a bunch of vortices? For two
+vortices, we can simply solve the equations of motion to find,
+x
+1
+-
+x
+2
+=
+R
+⁢
+sin
+⁡
+(
+ω
+R
+2
+⁢
+(
+t
+-
+t
+0
+)
+)
+y
+1
+-
+y
+2
+=
+R
+⁢
+cos
+⁡
+(
+ω
+R
+2
+⁢
+(
+t
+-
+t
+0
+)
+)
+(4.353)
+where
+R
+is the separation between the vortices and
+ω
+=
+(
+γ
+1
++
+γ
+2
+)
+/
+R
+2
+. So we learn that two vortices
+orbit each other with frequency inversely proportional to the square
+of their separation.
+For three vortices, it turns out that there is a known solution
+which is possible because of the three mutually Poisson commuting
+conserved quantities we saw above. We say the system is
+‘‘integrable”. We’ll define this properly shortly. For four or
+more vortices, the motion is chaotic
+7
+7
+7
+For more details on
+this system, see the review H. Aref, “
+Integrable, Chaotic,
+and Turbulent Vortex Motion in Two-Dimensional Flows
+”, Ann. Rev.
+Fluid Mech.
+15
+345 (1983).
+.
+You may think that the Poisson bracket structure
+{
+x
+,
+y
+}
+≠
+0
+looks a little strange. But it also appears in a more familiar
+setting: a charged particle moving in a magnetic field
+𝐁
+=
+(
+0
+,
+0
+,
+B
+)
+. We saw this example in section 4.1.3, where we
+calculated
+p
+x
+=
+m
+⁢
+x
+˙
+-
+e
+⁢
+B
+m
+⁢
+c
+⁢
+y
+(4.354)
+For large magnetic fields the second term in this equation
+dominates, and we have
+p
+x
+≈
+-
+e
+⁢
+B
+⁢
+y
+/
+m
+⁢
+c
+. In this case the
+Poisson bracket is
+{
+x
+,
+p
+x
+}
+=
+1
+⇒
+{
+x
+,
+y
+}
+≈
+-
+m
+⁢
+c
+e
+⁢
+B
+(4.355)
+This algebraic similarity between vortices and electrons is a hot
+topic of current research: can we make vortices do similar things to
+electrons in magnetic fields? For example: will vortices in a
+Bose-Einstein condensate form a fractional quantum Hall state? This is
+currently an active area of research.
+4.4
+Canonical Transformations
+There is a way to write Hamilton’s equations so that they look even
+more symmetric. Define the
+2
+⁢
+n
+vector
+𝐱
+=
+(
+q
+1
+,
+…
+,
+q
+n
+,
+p
+1
+,
+…
+,
+p
+n
+)
+T
+and the
+2
+⁢
+n
+×
+2
+⁢
+n
+matrix
+J
+,
+J
+=
+(
+0
+1
+-
+1
+0
+)
+(4.356)
+where each entry is itself an
+n
+×
+n
+matrix. Then with this
+notation, Hamilton’s equations read
+𝐱
+˙
+=
+J
+⁢
+∂
+⁡
+H
+∂
+⁡
+𝐱
+(4.357)
+Now remember that in the Lagrangian formalism we made a big deal
+about the fact that we could change coordinates
+q
+i
+→
+Q
+i
+⁢
+(
+q
+)
+without changing the form of the equations. Since we’ve
+managed to put
+q
+i
+and
+p
+i
+on an equal footing in the
+Hamiltonian formalism, one might wonder if its possible to make an
+even larger class of transformations of the form,
+q
+i
+→
+Q
+i
+⁢
+(
+q
+,
+p
+)
+and
+p
+i
+→
+P
+i
+⁢
+(
+q
+,
+p
+)
+(4.358)
+The answer is yes! But not all such transformations are allowed. To
+see what class of transformations leaves Hamilton’s equations
+invariant, we use our new symmetric form in terms of
+𝐱
+and write
+the transformation as
+x
+i
+→
+y
+i
+⁢
+(
+x
+)
+(4.359)
+Note that we’ll continue to use the index
+i
+which now runs over
+the range
+i
+=
+1
+,
+…
+,
+2
+⁢
+n
+. We have
+y
+i
+˙
+=
+∂
+⁡
+y
+i
+∂
+⁡
+x
+j
+⁢
+x
+˙
+j
+=
+∂
+⁡
+y
+i
+∂
+⁡
+x
+j
+⁢
+J
+j
+⁢
+k
+⁢
+∂
+⁡
+H
+∂
+⁡
+y
+l
+⁢
+∂
+⁡
+y
+l
+∂
+⁡
+x
+k
+(4.360)
+or, collating all the indices, we have
+𝐲
+˙
+=
+(
+𝒥
+⁢
+J
+⁢
+𝒥
+T
+)
+⁢
+∂
+⁡
+H
+∂
+⁡
+𝐲
+(4.361)
+where
+𝒥
+i
+⁢
+j
+=
+∂
+⁡
+y
+i
+/
+∂
+⁡
+x
+j
+is the Jacobian that
+we met in section 4.2. We see that Hamilton’s equations are left
+invariant under any transformation whose Jacobian
+𝒥
+satisfies
+𝒥
+⁢
+J
+⁢
+𝒥
+T
+=
+J
+⇒
+∂
+⁡
+y
+i
+∂
+⁡
+x
+j
+⁢
+J
+j
+⁢
+k
+⁢
+∂
+⁡
+y
+l
+∂
+⁡
+x
+k
+=
+J
+i
+⁢
+l
+(4.362)
+The Jacobian
+𝒥
+is said to be
+symplectic
+if this
+holds. A change of variables with a symplectic Jacobian is said to
+be a
+canonical transformation
+.
+There is a nice method to construct canonical transformations
+using “generating functions” which we will mention in section
+4.4.3. Before we get to this, let’s look at some uses. We start by
+proving a theorem relating
+canonical transformations with Poisson brackets.
+Theorem:
+The Poisson bracket is invariant under canonical
+transformations. Conversely, any transformation which preserves the
+Poisson bracket structure so that
+{
+Q
+i
+,
+Q
+j
+}
+=
+{
+P
+i
+,
+P
+j
+}
+=
+0
+and
+{
+Q
+i
+,
+P
+j
+}
+=
+δ
+i
+⁢
+j
+(4.363)
+is canonical.
+Proof:
+Let’s start by showing that the Poisson bracket is
+invariant under canonical transformations. Consider two functions
+f
+⁢
+(
+x
+i
+)
+and
+g
+⁢
+(
+x
+i
+)
+. Then,
+{
+f
+,
+g
+}
+=
+∂
+⁡
+f
+∂
+⁡
+q
+i
+⁢
+∂
+⁡
+g
+∂
+⁡
+p
+i
+-
+∂
+⁡
+f
+∂
+⁡
+p
+i
+⁢
+∂
+⁡
+g
+∂
+⁡
+q
+i
+(4.364)
+=
+∂
+⁡
+f
+∂
+⁡
+x
+i
+⁢
+J
+i
+⁢
+j
+⁢
+∂
+⁡
+g
+∂
+⁡
+x
+j
+So if
+x
+→
+y
+⁢
+(
+x
+)
+, we have
+∂
+⁡
+f
+∂
+⁡
+x
+i
+=
+∂
+⁡
+f
+∂
+⁡
+y
+k
+⁢
+𝒥
+k
+⁢
+i
+(4.365)
+and, assuming the transformation is canonical, the Poisson bracket
+becomes
+{
+f
+,
+g
+}
+=
+∂
+⁡
+f
+∂
+⁡
+y
+k
+𝒥
+k
+⁢
+i
+J
+i
+⁢
+j
+𝒥
+l
+⁢
+j
+∂
+⁡
+g
+∂
+⁡
+y
+l
+=
+∂
+⁡
+f
+∂
+⁡
+y
+k
+J
+k
+⁢
+l
+∂
+⁡
+g
+∂
+⁡
+y
+l
+(4.366)
+This means that we can compute our Poisson brackets in any
+coordinates related by a canonical transformation. Now let’s show
+the converse. Go back to the notation
+(
+q
+i
+,
+p
+i
+)
+and the new
+coordinates
+(
+Q
+i
+⁢
+(
+q
+,
+p
+)
+,
+P
+i
+⁢
+(
+q
+,
+p
+)
+)
+. The Jacobian is given by
+𝒥
+i
+⁢
+j
+=
+(
+∂
+⁡
+Q
+i
+/
+∂
+⁡
+q
+j
+∂
+⁡
+Q
+i
+/
+∂
+⁡
+p
+j
+∂
+⁡
+P
+i
+/
+∂
+⁡
+q
+j
+∂
+⁡
+P
+i
+/
+∂
+⁡
+p
+j
+)
+(4.367)
+If we now compute
+𝒥
+⁢
+J
+⁢
+𝒥
+T
+in components, we get
+(
+𝒥
+⁢
+J
+⁢
+𝒥
+T
+)
+i
+⁢
+j
+=
+(
+{
+Q
+i
+,
+Q
+j
+}
+{
+Q
+i
+,
+P
+j
+}
+{
+P
+i
+,
+Q
+j
+}
+{
+P
+i
+,
+P
+j
+}
+)
+(4.368)
+So
+whenever the Poisson bracket structure is preserved, the
+transformation is canonical.
+□
+Example
+In the next section we’ll see several non-trivial examples of
+canonical transformations which mix up
+q
+and
+p
+variables. But
+for now let’s content ourselves with reproducing the coordinate
+changes that we had in section 2. Consider a change of coordinates
+of the form
+q
+i
+→
+Q
+i
+⁢
+(
+q
+)
+(4.369)
+We know that Lagrange’s equations are invariant under this. But what
+transformation do we have to make on the momenta
+p
+i
+→
+P
+i
+⁢
+(
+q
+,
+p
+)
+(4.370)
+so that Hamilton’s equations are also invariant? We write
+Θ
+i
+⁢
+j
+=
+∂
+⁡
+Q
+i
+/
+∂
+⁡
+q
+j
+and look at the Jacobian
+𝒥
+i
+⁢
+j
+=
+(
+Θ
+i
+⁢
+j
+0
+∂
+⁡
+P
+i
+/
+∂
+⁡
+q
+j
+∂
+⁡
+P
+i
+/
+∂
+⁡
+p
+j
+)
+(4.371)
+in order for the transformation to be canonical, we require
+𝒥
+⁢
+J
+⁢
+𝒥
+T
+=
+J
+. By expanding these matrices out in components, we
+see that this is true if
+P
+i
+=
+(
+Θ
+-
+1
+)
+j
+⁢
+i
+⁢
+p
+j
+(4.372)
+This is as we would expect, for it’s equivalent to
+P
+i
+=
+∂
+⁡
+L
+/
+∂
+⁡
+Q
+˙
+i
+. Note that although
+Q
+i
+=
+Q
+i
+⁢
+(
+q
+)
+only,
+P
+i
+≠
+P
+i
+⁢
+(
+p
+)
+. Instead, the new momentum
+P
+i
+depends on both
+q
+and
+p
+.
+4.4.1
+Infinitesimal Canonical Transformations
+Consider transformations of the form
+q
+i
+→
+Q
+i
+=
+q
+i
++
+α
+⁢
+F
+i
+⁢
+(
+q
+,
+p
+)
+p
+i
+→
+P
+i
+=
+p
+i
++
+α
+⁢
+E
+i
+⁢
+(
+q
+,
+p
+)
+(4.373)
+where
+α
+is considered to be infinitesimally small. What
+functions
+F
+i
+⁢
+(
+q
+,
+p
+)
+and
+E
+i
+⁢
+(
+q
+,
+p
+)
+are allowed for this to be a
+canonical transformation? The Jacobian is
+𝒥
+i
+⁢
+j
+=
+(
+δ
+i
+⁢
+j
++
+α
+⁢
+∂
+⁡
+F
+i
+/
+∂
+⁡
+q
+j
+α
+⁢
+∂
+⁡
+F
+i
+/
+∂
+⁡
+p
+j
+α
+⁢
+∂
+⁡
+E
+i
+/
+∂
+⁡
+q
+j
+δ
+i
+⁢
+j
++
+α
+⁢
+∂
+⁡
+E
+i
+/
+∂
+⁡
+p
+j
+)
+(4.374)
+so the requirement that
+𝒥
+⁢
+J
+⁢
+𝒥
+T
+=
+J
+gives us
+∂
+⁡
+F
+i
+∂
+⁡
+q
+j
+=
+-
+∂
+⁡
+E
+i
+∂
+⁡
+p
+j
+(4.375)
+which is true if
+F
+i
+=
+∂
+⁡
+G
+∂
+⁡
+p
+i
+and
+E
+i
+=
+-
+∂
+⁡
+G
+∂
+⁡
+q
+i
+(4.376)
+for some function
+G
+⁢
+(
+q
+,
+p
+)
+. We say that
+G
+generates
+the
+transformation.
+This discussion motivates a slightly different way of thinking about
+canonical transformations. Suppose that we have a one-parameter
+family of transformations,
+q
+i
+→
+Q
+i
+⁢
+(
+q
+,
+p
+;
+α
+)
+and
+p
+i
+→
+P
+i
+⁢
+(
+q
+,
+p
+;
+α
+)
+(4.377)
+which are canonical for all
+α
+∈
+𝐑
+and have the property that
+Q
+i
+(
+q
+,
+p
+;
+α
+=
+0
+)
+=
+q
+i
+and
+P
+i
+(
+q
+,
+p
+;
+α
+=
+0
+)
+=
+p
+i
+. Up until now, we’ve
+been thinking of canonical transformations in the “passive” sense, with
+the
+(
+Q
+i
+,
+P
+i
+)
+labelling the same point in phase space as
+(
+q
+i
+,
+p
+i
+)
+,
+just in different coordinates. But a one-parameter family of canonical
+transformations can be endowed with a different interpretation,
+namely that the transformations take us from one point in the phase space
+(
+q
+i
+,
+p
+i
+)
+to another point in the same phase space
+(
+Q
+i
+⁢
+(
+q
+,
+p
+;
+α
+)
+,
+P
+i
+⁢
+(
+q
+,
+p
+;
+α
+)
+)
+.
+In this “active” interpretation,
+as we vary the parameter
+α
+we trace out lines in phase space. Using
+the results (
+4.373
+) and (
+4.376
+), the tangent vectors to these lines
+are given by,
+d
+⁢
+q
+i
+d
+⁢
+α
+=
+∂
+⁡
+G
+∂
+⁡
+p
+i
+and
+d
+⁢
+p
+i
+d
+⁢
+α
+=
+-
+∂
+⁡
+G
+∂
+⁡
+q
+i
+(4.378)
+But these look just like Hamilton’s equations, with the Hamiltonian
+replaced by the function
+G
+and time replaced by the parameter
+α
+. What we’ve found is that every one-parameter family of
+canonical transformations can be thought of as “Hamiltonian flow” on
+phase space for an appropriately chosen “Hamiltonian”
+G
+.
+Conversely, time evolution can be thought of as a canonical
+transformation for the coordinates
+(
+q
+i
+⁢
+(
+t
+0
+)
+,
+p
+i
+⁢
+(
+t
+0
+)
+)
+→
+(
+q
+i
+⁢
+(
+t
+)
+,
+p
+i
+⁢
+(
+t
+)
+)
+(4.379)
+generated by the Hamiltonian. Once again, we see the link between
+time and the Hamiltonian.
+As an example, consider the function
+G
+=
+p
+k
+. Then the corresponding
+infinitesimal canonical transformation is
+q
+i
+→
+q
+i
++
+α
+⁢
+δ
+i
+⁢
+k
+and
+p
+i
+→
+p
+i
+, which is simply a
+translation. We say that translations of
+q
+k
+are generated by the
+conjugate momentum
+G
+=
+p
+k
+.
+4.4.2
+Noether’s Theorem Revisited
+Recall that in the Lagrangian formalism, we saw a connection between
+symmetries and conservation laws. How does this work in the
+Hamiltonian formulation?
+Consider an infinitesimal canonical transformation generated by
+G
+.
+Then
+δ
+⁢
+H
+=
+∂
+⁡
+H
+∂
+⁡
+q
+i
+⁢
+δ
+⁢
+q
+i
++
+∂
+⁡
+H
+∂
+⁡
+p
+i
+⁢
+δ
+⁢
+p
+i
+(4.380)
+=
+α
+⁢
+∂
+⁡
+H
+∂
+⁡
+q
+i
+⁢
+∂
+⁡
+G
+∂
+⁡
+p
+i
+-
+α
+⁢
+∂
+⁡
+H
+∂
+⁡
+p
+i
+⁢
+∂
+⁡
+G
+∂
+⁡
+q
+i
++
+𝒪
+⁢
+(
+α
+2
+)
+=
+α
+⁢
+{
+H
+,
+G
+}
+The generator
+G
+is called a
+symmetry
+of the Hamiltonian if
+δ
+⁢
+H
+=
+0
+. This holds if
+{
+G
+,
+H
+}
+=
+0
+(4.381)
+But we know from section 4.3 that
+G
+˙
+=
+{
+G
+,
+H
+}
+. We have found
+that if
+G
+is a symmetry then
+G
+is conserved. Moreover, we can
+reverse the argument. If we have a conserved quantity
+G
+, then we
+can always use this to generate a canonical transformation which is
+a symmetry.
+4.4.3
+Generating Functions
+There’s a simple method to construct canonical transformations
+between coordinates
+(
+q
+i
+,
+p
+i
+)
+and
+(
+Q
+i
+,
+P
+i
+)
+. Consider a
+function
+F
+⁢
+(
+q
+,
+Q
+)
+of the original
+q
+i
+’s and the final
+Q
+i
+’s.
+Let
+p
+i
+=
+∂
+⁡
+F
+∂
+⁡
+q
+i
+(4.382)
+After inverting, this equation can be thought of as defining the
+new coordinate
+Q
+i
+=
+Q
+i
+⁢
+(
+q
+,
+p
+)
+. But what is the new canonical momentum
+P
+?
+We’ll show that it’s given by
+P
+i
+=
+-
+∂
+⁡
+F
+∂
+⁡
+Q
+i
+(4.383)
+The proof of this is a simple matter of playing with partial
+derivatives. Let’s see how it works in an example with just a
+single degree of freedom. (It generalises trivially to the case of
+several degrees of freedom). We can look at the Poisson bracket
+{
+Q
+,
+P
+}
+=
+∂
+⁡
+Q
+∂
+⁡
+q
+|
+p
+∂
+⁡
+P
+∂
+⁡
+p
+|
+q
+-
+∂
+⁡
+Q
+∂
+⁡
+p
+|
+q
+∂
+⁡
+P
+∂
+⁡
+q
+|
+p
+(4.384)
+At this point we need to do the playing with partial derivatives.
+Equation (
+4.383
+) defines
+P
+=
+P
+⁢
+(
+q
+,
+Q
+)
+, so we have
+∂
+⁡
+P
+∂
+⁡
+p
+|
+q
+=
+∂
+⁡
+Q
+∂
+⁡
+p
+|
+q
+⁢
+∂
+⁡
+P
+∂
+⁡
+Q
+|
+q
+and
+∂
+⁡
+P
+∂
+⁡
+q
+|
+p
+=
+∂
+⁡
+P
+∂
+⁡
+q
+|
+Q
++
+∂
+⁡
+Q
+∂
+⁡
+q
+|
+p
+⁢
+∂
+⁡
+P
+∂
+⁡
+Q
+|
+q
+(4.385)
+Inserting this into the Poisson bracket gives
+{
+Q
+,
+P
+}
+=
+-
+∂
+⁡
+Q
+∂
+⁡
+p
+|
+q
+∂
+⁡
+P
+∂
+⁡
+q
+|
+Q
+=
+∂
+⁡
+Q
+∂
+⁡
+p
+|
+q
+∂
+2
+⁡
+F
+∂
+⁡
+q
+⁢
+∂
+⁡
+Q
+=
+∂
+⁡
+Q
+∂
+⁡
+p
+|
+q
+∂
+⁡
+p
+∂
+⁡
+Q
+|
+q
+=
+1
+(4.386)
+as required. The function
+F
+⁢
+(
+q
+,
+Q
+)
+is known as a generating
+function of the first kind.
+There are three further types of generating function, related to
+the first by Legendre transforms. Each is a function of one of the
+original coordinates and one of the new coordinates. You can check
+that the following expression all define canonical
+transformations:
+F
+2
+⁢
+(
+q
+,
+P
+)
+:
+p
+i
+=
+∂
+⁡
+F
+2
+∂
+⁡
+q
+i
+and
+Q
+i
+=
+∂
+⁡
+F
+2
+∂
+⁡
+P
+i
+(4.387)
+F
+3
+⁢
+(
+p
+,
+Q
+)
+:
+q
+i
+=
+-
+∂
+⁡
+F
+3
+∂
+⁡
+p
+i
+and
+P
+i
+=
+-
+∂
+⁡
+F
+3
+∂
+⁡
+Q
+i
+F
+4
+⁢
+(
+p
+,
+P
+)
+:
+q
+i
+=
+-
+∂
+⁡
+F
+4
+∂
+⁡
+p
+i
+and
+Q
+i
+=
+∂
+⁡
+F
+4
+∂
+⁡
+P
+i
+4.5
+Action-Angle Variables
+We’ve all tried to solve problems in physics using the wrong
+coordinates and seen what a mess it can be. If you work in
+Cartesian coordinates when the problem really requires, say,
+spherical polar coordinates, it’s always possible to get to the
+right answer with enough perseverance, but you’re really making
+life hard for yourself. The ability to change coordinate systems
+can drastically simplify a problem. Now we have a much larger set
+of transformations at hand; we can mix up
+q
+’s and
+p
+’s. An
+obvious question is: Is this useful for anything?! In other words,
+is there a natural choice of variables which makes solving a given
+problem much easier. In many cases, there is. They’re called
+“angle-action” variables.
+4.5.1
+The Simple Harmonic Oscillator
+We’ll start this section by doing a simple example which will
+illustrate the main point. We’ll then move on to the more general theory.
+The example we choose is the simple harmonic oscillator. Notice that
+as our theory gets more abstract, our examples get easier!
+Figure 60:
+We have the Hamiltonian
+H
+=
+p
+2
+2
+⁢
+m
++
+1
+2
+⁢
+m
+⁢
+ω
+2
+⁢
+q
+2
+(4.388)
+so that Hamilton’s equations are the familiar
+p
+˙
+=
+-
+m
+⁢
+ω
+2
+⁢
+q
+and
+q
+˙
+=
+p
+m
+(4.389)
+which has the rather simple solution
+q
+=
+A
+⁢
+cos
+⁡
+(
+ω
+⁢
+(
+t
+-
+t
+0
+)
+)
+and
+p
+=
+-
+m
+⁢
+ω
+⁢
+A
+⁢
+sin
+⁡
+(
+ω
+⁢
+(
+t
+-
+t
+0
+)
+)
+(4.390)
+where
+A
+and
+t
+0
+are integration constants. The flows in phase
+space are ellipses as shown in the figure.
+Now let’s do a rather strange change of variables in which we use
+our freedom to mix up the position and momentum variables. We write
+(
+q
+,
+p
+)
+→
+(
+θ
+,
+I
+)
+(4.391)
+where you can think of
+θ
+is our new position coordinate and
+I
+our new momentum coordinate. The transformation we choose is:
+q
+=
+2
+⁢
+I
+m
+⁢
+ω
+⁢
+sin
+⁡
+θ
+and
+p
+=
+2
+⁢
+I
+⁢
+m
+⁢
+ω
+⁢
+cos
+⁡
+θ
+(4.392)
+It’s an odd choice, but it has advantages! Before we turn to these,
+let’s spend a minute checking that this is indeed a canonical
+transformation. There’s two ways to do this and we’ll do both:
+1)
+We can make sure that the Poisson brackets are preserved.
+In fact, it’s easier to work backwards and check that
+{
+q
+,
+p
+}
+=
+1
+in
+(
+θ
+,
+I
+)
+coordinates. In other words, we need to show that
+{
+q
+,
+p
+}
+(
+θ
+,
+I
+)
+≡
+∂
+⁡
+q
+∂
+⁡
+θ
+∂
+⁡
+p
+∂
+⁡
+I
+-
+∂
+⁡
+q
+∂
+⁡
+I
+∂
+⁡
+p
+∂
+⁡
+θ
+=
+1
+(4.393)
+To confirm this, let’s substitute the transformation (
+4.392
+),
+{
+q
+,
+p
+}
+(
+θ
+,
+I
+)
+=
+{
+2
+⁢
+I
+m
+⁢
+ω
+⁢
+sin
+⁡
+θ
+,
+2
+⁢
+I
+⁢
+m
+⁢
+ω
+⁢
+cos
+⁡
+θ
+}
+(
+θ
+,
+I
+)
+(4.394)
+=
+2
+⁢
+{
+I
+⁢
+sin
+⁡
+θ
+,
+I
+⁢
+cos
+⁡
+θ
+}
+(
+θ
+,
+I
+)
+=
+1
+where the final equality follows after a quick differentiation. So
+we see that the transformation (
+4.392
+) is indeed canonical.
+2)
+The second way to see that the transformation is canonical
+is to prove that the Jacobian is symplectic. Let’s now check it this
+way. We can calculate
+𝒥
+=
+(
+∂
+⁡
+θ
+/
+∂
+⁡
+q
+∂
+⁡
+θ
+/
+∂
+⁡
+p
+∂
+⁡
+I
+/
+∂
+⁡
+q
+∂
+⁡
+I
+/
+∂
+⁡
+p
+)
+=
+(
+(
+m
+⁢
+ω
+/
+p
+)
+⁢
+cos
+2
+⁡
+θ
+-
+(
+m
+⁢
+ω
+⁢
+q
+/
+p
+2
+)
+⁢
+cos
+2
+⁡
+θ
+m
+⁢
+ω
+⁢
+q
+p
+/
+m
+⁢
+ω
+)
+(4.395)
+from which we
+can calculate
+𝒥
+⁢
+J
+⁢
+𝒥
+T
+and find that it is equal
+to
+J
+as required.
+So we have a canonical transformation in (
+4.392
+). But what’s
+the point of doing this? Let’s look at the Hamiltonian in our new
+variables.
+H
+=
+1
+2
+⁢
+m
+⁢
+(
+2
+⁢
+m
+⁢
+ω
+⁢
+I
+)
+⁢
+sin
+2
+⁡
+θ
++
+1
+2
+⁢
+m
+⁢
+ω
+2
+⁢
+2
+⁢
+I
+m
+⁢
+ω
+⁢
+cos
+2
+⁡
+θ
+=
+ω
+⁢
+I
+(4.396)
+Figure 61:
+so the Hamiltonian doesn’t depend on the variable
+θ
+! This
+means that Hamilton’s equations read
+θ
+˙
+=
+∂
+⁡
+H
+∂
+⁡
+I
+=
+ω
+and
+I
+˙
+=
+-
+∂
+⁡
+H
+∂
+⁡
+θ
+=
+0
+(4.397)
+We’ve managed to map the phase space flow onto a cylinder parameterised
+by
+θ
+and
+I
+so that the flows are now all straight lines as shown
+in the figure. The
+coordinates
+(
+θ
+,
+I
+)
+are examples of
+angle-action
+variables
+.
+4.5.2
+Integrable Systems
+In the above example, we saw that we could straighten out the flow
+lines of the simple harmonic oscillator with a change of variables,
+so that the motion in phase space became trivial. It’s interesting
+to ask if we can we do this generally? The answer is: only for
+certain systems that are known as
+integrable
+.
+Suppose we have
+n
+degrees of freedom. We would like to find
+canonical transformations
+(
+q
+i
+,
+p
+i
+)
+→
+(
+θ
+i
+,
+I
+i
+)
+(4.398)
+such that the Hamiltonian becomes
+H
+=
+H
+⁢
+(
+I
+1
+,
+…
+,
+I
+n
+)
+and doesn’t
+depend on
+θ
+i
+. If we can do this, then Hamilton’s equations
+tell us that we have
+n
+conserved quantities
+I
+i
+, while
+θ
+˙
+i
+=
+∂
+⁡
+H
+∂
+⁡
+I
+i
+=
+ω
+i
+(4.399)
+where
+ω
+i
+is independent of
+θ
+(but in general depends on
+I
+)
+so that the solutions are simply
+θ
+i
+=
+ω
+i
+⁢
+t
+. Whenever
+such a transformation exists, the system is said to be
+integrable
+. For bounded motion, the
+θ
+i
+are usually scaled
+so that
+0
+≤
+θ
+i
+<
+2
+⁢
+π
+and the coordinates
+(
+θ
+i
+,
+I
+i
+)
+are called
+angle-action variables
+.
+Liouville’s Theorem on Integrable Systems:
+There is a converse statement. If we can find
+n
+mutually Poisson
+commuting constants of motion
+I
+1
+,
+…
+,
+I
+n
+then this implies the existence of angle-action variables and the
+system is integrable. The requirement of Poisson commutation
+{
+I
+i
+,
+I
+j
+}
+=
+0
+is the statement that we can view the
+I
+i
+as canonical momentum
+variables. This is known as Liouville’s theorem. (Same Liouville,
+different theorem). A proof can be found in the book by Arnold.
+Don’t be fooled into thinking all systems are integrable. They are
+rather special and precious. It remains an active area of research
+to find and study these systems. But many – by far the majority
+– of systems are not integrable (chaotic systems notably among
+them) and don’t admit this change of variables. Note that the
+question of whether angle-action variables exist is a
+global
+one. Locally you can always straighten out the flow lines; it’s a
+question of whether you can tie these straight lines together
+globally without them getting tangled.
+Clearly the motion of a completely integrable system is restricted
+to lie on
+I
+i
+=
+constant
+slices of the phase space. A theorem
+in topology says that these surfaces must be tori
+(
+S
+1
+×
+…
+×
+S
+1
+) known as the
+invariant tori
+.
+4.5.3
+Action-Angle Variables for 1d Systems
+Figure 62:
+Let’s see how this works for a 1d system with Hamiltonian
+H
+=
+p
+2
+2
+⁢
+m
++
+V
+⁢
+(
+q
+)
+(4.400)
+Since
+H
+itself is a constant of motion, with
+H
+=
+E
+for some
+constant
+E
+throughout the motion, the system is integrable. We
+assume that the motion is bounded so that
+q
+1
+≤
+q
+≤
+q
+2
+as
+shown in the figure. Then the motion is periodic, oscillating back
+and forth between the two end points, and the motion in phase space
+looks something like the figure
+63
+. Our goal is to find a
+canonical transformation to variables
+θ
+and
+I
+that
+straightens out this flow to look like the second figure in the
+diagram.
+Figure 63:
+Can we straighten out the flow lines in phase space?
+So what are
+I
+and
+θ
+? Since
+I
+is a constant of motion, it
+should be some function of the energy or, alternatively,
+H
+=
+H
+⁢
+(
+I
+)
+=
+E
+(4.401)
+But which choice will have as its canonical partner
+θ
+∈
+[
+0
+,
+2
+⁢
+π
+)
+satisfying
+θ
+˙
+=
+∂
+⁡
+H
+∂
+⁡
+I
+=
+∂
+⁡
+E
+∂
+⁡
+I
+≡
+ω
+(4.402)
+for a constant
+ω
+which is the frequency of the orbit?
+Claim:
+The correct choice for
+I
+is
+I
+=
+1
+2
+⁢
+π
+⁢
+∮
+p
+⁢
+𝑑
+q
+(4.403)
+which is the area of phase space enclosed by an orbit
+(divided by
+2
+⁢
+π
+) and is a function of the energy only.
+Proof:
+Since the Hamiltonian is conserved, we may write the
+momentum as a function of
+q
+and
+E
+:
+p
+=
+2
+⁢
+m
+⁢
+E
+-
+V
+⁢
+(
+q
+)
+(4.404)
+We know that for this system
+p
+=
+m
+⁢
+q
+˙
+so we have
+d
+⁢
+t
+=
+m
+2
+⁢
+d
+⁢
+q
+E
+-
+V
+⁢
+(
+q
+)
+(4.405)
+Integrating over a single orbit with period
+T
+=
+2
+⁢
+π
+/
+ω
+, we
+have
+2
+⁢
+π
+ω
+=
+m
+2
+⁢
+∮
+d
+⁢
+q
+E
+-
+V
+⁢
+(
+q
+)
+(4.406)
+=
+∮
+2
+⁢
+m
+⁢
+(
+d
+d
+⁢
+E
+⁢
+E
+-
+V
+⁢
+(
+q
+)
+)
+⁢
+𝑑
+q
+At this point we take the differentiation
+d
+/
+d
+⁢
+E
+outside the integral. This
+isn’t obviously valid since the path around which the integral is evaluated itself
+changes with energy
+E
+. Shortly we’ll show that this doesn’t matter. For now,
+let’s assume that this is valid and continue to find
+2
+⁢
+π
+ω
+=
+d
+d
+⁢
+E
+⁢
+∮
+2
+⁢
+m
+⁢
+E
+-
+V
+⁢
+(
+q
+)
+⁢
+𝑑
+q
+(4.407)
+=
+d
+d
+⁢
+E
+⁢
+∮
+p
+⁢
+𝑑
+q
+=
+2
+⁢
+π
+⁢
+d
+⁢
+I
+d
+⁢
+E
+where in
+the last line, we’ve substituted for our putative action variable
+I
+. Examining our end result, we have found that
+I
+does indeed satisfy
+d
+⁢
+E
+d
+⁢
+I
+=
+ω
+(4.408)
+Figure 64:
+where
+ω
+is the frequency of the orbit. This is our required result, but
+it remains to show that we didn’t miss anything by taking
+d
+/
+d
+⁢
+E
+outside the
+integral. Let’s think about this. We want to see how the area enclosed by
+the curve changes under a small shift in energy
+δ
+⁢
+E
+. Both the curve itself
+and the end points
+q
+1
+≤
+q
+≤
+q
+2
+vary as the energy shifts.
+The latter change by
+δ
+⁢
+q
+i
+=
+(
+d
+⁢
+V
+⁢
+(
+q
+i
+)
+/
+d
+⁢
+q
+)
+-
+1
+⁢
+δ
+⁢
+E
+. Allowing the
+differential
+d
+/
+d
+⁢
+E
+to wander inside and outside the integral is tantamount to
+neglecting the change in the end points. The piece we’ve missed is the small white
+region in the figure. But these pieces are of order
+δ
+⁢
+E
+2
+. To see this, note
+that order
+δ
+⁢
+E
+pieces are given by
+∫
+q
+i
++
+δ
+⁢
+q
+i
+q
+i
+2
+⁢
+m
+⁢
+E
+-
+V
+⁢
+(
+q
+)
+⁢
+𝑑
+q
+≈
+2
+⁢
+m
+⁢
+E
+-
+V
+⁢
+(
+q
+)
+⁢
+(
+∂
+⁡
+V
+∂
+⁡
+q
+)
+-
+1
+⁢
+δ
+⁢
+E
+(4.409)
+evaluated at the end point
+q
+=
+q
+i
+. They vanish because
+E
+=
+V
+⁢
+(
+q
+i
+)
+at the end points.
+This completes the proof.
+□
+This tells us that we can calculate the period of the orbit
+ω
+by figuring out the area enclosed by the orbit in phase
+space as a function of the energy. Notice that we can do this
+without ever having to work out the angle variable
+θ
+(which
+is a complicated function of
+q
+and
+p
+) which travels with
+constant speed around the orbit (i.e. satisfies
+θ
+=
+ω
+⁢
+t
+).
+In fact, it’s not too hard to get an expression for
+θ
+by
+going over the above analysis for a small part of the period. It
+follows from the above proof that
+t
+=
+d
+d
+⁢
+E
+⁢
+∫
+p
+⁢
+𝑑
+q
+(4.410)
+but we want a
+θ
+which obeys
+θ
+=
+ω
+⁢
+t
+. We see that we
+can achieve this by taking the choice
+θ
+=
+ω
+⁢
+d
+d
+⁢
+E
+⁢
+∫
+p
+⁢
+𝑑
+q
+=
+d
+⁢
+E
+d
+⁢
+I
+⁢
+d
+d
+⁢
+E
+⁢
+∫
+p
+⁢
+𝑑
+q
+=
+d
+d
+⁢
+I
+⁢
+∫
+p
+⁢
+𝑑
+q
+(4.411)
+Because
+E
+is conserved, all 1d systems are integrable. What about
+higher dimensional systems? If they are integrable, then there
+exists a change to angle-action variables given by
+I
+i
+=
+1
+2
+⁢
+π
+⁢
+∮
+γ
+i
+∑
+j
+p
+j
+⁢
+d
+⁢
+q
+j
+θ
+i
+=
+∂
+∂
+⁡
+I
+i
+⁢
+∫
+γ
+i
+∑
+j
+p
+j
+⁢
+d
+⁢
+q
+j
+(4.412)
+where the
+γ
+i
+are the periods of the invariant tori.
+4.5.4
+Action-Angle Variables for the Kepler Problem
+Perhaps the simplest integrable system with more than one degree of freedom is the Kepler problem. This is a particle of mass
+m
+moving in three dimensions, subject to the potential
+V
+⁢
+(
+𝐫
+)
+=
+-
+k
+r
+We solved this already back in the
+Dynamics and Relativity
+course. Recall that we can use the conservation of the (direction of) angular momentum to restrict dynamics to a two-dimensional plane. We’ll work in polar coordinates
+(
+r
+,
+ϕ
+)
+in this spatial plane. The associated momenta are
+p
+r
+=
+m
+⁢
+r
+˙
+and
+p
+ϕ
+=
+m
+⁢
+r
+2
+⁢
+ϕ
+˙
+. The Hamiltonian is
+H
+=
+1
+2
+⁢
+m
+⁢
+p
+r
+2
++
+1
+2
+⁢
+m
+⁢
+r
+2
+⁢
+p
+ϕ
+2
+-
+k
+r
+(4.413)
+There are two action variables, one associated to the radial motion and one associated to the angular motion. The latter is straightforward: it is the angular momentum itself
+I
+ϕ
+=
+1
+2
+⁢
+π
+⁢
+∫
+0
+2
+⁢
+π
+p
+ϕ
+⁢
+𝑑
+ϕ
+=
+p
+ϕ
+The action variable for the radial motion is more interesting. We can calculating it by using the fact that the total energy,
+E
+, and the angular momentum
+I
+ϕ
+are both conserved. Then, rearranging (
+4.413
+), we have
+p
+r
+2
+=
+2
+⁢
+m
+⁢
+(
+E
++
+k
+r
+)
+-
+I
+ϕ
+2
+r
+2
+and the action variable is
+I
+r
+=
+1
+2
+⁢
+π
+⁢
+∮
+p
+r
+⁢
+𝑑
+r
+=
+1
+2
+⁢
+π
+⁢
+2
+⁢
+∫
+r
+min
+r
+max
+p
+r
+⁢
+𝑑
+r
+=
+1
+2
+⁢
+π
+⁢
+2
+⁢
+∫
+r
+min
+r
+max
+2
+⁢
+m
+⁢
+(
+E
++
+k
+r
+)
+-
+I
+ϕ
+2
+r
+2
+⁢
+𝑑
+r
+Here
+r
+min
+and
+r
+max
+are, respectively, the closest and furthest distance to the origin. (If you try to picture this in space, you’ll need to recall that in the Kepler problem the origin sits on the focus of the ellipse, rather than the centre; this means that the smallest and furthest distance are opposite each other on the orbit).The factor of
+2
+in the second equality comes because a complete cycle goes from
+r
+min
+to
+r
+max
+and back again. To do this integral, you’ll need the result
+∫
+r
+min
+r
+max
+(
+1
+-
+r
+min
+r
+)
+⁢
+(
+r
+max
+r
+-
+1
+)
+=
+π
+2
+⁢
+(
+r
+min
++
+r
+max
+)
+-
+π
+⁢
+r
+min
+⁢
+r
+max
+Using this, we find
+I
+r
+=
+m
+2
+⁢
+|
+E
+|
+⁢
+k
+-
+I
+ϕ
+Or, re-arranging,
+E
+=
+-
+m
+⁢
+k
+2
+2
+⁢
+(
+I
+r
++
+I
+ϕ
+)
+2
+(4.414)
+There’s something rather nice lurking in this result. The energy is the same as the Hamiltonian in this case and we can use it to compute the speed at which the angular variables change. This follows from Hamilton’s equations,
+θ
+˙
+r
+=
+∂
+⁡
+H
+∂
+⁡
+I
+r
+and
+θ
+˙
+ϕ
+=
+∂
+⁡
+H
+∂
+⁡
+I
+ϕ
+Here
+θ
+ϕ
+=
+ϕ
+while
+θ
+r
+is some complicated function of
+r
+. But we see from (
+4.414
+) that the Hamiltonian is symmetric in
+I
+r
+and
+I
+ϕ
+. This means that the frequency at which the particle completes a
+ϕ
+cycle is the same frequency with which it completes a
+θ
+r
+cycle. But that’s the statement that the orbit is closed: when you go around
+2
+⁢
+π
+in space, you come back to the same
+r
+value.
+The existence of closed orbits is a unique feature of the
+1
+/
+r
+potential. The calculation reveals the underlying reason for this.
+4.6
+Adiabatic Invariants
+Figure 65:
+Consider a 1d system with a potential
+V
+⁢
+(
+q
+)
+that depends on some parameter
+λ
+. If the motion is bounded by the potential then it is necessarily
+periodic. We want to ask what happens if we
+slowly
+change
+λ
+over
+time. For example, we may slowly change the length of a pendulum, or the frequency of
+the harmonic oscillator.
+Since we now have
+λ
+=
+λ
+⁢
+(
+t
+)
+, the energy is not conserved. Rather
+E
+=
+E
+⁢
+(
+t
+)
+where
+E
+˙
+=
+∂
+⁡
+H
+∂
+⁡
+λ
+⁢
+λ
+˙
+(4.415)
+But there are combinations of
+E
+and
+λ
+which remain (approximately) constant.
+These are called
+adiabatic invariants
+and the purpose of this section is to
+find them. In fact, we’ve already come across them: we’ll see that the adiabatic invariants
+are the action variables of the previous section.
+For the 1d system, the Hamiltonian is
+H
+=
+p
+2
+2
+⁢
+m
++
+V
+⁢
+(
+q
+;
+λ
+⁢
+(
+t
+)
+)
+(4.416)
+and we claim that the adiabatic invariant is
+I
+=
+1
+2
+⁢
+π
+⁢
+∮
+p
+⁢
+𝑑
+q
+(4.417)
+where the path in phase space over which we integrate now depends on
+time and is given by
+p
+=
+2
+⁢
+m
+⁢
+E
+⁢
+(
+t
+)
+-
+V
+⁢
+(
+q
+;
+λ
+⁢
+(
+t
+)
+)
+.
+The purpose of this section is to show that
+I
+is indeed an
+adiabatic invariant. At the same time we will also make clearer what we mean when we say
+that
+λ
+must change slowly.
+Let’s start by thinking of
+I
+as a function of the energy
+E
+and the parameter
+λ
+.
+As we vary either of these,
+I
+will change. We have,
+I
+˙
+=
+∂
+⁡
+I
+∂
+⁡
+E
+|
+λ
+⁢
+E
+˙
++
+∂
+⁡
+I
+∂
+⁡
+λ
+|
+E
+⁢
+λ
+˙
+(4.418)
+where the subscripts on the partial derivatives tell us what variable we’re keeping
+fixed. For an arbitrary variation of
+E
+and
+λ
+, this equation tells us that
+I
+also
+changes. But, of course,
+E
+and
+λ
+do not change arbitrarily: they are related
+by (
+4.415
+). The point of the adiabatic invariant is that when
+E
+˙
+and
+λ
+˙
+are related in this way, the two terms in (
+4.418
+) approximately
+cancel out. We can deal with each of these terms in turn. The first term is something we’ve
+seen previously in equation (
+4.408
+) which tells us that,
+Figure 66:
+∂
+⁡
+I
+∂
+⁡
+E
+|
+λ
+=
+1
+ω
+⁢
+(
+λ
+)
+=
+T
+⁢
+(
+λ
+)
+2
+⁢
+π
+(4.419)
+where
+T
+⁢
+(
+λ
+)
+is the period of the system evaluated at fixed
+λ
+. The second
+term in (
+4.418
+) tells us how the path changes as
+λ
+is varied. For
+example, two possible paths for two different
+λ
+’s are shown in the
+figure and the change in
+I
+is the change in the area of under the two curves.
+We have
+∂
+⁡
+I
+∂
+⁡
+λ
+|
+E
+=
+1
+2
+⁢
+π
+⁢
+∂
+∂
+⁡
+λ
+|
+E
+⁢
+∮
+p
+⁢
+𝑑
+q
+=
+1
+2
+⁢
+π
+⁢
+∮
+∂
+⁡
+p
+∂
+⁡
+λ
+|
+E
+⁢
+d
+⁢
+q
+=
+1
+2
+⁢
+π
+⁢
+∫
+0
+T
+⁢
+(
+λ
+)
+∂
+⁡
+p
+∂
+⁡
+λ
+|
+E
+⁢
+∂
+⁡
+H
+∂
+⁡
+p
+|
+λ
+⁢
+d
+⁢
+t
+′
+(4.420)
+where, in the second equality, we have neglected a contribution arising from the
+fact that the path around which we integrate changes as
+λ
+changes. But
+this contribution can be safely ignored by the same argument given around
+(
+4.409
+).
+We can get a simple expression for the product of partial derivatives by
+differentiating the Hamiltonian and remembering what depends
+on what. We have the expression
+H
+⁢
+(
+q
+,
+p
+,
+λ
+)
+=
+E
+where, in the left-hand
+side we substitute
+p
+=
+2
+⁢
+m
+⁢
+E
+⁢
+(
+t
+)
+-
+V
+⁢
+(
+q
+;
+λ
+⁢
+(
+t
+)
+)
+. Then differentiating
+with respect to
+λ
+, keeping
+E
+(and
+q
+) fixed, we have
+∂
+⁡
+H
+∂
+⁡
+λ
+|
+p
++
+∂
+⁡
+H
+∂
+⁡
+p
+|
+λ
+⁢
+∂
+⁡
+p
+∂
+⁡
+λ
+|
+E
+=
+0
+(4.421)
+So substituting this into (
+4.420
+) we have
+∂
+⁡
+I
+∂
+⁡
+λ
+|
+E
+=
+-
+1
+2
+⁢
+π
+⁢
+∫
+0
+T
+⁢
+(
+λ
+)
+∂
+⁡
+H
+∂
+⁡
+λ
+|
+E
+⁢
+d
+⁢
+t
+′
+(4.422)
+So putting it all together, we have the time variation of
+I
+given by
+I
+˙
+=
+[
+T
+⁢
+(
+λ
+)
+⁢
+∂
+⁡
+H
+∂
+⁡
+λ
+|
+E
+-
+(
+∫
+0
+T
+⁢
+(
+λ
+)
+∂
+⁡
+H
+∂
+⁡
+λ
+|
+E
+⁢
+d
+⁢
+t
+′
+)
+]
+⁢
+λ
+˙
+2
+⁢
+π
+(4.423)
+where, in the first term, we’ve replaced
+E
+˙
+with the expression (
+4.415
+).
+Now we’re almost done. So far, each term on the right-hand side is evaluated at a
+given time
+t
+or, correspondingly for a given
+λ
+⁢
+(
+t
+)
+. The two terms look
+similar, but they don’t cancel! But we have yet to make use of the fact that the change
+in
+λ
+is
+slow
+. At this point we can clarify what we mean by this. The basic idea is
+that the speed at which the particle bounces backwards and forwards in the potential
+is much faster than the speed at which
+λ
+changes. This means that the particle
+has performed many periods before it notices any appreciable change in the potential.
+This means that if we compute averaged quantities over a single period,
+⟨
+A
+⁢
+(
+λ
+)
+⟩
+=
+1
+T
+⁢
+∫
+0
+T
+A
+⁢
+(
+t
+,
+λ
+)
+⁢
+𝑑
+t
+(4.424)
+then inside the integral we may treat
+λ
+as if it is effectively
+constant. We now consider the time averaged motion
+⟨
+I
+˙
+⟩
+.
+Since
+λ
+can be taken to be constant over a single period, the two
+terms in (
+4.423
+) do now cancel. We have
+⟨
+I
+˙
+⟩
+=
+0
+(4.425)
+This is the statement that
+I
+is an adiabatic invariant: for small changes in
+λ
+,
+the averaged value of
+I
+remains constant
+8
+8
+8
+The proof given
+above is intuitive, but begins to creak at the seams when pushed. A nice
+description of these issues, together with a more sophisticated proof using
+generating functions for canonical transformations is given in in the
+paper “The Adiabatic Invariance of the Action Variable in Classical Dynamics”
+by C.G.Wells and S.T.Siklos which can be found at http://arxiv.org/abs/physics/0610084.
+.
+The adiabatic invariants played an important role in the early history of quantum
+mechanics. You might recognise the quantity
+I
+as the object which takes
+integer values according to the old 1915 Bohr-Sommerfeld quantisation condition
+1
+2
+⁢
+π
+⁢
+∮
+p
+⁢
+𝑑
+q
+=
+n
+⁢
+ℏ
+n
+∈
+𝐙
+(4.426)
+The idea that adiabatic invariants and quantum mechanics are related actually
+predates the Bohr-Somerfeld quantisation rule. In
+the 1911 Solvay conference Einstein answered a question of Lorentz: if the energy
+is quantised as
+E
+=
+ℏ
+⁢
+n
+⁢
+ω
+where
+n
+∈
+𝐙
+then what happens if
+ω
+is changed slowly? Lorentz’ worry was that integers cannot change slowly –
+only by integer amounts. Einstein’s answer was not to worry:
+E
+/
+ω
+remains
+constant. These days the idea of adiabatic invariants in quantum theory enters
+into the discussion of quantum computers.
+An Example: The Simple Harmonic Oscillator
+We saw in section 4.5 that for the simple harmonic oscillator we have
+I
+=
+E
+/
+ω
+.
+So if we change
+ω
+slowly, then the ratio
+E
+/
+ω
+remains constant. This
+was Einstein’s 1911 point. In fact,
+for the SHO it turns out that there is an exact invariant that remains constant
+no matter how quickly you change
+ω
+and which, in the limit of slow change,
+goes over to
+I
+. This exact invariant is
+J
+=
+1
+2
+⁢
+[
+q
+2
+g
+⁢
+(
+t
+)
+2
++
+(
+g
+⁢
+(
+t
+)
+⁢
+q
+˙
+-
+q
+⁢
+g
+˙
+⁢
+(
+t
+)
+)
+2
+]
+(4.427)
+where
+g
+⁢
+(
+t
+)
+is a function satisfying the differential equation
+g
+¨
++
+ω
+2
+⁢
+(
+t
+)
+⁢
+g
+-
+1
+g
+3
+=
+0
+(4.428)
+4.6.1
+Adiabatic Invariants and Liouville’s Theorem
+Figure 67:
+There’s a way to
+think of adiabatic invariants using Liouville’s theorem. Consider
+first a series of systems, all described by a Hamiltonian with
+fixed parameter
+λ
+. We set off each system with the same
+energy
+E
+or, equivalently, the same action
+I
+, but we start
+them with slightly different phases
+θ
+. This means that
+their dynamics is described by a series of dots, all chasing each
+other around a fixed curve as shown in the figure. Now let’s think
+about how this train of dots evolves under the Hamiltonian with
+time dependent
+λ
+⁢
+(
+t
+)
+. Recall that Liouville’s theorem
+states that the area of phase space is invariant under any
+Hamiltonian evolution. This holds whether or not
+∂
+⁡
+H
+/
+∂
+⁡
+t
+=
+0
+, so is still valid for the time dependent
+Hamiltonian with
+λ
+⁢
+(
+t
+)
+. One might be tempted to say that
+we’re done since all the words sound right: Liouville’s theorem
+implies that the area is conserved which is also the statement
+that our adiabatic invariant
+I
+doesn’t change with time. But
+this is a little too fast! Liouville’s theorem says the area of a
+distribution of particles in phase space is conserved, not the
+area enclosed by a perimeter ring of particles. Indeed,
+Liouville’s theorem holds for any variation
+λ
+⁢
+(
+t
+)
+, not just
+for adiabatic variations. For a fast change of
+λ
+⁢
+(
+t
+)
+, there
+is nothing to ensure that the particles that had the same initial
+energy, but different phases, would have the same final energy and
+we lose the interpretation of a ring of dots in phase space
+enclosing some area.
+The missing ingredient is the “
+adiabatic principle
+”. In this
+context it states that for a suitably slow change of the parameter
+λ
+, all the systems in the same orbit, with the same
+energy, are affected in the same manner. If this holds, after some
+time the dots in phase space will still be chasing each other
+around another curve of constant energy
+E
+′
+. We can now
+think of a distribution of particles filling the area
+I
+inside
+the curve. As
+λ
+varies slowly, the area doesn’t change
+and
+the outer particles remain the outer particles, all with
+the same energy. Under these circumstances, Liouville’s theorem
+implies the adiabatic invariant
+I
+is constant in time.
+4.6.2
+An Application: A Particle in a Magnetic Field
+We saw in Section 4.1 that a particle in a constant magnetic field
+𝐁
+=
+(
+0
+,
+0
+,
+B
+)
+makes circles with Larmor frequency
+ω
+=
+e
+⁢
+B
+/
+m
+⁢
+c
+and a radius
+R
+, which depends
+on the energy of the particle. But what happens if
+B
+is slowly varying over space?
+i.e.
+B
+=
+B
+⁢
+(
+x
+,
+y
+)
+, but with
+∂
+i
+⁡
+B
+≪
+R
+(4.429)
+so that the field is roughly constant over
+one orbit.
+In this example, there is no explicit time dependence of the
+Hamiltonian so we know that the Hamiltonian itself is an exact
+constant of motion. For a particle in a constant magnetic field we
+can calculate
+H
+of an orbit by substituting the solutions
+(
+4.299
+) into the Hamiltonian (
+4.295
+). We find
+H
+=
+1
+2
+⁢
+m
+⁢
+ω
+2
+⁢
+R
+2
+=
+e
+2
+⁢
+R
+2
+⁢
+B
+2
+2
+⁢
+m
+⁢
+c
+2
+(4.430)
+This quantity is conserved. But what happens to the particle? Does
+it drift to regions with larger magnetic field
+B
+, keeping
+H
+constant by reducing the radius of the orbit? Or to regions with
+smaller
+B
+with larger orbits?
+We can answer this by means of the adiabatic invariant. We can
+use this because the motion of the particle is periodic in space so the particle
+sees a magnetic field which varies slowly over time. The adiabatic invariant is
+I
+=
+1
+2
+⁢
+π
+⁢
+∮
+p
+⁢
+𝑑
+q
+(4.431)
+which is now to be thought of as a line integral along the orbit of the electron.
+We evaluate this on the solution for the uniform magnetic field (
+4.299
+)
+I
+=
+1
+2
+⁢
+π
+⁢
+∫
+0
+T
+(
+p
+x
+⁢
+x
+˙
++
+p
+y
+⁢
+y
+˙
+)
+⁢
+𝑑
+t
+(4.432)
+=
+1
+2
+⁢
+π
+⁢
+∫
+0
+T
+(
+b
+⁢
+R
+⁢
+ω
+⁢
+cos
+⁡
+ω
+⁢
+t
++
+m
+⁢
+ω
+2
+⁢
+R
+2
+⁢
+sin
+2
+⁡
+ω
+⁢
+t
+)
+⁢
+𝑑
+t
+=
+m
+⁢
+ω
+⁢
+R
+2
+2
+⁢
+π
+⁢
+∫
+0
+2
+⁢
+π
+sin
+2
+⁡
+θ
+⁢
+d
+⁢
+θ
+Setting
+ω
+=
+e
+⁢
+B
+/
+m
+⁢
+c
+, we see that the adiabatic invariant
+I
+is proportional to
+(
+e
+/
+c
+)
+⁢
+B
+⁢
+R
+2
+.
+Since the electric
+charge
+e
+and the speed of light
+c
+are not things we can change, we find that
+B
+⁢
+R
+2
+is constant over many orbits. But as
+H
+∼
+B
+2
+⁢
+R
+2
+is also conserved, both the
+magnetic field
+B
+seen by the particle and the radius of the orbit
+R
+must be
+individually conserved. This means the particle can’t move into regions
+of higher or lower magnetic fields: it must move along constant field lines
+9
+9
+9
+For results
+that go beyond the adiabatic approximations, see the paper by the man: E. Witten “
+A
+Slowly Moving Particle in a Two-Dimensional Magnetic Field
+”, Annals of Physics
+120
+72 (1979).
+.
+Finally, there’s a simple physical way to see that the particle indeed drifts along
+lines of constant magnetic field. As the particle makes its little Larmor circles, it
+feels a slightly stronger force when it’s, say, at the top of its orbit where the field
+is slightly larger, compared to when its at the bottom. This net force tends to push the
+particle to regions of weaker or stronger magnetic field. But we’ve seen through the use
+of adiabatic invariants that this isn’t possible. The slow drift of
+the particle acts such that it compensates for this small force,
+keeping the particle on constant
+field lines.
+There’s a slight variant of the above set-up which allows you to trap charged
+particles using magnetic fields. Consider the particle making its little Larmor
+circles in the
+(
+x
+,
+y
+)
+plane, but also moving in the
+z
+direction and take
+a magnetic field that’s constant in the
+(
+x
+,
+y
+)
+-plane, but ever increasing in
+the
+z
+-direction. The energy of the particle is given by,
+H
+=
+1
+2
+⁢
+m
+⁢
+z
+˙
+2
++
+e
+2
+⁢
+R
+2
+⁢
+B
+2
+2
+⁢
+m
+⁢
+c
+2
+=
+1
+2
+⁢
+m
+⁢
+z
+˙
+2
++
+I
+⁢
+e
+⁢
+m
+⁢
+B
+m
+⁢
+c
+(4.433)
+Both
+H
+>
+0
+and
+I
+>
+0
+are constant in time. This ensures that there exists a
+value of the magnetic field
+B
+>
+0
+at which we necessarily have
+z
+˙
+=
+0
+and the particle can go no further. At this stage it turns round and goes
+back again. By creating a magnetic field that increases at two ends, charged
+particles can be made to bounce back and forth in the
+z
+direction, while executing
+their little circles in the
+(
+x
+,
+y
+)
+-plane. It is this mechanism that
+traps charged particles in magnetic loops emitted from the sun and is ultimately
+responsible for solar flares.
+4.6.3
+Hannay’s Angle
+Consider a particle bouncing
+around, with periodic motion, in an arbitrary potential. There are many
+parameters
+λ
+a
+describing the shape of the potential. As
+we slowly vary the
+λ
+a
+the path in phase space changes
+although, as we have seen, the area enclosed by the path remains
+the same. After some time
+t
+long
+(which, by the assumption of
+adiabiticity, is much longer than the period
+T
+of a single orbit)
+we return to the original parameters so that
+λ
+a
+⁢
+(
+t
+long
+)
+=
+λ
+a
+⁢
+(
+0
+)
+. The question we want to ask is: how has the phase angle
+θ
+changed?
+For any fixed
+λ
+a
+, the velocity of the angle variable is
+θ
+˙
+=
+∂
+⁡
+H
+/
+∂
+⁡
+I
+=
+ω
+⁢
+(
+I
+,
+λ
+a
+)
+. As we
+slowly vary the parameters, the particle is spinning around its
+phase space orbits. When we return we therefore expect that the
+phase has been shifted by
+∫
+ω
+⁢
+𝑑
+t
+. Which is true. But it
+turns out that there is another, more subtle, contribution to the
+phase shift as well. We’ll now see where this comes from.
+As the parameters change, we can write the change in the angle
+θ
+as
+θ
+˙
+=
+∂
+⁡
+H
+∂
+⁡
+I
++
+∂
+⁡
+θ
+∂
+⁡
+λ
+a
+⁢
+λ
+˙
+a
+(4.434)
+Which looks simple enough. But there’s a problem. The second term
+is not well defined. For each set of parameters
+λ
+a
+we
+have different action angle variables
+I
+⁢
+(
+λ
+a
+)
+and
+θ
+⁢
+(
+λ
+a
+)
+. But there’s nothing that stops choosing a
+different origin
+θ
+=
+0
+for each choice of the parameters. In
+other words, we could always redefine
+θ
+⁢
+(
+λ
+a
+)
+→
+θ
+⁢
+(
+λ
+a
+)
++
+β
+⁢
+(
+λ
+a
+)
+(4.435)
+where we shift by a different constant
+β
+for each
+λ
+a
+. What this means is that it doesn’t really make any
+sense to compare the angle variable for different parameters
+λ
+a
+. This makes the second term — which tells us how the
+angle variable changes as we change the parameters — ambiguous.
+One might think this means that we can just ignore it. Or, more
+precisely, we could choose the shifts
+β
+so that the angle
+variables are defined in such a way that the second term vanishes.
+But it turns out that this isn’t possible. Let’s see why. The
+point is that it does make sense to compare the angle variable for
+the same parameters
+λ
+a
+. After such a time
+t
+long
+,
+we have
+θ
+⁢
+(
+t
+long
+)
+=
+θ
+⁢
+(
+0
+)
++
+∫
+0
+t
+long
+ω
+⁢
+𝑑
+t
++
+Δ
+⁢
+θ
+(4.436)
+The term
+∫
+ω
+⁢
+𝑑
+t
+is the dynamic term that we anticipated above, arising
+from the fact that
+θ
+is continually making orbits around
+the curve in phase space. It depends on the time
+t
+long
+that we took to make
+the change. The other term that we call
+Δ
+⁢
+θ
+is more
+interesting. From (
+4.434
+) it is given by
+Δ
+⁢
+θ
+=
+∫
+0
+t
+long
+⟨
+∂
+⁡
+θ
+∂
+⁡
+λ
+a
+⟩
+⁢
+λ
+˙
+i
+⁢
+𝑑
+t
+=
+∮
+C
+⟨
+∂
+⁡
+θ
+∂
+⁡
+λ
+a
+⟩
+⁢
+𝑑
+λ
+a
+(4.437)
+where we’ve used the fact that the change in
+λ
+a
+is
+adiabatic to replace the integrand with its average over one
+period of the orbit. The final expression above means an
+integration over the curve
+C
+that the system traces in parameter
+space. We see that
+Δ
+⁢
+θ
+is independent of the time
+t
+long
+taken to make the change. However, it does depend
+on the path that we took through the space of all possible
+potentials. It is known as the ”Hannay angle”. Note that the
+Hannay angle is invariant under the ambiguity (
+4.436
+)
+even though the quantity
+∂
+⁡
+θ
+/
+∂
+⁡
+λ
+a
+that
+appears in the integrand isn’t. This idea of integrating
+quantities around loops is an example of ”holonomy”, an important
+concept in modern physics.
+Rather surprisingly, the Hannay angle was first discovered only in
+1984. The history is interesting. First Berry discovered a similar
+phase for the wavefunction in quantum mechanics (now known as the
+Berry phase). Many physicists were shocked that such a simple and
+profound idea as Berry’s phase had lain hidden in the formulation
+of quantum mechanics for 50 years and it set off a flurry of
+theoretical and experimental research. Soon after this, Hannay
+showed that an analogous phase had lain undiscovered in classical
+mechanics for 150 years! Although, in certain examples in
+celestial mechanics, the phase
+Δ
+⁢
+θ
+had been correctly
+calculated, the general theory lying behind it had not been
+appreciated. We now describe this theory.
+The first step is to use a higher dimensional version of Stokes’
+theorem to express the contour integral (
+4.437
+) as a surface
+integral
+Δ
+⁢
+θ
+=
+∫
+S
+(
+∂
+∂
+⁡
+λ
+a
+⁢
+⟨
+∂
+⁡
+θ
+∂
+⁡
+λ
+b
+⟩
+-
+∂
+∂
+⁡
+λ
+b
+⁢
+⟨
+∂
+⁡
+θ
+∂
+⁡
+λ
+a
+⟩
+)
+⁢
+𝑑
+A
+a
+⁢
+b
+(4.438)
+where
+S
+is a surface in parameter space bounded by the curve
+C
+and
+d
+⁢
+A
+a
+⁢
+b
+is the infinitesimal surface element.
+Claim:
+The Hannay angle can be written as
+Δ
+⁢
+θ
+=
+d
+d
+⁢
+I
+⁢
+∫
+S
+W
+a
+⁢
+b
+⁢
+𝑑
+A
+a
+⁢
+b
+(4.439)
+where the anti-symmetric matrix
+W
+a
+⁢
+b
+(known mathematically as
+a 2-form) is given by
+W
+a
+⁢
+b
+=
+⟨
+∂
+⁡
+θ
+∂
+⁡
+λ
+a
+⁢
+∂
+⁡
+I
+∂
+⁡
+λ
+b
+-
+∂
+⁡
+θ
+∂
+⁡
+λ
+b
+⁢
+∂
+⁡
+I
+∂
+⁡
+λ
+a
+⟩
+(4.440)
+Proof:
+To start with let’s think about the averaging
+procedure a little more. In equation (
+4.424
+) we wrote
+⟨
+A
+⟩
+as a time average, integrating over a single
+period. We could equally as well write it as an angle average,
+⟨
+A
+⟩
+=
+∮
+A
+⁢
+(
+I
+,
+θ
+)
+⁢
+𝑑
+θ
+=
+∫
+A
+⁢
+(
+q
+′
+,
+p
+′
+)
+⁢
+δ
+⁢
+(
+I
+′
+-
+I
+)
+⁢
+d
+⁢
+q
+′
+⁢
+d
+⁢
+p
+′
+2
+⁢
+π
+(4.441)
+where in the second equality we integrate over all of phase space
+and insert the delta function
+δ
+⁢
+(
+I
+′
+-
+I
+)
+to restrict the
+integral to the orbit over the curve with action
+I
+. It’s this
+latter formula that we’ll use. This allows us to write,
+∂
+∂
+⁡
+λ
+a
+⁢
+⟨
+∂
+⁡
+θ
+∂
+⁡
+λ
+b
+⟩
+-
+∂
+∂
+⁡
+λ
+b
+⁢
+⟨
+∂
+⁡
+θ
+∂
+⁡
+λ
+a
+⟩
+=
+[
+∂
+∂
+⁡
+λ
+a
+⁢
+∫
+∂
+⁡
+θ
+∂
+⁡
+λ
+b
+-
+∂
+∂
+⁡
+λ
+b
+⁢
+∫
+∂
+⁡
+θ
+∂
+⁡
+λ
+a
+]
+⁢
+δ
+⁢
+(
+I
+′
+-
+I
+)
+⁢
+d
+⁢
+q
+′
+⁢
+d
+⁢
+p
+′
+2
+⁢
+π
+(4.442)
+=
+∫
+[
+∂
+⁡
+θ
+∂
+⁡
+λ
+b
+⁢
+∂
+⁡
+δ
+∂
+⁡
+λ
+a
+-
+∂
+⁡
+θ
+∂
+⁡
+λ
+a
+⁢
+∂
+⁡
+δ
+∂
+⁡
+λ
+b
+]
+⁢
+d
+⁢
+q
+′
+⁢
+d
+⁢
+p
+′
+2
+⁢
+π
+=
+∫
+[
+∂
+⁡
+θ
+∂
+⁡
+λ
+b
+⁢
+∂
+⁡
+I
+′
+∂
+⁡
+λ
+a
+-
+∂
+⁡
+θ
+∂
+⁡
+λ
+a
+⁢
+∂
+⁡
+I
+′
+∂
+⁡
+λ
+b
+]
+⁢
+∂
+⁡
+δ
+∂
+⁡
+I
+′
+⁢
+d
+⁢
+q
+′
+⁢
+d
+⁢
+p
+′
+2
+⁢
+π
+=
+-
+d
+d
+⁢
+I
+⁢
+∫
+[
+∂
+⁡
+θ
+∂
+⁡
+λ
+b
+⁢
+∂
+⁡
+I
+′
+∂
+⁡
+λ
+a
+-
+∂
+⁡
+θ
+∂
+⁡
+λ
+a
+⁢
+∂
+⁡
+I
+′
+∂
+⁡
+λ
+b
+]
+⁢
+δ
+⁢
+(
+I
+′
+-
+I
+)
+⁢
+d
+⁢
+q
+′
+⁢
+d
+⁢
+p
+′
+2
+⁢
+π
+=
+d
+d
+⁢
+I
+⁢
+W
+a
+⁢
+b
+which completes the proof. I haven’t included any examples here of
+the Hannay angle: some simple ones can be found in the original
+literature
+10
+10
+10
+J. Hannay, ”
+Angle Variable Holonomy in
+Adiabatic Excursion of an Integrable Hamiltonian
+” J. Phys A,
+18
+221 (1985); M. Berry, ”
+Classical Adiabatic Angles and
+Quantal Adiabatic Phase
+” J. Phys A,
+18
+15 (1985).
+and more
+advanced applications can be found by googling ”Hannay angles”.
+For the pendulum example, in which the length of the pendulum
+varies, the Hannay angle vanishes. This is because there is only
+one parameter to vary, while a non-trivial
+Δ
+⁢
+θ
+occurs
+only if we make a non-trivial loop
+C
+in parameter space.
+4.7
+The Hamilton-Jacobi Equation
+Figure 68:
+In this section we will describe yet another viewpoint on classical dynamics,
+known as Hamilton-Jacobi theory. It will tie together several concepts that
+we’ve met so far.
+Recall from section 2.1 the principle of least action. We define the action
+S
+=
+∫
+0
+T
+L
+⁢
+(
+q
+i
+,
+q
+˙
+i
+,
+t
+)
+⁢
+𝑑
+t
+(4.443)
+which we evaluate for
+all
+paths
+q
+⁢
+(
+t
+)
+with fixed end points
+q
+i
+(
+0
+)
+=
+q
+i
+initial
+,
+q
+i
+(
+T
+)
+=
+q
+i
+final
+(4.444)
+Then the true path taken is an extremum of the action:
+δ
+⁢
+S
+=
+0
+.
+Now let’s change perspective a little. Consider the action evaluated only along
+the
+true
+path
+q
+i
+classical
+⁢
+(
+t
+)
+and define
+W
+⁢
+(
+q
+i
+initial
+,
+q
+i
+final
+,
+T
+)
+=
+S
+⁢
+[
+q
+i
+classical
+⁢
+(
+t
+)
+]
+(4.445)
+While
+S
+is a functional on any path,
+W
+is to be considered as a function
+of the initial and final configurations
+q
+i
+initial
+and
+q
+i
+final
+as well as the time
+T
+it takes to get between them.
+Now let’s ask what happens if we keep
+q
+i
+initial
+fixed but vary
+the end point
+q
+i
+final
+. We can go back to the analysis of section 2.1 to see
+that when the action is varied it looks like
+δ
+⁢
+S
+=
+∫
+0
+T
+𝑑
+t
+⁢
+[
+∂
+⁡
+L
+∂
+⁡
+q
+i
+-
+d
+d
+⁢
+t
+⁢
+(
+∂
+⁡
+L
+∂
+⁡
+q
+˙
+i
+)
+]
+⁢
+δ
+⁢
+q
+i
+⁢
+(
+t
+)
++
+[
+∂
+⁡
+L
+∂
+⁡
+q
+˙
+i
+⁢
+δ
+⁢
+q
+i
+⁢
+(
+t
+)
+]
+0
+T
+(4.446)
+If we evaluate this on the classical path the first term vanishes. We’re left with
+∂
+⁡
+W
+∂
+⁡
+q
+i
+final
+=
+∂
+⁡
+L
+∂
+⁡
+q
+˙
+i
+|
+t
+=
+T
+=
+p
+i
+final
+(4.447)
+The next thing we want to compute is
+∂
+⁡
+W
+/
+∂
+⁡
+T
+. Let’s start by considering a classical
+path with fixed initial configuration
+q
+i
+initial
+. We’ll let the path run on a little
+longer than before, so
+T
+→
+T
++
+δ
+⁢
+T
+. Then we have
+d
+⁢
+W
+d
+⁢
+T
+=
+∂
+⁡
+W
+∂
+⁡
+T
++
+∂
+⁡
+W
+∂
+⁡
+q
+i
+final
+⁢
+q
+˙
+i
+final
+=
+∂
+⁡
+W
+∂
+⁡
+T
++
+p
+i
+final
+⁢
+q
+˙
+i
+final
+(4.448)
+But this total derivative is easily calculated since
+d
+⁢
+S
+/
+d
+⁢
+T
+=
+L
+, or
+d
+⁢
+W
+d
+⁢
+T
+=
+L
+⁢
+(
+q
+i
+classical
+⁢
+(
+T
+)
+,
+q
+˙
+i
+classical
+⁢
+(
+T
+)
+,
+T
+)
+=
+L
+⁢
+(
+q
+i
+final
+,
+q
+˙
+i
+final
+,
+T
+)
+(4.449)
+So we arrive at the equation,
+∂
+⁡
+W
+∂
+⁡
+T
+=
+-
+(
+p
+i
+final
+⁢
+q
+˙
+i
+final
+-
+L
+⁢
+(
+q
+i
+final
+,
+q
+˙
+i
+final
+,
+T
+)
+)
+(4.450)
+=
+-
+H
+⁢
+(
+q
+i
+final
+,
+p
+i
+final
+,
+T
+)
+At this stage, the only time in the game is
+T
+and the only position in the game is
+q
+i
+final
+. So we can simply drop the word “final”, and relabel
+T
+→
+t
+. We have found
+ourselves a time dependent function on configuration space
+W
+=
+W
+⁢
+(
+q
+i
+,
+t
+)
+which satisfies
+∂
+⁡
+W
+∂
+⁡
+q
+i
+=
+p
+i
+and
+∂
+⁡
+W
+∂
+⁡
+t
+=
+-
+H
+⁢
+(
+q
+i
+,
+p
+i
+,
+t
+)
+(4.451)
+or, substituting the first into the second, we have
+∂
+⁡
+W
+∂
+⁡
+t
+=
+-
+H
+⁢
+(
+q
+i
+,
+∂
+⁡
+W
+/
+∂
+⁡
+q
+i
+,
+t
+)
+(4.452)
+This is the
+Hamilton-Jacobi Equation
+.
+We’ve shown how a solution to the Hamilton-Jacobi equation can be constructed by
+looking at the classical action of paths which reach a point
+q
+i
+at time
+T
+starting
+from some initial reference point
+q
+i
+initial
+. The starting point
+q
+i
+initial
+can be considered integration constants. In fact, there are more general solutions to the
+Hamilton-Jacobi equation, although all are related to the classical action in a similar way.
+Suppose we find a solution to (
+4.452
+). What do we do with it? We’re now armed with
+some time-dependent function
+W
+⁢
+(
+q
+i
+,
+t
+)
+on configuration space. We combine this
+with the first of Hamilton’s equations which reads
+q
+˙
+i
+=
+∂
+⁡
+H
+∂
+⁡
+p
+i
+|
+p
+i
+=
+∂
+⁡
+W
+/
+∂
+⁡
+q
+i
+(4.453)
+where, on the right-hand-side, we’ve replaced every appearance of the momenta
+p
+i
+by a function of the coordinates using
+p
+i
+=
+∂
+⁡
+W
+/
+∂
+⁡
+q
+i
+. What we’re
+left with is
+n
+first-order differential equations for the evolution of
+q
+i
+.
+In this manner the function
+W
+determines the path of the classical system: start it
+off at a point in configuration space and
+W
+can be considered as a real valued
+classical wavefunction which tells it how to evolve. What we need to show is that the
+evolution dictated by (
+4.453
+) does indeed satisfy the equations of motion. In other
+words, we should prove that
+the second of Hamilton’s equations,
+p
+˙
+i
+=
+-
+∂
+⁡
+H
+/
+∂
+⁡
+q
+i
+,
+is satisfied. We have
+p
+˙
+i
+=
+d
+d
+⁢
+t
+⁢
+(
+∂
+⁡
+W
+∂
+⁡
+q
+i
+)
+=
+∂
+2
+⁡
+W
+∂
+⁡
+q
+i
+⁢
+∂
+⁡
+q
+j
+⁢
+q
+˙
+j
++
+∂
+2
+⁡
+W
+∂
+⁡
+t
+⁢
+∂
+⁡
+q
+i
+(4.454)
+But differentiating the Hamilton-Jacobi equation (
+4.452
+) with respect to
+q
+i
+, we see that we can rewrite the right-hand-side of this equation using
+∂
+2
+⁡
+W
+∂
+⁡
+t
+⁢
+∂
+⁡
+q
+i
+=
+-
+∂
+⁡
+H
+∂
+⁡
+q
+i
+-
+∂
+⁡
+H
+∂
+⁡
+p
+j
+⁢
+∂
+2
+⁡
+W
+∂
+⁡
+q
+i
+⁢
+∂
+⁡
+q
+j
+=
+-
+∂
+⁡
+H
+∂
+⁡
+q
+i
+-
+q
+˙
+j
+⁢
+∂
+2
+⁡
+W
+∂
+⁡
+q
+i
+⁢
+∂
+⁡
+q
+j
+(4.455)
+So that (
+4.454
+) becomes
+p
+˙
+i
+=
+-
+∂
+⁡
+H
+/
+∂
+⁡
+q
+i
+as required.
+Let’s see what we’ve done. We’re used to dealing with second order differential
+equations for the time evolution on configuration space (i.e. Lagrange’s
+equations) and first order differential equations for time evolution on
+phase space (Hamilton’s equations). But the Hamilton-Jacobi approach allows
+us to incorporate
+n
+of the integration constants in the function
+W
+⁢
+(
+q
+i
+,
+t
+)
+so that we’re left
+solely with first order differential equations on configuration space given by
+(
+4.453
+).
+When we have conservation of the Hamiltonian, so
+∂
+⁡
+H
+/
+∂
+⁡
+t
+=
+0
+, there is
+solution of the Hamilton-Jacobi equation of a particularly simple form. Define
+W
+⁢
+(
+q
+i
+,
+t
+)
+=
+W
+0
+⁢
+(
+q
+i
+)
+-
+E
+⁢
+t
+(4.456)
+for some constant
+E
+. Then the time dependence drops out and we get the equation
+H
+⁢
+(
+q
+i
+,
+∂
+⁡
+W
+0
+/
+∂
+⁡
+q
+i
+)
+=
+E
+(4.457)
+Figure 69:
+W
+0
+is known as
+Hamilton’s principal function
+. The special property of this
+solution to the Hamilton-Jacobi equation is that every path in configuration
+space determined by the function
+W
+0
+has the same energy
+E
+. With a little
+thought, we can envisage how to construct solutions to (
+4.457
+). Start with a
+co-dimension one surface in configuration space which we will specify to be a surface
+of constant
+W
+0
+. (Co-dimension one means that the surface has dimension
+(
+n
+-
+1
+)
+:
+it splits the configuration space in two). At any point in this surface, the potential
+energy
+V
+⁢
+(
+q
+)
+is determined. Since
+p
+i
+=
+∂
+⁡
+W
+0
+/
+∂
+⁡
+q
+i
+, the momentum is
+perpendicular to the
+surface and in the direction of increasing
+W
+0
+. Its magnitude is fixed by requiring that
+the total energy is
+E
+. But this magnitude then tells us the position of the next
+surface of constant
+W
+0
+(with incremental increase). In this manner, it should
+be clear that, in multi-dimensional configuration spaces there are many solutions to
+(
+4.457
+). It should also be clear
+that something singular happens to
+W
+0
+in regions where
+V
+⁢
+(
+q
+i
+)
+=
+0
+. Finally, we
+note that even when
+∂
+⁡
+H
+/
+∂
+⁡
+t
+=
+0
+, there exist other solutions
+W
+to (
+4.452
+) which
+encode families of trajectories on configuration space which have different energies.
+4.7.1
+Action and Angles from Hamilton-Jacobi
+For the majority of examples the Hamilton-Jacobi approach doesn’t give a particularly
+useful way for solving a problem; its utility really lies in the structure it reveals
+about classical dynamics. So rather than go through the gymnastics of solving a complicated
+problem using this method, let us focus on a rather simple example which which illustrates
+connections between the different ideas we’ve seen. A system with a single
+degree of freedom has Hamiltonian
+H
+=
+p
+2
+2
+⁢
+m
++
+V
+⁢
+(
+q
+)
+(4.458)
+Since the Hamiltonian is time independent, energy is conserved and the
+solution to the Hamilton-Jacobi equation has a single integration constant,
+let’s call it
+β
+, which is necessarily some function of the energy.
+In the above discussion we were a little lax about showing these integration
+constants explicitly, but let’s do it now: we’ll write
+W
+=
+W
+⁢
+(
+q
+,
+t
+;
+β
+)
+with
+β
+=
+β
+⁢
+(
+E
+)
+. Now we ask a somewhat strange question: suppose we try
+to perform a canonical transformation from
+(
+q
+,
+p
+)
+to new coordinates
+(
+α
+,
+β
+)
+such that
+β
+is the new momentum. What is the new
+coordinate
+α
+?
+Since we wish the change of coordinates to be canonical, we must
+be able to write
+q
+=
+q
+⁢
+(
+α
+,
+β
+)
+and
+p
+=
+p
+⁢
+(
+α
+,
+β
+)
+such
+that
+{
+q
+,
+p
+}
+(
+α
+,
+β
+)
+≡
+∂
+⁡
+q
+∂
+⁡
+α
+∂
+⁡
+p
+∂
+⁡
+β
+-
+∂
+⁡
+q
+∂
+⁡
+β
+∂
+⁡
+p
+∂
+⁡
+α
+=
+1
+(4.459)
+Using
+p
+=
+∂
+⁡
+W
+/
+∂
+⁡
+q
+and remembering what all
+depends on what all (
+W
+=
+W
+⁢
+(
+q
+,
+β
+)
+and
+q
+=
+q
+⁢
+(
+α
+,
+β
+)
+and
+p
+=
+p
+⁢
+(
+α
+,
+β
+)
+) we can write this as,
+{
+q
+,
+p
+}
+(
+α
+,
+β
+)
+=
+∂
+⁡
+q
+∂
+⁡
+α
+(
+∂
+2
+⁡
+W
+∂
+⁡
+β
+⁢
+∂
+⁡
+q
++
+∂
+2
+⁡
+W
+∂
+⁡
+q
+2
+∂
+⁡
+q
+∂
+⁡
+β
+)
+-
+∂
+⁡
+q
+∂
+⁡
+β
+∂
+2
+⁡
+W
+∂
+⁡
+q
+2
+∂
+⁡
+q
+∂
+⁡
+α
+=
+∂
+⁡
+q
+∂
+⁡
+α
+∂
+∂
+⁡
+q
+(
+∂
+⁡
+W
+∂
+⁡
+β
+)
+(4.460)
+and we find that the transformation is canonical if we take
+α
+=
+∂
+⁡
+W
+/
+∂
+⁡
+β
+. Note the nice symmetry here:
+we have a solution
+W
+⁢
+(
+q
+,
+t
+;
+β
+)
+to the Hamilton Jacobi equation
+and we can think in terms of canonical coordinates
+(
+q
+,
+p
+)
+or
+alternatively
+(
+α
+,
+β
+)
+where
+p
+=
+∂
+⁡
+W
+∂
+⁡
+q
+,
+α
+=
+∂
+⁡
+W
+∂
+⁡
+β
+(4.461)
+The function
+W
+is an example of a generating function of the
+second kind (
+4.387
+).
+So what to do with this? Let’s look at some examples. Take
+β
+=
+E
+, so that our new
+momentum variable is the energy itself. What is the canonical coordinate? If we write
+W
+⁢
+(
+q
+,
+t
+;
+E
+)
+=
+W
+0
+⁢
+(
+q
+,
+E
+)
+-
+E
+⁢
+t
+then the coordinate canonically dual to
+E
+is
+α
+=
+∂
+⁡
+W
+0
+∂
+⁡
+E
+⁢
+(
+q
+,
+E
+)
+-
+t
+(4.462)
+Taking the time dependence over the left-hand-side, we see that
+α
+has the
+interpretation of
+-
+t
+0
+, the initial starting time. This tells us that we may
+parameterise every trajectory in a one-dimensional system in terms of the energy
+and starting time of the path, and that
+these are canonical variables. Again we see
+the dual relationship between energy and time. Note that both
+E
+and
+t
+0
+are
+independent of time; we’ve found canonical variables for which neither the
+coordinate nor the momentum vary along the path.
+As another example consider the case of
+β
+=
+I
+, our action variable of Section 4.5.
+What is the canonical coordinate
+α
+in this case? We expect that it will be related
+to the angle variable
+θ
+. To see this, we use the fact that
+W
+is the classical
+action to write
+W
+0
+=
+∫
+L
+⁢
+𝑑
+t
++
+E
+⁢
+t
+=
+∫
+(
+L
++
+H
+)
+⁢
+𝑑
+t
+=
+∫
+q
+˙
+⁢
+p
+⁢
+𝑑
+t
+=
+∫
+p
+⁢
+𝑑
+q
+(4.463)
+So we have that
+α
+=
+∂
+⁡
+W
+∂
+⁡
+β
+=
+d
+d
+⁢
+I
+⁢
+∫
+p
+⁢
+𝑑
+q
+-
+d
+⁢
+E
+d
+⁢
+I
+⁢
+t
+=
+θ
+-
+ω
+⁢
+t
+(4.464)
+where we’ve used our expression (
+4.411
+) for the angle variable, as well as
+the equation (
+4.408
+) for the frequency of motion
+ω
+. So we see
+that
+α
+is not quite equal to
+θ
+, but is shifted by a term linear in
+time. In fact this means that
+α
+itself does not change in time. Once again,
+we’ve arrived at a way to parameterise the orbits of motion by canonical variables
+which do not themselves change with time. In fact, in most presentations, this
+is the starting motivation for the Hamilton-Jacobi approach to classical dynamics
+and, even for higher dimensional systems, the function
+W
+can be thought of as a way
+to generate new, time independent, canonical variables.
+More discussion on the relationship between canonical transformations, angle-action
+variables and the Hamilton-Jacobi formulation can be found in the book by Hand and Finch, or
+deep within Goldstein.
+4.8
+Quantum Mechanics
+One of the primary reasons for studying the rather formal aspects
+of classical mechanics discussed in this course is to make contact
+with quantum mechanics. For this reason, in this last section of
+the course we will illustrate the connection between the classical
+and quantum world and point out a few analogies that might just
+make the quantum behaviour look a little less weird. (Just a
+little less: after all, it really is weird!)
+In classical mechanics the state of a system is described by a
+point
+(
+q
+i
+,
+p
+i
+)
+in phase space. In quantum mechanics the state
+is described by a very different object: a complex valued
+wavefunction
+ψ
+⁢
+(
+q
+)
+over the configuration space. The
+observables are operators on the space of wavefunctions. The
+standard representations of the position operator
+q
+^
+i
+and
+momentum operator
+p
+^
+i
+are
+q
+^
+i
+⁢
+ψ
+⁢
+(
+q
+)
+=
+q
+i
+⁢
+ψ
+⁢
+(
+q
+)
+p
+^
+i
+⁢
+ψ
+⁢
+(
+q
+)
+=
+i
+⁢
+ℏ
+⁢
+∂
+⁡
+ψ
+∂
+⁡
+q
+i
+(4.465)
+which
+leads to the well known Heisenberg commutation relations
+[
+p
+^
+i
+,
+p
+^
+j
+]
+=
+0
+[
+q
+^
+i
+,
+q
+^
+j
+]
+=
+0
+(4.466)
+[
+q
+^
+i
+,
+p
+^
+j
+]
+=
+i
+⁢
+ℏ
+⁢
+δ
+i
+⁢
+j
+Of course, we’ve already seen something very familiar in section 4.3 on Poisson
+brackets as summarised in equation (
+4.328
+). Although the bilinear, antisymmetric
+operators
+[
+,
+]
+and
+{
+,
+}
+act on very different spaces, they carry the same
+algebraic structure. Heuristically the relations (
+4.328
+) and (
+4.466
+) both
+represent the mathematical fact that momentum
+p
+i
+generates infinitesimal translations of
+q
+i
+: in classical mechanics we saw this in when we studied infinitesimal canonical
+transformations in section 4.4.1; in quantum mechanics it follows from the representation
+(
+4.465
+) and Taylor’s expansion.
+In general the map between a classical system and a quantum system goes via the Poisson brackets
+and was formulated by Dirac:
+{
+,
+}
+classical
+↔
+-
+i
+ℏ
+[
+,
+]
+quantum
+(4.467)
+This prescription for going between the classical and quantum theories is known as
+canonical quantisation
+. It also gives rise to the
+quantum equations of motion. In the Poisson bracket language, we have seen that
+the classical equation of motion for an arbitrary function
+f
+⁢
+(
+q
+,
+p
+)
+is
+f
+˙
+=
+{
+f
+,
+H
+}
+⟶
+i
+⁢
+ℏ
+⁢
+f
+^
+˙
+=
+[
+f
+^
+,
+H
+^
+]
+(4.468)
+which is the equation of motion in the Heisenberg picture, in which the time dependence
+is assigned to the operator rather than the state.
+While a great physicist, Dirac was never much of a storyteller. It shows in the following
+anecdote recounting his graduate student days:
+“
+I went back to Cambridge at the beginning of October 1925, and resumed my
+previous style of life, intense thinking about these problems during the week and
+relaxing on Sunday, going for a long walk in the country alone. The main purpose of
+these long walks was to have a rest so that I would start refreshed on the following
+Monday.
+It was during one of the Sunday walks in October 1925, when I was thinking about
+this
+(
+u
+⁢
+v
+-
+v
+⁢
+u
+)
+, in spite of my intention to relax, that I thought about Poisson brackets.
+I remembered something which I had read up previously, and from what I could remember,
+there seemed to be a close similarity between a Poisson bracket of two quantities
+and the commutator. The idea came in a flash, I suppose, and provided of course some
+excitement, and then came the reaction “No, this is probably wrong”.
+I did not remember very well the precise formula for a Poisson bracket, and only had
+some vague recollections. But there were exciting possibilities there, and I thought
+that I might be getting to some big idea. It was really a very disturbing situation, and
+it became imperative for me to brush up on my knowledge of Poisson brackets. Of course,
+I could not do that when I was right out in the countryside. I just had to hurry home and see what
+I could find about Poisson brackets.
+I looked through my lecture notes, the notes that I had taken at various lectures, and there
+was no reference there anywhere to Poisson brackets. The textbooks which I had at home were
+all too elementary to mention them. There was nothing I could do, because it was Sunday evening
+then and the libraries were all closed. I just had to wait impatiently through that night
+without knowing whether this idea was really any good or not, but I still think that my
+confidence gradually grew during the course of the night.
+The next morning I hurried along to one of the libraries as soon as it was open, and
+then I looked up Poisson brackets in Whitackers
+Analytical Dynamics
+, and I found
+that they were just what I needed.
+”
+4.8.1
+Hamilton, Jacobi, Schrödinger and Feynman
+While the Poisson bracket structure of quantum mechanics dovetails nicely with Heisenberg’s
+approach, the Hamilton-Jacobi equation is closely tied to Schrödinger’s wave equation.
+Let’s first recall what Schrödinger’s equation looks like for a one-dimensional system
+with a Hamiltonian operator
+H
+^
+=
+p
+^
+2
+/
+2
+⁢
+m
++
+V
+⁢
+(
+q
+^
+)
+acting on wavefunctions
+ψ
+⁢
+(
+q
+)
+,
+i
+⁢
+ℏ
+⁢
+∂
+⁡
+ψ
+∂
+⁡
+t
+=
+H
+^
+⁢
+ψ
+=
+-
+ℏ
+2
+2
+⁢
+m
+⁢
+∂
+2
+⁡
+ψ
+∂
+⁡
+q
+2
++
+V
+⁢
+(
+q
+)
+⁢
+ψ
+(4.469)
+where we have used the representation (
+4.465
+) for the position and momentum operators. To
+see the relationship of this equation to classical dynamics we decompose the wavefunction into
+the modulus and phase,
+ψ
+⁢
+(
+q
+,
+t
+)
+=
+R
+⁢
+(
+q
+,
+t
+)
+⁢
+e
+i
+⁢
+W
+⁢
+(
+q
+,
+t
+)
+/
+ℏ
+(4.470)
+where
+R
+and
+W
+are both real functions. We know that
+R
+is related to the probability
+P
+for finding a particle at position
+q
+at time
+t
+:
+P
+⁢
+(
+q
+,
+t
+)
+=
+|
+ψ
+⁢
+(
+q
+,
+t
+)
+|
+2
+=
+R
+⁢
+(
+q
+,
+t
+)
+2
+.
+But what is the interpretation of the phase
+W
+? Let’s substitute this decomposition of
+ψ
+into the Schrödinger equation to find
+i
+⁢
+ℏ
+⁢
+[
+∂
+⁡
+R
+∂
+⁡
+t
++
+i
+⁢
+R
+ℏ
+⁢
+∂
+⁡
+W
+∂
+⁡
+t
+]
+=
+-
+ℏ
+2
+2
+⁢
+m
+⁢
+[
+∂
+2
+⁡
+R
+∂
+⁡
+q
+2
++
+2
+⁢
+i
+ℏ
+⁢
+∂
+⁡
+R
+∂
+⁡
+q
+⁢
+∂
+⁡
+W
+∂
+⁡
+q
+-
+R
+ℏ
+2
+⁢
+(
+∂
+⁡
+W
+∂
+⁡
+q
+)
+2
++
+i
+⁢
+R
+ℏ
+⁢
+∂
+2
+⁡
+W
+∂
+⁡
+q
+2
+]
++
+V
+⁢
+R
+At this stage, we take the classical limit
+ℏ
+→
+0
+. Or, more precisely, we
+consider a situation with
+ℏ
+⁢
+|
+∂
+2
+⁡
+W
+∂
+⁡
+q
+2
+|
+≪
+|
+∂
+⁡
+W
+∂
+⁡
+q
+|
+(4.471)
+which can be understood physically as the requirement that the de Broglie wavelength of the
+particle is much smaller than any other length scale around. Either way, collecting together
+the terms above to leading order in
+ℏ
+we find
+∂
+⁡
+W
+∂
+⁡
+t
++
+1
+2
+⁢
+m
+⁢
+(
+∂
+⁡
+W
+∂
+⁡
+q
+)
+2
++
+V
+⁢
+(
+q
+)
+=
+𝒪
+⁢
+(
+ℏ
+)
+(4.472)
+which we recognise as the Hamilton-Jacobi equation (
+4.452
+). So in the classical
+limit the phase of the wavefunction is understood as the classical action of
+the path taken by the particle.
+Finally, let us finish on the same topic that we started: the
+principle of least action. Recall from section 2.1 that we can
+determine the true path of a system by assigning a number, called
+the action
+S
+, to every possible path. The equations of motion
+are then equivalent to insisting that the true path is an extremum
+of
+S
+. But what about all the other paths? Do they play any role
+in Nature? The answer is that, in the quantum world, they do.
+Suppose a particle is observed to be at position
+q
+i
+at time
+t
+=
+0
+. Then the probability
+P
+that it will later be observed to
+be at position
+q
+f
+at time
+t
+=
+T
+is encapsulated in the
+wavefunction
+ψ
+⁢
+(
+q
+f
+,
+T
+)
+. The Feynman path integral formula for
+the wavefunction is
+ψ
+⁢
+(
+q
+f
+,
+T
+)
+=
+N
+⁢
+∫
+q
+i
+q
+f
+𝒟
+⁢
+q
+⁢
+(
+t
+)
+⁢
+e
+i
+⁢
+S
+⁢
+[
+q
+⁢
+(
+t
+)
+]
+/
+ℏ
+(4.473)
+The
+N
+here is just a normalisation constant to ensure that
+probabilities add up to one: i.e.
+∫
+|
+ψ
+⁢
+(
+q
+)
+|
+2
+⁢
+𝑑
+q
+=
+1
+. The
+tricky part of this formula is the integral: it is a sum over all
+possible paths from
+q
+=
+q
+i
+at time
+0
+to
+q
+=
+q
+f
+at time
+T
+.
+These paths are weighted with their action. It’s as if the
+particle really does take every possible path, but with a
+particular phase. In the limit
+ℏ
+→
+0
+, the phases
+oscillate wildly for any path away from the classical equation of
+motion
+δ
+⁢
+S
+=
+0
+and they cancel out in the integral. But for
+situations where
+ℏ
+is important, the other paths are also
+important.
+Figure 70:
+Discretising the paths.
+Let’s prove that the wavefunction defined by (
+4.473
+) satisfies the Schrödinger
+equation. Firstly we need to understand this integral over paths a little better. We do
+this by splitting the path into
+n
+small segments, each ranging over a small time
+δ
+⁢
+t
+=
+t
+/
+n
+. Then we define
+∫
+𝒟
+⁢
+q
+⁢
+(
+t
+)
+=
+lim
+n
+→
+∞
+⁡
+∏
+k
+=
+1
+n
+∫
+-
+∞
++
+∞
+d
+⁢
+q
+k
+C
+(4.474)
+where
+q
+k
+is the position of the particle at time
+t
+=
+k
+⁢
+δ
+⁢
+t
+. In this
+expression
+C
+is a constant that we’re going to figure out shortly that will be
+required to make sense of this infinite number of integrals. In any given segment,
+we treat the path as straight lines as shown in the figure and replace the action
+with the appropriate quantity,
+S
+=
+∫
+0
+T
+𝑑
+t
+⁢
+(
+1
+2
+⁢
+m
+⁢
+q
+˙
+2
+-
+V
+⁢
+(
+q
+)
+)
+→
+∑
+k
+=
+1
+n
+(
+m
+2
+⁢
+(
+q
+k
++
+1
+-
+q
+k
+)
+2
+δ
+⁢
+t
+-
+δ
+⁢
+t
+⁢
+V
+⁢
+(
+q
+k
++
+1
++
+q
+k
+2
+)
+)
+Then to prove that
+ψ
+defined in (
+4.473
+) satisfies Schrödinger’s equation,
+let’s consider adding a single extra time step to look at the wavefunction at time
+t
++
+δ
+⁢
+t
+. We can Taylor expand the left hand side of (
+4.473
+) happily
+ψ
+⁢
+(
+q
+f
+,
+T
++
+δ
+⁢
+t
+)
+=
+ψ
+⁢
+(
+q
+f
+,
+T
+)
++
+∂
+⁡
+ψ
+∂
+⁡
+T
+⁢
+δ
+⁢
+t
++
+𝒪
+⁢
+(
+δ
+⁢
+t
+2
+)
+(4.475)
+while the right hand side requires us to do one extra integral over the penultimate
+position of the path
+q
+′
+. But the first
+n
+integrals simply give back the original
+wavefunction, now evaluated at
+q
+′
+. We get
+∫
+-
+∞
++
+∞
+d
+⁢
+q
+′
+C
+⁢
+exp
+⁡
+[
+i
+⁢
+m
+2
+⁢
+ℏ
+⁢
+(
+q
+f
+-
+q
+′
+)
+2
+δ
+⁢
+t
+-
+i
+ℏ
+⁢
+δ
+⁢
+t
+⁢
+V
+⁢
+(
+q
+f
++
+q
+′
+2
+)
+]
+⁢
+ψ
+⁢
+(
+q
+′
+,
+t
+)
+(4.476)
+The term in the exponent means that the integral oscillates wildly
+whenever
+q
+′
+is far from
+q
+f
+and these regions of the
+integral will all cancel out. We can therefore Taylor expand
+around
+(
+q
+f
+-
+q
+′
+)
+to rewrite this as
+∫
+-
+∞
++
+∞
+d
+⁢
+q
+′
+C
+⁢
+exp
+⁡
+[
+i
+⁢
+m
+2
+⁢
+ℏ
+⁢
+(
+q
+f
+-
+q
+′
+)
+2
+δ
+⁢
+t
+]
+⁢
+(
+1
+-
+i
+⁢
+δ
+⁢
+t
+ℏ
+⁢
+V
+⁢
+(
+q
+f
+)
++
+…
+)
+(
+1
++
+(
+q
+′
+-
+q
+f
+)
+⁢
+∂
+∂
+⁡
+q
+f
++
+1
+2
+⁢
+(
+q
+′
+-
+q
+f
+)
+2
+⁢
+∂
+2
+∂
+⁡
+q
+f
+2
++
+…
+)
+⁢
+ψ
+⁢
+(
+q
+f
+,
+T
+)
+(4.477)
+At this stage we do the integral over
+q
+′
+. We’ll use the formulae for Gaussian integration
+∫
+d
+y
+e
+-
+a
+⁢
+y
+2
+=
+π
+a
+,
+∫
+d
+y
+y
+e
+-
+a
+⁢
+y
+2
+=
+0
+,
+∫
+d
+y
+y
+2
+e
+-
+a
+⁢
+y
+2
+=
+1
+2
+⁢
+a
+π
+a
+(4.478)
+Then equating the lefthand side (
+4.475
+) with the righthand side (
+4.477
+), we
+have
+ψ
+⁢
+(
+q
+f
+,
+T
+)
++
+∂
+⁡
+ψ
+∂
+⁡
+T
+⁢
+δ
+⁢
+t
+=
+1
+C
+⁢
+2
+⁢
+π
+⁢
+ℏ
+⁢
+δ
+⁢
+t
+-
+i
+⁢
+m
+⁢
+[
+1
+-
+i
+⁢
+δ
+⁢
+t
+ℏ
+⁢
+V
+⁢
+(
+q
+f
+)
++
+i
+⁢
+ℏ
+⁢
+δ
+⁢
+t
+2
+⁢
+m
+⁢
+∂
+2
+∂
+⁡
+q
+f
+2
++
+𝒪
+⁢
+(
+δ
+⁢
+t
+2
+)
+]
+⁢
+ψ
+⁢
+(
+q
+f
+,
+T
+)
+At this stage we see what the constant
+C
+has to be to make sense of this whole calculation:
+we should take
+C
+=
+2
+⁢
+π
+⁢
+ℏ
+⁢
+δ
+⁢
+t
+-
+i
+⁢
+m
+(4.479)
+so that
+C
+→
+0
+as
+δ
+⁢
+t
+→
+0
+. Then the terms of order
+𝒪
+⁢
+(
+δ
+⁢
+t
+0
+)
+agree.
+Collecting the terms of order
+𝒪
+⁢
+(
+δ
+⁢
+t
+)
+, and replacing the time
+T
+at the end point
+with the general time
+t
+, we see that we have
+i
+⁢
+ℏ
+⁢
+∂
+⁡
+ψ
+∂
+⁡
+t
+=
+-
+ℏ
+2
+2
+⁢
+m
+⁢
+∂
+2
+⁡
+ψ
+∂
+⁡
+q
+f
+2
++
+V
+⁢
+(
+q
+f
+)
+⁢
+ψ
+=
+H
+^
+⁢
+ψ
+(4.480)
+and we recover Schrödinger’s equation as promised.
+4.8.2
+Nambu Brackets
+Throughout this section, we’ve seen that several of the structures
+appearing in quantum mechanics were anticipated, in some form,
+within the framework of classical dynamics. You just need to know
+where to look. One might wonder whether classical mechanics also
+contains other structures which will prove to be important in
+future discoveries. Or, alternatively, whether there are ways to
+extend the framework of classical dynamics that hints at new ways
+to formulate the laws of physics. In this section, I’ll briefly
+describe such an extension due to Nambu in 1973. I should confess
+immediately that there’s no known use for Nambu’s formalism! And
+it’s not at all clear that one will be found! But then again,
+maybe it holds the clue that will prove crucial in the search for
+the ideas beyond the known laws of Nature.
+We’ve seen that the Hamiltonian framework deals with canonical
+pairs of coordinates and momenta
+(
+q
+i
+,
+p
+i
+)
+with
+i
+=
+1
+,
+…
+,
+n
+.
+Nambu’s idea was to extend this to triplets of objects
+(
+q
+i
+,
+p
+i
+,
+r
+i
+)
+with
+i
+=
+1
+,
+…
+,
+n
+. We don’t say what this extra
+variable
+r
+i
+is: just that it is necessary to define the state
+of a system. This means that the phase space has dimension
+3
+⁢
+n
+.
+The Nambu bracket, which replaces the Poisson bracket, acts on
+three functions
+f
+,
+g
+and
+h
+in phase space,
+{
+f
+,
+g
+,
+h
+}
+=
+∑
+i
+∂
+⁡
+f
+∂
+⁡
+q
+i
+⁢
+∂
+⁡
+g
+∂
+⁡
+p
+i
+⁢
+∂
+⁡
+h
+∂
+⁡
+r
+i
+-
+∂
+⁡
+f
+∂
+⁡
+q
+i
+⁢
+∂
+⁡
+g
+∂
+⁡
+r
+i
+⁢
+∂
+⁡
+h
+∂
+⁡
+p
+i
++
+∂
+⁡
+f
+∂
+⁡
+r
+i
+⁢
+∂
+⁡
+g
+∂
+⁡
+q
+i
+⁢
+∂
+⁡
+h
+∂
+⁡
+p
+i
+(4.481)
+-
+∂
+⁡
+f
+∂
+⁡
+r
+i
+⁢
+∂
+⁡
+g
+∂
+⁡
+p
+i
+⁢
+∂
+⁡
+h
+∂
+⁡
+q
+i
++
+∂
+⁡
+f
+∂
+⁡
+p
+i
+⁢
+∂
+⁡
+g
+∂
+⁡
+r
+i
+⁢
+∂
+⁡
+h
+∂
+⁡
+q
+i
+-
+∂
+⁡
+f
+∂
+⁡
+p
+i
+⁢
+∂
+⁡
+h
+∂
+⁡
+q
+i
+⁢
+∂
+⁡
+h
+∂
+⁡
+r
+i
+This satisfies similar properties to the Poisson bracket,
+including linearity and
+•
+Anti-symmetry:
+{
+f
+,
+g
+,
+h
+}
+=
+-
+{
+g
+,
+f
+,
+h
+}
+=
+{
+g
+,
+h
+,
+f
+}
+.
+•
+Leibniz:
+{
+f
+⁢
+g
+,
+h
+,
+l
+}
+=
+f
+⁢
+{
+g
+,
+h
+,
+l
+}
++
+{
+f
+,
+h
+,
+l
+}
+⁢
+g
+.
+•
+“Jacobi”:
+{
+{
+f
+,
+g
+,
+h
+}
+,
+l
+,
+m
+}
++
+{
+h
+,
+{
+f
+,
+g
+,
+l
+}
+,
+m
+}
++
+{
+h
+,
+l
+,
+{
+f
+,
+g
+,
+m
+}
+}
+=
+{
+f
+,
+g
+,
+{
+h
+,
+l
+,
+m
+}
+}
+.
+In order to specify time evolution, we need two ”Hamiltonians”. We
+call them
+H
+⁢
+(
+q
+,
+p
+,
+r
+)
+and
+G
+⁢
+(
+q
+,
+p
+,
+r
+)
+. Then any function
+f
+over
+phase space evolves as
+d
+⁢
+f
+d
+⁢
+t
+=
+{
+f
+,
+G
+,
+H
+}
+(4.482)
+In particular, the new version Hamilton’s equations read
+q
+˙
+i
+=
+∂
+⁡
+G
+∂
+⁡
+p
+i
+⁢
+∂
+⁡
+H
+∂
+⁡
+r
+i
+-
+∂
+⁡
+G
+∂
+⁡
+r
+i
+⁢
+∂
+⁡
+H
+∂
+⁡
+p
+i
+p
+˙
+i
+=
+∂
+⁡
+G
+∂
+⁡
+r
+i
+⁢
+∂
+⁡
+H
+∂
+⁡
+q
+i
+-
+∂
+⁡
+G
+∂
+⁡
+q
+i
+⁢
+∂
+⁡
+H
+∂
+⁡
+r
+i
+(4.483)
+r
+˙
+i
+=
+∂
+⁡
+G
+∂
+⁡
+q
+i
+⁢
+∂
+⁡
+H
+∂
+⁡
+p
+i
+-
+∂
+⁡
+G
+∂
+⁡
+p
+i
+⁢
+∂
+⁡
+H
+∂
+⁡
+q
+i
+where there’s no sum over
+i
+on the right-hand side of these
+equations. By the anti-symmetry of the Nambu bracket, we learn
+that both
+H
+and
+G
+are conserved (as long as neither have
+explicit time dependence).
+Many of the key features of classical dynamics are retained in
+Nambu’s formalism. For example, Liouville’s theorem still holds.
+(This was Nambu’s original motivation for suggesting this
+framework). Similarly, canonical transformations can be defined as
+a change of variables
+q
+i
+→
+Q
+i
+⁢
+(
+q
+,
+p
+,
+r
+)
+and
+p
+i
+→
+P
+i
+⁢
+(
+q
+,
+p
+,
+r
+)
+and
+r
+i
+→
+R
+i
+⁢
+(
+q
+,
+p
+,
+r
+)
+such
+that the Nambu bracket structure is preserved, for example
+{
+Q
+i
+,
+P
+j
+,
+R
+k
+}
+=
+{
+1
+if
+⁢
+i
+=
+j
+=
+k
+0
+otherwise
+(4.484)
+together with similar equations involving other combinations of
+Q
+’s,
+P
+’s and
+R
+’s. ”Hamilton’s” equations (
+4.483
+) are
+invariant under these canonical transformations.
+The Nambu bracket provides a generalisation of classical dynamics.
+But can we quantise it? In other words, can we find some
+operators which reproduce the Nambu bracket structure (up to a
+factor of
+ℏ
+and perhaps an
+i
+) in much the same way that
+the usual quantum theory ties in with the Poisson bracket? This
+turns out to be pretty tricky. In particular, it seems difficult
+to keep all three conditions: anti-symmetry, Leibniz and Jacobi.
+Perhaps this suggests that the correct mathematical structure has
+not yet been uncovered. Perhaps it suggests that the Nambu bracket
+is just not useful!
+Chances are that you won’t ever have any use for the Nambu
+bracket. But you never know. Perhaps one day, like Dirac, you’ll
+return from wandering the fields around Cambridge and desperately
+need to recall this concept. But, unlike Dirac, you’ll be able to
+find a reference in your lecture notes (the notes you had taken at
+various lectures).
+3
+The Motion of Rigid Bodies
+Generated  on Thu Mar 24 09:29:54 2022 by
+LaTeXML

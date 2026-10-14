@@ -1,0 +1,154 @@
+Dominance Tree Sorts
+home
+table of contents
+Comp. Sci.
+August 2004
+email
+Dominance Tree Sorts
+“Dominance tree sorts” is a neologism.  If anyone recognizes this 
+class of sorts I would take it kindly if they would point to the 
+literature (web preferred) where this class of sorts is described 
+and named.  The idea doesn’t seem to be explored in Knuth, though 
+something may be hidden in the exercises.  Dominance tree sorts 
+aare selection sorts but not tournament sorts.
+Suppose we have a set S of elements and an ordering relationship 
+R defined over S.  For example, S might be an array of integers, 
+and R might be >, the greater than relationship.  Let x and y be 
+two elements of S.  Element x is said to dominate y if (x R y).  
+Again from the example, let x be 8 and y be 5.  Then x dominates 
+y.
+A dominance tree T over S is a tree such that (a) every element 
+of S appears exactly once in T, and (b) for every element (except 
+the root) the element’s parent dominates it.  Here are some 
+examples of dominance trees over the set {1,2,3,4,5}
+A          B        C
+          5          5        5
+          |          |        |
+       -------     -----      4
+       | | | |     |   |      |
+       1 2 3 4     4   2      3
+                   |          |
+                  ---         2
+                  | |         |
+                  1 3         1
+Dominance trees satisfy the heap property; accordingly they are heaps,
+taking the term “heap” in its most general sense.
+Binary heaps are dominance trees, but not all dominance trees are binary heaps.  
+Example B is a binary heap, example C is a sorted list, and in example A 
+all we know is that ‘5’ is maximal.
+A set K of comparisons (xRy) is a minimum comparison set for 
+a dominance tree T if it consists exclusively of the comparisons
+in the child/parent linkages.  Thus, in our example, the minimum 
+comparison sets are:
+K(A):  5>1, 5>2, 5>3, 5>4
+K(B):  5>4, 5>2, 4>1, 4>3
+K(C):  5>4, 4>3, 3>2, 2>1
+Note that a minimum comparison set always has n-1 members where n 
+is the cardinality of S.
+An algorithm is an efficient dominance tree construction (EDTC) 
+algorithm if it specifies a minimum comparison sequence that in 
+turn specifies a dominance tree.
+One of the important features of EDTC algorithms is that if an 
+element ‘loses’ in a comparison it cannot appear in a later 
+comparison in the comparison’s sequence.  Another is that there 
+is no EDTC algorithm that can guarantee that the root element has 
+less than log2(n) children.  In particular there are no 
+EDTC algorithms for creating heaps.
+The general plan for dominance tree sorts runs as follows:  For a 
+given set S we first construct a dominance tree T.  We then emit 
+the root of the tree.  The children of the root are compared 
+until a new root is established. In each comparison the ‘loser’ 
+becomes a new child of the ‘winner’.  EDTC algorithms are used in 
+both the initial construction phase and in each emission step.  
+There are quite a number of variations depending on which EDTC 
+algorithms are used.
+There are two major EDTC algorithms that occur to me.  The first 
+is tournament pairing, also used in the tournament sort and in 
+heapsort.  In the tournament pairing algorithm the set is divided
+into pairs that are compared.  The winners go on to the second 
+round where they are again divided into pairs that are compared.  
+This is continued until a final winner is determined.  This 
+requires n-1 comparisons, log2(n) rounds, and the winner, the 
+root of the tree, will have log2(n) children.
+The second is sequential comparison.  The first element in a 
+list is compared with the second.  The winner is compared with 
+the third, and so on.  This also requires n-1 comparisons.  The 
+number of children of the root depends on the location of the 
+root element in the list.  If the ordering of the list elements 
+is random, the average number of children will n/2.  On the other 
+hand, the number of children will be 1 if the list is ordered.
+It turns out that we get a very efficient (as measured by the 
+number of comparisons used) algorithm if we use tournament 
+pairing to construct the initial dominance tree and sequential 
+comparison in the update after emission of the root.  Each 
+element has a list associated with it of elements that it 
+dominates.  During construction when one element dominates 
+another the losing element is appended to the winning elements 
+list.  Here is a very simple example.  Let the set to be sorted 
+be {2,4,3,1}.  The actions are:
+Construction Phase
+        compare (2,4); append 4 to 2's list
+        compare (3,1); append 3 to 1's list
+        compare (2,1); append 2 to 1's list; 1 is the root
+    Emission Phase
+        emit (1); compare (3,2); append 3 to 2's list; 2 is root
+        emit (2); compare (3,4); append 4 to 3's list; 3 is root
+        emit (3); 4 is root
+        emit (4); done
+How efficient is this sort?  The tests that I ran showed it to 
+about equivalent to merge-insert (see Knuth, Vol 3, 5.3.1).  For 
+example, sorting 32 items requires a minimum of 118 comparisons 
+on average (log2(32!)).  Merge-insert needs 121.  The number 
+needed by the above algorithm depends on the precise permutation.  
+The average number needed is about 121.5.  For large n the number 
+of comparisons required was ~ n*(log2(n) – 1.27) in the tests I 
+performed; this is not far off from the best possible of which is
+~ n*(log2(n) – log2(e)) = n*(log2(n) – 1.44).
+Why is this sort efficient?  It has to do with an order 
+preservation property in the construction and updating of the 
+dominance lists.  In the construction phase a dominance list has 
+two special properties: (a) its length is longer than the lengths 
+of the lists of the elements in its list, and (b) the elements in 
+the list are in order of the length of their lists.  These 
+properties are almost always preserved by the above algorithm.  
+In turn this implies that the lengths of the dominance lists are 
+slightly less than O(log2(n)) on average.
+Can this be improved upon?  Possibly.  The only 
+reference I can find to dominance tree sorts is a web article by 
+someone called Supercat.  In the web article he in effect forces 
+property (b) to hold.  (He calls it a tournament sort which is a 
+bit of a misnomer.)  He gives the following results for a test 
+case sorting one million items.
+Number of comparisons by a perfect sort (lg(n!)) : 18,488,865
+Avg # of comparisons for Tournament Sort: 18,646,425 (100.85% of perfect)
+Avg # of comparisons for Borland C’s qsort: 22,439,507 (121.37% of perfect)
+This gives (n = 1000000) n*(log2(n) – 1.284) which is tad better 
+than the simpler algorithm given here.  On the other hand 
+Supercat’s version requires addition comparisons of the element 
+weights (integers rather than keys).
+Is this a practical sort?  Possibly not.  It requires extra space 
+O(n) for the lists and O(n) for the list headers.  Each 
+comparison involves adding an item to a linked list, so the 
+cost of the inner loop operations will be higher than it is in 
+simpler sorts.  On the other hand memory is often plentiful and 
+the inner loop costs should be no worse than those for an 
+ordinary tree sort.
+Dominance tree sorts have an obvious relationship with fibonacci heaps
+and sorts based on fibonacci heaps.  However the fibonacci heapify operation
+uses in effect uses sequential comparison rather than tournament pairing
+comparison; the resulting sort is considerably less efficient. A question of
+interest is whether there is a version of fibonacci heaps that is consistent
+with tournament pairing.
+References:
+URL:   http://www.halfbakery.com/idea/Tournament_20Sort
+Title: Tournament sort
+URL:   http://algorithm.myrice.com/resources/technical_artile/fibonacci_heap/fibonacci.htm
+Title: The Fibonacci Heap
+Knuth, The Art of Computer Programming, Vol 3, Searching
+   and Sorting.
+This page was last updated August 24, 2004.
+home
+table of contents
+Comp. Sci.
+August 2004
+email

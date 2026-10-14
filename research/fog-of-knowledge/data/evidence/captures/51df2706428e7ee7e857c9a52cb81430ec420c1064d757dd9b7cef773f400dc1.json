@@ -1,0 +1,15 @@
+{
+  "id": "nist-repair-source.5301a2dedbe1d04eaa0f",
+  "url": "http://www-igm.univ-mlv.fr/~lecroq/string/node13.html",
+  "final_url": "http://www-igm.univ-mlv.fr/~lecroq/string/node13.html",
+  "title": "Charras and Lecroq: Exact String Matching Algorithms chapter 13",
+  "source_kind": "secondary",
+  "retrieved_at": "2026-10-14T20:04:35.405069+00:00",
+  "text": "Not So Naive algorithm\nNext:\nBoyer-Moore\nUp:\nESMAJ\nPrev:\nApostolico-Crochemore\nNot So Naive algorithm\nMain features\npreprocessing phase in constant time and space;\nsearching phase in\nO\n(\nn\nm\n) time complexity;\nslightly (\nby coefficient\n) sub-linear in the average case.\nDescription\nDuring the searching phase of the Not So Naive algorithm the character comparisons are made with the pattern positions in the following order\n1, 2, ... ,\nm\n-2,\nm\n-1, 0\n.\nFor each attempt where the window is positioned on the text factor\ny\n[\nj\n..\nj\n+\nm\n-1]\n: if\nx\n[0]=\nx\n[1]\nand\nx\n[1]\ny\n[\nj\n+1]\nof if\nx\n[0]\nx\n[1]\nand\nx\n[1]=\ny\n[\nj\n+1]\nthe pattern is shifted by 2 positions at the end of the attempt and by 1 otherwise.\nThus the preprocessing phase can be done in constant time and space. The searching phase of the Not So Naive algorithm has a quadratic worst case but it is slightly (\nby coefficient\n) sub-linear in the average case.\nThe C code\nvoid NSN(char *x, int m, char *y, int n) {\r\n   int j, k, ell;\r\n  \r\n   /* Preprocessing */\r\n   if (x[0] == x[1]) {\r\n      k = 2;\r\n      ell = 1;\r\n   }\r\n   else {\r\n      k = 1;\r\n      ell = 2;\r\n   }\r\n  \r\n   /* Searching */\r\n   j = 0;\r\n   while (j <= n - m)\r\n      if (x[1] != y[j + 1])\r\n         j += k;\r\n      else {\r\n         if (memcmp(x + 2, y + j + 2, m - 2) == 0 &&\r\n             x[0] == y[j])\r\n            OUTPUT(j);\r\n         j += ell;\r\n      }\r\n}\nThe example\nPreprocessing phase\nk=1\nand\n=2\nSearching\nphase\nReferences\nC\nARDON\n, A., C\nHARRAS\n, C., 1996,\nIntroduction à l'algorithmique et à la programmation\n, Chapter 9, pp 254-279, Ellipses.\nH\nANCART\nC.\n, 1992, Une analyse en moyenne de l'algorithme de Morris et Pratt et de ses raffinements, in\nThéorie des Automates et Applications, Actes des 2\ne\nJournées Franco-Belges\n, D. Krob ed., Rouen, France, 1991, PUR 176, Rouen, France, 99-110.\nH\nANCART\n, C., 1993.\nAnalyse exacte et en moyenne d'algorithmes de recherche d'un motif dans un texte\n, Ph. D. Thesis, University Paris 7, France.\nNext:\nBoyer-Moore\nUp:\nESMAJ\nPrev:\nApostolico-Crochemore\ne-mails: {\nChristian.Charras\n,\nThierry.Lecroq\n}@laposte.net\nTue Jan 14 15:03:31 MET 1997",
+  "sha256": "82eec893eab06f2284745ffcad0ae2402c816ce8bffa29d0c2bf978d452c940d",
+  "raw_sha256": "423a862fafbcdbd56eb4acaaa3fbebf50383bcaff68071570bda35f8e4f59057",
+  "content_type": "text/html",
+  "charset": "utf-8",
+  "extraction_method": "http-html-data-lines/1",
+  "capture_id": "51df2706428e7ee7e857c9a52cb81430ec420c1064d757dd9b7cef773f400dc1"
+}

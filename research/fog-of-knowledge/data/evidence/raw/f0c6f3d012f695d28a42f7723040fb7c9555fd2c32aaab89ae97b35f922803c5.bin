@@ -1,0 +1,397 @@
+<HTML lang="en">
+<HEAD>
+<TITLE> Data Compression -- Section 5</TITLE>
+<style>
+p{line-height:1.5;}
+</style>
+</HEAD><BODY>
+
+<H1> Data Compression </H1>
+
+<a name="Sec_5">
+<H2> 5.  OTHER ADAPTIVE METHODS</H2> </a>
+
+<A HREF="DC-Sec4.html"><IMG SRC="prev.gif" ALT="PREV section"></A>
+<A HREF="DC-Sec678.html"><IMG SRC="next.gif" ALT="NEXT section"></A>
+<P>
+
+	Two more adaptive data compression methods, algorithm BSTW and
+Lempel-Ziv coding, are discussed in this section.  Like the adaptive
+Huffman coding techniques, these methods do not require a first pass to
+analyze the characteristics of the source.  Thus, they provide coding
+and transmission in real time.  However, these
+schemes diverge from the fundamental Huffman coding approach
+to a greater degree than the methods discussed in
+<a href="DC-Sec4.html#Sec_4">Section 4</a>.
+Algorithm BSTW is a defined-word scheme which attempts to
+exploit locality.  Lempel-Ziv coding is a <EM>free-parse</EM> method;
+that is, the words of the source alphabet are defined dynamically,
+as the encoding is performed.  Lempel-Ziv coding is the basis for
+the UNIX utility <EM>compress</EM>.  Algorithm BSTW is a variable-variable
+scheme, while Lempel-Ziv coding is variable-block.
+
+<a name="Sec_5.1">
+<H3> 5.1  Lempel-Ziv Codes</H3> </a>
+
+Lempel-Ziv coding represents a departure from the classic view
+of a code as a mapping from a fixed set of source messages
+(letters, symbols or words) to a fixed set of codewords.
+We coin the term <EM>free-parse</EM> to characterize this type of
+code, in which the set of source messages and the codewords
+to which they are mapped are defined as the algorithm executes.
+While all adaptive methods create a set of codewords dynamically,
+defined-word schemes have a fixed set of source messages, defined
+by context (eg., in text file processing the source messages might
+be single letters; in Pascal source file processing the source
+messages might be tokens).  Lempel-Ziv coding defines the set
+of source messages as it parses the ensemble.
+<P>
+The Lempel-Ziv algorithm consists of a rule for parsing strings
+of symbols from a finite alphabet into substrings, or words,
+whose lengths do not exceed a prescribed integer <VAR>L</VAR>(1);
+and a coding scheme which maps these substrings sequentially
+into uniquely decipherable codewords of fixed length <VAR>L</VAR>(2)
+[Ziv and Lempel 1977].  The strings are selected so that they
+have very nearly equal probability of occurrence.  As a result,
+frequently-occurring symbols are grouped into longer strings
+while infrequent symbols appear in short strings.
+This strategy is effective at exploiting redundancy
+due to symbol frequency, character repetition, and high-usage
+patterns.  Figure 5.1 shows a small Lempel-Ziv code table.
+Low-frequency letters such as Z are assigned individually
+to fixed-length codewords 
+(in this case, 12 bit binary numbers represented in base ten
+for readability).
+Frequently-occurring symbols, such as blank 
+(represented by _) and zero, appear
+in long strings.  Effective compression is achieved when a long
+string is replaced by a single 12-bit code.
+
+<PRE>
+Symbol string     Code
+
+     A               1
+     T               2
+     AN              3
+     TH              4
+     THE             5
+     AND             6
+     AD              7
+     _               8
+     __              9
+     ___            10
+     0              11
+     00             12
+     000            13
+     0000           14
+     Z              15
+
+     ###          4095
+
+Figure 5.1 -- A Lempel-Ziv code table.
+</PRE>
+
+The Lempel-Ziv method is an incremental parsing strategy in which
+the coding process is interlaced with a learning process for
+varying source characteristics [Ziv and Lempel 1977].  In Figure 5.1,
+run-length encoding of zeros and blanks is being learned.  
+<P>
+The Lempel-Ziv algorithm parses the source ensemble into a collection of 
+segments of gradually increasing length.  At each encoding step,
+the longest prefix of the remaining source ensemble which matches
+an existing table entry (<VAR>alpha</VAR>) is parsed off, along with the 
+character (<VAR>c</VAR>) following this prefix in the ensemble.  The 
+new source message, <VAR>alpha</VAR> <VAR>c</VAR>, is added
+to the code table.  The new table entry is coded as (<VAR>i,c</VAR>) where
+<VAR>i</VAR> is the codeword for the existing table entry and <VAR>c</VAR> is the appended
+character.  For example, the ensemble 010100010 is parsed into
+{ 0, 1, 01, 00, 010 } and is coded as { (0,0), (0,1), (1,1), 
+(1,0), (3,0) }.  The table built for the message ensemble
+<VAR>EXAMPLE</VAR> is shown in Figure 5.2.  The coded ensemble
+has the form: { (0,<VAR>a</VAR>), (1,<VAR>space</VAR>), (0,<VAR>b</VAR>), (3,<VAR>b</VAR>), (0,<VAR>space</VAR>),
+(0,<VAR>c</VAR>), (6,<VAR>c</VAR>), (6,<VAR>space</VAR>), (0,<VAR>d</VAR>), (9,<VAR>d</VAR>), (10,<VAR>space</VAR>), (0,<VAR>e</VAR>), 
+(12,<VAR>e</VAR>), (13,<VAR>e</VAR>),
+(5,<VAR>f</VAR>), (0,<VAR>f</VAR>), (16,<VAR>f</VAR>), (17,<VAR>f</VAR>), (0,<VAR>g</VAR>), (19,<VAR>g</VAR>), (20,<VAR>g</VAR>), 
+(20) }.  The string table is represented in a
+more efficient manner than in Figure 5.1; the string is
+represented by its prefix codeword followed by the extension 
+character, so that the table entries have fixed length.  The 
+Lempel-Ziv strategy is simple, but
+greedy.  It simply parses off the longest recognized string each time
+rather than searching for the best way to parse the ensemble.  
+
+<table align=center>
+<TR><TD>
+<TABLE>
+<tr><th>Message</th><th>Codeword</th>
+<tr><td></td><td></td>
+<tr><td><VAR>a</VAR></td><td>1</td>
+<tr><td>1<VAR>space</VAR></td><td>2</td>
+<tr><td><VAR>b</VAR></td><td>3</td>
+<tr><td>3<VAR>b</VAR></td><td>4</td>
+<tr><td><VAR>space</VAR></td><td>5</td>
+<tr><td><VAR>c</VAR></td><td>6</td>
+<tr><td>6<VAR>c</VAR></td><td>7</td>
+<tr><td>6<VAR>space</VAR></td><td>8</td>
+<tr><td><VAR>d</VAR></td><td>9</td>
+<tr><td>9<VAR>d</VAR></td><td>10</td>
+<tr><td>10<VAR>space</VAR></td><td>11</td>
+</TABLE></TD><TD>
+<TABLE>
+<tr><th>Message</th><th>Codeword</th>
+<tr><td></td><td></td>
+<tr><td><VAR>e</VAR></td><td>12</td>
+<tr><td>12<VAR>e</VAR></td><td>13</td>
+<tr><td>13<VAR>e</VAR></td><td>14</td>
+<tr><td>5<VAR>f</VAR></td><td>15</td>
+<tr><td><VAR>f</VAR></td><td>16</td>
+<tr><td>16<VAR>f</VAR></td><td>17</td>
+<tr><td>17<VAR>f</VAR></td><td>18</td>
+<tr><td><VAR>g</VAR></td><td>19</td>
+<tr><td>19<VAR>g</VAR></td><td>20</td>
+<tr><td>20<VAR>g</VAR></td><td>21</td>
+<tr><td>&nbsp;</td><td></td>
+</TABLE></TD>
+</table>
+<P align=center>
+<PRE>
+Figure 5.2 -- Lempel-Ziv table for the message ensemble <VAR>EXAMPLE</VAR>
+              (code length=173).
+</PRE>
+</P>
+
+The Lempel-Ziv method specifies fixed-length codewords.  The
+size of the table and the maximum source message length are
+determined by the length of the codewords.  It should
+be clear from the definition of the algorithm that Lempel-Ziv
+codes tend to be quite inefficient during the initial portion
+of the message ensemble.  For example, even if we assume 3-bit
+codewords for characters <VAR>a</VAR> through <VAR>g</VAR> and <VAR>space</VAR> and 5-bit
+codewords for table indices, the Lempel-Ziv algorithm transmits
+173 bits for ensemble <VAR>EXAMPLE</VAR>.  This compares poorly with
+the other methods discussed in this survey.  The ensemble must 
+be sufficiently long 
+for the procedure to build up enough symbol frequency experience 
+to achieve good compression over the full ensemble.  
+<P>
+If the 
+codeword length is not sufficiently
+large, Lempel-Ziv codes may also rise slowly to reasonable efficiency,
+maintain good performance briefly, and fail to make any gains
+once the table is full and messages can no longer be added.
+If the ensemble's characteristics vary over time, the method
+may be "stuck with" the behavior it has learned and may
+be unable to continue to adapt. 
+<P>
+Lempel-Ziv coding is asymptotically optimal, meaning that the redundancy
+approaches zero as the length of the source ensemble
+tends to infinity.  However, for particular finite
+sequences, the compression achieved may be far from optimal
+[Storer and Szymanski 1982].  When the method begins, each source
+symbol is coded individually.  In the case of 6- or 8-bit source
+symbols and 12-bit codewords, the method yields as much as
+50% expansion during initial encoding.  This initial inefficiency
+can be mitigated somewhat by initializing the string table
+to contain all of the source characters.  Implementation
+issues are particularly important in Lempel-Ziv methods.  A
+straightforward implementation takes <VAR>O</VAR>(<VAR>n</VAR>^2) time to process
+a string of <VAR>n</VAR> symbols; for each encoding operation, the existing
+table must be scanned for the longest message occurring as a
+prefix of the remaining ensemble.  Rodeh et al. address the
+issue of computational complexity by defining a linear implementation
+of Lempel-Ziv coding based on suffix trees [Rodeh et al. 1981].
+The Rodeh et al. scheme is asymptotically optimal, but an input must
+be very long in order to allow efficient compression, and the
+memory requirements of the scheme are large, <VAR>O</VAR>(<VAR>n</VAR>) where <VAR>n</VAR>
+is the length of the source ensemble.  It should also be mentioned
+that the method of Rodeh et al. constructs a variable-variable code;
+the pair (<VAR>i,c</VAR>) is coded using a representation of the integers,
+such as the Elias codes, for <VAR>i</VAR> and for <VAR>c</VAR> (a letter <VAR>c</VAR> can always
+be coded as the <VAR>k</VAR>th member of the source alphabet for some <VAR>k</VAR>).
+<P>
+The other major implementation consideration involves the way
+in which the string table is stored and accessed.  Welch
+suggests that the table be indexed by the codewords (integers 1 ...
+2^<VAR>L</VAR> where <VAR>L</VAR> is the maximum codeword length) and that the
+table entries be fixed-length codeword-extension character 
+pairs [Welch 1984].  Hashing is proposed to assist in encoding.
+Decoding becomes a recursive operation, in which the codeword
+yields the final character of the substring and another codeword.
+The decoder must continue to consult the table until the 
+retrieved codeword is 0.  Unfortunately, this strategy peels
+off extension characters in reverse order and some type of
+stack operation must be used to reorder the source.
+<P>
+Storer and Szymanski present a general model for data compression
+which encompasses Lempel-Ziv coding [Storer and Szymanski 1982].
+Their broad theoretical work compares classes of <VAR>macro
+schemes</VAR>, where macro schemes include all methods which factor
+out duplicate occurrences of data and replace them by 
+references either to the source ensemble or to a code table.  They also
+contribute a linear-time Lempel-Ziv-like algorithm with better
+performance than the standard Lempel-Ziv method.
+<P>
+Rissanen 
+extends the Lempel-Ziv incremental parsing approach [Rissanen 1983].  
+Abandoning
+the requirement that the substrings partition the ensemble,
+the Rissanen method gathers "contexts" in which each symbol
+of the string occurs.  The contexts are substrings of the
+previously encoded string (as in Lempel-Ziv), have varying size, and are
+in general overlapping.
+The Rissanen method hinges upon the identification of a
+design parameter capturing the concept of "relevant"
+contexts.  The problem of finding the best parameter is
+undecidable, and Rissanen suggests estimating the parameter
+experimentally. 
+<P>
+As mentioned earlier, Lempel-Ziv coding is the basis for the UNIX
+utility <EM>compress</EM> and is one of the methods commonly used in
+file archival programs.  The archival system PKARC uses Welch's 
+implementation, as does <EM>compress</EM>.  The compression provided
+by <EM>compress</EM> is generally much better than that achieved by 
+<EM>compact</EM> (the UNIX utility based on algorithm FGK), and takes
+less time to compute [UNIX 1984].  Typical compression values attained
+by <EM>compress</EM> are in the range of 50-60%.
+
+<a name="Sec_5.2">
+<H3> 5.2  Algorithm BSTW</H3> </a>
+
+	The most recent of the algorithms surveyed here is due
+to Bentley, Sleator, Tarjan and Wei [Bentley et al. 1986].
+This method, algorithm BSTW, possesses the advantage that it
+requires only one pass over the data to be transmitted yet
+has performance which compares well to that of the static
+two-pass method along the dimension of number of bits per word
+transmitted.  This number of bits is never much
+larger than the number of bits transmitted by static Huffman 
+coding (in fact, is usually quite close), and can be significantly 
+better.  Algorithm BSTW incorporates the additional benefit of taking
+advantage of locality of reference, the tendency for words to
+occur frequently for short periods of time then fall into long 
+periods of disuse.  The algorithm uses a self-organizing list as
+an auxiliary data structure and employs shorter encodings for words
+near the front of this list.  There are many strategies for
+maintaining self-organizing lists (see [Hester and Hirschberg 1985]);
+algorithm BSTW uses move-to-front.
+<P>
+	A simple example serves to outline the method of
+algorithm BSTW.  As in other adaptive schemes, sender and receiver
+maintain identical representations of the code; in this case message
+lists which are updated at each transmission, using the move-to-front
+heuristic.  These lists are initially empty.  When message <VAR>a</VAR>(<VAR>t</VAR>) is 
+transmitted, if <VAR>a</VAR>(<VAR>t</VAR>) is on the sender's list, he transmits its current
+position.  He then updates his list by moving <VAR>a</VAR>(<VAR>t</VAR>) to position 1 and
+shifting each of the other messages down one position.  The receiver
+similarly alters his word list.  If <VAR>a</VAR>(<VAR>t</VAR>) is being transmitted for the
+first time, then <VAR>k</VAR>+1 is the "position" transmitted, where <VAR>k</VAR> is the
+number of distinct messages transmitted so far.  Some representation
+of the message itself
+must be transmitted as well, but just this first time.  Again,
+<VAR>a</VAR>(<VAR>t</VAR>) is moved to position one by both sender and receiver
+subsequent to its transmission.
+For the ensemble "<kbd>abcadeabfd</kbd>", the transmission would be
+<kbd> 1  a  2  b  3  c  3  4  d  5  e  3  5  6  f  5</kbd>.
+(for ease of presentation, list positions are represented in base ten).
+<P>
+	As the example shows, algorithm BSTW transmits each source
+message once; the rest of its transmission consists of encodings of 
+list positions.
+Therefore, an essential feature of algorithm BSTW is a reasonable
+scheme for representation of the integers.  The methods discussed
+by Bentley et al. are the Elias codes presented in
+<a href="DC-Sec3.html#Sec_3.3">Section 3.3</a>.
+The simple scheme, code <VAR>gamma</VAR>, involves prefixing the binary representation of 
+the integer <VAR>i</VAR> with floor[ lg <VAR>i</VAR> ] zeros.  This yields a prefix
+code with the length of the codeword for <VAR>i</VAR> equal to
+2 floor[ lg <VAR>i</VAR> ] + 1.  Greater compression can be gained
+through use of the more sophisticated scheme, <VAR>delta</VAR>, which encodes an 
+integer <VAR>i</VAR> in 1 + floor[ lg <VAR>i</VAR> ] + 2 floor[ (lg (1 + 
+floor[ lg <VAR>i</VAR> ] ) ] bits.
+<P>
+	A message ensemble on which algorithm BSTW is particularly 
+efficient, described by Bentley et al., is
+formed by repeating each of <VAR>n</VAR> messages <VAR>n</VAR> times, for example
+1^<VAR>n</VAR> 2^<VAR>n</VAR> 3^<VAR>n</VAR> ... <VAR>n</VAR>^<VAR>n</VAR>.
+Disregarding overhead, a static Huffman code 
+uses <VAR>n</VAR>^2 lg <VAR>n</VAR> bits (or lg <VAR>n</VAR> bits per message), while algorithm 
+BSTW uses <VAR>n</VAR>^2 + 2 SUM{ <VAR>i</VAR>=1 to <VAR>n</VAR>} floor[ lg <VAR>i</VAR> ] 
+(which is less than or equal to <VAR>n</VAR>^2 + 2 <VAR>n</VAR> lg <VAR>n</VAR>, or <VAR>O</VAR>(1) bits per message).  
+The overhead for algorithm BSTW consists of just the <VAR>n</VAR> lg <VAR>n</VAR> bits
+needed to transmit each source letter once.  As discussed in
+<a href="DC-Sec3.html#Sec_3.2">Section 3.2</a>,
+the overhead for static Huffman coding includes an additional 2<VAR>n</VAR> bits.
+The locality present in ensemble <VAR>EXAMPLE</VAR> is similar to that in the
+above example.  The transmission effected by algorithm BSTW is:
+<VAR>    1 a 1 2 space 3 b 1 1 2 4 c 1 1 1 2 5 d 1 1
+ 1 1 2 6 e 1 1 1 1 1 2 7 f 1 1 1 1 1 1 8 g
+ 1 1 1 1 1 1 1</VAR>.  Using 3 bits for each source letter (<VAR>a</VAR> through
+<VAR>g</VAR> and <VAR>space</VAR>) and the Elias code <VAR>delta</VAR> for list positions,
+the number of bits used is 81, which is a great improvement over all
+of the other methods discussed (only 69% of the length used by static
+Huffman coding).  This could be improved further by the use
+of Fibonacci codes for list positions.
+<P>
+In [Bentley et al. 1986] a proof is given that with the simple scheme for encoding 
+integers, the performance of algorithm BSTW is bounded above by 
+2 <VAR>S</VAR> + 1, where <VAR>S</VAR> is the cost of the static Huffman coding scheme.  
+Using the more sophisticated integer encoding scheme, the bound is 
+1 + <VAR>S</VAR> + 2 lg(1 + <VAR>S</VAR>).  A key idea in the proofs given by
+Bentley et al. is the fact that, using the move-to-front 
+heuristic, the integer transmitted for a message <VAR>a</VAR>(<VAR>t</VAR>) will be one 
+more than the number of different words transmitted since the last 
+occurrence of <VAR>a</VAR>(<VAR>t</VAR>).  Bentley et al. also prove that
+algorithm BSTW is asymptotically optimal.
+<P>
+An implementation of algorithm BSTW is described in great detail 
+in [Bentley et al. 1986].  In this implementation, encoding an integer consists of
+a table lookup; the codewords for the integers from 1 to <VAR>n</VAR>+1 are
+stored in an array indexed from 1 to <VAR>n</VAR>+1.  A binary
+trie is used to store the inverse mapping, from codewords to integers.
+Decoding an Elias codeword to find the corresponding integer 
+involves following a path in the trie.  Two interlinked data structures,
+a binary trie and a binary tree, are used to maintain the word list.
+The trie is based on the binary encodings of the source words.
+Mapping a source message <VAR>a</VAR>(<VAR>i</VAR>) to its list position <VAR>p</VAR> involves
+following a path in the trie, following a link to the tree, and then computing
+the symmetric order position of the tree node.  Finding the source
+message <VAR>a</VAR>(<VAR>i</VAR>) in position <VAR>p</VAR> is accomplished by finding the symmetric
+order position <VAR>p</VAR> in the tree and returning the word stored there.
+Using this implementation, the work done by sender and receiver is
+<VAR>O</VAR>(<VAR>length</VAR>(<VAR>a</VAR>(<VAR>i</VAR>)) + <VAR>length</VAR>(<VAR>w</VAR>)) where <VAR>a</VAR>(<VAR>i</VAR>) is the message being transmitted
+and <VAR>w</VAR> the codeword representing <VAR>a</VAR>(<VAR>i</VAR>)'s position in the list.
+If the source alphabet consists of single characters, then the
+complexity of algorithm BSTW is just <VAR>O</VAR>(<VAR>length</VAR>(<VAR>w</VAR>)).
+<P>
+The move-to-front scheme of Bentley et al. was independently developed
+by Elias in his paper on <EM>interval encoding</EM> and <EM>recency rank 
+encoding</EM> [Elias 1987].  Recency rank encoding is equivalent to 
+algorithm BSTW.  The name emphasizes the fact, mentioned above, that
+the codeword for a source message represents the number of distinct
+messages which have occurred since its most recent occurrence.
+Interval encoding represents a source message by the total number
+of messages which have occurred since its last occurrence (equivalently,
+the length of the interval since the last previous occurrence of the
+current message).  It is obvious that the length of the interval 
+since the last occurrence of a message <VAR>a</VAR>(<VAR>t</VAR>) is at least as great
+as its recency rank, so that recency rank encoding never uses more,
+and generally uses fewer, symbols per message than interval encoding.
+The advantage to interval encoding is that it has a very simple 
+implementation and can encode and decode selections from a very
+large alphabet (a million letters, for example) at a microsecond
+rate [Elias 1987].  The use of interval encoding might be justified
+in a data transmission setting, where speed is the essential factor.
+<P>
+Ryabko also comments that the work of Bentley et al. coincides with
+many of the results in a paper in which he considers data compression
+by means of a "book stack" (the books represent the source messages
+and as a "book" occurs it is taken from the stack and placed on top)
+[Ryabko 1987].  Horspool and Cormack have considered move-to-front,
+as well as several other list organization heuristics, in connection
+with data compression [Horspool and Cormack 1987].
+
+<P>
+<A HREF="DC-Sec4.html"><IMG SRC="prev.gif" ALT="PREV section"></A>
+<A HREF="DC-Sec678.html"><IMG SRC="next.gif" ALT="NEXT section"></A>
+<P>
+</BODY></HTML>

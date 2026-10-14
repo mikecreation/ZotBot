@@ -1,0 +1,448 @@
+                                                                                                                                                                                        3/6/16
+
+
+
+
+
+Objec&ves	                                                                                         Review
+• Clustering	                                                                                      • What	is	a	minimum	spanning	tree?
+• Encoding	                                                                                        • What	are	some	eﬃcient	algorithms	to	ﬁnd	an
+                                                                                                      MST?
+                                                                                                   • What	two	proper&es	did	we	prove	that	would
+                                                                                                      helps	us	to	prove	that	these	algorithms	are
+                                                                                                      correct?
+
+
+
+
+
+
+
+
+
+
+
+
+  Mar	4,	2016	                   CSCI211	-	Sprenkle	                        1	                       Mar	4,	2016	                   CSCI211	-	Sprenkle	                        2
+
+
+
+
+
+Review:	Minimum	Spanning	Tree	                                                                     Review:	Greedy	Algorithms
+• Spanning	tree:	spans	all	nodes	in	graph	                                                                     All three algor ithms produce a MST
+• Given	a	connected	graph	G	=	(V,	E)	with	posi&ve	                                                 •  Prim's	algorithm.		  Start	with	some	root	node	     s	and	greedily	grow
+   edge	weights	ce,	an	MST	is	a	subset	of	the	edges	                                                  a	tree	T	from	s	outward.		At	each	step,	add	the	cheapest	edge	e
+   T	⊆	E	such	that	T	is	a	spanning	tree	whose	sum	                                                    to	T	that	has	exactly	one	endpoint	in	T.
+   of	edge	weights	is	minimized	                                                                       Ø  Similar	to	Dijkstra’s	(but	simpler)
+                                                                                                   •  Kruskal's	algorithm.		Start	with	T	=	φ.	Consider	edges	in	ascending
+
+      4	            24	                       4	                                                      order	of	cost.	Insert	edge	e	in	T	unless	doing	so	would	create	a
+
+                   23	                                                                                cycle.
+        6	               18	     9	            6	                        9
+                                                                                                   •  Reverse-Delete	algorithm.		Start	with	T	=	E.		Consider	edges	in
+      16	      5	        11	                           5	       11
+          8	                                      8	                                                  descending	order	of	cost.	Delete	edge	e	from	T	unless	doing	so
+             10 	       14	     7	                                      7
+                                                                                                      would	disconnect	T.
+                   21
+              G = (V, E)	                          T,       Σe∈T ce = 50
+
+
+  Mar	4,	2016	                   CSCI211	-	Sprenkle	                        3	                       Mar	4,	2016	                   CSCI211	-	Sprenkle	                        4
+
+
+
+
+
+Summary	of	What	Just	Proved	                                                                       Kruskal’s	Algorithm	[1956]
+•  Simplifying	assump&on:	All	edge	costs	ce	are	dis&nct	                                           • Start	with	T	=	φ
+    ➜ 	MST	is	unique	                                                                              • Consider	edges	in	ascending	order	of	cost
+•  Cut	property.		Let	S	be	any	subset	of	nodes,	and	let	e
+   be	the	min	cost	edge	with	exactly	one	endpoint	in	S.		                                          • Insert	edge	e	in	T	unless	doing	so	would	create	a
+   Then	MST	contains	e.	                                                                              cycle
+•  Cycle	property.		Let	C	be	any	cycle,	and	let	f	be	the	                                              Ø Add	edge	as	long	as	it	is	“compa&ble”
+   max	cost	edge	belonging	to	C.
+   Then	MST	does	not	contain	f.
+                                                                   C
+                                                            f 	                                                  How can we prove algorithm’s correctness?
+
+    S	           e
+
+
+
+    Cut Property: e is in MST	             Cycle Property: f is not in MST
+  Mar	4,	2016	                   CSCI211	-	Sprenkle	                        5	                       Mar	4,	2016	                   CSCI211	-	Sprenkle	                        6
+
+
+
+
+
+                                                                                                                                                                                                  1
+
+                                                                                                                                                                                             3/6/16
+
+
+
+
+
+Kruskal's      	Algorithm:	               What is tricky about implementing
+Proof	of	Correctness	                              Kruskal’s algorithm?	                             Implemen&ng	Kruskal’s	Algorithm
+•  Consider	edges	in	ascending	order	of	weight
+•  Case	1   :		If	adding	  e 	to	T	creates	a	cycle,	discard	        e 	                                 What is tricky about implementing Kruskal’s algorithm?
+   according	to	     cycle	property	(e	must	be	max	weight)
+•  Case	2:		Otherwise,	insert	e	=	(u,	v)	into	T	according	to
+   cut	property	where	S	=	set	of	nodes	in	u's	connected
+   component
+                                                                                                       How do we know when adding an edge will create a cycle?
+                                                                                                         • What are the proper ties of a graph/its nodes when
+                                                                                                           adding an edge will create a cycle?
+
+                                                  v	                    S
+                                                      e
+
+                          e	                                u
+
+
+
+
+
+  Mar	4,	2016	    Case 1	         CSCI211	-	Sprenkle	       Case 2	           7	                        Mar	4,	2016	                    CSCI211	-	Sprenkle	                         8
+
+
+
+
+
+                                                                                                     Union-Find	Data	Structure
+                                                                                                     • Keeps	track	of	a	graph	as	edges	are	added
+                                                                                                          Ø Cannot	handle	when	edges	are	deleted
+                                                                                                     • Maintains	disjoint	sets
+                                                                                                          Ø E.g.,	graph’s	connected	components
+                                                                                                     • Opera&ons:
+                                                                                                          Ø Find(u):	returns	name	of	set	containing	u
+                                                                                                              • How	u&lized	to	see	if	two	nodes	are	in	the	same	set?
+    UNION-FIND		                                                                                              • Goal	implementa&on:	O(log	n)
+    DATA	STRUCTURE	                                                                                       Ø Union(A, B):	merge	sets	A	and	B	into	one	set
+                                                                                                              • Goal	implementa&on:	O(log	n)
+
+
+
+  Mar	4,	2016	                    CSCI211	-	Sprenkle	                         9	                        Mar	4,	2016	 Best darn Union-Find Data StructureCSCI211	-	Sprenkle		       10
+
+
+
+
+
+Implemen&ng	Kruskal's	Algorithm	                                                                     Implemen&ng	Kruskal's	Algorithm
+• Using	the	union-ﬁnd	data	structure	                                                                • Using	the	union-ﬁnd	data	structure
+    Ø Build	set	T	of	edges	in	the	MST	                                                                    Ø Build	set	T	of	edges	in	the	MST
+    Ø Maintain	set	for	each	connected	component	                                                          Ø Maintain	set	for	each	connected	component
+
+      Implementation?	                                                                                       Costs?
+
+   Sort edges weights so that c1 ≤ c2 ≤ ... ≤ cm	                                                        Sort edge weights so that c1 ≤ c2 ≤ ... ≤ cm
+   T = {}	                                                                                               T = {}
+   foreach (u ∈ V) make a set containing singleton u	                                                    foreach (u ∈ V) make a set containing singleton u
+
+   for i = 1 to m	               are u and v in different connected components?	                         for i = 1 to m	               are u and v in different connected components?
+      (u,v) = ei	                                                                                           (u,v) = ei
+      if (u and v are in different sets)	                                                                   if ( Find(u) != Find(v) )
+         T = T ∪ {ei}	                                                                                         T = T ∪ {ei}
+         merge the sets containing u and v	                                                                    Union( Find(u), Find(v) )
+   return T	                                                                                             return T
+                                              merge two components	                                                                                 merge two components
+
+  Mar	4,	2016	                    CSCI211	-	Sprenkle	                        11	                        Mar	4,	2016	                    CSCI211	-	Sprenkle	                        12
+
+
+
+
+
+                                                                                                                                                                                                       2
+
+                                                                                                                                                                                        3/6/16
+
+
+
+
+
+Implemen&ng	               Kruskal's        	Algorithm	                                            Intersections with
+                                                                                                     polluted wells
+•  Using	best	implementa&on	of	                  union-ﬁnd
+    Ø Sor&ng:	O(m	log	n)	                  m ≤ n2 ⇒ log m is O(log n)
+    Ø Union-ﬁnd:	O(m	α	(m,	n))
+    Ø O(m	log	n)	          essentially a constant	                                                                   Outbreak of cholera deaths  in London in 1850s. 
+                                                                                                                     Reference: Nina Mishra, HP Labs
+   Sort edge weights so that c1 ≤ c2 ≤ ... ≤ cm	     O(m logn)
+   T = {}
+   foreach (u ∈ V) make a set containing singleton u
+
+   for i = 1 to m	  O(m)	are u and v in different connected components?
+      (u,v) = ei	                                                                                      CLUSTERING
+      if ( Find(u) != Find(v) )	   O(logn)
+         T = T ∪ {ei}
+         Union( Find(u), Find(v) )	    O(logn)
+   return T
+                                        merge two components
+
+  Mar	4,	2016	                   CSCI211	-	Sprenkle	                       13	                       Mar	4,	2016	                   CSCI211	-	Sprenkle	                       14
+
+
+
+
+
+Clustering	                                                                                       Clustering:	Distance	Func&on
+• Given	a	set	U	of	n	objects	(or	points)	labeled		                                                • Numeric	value	specifying	"closeness"	of	two
+   p1,	…,	pn,	classify	into	coherent	groups	                                                          objects
+    Ø Problem:	Divide	objects	into	clusters	so	that	points	in	                                    • Assume	distance	func&on	sa&sﬁes	several
+       diﬀerent	clusters	are	far	apart	                                                               natural	proper&es
+        • Requires	quan&ﬁca&on	of	distance
+• Applica&ons	                                                                                         Ø d(pi,	pj)	=	0	iﬀ	pi	=	pj			(iden&ty	of	indiscernibles)
+    Ø Rou&ng	in	mobile	ad	hoc	networks	                                                                Ø d(pi,	pj)	≥	0     	        						(nonnega&vity)
+    Ø Iden&fy	paoerns	in	gene	expression	                                                              Ø d(pi,	pj)	=	d(pj,	pi)      						(symmetry)
+    Ø Iden&fying	paoerns	in	web	applica&on	use	cases
+        • Sets	of	URLs
+    Ø Similarity	searching	in	medical	image	databases
+
+  Mar	4,	2016	                   CSCI211	-	Sprenkle	                       15	                       Mar	4,	2016	                   CSCI211	-	Sprenkle	                       16
+
+
+
+
+
+Our	Problem:		                                                                                    Greedy	Clustering	Algorithm
+k-Clustering	of	Maximum	Spacing
+• k-clustering.	Divide	objects	into	k	non-empty	                                                  • Single-link	k-clustering	algorithm
+   groups	                                                                                             Ø Form	a	graph	on	the	vertex	set	U,	corresponding	to	n
+• Spacing.	Min	distance	between	any	pair	of	points	                                                       clusters
+   in	diﬀerent	clusters	                                                                               Ø Find	the	closest	pair	of	objects	such	that	each	object
+• k-clustering	of	maximum	spacing.			                                                                     is	in	a	diﬀerent	cluster	and	add	an	edge	between
+   Given	an	integer	k,	ﬁnd	a	k-clustering	of	                                                             them
+   maximum	spacing	                                                                                    Ø Repeat	n-k	&mes	un&l	there	are	exactly	k	clusters
+
+                                                        spacing
+             k = 4	                                                                                                 How is this related to the MST?
+
+
+
+
+
+  Mar	4,	2016	                   CSCI211	-	Sprenkle	      Ideas about solving?17		                   Mar	4,	2016	                   CSCI211	-	Sprenkle	                       18
+
+
+
+
+
+                                                                                                                                                                                                 3
+
+                                                                                                                                                                                                                          3/6/16
+
+
+
+
+
+Greedy	Clustering	Algorithm	                                                                                         Greedy	Clustering	Algorithm:	Analysis
+•  Key	observa&on.	                Same	as	        Kruskal's       	algorithm	                                       •   Theorem.	Let	C	denote	the	clustering	C1,	…,	Ck	formed	by
+     Ø   Except	we	stop	when	there	are	                    k 	connected	                                                 dele&ng	the	k-1	most	expensive	edges	of	a	MST.
+        components	                                                                                                      C	is	a	k-clustering	of	max	spacing.
+                                                                                                                     •   Pf	Intui&on:
+•  Remark.	        Equivalent	to	ﬁnding	MST	and	dele&ng	                                                                  Ø What	can	we	say	about	C’s	spacing?
+   the	   k-1	most	expensive	edges	                                                                                       Ø What	if	C	isn’t	op&mal?	• Within	clusters	and	between	clusters
+                                                                                                                               •  What	does	that	mean	about	C’s	clusters	vs	(op&mal)	C*’s
+                                                                                                                                  clusters?
+       4	                                            4
+                                                                       k=3
+         6	                            9	                                                                                    4	                                            4	             K=3
+                                                       6
+                  5	         11	                                5	                                                            6	                             9	              6
+            8	                        7	                  8	                                                                           5	                                            5
+                                                                                    7	                                                             11
+                                                                                                                                  8	                        7	                  8
+                                                                                                                                                                                                          7
+                   MST
+  Mar	4,	2016	                         CSCI211	-	Sprenkle	                               19	                            Mar	4,	2016	     MST	                CSCI211	-	Sprenkle	                               20
+
+
+
+
+
+Greedy	Clustering	Algorithm:	Analysis	                                                                               Greedy	Clustering	Algorithm:	Analysis
+•  Theorem.		Let	C	denote	the	clustering	C1,	…,	Ck	formed	by	                                                        •   Theorem.		Let	C	denote	the	clustering	C1,	…,	Ck	formed	by
+   dele&ng	the	k-1	most	expensive	edges	of	a	MST.	C	is	a	k-                                                              dele&ng	the	k-1	most	expensive	edges	of	a	MST.	C	is	a	k-
+   clustering	of	maximum	spacing.	                                                                                       clustering	of	maximum	spacing.
+•  Pf	Sketch.		Let	C*	denote	some	other	clustering	C*1,	…,	C*k.			                                                   •   Pf.		Let	C*	denote	some	other	clustering	C*1,	…,	C*k.
+   C*	and	C	must	be	diﬀerent;	otherwise	we’re	done.	                                                                     C*	and	C	must	be	diﬀerent;	otherwise	we’re	done.
+     Ø  The	spacing	of	C	is	length	d	of	(k-1)st	most	expensive	edge	                                                      Ø   The	spacing	of	C	is	length	d	of	(k-1)st	most	expensive	edge
+     Ø  Let	pi,	pj	be	in	the	same	cluster	in	Greedy	solu&on	C	(say	Cr)	but	                                               Ø   Let	pi,	pj	be	in	the	same	cluster	in	C	(say	Cr)	but	diﬀerent	clusters	in
+        diﬀerent	clusters	in	other	solu&on	C*,	say	C*s	and	C*t	                                                               C*,	say	C*s	and	C*t
+     Ø  Some	edge	(p,	q)	on	pi-pj	path	in	Cr	spans	two	diﬀerent	clusters	in	                                              Ø   Some	edge	(p,	q)	on	pi-pj	path	in	Cr	spans	two	diﬀerent	clusters	in
+        C*	                                                           C*s	       C*t	 Other                                   C*	                                                              C*s	       C*t	Other
+                                                                                      solution	                           Ø   All	edges	on	p-p     path	have	length	≤	d	                                     solution
+                                                            Cr	                                                                                 i  j	                                Cr
+        What do we know about (p, q)?	                                                                                        since	Kruskal	chose	them
+                                                                                                                          Ø   Spacing	of	C*	is	at	most	≤	d	since
+                                                                  pi	   p	         q	   pj	                               				p	and	q	are	in	diﬀerent	clusters	                            pi	   p	         q	   pj
+
+
+  Mar	4,	2016	                         CSCI211	-	Sprenkle	 Greedy	                       21	                            Mar	4,	2016	                         CSCI211	-	Sprenkle	    Greedy	                    22
+
+
+
+
+
+                                                                                                                     Which	Is	Beoer?
+
+                                                                                                                                  Ser ver	                     Internet	                     Client
+
+
+
+                                                                                                                                  Large                                                     Large
+                                                                                                                                    File	                                                    File
+
+                                                                                                                                                               OR
+
+                                                                                                                                  Ser ver	                     Internet	                     Client
+     IMPROVING
+     TRANSMISSION	SPEEDS	                                                                                              Large            Compressed	                                  Compressed
+                                                                                                                         File	              File	                                         File	           Large File
+
+
+
+  Mar	4,	2016	                         CSCI211	-	Sprenkle	                               23	                            Mar	4,	2016	                         CSCI211	-	Sprenkle	                               24
+
+
+
+
+
+                                                                                                                                                                                                                                      4
+
+                                                                                                                                                                                         3/6/16
+
+
+
+
+
+Discussion:	Which	Is	Beoer?	                                                                       Problem:	Encoding
+•  Depends	on	your	metrics,	compression	&me/amount	                                                • Computers	use	bits:	0s	and	1s
+•  Case	1	requires	                                                                                • Need	to	represent	what	we	(humans)	know	to
+    Ø  More	network	resources	                                                                        what	computers	know
+    Ø  Less	CPU	&me	(server:	compress;	client:	uncompress)
+•  Case	2	requires
+    Ø  Less	network	resources
+    Ø  More	CPU	&me	(client	and	server)
+•  Overall	best
+    Ø  Depends	on	ﬁle	size,	network	speed,	compression	&me/                                          decimal, strings	                binar y	              decimal, strings
+       amount
+    Ø  Bigger	ﬁles	à	Case	2	                                                                           Ø Map	symbol	à	unique	sequence	of	0s	and	1s
+                                                                                                       Ø Process	is	called	encoding
+
+
+  Mar	4,	2016	                   CSCI211	-	Sprenkle	                       25	                       Mar	4,	2016	                    CSCI211	-	Sprenkle	                       26
+
+
+
+
+
+Problem:	Encoding	                                                                                 Problem:	Encoding	Symbols
+• Let’s	say	we	want	to	encode	characters	using	0s	                                                 • 32	characters	to	encode
+   and	1s	                                                                                             Ø log2(32)	=	5	bits
+    Ø Lower	case	leoers	(26)	                                                                          Ø Can’t	use	fewer	bits
+    Ø Space	                                                                                       • Examples:
+    Ø Punctua&on	(, . ? ! ')	                                                                          Ø a	à	00000
+                                                                                                       Ø b	à	00001
+       What is the least number of bits we would                                                   • Actual	mapping	from	character	to	encoding
+            we need to encode these characters?	                                                      doesn’t	maoer
+                                                                                                       Ø Easier	if	have	a	way	to	compare	…
+
+  Mar	4,	2016	                   CSCI211	-	Sprenkle	                       27	                       Mar	4,	2016	                    CSCI211	-	Sprenkle	                       28
+
+
+
+
+
+For	Long	Strings	of	Characters…	                                                                   Example:	Morse	Code
+• Do	we	need	an	average	of	5	bits/character	                                                       • Used	for	encoding	messages	over	telegraph
+   always?	                                                                                        • Example	of	variable-length	encoding
+• What	if	we	could	use	shorter	encodings	for
+   frequently	used	characters,	like	a,	e,	s,	t?
+   Goal: Optimal encoding that takes advantage                                                                         How are letters encoded?
+          of nonuniformity of letter frequencies	                                                                  How are letters differentiated?
+
+• A	fundamental	problem	for	data	compression
+    Ø Represent	data	as	compactly	as	possible
+
+
+  Mar	4,	2016	                   CSCI211	-	Sprenkle	                       29	                       Mar	4,	2016	                    CSCI211	-	Sprenkle	                       30
+
+
+
+
+
+                                                                                                                                                                                                   5
+
+                                                                                                                                                                                                  3/6/16
+
+
+
+
+
+Example:	Morse	Code	                                                                                    Ambiguity	in	Morse	Code
+•  Used	for	encoding	messages	over	telegraph	                                                           • Encoding:
+•  Example	of	        variable-length	encoding                	                                              Ø e	à	dot;	t	à	dash;	a	à	dot-dash
+•  How	are	leoers	encoded?	                                                                             • Example:	dot-dash-dot-dash	could	correspond	to
+    Ø   Dots,	dashes
+    Ø   Most	frequent	leoers	use	shorter	sequences
+        •  e 	à  	dot;	 t	à  	dash;	a	  à  	dot-dash
+•  How	are	leoers	diﬀeren&ated?
+    Ø   Spaces	in	between	leoers
+        •  Otherwise,	ambiguous
+        •  adds	one	more	character	to	each	leoer
+
+
+
+  Mar	4,	2016	                     CSCI211	-	Sprenkle	                         31	                         Mar	4,	2016	                     CSCI211	-	Sprenkle	                         32
+
+
+
+
+
+Ambiguity	in	Morse	Code	                                                                                Problem
+• Encoding:	                                                                                            • Ambiguity	caused	by	encoding	of	one	character
+    Ø e	à	dot;	t	à	dash;	a	à	dot-dash	                                                                      being	a	preﬁx	of	encoding	of	another
+• Example:	dot-dash-dot-dash	could	correspond	to
+    Ø etet
+    Ø aa
+    Ø eta
+    Ø aet
+
+
+                  What’s the cause of the ambiguity?
+
+
+
+  Mar	4,	2016	                     CSCI211	-	Sprenkle	                         33	                         Mar	4,	2016	                     CSCI211	-	Sprenkle	                         34
+
+
+
+
+
+Preﬁx	Codes	                                                                                            Assignments
+• Problem:	Encoding	of	one	character	being	a	                                                           • Wiki	due	Mon	night
+   preﬁx	of	encoding	of	another	à	ambiguity	                                                                 Ø 4.5-4.8
+• Solu&on:	Preﬁx	Codes:	map	leoers	to	bit	strings	                                                      • PS	6	due	next	Friday	in	class
+   such	that	no	encoding	is	a	preﬁx	of	any	other
+    Ø Won’t	need	ar&ﬁcial	devices	like	spaces	to	separate
+       characters
+• Example	encodings:	                             a: 11           	d: 10
+    Ø Verify	that	no	encoding	is	                 b: 01           	e: 000
+    				a	preﬁx	of	another	                       c: 001
+    Ø What	is	0010000011101?
+
+  Mar	4,	2016	                     CSCI211	-	Sprenkle	                         35	                         Mar	4,	2016	                     CSCI211	-	Sprenkle	                         36
+
+
+
+
+
+                                                                                                                                                                                                             6

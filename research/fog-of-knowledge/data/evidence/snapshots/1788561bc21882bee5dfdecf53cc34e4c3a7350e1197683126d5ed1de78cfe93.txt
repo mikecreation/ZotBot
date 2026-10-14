@@ -1,0 +1,70 @@
+linear hashing
+linear hashing
+(data structure)
+Definition:
+A
+dynamic hashing
+table that grows one slot at a time.  It has a family of
+hash functions
+, h
+i
+, where the
+range
+of h
+i+1
+is twice the range of h
+i
+.  Slots below a pointer, p, have been split.  That is,
+key
+, k, is in slot h
+i
+(k) if h
+i
+(k) > p.  Otherwise it is in h
+i+1
+(k).  To maintain the
+load factor
+, slot p can be split (rehashed with h
+i+1
+) and p incremented. When p reaches the end, the ranges are doubled (i is incremented), and p starts over.
+Also known as
+incremental hashing.
+Generalization
+(I am a kind of ...)
+dynamic hashing
+.
+See also
+linear hash
+,
+spiral storage
+.
+Note:
+This is called incremental hashing in P. J. Plauger, "Hash It", ("STATE OF THE ART" column) Embedded Systems Programming, September 1998, 117-120.  The article has a nearly complete implementation in C++.
+Stefan Edelkamp uses "incremental hashing" to mean a hash function where subsequent characters are independent.
+Author:
+PEB
+More information
+W. Litwin
+,
+Linear hashing: A new tool for file and table addressing
+, Proc. 6th Conference on Very Large Databases, pages 212-223, 1980.
+Per-Åke Larson
+,
+Dynamic Hash Tables
+, CACM 31(4):446-457, April 1988.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 25 July 2006.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "linear hashing", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 25 July 2006. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/linearHashing.html

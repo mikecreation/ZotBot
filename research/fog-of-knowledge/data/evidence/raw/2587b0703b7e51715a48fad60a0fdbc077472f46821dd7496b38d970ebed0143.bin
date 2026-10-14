@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>linear hashing</title>
+<meta name="description"
+  content="Definition of linear hashing,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="linear hashing">
+<meta name="type" content="data structure">
+<meta name="area" content="Searching">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>linear hashing</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A <a href="dynamicHashing.html"><em>dynamic hashing</em></a> table that grows one slot at a time.  It has a family of <a href="hash.html"><em>hash functions</em></a>, h<sub>i</sub>, where the <a href="range.html"><em>range</em></a> of h<sub>i+1</sub> is twice the range of h<sub>i</sub>.  Slots below a pointer, p, have been split.  That is, <a href="key.html"><em>key</em></a>, k, is in slot h<sub>i</sub>(k) if h<sub>i</sub>(k) &gt; p.  Otherwise it is in h<sub>i+1</sub>(k).  To maintain the <a href="loadfactor.html"><em>load factor</em></a>, slot p can be split (rehashed with h<sub>i+1</sub>) and p incremented. When p reaches the end, the ranges are doubled (i is incremented), and p starts over.
+</p>
+
+<p>
+<strong>Also known as</strong> incremental hashing.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="dynamicHashing.html"><em>dynamic hashing</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="linearhash.html"><em>linear hash</em></a>, <a href="spiralStorage.html"><em>spiral storage</em></a>.
+</p>
+
+<p>
+<em>Note:
+This is called incremental hashing in P. J. Plauger, "Hash It", ("STATE OF THE ART" column) Embedded Systems Programming, September 1998, 117-120.  The article has a nearly complete implementation in C++. </p> 
+<p> Stefan Edelkamp uses "incremental hashing" to mean a hash function where subsequent characters are independent.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>More information</h2>
+<p>
+<strong>W. Litwin</strong>, <em>Linear hashing: A new tool for file and table addressing</em>, Proc. 6th Conference on Very Large Databases, pages 212-223, 1980. </p> <p> <strong>Per-&Aring;ke Larson</strong>, <em>Dynamic Hash Tables</em>, CACM 31(4):446-457, April 1988.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#d3a3b2a6bffdb1bfb2b0b893bdbaa0a7fdb4bca5">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 25 July 2006.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "linear hashing", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 25 July 2006. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/linearHashing.html">https://www.nist.gov/dads/HTML/linearHashing.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a916c81f7ddcf3',t:'MTc5MjAwNzE3NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

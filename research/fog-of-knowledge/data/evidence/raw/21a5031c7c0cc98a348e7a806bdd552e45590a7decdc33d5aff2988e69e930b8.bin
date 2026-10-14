@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="generator" content="HTML Tidy, see www.w3.org">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Skip Search algorithm</title>
+<meta name="generator" content="Microsoft XSLT (msxml3 golden/ msxml4), see http://www.microsoft.com">
+<meta name="robots" content="index, follow">
+<meta name="description" content="EXACT STRING MATCHING ALGORITHMS Animation in Java, Skip Search algorithm">
+<meta name="keywords" content="string matching, algorithm, Java, C">
+<meta name="resource-type" content="document">
+<meta name="Author-Corporate" content="Chistian.Charras@dir.univ-rouen.fr">
+<meta name="Content-Language" content="en">
+<meta name="distribution" content="global">
+<link type="text/css" rel="stylesheet" href="string.css">
+</head>
+<body bgcolor="white">
+<a href="node32.html#SECTION00320"><img alt="KmpSkip Search algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node29.html#SECTION00290"><img alt="Maximal Shift algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="node32.html#SECTION00320">KmpSkip Search algorithm</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Previous:</b> <a href="node29.html#SECTION00290">Maximal Shift algorithm</a> 
+
+<hr>
+<h1 align="center"><a id="SECTION00310" name="SECTION00310">Skip Search algorithm</a></h1>
+
+<hr color="#F0F0FC" size="3">
+<applet codebase="../spm/SkipSearchV2" archive="SkipSearchV2.zip" code="AppletButtonText2.class" width="230" height="63"><param name="windowTitle" value="Skip Search algorithm">
+<param name="windowClass" value="ProgramTextWindow2">
+<param name="buttonText" value="visualization">
+<param name="windowwidth" value="375">
+<param name="windowheight" value="560">
+<param name="label1" value="Pattern:">
+<param name="input1" value="gcagagag">
+<param name="label2" value="String:">
+<param name="input2" value="gcatcgcagagagtatacagtacg">
+<param name="program" value="SkipSearchV2">
+</applet> 
+
+<div class="bar"><a name="SECTION00311">Main features</a></div>
+
+<div class="mf">
+<ul>
+<li>uses buckets of positions for each character of the alphabet;</li>
+
+<li>preprocessing phase in <big><i><b>O</b></i></big>(<i>m</i>+<img alt="sigma" src="images/psigma.gif">) time and space complexity;</li>
+
+<li>searching phase in <big><i><b>O</b></i></big>(<i>m</i><i>n</i>) time complexity;</li>
+
+<li><big><i><b>O</b></i></big>(<i>n</i>) expected text character comparisons.</li>
+</ul>
+</div>
+
+<div class="bar"><a name="SECTION00312">Description</a></div>
+
+<div class="desc">
+<p align="justify">For each character of the alphabet, a bucket collects all the positions of that character in <i>x</i>. When a character occurs <i>k</i> times in the pattern, there are <i>k</i> corresponding positions in the bucket of the character. When the word is much shorter than the alphabet, many buckets are empty.</p>
+
+<p align="justify">The preprocessing phase of the Skip Search algorithm consists in computing the buckets for all the characters of the alphabet: for <i>c</i> in <img alt="Sigma" src="images/gsigma.gif">&nbsp; <i>z</i>[<i>c</i>] = {<i>i</i>&nbsp;<big>:</big>&nbsp; 0&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>i</i>&nbsp;<img alt="leq" src="images/leq.gif">&nbsp;<i>m</i>-1 and <i>x</i>[<i>i</i>] = <i>c</i>} The space and time complexity of this preprocessing phase is <big><i><b>O</b></i></big>(<i>m</i>+<img alt="sigma" src="images/psigma.gif">).</p>
+
+<p align="justify">The main loop of the search phase consists in examining every <i>m</i>-<i>th</i> text character, <i>y</i>[<i>j</i>] (so there will be <span style="white-space: nowrap"><i>n</i> / <i>m</i></span> main iterations). For <i>y</i>[<i>j</i>], it uses each position in the bucket <i>z</i>[<i>y</i>[<i>j</i>]] to obtain a possible starting position <i>p</i> of <i>x</i> in <i>y</i>. It performs a comparison of <i>x</i> with <i>y</i> beginning at position <i>p</i>, character by character, until there is a mismatch, or until all match.</p>
+
+<p align="justify">The Skip Search algorithm has a quadratic worst case time complexity but the expected number of text character inspections is <big><i><b>O</b></i></big>(<i>n</i>).</p>
+</div>
+
+<div class="bar"><a name="SECTION00313">The C code</a></div>
+
+<p align="justify">The description of a linked list <tt><big><tt>List</tt></big></tt> can be found in the introduction section <a href="node2.html#SECTION0026"><i>implementation</i></a>.</p>
+
+<div class="pre">
+<pre>
+void SKIP(char *x, int m, char *y, int n) {
+   int i, j;
+   List ptr, z[ASIZE];
+
+   /* Preprocessing */
+   memset(z, NULL, ASIZE*sizeof(List));
+   for (i = 0; i &lt; m; ++i) {
+      ptr = (List)malloc(sizeof(struct _cell));
+      if (ptr == NULL)
+         error("SKIP");
+      ptr-&gt;element = i;
+      ptr-&gt;next = z[x[i]];
+      z[x[i]] = ptr;
+   }
+  
+   /* Searching */
+   for (j = m - 1; j &lt; n; j += m)
+      for (ptr = z[y[j]]; ptr != NULL; ptr = ptr-&gt;next)
+         if (memcmp(x, y + j - ptr-&gt;element, m) == 0) {
+            if (j - ptr-&gt;element &lt;= n - m)
+               OUTPUT(j - ptr-&gt;element);
+         }
+         else
+            break;
+}
+</pre>
+</div>
+
+<p>In practice the test <tt><big><tt>j - ptr-&gt;element &lt;= n - m</tt></big></tt> can be omitted and the algorithm becomes :</p>
+
+<div class="pre">
+<pre>
+void SKIP(char *x, int m, char *y, int n) {
+   int i, j;
+   List ptr, z[ASIZE];
+
+   /* Preprocessing */
+   memset(z, NULL, ASIZE*sizeof(List));
+   for (i = 0; i &lt; m; ++i) {
+      ptr = (List)malloc(sizeof(struct _cell));
+      if (ptr == NULL)
+         error("SKIP");
+      ptr-&gt;element = i;
+      ptr-&gt;next = z[x[i]];
+      z[x[i]] = ptr;
+   }
+  
+   /* Searching */
+   for (j = m - 1; j &lt; n; j += m)
+      for (ptr = z[y[j]]; ptr != NULL; ptr = ptr-&gt;next)
+         if (memcmp(x, y + j - ptr-&gt;element, m) == 0)
+            OUTPUT(j - ptr-&gt;element);
+}
+
+</pre>
+</div>
+
+<div class="bar"><a name="SECTION00314" style="color: teal">The example</a></div>
+
+<p>Preprocessing phase</p>
+
+<p align="center"><img alt="Skip search Z table" align="BOTTOM" src="images/sksztab1.png"><br clear="all">
+<span style="white-space: nowrap">Z table used by Skip Search algorithm.</span></p>
+
+<p><a name="search" href="examples/exp31.html" style="text-decoration: underline">Searching</a> phase</p>
+
+<br>
+<div class="bar"><a name="SECTION00315">References</a></div>
+
+<div class="ref">
+<ul style="text-align: justify ">
+<li><strong>C<small>HARRAS</small> C</strong>., <strong>L<small>ECROQ</small> T.</strong>, <strong>P<small>EHOUSHEK</small> J.D.</strong>, 1998, A very fast string matching algorithm for small alphabets and long patterns, in <em>Proceedings of the 9th Annual Symposium on Combinatorial Pattern Matching</em> , M. Farach-Colton ed., Piscataway, New Jersey, Lecture Notes in Computer Science 1448, pp 55-64, Springer-Verlag, Berlin.</li>
+</ul>
+</div>
+
+<br>
+<hr color="#F0F0FC" size="2">
+<a href="node32.html#SECTION00320"><img alt="KmpSkip Search algorithm" src="../images/next_motif.gif" border="0"></a><a href="index.html"><img alt="ESMAJ" src="../images/up_motif.gif" border="0"></a><a href="node29.html#SECTION00290"><img alt="Maximal Shift algorithm" src="../images/previous_motif.gif" border="0"></a><a href="node1.html"><img alt="Contents" src="../images/contents_motif.gif" border="0"></a><br>
+<b>Next:</b> <a href="node32.html#SECTION00320">KmpSkip Search algorithm</a> <b>Up:</b> <a href="index.html">ESMAJ</a> <b>Previous:</b> <a href="node29.html#SECTION00290">Maximal Shift algorithm</a> 
+
+<hr>
+<br>
+<div align="right"><em><small><small>e-mails: {<a href="mailto:Christian.Charras@laposte.net">Christian.Charras</a>, <a href="mailto:Thierry.Lecroq@laposte.net">Thierry.Lecroq</a> }@laposte.net</small><br>
+ Tue Jan 14 15:03:31 MET 1997</small></em></div>
+</body>
+</html>
+

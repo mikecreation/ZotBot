@@ -1,0 +1,83 @@
+2-left hashing
+2-left hashing
+(data structure)
+Definition:
+A
+dictionary
+implemented with two
+hash tables
+of equal size, T
+1
+and T
+2
+, and two different
+hash functions
+, h
+1
+and h
+2
+. A new
+key
+is put in table 2 only if there are fewer (colliding) keys at T
+2
+[h
+2
+(key)] than at T
+1
+[h
+1
+(key)], otherwise it is put in table 1. With n keys and two tables of size n/2, the most collisions is 0.69... log
+2
+ln n +
+O
+(1) with high probability.
+Generalization
+(I am a kind of ...)
+hash table
+.
+Aggregate parent
+(I am a part of or used in ...)
+dictionary
+.
+Aggregate child
+(... is a part of or used in me.)
+array
+,
+hash function
+.
+See also
+cuckoo hashing
+,
+2-choice hashing
+.
+Note:
+The name comes from the notion of dividing a single hash table in two, left and right halves of equal sizes, and always putting the key in the left half on ties.
+Although the average lookup time is similar to a table with a single hash function, the maximum number of collisions is exponentially smaller.  This makes using buckets or use in real-time systems far more practical.  Additional hash functions only decrease the maximum by a constant factor.
+Buckets or lists can be searched in parallel.
+Why would breaking a single hash table into two pieces and asymmetrically resolving ties keep the maximum number of collisions lower than the single table of
+2-choice hashing
+?  Michael Mitzenmacher, who extensively studied and analyzed 2-left and 2-choice hashing, provides the intuition that no location increases the maximum number of collisions until both of the pair has the same number.  But always-go-left keeps one half more loaded.
+Author:
+PEB
+More information
+Berthold Vöcking
+,
+How Asymmetry Helps Load Balancing
+, Journal of the ACM, 50(4):568-589, July 2003.
+A preliminary version appeared in FOCS 1999.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 19 December 2012.
+HTML page formatted Wed Oct 30 12:15:31 2024.
+Cite this as:
+Paul E. Black, "2-left hashing", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 19 December 2012. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/twoLeftHashing.html

@@ -1,0 +1,155 @@
+<HTML>
+<HEAD>
+   <TITLE>ViC* Papers</TITLE>
+   <META NAME="GENERATOR" CONTENT="Emacs">
+</HEAD>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<BODY TEXT="#000000" BGCOLOR="white" LINK="blue" VLINK="blue" ALINK="blue">
+
+<CENTER><TABLE CELLSPACING=0 CELLPADDING=10 WIDTH="80%" BGCOLOR="#FF0000" >
+<TR ALIGN=CENTER VALIGN=CENTER>
+<TD>
+<CENTER><TABLE CELLSPACING=3 CELLPADDING=3 WIDTH="100%" BGCOLOR="#9400D3" >
+<TR ALIGN=CENTER VALIGN=CENTER>
+
+<TD>
+<CENTER><a href="index.shtml"><font color="white">ViC*</font></a></CENTER>
+</TD>
+
+<TD>
+<CENTER><a href="people.shtml"><font color="white">People</font></a></CENTER>
+</TD>
+
+<TD>
+<CENTER><a href="papers.shtml"><font color="white">Papers</font></a></CENTER>
+</TD>
+
+<TD>
+<CENTER><a href="work.shtml"><font color="white">Current Work</font></a></CENTER>
+</TD>
+
+<TD>
+<CENTER><a href="code.shtml"><font color="white">Software</font></a></CENTER>
+</TD>
+
+<TD>
+<CENTER><a href="name.shtml"><font color="white">Why ViC*?</font></a></CENTER>
+</TD>
+</TR>
+</TABLE></CENTER>
+</TD>
+</TR>
+</TABLE></CENTER>
+
+<CENTER><P><IMG SRC="graphics/logo.trans.gif" ALT="ViC*" HEIGHT=64 WIDTH=135><BR>
+<FONT FACE="helvetica,arial,sans-serif">Virtual-Memory C* Compiler Project
+</FONT></P></CENTER>
+
+
+
+<center>
+<table width="80%">
+<tr>
+<td>
+
+
+<h1>Papers</h1>
+
+<h2>Overview of ViC*</h2>
+
+<IMG SRC="http://www.cs.dartmouth.edu/~thc/images/yellowsq.gif" ALT="*" WIDTH=9 HEIGHT=9 ALIGN=TOP>
+Alex Colvin and Thomas H. Cormen.
+<br>
+<a href="/reports/abstracts/TR97-323/">ViC*: A Compiler for
+Virtual-Memory C*</a>.
+<br>
+Dartmouth College Computer Science Technical Report PCS-TR97-303,
+November 1997.  Submitted to HIPS '98.<br>
+A description of why the ViC* compiler is necessary, what it does, and
+how good the resulting code is.
+
+<p>
+
+<h2>ViC* and the Parallel Disk Model</h2>
+
+<IMG SRC="http://www.cs.dartmouth.edu/~thc/images/yellowsq.gif" ALT="*" WIDTH=9 HEIGHT=9 ALIGN=TOP>
+Thomas H. Cormen and Melissa Hirschl.
+<BR>
+<A HREF="papers/evaluating-PDM.ps.gz">Early Experiences in Evaluating
+the Parallel Disk Model with the ViC* Implementation</A>.
+<BR>
+<EM>Parallel Computing</EM>, 23:4-5, June 1997, pp. 571-600.<br>
+This paper shows that analysis for the PDM is a good indicator of
+actual performance, with some minor caveats.  It describes
+implementations of PDM algorithms for out-of-core BMMC permutations
+and external radix sort, and shows how their measured performance
+matches the predicated performance when PDM parameters vary.
+
+<P>
+
+<h2>Papers that use the ViC* software</h2>
+
+<IMG SRC="http://www.cs.dartmouth.edu/~thc/images/yellowsq.gif" ALT="*" WIDTH=9 HEIGHT=9 ALIGN=TOP>
+Thomas H. Cormen and David M. Nicol.
+<BR>
+<A HREF="papers/PER.ps.gz">Out-of-Core FFTs with Parallel Disks</A>.
+<BR>
+ACM SIGMETRICS <em>Performance Evaluation Review</em>, 25:3, December
+1997, pp. 3-12.<br>
+A compilation of the following two papers.
+
+<p>
+
+<IMG SRC="http://www.cs.dartmouth.edu/~thc/images/yellowsq.gif" ALT="*" WIDTH=9 HEIGHT=9 ALIGN=TOP>
+Thomas H. Cormen and David M. Nicol.
+<BR>
+<A HREF="papers/fft-uniprocessor.ps.gz">Performing Out-of-Core FFTs on Parallel Disk Systems</A>.
+<BR>
+ To appear in
+<EM>Parallel Computing</EM>. Also <a
+href="http://www.cs.dartmouth.edu/reports/abstracts/TR96-294/">Dartmouth
+College Computer Science Technical Report PCS-TR96-294</a>, August
+1996, revised September 1996, and ICASE Report 96-70, December
+1996.<br>
+We show how to perform out-of-core FFTs on a uniprocessor with
+multiple disks.  We get speedups of up to a factor of 140 compared to
+running Cooley-Tukey with demand paging.  (We cheat slightly to obtain
+a speedup of 140 times, but the improvement is real.)
+
+<P>
+
+<IMG SRC="http://www.cs.dartmouth.edu/~thc/images/yellowsq.gif" ALT="*" WIDTH=9 HEIGHT=9 ALIGN=TOP>
+Thomas H. Cormen, Jake Wegmann, and David M. Nicol.
+<BR>
+<A HREF="papers/fft-multiprocessor.ps.gz">Multiprocessor Out-of-Core FFTs
+with Distributed Memory and Parallel Disks</A>.
+<BR>
+IOPADS '97, November 1997, pp. 68-78.<br>
+We extend the uniprocessor out-of-core FFT method for multiprocessors
+in a way that requires no interprocessor communication during the
+butterfly operations.  Communication that would normally occur during
+butterfly operations is folded into permutations (BMMC, in fact) that
+are performed anyway.  The result on one platform (a network of 8
+RS6000's) is about a 10% speedup.  Not earthshaking, but it is faster,
+and it was easy to program.
+
+<p>
+
+<h2>For other related papers...</h2>
+
+...see Tom Cormen's <a
+href="http://www.cs.dartmouth.edu/~thc/papers.html">papers</a> page.
+
+<hr>
+<address><a href="http://www.cs.dartmouth.edu/~thc/">Thomas H. Cormen &lt;thc@cs.dartmouth.edu&gt;</a></address>
+<!-- hhmts start -->
+Last modified: Fri Dec  5 16:48:50 1997
+<!-- hhmts end -->
+
+</td>
+</tr>
+</table>
+</center>
+</BODY>
+</HTML>
+

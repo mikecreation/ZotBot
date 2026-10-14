@@ -1,0 +1,111 @@
+optimal merge
+optimal merge
+(algorithm)
+Definition:
+Merge
+n sorted sequences of different lengths into one output while minimizing reads.  Only two sequences can be merged at once.  At each step, the two shortest sequences are merged.
+Formal Definition:
+Let D={n
+1
+, … , n
+k
+} be the set of lengths  of sequences to be merged.  Take the two shortest sequences,  n
+i
+, n
+j
+∈ D,  such that n≥ n
+i
+and n≥ n
+j
+∀ n∈ D.   Merge these two sequences.  The new set D is D' = (D - {n
+i
+, n
+j
+}) ∪ {n
+i
++n
+j
+}.   Repeat until there is only one sequence.
+See also
+simple merge
+,
+ideal merge
+,
+Huffman coding
+,
+greedy algorithm
+.
+Note:
+Merging sequences by length is the same as joining trees by frequency in
+Huffman coding
+. For example, let there be a set of sorted sequences of the following  lengths: D={3,5,7,9,12,14,15,17}.  Building the optimal merge tree goes as follows.  Note that merged sequences are replaced by the sum of their lengths.  For instance, the first step merges the sequence of length 3 and the sequence of length 5 to get a sequence of length 8.
+3        5        7        9       12        14     15       17
+8          7        9       12        14     15       17
+/ \
+3   5
+15         9       12        14     15       17
+/  \
+8    7
+/ \
+3   5
+15          21       14     15       17
+/  \        /  \
+8    7      9    12
+/ \
+3   5
+29             21        15       17
+/  \           /  \
+14    15        9    12
+/  \
+8    7
+/ \
+3   5
+29             21           32
+/  \           /  \         /  \
+14    15        9    12     15    17
+/  \
+8    7
+/ \
+3   5
+50                 32
+/    \              /  \
+/      \           15    17
+29        21
+/  \      /  \
+14    15   9    12
+/  \
+8    7
+/ \
+3   5
+82
+/    \
+/      \
+/        \
+50          32
+/    \       /  \
+/      \    15    17
+29        21
+/  \      /  \
+14    15   9    12
+/  \
+8    7
+/ \
+3   5
+Author:
+AL
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 14 August 2008.
+HTML page formatted Wed Oct 30 12:15:31 2024.
+Cite this as:
+Alen Lovrencic, "optimal merge", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 14 August 2008. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/optimalMerge.html

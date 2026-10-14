@@ -1,0 +1,70 @@
+adjacency-matrix representation
+adjacency-matrix representation
+(data structure)
+Definition:
+A representation of a
+directed graph
+with n
+vertices
+using an n × n
+matrix
+, where the entry at (i,j) is 1 if there is an
+edge
+from vertex i to vertex j; otherwise the entry is 0.  A
+weighted graph
+may be represented using the weight as the entry.  An
+undirected graph
+may be represented using the same entry in both (i,j) and (j,i) or using an
+upper triangular matrix
+.
+Aggregate parent
+(I am a part of or used in ...)
+graph
+,
+k²-tree
+.
+See also
+adjacency-list representation
+,
+dense graph
+.
+Note:
+Suppose we have a directed graph with four vertices.  Here are adjacency-matrix and adjacency-list representations.  The arrow (->) means a link in a list.
+1 2 3 4
+1  1 1 1 1
+2  1 0 0 0
+3  0 1 0 1
+4  0 1 1 0
+1  -> 1 -> 2 -> 3 -> 4
+2  -> 1
+3  -> 2 -> 4
+4  -> 2 -> 3
+The adjacency-list representation is more compact for a
+sparse matrix
+, although a
+k²-tree
+can represent a sparse matrix very efficiently.
+Author:
+SKS
+Implementation
+Algorithms and Data Structures'
+implementation (Java and C++)
+. Sedgewick and Wayne "Algorithms" 4th edition's
+implementation (Java)
+.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 8 June 2023.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Sandeep Kumar Shukla, "adjacency-matrix representation", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 8 June 2023. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/adjacencyMatrixRep.html

@@ -1,0 +1,800 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head><!-- inj yui3-seed: --><script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/yui/3.6.0/yui/yui-min.js'></script><script type='text/javascript' src='//ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js'></script><!-- Adobe Analytics --><script type='text/javascript' src='https://assets.adobedtm.com/4a848ae9611a/d0e96722185b/launch-d525bb0064d8.min.js'></script><script type='text/javascript' src=/assets/nr_browser_production.js></script>
+
+<!-- def.1 -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>
+"Early Experiences in Evaluating the Parallel Disk Model with the ViC* " by Thomas H. Cormen and Melissa Hirschl
+</title>
+
+
+<!-- FILE article_meta-tags.inc --><!-- FILE: /srv/sequoia/main/data/assets/site/article_meta-tags.inc -->
+<meta itemprop="name" content="Early Experiences in Evaluating the Parallel Disk Model with the ViC* Implementation">
+<meta property="og:title" content="Early Experiences in Evaluating the Parallel Disk Model with the ViC* Implementation">
+<meta name="twitter:title" content="Early Experiences in Evaluating the Parallel Disk Model with the ViC* Implementation">
+<meta property="article:author" content="Thomas H Cormen">
+<meta name="author" content="Thomas H Cormen">
+<meta property="article:author" content="Melissa Hirschl">
+<meta name="author" content="Melissa Hirschl">
+<meta name="robots" content="noodp, noydir">
+<meta name="description" content="Although several algorithms have been developed for the Parallel Disk Model (PDM), few have been implemented. Consequently, little has been known about the accuracy of the PDM in measuring I/O time and total time to perform an out-of-core computation. This paper analyzes timing results on a uniprocessor with several disks for two PDM algorithms, out-of-core radix sort and BMMC permutations, to determine the strengths and weaknesses of the PDM. The results indicate the following. First, good PDM algorithms are usually not I/O bound. Second, of the four PDM parameters, two (problem size and memory size) are good indicators of I/O time and running time, but the other two (block size and number of disks) are not. Third, because PDM algorithms tend not to be I/O bound, asynchronous I/O effectively hides I/O times. The software interface to the PDM is part of the ViC* run-time library. The interface is a set of wrappers that are designed to be both efficient and portable across several parallel file systems and target machines.">
+<meta itemprop="description" content="Although several algorithms have been developed for the Parallel Disk Model (PDM), few have been implemented. Consequently, little has been known about the accuracy of the PDM in measuring I/O time and total time to perform an out-of-core computation. This paper analyzes timing results on a uniprocessor with several disks for two PDM algorithms, out-of-core radix sort and BMMC permutations, to determine the strengths and weaknesses of the PDM. The results indicate the following. First, good PDM algorithms are usually not I/O bound. Second, of the four PDM parameters, two (problem size and memory size) are good indicators of I/O time and running time, but the other two (block size and number of disks) are not. Third, because PDM algorithms tend not to be I/O bound, asynchronous I/O effectively hides I/O times. The software interface to the PDM is part of the ViC* run-time library. The interface is a set of wrappers that are designed to be both efficient and portable across several parallel file systems and target machines.">
+<meta name="twitter:description" content="Although several algorithms have been developed for the Parallel Disk Model (PDM), few have been implemented. Consequently, little has been known about the accuracy of the PDM in measuring I/O time and total time to perform an out-of-core computation. This paper analyzes timing results on a uniprocessor with several disks for two PDM algorithms, out-of-core radix sort and BMMC permutations, to determine the strengths and weaknesses of the PDM. The results indicate the following. First, good PDM algorithms are usually not I/O bound. Second, of the four PDM parameters, two (problem size and memory size) are good indicators of I/O time and running time, but the other two (block size and number of disks) are not. Third, because PDM algorithms tend not to be I/O bound, asynchronous I/O effectively hides I/O times. The software interface to the PDM is part of the ViC* run-time library. The interface is a set of wrappers that are designed to be both efficient and portable across several parallel file systems and target machines.">
+<meta property="og:description" content="Although several algorithms have been developed for the Parallel Disk Model (PDM), few have been implemented. Consequently, little has been known about the accuracy of the PDM in measuring I/O time and total time to perform an out-of-core computation. This paper analyzes timing results on a uniprocessor with several disks for two PDM algorithms, out-of-core radix sort and BMMC permutations, to determine the strengths and weaknesses of the PDM. The results indicate the following. First, good PDM algorithms are usually not I/O bound. Second, of the four PDM parameters, two (problem size and memory size) are good indicators of I/O time and running time, but the other two (block size and number of disks) are not. Third, because PDM algorithms tend not to be I/O bound, asynchronous I/O effectively hides I/O times. The software interface to the PDM is part of the ViC* run-time library. The interface is a set of wrappers that are designed to be both efficient and portable across several parallel file systems and target machines.">
+<meta name="bepress_citation_series_title" content="Computer Science Technical Reports">
+<meta name="bepress_citation_author" content="Cormen, Thomas H">
+<meta name="bepress_citation_author_institution" content="Dartmouth College">
+<meta name="bepress_citation_author" content="Hirschl, Melissa">
+<meta name="bepress_citation_author_institution" content="Dartmouth College">
+<meta name="bepress_citation_title" content="Early Experiences in Evaluating the Parallel Disk Model with the ViC* Implementation">
+<meta name="bepress_citation_date" content="1996">
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_download_link.inc -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/article_meta-tags.inc (cont) -->
+<meta name="bepress_citation_pdf_url" content="https://digitalcommons.dartmouth.edu/cgi/viewcontent.cgi?article=1140&amp;context=cs_tr">
+<meta name="bepress_citation_abstract_html_url" content="https://digitalcommons.dartmouth.edu/cs_tr/135">
+<meta name="bepress_citation_online_date" content="2020/9/17">
+<meta name="viewport" content="width=device-width">
+<!-- Additional Twitter data -->
+<meta name="twitter:card" content="summary">
+<!-- Additional Open Graph data -->
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://digitalcommons.dartmouth.edu/cs_tr/135">
+<meta property="og:site_name" content="Dartmouth Digital Commons">
+
+
+
+
+<!-- FILE: article_meta-tags.inc (cont) -->
+<meta name="bepress_is_article_cover_page" content="1">
+
+
+<!-- sh.1 -->
+<link rel="stylesheet" href="/ir-style.css" type="text/css" media="screen">
+<link rel="stylesheet" href="/ir-custom.css" type="text/css" media="screen">
+<link rel="stylesheet" href="../ir-custom.css" type="text/css" media="screen">
+<link rel="stylesheet" href="/ir-local.css" type="text/css" media="screen">
+<link rel="stylesheet" href="../ir-local.css" type="text/css" media="screen">
+<link rel="stylesheet" href="/ir-print.css" type="text/css" media="print">
+<link type="text/css" rel="stylesheet" href="/assets/floatbox/floatbox.css">
+<link rel="alternate" type="application/rss+xml" title="Site Feed" href="/recent.rss">
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+<!--[if IE]>
+<link rel="stylesheet" href="/ir-ie.css" type="text/css" media="screen">
+<![endif]-->
+
+<!-- JS  -->
+<script type="text/javascript" src="/assets/jsUtilities.js"></script>
+<script type="text/javascript" src="/assets/footnoteLinks.js"></script>
+<script type="text/javascript" src="/assets/scripts/yui-init.pack.js"></script>
+<script type="text/javascript" src="/assets/scripts/bepress-init.debug.js"></script>
+<script type="text/javascript" src="/assets/scripts/JumpListYUI.pack.js"></script>
+
+<!-- end sh.1 -->
+
+
+
+
+<script type="text/javascript">var pageData = {"page":{"environment":"prod","productName":"bpdg","language":"en","name":"ir_series:article","businessUnit":"els:rp:st"},"visitor":{}};</script>
+
+</head>
+<body id="geo-series">
+<!-- FILE /srv/sequoia/main/data/digitalcommons.dartmouth.edu/assets/header.pregen --><!-- FILE: /srv/sequoia/main/data/assets/site/mobile_nav.inc --><!--[if !IE]>-->
+<script src="/assets/scripts/dc-mobile/dc-responsive-nav.js"></script>
+
+<header id="mobile-nav" class="nav-down device-fixed-height" style="visibility: hidden;">
+  
+  
+  <nav class="nav-collapse">
+    <ul>
+      <li class="menu-item active device-fixed-width"><a href="https://digitalcommons.dartmouth.edu" title="Home" data-scroll >Home</a></li>
+      <li class="menu-item device-fixed-width"><a href="https://digitalcommons.dartmouth.edu/do/search/advanced/" title="Search" data-scroll ><i class="icon-search"></i> Search</a></li>
+      <li class="menu-item device-fixed-width"><a href="https://digitalcommons.dartmouth.edu/communities.html" title="Browse" data-scroll >Browse Collections</a></li>
+      <li class="menu-item device-fixed-width"><a href="/cgi/myaccount.cgi?context=cs_tr" title="My Account" data-scroll >My Account</a></li>
+      <li class="menu-item device-fixed-width"><a href="https://digitalcommons.dartmouth.edu/about.html" title="About" data-scroll >About</a></li>
+      <li class="menu-item device-fixed-width"><a href="https://network.bepress.com" title="Digital Commons Network" data-scroll ><img width="16" height="16" alt="DC Network" style="vertical-align:top;" src="/assets/md5images/8e240588cf8cd3a028768d4294acd7d3.png"> Digital Commons Network™</a></li>
+    </ul>
+  </nav>
+</header>
+
+<script src="/assets/scripts/dc-mobile/dc-mobile-nav.js"></script>
+<!--<![endif]-->
+<!-- FILE: /srv/sequoia/main/data/digitalcommons.dartmouth.edu/assets/header.pregen (cont) -->
+
+
+
+
+
+<div id="dartmouth">
+	<div id="container">
+		<a href="#main" class="skiplink" accesskey="2" >Skip to main content</a>
+
+		
+			<div id="navigation">
+				<!-- FILE: /srv/sequoia/main/data/digitalcommons.dartmouth.edu/assets/ir_navigation.inc --><div id="tabs">
+	<ul>
+
+	<li id="tabzero"><a href="https://www.library.dartmouth.edu/" ><span><img alt="Darthmouth Libraries logo" width='252' height='121' src="/assets/md5images/d4200c6160c1edd9ff2da71682dbd8d1.png"></span></a></li>
+
+	<li id="tabone"><a href="https://digitalcommons.dartmouth.edu" title="Home" ><span>Home</span></a></li><li id="tabtwo"><a href="https://digitalcommons.dartmouth.edu/about.html" title="About" ><span>About</span></a></li><li id="tabthree"><a href="https://digitalcommons.dartmouth.edu/faq.html" title="FAQ" ><span>FAQ</span></a></li><li id="tabfour"><a href="https://digitalcommons.dartmouth.edu/cgi/myaccount.cgi?context=cs_tr" title="My Account" ><span>My Account</span></a></li>
+
+	</ul>
+</div><!-- FILE: /srv/sequoia/main/data/digitalcommons.dartmouth.edu/assets/header.pregen (cont) -->
+			</div>			
+					
+			<div id="header" role="banner">
+				<a href="https://digitalcommons.dartmouth.edu" id="banner_link" title="Dartmouth Digital Commons" >
+					<img id="banner_image" alt="Dartmouth Digital Commons" width='1960' height='626' src="/assets/md5images/64ed34460af0fe58cf7086ddc06f920e.png">
+				</a>
+
+				
+
+				
+
+				</magic>
+			</div>
+		
+
+		<div id="wrapper">
+			<div id="content">
+				<div id="main" class="text" role="main">
+
+<script type="text/javascript" src="/assets/floatbox/floatbox.js"></script>  
+<!-- FILE: /srv/sequoia/main/data/assets/site/article_pager.inc -->
+
+<div id="breadcrumb"><ul id="pager">
+
+                
+                 
+<li>&lt; <a href="https://digitalcommons.dartmouth.edu/cs_tr/127" class="ignore" >Previous</a></li>
+        
+        
+        
+
+                
+                 
+<li><a href="https://digitalcommons.dartmouth.edu/cs_tr/236" class="ignore" >Next</a> &gt;</li>
+        
+        
+        
+<li>&nbsp;</li></ul><div class="crumbs"><!-- FILE: /srv/sequoia/main/data/assets/site/ir_breadcrumb.inc -->
+
+<div class="crumbs" role="navigation" aria-label="Breadcrumb">
+    <ol style="list-style:none;margin:0;padding:0">
+	
+	
+	<li style="display:inline;margin:0">
+		<a href="https://digitalcommons.dartmouth.edu" class="ignore" >Home</a>
+	</li>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	 <span aria-hidden="true">&gt;</span> 
+	<li style="display:inline;margin:0">
+		<a href="https://digitalcommons.dartmouth.edu/academic_departments" class="ignore" >Academic departments</a>
+	</li>	
+	
+	
+	
+	
+	
+	
+	 <span aria-hidden="true">&gt;</span> 
+	<li style="display:inline;margin:0">
+		<a href="https://digitalcommons.dartmouth.edu/cs" class="ignore" >Computer Science</a>
+	</li>	
+	
+	
+	
+	
+	
+	
+	 <span aria-hidden="true">&gt;</span> 
+	<li style="display:inline;margin:0">
+		<a href="https://digitalcommons.dartmouth.edu/cs_tr" class="ignore" >Technical Reports</a>
+	</li>	
+	
+	
+	
+	
+	
+	 <span aria-hidden="true">&gt;</span> 
+	<li style="display:inline;margin:0">
+		<a href="https://digitalcommons.dartmouth.edu/cs_tr/135" class="ignore" aria-current="page" >135</a>
+	</li>	
+	
+	
+	
+	</ol>
+</div>
+
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/article_pager.inc (cont) --></div>
+</div>
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_series/article/index.html (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_series/article/article_info.inc --><!-- FILE: /srv/sequoia/main/data/assets/site/openurl.inc -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_series/article/article_info.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_download_link.inc -->
+
+
+
+
+
+
+
+
+
+	
+	
+	
+    
+    
+    
+	
+		
+		
+		
+	
+	
+	
+	
+	
+	
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_series/article/article_info.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_series/article/ir_article_header.inc -->
+
+
+<div id="series-header">
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_series/ir_series_logo.inc -->
+
+
+
+ 
+
+
+
+
+
+
+	
+	
+	
+	
+	
+	
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_series/article/ir_article_header.inc (cont) --><h2 id="series-title"><a href="https://digitalcommons.dartmouth.edu/cs_tr" >Computer Science Technical Reports</a></h2></div>
+<div style="clear: both">&nbsp;</div>
+
+<div id="sub">
+<div id="alpha">
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_series/article/article_info.inc (cont) --><div id='title' class='element'>
+<h1><a href='https://digitalcommons.dartmouth.edu/cgi/viewcontent.cgi?article=1140&amp;context=cs_tr'>Early Experiences in Evaluating the Parallel Disk Model with the ViC* Implementation</a></h1>
+</div>
+<div class='clear'></div>
+<div id='authors' class='element'>
+<h2 class='visually-hidden'>Authors</h2>
+<ul class="author"><li><a href='https://digitalcommons.dartmouth.edu/do/search/?q=%28author%3A%22Thomas%20H.%20Cormen%22%20AND%20-bp_author_id%3A%5B%2A%20TO%20%2A%5D%29%20OR%20bp_author_id%3A%28%22aba6bd2f-d754-4e87-b94c-d604c06f7329%22%29&start=0&context=9951493'><strong>Thomas H. Cormen</strong>, <em>Dartmouth College</em></a><a rel="nofollow" href="https://network.bepress.com/api/follow/subscribe?user=MDBmNzlhZjViMTNhYTI4MQ%3D%3D&amp;institution=NGVmMmZkMWY1ZWU4NWRiZQ%3D%3D&amp;format=html" data-follow-set="user:MDBmNzlhZjViMTNhYTI4MQ== institution:NGVmMmZkMWY1ZWU4NWRiZQ==" title="Follow Thomas H. Cormen" class="btn followable">Follow</a></li>
+<li><a href='https://digitalcommons.dartmouth.edu/do/search/?q=author%3A%22Melissa%20Hirschl%22&start=0&context=9951493'><strong>Melissa Hirschl</strong>, <em>Dartmouth College</em></a></li>
+</ul></div>
+<div class='clear'></div>
+<div id='document_type' class='element'>
+<h2 class='field-heading'>Document Type</h2>
+<p>Technical Report</p>
+</div>
+<div class='clear'></div>
+<div id='publication_date' class='element'>
+<h2 class='field-heading'>Publication Date</h2>
+<p>9-1-1996</p>
+</div>
+<div class='clear'></div>
+<div id='tr_number' class='element'>
+<h2 class='field-heading'>Technical Report Number</h2>
+<p>PCS-TR96-293</p>
+</div>
+<div class='clear'></div>
+<div id='abstract' class='element'>
+<h2 class='field-heading'>Abstract</h2>
+<p>Although several algorithms have been developed for the Parallel Disk Model (PDM), few have been implemented. Consequently, little has been known about the accuracy of the PDM in measuring I/O time and total time to perform an out-of-core computation. This paper analyzes timing results on a uniprocessor with several disks for two PDM algorithms, out-of-core radix sort and BMMC permutations, to determine the strengths and weaknesses of the PDM. The results indicate the following. First, good PDM algorithms are usually not I/O bound. Second, of the four PDM parameters, two (problem size and memory size) are good indicators of I/O time and running time, but the other two (block size and number of disks) are not. Third, because PDM algorithms tend not to be I/O bound, asynchronous I/O effectively hides I/O times. The software interface to the PDM is part of the ViC* run-time library. The interface is a set of wrappers that are designed to be both efficient and portable across several parallel file systems and target machines.</p>
+</div>
+<div class='clear'></div>
+<div id='comments' class='element'>
+<h2 class='field-heading'>Comments</h2>
+<p>Revised version appeared in Parallel Computing 23(4), June 1997. Original version August 7, 1996; revised version September 6, 1996.</p>
+</div>
+<div class='clear'></div>
+<div id='recommended_citation' class='element'>
+<h2 class='field-heading'>Dartmouth Digital Commons Citation</h2>
+<!-- FILE: /srv/sequoia/main/data/journals/digitalcommons.dartmouth.edu/cs_tr/assets/ir_citation.inc --><p>
+    Cormen, Thomas H. and Hirschl, Melissa, "Early Experiences in Evaluating the Parallel Disk Model with the ViC* Implementation" (1996). Computer Science Technical Report PCS-TR96-293. 
+    
+        https://digitalcommons.dartmouth.edu/cs_tr/135
+    
+    
+</p>
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_series/article/article_info.inc (cont) --></div>
+<div class='clear'></div>
+</div>
+    </div>
+    <div id='beta_7-3'>
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_7_3.inc --><!-- FILE: /srv/sequoia/main/data/assets/site/openurl.inc -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_7_3.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_download_link.inc -->
+
+
+
+
+
+
+
+
+
+	
+	
+	
+    
+    
+    
+	
+		
+		
+		
+	
+	
+	
+	
+	
+	
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_7_3.inc (cont) -->
+
+
+	<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_download_button.inc --><div class="aside download-button">
+      <a id="pdf" class="btn" href="https://digitalcommons.dartmouth.edu/cgi/viewcontent.cgi?article=1140&amp;context=cs_tr" title="PDF (392&nbsp;KB) opens in new window" target="_blank" > 
+    	<i class="icon-download-alt" aria-hidden="true"></i>
+        Download
+      </a>
+</div>
+
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_7_3.inc (cont) -->
+	<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_embargo.inc -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_7_3.inc (cont) -->
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_custom_upper.inc -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_7_3.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_openurl.inc -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_7_3.inc (cont) -->
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_article_metrics.inc -->
+
+
+
+
+
+
+<div id="article-stats" class="aside hidden">
+
+    <p class="article-downloads-wrapper hidden"><span id="article-downloads"></span> DOWNLOADS</p>
+    <p class="article-stats-date hidden">Since September 17, 2020</p>
+
+
+<script type="text/javascript">
+// magic has trouble rendering macros embedded directly in the the plumx-widget tag
+// so we have to emit the macro value into some js and let js
+// render and append the plumx-widget tag at view time
+const widget = document.createElement('plumx-widget');
+widget.setAttribute('type', 'artifact');
+widget.setAttribute('identifier-type', 'repo_url');
+widget.setAttribute('identifier', 'https://digitalcommons.dartmouth.edu/cs_tr/135');
+widget.setAttribute('display', 'badge');
+widget.setAttribute('theme', 'bigben');
+widget.setAttribute('config', '{"hideWhenEmpty":true}');
+document.querySelector('#article-stats').appendChild(widget);
+</script>
+</div>
+
+
+
+<script src="https://plumx.elsevier.com/widget/plumx-widget.js" defer></script>
+
+
+
+
+
+<!-- Article Download Counts -->
+<script type="text/javascript" src="/assets/scripts/article-downloads.pack.js"></script>
+<script type="text/javascript">
+    insertDownloads(19426636);
+</script>
+
+
+<!-- Add border to Plum badge & download counts when visible -->
+<script>
+// bind to event when PlumX widget loads
+widget.addEventListener('plumx:load', (event) => {
+  jQuery('#article-stats').removeClass('hidden');
+  jQuery('.article-stats-date').addClass('plum-border');
+});
+
+// bind to event when page loads
+jQuery(window).on('load',function(e){
+// if DC downloads are visible
+  if (jQuery('#article-downloads').text().length > 0) {
+// add border to aside
+  jQuery('#article-stats').removeClass('hidden');
+  }
+});
+</script>
+
+
+
+<!-- Adobe Analytics: Download Click Tracker -->
+<script>
+
+$(function() {
+
+  // Download button click event tracker for PDFs
+  $(".aside.download-button").on("click", "a#pdf", function(event) {
+    pageDataTracker.trackEvent('navigationClick', {
+      link: {
+          location: 'aside download-button',
+          name: 'pdf'
+      }
+    });
+  });
+
+  // Download button click event tracker for native files
+  $(".aside.download-button").on("click", "a#native", function(event) {
+    pageDataTracker.trackEvent('navigationClick', {
+        link: {
+            location: 'aside download-button',
+            name: 'native'
+        }
+     });
+  });
+
+});
+
+</script>
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_7_3.inc (cont) -->
+
+
+
+	<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_disciplines.inc -->
+
+
+
+
+	
+
+
+
+
+
+	<div id="beta-disciplines" class="aside">
+		<h3>Included in</h3>
+	<p>
+		
+				
+					<a href="https://network.bepress.com/hgg/discipline/142" title="Computer Sciences Commons" >Computer Sciences Commons</a>
+				
+				
+			
+		
+	</p>
+	</div>
+
+
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_7_3.inc (cont) -->
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/bookmark_widget.inc -->
+
+<div id="share" class="aside">
+<h2>Share</h2>
+	
+	<div class="a2a_kit a2a_kit_size_24 a2a_default_style">
+    	<a class="a2a_button_facebook"></a>
+    	<a class="a2a_button_linkedin"></a>
+		<a class="a2a_button_whatsapp"></a>
+		<a class="a2a_button_email"></a>
+    	<a class="a2a_dd"></a>
+    	<script async src="https://static.addtoany.com/menu/page.js"></script>
+	</div>
+</div>
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_7_3.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_geolocate.inc --><!-- FILE: /srv/sequoia/main/data/assets/site/ir_geolocate_enabled_and_displayed.inc -->
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_geolocate.inc (cont) -->
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_7_3.inc (cont) -->
+
+	<!-- FILE: /srv/sequoia/main/data/assets/site/zotero_coins.inc -->
+
+<span class="Z3988" title="ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Ajournal&amp;rft_id=https%3A%2F%2Fdigitalcommons.dartmouth.edu%2Fcs_tr%2F135&amp;rft.atitle=Early%20Experiences%20in%20Evaluating%20the%20Parallel%20Disk%20Model%20with%20the%20ViC%2A%20Implementation&amp;rft.aufirst=Thomas&amp;rft.aulast=Cormen&amp;rft.au=Melissa%20Hirschl&amp;rft.jtitle=Computer%20Science%20Technical%20Reports&amp;rft.date=1996-09-01">COinS</span>
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_7_3.inc (cont) -->
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_custom_lower.inc -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/info_box_7_3.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_series/article/article_info.inc (cont) --></div>
+
+<div class='clear'>&nbsp;</div>
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_article_custom_fields.inc -->
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_series/article/article_info.inc (cont) -->
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_series/article/index.html (cont) -->
+<!-- FILE /srv/sequoia/main/data/assets/site/footer.pregen --></div>
+	<div class="verticalalign">&nbsp;</div>
+	<div class="clear">&nbsp;</div>
+
+</div>
+
+	<div id="sidebar" role="complementary">
+	<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_7_8.inc -->
+
+		
+
+
+
+	<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_sort_bsa.inc --><!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_custom_upper_7_8.inc -->
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_sort_bsa.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_browse.inc --><h2>Browse</h2>
+<ul id="side-browse">
+
+
+<li class="collections"><a href="https://digitalcommons.dartmouth.edu/communities.html" title="Browse by Collections" >Collections</a></li>
+<li class="discipline-browser"><a href="https://digitalcommons.dartmouth.edu/do/discipline_browser/disciplines" title="Browse by Disciplines" >Disciplines</a></li>
+<li class="author"><a href="https://digitalcommons.dartmouth.edu/authors.html" title="Browse by Author" >Authors</a></li>
+
+
+</ul>
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_sort_bsa.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_custom_middle_7_8.inc --><!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_sort_bsa.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_search_7_8.inc --><h2>Search</h2>
+
+
+	
+<form method='get' action='https://digitalcommons.dartmouth.edu/do/search/' id="sidebar-search">
+	<label for="search" accesskey="4">
+		Enter search terms:
+	</label>
+		<div>
+			<span class="border">
+				<input type="text" name='q' class="search" id="search">
+			</span> 
+			<input type="submit" value="Search" class="searchbutton" style="font-size:11px;">
+		</div>
+	<label for="context">
+		Select context to search:
+	</label> 
+		<div>
+			<span class="border">
+				<select name="fq" id="context">
+					
+					
+						<option value='virtual_ancestor_link:"https://digitalcommons.dartmouth.edu/cs_tr"'>in this series</option>
+					
+					
+					
+					<option value='virtual_ancestor_link:"https://digitalcommons.dartmouth.edu"'>Dartmouth Digital Commons</option>
+					<option value='virtual_ancestor_link:"http:/"'>across all institutions</option>
+				</select>
+			</span>
+		</div>
+</form>
+
+<p class="advanced">
+	
+	
+		<a href="https://digitalcommons.dartmouth.edu/do/search/advanced/?fq=virtual_ancestor_link:%22https://digitalcommons.dartmouth.edu/cs_tr%22" >
+			Advanced Search
+		</a>
+	
+</p>
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_sort_bsa.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_notify_7_8.inc -->
+
+
+	<ul id="side-notify">
+		<li class="notify">
+			<a href="https://digitalcommons.dartmouth.edu/cs_tr/announcements.html" title="Email or RSS Notifications" >
+				Notify me via email or <acronym title="Really Simple Syndication">RSS</acronym>
+			</a>
+		</li>
+	</ul>
+
+
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/urc_badge.inc -->
+
+
+
+
+
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_notify_7_8.inc (cont) -->
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_sort_bsa.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/digitalcommons.dartmouth.edu/assets/ir_sidebar_author_7_8.inc --><h2>Contribute</h2>
+
+
+
+
+
+
+	<ul id="side-author">
+		<li class="faq">
+			<a href="https://digitalcommons.dartmouth.edu/faq.html" title="Contributor FAQ" >
+				Contributor FAQ
+			</a>
+		</li>
+		
+		
+		
+			<li class="submit">
+				<a href="https://digitalcommons.dartmouth.edu/cgi/ir_submit.cgi?context=cs_tr" >
+					Submit Work
+				</a>
+			</li>
+		
+	</ul>
+
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_sort_bsa.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/digitalcommons.dartmouth.edu/assets/ir_sidebar_custom_lower_7_8.inc --><!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_homepage_links_7_8.inc --><h2>Links</h2>
+	<ul id="homepage-links">
+		<li class="sb-homepage">
+			
+				<a href="https://web.cs.dartmouth.edu/" title="cs_tr Home Page" >
+						Department of Computer Science
+				</a>
+			
+			
+			
+		</li>
+	</ul>
+
+
+<!-- FILE: /srv/sequoia/main/data/digitalcommons.dartmouth.edu/assets/ir_sidebar_custom_lower_7_8.inc (cont) -->
+	
+
+
+
+<div id="sb-custom-lower">
+	<h2 class="sb-custom-title">Questions?</h2>
+		<ul class="sb-custom-ul">
+			<li class="sb-custom-li">
+				<script type="text/javascript">
+    //<![CDATA[
+        document.write("<a href='mailto:" + "dartmouthdigitalcommons" + "@" + "groups.dartmouth.edu" + "'>" + "Contact Us" + "<\/a>")
+    //]]>
+</script>
+			</li>
+</div>
+
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_sort_bsa.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_sw_links_7_8.inc -->
+
+	
+		
+	
+
+
+	<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_sort_bsa.inc (cont) -->
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_geolocate.inc --><!-- FILE: /srv/sequoia/main/data/assets/site/ir_geolocate_enabled_and_displayed.inc -->
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_geolocate.inc (cont) -->
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_sort_bsa.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_custom_lowest_7_8.inc -->
+
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_sort_bsa.inc (cont) -->
+<!-- FILE: /srv/sequoia/main/data/assets/site/ir_sidebar_7_8.inc (cont) -->
+
+<!-- FILE: /srv/sequoia/main/data/assets/site/footer.pregen (cont) -->
+	<div class="verticalalign">&nbsp;</div>
+	</div>
+
+</div>
+
+<!-- FILE: /srv/sequoia/main/data/digitalcommons.dartmouth.edu/assets/ir_footer_content.inc --><div id="footer" role="contentinfo">
+    
+    
+    <!-- FILE: /srv/sequoia/main/data/assets/site/ir_bepress_logo.inc --><div id="bepress">
+
+<a href="https://www.elsevier.com/solutions/digital-commons" title="Elsevier - Digital Commons" >
+	<em>Elsevier - Digital Commons</em>
+</a>
+
+</div>
+<!-- FILE: /srv/sequoia/main/data/digitalcommons.dartmouth.edu/assets/ir_footer_content.inc (cont) -->
+    <p>
+        <a href="https://digitalcommons.dartmouth.edu" title="Home page" accesskey="1" >Home</a> |
+        <a href="https://digitalcommons.dartmouth.edu/about.html" title="About" >About</a> |
+        <a href="https://digitalcommons.dartmouth.edu/faq.html" title="FAQ" >FAQ</a> |
+        <a href="/cgi/myaccount.cgi?context=cs_tr" title="My Account Page" accesskey="3" >My Account</a> |
+        <a href="https://digitalcommons.dartmouth.edu/accessibility.html" title="Accessibility Statement" accesskey="0" >Accessibility Statement</a>
+    </p>
+    <p>
+    
+    
+        <a class="secondary-link" href="https://www.elsevier.com/legal/privacy-policy" title="Privacy Policy" >Privacy</a>
+    
+        <a class="secondary-link" href="https://www.elsevier.com/legal/elsevier-website-terms-and-conditions" title="Copyright Policy" >Copyright</a>  
+    </p>
+    
+    <a href="https://www.library.dartmouth.edu/" id="footer-logo-link" ><img id="footerlogo" alt="Dartmouth" width='374' height='39' src="/assets/md5images/13e225be4b06a952947ed97c5c6cb98b.png"></a>
+</div><!-- FILE: /srv/sequoia/main/data/assets/site/footer.pregen (cont) -->
+
+</div>
+</div>
+
+<!-- FILE: /srv/sequoia/main/data/digitalcommons.dartmouth.edu/assets/ir_analytics.inc --><!-- FILE: /srv/sequoia/main/data/assets/site/footer.pregen (cont) -->
+
+<script type='text/javascript' src='/assets/scripts/bpbootstrap-20160726.pack.js'></script><script type='text/javascript'>BPBootstrap.init({appendCookie:''})</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a952b43973c644',t:'MTc5MjAwOTYyOA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body></html>

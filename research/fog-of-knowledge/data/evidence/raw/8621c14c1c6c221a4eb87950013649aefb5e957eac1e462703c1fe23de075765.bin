@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>HyperLogLog</title>
+<meta name="description"
+  content="Definition of HyperLogLog,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="HyperLogLog">
+<meta name="type" content="algorithm">
+<meta name="area" content="Basic">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>HyperLogLog</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+Estimate the number of unique items by setting m = 2<sup>b</sup> counters to maximum value (e.g. all 1 bits). <a href="hash.html"><em>Hash</em></a> each item to get an L bit result. The first b bits of the result indicate a counter.  Set that counter to the minimum of the remaining L-b bits and the counter value. When finished with all items, compute the harmonic mean of the number of leading zeros in each counter's value, Z.  The estimate of the number of distinct items is &alpha; m&sup2; Z. 
+</p>
+
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="hash.html"><em>hash function</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="https://en.wikipedia.org/wiki/count-distinct problem" target="_blank"><em>count-distinct problem [Wikipedia]</em></a>.
+</p>
+
+<p>
+<em>Note:
+This can estimate cardinalities of more than a billion items with a 2% standard error using only 1 500 bytes of memory. </p> 
+<p> The number of counters, m, is small, usually less than 2<sup>8</sup> = 256. The approximation factor, &alpha;, is about 0.7. It is tedious to compute exactly. </p> 
+<p> Counting the number of unique items in a (large) collection is the Count-distinct problem in Computer Science or Cardinality estimation problem in Applied Mathematics.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>More information</h2>
+<p>
+<strong>Philippe Flajolet</strong>, <strong>&Eacute;ric Fusy</strong>, <strong>Olivier Gandouet</strong>, and <strong>Fr&eacute;d&eacute;ric Meunier</strong>, <em>HyperLogLog: the analysis of a near-optimal cardinality estimation algorithm</em>, Proc. 2007 Intern'l Conf. on Analysis of Algorithms (AOFA '07). </p> <p> <strong>Cheng-Wei Hu</strong>, <a href="https://chengweihu.com/hyperloglog/" target="_blank"><em>HyperLogLog: A Simple but Powerful Algorithm for Data Scientists</em></a>, January 2021.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#473726322b69252b26242c07292e343369202831">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 10 August 2023.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "HyperLogLog", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 10 August 2023. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/hyperloglog.html">https://www.nist.gov/dads/HTML/hyperloglog.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a916ae1861e8ea',t:'MTc5MjAwNzE3MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+
