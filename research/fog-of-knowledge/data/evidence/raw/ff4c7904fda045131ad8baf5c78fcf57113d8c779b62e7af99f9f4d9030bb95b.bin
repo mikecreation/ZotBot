@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>hsadelta</title>
+<meta name="description"
+  content="Definition of hsadelta,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="hsadelta">
+<meta name="type" content="algorithm">
+<meta name="area" content="Cryptography and Compression">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>hsadelta</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+An <a href="algorithm.html"><em>algorithm</em></a> to produce a sequence of insert and copy commands (an <a href="editscript.html"><em>edit script</em></a>) which creates a new version file from a reference file. To begin, <a href="hash.html"><em>hash</em></a> every block of the reference file and store every hash in a hash value <a href="array.html"><em>array</em></a>.  Build a <a href="suffixarray.html"><em>suffix array</em></a> and three other data  structures for quick access.  Beginning at the first location in the version file, hash a block and look for the longest match in the reference file.  Upon a match, encode an insert back to the previous match and a copy of the match.  If no match, look at the next location.  At the end, encode an insert for remaining unmatched characters.
+</p>
+
+<p>
+<strong>Aggregate parent</strong> (I am a part of or used in ...)<br>
+<a href="longestCommonSubsequence.html"><em>longest common subsequence</em></a>.
+</p>
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="bloomFilter.html"><em>Bloom filter</em></a>, <a href="hashtab.html"><em>hash table</em></a>, <a href="binarySearch.html"><em>binary search</em></a>.
+</p>
+
+<p>
+<em>Note:
+There are many differential compression algorithms, such as vcdiff, xdelta, and zdelta.  See Agarwal et. al.  I happened to find this one, and it uses neat data structures. </p> 
+<p> The three other data structures for quick access to the suffix array are:  the quick index array, a <a href="bloomFilter.html"><em>Bloom filter</em></a> using one <a href="hash.html"><em>hash function</em></a>, the block hash table, and the pointer array, an array of pointers into the block hash table.  The quick index array allows most (97%) version file block hashes to be rejected as having no match.  The block hash table has pointers into the suffix array.  The pointer array can be viewed as a table of the <a href="hash.html"><em>hash function</em></a> into the block hash table, which uses <a href="openAddressing.html"><em>open addressing</em></a> in case of <a href="collision.html"><em>collisions</em></a>. </p> 
+<p> When a match is found, the suffix array is searched, via <a href="binarySearch.html"><em>binary search</em></a> in the block hash table, to find the longest matching sequence of blocks.  Then the match is extended character by character as far as possible.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>More information</h2>
+<p>
+<strong>Ramesh C. Agarwal</strong>, <strong>Karan Gupta</strong>, <strong>Shaili Jain</strong>, and <strong>Suchitra Amalapurapu</strong>, <em>An approximation to the greedy algorithm for differential compression</em>, IBM Journal of Research &amp; Development, 50(1):149-166, January 2006.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#f484958198da969895979fb49a9d8780da939b82">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 14 April 2009.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "hsadelta", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 14 April 2009. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/hsadelta.html">https://www.nist.gov/dads/HTML/hsadelta.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a916abc89c114d',t:'MTc5MjAwNzE2OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

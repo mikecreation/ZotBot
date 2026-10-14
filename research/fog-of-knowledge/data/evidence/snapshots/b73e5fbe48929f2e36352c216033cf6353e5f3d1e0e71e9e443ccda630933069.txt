@@ -1,0 +1,40 @@
+SSTable
+SSTable
+(data structure)
+Definition:
+An immutable
+dictionary
+stored on disk.  Values are far larger than keys.  Keys and values are in key-order in a "data block".   Ordered keys are in an "index block", where each key has an offset into its location in the data block.
+Also known as
+sorted-string table.
+Generalization
+(I am a kind of ...)
+dictionary
+.
+Aggregate parent
+(I am a part of or used in ...)
+Log-structured_merge-tree [Wikipedia]
+.
+Note:
+SSTables are used in log-structured merge (LSM) trees.  They are not used as stand-alone data structures. See for instance, Ben Stopford
+Log  Structured Merge Trees
+, 2015.
+SSTables are not updated.  Updates are written elsewhere.  Occasional reads are computed from merging information from all those.  Since the number of SSTables grow, they are merged from time to time
+Author:
+PEB
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 15 November 2021.
+HTML page formatted Wed Oct 30 12:15:31 2024.
+Cite this as:
+Paul E. Black, "SSTable", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 15 November 2021. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/SSTable.html

@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>ideal merge</title>
+<meta name="description"
+  content="Definition of ideal merge,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="ideal merge">
+<meta name="type" content="algorithm">
+<meta name="area" content="Sorting">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>ideal merge</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+<a href="merge.html"><em>Merge</em></a> n sorted streams into one output stream. To begin the streams are sorted by the value of the head element of each. Then the head of the first stream, which is the least since the streams were sorted, is removed and written to the output.  That stream is inserted back into the list of streams according to its new head.  Taking the head of the first stream and reinserting that stream is repeated until all elements have been processed. Using <a href="linearSearch.html"><em>linear search</em></a> to insert a stream into the list, the execution time is <a href="theta.html"><em>&Theta;(M N)</em></a> where M is the total number of elements. Keeping the streams in a <a href="heap.html"><em>heap</em></a>, the execution time is <a href="theta.html"><em>&Theta;(M log N)</em></a>.
+</p>
+
+<p>
+<strong>See also</strong>
+<a href="simplemerge.html"><em>simple merge</em></a>, <a href="optimalMerge.html"><em>optimal merge</em></a>, <a href="unshufflsort.html"><em>UnShuffle sort</em></a>, <a href="mergesort.html"><em>merge sort</em></a>.
+</p>
+
+<p>
+<em>Note:
+Ideal merge was first mentioned by Art S. Kagel as  part of the implementation of the UnShuffle sort.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorASK">ASK</a></p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#b9c9d8ccd597dbd5d8dad2f9d7d0cacd97ded6cf">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 9 January 2009.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Art S. Kagel, "ideal merge", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 9 January 2009. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/idealmerge.html">https://www.nist.gov/dads/HTML/idealmerge.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a916ae1f290041',t:'MTc5MjAwNzE3MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

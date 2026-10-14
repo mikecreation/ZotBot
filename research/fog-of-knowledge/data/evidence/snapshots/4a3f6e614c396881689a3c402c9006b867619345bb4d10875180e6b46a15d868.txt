@@ -1,0 +1,57 @@
+nondeterministic algorithm
+nondeterministic algorithm
+(algorithmic technique)
+Definition:
+A conceptual
+algorithm
+with more than one allowed step at certain times and which always takes the right or best step.   It is not random, as in
+randomized algorithm
+, or indeterminate. Rather it has the supercomputational characteristic of choosing the optimal behavior.
+See also
+deterministic algorithm
+,
+probabilistic algorithm
+,
+randomized algorithm
+,
+heuristic
+.
+Note:
+Conceptually a nondeterministic algorithm could run on a deterministic computer with an unlimited number of parallel processors.  Each time more than one step is possible, new processes are instantly forked to try all of them.  When one successfully finishes, that result is returned.  Thus the computation is as fast as if it always chooses the right step.
+This notion is defined for theoretic analysis and specifying. Nondeterministic algorithms compute the same class of functions as
+deterministic algorithms
+, but the
+complexity
+may be much less. Every nondeterministic algorithm can be turned into a deterministic algorithm, possibly with
+exponential
+slow down.
+Consider searching an unordered
+array
+.  A
+linear search
+has
+Θ(n)
+expected time.  A nondeterministic search has constant expected time.
+int search(key k, array a)
+{
+return oracle(0, sizeof(a));
+}
+where oracle() returns (the right) number between 0 and the size of the array in constant time.
+Author:
+PEB
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 7 December 2020.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "nondeterministic algorithm", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 7 December 2020. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/nondetermAlgo.html

@@ -1,0 +1,56 @@
+Burrows-Wheeler transform
+Burrows-Wheeler transform
+(algorithm)
+Definition:
+Permute
+a
+string
+. Repeated
+substrings
+lead to repeated  characters in the permuted string, which is easier to compress. Knowing which character was last in the original string, the original can be reconstructed from the rearranged string.
+Also known as
+BWT.
+Aggregate child
+(... is a part of or used in me.)
+sort
+.
+Note:
+The transform may be defined in relation to the
+suffix array
+as follows. The result is an
+array
+BWT such that
+BWT[i] = T[SA[i]-1], if SA[i] > 1, otherwise $
+where T is the original string, i goes from 1 (
+1-based indexing
+) to the length of T, SA is the suffix array of T, and $ is the special character indicating the end of string.
+Author:
+PEB
+Implementation
+Mark Nelson's great
+Data Compression with the Burrows-Wheeler Transform (C++)
+explains the algorithm. Dr. Dobb's Journal, September, 1996.
+More information
+Burrows-Wheeler_transform [Wikipedia]
+.
+Michael Burrows and David J. Wheeler
+,
+A Block-sorting Lossless Data Compression Algorithm
+, Research Report SRC-124, Digital Equipment Corporation, Palo Alto, California, May 1994.
+This transform is algorithm C in the paper.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 20 April 2022.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "Burrows-Wheeler transform", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 20 April 2022. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/burrowsWheelerTransform.html

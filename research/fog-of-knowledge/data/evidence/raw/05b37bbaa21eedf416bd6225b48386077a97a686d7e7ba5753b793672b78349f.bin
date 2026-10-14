@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>pagoda</title>
+<meta name="description"
+  content="Definition of pagoda,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="pagoda">
+<meta name="type" content="data structure">
+<meta name="area" content="Trees">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>pagoda</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A <a href="priorityque.html"><em>priority queue</em></a> implemented with a variant of a <a href="binarytree.html"><em>binary tree</em></a>.  The <a href="root.html"><em>root</em></a> points to its children, as in a binary tree.  Every other <a href="node.html"><em>node</em></a> points back to its <a href="parent.html"><em>parent</em></a> and down to its leftmost (if it is a right <a href="child.html"><em>child</em></a>) or rightmost (if it is a left child) <a href="descendant.html"><em>descendant</em></a> <a href="leaf.html"><em>leaf</em></a>.  The basic operation is merge or <a href="meld.html"><em>meld</em></a>, which maintains  the <a href="heapproperty.html"><em>heap property</em></a>.  An element is inserted by merging it as a singleton.  The <a href="root.html"><em>root</em></a> is removed by merging its right and left children.  Merging is bottom-up, merging the leftmost edge of one with the rightmost edge of the other.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="priorityque.html"><em>priority queue</em></a>.
+</p>
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="binarytree.html"><em>binary tree</em></a>, <a href="heapproperty.html"><em>heap property</em></a>, <a href="meld.html"><em>meld</em></a>.
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+<a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/5/515.del.c" target="_blank">delete (C and Pascal)</a>, <a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/5/515.ins.c" target="_blank">insert (C and Pascal)</a>, and <a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/5/515.merg.c" target="_blank">merge (C and Pascal)</a>
+<h2>More information</h2>
+<p>
+<strong>J. Francon, G. Viennot, and J. Vuillemin</strong>, <em>Description and analysis of an efficient priority queue representation</em>, Proc. 19th Annual Symp. on Foundations of Computer Science.  IEEE, 1978, pages 1-7.<br /> <strong>R. Nix</strong>, <em>An Evaluation of Pagodas</em>, Res. Rep. 164, Dept. of Computer Science, Yale Univ.  1988?
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#bacadbcfd694d8d6dbd9d1fad4d3c9ce94ddd5cc">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 12 February 2019.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "pagoda", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 12 February 2019. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/pagoda.html">https://www.nist.gov/dads/HTML/pagoda.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a916f7be8970c4',t:'MTc5MjAwNzE4Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

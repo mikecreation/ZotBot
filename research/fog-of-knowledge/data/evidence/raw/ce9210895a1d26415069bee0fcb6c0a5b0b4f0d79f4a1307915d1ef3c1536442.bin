@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>diminishing increment sort</title>
+<meta name="description"
+  content="Definition of diminishing increment sort,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="diminishing increment sort">
+<meta name="type" content="algorithm">
+<meta name="area" content="Sorting">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>diminishing increment sort</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+An <a href="inplacesort.html"><em>in-place sort</em></a> algorithm that repeatedly reorders different, small subsets of the input until the entire array is ordered. On each pass it handles i sets of n/i items, where n is the total number of items.  Each set is every i<sup>th</sup> item, e.g. set 1 is item 1, 1+i, 1+2i, etc., set 2 is item 2, 2+i, etc.  On each succeeding pass, the increment or gap, i, is reduced until it is 1 for the last pass.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="inplacesort.html"><em>in-place sort</em></a>.
+</p>
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="shellsort.html"><em>Shell sort</em></a>, <a href="combSort.html"><em>comb sort</em></a>.
+</p>
+
+<p>
+<em>Note:
+Since items may move large distances at first, this method is quite efficient.   <a href="combSort.html"><em>Comb sort</em></a> does a single "bubbling" pass (ala <a href="bubblesort.html"><em>bubble sort</em></a>) over each set for each gap or increment, whereas <a href="shellsort.html"><em>Shell sort</em></a> completely sorts each set. </p> 
+<p> Shell had the first increment be half the number of items to be sorted, i.e., &lfloor; n/2&rfloor;, and each succeeding increment half the preceding increment.  This lowers efficiency since the same items are compared over and over.  Relatively prime increments are better. </p> 
+<p> Since one of the sets can be visualized as those items where the teeth of a comb touch, this is sometimes called a comb sort.  Using this analogy, the teeth get closer on each pass. However, the term "comb sort" is used for a specific algorithm.  Knuth uses "diminishing increment sort" as a synonym of "Shell sort", but we include comb sort.</em>
+</p>
+
+<p>Authors: <a href="../Other/contrib.html#authorPEB">PEB</a>,<a href="../Other/contrib.html#authorASK">ASK</a></p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#95e5f4e0f9bbf7f9f4f6fed5fbfce6e1bbf2fae3">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 7 January 2005.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black and Art S. Kagel, "diminishing increment sort", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 7 January 2005. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/diminishingIncSort.html">https://www.nist.gov/dads/HTML/diminishingIncSort.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a91679dd9d1267',t:'MTc5MjAwNzE2MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

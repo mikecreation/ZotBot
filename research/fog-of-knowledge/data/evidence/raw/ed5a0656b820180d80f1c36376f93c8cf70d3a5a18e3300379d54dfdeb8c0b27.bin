@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>Bloom filter</title>
+<meta name="description"
+  content="Definition of Bloom filter,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="Bloom filter">
+<meta name="type" content="data structure">
+<meta name="area" content="Searching">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>Bloom filter</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A data structure with a <a href="probablAlgo.html"><em>probabilistic algorithm</em></a> to quickly test membership in a  large set using multiple <a href="hash.html"><em>hash functions</em></a> into a single  <a href="array.html"><em>array</em></a> of bits.
+</p>
+
+<p>
+<strong>Aggregate parent</strong> (I am a part of or used in ...)<br>
+<a href="hsadelta.html"><em>hsadelta</em></a>.
+</p>
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="array.html"><em>array</em></a> of bits, <a href="hash.html"><em>hash function</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="invertibleBloomTable.html"><em>invertible Bloom lookup table</em></a>, <a href="localitySensitiveHashing.html"><em>locality-sensitive hashing</em></a>.
+</p>
+
+<p>
+<em>Note:
+A Bloom filter is good for secret sharing: giving a Bloom filter lets someone see if you have an item (it is found in the Bloom filter), but it is impractical to recreate the whole collection.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+Arash Partow's <a href="http://www.partow.net/programming/hashfunctions/" target="_blank">implementations (C++, Object Pascal)</a> (go to Download, at the bottom).
+<h2>More information</h2>
+<p>
+The Bose, Guo, Kranakis, et. al. paper below shows that "The actual false-positive rate is strictly larger than" Bloom's formula. <br /> <a href="https://en.wikipedia.org/wiki/Bloom_filter" target="_blank"><em>Bloom_filter [Wikipedia]</em></a> gives many variants and extensions. <a href="http://cap-lore.com/code/BloomTheory.html" target="_blank" target="_blank">Trade-offs and engineering techniques</a> with links to sites with recent papers, hash functions, etc. <a href="http://pages.cs.wisc.edu/~cao/papers/summary-cache/node8.html" target="_blank" target="_blank">Another explanation</a> typo: probability of false positive is missing a minus sign; exponent should be ... e<sup>-kn/m</sup>. <a href="https://www.perl.com/pub/2004/04/08/bloom_filters.html/" target="_blank" target="_blank">Using Bloom filters</a>.  Language is Perl. Jason Davies'  <a href="https://www.jasondavies.com/bloomfilter/" target="_blank" target="_blank">interactive animation</a> helps people understand how a Bloom filter works.
+</p>
+<p>
+<strong>Burton Bloom</strong>, <em>Space/time trade-offs in hash coding with allowable errors</em>, CACM, 13(7):422-426, July 1970.  <br /> <strong>Prosenjit Bose, Hua Guo, Evangelos Kranakis, Anil Maheshwari, Pat Morin, Jason Morrison, Michiel Smid, and Yihui Tang</strong>, <em>On the False-Positive Rate of Bloom Filters</em>, Technical Report TR-07-07, Carleton University - School of Computer Science, 1 March 2007. <br /> They also conclude that "Our upper-bounds show that, for large enough values of m with small values of k, the difference between p<sup>k</sup> and the actual false-positive rate is negligible."
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#c9b9a8bca5e7aba5a8aaa289a7a0babde7aea6bf">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 20 September 2024.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "Bloom filter", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 20 September 2024. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/bloomFilter.html">https://www.nist.gov/dads/HTML/bloomFilter.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a9164e59d23bdc',t:'MTc5MjAwNzE1NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

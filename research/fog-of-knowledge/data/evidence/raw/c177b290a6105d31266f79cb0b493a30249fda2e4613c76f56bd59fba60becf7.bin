@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>traveling salesman</title>
+<meta name="description"
+  content="Definition of traveling salesman,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="traveling salesman">
+<meta name="type" content="classic problem">
+<meta name="area" content="Graphs">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>traveling salesman</h1>
+<p>
+(classic problem)
+</p>
+
+<p>
+<strong>Definition:</strong>
+Find a <a href="path.html"><em>path</em></a> through a <a href="weightedGraph.html"><em>weighted graph</em></a> that starts and ends at the same <a href="vertex.html"><em>vertex</em></a>, includes every other vertex exactly once, and minimizes the total cost of <a href="edge.html"><em>edges</em></a>.
+</p>
+
+<p>
+<strong>Also known as</strong> TSP.
+</p>
+
+<p>
+<strong>See also</strong>
+<a href="bottleneckTravelingSales.html"><em>bottleneck traveling salesman</em></a>, <a href="hamiltonianCycle.html"><em>Hamiltonian cycle</em></a>, <a href="optimization.html"><em>optimization problem</em></a>, <a href="christofides.html"><em>Christofides algorithm</em></a>, similar problems: <a href="allPairsShortestPath.html"><em>all pairs shortest path</em></a>, <a href="minimumSpanningTree.html"><em>minimum spanning tree</em></a>, <a href="vehicleRouting.html"><em>vehicle routing problem</em></a>.
+</p>
+
+<p>
+<em>Note:
+Less formally, find a path for a salesman to visit every listed city at the lowest total cost. </p> 
+<p> The above described path is always a <a href="hamiltonianCycle.html"><em>Hamiltonian cycle</em></a>, or tour, however a Hamiltonian cycle need not be optimal.  The problem is an optimization problem, that is, to find the shortest tour.  The corresponding <a href="decisionProblem.html"><em>decision problem</em></a> asks if there is a tour with a cost less than some given amount. See <a href="../terms.html#CLR90">[CLR90, page 969]</a>. </p> 
+<p> If the triangle inequality does not hold, that is d<sub>ik</sub> &gt; d<sub>ij</sub> + d<sub>jk</sub> for some i, j, k, there is no possible polynomial time algorithm that guarantees near-optimal result (unless P=NP). </p> 
+<p> If the triangle inequality holds, you can quickly get a near-optimal solution by finding the <a href="minimumSpanningTree.html"><em>minimum spanning tree</em></a>.  Convert the tree to a path by traversing the tree, say by <a href="depthfirst.html"><em>depth-first search</em></a>, but go directly to the next unvisited node, rather than repeating nodes.  <a href="christofides.html"><em>Christofides algorithm</em></a> starts with a minimum spanning tree, but is more careful about converting the tree to a path with results closer to optimal.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+Steven Skiena's Stony Brook Algorithm Repository <a href="https://algorist.com/problems/Traveling_Salesman_Problem.html" target="_blank">(C, Fortran, Pascal, Mathematica, and C++)</a>. Animation and <a href="http://www2.cs.arizona.edu/icon/oddsends/travels/travels.htm" target="_blank">implementation (Icon)</a>.
+<h2>More information</h2>
+<p>
+<a href="http://www.math.uwaterloo.ca/tsp/" target="_blank">links to challenges, advances, etc.</a>.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#d7a7b6a2bbf9b5bbb6b4bc97b9bea4a3f9b0b8a1">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 26 July 2021.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "traveling salesman", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 26 July 2021. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/travelingSalesman.html">https://www.nist.gov/dads/HTML/travelingSalesman.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a91767ab701f93',t:'MTc5MjAwNzE5OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

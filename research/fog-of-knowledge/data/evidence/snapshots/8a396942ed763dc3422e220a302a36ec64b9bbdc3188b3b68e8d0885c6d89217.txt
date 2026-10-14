@@ -1,0 +1,80 @@
+traveling salesman
+traveling salesman
+(classic problem)
+Definition:
+Find a
+path
+through a
+weighted graph
+that starts and ends at the same
+vertex
+, includes every other vertex exactly once, and minimizes the total cost of
+edges
+.
+Also known as
+TSP.
+See also
+bottleneck traveling salesman
+,
+Hamiltonian cycle
+,
+optimization problem
+,
+Christofides algorithm
+, similar problems:
+all pairs shortest path
+,
+minimum spanning tree
+,
+vehicle routing problem
+.
+Note:
+Less formally, find a path for a salesman to visit every listed city at the lowest total cost.
+The above described path is always a
+Hamiltonian cycle
+, or tour, however a Hamiltonian cycle need not be optimal.  The problem is an optimization problem, that is, to find the shortest tour.  The corresponding
+decision problem
+asks if there is a tour with a cost less than some given amount. See
+[CLR90, page 969]
+.
+If the triangle inequality does not hold, that is d
+ik
+> d
+ij
++ d
+jk
+for some i, j, k, there is no possible polynomial time algorithm that guarantees near-optimal result (unless P=NP).
+If the triangle inequality holds, you can quickly get a near-optimal solution by finding the
+minimum spanning tree
+.  Convert the tree to a path by traversing the tree, say by
+depth-first search
+, but go directly to the next unvisited node, rather than repeating nodes.
+Christofides algorithm
+starts with a minimum spanning tree, but is more careful about converting the tree to a path with results closer to optimal.
+Author:
+PEB
+Implementation
+Steven Skiena's Stony Brook Algorithm Repository
+(C, Fortran, Pascal, Mathematica, and C++)
+. Animation and
+implementation (Icon)
+.
+More information
+links to challenges, advances, etc.
+.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 26 July 2021.
+HTML page formatted Wed Oct 30 12:15:31 2024.
+Cite this as:
+Paul E. Black, "traveling salesman", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 26 July 2021. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/travelingSalesman.html

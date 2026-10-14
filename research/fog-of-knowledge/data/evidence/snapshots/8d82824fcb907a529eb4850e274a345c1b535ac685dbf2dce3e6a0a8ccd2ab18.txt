@@ -1,0 +1,72 @@
+hsadelta
+hsadelta
+(algorithm)
+Definition:
+An
+algorithm
+to produce a sequence of insert and copy commands (an
+edit script
+) which creates a new version file from a reference file. To begin,
+hash
+every block of the reference file and store every hash in a hash value
+array
+.  Build a
+suffix array
+and three other data  structures for quick access.  Beginning at the first location in the version file, hash a block and look for the longest match in the reference file.  Upon a match, encode an insert back to the previous match and a copy of the match.  If no match, look at the next location.  At the end, encode an insert for remaining unmatched characters.
+Aggregate parent
+(I am a part of or used in ...)
+longest common subsequence
+.
+Aggregate child
+(... is a part of or used in me.)
+Bloom filter
+,
+hash table
+,
+binary search
+.
+Note:
+There are many differential compression algorithms, such as vcdiff, xdelta, and zdelta.  See Agarwal et. al.  I happened to find this one, and it uses neat data structures.
+The three other data structures for quick access to the suffix array are:  the quick index array, a
+Bloom filter
+using one
+hash function
+, the block hash table, and the pointer array, an array of pointers into the block hash table.  The quick index array allows most (97%) version file block hashes to be rejected as having no match.  The block hash table has pointers into the suffix array.  The pointer array can be viewed as a table of the
+hash function
+into the block hash table, which uses
+open addressing
+in case of
+collisions
+.
+When a match is found, the suffix array is searched, via
+binary search
+in the block hash table, to find the longest matching sequence of blocks.  Then the match is extended character by character as far as possible.
+Author:
+PEB
+More information
+Ramesh C. Agarwal
+,
+Karan Gupta
+,
+Shaili Jain
+, and
+Suchitra Amalapurapu
+,
+An approximation to the greedy algorithm for differential compression
+, IBM Journal of Research & Development, 50(1):149-166, January 2006.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 14 April 2009.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "hsadelta", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 14 April 2009. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/hsadelta.html

@@ -1,0 +1,37 @@
+Deutsch-Jozsa algorithm
+Deutsch-Jozsa algorithm
+(algorithm)
+Definition:
+A quantum algorithm to determine whether a function is
+constant
+or balanced, that is, returns 1 for half the
+domain
+and 0 for the other half.  For a function taking n input qubits, first, do Hadamards on n 0's, forming all possible inputs, and a single 1, which will be the answer qubit. Next, run the function once; this
+exclusive or
+'s the result with the answer qubit.  Finally, do Hadamards on the n inputs again, and measure the answer qubit.  If it is 0, the function is constant, otherwise the function is balanced.
+See also
+quantum computation
+.
+Note:
+The algorithm needs only one (quantum) evaluation of the function.  A classical algorithm to answer the same question is to examine one more than half the domain in the
+worst case
+.
+See Arthur O. Pittenger, "An Introduction to Quantum Computing Algorithms", page 41, or Michael A. Nielsen and Isaac L. Chuang, "Quantum Computation and Quantum Information", pages 34-36.
+Author:
+PEB
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 17 December 2004.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "Deutsch-Jozsa algorithm", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 17 December 2004. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/deutschJozsaAlgo.html

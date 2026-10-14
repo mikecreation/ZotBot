@@ -1,0 +1,49 @@
+reservoir sampling
+reservoir sampling
+(algorithm)
+Definition:
+Randomly select k items from a stream of items of unknown length.  Save the first k items in an
+array
+of size k. For each item j, j > k, choose a random integer M from 1 to j (inclusive).  If M ≤ k, replace item M of the array with item j.
+Generalization
+(I am a kind of ...)
+randomized algorithm
+.
+Note:
+Each possible selection of k items has an equal probability of occurring.
+This algorithm is an in-memory variant of Knuth's Algorithm 3.4.2R
+[Knuth97, 2:144]
+. He credits Alan G. Waterman.  This algorithm is suggested in exercise 10.
+Author:
+PEB
+Implementation
+(Perl)
+.
+More information
+Sahil (Thaker?)'s
+explanation of correctness
+. The extension to distributed reservoir sampling is flawed.
+Vitter's algorithms X, Y, and Z use far fewer random numbers by choosing how many items to skip, rather than deciding whether or not to skip each item.
+Jeffrey Scott Vitter
+,
+Random Sampling with a Reservoir
+, ACM Transactions on Mathematical Software (TOMS), 11(1):37-57, March 1985.
+Available on-line, for instance at
+http://www.cs.umd.edu/~samir/498/vitter.pdf
+.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 21 January 2020.
+HTML page formatted Wed Oct 30 12:15:31 2024.
+Cite this as:
+Paul E. Black, "reservoir sampling", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 21 January 2020. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/reservoirSampling.html

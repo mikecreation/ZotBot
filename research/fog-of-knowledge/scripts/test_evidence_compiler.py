@@ -7,6 +7,7 @@ import sys
 import tempfile
 import threading
 import unittest
+from unittest.mock import patch
 from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 from copy import deepcopy
 from pathlib import Path
@@ -45,6 +46,22 @@ class EvidenceCompilerTests(unittest.TestCase):
     def setUp(self):self.c,self.g,self.d=fixture()
     def check(self):return enforce(self.c,self.g,self.d,POLICY)
     def test_exact_bound_review_passes(self):self.assertEqual(self.check()["reviewed_targets"],1)
+    def test_context_hash_cost_does_not_grow_with_review_count_and_stale_later_review_is_rejected(self):
+        with patch('evidence_compiler.context_digest',wraps=context_digest) as measured:
+            proof=self.check()
+        self.assertEqual(len(proof['decisions']),len(self.d))
+        self.assertEqual(measured.call_count,1)
+        self.d[-1]['context_sha256']='0'*64
+        with patch('evidence_compiler.context_digest',wraps=context_digest) as measured:
+            with self.assertRaisesRegex(EvidenceError,'context changed'):self.check()
+        self.assertEqual(measured.call_count,1)
+    def test_reapplication_hashes_candidate_once_across_unrelated_history(self):
+        once=compile_reviewed(self.g,self.c,self.check())
+        once['evidence_reviews'][:0]=[{'candidate_sha256':str(i)*64} for i in range(8)]
+        with patch('evidence_compiler.candidate_digest',wraps=candidate_digest) as measured:
+            actual=context_digest(self.c,once)
+        self.assertEqual(actual,self.d[0]['context_sha256'])
+        self.assertEqual(measured.call_count,1)
     def neutral_report(self):
         self.c['nodes.jsonl'][0].update(status='reported',era='undated',frontier=False)
         self.g['eras'].append({'id':'undated','label':'Chronology unresolved'})

@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>weak-heap</title>
+<meta name="description"
+  content="Definition of weak-heap,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="weak-heap">
+<meta name="type" content="data structure">
+<meta name="area" content="Searching">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>weak-heap</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A relaxed <a href="heap.html"><em>heap</em></a> satisfying the following three conditions: (1) every <a href="key.html"><em>key</em></a> in the right subtree of a <a href="node.html"><em>node</em></a> is greater      than the key stored in the node itself,  (2) the <a href="root.html"><em>root</em></a> has no left <a href="child.html"><em>child</em></a>, and (3) <a href="leaf.html"><em>leaves</em></a> are only found on the last two <a href="level.html"><em>levels</em></a> of the tree.
+</p>
+
+<p>
+<strong>See also</strong>
+<a href="weakheapsort.html"><em>weak-heap sort</em></a>.
+</p>
+
+<p>
+<em>Note:
+A weak-heap may be efficiently implemented with an <a href="array.html"><em>array</em></a> a of items and an array r of reverse bits.  The left child of an index i is at index 2i+1-r<sub>i</sub>, and the right child is at index 2i+r<sub>i</sub>. </p> 
+<p> This is a minimum weak-heap.  A maximum weak-heap has subtree keys that are less than the node's key.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorSE">SE</a></p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#7808190d14561a14191b133816110b0c561f170e">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 26 May 2011.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Stefan Edelkamp, "weak-heap", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 26 May 2011. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/weakheap.html">https://www.nist.gov/dads/HTML/weakheap.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a9177e689c0ed2',t:'MTc5MjAwNzIwMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

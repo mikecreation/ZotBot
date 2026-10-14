@@ -1,0 +1,44 @@
+stable
+stable
+(definition)
+Definition:
+An
+algorithm
+where the relative order upon input of items with equal
+keys
+is always preserved in the output.  Usually a
+sort
+algorithm.
+Note:
+Many different operations, such as
+sort
+,
+merge
+, and select the minimum using a
+priority queue
+, can be stable.
+Suppose we need to order the following people by age:  Max, age 45, Brodsky (19), David (21), Carla (45), and Liang (19). A stable sort would yield Brodsky (19), Liang (19), David (21), Max (45), and Carla (45).  Note that Brodsky still precedes Liang, and Max still precedes Carla.  A sort that is not stable may put Liang before or after Brodsky and Carla before or after Max.  A
+radix sort
+requires each phase to be stable.
+Many algorithms can be turned into a stable variant by appending the original position to the
+key
+.  When otherwise-equal keys are compared, the positions "break the tie" and the original order is maintained.
+From Algorithms and Theory of Computation Handbook, and is Copyright © 1999 by CRC Press LLC. Appearing in the Dictionary of Computer Science, Engineering and Technology, Copyright © 2000 CRC Press LLC.
+Author:
+CRC-A
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 17 December 2004.
+HTML page formatted Wed Oct 30 12:15:31 2024.
+Cite this as:
+Algorithms and Theory of Computation Handbook, CRC Press LLC, 1999, "stable", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 17 December 2004. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/stable.html

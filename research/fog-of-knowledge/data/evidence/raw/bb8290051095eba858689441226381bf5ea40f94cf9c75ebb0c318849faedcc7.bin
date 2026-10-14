@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>directed acyclic word graph</title>
+<meta name="description"
+  content="Definition of directed acyclic word graph,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="directed acyclic word graph">
+<meta name="type" content="data structure">
+<meta name="area" content="Trees">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>directed acyclic word graph</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+(1) A <a href="directAcycGraph.html"><em>directed acyclic graph</em></a> representing the <a href="suffix.html"><em>suffixes</em></a> of a given <a href="string.html"><em>string</em></a> in which each <a href="edge.html"><em>edge</em></a> is labeled with a character.  The characters along a <a href="path.html"><em>path</em></a> from the <a href="root.html"><em>root</em></a> to a <a href="node.html"><em>node</em></a> are the <a href="substring.html"><em>substring</em></a> which the <a href="node.html"><em>node</em></a> represents. (2) A <a href="finiteStateMachine.html"><em>finite state machine</em></a> that recognizes a set of words.
+</p>
+
+<p>
+<strong>Also known as</strong> DAWG.
+</p>
+
+<p>
+<strong>See also</strong>
+<a href="compactDAWG.html"><em>compact DAWG</em></a>, <a href="suffixtree.html"><em>suffix tree</em></a>, <a href="trie.html"><em>trie</em></a>, <a href="patriciatree.html"><em>Patricia tree</em></a>, <a href="suffixautmtn.html"><em>suffix automaton</em></a>.
+</p>
+
+<p>
+<em>Note:
+A variant, the compact DAWG, labels the edges with strings, not just single characters.  In the compact DAWG, any <a href="node.html"><em>node</em></a> which is an only <a href="child.html"><em>child</em></a>  is merged with its <a href="parent.html"><em>parent</em></a> and the edge labels are concatenated. Another variant is the morphic DAWG, where some substrings are coded with new characters, like a simplified <a href="huffmanCoding.html"><em>Huffman coding</em></a>.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>More information</h2>
+<p>
+(1) <strong>Andrew W. Appel and Guy J. Jacobson</strong>, <em>The World's Fastest Scrabble Program</em>, CACM, 31(5):572-578, May 1988. Good description and comparison with a trie. </p> <p> <strong>M. Crochemore and R. Verin</strong>, <em>Direct Construction of Compact Directed Acyclic Word Graphs</em>, 8th Annual Symposium, CPM 97, Aarhus, Denmark, 116-129, 1997. </p> <p> (2) <strong>J. Aoe, K. Morimoto, M. Shishibori and K-H. Park</strong>, <em>A Trie Compaction Algorithm for a Large Set of Keys</em>, IEEE Trans. Knowledge and Data Engineering, 8(3):476-491, 1996.  </p> <p> <strong>D. Perrin</strong>, <em>Finite Automata</em>, in: J. van Leeuwen, ed., Handbook of Theoretical Computer Science, Elsevier, Amsterdam, Vol. A, 3-57, 1990.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#1969786c75377b75787a725977706a6d377e766f">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 13 June 2022.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "directed acyclic word graph", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 13 June 2022. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/directedAcyclicWordGraph.html">https://www.nist.gov/dads/HTML/directedAcyclicWordGraph.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a9167abba0fa17',t:'MTc5MjAwNzE2Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

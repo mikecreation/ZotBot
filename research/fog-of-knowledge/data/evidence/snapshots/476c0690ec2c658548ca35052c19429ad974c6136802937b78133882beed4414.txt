@@ -1,0 +1,39 @@
+zipper
+zipper
+(data structure)
+Definition:
+A data structure equivalent to a
+binary tree
+that is "opened" so that some
+node
+is accessible.  It consists of a pair: the current node, along with information to reconstruct the tree.  Reconstruction information is called the path or context.  A move-to-left-child operation returns the left subtree, along with a new path, which has (i) a Left value, (ii) the current node, (iii) the right subtree, and (iv) any previous path.  A similar operation moves to the right child.  A move-up operation returns a tree rebuilt from the path information and the current node, along with the previous path.
+Note:
+In functional programming languages, a zipper acts as a "pointer" into a tree. The name comes from visualizing the move-to-child operation as unzipping a tree.  (Instead of two halves, though, move-to-child keeps the pieces in a
+k-ary tree
+: the path.)
+Author:
+PEB
+More information
+A message on
+Using zippers to handle huge trees
+.
+Gérard Huet
+,
+The Zipper
+, Journal of Functional Programming, 7(5):549-554, 1997.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 29 June 2021.
+HTML page formatted Wed Oct 30 12:15:31 2024.
+Cite this as:
+Paul E. Black, "zipper", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 29 June 2021. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/zipper.html

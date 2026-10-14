@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>Knuth-Morris-Pratt algorithm</title>
+<meta name="description"
+  content="Definition of Knuth-Morris-Pratt algorithm,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="Knuth-Morris-Pratt algorithm">
+<meta name="type" content="algorithm">
+<meta name="area" content="Searching">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>Knuth-Morris-Pratt algorithm</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A <a href="stringMatching.html"><em>string matching</em></a> algorithm that turns the search string into a <a href="finiteStateMachine.html"><em>finite state machine</em></a>, then runs the machine with the string to be searched as the input string.  Execution time is <a href="bigOnotation.html"><em>O(m+n)</em></a>, where m is the length of the search string, and n is the length of the string to be searched.
+</p>
+
+<p>
+<strong>Also known as</strong> KMP.
+</p>
+
+
+<p>Author: <a href="../Other/contrib.html#authorSB">SB</a></p>
+<h2>Implementation</h2>
+Christian Charras' and Thierry Lecroq's <a href="http://www-igm.univ-mlv.fr/~lecroq/string/" target="_blank">Exact String Matching Algorithms (C)</a>. Terry R. McConnell's implementation of Unix strstr with <a href="http://subarnyard.net/quickies/kmp.c" target="_blank">KMP (C)</a>. <a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/7/712.srch.c" target="_blank">(C and Pascal)</a> which uses <a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/7/713.preproc.c" target="_blank">Boyer-Moore preprocessing (C)</a>
+<h2>More information</h2>
+<p>
+Series of pages explaining <a href="https://www.cs.utexas.edu/users/moore/best-ideas/string-searching/kpm-example.html" target="_blank">how Knuth-Morris-Pratt works</a>.
+</p>
+<p>
+<strong> Donald E. Knuth</strong>, <strong>James H. Morris</strong>, and <strong>Vaughan R. Pratt</strong>,  <em>Fast Pattern Matching in Strings</em>, SIAM Journal on Computing, 6(2):323-350, 1977.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#6f1f0e1a03410d030e0c042f01061c1b41080019">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 26 July 2021.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Sterling Bates, "Knuth-Morris-Pratt algorithm", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 26 July 2021. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/knuthMorrisPratt.html">https://www.nist.gov/dads/HTML/knuthMorrisPratt.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a916c0ff5fcdc7',t:'MTc5MjAwNzE3Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

@@ -1,0 +1,15 @@
+{
+  "id": "nist-dads.levelordertraversal",
+  "url": "https://xlinux.nist.gov/dads/HTML/levelOrderTraversal.html",
+  "final_url": "https://xlinux.nist.gov/dads/HTML/levelOrderTraversal.html",
+  "title": "NIST Dictionary of Algorithms and Data Structures: levelOrderTraversal",
+  "source_kind": "secondary",
+  "retrieved_at": "2026-10-14T19:46:14.350912+00:00",
+  "text": "level-order traversal\nlevel-order traversal\n(algorithm)\nDefinition:\nProcess all\nnodes\nof a\ntree\nby\ndepth\n: first the\nroot\n, then the\nchildren\nof the root, etc.  Equivalent to a\nbreadth-first search\nfrom the root.\nSee also\npostorder traversal\n,\npreorder traversal\n,\ntree traversal\n,\nCupif-Giannini tree traversal\n,\nlevel\n(1).\nNote:\nFor instance, if the \"processing\" is just printing, a tree is printed as \"root, all children of the root, all grandchildren (children of children) of the root, etc.\" Here is pseudocode for an inefficient level-order traversal of a\nbinary tree\n:\nlevelorderAux(tree, level)\nbegin\nif tree is null, return;\nif level is 1, then\nprint(tree.root);\nelse if level greater than 1, then\nlevelorderAux(tree.left_subtree, level-1);\nlevelorderAux(tree.right_subtree, level-1);\nendif\nend\nlevelorder(tree)\nbegin\nfor d = 1 to height(tree)\nlevelorderAux(tree, d);\nendfor\nend\nSee\n[Stand98, p. 251]\n.\nAuthor:\nPEB\nGo to the\nDictionary of Algorithms and Data\nStructures\nhome page.\nIf you have suggestions, corrections, or comments, please get in touch\nwith\nPaul Black\n.\nEntry modified 10 February 2017.\nHTML page formatted Wed Oct 30 12:15:30 2024.\nCite this as:\nPaul E. Black, \"level-order traversal\", in\nDictionary of Algorithms and Data Structures\n[online], Paul E. Black, ed. 10 February 2017. (accessed TODAY)\nAvailable from:\nhttps://www.nist.gov/dads/HTML/levelOrderTraversal.html",
+  "sha256": "93c0ccb4bbd8ee5d7d29e0d0b38b1418892f4bf4df1a8c877c0f786fb29bafda",
+  "raw_sha256": "6930562574e180b0959f0dded308f5f588c2a7fa6b9b03047dda1e13894c0879",
+  "content_type": "text/html",
+  "charset": "utf-8",
+  "extraction_method": "http-html-data-lines/1",
+  "capture_id": "6b0517823a3d004faf6ae696404e96ca03d21ddba5f74ecbac7b4ce68e819c77"
+}

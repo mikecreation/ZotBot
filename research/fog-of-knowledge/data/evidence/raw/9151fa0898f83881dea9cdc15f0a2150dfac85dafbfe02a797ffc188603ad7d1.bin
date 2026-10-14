@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>P-tree</title>
+<meta name="description"
+  content="Definition of P-tree,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="P-tree">
+<meta name="type" content="data structure">
+<meta name="area" content="Trees">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>P-tree</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+(1) A <a href="spatialAccessMethod.html"><em>spatial access method</em></a> that defines hyperplanes, in addition to the orthogonal dimensions, which node boundaries may parallel.  Space is split by hierarchically nested  <a href="polytope.html"><em>polytopes</em></a> (multidimensional boxes with nonrectangular sides).  The <a href="rtree.html"><em>R-tree</em></a> is a special case that has no additional hyperplanes. (2) A <a href="spatialAccessMethod.html"><em>spatial access method</em></a> that splits space by hierarchically nested polytopes. The <a href="rtree.html"><em>R-tree</em></a> is a special case in which all polytopes are boxes.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="tree.html"><em>tree</em></a>, <a href="spatialAccessMethod.html"><em>spatial access method</em></a>.
+</p>
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="rtree.html"><em>R-tree</em></a>.
+</p>
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="polytope.html"><em>polytope</em></a>.
+</p>
+
+<p>
+<em>Note:
+(2) by Jagadish after <a href="../terms.html#GG98">[GG98]</a>.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+Implementations of P-tree (1) <a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/5/512.ins.c" target="_blank">insert (C and Pascal)</a>, <a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/5/512.del.c" target="_blank">delete max (C and Pascal)</a>, and <a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/5/512.insp.c" target="_blank">head (C and Pascal)</a>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#235342564f0d414f424048634d4a50570d444c55">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 12 February 2019.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "P-tree", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 12 February 2019. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/ptree.html">https://www.nist.gov/dads/HTML/ptree.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a9171339eb609a',t:'MTc5MjAwNzE4Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

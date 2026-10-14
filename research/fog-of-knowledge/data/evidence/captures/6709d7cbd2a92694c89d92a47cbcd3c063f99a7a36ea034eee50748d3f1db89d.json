@@ -1,0 +1,15 @@
+{
+  "id": "nist-dads.bag",
+  "url": "https://xlinux.nist.gov/dads/HTML/bag.html",
+  "final_url": "https://xlinux.nist.gov/dads/HTML/bag.html",
+  "title": "NIST Dictionary of Algorithms and Data Structures: bag",
+  "source_kind": "secondary",
+  "retrieved_at": "2026-10-14T19:45:52.730741+00:00",
+  "text": "bag\nbag\n(data structure)\nDefinition:\nAn unordered collection of values that may have duplicates.\nFormal Definition:\nA bag has a single query function, numberIn(v, B), which tells how many copies of an element are in the bag, and two modifier functions, add(v, B) and remove(v, B). These may be defined with\naxiomatic semantics\nas follows.\nnew() returns a bag\nnumberIn(v, new()) = 0\nnumberIn(v, add(v, B)) = 1 + numberIn(v, B)\nnumberIn(v, add(u, B)) = numberIn(v, B) if v ≠ u\nremove(v, new()) = new()\nremove(v, add(v, B)) = B\nremove(v, add(u, B)) = add(u, remove(v, B)) if v ≠ u\nwhere B is a bag and u and v are elements.\nThe\npredicate\nisEmpty(B) may be defined with the following additional axioms.\nisEmpty(new()) = true\nisEmpty(add(v, B)) = false\nAlso known as\nmulti-set.\nGeneralization\n(I am a kind of ...)\nabstract data type\n.\nSee also\nset\n,\nlist\n.\nNote:\nA bag, or multi-set, is a set where values may be repeated.  Inserting 2, 1, 2 into an empty set gives the set {1, 2}.  Inserting those values into an empty bag gives {1, 2, 2}.  From another point of view, a\nset\nis unordered, too, but has each value at most once.\nAuthor:\nPEB\nGo to the\nDictionary of Algorithms and Data\nStructures\nhome page.\nIf you have suggestions, corrections, or comments, please get in touch\nwith\nPaul Black\n.\nEntry modified 11 January 2005.\nHTML page formatted Wed Oct 30 12:15:30 2024.\nCite this as:\nPaul E. Black, \"bag\", in\nDictionary of Algorithms and Data Structures\n[online], Paul E. Black, ed. 11 January 2005. (accessed TODAY)\nAvailable from:\nhttps://www.nist.gov/dads/HTML/bag.html",
+  "sha256": "ee6444c90b834c612da8e343598ed1307cd42e360fb65bd701e968683108d442",
+  "raw_sha256": "68fa688394403fe445b6a707054a322e651091bb67b32a63c278fa8f65f7e97a",
+  "content_type": "text/html",
+  "charset": "utf-8",
+  "extraction_method": "http-html-data-lines/1",
+  "capture_id": "6709d7cbd2a92694c89d92a47cbcd3c063f99a7a36ea034eee50748d3f1db89d"
+}

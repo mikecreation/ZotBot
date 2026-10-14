@@ -1,0 +1,61 @@
+inversion list
+inversion list
+(data structure)
+Definition:
+A set of non-overlapping numeric ranges, stored in an
+array
+in increasing order.  Items in odd indexes begin ranges, and items in even indexes are the first number after the ends.
+Use a form of
+binary search
+to determine if a number is in any of the ranges. If the search ends on an odd index (a beginning), the number is in the set.  If the search ends on an even index (a just-after-end) or outside the array, it is not in the set.
+Generalization
+(I am a kind of ...)
+set
+.
+Aggregate child
+(... is a part of or used in me.)
+array
+,
+binary search
+.
+See also
+inverted index
+.
+Note:
+For example, to represent the ranges 10-14, 25, and 37-42, the inversion list would be:
+10 15 25 26 37 43
+There are linear algorithms for union, intersection, set difference, negation, etc.
+The term inversion list is also used to refer to storing a sequence of bits as the numeric position of each switch between 0 and 1 bits. See
+Teodor Ziatanov's InversionList
+in Perl. Some authors refer to
+inverted index
+as inversion list.
+Author:
+JH
+Implementation
+prototype code with tests (Perl)
+.
+More information
+Definition adapted from
+Inversion_list [Wikipedia]
+.   More explanation and code in
+Richard Gillam
+,
+A Practical Programmer's Guide to the Encoding Standard
+, chapter 13, page 504ff, Addison-Wesley Professional, 2002.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 19 July 2021.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Jarkko Hietaniemi, "inversion list", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 19 July 2021. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/inversionList.html

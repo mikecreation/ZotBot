@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>Merkle tree</title>
+<meta name="description"
+  content="Definition of Merkle tree,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="Merkle tree">
+<meta name="type" content="data structure">
+<meta name="area" content="Trees">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>Merkle tree</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A <a href="tree.html"><em>tree</em></a> (usually a <a href="binarytree.html"><em>binary tree</em></a>) in which each <a href="internalnode.html"><em>internal node</em></a> has a <a href="hash.html"><em>hash</em></a> of all the information in the <a href="leaf.html"><em>leaf</em></a> nodes under it.  Specifically, each internal node has a hash of the information in its <a href="child.html"><em>children</em></a>.  Each leaf has a hash of the block of information it represents.  All leaf nodes are at the same <a href="depth.html"><em>depth</em></a>.  All nodes are as far left as possible. </p> <p> To add a block (leaf) to a <a href="fullBinaryTree.html"><em>full</em></a> tree, a new <a href="root.html"><em>root</em></a> is created with the old root as its left child.  Its right child is a degenerate tree (only left subtrees) all the way to the leaf level.
+</p>
+
+<p>
+<strong>Also known as</strong> hash tree.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="tree.html"><em>tree</em></a>.
+</p>
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="hash.html"><em>hash function</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="https://en.wikipedia.org/wiki/Merkle_tree" target="_blank"><em>Merkle_tree [Wikipedia]</em></a>.
+</p>
+
+<p>
+<em>Note:
+Usually the branching is two, making it a <a href="binarytree.html"><em>binary tree</em></a>, but it can be a <a href="karyTree.html"><em>k-ary tree</em></a>. </p> 
+<p> Merkle's paper describes a conceptually infinite (binary) tree with blocks (documents) at each internal node. To add a new block, use the next node in a <a href="levelOrderTraversal.html"><em>level-order traversal</em></a>.  (A level-order traversal is the same order as a <a href="breadthfirst.html"><em>breadth-first search</em></a> from the root.) </p> 
+<p> Given two copies of possibly-the-same information represented by Merkle trees, one can check whether the copies are the same by just comparing the hashes at the root.  A single difference between the copies can be found by just comparing the hashes at internal nodes on a path to the different leaf.  This is logarithmic in the number of leaves. </p> 
+<p> A <a href="completetree.html"><em>complete tree</em></a> has all nodes as far left as possible, too, but every level is filled.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>More information</h2>
+<p>
+Average  <a href="https://brilliant.org/wiki/merkle-tree/" target="_blank">space required and complexity</a> for search, traversal, insert, delete, and synchronize.
+</p>
+<p>
+<strong>Ralph C. Merkle</strong>, <em>Method of providing digital signatures</em>, U.S. Patent 4309569, filed 5 September 1979. PDF image available at  <a href="http://pdfpiw.uspto.gov/.piw?Docid=04309569&PageNum=0" target="_blank">http://pdfpiw.uspto.gov/.piw?Docid=04309569</a>. Text version available at <a href="http://patft.uspto.gov/netahtml/PTO/srchnum.htm" target="_blank">http://patft.uspto.gov/netahtml/PTO/srchnum.htm</a> enter 4309569 and click Search. <br /> <strong>Ralph C. Merkle</strong>, <em>A Digital Signature Based on a Conventional Encryption Function</em>, in C. Pomerance (ed) Advances in Cryptology &mdash; CRYPTO &rsquo;87. Lecture Notes in Computer Science 293:369-378, 1988. <a href="https://doi.org/10.1007/3-540-48184-2_32" target="_blank">doi:10.1007/3-540-48184-2_32</a>
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#d7a7b6a2bbf9b5bbb6b4bc97b9bea4a3f9b0b8a1">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 19 February 2019.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "Merkle tree", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 19 February 2019. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/MerkleTree.html">https://www.nist.gov/dads/HTML/MerkleTree.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a9162f1e371103',t:'MTc5MjAwNzE0OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

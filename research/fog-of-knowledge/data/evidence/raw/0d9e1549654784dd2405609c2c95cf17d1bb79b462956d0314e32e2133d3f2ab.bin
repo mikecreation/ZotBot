@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>simulated annealing</title>
+<meta name="description"
+  content="Definition of simulated annealing,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="simulated annealing">
+<meta name="type" content="algorithm">
+<meta name="area" content="Searching">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>simulated annealing</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A technique to find a good solution to an <a href="optimization.html"><em>optimization problem</em></a> by trying random variations of the current solution.  A worse variation is accepted as the new solution with a probability that decreases as the computation proceeds.  The slower the <em>cooling schedule</em>, or rate of decrease, the more likely the algorithm is to find an optimal or near-<a href="optimalsoltn.html"><em>optimal solution</em></a>.
+</p>
+
+<p>
+<strong>See also</strong>
+<a href="metaheuristic.html"><em>metaheuristic</em></a>.
+</p>
+
+<p>
+<em>Note:
+This technique stems from thermal annealing which aims to obtain perfect crystallizations by a slow enough temperature reduction to give atoms the time to attain the lowest energy state. </p> 
+<p> This search tries to avoid local minima by jumping out of them early in the computation.  Toward the end of the computation, when the <em>temperature</em>, or probability of accepting a worse solution, is nearly zero, this simply seeks the bottom of the local minimum.  The chance of getting a good solution can be traded off with computation time by slowing down the cooling schedule.  The slower the cooling, the higher the chance of finding the optimum solution, but the longer the run time.  Thus effective use of this technique depends on finding a cooling schedule that gets good enough solutions without taking too much time. </p> 
+<p> After Daniel Thiel &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e78a88929393869692a782898e938e8686ca898689938294c98195">[email&#160;protected]</a>&gt;, 31 January 2000.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#3a4a5b4f561458565b59517a5453494e145d554c">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 30 March 2009.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "simulated annealing", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 30 March 2009. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/simulatedAnnealing.html">https://www.nist.gov/dads/HTML/simulatedAnnealing.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a9173d5af972e4',t:'MTc5MjAwNzE5Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

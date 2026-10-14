@@ -1,0 +1,43 @@
+ideal merge
+ideal merge
+(algorithm)
+Definition:
+Merge
+n sorted streams into one output stream. To begin the streams are sorted by the value of the head element of each. Then the head of the first stream, which is the least since the streams were sorted, is removed and written to the output.  That stream is inserted back into the list of streams according to its new head.  Taking the head of the first stream and reinserting that stream is repeated until all elements have been processed. Using
+linear search
+to insert a stream into the list, the execution time is
+Θ(M N)
+where M is the total number of elements. Keeping the streams in a
+heap
+, the execution time is
+Θ(M log N)
+.
+See also
+simple merge
+,
+optimal merge
+,
+UnShuffle sort
+,
+merge sort
+.
+Note:
+Ideal merge was first mentioned by Art S. Kagel as  part of the implementation of the UnShuffle sort.
+Author:
+ASK
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 9 January 2009.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Art S. Kagel, "ideal merge", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 9 January 2009. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/idealmerge.html

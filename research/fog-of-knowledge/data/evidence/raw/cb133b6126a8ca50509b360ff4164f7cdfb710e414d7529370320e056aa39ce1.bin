@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>secant search</title>
+<meta name="description"
+  content="Definition of secant search,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="secant search">
+<meta name="type" content="algorithm">
+<meta name="area" content="Searching">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>secant search</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+Search a <a href="sortedarray.html"><em>sorted array</em></a> by estimating the next position to check based on the values at the two previous positions checked.
+</p>
+
+<p>
+<strong>See also</strong>
+<a href="binarySearch.html"><em>binary search</em></a>, <a href="interpolationSearch.html"><em>interpolation search</em></a>.
+</p>
+
+<p>
+<em>Note:
+It is called "secant search" because it uses the secant of the function at two successive points to approximate the derivative in the Newton-Raphson formula. </p> 
+<p> To find a <a href="key.html"><em>key</em></a> k in an array v with indexes from 0 to n-1, begin with x<sub>0</sub> = 0, x<sub>1</sub> = n-1, and i = 1. Compute the next position with <br /> x<sub>i+1</sub> = x<sub>i</sub> - (v[x<sub>i</sub>]-k) *  (x<sub>i</sub> - x<sub>i-1</sub>)/(v[x<sub>i</sub>] - v[x<sub>i-1</sub>]). <br /> If this lies outside the range, a different method (e.g., midpoint of the range) must be used to get the next position. </p> 
+<p> Although the theoretical execution time is better than <a href="interpolationSearch.html"><em>interpolation search</em></a> or <a href="binarySearch.html"><em>binary search</em></a>, coding is tricky, and the gains from faster convergence are offset by higher costs per iteration. </p> 
+<p> Richard Harter &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4f2c3d260f3b262e2c61212a3b">[email&#160;protected]</a>&gt; January 2001.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#5b2b3a2e377539373a38301b3532282f753c342d">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 14 August 2008.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "secant search", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 14 August 2008. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/secantSearch.html">https://www.nist.gov/dads/HTML/secantSearch.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a917321abc13d1',t:'MTc5MjAwNzE5MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>dictionary</title>
+<meta name="description"
+  content="Definition of dictionary,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="dictionary">
+<meta name="type" content="data structure">
+<meta name="area" content="Searching">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>dictionary</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+An <a href="abstractDataType.html"><em>abstract data type</em></a> storing items, or values.  A value is accessed by an associated <a href="key.html"><em>key</em></a>. Basic operations are new, insert, find and delete.
+</p>
+
+<p>
+<strong>Formal Definition:</strong> The operations new(), insert(k, v, D), and find(k, D) may be defined with <a href="axiomaticSemantics.html"><em>axiomatic semantics</em></a> as follows. <ol> <li>new() returns a dictionary <li>find(k, insert(k, v, D)) = v <li>find(k, insert(j, v, D)) = find(k, D) if k &ne; j </ol> where k and j are keys, v is a value, and D is a dictionary. </p> <p> The modifier function delete(k, D) may be defined as follows. <ol start="4"> <li>delete(k, new()) = new() <li>delete(k, insert(k, v, D)) = delete(k, D) <li>delete(k, insert(j, v, D)) = insert(j, v, delete(k, D)) if k &ne; j </ol> </p> <p> If we want find to be a <a href="totalfunc.html"><em>total function</em></a>, we could define  find(k, new()) using a special value: <em>fail</em>. This only changes the return type of find. <ol start="7"> <li>find(k, new()) = <em>fail</em> </ol>
+</p>
+<p>
+<strong>Also known as</strong> association list, map, property list.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="binaryRelation.html"><em>binary relation</em></a>, <a href="abstractDataType.html"><em>abstract data type</em></a>.
+</p>
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="assocarray.html"><em>associative array</em></a>, <a href="invertibleBloomTable.html"><em>invertible Bloom lookup table</em></a> with high probability.
+</p>
+<p>
+<strong>See also</strong>
+<a href="totalorder.html"><em>total order</em></a>, <a href="set.html"><em>set</em></a> Some implementations: <a href="linkedList.html"><em>linked list</em></a>, <a href="hashtab.html"><em>hash table</em></a>, <a href="btree.html"><em>B-tree</em></a>, <a href="jumpList.html"><em>jump list</em></a>, <a href="directedAcyclicWordGraph.html"><em>directed acyclic word graph</em></a>.
+</p>
+
+<p>
+<em>Note:
+The terms "association list" and "property list" are used with LISP-like languages and in the area of Artificial Intelligence.  These suggest a relatively small number of items, whereas a dictionary may be quite large.  Professionals in the Data Management area have specialized semantics for "dictionary" and related terms. </p> 
+<p> A dictionary defines a <a href="binaryRelation.html"><em>binary relation</em></a> that maps keys to values. The keys of a dictionary are a <a href="set.html"><em>set</em></a>. </p> 
+<p> Contributions by Rob Stewart 16 March 2004.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+<a href="https://algorist.com/problems/Dictionaries.html" target="_blank">(C++, Pascal, and Fortran)</a>. Maksim Goleta's C# Collections <a href="https://github.com/Goleta/csharp-collections/blob/master/Goletas.Collections/SortedDictionary.cs" target="_blank">sorted (C#)</a> and <a href="https://github.com/Goleta/csharp-collections/blob/master/Goletas.Collections/IDictionary.cs" target="_blank">unordered (C#)</a>.
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#e29283978ecc808e838189a28c8b9196cc858d94">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 2 November 2020.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "dictionary", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 2 November 2020. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/dictionary.html">https://www.nist.gov/dads/HTML/dictionary.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a91678aaff253a',t:'MTc5MjAwNzE2MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

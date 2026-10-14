@@ -1,0 +1,3180 @@
+<!doctype html><html lang="en"><head>
+
+<title>MeSH Browser</title>
+
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+
+<link rel="stylesheet" href="/public/css/font-awesome.css">
+<link rel="stylesheet" href="/public/css/bootstrap.css">
+<link rel="stylesheet" href="/public/css/mongoMesh.css">
+<link rel="icon" type="image/jpeg" href="/public/img/meshLogo.jpg">
+
+<base href="/">
+<script src="https://www.nlm.nih.gov/coop_all_uswds.js?v=1792006152525"></script>
+
+<script>
+
+    if (document.domain != "localhost")
+        document.domain = "nlm.nih.gov";
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        try {
+
+            if (coopmsg
+                && !/(^|; *)shutdown-banner=/.test(document.cookie))
+
+                document.querySelector(
+                    "body > div"
+                ).insertAdjacentHTML(
+                    "afterbegin",
+                    "<div id='shutdown-banner'><p>" + coopmsg
+                    + "</p><button type='button' role='button'"
+                    + " aria-label='Close' onclick='"
+                    + 'document.getElementById("shutdown-banner")'
+                    + '.remove(); document.cookie ='
+                    + ' "shutdown-banner=hidden; path=/";'
+                    + "'>Close</button></div>"
+                );
+
+        } catch (error) {
+            /* The "coopmsg" variable is only defined during a
+             * shutdown. */
+            if (!(error instanceof ReferenceError))
+                throw error;
+        }
+
+    });
+
+    var dcmsLinks = false,
+        dcmsParam = dcmsLinks
+                    ? function (sep) { return sep + "dcmsLinks=true"; }
+                    : function (   ) { return ""                    ; };
+
+</script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){
+        var _fullPath = window.location.href;
+        var urlParams = _fullPath.slice(_fullPath.indexOf('?') + 1).split('&');
+        var IsOpen = "false";
+        if (urlParams != undefined && urlParams != null && urlParams != "") {
+            IsOpen = urlParams[0].split("=")[1];
+        }
+
+        if (IsOpen == "false" || IsOpen == undefined || IsOpen != "true") {
+            w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        }
+    })(window,document,'script','dataLayer','GTM-5QZ7KJZ');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe sandbox src="https://www.googletagmanager.com/ns.html?id=GTM-5QZ7KJZ"
+                  height="0" width="0" style="display:none;visibility:hidden" title="googletagmanager"></iframe></noscript> 
+<!-- End Google Tag Manager (noscript) -->
+
+<script src="/public/js/elemUtil.js"></script>
+
+<script src="/public/js/record.js"  ></script>
+<script src="/public/js/treeDom.js" ></script>
+</head><body>
+
+<div>
+
+    <header class="NLMheader">
+        <a href="https://www.nlm.nih.gov/">
+          <img height="80" alt="NLM Logo"
+               src="https://www.nlm.nih.gov/images/NLM_White.png">
+        </a>
+        <!--<img class="starLogo"src="/public/img/NLM_Star.png" alt="NLM Star">-->
+    </header>
+<nav class="navbar navbar-default">
+
+  <div class="container-fluid">
+
+        <div class="navbar-header">
+
+          <button class="navbar-toggle collapsed" type="button"
+                  aria-expanded="false"
+                  onclick="toggleCollapse('bs-example-navbar-collapse-1')">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://www.nlm.nih.gov/mesh/">
+                <img id="meshNavbarLogo" src="/public/img/meshLogo.jpg" alt="MeSH Logo">
+            </a>
+        </div>
+
+        <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse"
+             aria-expanded="false">
+            <ul class="nav navbar-nav">
+                
+                <li><a href="/" id="mainSearchButton">Search</a></li>
+                <li><a href="/treeView">Tree View</a></li>
+                <li><a href="/MeSHonDemand">MeSH on Demand</a> </li> <!--Delete the Span Tags after  a few months, once MeSH on Demand is no longer new-->
+                <li><a href="https://meshb-prev.nlm.nih.gov/" target="_blank">MeSH 2027</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/mbinfo.html" target="_blank">About</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/meshsugg.html" target="_blank">Suggestions</a> </li>
+                <li><a href="https://support.nlm.nih.gov/support/create-case/" target="_blank">Contact Us</a></li>
+            </ul>
+
+        </div>
+
+  </div>
+
+</nav>
+
+</div>
+
+<div class="container">
+
+
+
+
+<h1>Demography <small>MeSH Descriptor            Data 2026</small></h1>
+
+<ul class="nav nav-tabs">
+    <li id="details" class="active"
+        onclick="switchTab([ 'details', 'detailsTabContent' ])">
+        <a class="fakeLink">Details</a></li>
+    
+        <li id="qualifiers"
+            onclick="switchTab([ 'qualifiers', 'qualifiersTabContent' ])">
+            <a class="fakeLink">Qualifiers</a></li>
+        <li id="trees" onclick="switchTab([ 'trees', 'treesTabContent' ])">
+            <a class="fakeLink">MeSH Tree Structures</a></li>
+    
+    <li id="concepts" onclick="switchTab([ 'concepts', 'conceptsTabContent' ])">
+        <a class="fakeLink">Concepts</a></li>
+</ul>
+
+
+
+<div class="tab-content"><br>
+<div id="detailsTabContent" class="tab-pane active">
+
+    <dl id="descriptorDetails_Demography"
+        class="dl-horizontal">
+
+        <dt>MeSH Heading      </dt>
+
+        <dd>Demography</dd>
+
+        
+                    <dt>Tree Number(s)</dt>
+                    
+                        <dd><a id="treeNumber_0" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >I01.240</a></dd>
+                    
+                        <dd><a id="treeNumber_1" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >N01.224</a></dd>
+                    
+                        <dd><a id="treeNumber_2" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >N06.850.505.400</a></dd>
+                    
+
+        <dt>Unique ID</dt><dd>D003710</dd>
+
+        <dt>RDF Unique Identifier</dt>
+        <dd><a href="https://id.nlm.nih.gov/mesh/D003710.html">
+            http://id.nlm.nih.gov/mesh/D003710
+        </a></dd>
+
+        <span id="annotation">
+            <dt>Annotation</dt><dd>the statistical study of population characteristics; do not confuse with the <a href="/record/ui?ui=D011153" class="textLink_POPULATION">POPULATION</a> itself</dd>
+        </span>
+                <span id="scopeNote">
+                    <dt>Scope Note</dt><dd>Statistical interpretation and description of a population with reference to distribution, composition, or structure.</dd>
+                </span>
+            
+            <dt>Entry Version</dt><dd>DEMOGR</dd>
+        
+                <dt>Entry Term(s)</dt>
+                <dd>
+                    Accounting, Demographic
+                    
+                </dd><dd>
+                    Analyses, Demographic
+                    
+                </dd><dd>
+                    Analyses, Multiregional
+                    
+                </dd><dd>
+                    Analysis, Period
+                    
+                </dd><dd>
+                    Brass Technic
+                    
+                </dd><dd>
+                    Brass Technique
+                    
+                </dd><dd>
+                    Demographer
+                    
+                </dd><dd>
+                    Demographers
+                    
+                </dd><dd>
+                    Demographic
+                    
+                </dd><dd>
+                    Demographic Accounting
+                    
+                </dd><dd>
+                    Demographic Analysis
+                    
+                </dd><dd>
+                    Demographic Factor
+                    
+                </dd><dd>
+                    Demographic Factors
+                    
+                </dd><dd>
+                    Demographic Impact
+                    
+                </dd><dd>
+                    Demographic Impacts
+                    
+                </dd><dd>
+                    Demographic Survey
+                    
+                </dd><dd>
+                    Demographic Surveys
+                    
+                </dd><dd>
+                    Demographic and Health Survey
+                    
+                </dd><dd>
+                    Demographic and Health Surveys
+                    
+                </dd><dd>
+                    Demographics
+                    
+                </dd><dd>
+                    Demography, Historical
+                    
+                </dd><dd>
+                    Demography, Prehistoric
+                    
+                </dd><dd>
+                    Factor, Demographic
+                    
+                </dd><dd>
+                    Factors, Demographic
+                    
+                </dd><dd>
+                    Family Reconstitution
+                    
+                </dd><dd>
+                    Historical Demography
+                    
+                </dd><dd>
+                    Impact, Demographic
+                    
+                </dd><dd>
+                    Impacts, Demographic
+                    
+                </dd><dd>
+                    Multiregional Analysis
+                    
+                </dd><dd>
+                    Period Analysis
+                    
+                </dd><dd>
+                    Population Distribution
+                    
+                </dd><dd>
+                    Population Spatial Distribution
+                    
+                </dd><dd>
+                    Prehistoric Demography
+                    
+                </dd><dd>
+                    Reverse Survival Method
+                    
+                </dd><dd>
+                    Stable Population Method
+                    
+                </dd><dd>
+                    Survey, Demographic
+                    
+                </dd><dd>
+                    Surveys, Demographic
+                    
+                </dd>
+        
+
+
+        
+                <dt>Date Introduced</dt>
+                <dd>1966/01/01</dd>
+            
+                <dt>Last Updated</dt>
+                <dd>2020/05/27</dd>
+            
+
+    </dl>
+
+</div>
+
+<div id="qualifiersTabContent" class="tab-pane">
+
+    <dl class="dl-horizontal">
+
+        
+<br>
+
+        
+                <span id="allowableQualifiers"><dt>Allowable Qualifiers</dt><dd>
+                <ul class="list-unstyled">
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000145">
+                            classification
+                            (CL)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000191">
+                            economics
+                            (EC)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000941">
+                            ethics
+                            (ES)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000266">
+                            history
+                            (HI)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000331">
+                            legislation &amp; jurisprudence
+                            (LJ)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000379">
+                            methods
+                            (MT)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000592">
+                            standards
+                            (ST)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000706">
+                            statistics &amp; numerical data
+                            (SN)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000600">
+                            supply &amp; distribution
+                            (SD)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000639">
+                            trends
+                            (TD)
+                        </a></li>
+                    
+                </ul></dd></span>
+            
+
+    </dl>
+
+</div><div id="treesTabContent" class="tab-pane">
+
+    <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_I01"
+           
+               href="/record/ui?ui=D012942"
+           
+        ><span>Social Sciences [I01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_I01_076"
+           
+               href="/record/ui?ui=D000883"
+           
+        ><span>Anthropology [I01.076]</span>
+        </a>
+        
+            <i id="plus_Anthropology" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Anthropology" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_I01_198"
+           
+               href="/record/ui?ui=D003418"
+           
+        ><span>Criminology [I01.198]</span>
+        </a>
+        
+            <i id="plus_Criminology" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Criminology" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_I01_240"
+           
+               href="/record/ui?ui=D003710"
+           
+        ><strong>Demography [I01.240]</strong>
+        </a>
+        
+            <i id="plus_Demography" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Demography" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_I01_240_050"
+           
+               href="/record/ui?ui=D017677"
+           
+        ><span>Age Distribution [I01.240.050]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_I01_240_205"
+           
+               href="/record/ui?ui=D019352"
+           
+        ><span>Censuses [I01.240.205]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_I01_240_361"
+           
+               href="/record/ui?ui=D005191"
+           
+        ><span>Family Characteristics [I01.240.361]</span>
+        </a>
+        
+            <i id="plus_Family_Characteristics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Family_Characteristics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_I01_240_425"
+           
+               href="/record/ui?ui=D006304"
+           
+        ><span>Health Status [I01.240.425]</span>
+        </a>
+        
+            <i id="plus_Health_Status" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Health_Status" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_I01_240_600"
+           
+               href="/record/ui?ui=D011157"
+           
+        ><span>Population Dynamics [I01.240.600]</span>
+        </a>
+        
+            <i id="plus_Population_Dynamics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Population_Dynamics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_I01_240_800"
+           
+               href="/record/ui?ui=D017678"
+           
+        ><span>Sex Distribution [I01.240.800]</span>
+        </a>
+        
+            <i id="plus_Sex_Distribution" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Sex_Distribution" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_0_node_I01_261"
+           
+               href="/record/ui?ui=D004467"
+           
+        ><span>Economics [I01.261]</span>
+        </a>
+        
+            <i id="plus_Economics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Economics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_I01_283"
+           
+               href="/record/ui?ui=D004779"
+           
+        ><span>Environment Design [I01.283]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_I01_320"
+           
+               href="/record/ui?ui=D005544"
+           
+        ><span>Forecasting [I01.320]</span>
+        </a>
+        
+            <i id="plus_Forecasting" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Forecasting" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_I01_409"
+           
+               href="/record/ui?ui=D006076"
+           
+        ><span>Government [I01.409]</span>
+        </a>
+        
+            <i id="plus_Government" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Government" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_I01_451"
+           
+               href="/record/ui?ui=D006078"
+           
+        ><span>Government Programs [I01.451]</span>
+        </a>
+        
+            <i id="plus_Government_Programs" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Government_Programs" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_I01_615"
+           
+               href="/record/ui?ui=D038622"
+           
+        ><span>Internationality [I01.615]</span>
+        </a>
+        
+            <i id="plus_Internationality" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Internationality" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_I01_655"
+           
+               href="/record/ui?ui=D057766"
+           
+        ><span>Policy [I01.655]</span>
+        </a>
+        
+            <i id="plus_Policy" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Policy" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_I01_696"
+           
+               href="/record/ui?ui=D011056"
+           
+        ><span>Political Systems [I01.696]</span>
+        </a>
+        
+            <i id="plus_Political_Systems" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Political_Systems" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_I01_738"
+           
+               href="/record/ui?ui=D011057"
+           
+        ><span>Politics [I01.738]</span>
+        </a>
+        
+            <i id="plus_Politics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Politics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_I01_791"
+           
+               href="/record/ui?ui=D017149"
+           
+        ><span>Private Sector [I01.791]</span>
+        </a>
+        
+            <i id="plus_Private_Sector" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Private_Sector" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_I01_795"
+           
+               href="/record/ui?ui=D017150"
+           
+        ><span>Public Sector [I01.795]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_I01_800"
+           
+               href="/record/ui?ui=D011788"
+           
+        ><span>Quality of Life [I01.800]</span>
+        </a>
+        
+            <i id="plus_Quality_of_Life" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Quality_of_Life" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_I01_880"
+           
+               href="/record/ui?ui=D012961"
+           
+        ><span>Sociology [I01.880]</span>
+        </a>
+        
+            <i id="plus_Sociology" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Sociology" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_I01_940"
+           
+               href="/record/ui?ui=D000072358"
+           
+        ><span>Work-Life Balance [I01.940]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_N01"
+           
+               href="/record/ui?ui=D011154"
+           
+        ><span>Population Characteristics [N01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_N01_224"
+           
+               href="/record/ui?ui=D003710"
+           
+        ><strong>Demography [N01.224]</strong>
+        </a>
+        
+            <i id="plus_Demography" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Demography" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_N01_224_033"
+           
+               href="/record/ui?ui=D017677"
+           
+        ><span>Age Distribution [N01.224.033]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N01_224_175"
+           
+               href="/record/ui?ui=D019352"
+           
+        ><span>Censuses [N01.224.175]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N01_224_317"
+           
+               href="/record/ui?ui=D005006"
+           
+        ><span>Ethnicity [N01.224.317]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N01_224_361"
+           
+               href="/record/ui?ui=D005191"
+           
+        ><span>Family Characteristics [N01.224.361]</span>
+        </a>
+        
+            <i id="plus_Family_Characteristics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Family_Characteristics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N01_224_425"
+           
+               href="/record/ui?ui=D006304"
+           
+        ><span>Health Status [N01.224.425]</span>
+        </a>
+        
+            <i id="plus_Health_Status" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Health_Status" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N01_224_600"
+           
+               href="/record/ui?ui=D011156"
+           
+        ><span>Population Density [N01.224.600]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N01_224_625"
+           
+               href="/record/ui?ui=D011157"
+           
+        ><span>Population Dynamics [N01.224.625]</span>
+        </a>
+        
+            <i id="plus_Population_Dynamics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Population_Dynamics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N01_224_667"
+           
+               href="/record/ui?ui=D000069457"
+           
+        ><span>Population Forecast [N01.224.667]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N01_224_708"
+           
+               href="/record/ui?ui=D044382"
+           
+        ><span>Population Groups [N01.224.708]</span>
+        </a>
+        
+            <i id="plus_Population_Groups" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Population_Groups" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N01_224_791"
+           
+               href="/record/ui?ui=D012111"
+           
+        ><span>Residence Characteristics [N01.224.791]</span>
+        </a>
+        
+            <i id="plus_Residence_Characteristics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Residence_Characteristics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N01_224_803"
+           
+               href="/record/ui?ui=D017678"
+           
+        ><span>Sex Distribution [N01.224.803]</span>
+        </a>
+        
+            <i id="plus_Sex_Distribution" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Sex_Distribution" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N01_224_935"
+           
+               href="/record/ui?ui=D014798"
+           
+        ><span>Vital Statistics [N01.224.935]</span>
+        </a>
+        
+            <i id="plus_Vital_Statistics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Vital_Statistics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N01_400"
+           
+               href="/record/ui?ui=D006262"
+           
+        ><span>Health [N01.400]</span>
+        </a>
+        
+            <i id="plus_Health" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Health" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N01_600"
+           
+               href="/record/ui?ui=D011153"
+           
+        ><span>Population [N01.600]</span>
+        </a>
+        
+            <i id="plus_Population" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Population" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N01_824"
+           
+               href="/record/ui?ui=D012959"
+           
+        ><span>Socioeconomic Factors [N01.824]</span>
+        </a>
+        
+            <i id="plus_Socioeconomic_Factors" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Socioeconomic_Factors" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_N06"
+           
+               href="/record/ui?ui=D004778"
+           
+        ><span>Environment and Public Health [N06]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_N06_850"
+           
+               href="/record/ui?ui=D011634"
+           
+        ><span>Public Health [N06.850]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_N06_850_505"
+           
+               href="/record/ui?ui=D015991"
+           
+        ><span>Epidemiologic Measurements [N06.850.505]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_N06_850_505_200"
+           
+               href="/record/ui?ui=D001699"
+           
+        ><span>Biometry [N06.850.505.200]</span>
+        </a>
+        
+            <i id="plus_Biometry" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Biometry" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_N06_850_505_300"
+           
+               href="/record/ui?ui=D000090022"
+           
+        ><span>Chemometrics [N06.850.505.300]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_N06_850_505_400"
+           
+               href="/record/ui?ui=D003710"
+           
+        ><strong>Demography [N06.850.505.400]</strong>
+        </a>
+        
+            <i id="plus_Demography" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Demography" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_N06_850_505_400_050"
+           
+               href="/record/ui?ui=D017677"
+           
+        ><span>Age Distribution [N06.850.505.400.050]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_N06_850_505_400_225"
+           
+               href="/record/ui?ui=D019352"
+           
+        ><span>Censuses [N06.850.505.400.225]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_N06_850_505_400_400"
+           
+               href="/record/ui?ui=D005191"
+           
+        ><span>Family Characteristics [N06.850.505.400.400]</span>
+        </a>
+        
+            <i id="plus_Family_Characteristics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Family_Characteristics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_N06_850_505_400_425"
+           
+               href="/record/ui?ui=D006304"
+           
+        ><span>Health Status [N06.850.505.400.425]</span>
+        </a>
+        
+            <i id="plus_Health_Status" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Health_Status" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_N06_850_505_400_600"
+           
+               href="/record/ui?ui=D011156"
+           
+        ><span>Population Density [N06.850.505.400.600]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_N06_850_505_400_700"
+           
+               href="/record/ui?ui=D011157"
+           
+        ><span>Population Dynamics [N06.850.505.400.700]</span>
+        </a>
+        
+            <i id="plus_Population_Dynamics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Population_Dynamics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_N06_850_505_400_800"
+           
+               href="/record/ui?ui=D012111"
+           
+        ><span>Residence Characteristics [N06.850.505.400.800]</span>
+        </a>
+        
+            <i id="plus_Residence_Characteristics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Residence_Characteristics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_N06_850_505_400_850"
+           
+               href="/record/ui?ui=D017678"
+           
+        ><span>Sex Distribution [N06.850.505.400.850]</span>
+        </a>
+        
+            <i id="plus_Sex_Distribution" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Sex_Distribution" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_N06_850_505_400_975"
+           
+               href="/record/ui?ui=D014798"
+           
+        ><span>Vital Statistics [N06.850.505.400.975]</span>
+        </a>
+        
+            <i id="plus_Vital_Statistics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Vital_Statistics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_2_node_N06_850_505_557"
+           
+               href="/record/ui?ui=D015596"
+           
+        ><span>Nutrition Assessment [N06.850.505.557]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_N06_850_505_616"
+           
+               href="/record/ui?ui=D009749"
+           
+        ><span>Nutrition Surveys [N06.850.505.616]</span>
+        </a>
+        
+            <i id="plus_Nutrition_Surveys" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Nutrition_Surveys" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_N06_850_505_636"
+           
+               href="/record/ui?ui=D060735"
+           
+        ><span>Pharmacovigilance [N06.850.505.636]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_N06_850_505_715"
+           
+               href="/record/ui?ui=D018570"
+           
+        ><span>Risk Assessment [N06.850.505.715]</span>
+        </a>
+        
+            <i id="plus_Risk_Assessment" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Risk_Assessment" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+
+</div>
+
+<div id="conceptsTabContent" class="tab-pane">
+
+    <button id="ExpandAll" class="btn btn-default btn-sm pull-right"
+            onclick="toggleConcepts()">
+        <span id="expandConcepts"                        >  Expand All</span>
+        <span id="collapseConcepts" style="display: none">Collapse All</span>
+    </button>
+
+    
+
+        <div>
+        <span id="Nightwatch_cp_0_0"
+              onclick="toggleCollapse('cp_0_0', 'Nightwatch_cp_0_0')">
+        <a class="fakeLink"><b>
+            Demography
+            <i>Preferred</i>
+        </b></a></span>
+
+        <div id="cp_0_0" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0005814</dd>
+
+            
+                <dt>Scope Note</dt><dd>Statistical interpretation and description of a population with reference to distribution, composition, or structure.</dd>
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_0_0"
+                      onclick="toggleCollapse('termName_0_0',
+                                              'Nightwatch_termName_0_0')">
+                    <a class="fakeLink"><b>Demography</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_0_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010860<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>01/01/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1978)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_1"
+                      onclick="toggleCollapse('termName_0_1',
+                                              'Nightwatch_termName_0_1')">
+                    <a class="fakeLink"><b>Demographic</b></a></span>
+
+                
+
+                <div id="termName_0_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T001004481<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>12/30/2019<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2021)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_2"
+                      onclick="toggleCollapse('termName_0_2',
+                                              'Nightwatch_termName_0_2')">
+                    <a class="fakeLink"><b>Demographics</b></a></span>
+
+                
+
+                <div id="termName_0_2" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010861<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>08/30/1990<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1987)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_1_1"
+              onclick="toggleCollapse('cp_1_1', 'Nightwatch_cp_1_1')">
+        <a class="fakeLink"><b>
+            Demographers
+            <i>Related</i>
+        </b></a></span>
+
+        <div id="cp_1_1" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0005808</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_1_0"
+                      onclick="toggleCollapse('termName_1_0',
+                                              'Nightwatch_termName_1_0')">
+                    <a class="fakeLink"><b>Demographers</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_1_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010843<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>12/26/1978<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1978)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_1_1"
+                      onclick="toggleCollapse('termName_1_1',
+                                              'Nightwatch_termName_1_1')">
+                    <a class="fakeLink"><b>Demographer</b></a></span>
+
+                
+
+                <div id="termName_1_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T001004482<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>12/30/2019<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2021)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_2_2"
+              onclick="toggleCollapse('cp_2_2', 'Nightwatch_cp_2_2')">
+        <a class="fakeLink"><b>
+            Demographic Accounting
+            <i>Narrower</i>
+        </b></a></span>
+
+        <div id="cp_2_2" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0005809</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_2_0"
+                      onclick="toggleCollapse('termName_2_0',
+                                              'Nightwatch_termName_2_0')">
+                    <a class="fakeLink"><b>Demographic Accounting</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_2_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010845<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>12/31/1986<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1982)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_2_1"
+                      onclick="toggleCollapse('termName_2_1',
+                                              'Nightwatch_termName_2_1')">
+                    <a class="fakeLink"><b>Accounting, Demographic</b></a></span>
+
+                
+
+                <div id="termName_2_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010844<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>10/13/1993<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1995)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_3_3"
+              onclick="toggleCollapse('cp_3_3', 'Nightwatch_cp_3_3')">
+        <a class="fakeLink"><b>
+            Demographic Analysis
+            <i>Narrower</i>
+        </b></a></span>
+
+        <div id="cp_3_3" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0005810</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_3_0"
+                      onclick="toggleCollapse('termName_3_0',
+                                              'Nightwatch_termName_3_0')">
+                    <a class="fakeLink"><b>Demographic Analysis</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_3_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010847<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>12/31/1986<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1981)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_3_1"
+                      onclick="toggleCollapse('termName_3_1',
+                                              'Nightwatch_termName_3_1')">
+                    <a class="fakeLink"><b>Analyses, Demographic</b></a></span>
+
+                
+
+                <div id="termName_3_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010846<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>10/13/1993<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1995)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_4_4"
+              onclick="toggleCollapse('cp_4_4', 'Nightwatch_cp_4_4')">
+        <a class="fakeLink"><b>
+            Factors, Demographic
+            <i>Narrower</i>
+        </b></a></span>
+
+        <div id="cp_4_4" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0005811</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_4_0"
+                      onclick="toggleCollapse('termName_4_0',
+                                              'Nightwatch_termName_4_0')">
+                    <a class="fakeLink"><b>Factors, Demographic</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_4_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010851<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>10/13/1993<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1995)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_4_1"
+                      onclick="toggleCollapse('termName_4_1',
+                                              'Nightwatch_termName_4_1')">
+                    <a class="fakeLink"><b>Demographic Factor</b></a></span>
+
+                
+
+                <div id="termName_4_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010848<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>10/13/1993<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1995)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_4_2"
+                      onclick="toggleCollapse('termName_4_2',
+                                              'Nightwatch_termName_4_2')">
+                    <a class="fakeLink"><b>Demographic Factors</b></a></span>
+
+                
+
+                <div id="termName_4_2" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010849<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>03/22/1979<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1978)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_4_3"
+                      onclick="toggleCollapse('termName_4_3',
+                                              'Nightwatch_termName_4_3')">
+                    <a class="fakeLink"><b>Factor, Demographic</b></a></span>
+
+                
+
+                <div id="termName_4_3" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010850<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>10/13/1993<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1995)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_5_5"
+              onclick="toggleCollapse('cp_5_5', 'Nightwatch_cp_5_5')">
+        <a class="fakeLink"><b>
+            Impacts, Demographic
+            <i>Narrower</i>
+        </b></a></span>
+
+        <div id="cp_5_5" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0005812</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_5_0"
+                      onclick="toggleCollapse('termName_5_0',
+                                              'Nightwatch_termName_5_0')">
+                    <a class="fakeLink"><b>Impacts, Demographic</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_5_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010855<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>10/13/1993<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1995)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_5_1"
+                      onclick="toggleCollapse('termName_5_1',
+                                              'Nightwatch_termName_5_1')">
+                    <a class="fakeLink"><b>Demographic Impact</b></a></span>
+
+                
+
+                <div id="termName_5_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010852<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>12/26/1978<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1978)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_5_2"
+                      onclick="toggleCollapse('termName_5_2',
+                                              'Nightwatch_termName_5_2')">
+                    <a class="fakeLink"><b>Demographic Impacts</b></a></span>
+
+                
+
+                <div id="termName_5_2" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010853<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>10/13/1993<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1995)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_5_3"
+                      onclick="toggleCollapse('termName_5_3',
+                                              'Nightwatch_termName_5_3')">
+                    <a class="fakeLink"><b>Impact, Demographic</b></a></span>
+
+                
+
+                <div id="termName_5_3" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010854<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>10/13/1993<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1995)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_6_6"
+              onclick="toggleCollapse('cp_6_6', 'Nightwatch_cp_6_6')">
+        <a class="fakeLink"><b>
+            Surveys, Demographic
+            <i>Narrower</i>
+        </b></a></span>
+
+        <div id="cp_6_6" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0005813</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_6_0"
+                      onclick="toggleCollapse('termName_6_0',
+                                              'Nightwatch_termName_6_0')">
+                    <a class="fakeLink"><b>Surveys, Demographic</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_6_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010859<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>10/13/1993<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1995)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_6_1"
+                      onclick="toggleCollapse('termName_6_1',
+                                              'Nightwatch_termName_6_1')">
+                    <a class="fakeLink"><b>Demographic Survey</b></a></span>
+
+                
+
+                <div id="termName_6_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010856<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>10/13/1993<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1995)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_6_2"
+                      onclick="toggleCollapse('termName_6_2',
+                                              'Nightwatch_termName_6_2')">
+                    <a class="fakeLink"><b>Demographic Surveys</b></a></span>
+
+                
+
+                <div id="termName_6_2" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010857<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>12/26/1978<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1978)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_6_3"
+                      onclick="toggleCollapse('termName_6_3',
+                                              'Nightwatch_termName_6_3')">
+                    <a class="fakeLink"><b>Survey, Demographic</b></a></span>
+
+                
+
+                <div id="termName_6_3" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010858<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>10/13/1993<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1995)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_7_7"
+              onclick="toggleCollapse('cp_7_7', 'Nightwatch_cp_7_7')">
+        <a class="fakeLink"><b>
+            Historical Demography
+            <i>Narrower</i>
+        </b></a></span>
+
+        <div id="cp_7_7" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0005815</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_7_0"
+                      onclick="toggleCollapse('termName_7_0',
+                                              'Nightwatch_termName_7_0')">
+                    <a class="fakeLink"><b>Historical Demography</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_7_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010863<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>12/31/1986<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1981)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_7_1"
+                      onclick="toggleCollapse('termName_7_1',
+                                              'Nightwatch_termName_7_1')">
+                    <a class="fakeLink"><b>Demography, Historical</b></a></span>
+
+                
+
+                <div id="termName_7_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010862<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>10/13/1993<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1995)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_8_8"
+              onclick="toggleCollapse('cp_8_8', 'Nightwatch_cp_8_8')">
+        <a class="fakeLink"><b>
+            Multiregional Analysis
+            <i>Related</i>
+        </b></a></span>
+
+        <div id="cp_8_8" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0005816</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_8_0"
+                      onclick="toggleCollapse('termName_8_0',
+                                              'Nightwatch_termName_8_0')">
+                    <a class="fakeLink"><b>Multiregional Analysis</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_8_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010865<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>12/31/1986<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1983)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_8_1"
+                      onclick="toggleCollapse('termName_8_1',
+                                              'Nightwatch_termName_8_1')">
+                    <a class="fakeLink"><b>Analyses, Multiregional</b></a></span>
+
+                
+
+                <div id="termName_8_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010864<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>10/13/1993<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1995)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_9_9"
+              onclick="toggleCollapse('cp_9_9', 'Nightwatch_cp_9_9')">
+        <a class="fakeLink"><b>
+            Population Distribution
+            <i>Related</i>
+        </b></a></span>
+
+        <div id="cp_9_9" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0005817</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_9_0"
+                      onclick="toggleCollapse('termName_9_0',
+                                              'Nightwatch_termName_9_0')">
+                    <a class="fakeLink"><b>Population Distribution</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_9_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010866<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>03/17/1977<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        UNK (19XX)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_10_10"
+              onclick="toggleCollapse('cp_10_10', 'Nightwatch_cp_10_10')">
+        <a class="fakeLink"><b>
+            Reverse Survival Method
+            <i>Related</i>
+        </b></a></span>
+
+        <div id="cp_10_10" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0005818</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_10_0"
+                      onclick="toggleCollapse('termName_10_0',
+                                              'Nightwatch_termName_10_0')">
+                    <a class="fakeLink"><b>Reverse Survival Method</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_10_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010867<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>12/26/1978<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        POPLINE (1978)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_11_11"
+              onclick="toggleCollapse('cp_11_11', 'Nightwatch_cp_11_11')">
+        <a class="fakeLink"><b>
+            Stable Population Method
+            <i>Related</i>
+        </b></a></span>
+
+        <div id="cp_11_11" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0005819</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_11_0"
+                      onclick="toggleCollapse('termName_11_0',
+                                              'Nightwatch_termName_11_0')">
+                    <a class="fakeLink"><b>Stable Population Method</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_11_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010868<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>12/26/1978<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1978)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_12_12"
+              onclick="toggleCollapse('cp_12_12', 'Nightwatch_cp_12_12')">
+        <a class="fakeLink"><b>
+            Prehistoric Demography
+            <i>Narrower</i>
+        </b></a></span>
+
+        <div id="cp_12_12" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0005820</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_12_0"
+                      onclick="toggleCollapse('termName_12_0',
+                                              'Nightwatch_termName_12_0')">
+                    <a class="fakeLink"><b>Prehistoric Demography</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_12_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010870<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>08/30/1990<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1980)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_12_1"
+                      onclick="toggleCollapse('termName_12_1',
+                                              'Nightwatch_termName_12_1')">
+                    <a class="fakeLink"><b>Demography, Prehistoric</b></a></span>
+
+                
+
+                <div id="termName_12_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010869<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>10/13/1993<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1995)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_13_13"
+              onclick="toggleCollapse('cp_13_13', 'Nightwatch_cp_13_13')">
+        <a class="fakeLink"><b>
+            Period Analysis
+            <i>Related</i>
+        </b></a></span>
+
+        <div id="cp_13_13" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0005821</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_13_0"
+                      onclick="toggleCollapse('termName_13_0',
+                                              'Nightwatch_termName_13_0')">
+                    <a class="fakeLink"><b>Period Analysis</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_13_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010872<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/23/1993<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1981)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_13_1"
+                      onclick="toggleCollapse('termName_13_1',
+                                              'Nightwatch_termName_13_1')">
+                    <a class="fakeLink"><b>Analysis, Period</b></a></span>
+
+                
+
+                <div id="termName_13_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010871<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/23/1993<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1995)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_14_14"
+              onclick="toggleCollapse('cp_14_14', 'Nightwatch_cp_14_14')">
+        <a class="fakeLink"><b>
+            Demographic and Health Surveys
+            <i>Related</i>
+        </b></a></span>
+
+        <div id="cp_14_14" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0005822</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_14_0"
+                      onclick="toggleCollapse('termName_14_0',
+                                              'Nightwatch_termName_14_0')">
+                    <a class="fakeLink"><b>Demographic and Health Surveys</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_14_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010873<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/29/1993<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1978)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_14_1"
+                      onclick="toggleCollapse('termName_14_1',
+                                              'Nightwatch_termName_14_1')">
+                    <a class="fakeLink"><b>Demographic and Health Survey</b></a></span>
+
+                
+
+                <div id="termName_14_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T001004483<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>12/30/2019<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2021)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_15_15"
+              onclick="toggleCollapse('cp_15_15', 'Nightwatch_cp_15_15')">
+        <a class="fakeLink"><b>
+            Family Reconstitution
+            <i>Related</i>
+        </b></a></span>
+
+        <div id="cp_15_15" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0005823</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_15_0"
+                      onclick="toggleCollapse('termName_15_0',
+                                              'Nightwatch_termName_15_0')">
+                    <a class="fakeLink"><b>Family Reconstitution</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_15_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010874<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/29/1993<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1982)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_16_16"
+              onclick="toggleCollapse('cp_16_16', 'Nightwatch_cp_16_16')">
+        <a class="fakeLink"><b>
+            Brass Technique
+            <i>Related</i>
+        </b></a></span>
+
+        <div id="cp_16_16" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0005807</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_16_0"
+                      onclick="toggleCollapse('termName_16_0',
+                                              'Nightwatch_termName_16_0')">
+                    <a class="fakeLink"><b>Brass Technique</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_16_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010841<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>01/10/1990<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    EPO<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1991)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_16_1"
+                      onclick="toggleCollapse('termName_16_1',
+                                              'Nightwatch_termName_16_1')">
+                    <a class="fakeLink"><b>Brass Technic</b></a></span>
+
+                
+
+                <div id="termName_16_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T010842<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>12/26/1978<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    EPO<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1978)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_17_17"
+              onclick="toggleCollapse('cp_17_17', 'Nightwatch_cp_17_17')">
+        <a class="fakeLink"><b>
+            Population Spatial Distribution
+            <i>Related</i>
+        </b></a></span>
+
+        <div id="cp_17_17" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0569894</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_17_0"
+                      onclick="toggleCollapse('termName_17_0',
+                                              'Nightwatch_termName_17_0')">
+                    <a class="fakeLink"><b>Population Spatial Distribution</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_17_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T815916<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>01/12/2012<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2013)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+</div></div>
+
+<small class="pull-right">
+    page delivered in 0.173s
+</small>
+
+</div>
+
+<footer class="footer">
+    <div class="container-fluid"><div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/socialmedia/index.html">
+                    Connect with NLM
+                </a></p>
+                <ul class="list-inline">
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://twitter.com/NLM_NIH">
+                        <img src="https://www.nlm.nih.gov/images/Twitter_W.svg"
+                             alt="Twitter">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.facebook.com/nationallibraryofmedicine"
+                    ><img src="https://www.nlm.nih.gov/images/Facebook_W.svg"
+                          alt="Facebook">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.youtube.com/user/NLMNIH">
+                        <img src="https://www.nlm.nih.gov/images/YouTube_W.svg"
+                             alt="You Tube">
+                    </a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p>National Library of Medicine<br>
+                    <a href="https://www.google.com/maps/place/8600+Rockville+Pike,+Bethesda,+MD+20894/@38.9959508,-77.101021,17z/data=!3m1!4b1!4m5!3m4!1s0x89b7c95e25765ddb:0x19156f88b27635b8!8m2!3d38.9959508!4d-77.0988323">
+                        8600 Rockville Pike<br>
+                        Bethesda, MD 20894
+                    </a>
+                </p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/web_policies.html">
+                    Web Policies
+                </a><br>
+                <a href="https://www.nih.gov/institutes-nih/nih-office-director/office-communications-public-liaison/freedom-information-act-office">
+                    FOIA
+                </a><br>
+                <a href="https://www.hhs.gov/vulnerability-disclosure-policy/index.html">
+                    HHS Vulnerability Disclosure
+                </a></p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href=
+                      "https://support.nlm.nih.gov?from=https://www.nlm.nih.gov/">
+                    NLM Support Center
+                </a><br>
+                <a href="https://www.nlm.nih.gov/accessibility.html">
+                    Accessibility
+                </a><br>
+                <a href="https://www.nlm.nih.gov/careers/careers.html">
+                    Careers
+                </a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+              <p class="text-center"> <a href="https://www.nlm.nih.gov/">NLM</a> | <a href="https://www.nih.gov/">NIH</a> | <a href="https://www.hhs.gov/">HHS</a> | <a href="https://www.usa.gov/">USA.gov</a></p>
+            </div>
+        </div>
+    </div></div>
+<!--BEGIN QUALTRICS WEBSITE FEEDBACK SNIPPET-->
+<script type='text/javascript'>
+(function(){var g=function(e,h,f,g){
+this.get=function(a){for(var a=a+"=",c=document.cookie.split(";"),b=0,e=c.length;b<e;b++){for(var d=c[b];" "==d.charAt(0);)d=d.substring(1,d.length);if(0==d.indexOf(a))return d.substring(a.length,d.length)}return null};
+this.set=function(a,c){var b="",b=new Date;b.setTime(b.getTime()+6048E5);b="; expires="+b.toGMTString();document.cookie=a+"="+c+b+"; path=/; "};
+this.check=function(){var a=this.get(f);if(a)a=a.split(":");else if(100!=e)"v"==h&&(e=Math.random()>=e/100?0:100),a=[h,e,0],this.set(f,a.join(":"));else return!0;var c=a[1];if(100==c)return!0;switch(a[0]){case "v":return!1;case "r":return c=a[2]%Math.floor(100/c),a[2]++,this.set(f,a.join(":")),!c}return!0};
+this.go=function(){if(this.check()){var a=document.createElement("script");a.type="text/javascript";a.src=g;document.body&&document.body.appendChild(a)}};
+this.start=function(){var t=this;"complete"!==document.readyState?window.addEventListener?window.addEventListener("load",function(){t.go()},!1):window.attachEvent&&window.attachEvent("onload",function(){t.go()}):t.go()};};
+try{(new g(100,"r","QSI_S_ZN_cwOHfLkxRr4n4W2","https://zncwohflkxrr4n4w2-nlmenterprise.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_cwOHfLkxRr4n4W2")).start()}catch(i){}})();
+</script><div id='ZN_cwOHfLkxRr4n4W2'><!--DO NOT REMOVE-CONTENTS PLACED HERE--></div>
+<!--END WEBSITE FEEDBACK SNIPPET-->
+</footer>
+
+</body></html>
+

@@ -1,0 +1,87 @@
+Merkle tree
+Merkle tree
+(data structure)
+Definition:
+A
+tree
+(usually a
+binary tree
+) in which each
+internal node
+has a
+hash
+of all the information in the
+leaf
+nodes under it.  Specifically, each internal node has a hash of the information in its
+children
+.  Each leaf has a hash of the block of information it represents.  All leaf nodes are at the same
+depth
+.  All nodes are as far left as possible.
+To add a block (leaf) to a
+full
+tree, a new
+root
+is created with the old root as its left child.  Its right child is a degenerate tree (only left subtrees) all the way to the leaf level.
+Also known as
+hash tree.
+Generalization
+(I am a kind of ...)
+tree
+.
+Aggregate child
+(... is a part of or used in me.)
+hash function
+.
+See also
+Merkle_tree [Wikipedia]
+.
+Note:
+Usually the branching is two, making it a
+binary tree
+, but it can be a
+k-ary tree
+.
+Merkle's paper describes a conceptually infinite (binary) tree with blocks (documents) at each internal node. To add a new block, use the next node in a
+level-order traversal
+.  (A level-order traversal is the same order as a
+breadth-first search
+from the root.)
+Given two copies of possibly-the-same information represented by Merkle trees, one can check whether the copies are the same by just comparing the hashes at the root.  A single difference between the copies can be found by just comparing the hashes at internal nodes on a path to the different leaf.  This is logarithmic in the number of leaves.
+A
+complete tree
+has all nodes as far left as possible, too, but every level is filled.
+Author:
+PEB
+More information
+Average
+space required and complexity
+for search, traversal, insert, delete, and synchronize.
+Ralph C. Merkle
+,
+Method of providing digital signatures
+, U.S. Patent 4309569, filed 5 September 1979. PDF image available at
+http://pdfpiw.uspto.gov/.piw?Docid=04309569
+. Text version available at
+http://patft.uspto.gov/netahtml/PTO/srchnum.htm
+enter 4309569 and click Search.
+Ralph C. Merkle
+,
+A Digital Signature Based on a Conventional Encryption Function
+, in C. Pomerance (ed) Advances in Cryptology — CRYPTO ’87. Lecture Notes in Computer Science 293:369-378, 1988.
+doi:10.1007/3-540-48184-2_32
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 19 February 2019.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "Merkle tree", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 19 February 2019. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/MerkleTree.html

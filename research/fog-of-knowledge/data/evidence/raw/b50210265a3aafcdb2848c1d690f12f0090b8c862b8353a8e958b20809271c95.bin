@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>invertible Bloom lookup table</title>
+<meta name="description"
+  content="Definition of invertible Bloom lookup table,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="invertible Bloom lookup table">
+<meta name="type" content="data structure">
+<meta name="area" content="Searching">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>invertible Bloom lookup table</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+Algorithms and an <a href="array.html"><em>array</em></a> of cells to store key/value pairs. Each cell has a <em>count</em> of how many pairs are mapped to the cell, the <em>sum</em> of the keys mapped to it, and the <em>sum</em> of the values mapped to it.  Using k <a href="hash.html"><em>hash functions</em></a>, each pair is mapped to T[h<sub>1</sub>(k)], T[h<sub>2</sub>(k)], ..., T[h<sub>k</sub>(k)].
+</p>
+
+<p>
+<strong>Also known as</strong> IBLT.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="dictionary.html"><em>dictionary</em></a> plus a listEntries() operation and the ability to handle duplicate keys with some implementations.
+</p>
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="array.html"><em>array</em></a>, <a href="hash.html"><em>hash function</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="bloomFilter.html"><em>Bloom filter</em></a>.
+</p>
+
+<p>
+<em>Note:
+The implementation details guarantee that with high probability, each key/value pair has at least one cell to itself, which has a count of 1.  The value and key can be retrieved from that cell. </p> 
+<p> Special care must be taken to either (a) not insert keys multiple times or delete keys that are not present or (b) elaborate the algorithms and data structure. </p> 
+<p> listEntries() reports the key/value pair in each cell with a count of 1, and then removes that key/value pair.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>More information</h2>
+<p>
+<strong>Michael T. Goodrich</strong> and <strong>Michael Mitzenmacher</strong>, <em>Invertible Bloom Lookup Tables</em>, 2011. (V3 is October 2015.) Available at <a href="https://arxiv.org/pdf/1101.2245.pdf" target="_blank">https://arxiv.org/pdf/1101.2245.pdf</a>.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#d1a1b0a4bdffb3bdb0b2ba91bfb8a2a5ffb6bea7">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 8 June 2018.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "invertible Bloom lookup table", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 8 June 2018. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/invertibleBloomTable.html">https://www.nist.gov/dads/HTML/invertibleBloomTable.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a916b7fe862c1d',t:'MTc5MjAwNzE3MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

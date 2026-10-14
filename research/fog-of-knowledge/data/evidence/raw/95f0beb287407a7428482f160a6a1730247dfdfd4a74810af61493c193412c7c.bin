@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>tail recursion</title>
+<meta name="description"
+  content="Definition of tail recursion,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="tail recursion">
+<meta name="type" content="algorithmic technique">
+<meta name="area" content="Basic">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>tail recursion</h1>
+<p>
+(algorithmic technique)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A special form of <a href="recursion.html"><em>recursion</em></a> where the last operation of a function is a recursive call.  The recursion may be optimized away by executing the call in the current stack frame and returning its result rather than creating a new stack frame.
+</p>
+
+<p>
+<strong>See also</strong>
+<a href="collectiveRecursion.html"><em>collective recursion</em></a>, <a href="iteration.html"><em>iteration</em></a>.
+</p>
+
+<p>
+<em>Note:
+Although it may not save a lot of run time, it can save a lot of memory. The following finds the maximum value in a list. 
+<pre> int max_list(list l, int max_so_far)<br /> {<br />     if (null == l) {<br />         return max_so_far;<br />     }<br /> <br />     if (max_so_far < head(l)) {<br />         return max_list(tail(l), head(l));<br />     } else {<br />         return max_list(tail(l), max_so_far);<br />     }<br /> } </pre> 
+<p> The return value of the current invocation is just the return value of the recursive call.  A compiler could optimize it something like the following so it doesn't allocate new space for l and max_so_far on each invocation or tear down the stack on the returns. 
+<pre> <br /> int max_list(list l, int max_so_far)<br /> {<br />   for (;;) {<br />     if (null == l) {<br />         return max_so_far;<br />     }<br /> <br />     if (max_so_far < head(l)) {<br />         max_so_far = head(l);<br />         l = tail(l);<br />     } else {<br />         max_so_far = max_so_far;<br />         l = tail(l);<br />     }<br />   }<br /> } </pre> Now there is no need to allocate new memory for the parameters or get rid of it during the returns, so this will run faster.  This code transformation is simple enough to do by hand in this example, but it is much harder for complex <a href="recursive.html"><em>recursive</em></a> data structures, such as <a href="tree.html"><em>trees</em></a>. 
+<p> Of course, if a compiler is good enough to find and rewrite tail recursion, it will also collapse the loop test, eliminate the assignment of max_so_far to itself, and hoist the assignment of l after the test giving the following: 
+<pre> <br /> int max_list(list l, int max_so_far)<br /> {<br />   while (null != l) {<br />     if (max_so_far < head(l)) {<br />         max_so_far = head(l);<br />     }<br />     l = tail(l);<br />   }<br />   return max_so_far;<br /> } </pre></em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#c8b8a9bda4e6aaa4a9aba388a6a1bbbce6afa7be">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 14 August 2008.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "tail recursion", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 14 August 2008. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/tailRecursion.html">https://www.nist.gov/dads/HTML/tailRecursion.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a9175ccbafeb62',t:'MTc5MjAwNzE5OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

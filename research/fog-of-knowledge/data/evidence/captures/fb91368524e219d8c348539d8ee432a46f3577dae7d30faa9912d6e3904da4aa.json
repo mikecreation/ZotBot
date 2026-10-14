@@ -1,0 +1,15 @@
+{
+  "id": "nist-dads.tailrecursion",
+  "url": "https://xlinux.nist.gov/dads/HTML/tailRecursion.html",
+  "final_url": "https://xlinux.nist.gov/dads/HTML/tailRecursion.html",
+  "title": "NIST Dictionary of Algorithms and Data Structures: tailRecursion",
+  "source_kind": "secondary",
+  "retrieved_at": "2026-10-14T19:46:38.270010+00:00",
+  "text": "tail recursion\ntail recursion\n(algorithmic technique)\nDefinition:\nA special form of\nrecursion\nwhere the last operation of a function is a recursive call.  The recursion may be optimized away by executing the call in the current stack frame and returning its result rather than creating a new stack frame.\nSee also\ncollective recursion\n,\niteration\n.\nNote:\nAlthough it may not save a lot of run time, it can save a lot of memory. The following finds the maximum value in a list.\nint max_list(list l, int max_so_far)\n{\nif (null == l) {\nreturn max_so_far;\n}\nif (max_so_far\n<\nhead(l)) {\nreturn max_list(tail(l), head(l));\n} else {\nreturn max_list(tail(l), max_so_far);\n}\n}\nThe return value of the current invocation is just the return value of the recursive call.  A compiler could optimize it something like the following so it doesn't allocate new space for l and max_so_far on each invocation or tear down the stack on the returns.\nint max_list(list l, int max_so_far)\n{\nfor (;;) {\nif (null == l) {\nreturn max_so_far;\n}\nif (max_so_far\n<\nhead(l)) {\nmax_so_far = head(l);\nl = tail(l);\n} else {\nmax_so_far = max_so_far;\nl = tail(l);\n}\n}\n}\nNow there is no need to allocate new memory for the parameters or get rid of it during the returns, so this will run faster.  This code transformation is simple enough to do by hand in this example, but it is much harder for complex\nrecursive\ndata structures, such as\ntrees\n.\nOf course, if a compiler is good enough to find and rewrite tail recursion, it will also collapse the loop test, eliminate the assignment of max_so_far to itself, and hoist the assignment of l after the test giving the following:\nint max_list(list l, int max_so_far)\n{\nwhile (null != l) {\nif (max_so_far\n<\nhead(l)) {\nmax_so_far = head(l);\n}\nl = tail(l);\n}\nreturn max_so_far;\n}\nAuthor:\nPEB\nGo to the\nDictionary of Algorithms and Data\nStructures\nhome page.\nIf you have suggestions, corrections, or comments, please get in touch\nwith\nPaul Black\n.\nEntry modified 14 August 2008.\nHTML page formatted Wed Oct 30 12:15:31 2024.\nCite this as:\nPaul E. Black, \"tail recursion\", in\nDictionary of Algorithms and Data Structures\n[online], Paul E. Black, ed. 14 August 2008. (accessed TODAY)\nAvailable from:\nhttps://www.nist.gov/dads/HTML/tailRecursion.html",
+  "sha256": "03763f16730b90bc923f96a38f78b2dc5a1d56a96327501421ba77c1af65de9a",
+  "raw_sha256": "95f0beb287407a7428482f160a6a1730247dfdfd4a74810af61493c193412c7c",
+  "content_type": "text/html",
+  "charset": "utf-8",
+  "extraction_method": "http-html-data-lines/1",
+  "capture_id": "fb91368524e219d8c348539d8ee432a46f3577dae7d30faa9912d6e3904da4aa"
+}

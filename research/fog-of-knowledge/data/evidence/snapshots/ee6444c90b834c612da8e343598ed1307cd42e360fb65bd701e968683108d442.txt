@@ -1,0 +1,55 @@
+bag
+bag
+(data structure)
+Definition:
+An unordered collection of values that may have duplicates.
+Formal Definition:
+A bag has a single query function, numberIn(v, B), which tells how many copies of an element are in the bag, and two modifier functions, add(v, B) and remove(v, B). These may be defined with
+axiomatic semantics
+as follows.
+new() returns a bag
+numberIn(v, new()) = 0
+numberIn(v, add(v, B)) = 1 + numberIn(v, B)
+numberIn(v, add(u, B)) = numberIn(v, B) if v ≠ u
+remove(v, new()) = new()
+remove(v, add(v, B)) = B
+remove(v, add(u, B)) = add(u, remove(v, B)) if v ≠ u
+where B is a bag and u and v are elements.
+The
+predicate
+isEmpty(B) may be defined with the following additional axioms.
+isEmpty(new()) = true
+isEmpty(add(v, B)) = false
+Also known as
+multi-set.
+Generalization
+(I am a kind of ...)
+abstract data type
+.
+See also
+set
+,
+list
+.
+Note:
+A bag, or multi-set, is a set where values may be repeated.  Inserting 2, 1, 2 into an empty set gives the set {1, 2}.  Inserting those values into an empty bag gives {1, 2, 2}.  From another point of view, a
+set
+is unordered, too, but has each value at most once.
+Author:
+PEB
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 11 January 2005.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "bag", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 11 January 2005. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/bag.html

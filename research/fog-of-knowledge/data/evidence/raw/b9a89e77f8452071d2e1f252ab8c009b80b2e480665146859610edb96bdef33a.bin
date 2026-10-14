@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>Ackermann's function</title>
+<meta name="description"
+  content="Definition of Ackermann's function,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="Ackermann's function">
+<meta name="type" content="algorithm">
+<meta name="area" content="Basic">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>Ackermann's function</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A function of two parameters whose value grows very fast.
+</p>
+
+<p>
+<strong>Formal Definition:</strong> <ul> <li>A(0, j)=j+1			for j &ge; 0 <li>A(i, 0)=A(i-1, 1)			for i &gt; 0 <li>A(i, j)=A(i-1, A(i, j-1))		for i, j &gt; 0 </ul>
+</p>
+<p>
+<strong>See also</strong>
+<a href="inverseAckermann.html"><em>inverse Ackermann function</em></a>.
+</p>
+
+<p>
+<em>Note:
+Many people have defined other similar functions which are not simply a restating of this one. </p> 
+<p> In 1928,  <a href="https://mathshistory.st-andrews.ac.uk/Biographies/Ackermann/" target="_blank">Wilhelm Ackermann</a> observed that A(x,y,z), the z-fold iterated exponentiation of x with y, is a recursive function that is not primitive recursive. A(x,y,z) was simplified to a function of 2 variables by  R&oacute;zsa P&eacute;ter in 1935.  Raphael M. Robinson simplified the initial condition in 1948.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+History of the function and <a href="http://www.modulaware.com/mdlt08.htm" target="_blank">(Modula-2)</a> code.
+<h2>More information</h2>
+<p>
+Robert Munafo's <a href="http://www.mrob.com/pub/math/ln-2deep.html" target="_blank">Versions of Ackermann's Function</a> and analysis. Cowles and Bailey <a href="https://www.cs.utexas.edu/users/boyer/ftp/nqthm/nqthm-1992/examples/basic/peter.events" target="_blank">Several Versions of Ackermann's function</a>.
+</p>
+<p>
+<strong>Wilhelm Ackermann</strong>, <em>Zum Hilbertschen Aufbau der reellen Zahlen</em>, Mathematische Annalen 99(1):118-133,  December 1928. <br /> <a href="http://dx.doi.org/10.1007/BF01459088" target="_blank">doi:10.1007/BF01459088</a> </p> <p> The formal definition given here is G<sub>n</sub>x in the first page of<br /> <strong>Raphael M. Robinson</strong>, <em>Recursion and Double Recursion</em>, Bulletin of the American Mathematical Society 54:987-993, October 1948.<br /> <a href="http://dx.doi.org/10.1090/S0002-9904-1948-09121-2" target="_blank">doi:10.1090/S0002-9904-1948-09121-2</a>
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#9bebfaeef7b5f9f7faf8f0dbf5f2e8efb5fcf4ed">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 9 November 2020.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "Ackermann's function", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 9 November 2020. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/ackermann.html">https://www.nist.gov/dads/HTML/ackermann.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a91630dbce10ee',t:'MTc5MjAwNzE1MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

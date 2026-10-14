@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>pseudo-random number generator</title>
+<meta name="description"
+  content="Definition of pseudo-random number generator,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="pseudo-random number generator">
+<meta name="type" content="algorithm">
+<meta name="area" content="Cryptography and Compression">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>pseudo-random number generator</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A <a href="deterministicAlgorithm.html"><em>deterministic algorithm</em></a> to generate a sequence of numbers with little or no discernible pattern in the numbers, except for broad statistical properties.
+</p>
+
+<p>
+<strong>Also known as</strong> PRNG, deterministic random bit generator, DRBG.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+deterministic algorithm.
+</p>
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="linearCongruentGen.html"><em>linear congruential generator</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="randomizedAlgo.html"><em>randomized algorithm</em></a>.
+</p>
+
+<p>
+<em>Note:
+Any computer program is likely to generate pseudo-random numbers, not actually random numbers.  This is important when, say, simulations are sensitive to subtle patterns in the "random" numbers used.  Hardware-based random number generators are built from parts with naturally random events, such as noise in a diode. </p> 
+<p> Pseudorandom number generators are often based on a  Deterministic Random Bit Generator (DRBG). </p> 
+<p> A generator is often "seeded", or initialized, from sources of entropy, such as the current time in microseconds, response time to a disk seek, or other random events to give different sequences every time it is used. </p> 
+<p> Do <strong>NOT</strong> use typical "random" number generators for security or cryptographic purposes. <a href="https://dwheeler.com/secure-programs/Secure-Programs-HOWTO/random-numbers.html" target="_blank">Random Numbers</a> from David Wheeler's <em>Secure Programming for Linux and Unix HOWTO</em>, Section 11.3, gives suggestions and guidelines. </p> 
+<p> <img src="../Images/dt random 040112.jpg" border="0"  alt="comic with the lines 'lets do something random' 'Sorry, living creatures are notoriously terrible at generating true random numbers.'"> <br /> From Dragon Tails. Used by permission.  Copyright &copy; 2004 Tim Dawson. </p> 
+<p> <img src="../Images/xkcd 0221 random_number.png"   alt="a C function, named get random number, that always returns    the number 4.  It has comments 'chosen by fair dice roll.' and   'guaranteed to be random.'"> <br /> From <a href="https://xkcd.com/221/" target="_blank">xkcd 221</a> by Randall Munroe. <a href="https://xkcd.com/license.html" target="_blank">Creative Commons Attribution-NonCommercial 2.5 License</a>.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+<a href="https://algorist.com/problems/Random_Number_Generation.html" target="_blank">(C++, C, and Java)</a>. GAMS <a href="http://gams.nist.gov/serve.cgi/Module/C/SERV/11669" target="_blank">(C)</a>. Using C libraries to get  <a href="https://c-faq.com/lib/randrange.html" target="_blank">random numbers in a certain range (C)</a> is C FAQ question 13.16, <a href="http://www.lysator.liu.se/c/c-faq/c-12.html" target="_blank">C FAQ question 12.9 as of 1995 (C)</a>, or <a href="http://www.eskimo.com/~scs/cclass/krnotes/sx10n.html" target="_blank">section 7.8.7 (C)</a> of Steve Summit's Notes to Accompany <em>The C Programming Language</em>.
+<h2>More information</h2>
+<p>
+<a href="https://csrc.nist.gov/Projects/Random-Bit-Generation" target="_blank">Random  Bit Generation</a> with links to reports, standard tests, and on-going research. <a href="https://www.fourmilab.ch/random/" target="_blank">ent</a>: a program to test the randomness of bytes in a file. </p> <p> <em>Recommendation for Random Number Generation Using Deterministic  Random Bit Generators</em>, NIST SP 800-90A, Revision 1, June 2015 has recommendations for generating (pseudo)random numbers using deterministic random bit generators, for entropy sources, and for implementation. Available at  <a href="http://dx.doi.org/10.6028/NIST.SP.800-90Ar1" target="_blank">http://dx.doi.org/10.6028/NIST.SP.800-90Ar1</a>.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#35455440591b575954565e755b5c46411b525a43">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 5 July 2022.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "pseudo-random number generator", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 5 July 2022. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/pseudorandomNumberGen.html">https://www.nist.gov/dads/HTML/pseudorandomNumberGen.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a917125e10f151',t:'MTc5MjAwNzE4Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

@@ -230,7 +230,8 @@ def context_digest(candidate,graph):
     # for a new node). Never reuse that context if a candidate node changed since.
     unchanged=all(existing.get(n['id'])==storage_record(n) for n in candidate['nodes.jsonl'])
     if unchanged:
-        accepted=next((b for b in graph.get('evidence_reviews',[]) if b.get('candidate_sha256')==candidate_digest(candidate)),None)
+        batch_hash=candidate_digest(candidate)
+        accepted=next((b for b in graph.get('evidence_reviews',[]) if b.get('candidate_sha256')==batch_hash),None)
         if accepted is not None:
             original={n['id']:n for n in accepted.get('context_nodes',[])}
             prior={n['id']:original[n['id']] for n in candidate['nodes.jsonl'] if n['id'] in original}
@@ -319,6 +320,9 @@ def enforce(candidate,graph,decisions,policy):
         if not left or not right or left==right:raise EvidenceError("invalid identity endpoints")
         if ident.get("type") not in {"same_concept","about","related_concept"}:raise EvidenceError("unsupported identity relation")
         if ident["type"]=="same_concept" and left["kind"]!=right["kind"]:raise EvidenceError("same_concept cannot collapse distinct record kinds")
+    # Candidate and graph are the fixed input snapshot throughout this check.
+    # Hash that context once; each matching decision must still equal it.
+    reviewed_context_hash=context_digest(candidate,graph)
     accepted=[]
     for kind,record in targets:
         record_hash=digest(record)
@@ -326,7 +330,7 @@ def enforce(candidate,graph,decisions,policy):
         for decision in decisions:
             if decision.get("target_kind")==kind and decision.get("target_sha256")==record_hash:
                 if decision.get("candidate_sha256")!=batch_hash:raise EvidenceError("review bound to another candidate revision")
-                if decision.get('context_sha256')!=context_digest(candidate,graph):raise EvidenceError("reviewed endpoint context changed; request a new review")
+                if decision.get('context_sha256')!=reviewed_context_hash:raise EvidenceError("reviewed endpoint context changed; request a new review")
                 aid=decision.get("assertion_id");assertion=assertions.get(aid)
                 if not assertion or assertion.get("target_kind")!=kind or assertion.get("target_sha256")!=record_hash:raise EvidenceError("assertion does not bind the reviewed record")
                 if assertion.get("canonical_record")!=record:raise EvidenceError("assertion representation differs from candidate record")

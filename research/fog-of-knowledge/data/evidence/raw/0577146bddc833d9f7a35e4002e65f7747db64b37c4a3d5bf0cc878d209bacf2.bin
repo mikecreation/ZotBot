@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>Burrows-Wheeler transform</title>
+<meta name="description"
+  content="Definition of Burrows-Wheeler transform,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="Burrows-Wheeler transform">
+<meta name="type" content="algorithm">
+<meta name="area" content="Cryptography and Compression">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>Burrows-Wheeler transform</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+<a href="permutation.html"><em>Permute</em></a> a <a href="string.html"><em>string</em></a>. Repeated <a href="substring.html"><em>substrings</em></a> lead to repeated  characters in the permuted string, which is easier to compress. Knowing which character was last in the original string, the original can be reconstructed from the rearranged string.
+</p>
+
+<p>
+<strong>Also known as</strong> BWT.
+</p>
+
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="sort.html"><em>sort</em></a>.
+</p>
+
+<p>
+<em>Note:
+The transform may be defined in relation to the <a href="suffixarray.html"><em>suffix array</em></a> as follows. The result is an <a href="array.html"><em>array</em></a> BWT such that  <br />  &nbsp; &nbsp; BWT[i] = T[SA[i]-1], if SA[i] &gt; 1, otherwise $ <br /> where T is the original string, i goes from 1 (<a href="oneBasedIndexing.html"><em>1-based indexing</em></a>) to the length of T, SA is the suffix array of T, and $ is the special character indicating the end of string.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+Mark Nelson's great  <a href="https://marknelson.us/posts/1996/09/01/bwt.html" target="_blank">Data Compression with the Burrows-Wheeler Transform (C++)</a> explains the algorithm. Dr. Dobb's Journal, September, 1996.
+<h2>More information</h2>
+<p>
+<a href="https://en.wikipedia.org/wiki/Burrows-Wheeler_transform" target="_blank"><em>Burrows-Wheeler_transform [Wikipedia]</em></a>.
+</p>
+<p>
+<strong>Michael Burrows and David J. Wheeler</strong>, <em>A Block-sorting Lossless Data Compression Algorithm</em>, Research Report SRC-124, Digital Equipment Corporation, Palo Alto, California, May 1994. <br /> This transform is algorithm C in the paper.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#98e8f9edf4b6faf4f9fbf3d8f6f1ebecb6fff7ee">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 20 April 2022.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "Burrows-Wheeler transform", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 20 April 2022. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/burrowsWheelerTransform.html">https://www.nist.gov/dads/HTML/burrowsWheelerTransform.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a91657dadf10dc',t:'MTc5MjAwNzE1Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

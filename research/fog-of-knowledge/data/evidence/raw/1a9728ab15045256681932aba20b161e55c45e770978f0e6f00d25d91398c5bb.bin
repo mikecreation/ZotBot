@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>minimal perfect hashing</title>
+<meta name="description"
+  content="Definition of minimal perfect hashing,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="minimal perfect hashing">
+<meta name="type" content="algorithm">
+<meta name="area" content="Searching">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>minimal perfect hashing</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A <a href="perfecthash.html"><em>perfect hashing</em></a> function that maps each different <a href="key.html"><em>key</em></a> to a distinct integer and has the same number of possible integers as keys.
+</p>
+
+<p>
+<strong>Formal Definition:</strong> A function f is a minimal perfect hash function for a set of keys K iff &forall; j, k &isin; K f(j) = f(k) &rarr; j = k and the <a href="range.html"><em>range</em></a> of f(k) is 1&hellip; |K|.
+</p>
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="perfecthash.html"><em>perfect hashing</em></a>, <a href="hash.html"><em>hash function</em></a>.
+</p>
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="orderPreservMinPerfectHash.html"><em>order-preserving minimal perfect hashing</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="pearsonshash.html"><em>Pearson's hash</em></a>.
+</p>
+
+<p>
+<em>Note:
+After BJ.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+Description and code for <a href="http://burtleburtle.net/bob/hash/perfect.html" target="_blank">minimal perfect hashing (C)</a>, <a href="http://www.ibiblio.org/pub/Linux/devel/lang/c/!INDEX.short.html" target="_blank"> mph: minimal perfect hash function generator (C)</a>. <a href="http://www.gnu.org/software/gperf/gperf.html" target="_blank">gperf: a near-minimal perfect hashing (C++)</a>, click on GNU mirror, click on a nearby server, then gperf.
+<h2>More information</h2>
+<p>
+<strong>Edward A. Fox, Lenwood S. Heath, Qi Fan Chen</strong> and <strong>Amjad M. Daoud</strong>, <em><a href="https://doi.acm.org/10.1145/129617.129623" target="_blank">Practical minimal perfect hash functions for large databases</a></em>,  CACM, 35(1):105-121, January 1992. <br /> <strong>Douglas C. Schmidt</strong>, <a href="http://www.dre.vanderbilt.edu/~schmidt/PDF/gperf.pdf" target="_blank">GPERF: A Perfect Hash Function Generator</a>, about 1997.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#433322362f6d212f222028032d2a30376d242c35">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 6 May 2019.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "minimal perfect hashing", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 6 May 2019. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/minimalPerfectHash.html">https://www.nist.gov/dads/HTML/minimalPerfectHash.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a916d75bed124c',t:'MTc5MjAwNzE3Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

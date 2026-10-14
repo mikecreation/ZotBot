@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>UnShuffle sort</title>
+<meta name="description"
+  content="Definition of UnShuffle sort,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="UnShuffle sort">
+<meta name="type" content="algorithm">
+<meta name="area" content="Sorting">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>UnShuffle sort</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A <a href="distributionSort.html"><em>distribution sort</em></a> with two phases.  In the first phase, the inputs are distributed among <a href="deque.html"><em>doubly-ended queues</em></a> keeping the items in each queue ordered and creating a new queue when there is no place on an existing queue.  The second phase is an  <a href="idealmerge.html"><em>ideal merge</em></a> in which the item to be removed is determined by keeping the queues in a <a href="priorityque.html"><em>priority queue</em></a>.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="distributionSort.html"><em>distribution sort</em></a>.
+</p>
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="idealmerge.html"><em>ideal merge</em></a>, <a href="pile.html"><em>pile</em></a>, <a href="priorityque.html"><em>priority queue</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="strandSort.html"><em>strand sort</em></a>, <a href="mergesort.html"><em>merge sort</em></a>.
+</p>
+
+<p>
+<em>Note:
+The doubly-ended queue with ordered items is called a  <a href="pile.html"><em>pile</em></a>.  The UnShuffle algorithm is the most efficient available for sorting data streams that exhibit  low entropy, i.e., are already mostly sorted or contains runs of  sorted elements.  The run time is <a href="theta.html"><em>&Theta;</em></a>(N) for sorted input.  The general case is NK/2 + N log K where K is the entropy of the input and is manifest in the number of piles generated during the distribution phase.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorASK">ASK</a></p>
+<h2>More information</h2>
+<p>
+<strong>Art S. Kagel</strong>, <em>Unshuffle Algorithm, Not Quite a Sort?</em>, Computer Language Magazine, 3(11), November 1985.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#7b0b1a0e175519171a18103b1512080f551c140d">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 14 December 2005.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Art S. Kagel, "UnShuffle sort", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 14 December 2005. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/unshufflsort.html">https://www.nist.gov/dads/HTML/unshufflsort.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a917784bf5f83f',t:'MTc5MjAwNzIwMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

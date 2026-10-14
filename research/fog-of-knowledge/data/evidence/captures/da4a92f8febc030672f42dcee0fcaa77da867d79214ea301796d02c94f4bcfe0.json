@@ -1,0 +1,15 @@
+{
+  "id": "nist-dads.collectiverecursion",
+  "url": "https://xlinux.nist.gov/dads/HTML/collectiveRecursion.html",
+  "final_url": "https://xlinux.nist.gov/dads/HTML/collectiveRecursion.html",
+  "title": "NIST Dictionary of Algorithms and Data Structures: collectiveRecursion",
+  "source_kind": "secondary",
+  "retrieved_at": "2026-10-14T19:45:58.480312+00:00",
+  "text": "collective recursion\ncollective recursion\n(algorithmic technique)\nDefinition:\nA special form of\ntail recursion\n, where the results are produced during the recursive calls and nothing is returned.  The recursion may be optimized away by executing the call in the current stack frame, rather than creating a new stack frame, or by deallocating the entire recursion stack at once rather than a little at each return.\nNote:\nThe following program prints the values greater than limit in a list.\nint overlimit(list l, int limit)\n{\nif (null == l) {\nreturn;\n}\nif (limit\n<\nhead(l)) {\nprintf(\"%d\\n\", head(l));\n}\noverlimit(tail(l), limit);\n}\nAt the return, the compiler can deallocate all the memory for the recursion stack at once.\nAuthor:\nPEB\nGo to the\nDictionary of Algorithms and Data\nStructures\nhome page.\nIf you have suggestions, corrections, or comments, please get in touch\nwith\nPaul Black\n.\nEntry modified 14 August 2008.\nHTML page formatted Wed Oct 30 12:15:30 2024.\nCite this as:\nPaul E. Black, \"collective recursion\", in\nDictionary of Algorithms and Data Structures\n[online], Paul E. Black, ed. 14 August 2008. (accessed TODAY)\nAvailable from:\nhttps://www.nist.gov/dads/HTML/collectiveRecursion.html",
+  "sha256": "2c80087304eba3ba26c5bbe849b17e899f4fa8f4ae78aba4318341de17bc6fb8",
+  "raw_sha256": "b63c8a874e9d26aa90e9af230784854226271d0001031ca9f8506da5af62e356",
+  "content_type": "text/html",
+  "charset": "utf-8",
+  "extraction_method": "http-html-data-lines/1",
+  "capture_id": "da4a92f8febc030672f42dcee0fcaa77da867d79214ea301796d02c94f4bcfe0"
+}

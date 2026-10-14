@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>bag</title>
+<meta name="description"
+  content="Definition of bag,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="bag">
+<meta name="type" content="data structure">
+<meta name="area" content="Basic">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>bag</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+An unordered collection of values that may have duplicates.
+</p>
+
+<p>
+<strong>Formal Definition:</strong> A bag has a single query function, numberIn(v, B), which tells how many copies of an element are in the bag, and two modifier functions, add(v, B) and remove(v, B). These may be defined with <a href="axiomaticSemantics.html"><em>axiomatic semantics</em></a> as follows. <ol> <li>new() returns a bag <li>numberIn(v, new()) = 0 <li>numberIn(v, add(v, B)) = 1 + numberIn(v, B) <li>numberIn(v, add(u, B)) = numberIn(v, B) if v &ne; u <li>remove(v, new()) = new() <li>remove(v, add(v, B)) = B <li>remove(v, add(u, B)) = add(u, remove(v, B)) if v &ne; u </ol> where B is a bag and u and v are elements. </p> <p> The <a href="predicate.html"><em>predicate</em></a> isEmpty(B) may be defined with the following additional axioms. <ol start="8"> <li>isEmpty(new()) = true <li>isEmpty(add(v, B)) = false </ol>
+</p>
+<p>
+<strong>Also known as</strong> multi-set.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="abstractDataType.html"><em>abstract data type</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="set.html"><em>set</em></a>, <a href="list.html"><em>list</em></a>.
+</p>
+
+<p>
+<em>Note:
+A bag, or multi-set, is a set where values may be repeated.  Inserting 2, 1, 2 into an empty set gives the set {1, 2}.  Inserting those values into an empty bag gives {1, 2, 2}.  From another point of view, a <em>set</em> is unordered, too, but has each value at most once.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#c9b9a8bca5e7aba5a8aaa289a7a0babde7aea6bf">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 11 January 2005.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "bag", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 11 January 2005. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/bag.html">https://www.nist.gov/dads/HTML/bag.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a9164038fd5eb1',t:'MTc5MjAwNzE1Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

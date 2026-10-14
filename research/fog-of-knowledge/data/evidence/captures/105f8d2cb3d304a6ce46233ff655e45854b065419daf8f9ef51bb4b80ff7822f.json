@@ -1,0 +1,15 @@
+{
+  "id": "nist-dads.dictionary",
+  "url": "https://xlinux.nist.gov/dads/HTML/dictionary.html",
+  "final_url": "https://xlinux.nist.gov/dads/HTML/dictionary.html",
+  "title": "NIST Dictionary of Algorithms and Data Structures: dictionary",
+  "source_kind": "secondary",
+  "retrieved_at": "2026-10-14T19:46:01.765758+00:00",
+  "text": "dictionary\ndictionary\n(data structure)\nDefinition:\nAn\nabstract data type\nstoring items, or values.  A value is accessed by an associated\nkey\n. Basic operations are new, insert, find and delete.\nFormal Definition:\nThe operations new(), insert(k, v, D), and find(k, D) may be defined with\naxiomatic semantics\nas follows.\nnew() returns a dictionary\nfind(k, insert(k, v, D)) = v\nfind(k, insert(j, v, D)) = find(k, D) if k ≠ j\nwhere k and j are keys, v is a value, and D is a dictionary.\nThe modifier function delete(k, D) may be defined as follows.\ndelete(k, new()) = new()\ndelete(k, insert(k, v, D)) = delete(k, D)\ndelete(k, insert(j, v, D)) = insert(j, v, delete(k, D)) if k ≠ j\nIf we want find to be a\ntotal function\n, we could define  find(k, new()) using a special value:\nfail\n. This only changes the return type of find.\nfind(k, new()) =\nfail\nAlso known as\nassociation list, map, property list.\nGeneralization\n(I am a kind of ...)\nbinary relation\n,\nabstract data type\n.\nSpecialization\n(... is a kind of me.)\nassociative array\n,\ninvertible Bloom lookup table\nwith high probability.\nSee also\ntotal order\n,\nset\nSome implementations:\nlinked list\n,\nhash table\n,\nB-tree\n,\njump list\n,\ndirected acyclic word graph\n.\nNote:\nThe terms \"association list\" and \"property list\" are used with LISP-like languages and in the area of Artificial Intelligence.  These suggest a relatively small number of items, whereas a dictionary may be quite large.  Professionals in the Data Management area have specialized semantics for \"dictionary\" and related terms.\nA dictionary defines a\nbinary relation\nthat maps keys to values. The keys of a dictionary are a\nset\n.\nContributions by Rob Stewart 16 March 2004.\nAuthor:\nPEB\nImplementation\n(C++, Pascal, and Fortran)\n. Maksim Goleta's C# Collections\nsorted (C#)\nand\nunordered (C#)\n.\nGo to the\nDictionary of Algorithms and Data\nStructures\nhome page.\nIf you have suggestions, corrections, or comments, please get in touch\nwith\nPaul Black\n.\nEntry modified 2 November 2020.\nHTML page formatted Wed Oct 30 12:15:30 2024.\nCite this as:\nPaul E. Black, \"dictionary\", in\nDictionary of Algorithms and Data Structures\n[online], Paul E. Black, ed. 2 November 2020. (accessed TODAY)\nAvailable from:\nhttps://www.nist.gov/dads/HTML/dictionary.html",
+  "sha256": "cc3e036afdfd1c94475781009b160dcbcba0384f3c802633c29a212df630fe25",
+  "raw_sha256": "742c98eed58cbe96a5560b3f14caaf0ae3cf08dd654306d2698064b80ea081b3",
+  "content_type": "text/html",
+  "charset": "utf-8",
+  "extraction_method": "http-html-data-lines/1",
+  "capture_id": "105f8d2cb3d304a6ce46233ff655e45854b065419daf8f9ef51bb4b80ff7822f"
+}

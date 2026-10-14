@@ -1,0 +1,76 @@
+pseudo-random number generator
+pseudo-random number generator
+(algorithm)
+Definition:
+A
+deterministic algorithm
+to generate a sequence of numbers with little or no discernible pattern in the numbers, except for broad statistical properties.
+Also known as
+PRNG, deterministic random bit generator, DRBG.
+Generalization
+(I am a kind of ...)
+deterministic algorithm.
+Specialization
+(... is a kind of me.)
+linear congruential generator
+.
+See also
+randomized algorithm
+.
+Note:
+Any computer program is likely to generate pseudo-random numbers, not actually random numbers.  This is important when, say, simulations are sensitive to subtle patterns in the "random" numbers used.  Hardware-based random number generators are built from parts with naturally random events, such as noise in a diode.
+Pseudorandom number generators are often based on a  Deterministic Random Bit Generator (DRBG).
+A generator is often "seeded", or initialized, from sources of entropy, such as the current time in microseconds, response time to a disk seek, or other random events to give different sequences every time it is used.
+Do
+NOT
+use typical "random" number generators for security or cryptographic purposes.
+Random Numbers
+from David Wheeler's
+Secure Programming for Linux and Unix HOWTO
+, Section 11.3, gives suggestions and guidelines.
+From Dragon Tails. Used by permission.  Copyright © 2004 Tim Dawson.
+From
+xkcd 221
+by Randall Munroe.
+Creative Commons Attribution-NonCommercial 2.5 License
+.
+Author:
+PEB
+Implementation
+(C++, C, and Java)
+. GAMS
+(C)
+. Using C libraries to get
+random numbers in a certain range (C)
+is C FAQ question 13.16,
+C FAQ question 12.9 as of 1995 (C)
+, or
+section 7.8.7 (C)
+of Steve Summit's Notes to Accompany
+The C Programming Language
+.
+More information
+Random  Bit Generation
+with links to reports, standard tests, and on-going research.
+ent
+: a program to test the randomness of bytes in a file.
+Recommendation for Random Number Generation Using Deterministic  Random Bit Generators
+, NIST SP 800-90A, Revision 1, June 2015 has recommendations for generating (pseudo)random numbers using deterministic random bit generators, for entropy sources, and for implementation. Available at
+http://dx.doi.org/10.6028/NIST.SP.800-90Ar1
+.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 5 July 2022.
+HTML page formatted Wed Oct 30 12:15:31 2024.
+Cite this as:
+Paul E. Black, "pseudo-random number generator", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 5 July 2022. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/pseudorandomNumberGen.html
