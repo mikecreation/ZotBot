@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>big-O notation</title>
+<meta name="description"
+  content="Definition of big-O notation,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="big-O notation">
+<meta name="type" content="definition">
+<meta name="area" content="Basic">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>big-O notation</h1>
+<p>
+(definition)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A theoretical measure of the execution of an <a href="algorithm.html"><em>algorithm</em></a>, usually the time or memory needed, given the problem size n, which is usually the number of items.  Informally, saying some equation f(n) = O(g(n)) means it is less than some constant multiple of g(n).     The notation is read, "f of n is big oh of g of n".
+</p>
+
+<p>
+<strong>Formal Definition:</strong> f(n) = O(g(n)) means there are positive constants c and k, such that  0 &le; f(n) &le; cg(n) for all n &ge; k. The values of c and k must be fixed for the function f and must not depend on n. <br /> <img src="../Images/bigOGraph.gif" height="261" width="453" alt="graph showing relation between a function, f, and the limit function, g">
+</p>
+<p>
+<strong>Also known as</strong> O, asymptotic upper bound.
+</p>
+
+<p>
+<strong>See also</strong>
+<a href="omegaCapital.html"><em>&Omega;(n)</em></a>, <a href="omega.html"><em>&omega;(n)</em></a>, <a href="theta.html"><em>&Theta;(n)</em></a>, <a href="sim.html"><em>&sim;</em></a>, <a href="littleOnotation.html"><em>little-o notation</em></a>, <a href="np.html"><em>NP</em></a>, <a href="complexity.html"><em>complexity</em></a>, <a href="modelOfComputation.html"><em>model of computation</em></a>.
+</p>
+
+<p>
+<em>Note:
+As an example, n&sup2; + 3n + 4 is O(n&sup2;), since n&sup2; + 3n + 4 &lt; 2n&sup2; for all n &gt; 10 (and many smaller values of n).   Strictly speaking, 3n + 4 is O(n&sup2;), too, but big-O notation is often misused to mean "equal to" rather than "less than". The notion of "equal to" is expressed by <a href="theta.html"><em>&Theta;(n)</em></a>. </p> 
+<p> The importance of this measure can be seen in trying to decide whether an algorithm is adequate, but may just need a better implementation, or the algorithm will always be too slow on a big enough input.  For instance, <a href="quicksort.html"><em>quicksort</em></a>, which is O(n log n) on average, running on a small desktop computer can beat <a href="bubblesort.html"><em>bubble sort</em></a>, which is O(n&sup2;), running on a supercomputer if there are a lot of numbers to sort.  To sort 1,000,000 numbers, the quicksort takes 20,000,000 steps on average, while the bubble sort takes 1,000,000,000,000 steps!   See <strong>Jon Bentley</strong>, <em> Algorithm Design Techniques</em>, CACM, 27(9):868, September 1984 for an example of a microcomputer running BASIC beating a supercomputer running FORTRAN. </p> 
+<p> Any measure of execution must implicitly or explicitly refer to some computation model.  Usually this is some notion of the limiting factor.  For one problem or machine, the number of floating point multiplications may be the limiting factor, while for another, it may be the number of messages passed across a network. Other measures that may be important are compares, item moves, disk accesses, memory used, or elapsed ("wall clock") time. </p> 
+<p> <a href="../terms.html#Knuth97">[Knuth97, 1:107]</a>,  <a href="../terms.html#HS83">[HS83, page 31]</a>, and <a href="../terms.html#Stand98">[Stand98, page 466]</a> use |f(n)| &le; c|g(n)|.   In <a href="https://en.wikipedia.org/wiki/Computational_complexity_theory" target="_blank"><em>Computational_complexity_theory [Wikipedia]</em></a> "only positive functions are considered, so the absolute value bars may be left out." (Wikipedia, "Big O notation"). This definition after <a href="../terms.html#CLR90">[CLR90, page 26]</a>. </p> 
+<p> This notation was introduced by Paul Bauchmann in his "Analytische Zahlentheorie" (1894).  "... the O is apparently derived from the German word "Ordnung" (meaning 'order')." (Ivan Panchenko, private communication, 6 September 2019) It is capital "O", not the capital Greek letter Omicron.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>More information</h2>
+<p>
+Wikipedia <a href="https://en.wikipedia.org/wiki/Big_O_notation" target="_blank">Big O notation</a>. Big O is a <a href="http://mathworld.wolfram.com/LandauSymbols.html" target="_blank">Landau Symbol</a>.
+</p>
+<p>
+<strong>Donald E. Knuth</strong>, <em>Big Omicron and Big Omega and Big Theta</em>, SIGACT News, 8(2):18-24, April-June 1976.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#4c3c2d3920622e202d2f270c22253f38622b233a">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 6 September 2019.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "big-O notation", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 6 September 2019. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/bigOnotation.html">https://www.nist.gov/dads/HTML/bigOnotation.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a884fe3fe8e80e',t:'MTc5MjAwMTIwMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

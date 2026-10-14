@@ -1,0 +1,15 @@
+{
+  "id": "nist-dads.set",
+  "url": "https://xlinux.nist.gov/dads/HTML/set.html",
+  "final_url": "https://xlinux.nist.gov/dads/HTML/set.html",
+  "title": "NIST Dictionary of Algorithms and Data Structures: set",
+  "source_kind": "secondary",
+  "retrieved_at": "2026-10-14T18:06:39.944952+00:00",
+  "text": "set\nset\n(data structure)\nDefinition:\nAn unordered collection of values where each value occurs at most once. A group of elements with three properties: (1) all elements belong to a\nuniverse\n, (2) either each element is a\nmember\nof the set or it is not, and (3) the elements are unordered.\nFormal Definition:\nAs an\nabstract data type\n, a set has a single query function, isIn(v, S), which tells whether an element is a member of the set or not, and two modifier functions, add(v, S) and remove(v, S). These may be defined with\naxiomatic semantics\nas follows.\nnew() returns a set\nisIn(v, new()) = false\nisIn(v, add(v, S)) = true\nisIn(v, add(u, S)) = isIn(v , S) if v ≠ u\nremove(v, new()) = new()\nremove(v, add(v, S)) = remove(v, S)\nremove(v, add(u, S)) = add(u, remove(v, S)) if v ≠ u\nwhere S is a set and u and v are elements.\nThe\npredicate\nisEmpty(S) may be defined with the following additional axioms.\nisEmpty(new()) = true\nisEmpty(add(v, S)) = false\nGeneralization\n(I am a kind of ...)\nbag\n,\nabstract data type\n.\nSpecialization\n(... is a kind of me.)\nposet\nsuggested by Norman T. Thornton 25 January 2016.\nSee also\nintersection\n,\nunion\n,\ncomplement\n,\ndifference\n,\nlist\n,\nset cover\n.\nNote:\nSets may be implemented with an\narray\nof bits.  A set that is many ranges may be efficiently implemented as an\ninversion list\n.\nAuthors:\nPR\n,\nPEB\nImplementation\n(C++ and Pascal)\n. Maksim Goleta's C# Collections\nsorted set (C#)\n.\nGo to the\nDictionary of Algorithms and Data\nStructures\nhome page.\nIf you have suggestions, corrections, or comments, please get in touch\nwith\nPaul Black\n.\nEntry modified 2 November 2020.\nHTML page formatted Wed Oct 30 12:15:31 2024.\nCite this as:\nPatrick Rodgers and Paul E. Black, \"set\", in\nDictionary of Algorithms and Data Structures\n[online], Paul E. Black, ed. 2 November 2020. (accessed TODAY)\nAvailable from:\nhttps://www.nist.gov/dads/HTML/set.html",
+  "sha256": "1ca0df0af76538a11d49c4d26da2bbec44800022ca4f6f4dfac484195cb83bd7",
+  "raw_sha256": "a5f6c63d0bd47a168706eb334ba159d01e619e78f6bb5450cb98894dbb7c9161",
+  "content_type": "text/html",
+  "charset": "utf-8",
+  "extraction_method": "http-html-data-lines/1",
+  "capture_id": "59c8f2f272c613f03404eee5eb1b14f579bb36460318000b66627ebbc62a2354"
+}

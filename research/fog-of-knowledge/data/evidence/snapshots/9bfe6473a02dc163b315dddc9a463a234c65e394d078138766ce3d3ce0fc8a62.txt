@@ -1,0 +1,40 @@
+branch and bound
+branch and bound
+(algorithmic technique)
+Definition:
+An algorithmic technique to find the optimal solution by keeping the best solution found so far.  If a partial solution cannot improve on the best, it is abandoned.
+See also
+depth-first search
+,
+best-first search
+.
+Note:
+For instance, suppose we want to find the shortest route from Zarahemla to Manti, and at some time the shortest route found until that time is 387 kilometers.  Suppose we are to next consider routes through Cumeni.  If the shortest distance from Zarahemla to Cumeni is 350 km and Cumeni is 46 km from Manti in a straight line, there is no reason to explore possible roads from Cumeni: they will be at least 396 km (350 + 46), which is worse than the shortest known route.  So we need not explore paths from Cumeni.
+This may be implemented as a
+backtracking
+algorithm, which is a modified
+depth-first search
+, or using a
+priority queue
+ordering partial solutions by lower bounds (current + least possible completion), which is a
+best-first search
+.
+This technique is not helpful if all solutions are about the same or the initial solutions are very poor and better solutions are only found gradually.  In either case, the cost is similar to exploring the entire solution space.
+Author:
+PEB
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 10 February 2020.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "branch and bound", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 10 February 2020. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/branchNbound.html

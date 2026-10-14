@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>comb sort</title>
+<meta name="description"
+  content="Definition of comb sort,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="comb sort">
+<meta name="type" content="algorithm">
+<meta name="area" content="Sorting">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>comb sort</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+An <a href="inplacesort.html"><em>in-place sort</em></a> algorithm that repeatedly reorders different pairs of items.  On each pass swap pairs of items separated by the increment or gap, if needed, and reduce the gap (divide it by about 1.3).  The gap starts at about 3/4 of the number of items.  Continue until the gap is 1 and a pass had no swaps.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="diminishingIncSort.html"><em>diminishing increment sort</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="bubblesort.html"><em>bubble sort</em></a>, <a href="shellsort.html"><em>Shell sort</em></a>.
+</p>
+
+<p>
+<em>Note:
+Bubble sort can be seen as a variant of comb sort where the gap is always 1.  Since items may move large distances at first, comb sort is quite efficient. </p> 
+<p> Comb sort does a single "bubbling" pass (ala <a href="bubblesort.html"><em>bubble sort</em></a>) over  each set for each gap or increment, whereas <a href="shellsort.html"><em>Shell sort</em></a> completely sorts each set.   J. Incerpi and R. Sedgewick (1985) point out that bidirectional "bubbling" (ala <a href="bidirectionalBubbleSort.html"><em>bidirectional bubble sort</em></a>) is more symmetric than the typical comb sort.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+<a href="https://www.geeksforgeeks.org/python-program-for-comb-sort/" target="_blank">(Python)</a>.
+<h2>More information</h2>
+<p>
+<strong>W. Dobosiewicz</strong>, <em>An efficient variation of bubble sort</em>, Information Processing letters 11(1):5-6, 1980. <br /> <strong>Richard Box</strong> and <strong>Stephen Lacey</strong>,  <em>A fast, easy sort</em>, Byte, 16(4):315-ff, April 1991.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#1e6e7f6b72307c727f7d755e70776d6a30797168">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 21 April 2022.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "comb sort", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 21 April 2022. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/combSort.html">https://www.nist.gov/dads/HTML/combSort.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a884fb9efeff58',t:'MTc5MjAwMTIwMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

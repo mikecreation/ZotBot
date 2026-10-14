@@ -1,0 +1,15 @@
+{
+  "id": "nist-dads.abstractdatatype",
+  "url": "https://xlinux.nist.gov/dads/HTML/abstractDataType.html",
+  "final_url": "https://xlinux.nist.gov/dads/HTML/abstractDataType.html",
+  "title": "NIST Dictionary of Algorithms and Data Structures: abstractDataType",
+  "source_kind": "secondary",
+  "retrieved_at": "2026-10-14T18:06:41.026301+00:00",
+  "text": "abstract data type\nabstract data type\n(definition)\nDefinition:\nA set of data values and associated operations that are precisely specified independent of any particular implementation.\nAlso known as\nADT.\nSpecialization\n(... is a kind of me.)\ndictionary\n,\nstack\n,\nqueue\n,\npriority queue\n,\nset\n,\nbag\n.\nSee also\ndata structure\n.\nNote:\nSince the data values and operations are defined with mathematical precision, rather than as an implementation in a computer language, we may reason about effects of the operations, relations to other abstract data types, whether a program implements the data type, etc.\nOne of the simplest abstract data types is the\nstack\n.   The operations new(), push(v, S), top(S), and popOff(S) may be defined with\naxiomatic semantics\nas following.\nnew() returns a stack\npopOff(push(v, S)) = S\ntop(push(v, S)) = v\nwhere S is a stack and v is a value.  (The usual pop operation is a combination of top, to return the top value, and popOff, to remove the top value.) Contrast this with the\naxiomatic semantics\ndefinition of a\nset\n, a\ndictionary\n, or a\nqueue\n.\nFrom these axioms, one may define equality between stacks, define a pop function which returns the top value in a non-empty stack, etc.  For instance, the\npredicate\nisEmpty(S) may be  added and defined with the following additional axioms.\nisEmpty(new()) = true\nisEmpty(push(v, S)) = false\nAfter Nell Dale <\n[email protected]\n> May 2001.\nAuthor:\nPEB\nGo to the\nDictionary of Algorithms and Data\nStructures\nhome page.\nIf you have suggestions, corrections, or comments, please get in touch\nwith\nPaul Black\n.\nEntry modified 10 February 2005.\nHTML page formatted Wed Oct 30 12:15:30 2024.\nCite this as:\nPaul E. Black, \"abstract data type\", in\nDictionary of Algorithms and Data Structures\n[online], Paul E. Black, ed. 10 February 2005. (accessed TODAY)\nAvailable from:\nhttps://www.nist.gov/dads/HTML/abstractDataType.html",
+  "sha256": "960b51c9c3e01e940cc5262ffa7e4c1826f99b0d94e377b0ed88a78a13ee0ee0",
+  "raw_sha256": "568bbc462d23b0a5ffbacb9231abdbed660d63a10e33ff028f9397c166428464",
+  "content_type": "text/html",
+  "charset": "utf-8",
+  "extraction_method": "http-html-data-lines/1",
+  "capture_id": "47821d795a4bd30d599d69a58206d77f58f3e0055d5ce0fe996ea828da41542b"
+}

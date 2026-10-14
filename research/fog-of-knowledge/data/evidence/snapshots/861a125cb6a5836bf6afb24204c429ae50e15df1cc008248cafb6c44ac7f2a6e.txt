@@ -1,0 +1,102 @@
+binary heap
+binary heap
+(data structure)
+Definition:
+A
+complete binary tree
+where every
+node
+has a
+key
+more extreme (greater or less) than or equal to the key of its
+parent
+.
+Generalization
+(I am a kind of ...)
+complete binary tree
+,
+heap
+,
+k-ary heap
+with k=2.
+Specialization
+(... is a kind of me.)
+treap
+.
+Aggregate parent
+(I am a part of or used in ...)
+build-heap
+,
+heapify
+,
+heapsort
+,
+priority queue
+.
+Aggregate child
+(... is a part of or used in me.)
+array
+.
+See also
+Fibonacci heap
+,
+binomial heap
+.
+Note:
+Insertion is
+O(log
+2
+n)
+where n is the number of nodes. A binary heap can be efficiently implemented as an
+array
+, where a node at index i has children at indexes 2i and 2i+1 and a parent at index i/2, with
+1-based indexing
+.   If a child index is greater than the number of nodes, the child does not exist.
+The above implementation is inefficient with virtual memories because (almost) every
+level
+is in a different page.
+B-heaps
+allocate subtrees to a single page for better virtual memory performance.
+Merging two binary heaps is
+O(n)
+: the best you can do is just concatenate two heap arrays and make a heap of the result. Two
+binomial heaps
+can be merged in O(ln n).   Two
+Fibonacci heaps
+can be merged in Θ(1).
+Author:
+CLK
+Implementation
+delete (C)
+and
+insert (C and Pascal)
+both of which use the auxiliary function
+siftup (C and Pascal)
+,
+explanation, examples, and code (C)
+.
+(Fortran)
+.
+More information
+"... you just KNOW Billy's going to open the root present first, and then everyone will have to wait while the heap is rebuilt."
+From
+xkcd 835
+by Randall Munroe.
+Creative Commons Attribution-NonCommercial 2.5 License
+.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 25 July 2022.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Chris L. Kuszmaul, "binary heap", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 25 July 2022. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/binaryheap.html

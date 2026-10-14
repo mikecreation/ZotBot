@@ -1,0 +1,77 @@
+suffix array
+suffix array
+(data structure)
+Definition:
+An
+array
+of all starting positions of
+suffixes
+of a
+string
+arranged in
+lexicographical order
+. This allows a
+binary search
+or fast substring search.
+Generalization
+(I am a kind of ...)
+array
+.
+Aggregate child
+(... is a part of or used in me.)
+suffix
+,
+binary search
+.
+See also
+suffix tree
+,
+inverse suffix array
+,
+suffix automaton
+.
+Note:
+Consider the string "good".  In lexicographical order, the suffixes are "d", "good", "od", and "ood". In
+1-based indexing
+, the suffix array is [4, 1, 3, 2].  (For convenience, a special character is usually appended to the string.)
+A suffix array can be constructed in
+O(n log n)
+time, where n is the length of the string, by sorting the suffixes, or in
+O(n)
+time by building the
+suffix tree
+, then doing a
+depth-first search
+. Many other algorithms build suffix arrays quickly.   For a comprehensive survey, see
+Simon J. Puglisi, W. F. Smyth, and Andrew H. Turpin
+,
+A taxonomy of suffix array construction algorithms
+, ACM Computing Surveys, 39(2) Article #4, 2007.
+From Algorithms and Theory of Computation Handbook, page 11-23, Copyright © 1999 by CRC Press LLC. Appearing in the Dictionary of Computer Science, Engineering and Technology, Copyright © 2000 CRC Press LLC.
+Author:
+CRC-A
+Implementation
+Steven Skiena's
+Suffix Trees and Arrays (C++, Python, and Java)
+.
+More information
+Udi Manber and Gene Myers
+,
+Suffix Arrays: A New Method for On-Line String Searches
+, SIAM Journal on Computing 22(5):935-948, 1993.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 2 November 2020.
+HTML page formatted Wed Oct 30 12:15:31 2024.
+Cite this as:
+Algorithms and Theory of Computation Handbook, CRC Press LLC, 1999, "suffix array", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 2 November 2020. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/suffixarray.html

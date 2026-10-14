@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>suffix tree</title>
+<meta name="description"
+  content="Definition of suffix tree,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="suffix tree">
+<meta name="type" content="data structure">
+<meta name="area" content="Trees">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>suffix tree</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A compact representation of a <a href="trie.html"><em>trie</em></a> corresponding to the <a href="suffix.html"><em>suffixes</em></a> of a given <a href="string.html"><em>string</em></a> where all <a href="node.html"><em>nodes</em></a> with one <a href="child.html"><em>child</em></a> are merged with their <a href="parent.html"><em>parents</em></a>.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="patriciatree.html"><em>Patricia tree</em></a>, <a href="trie.html"><em>trie</em></a>.
+</p>
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="multiSuffixTree.html"><em>multi suffix tree</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="suffixarray.html"><em>suffix array</em></a>, <a href="directedAcyclicWordGraph.html"><em>directed acyclic word graph</em></a>.
+</p>
+
+<p>
+<em>Note:
+A suffix tree is a Patricia tree corresponding to the suffixes of a given string.  A directed acyclic word graph (DAWG) is a more compact form. </p> 
+<p> The newer <a href="suffixarray.html"><em>suffix array</em></a> has replaced the suffix tree as the data structure of choice in many applications.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorSE">SE</a></p>
+<h2>Implementation</h2>
+Strmat - a variety of <a href="https://web.cs.ucdavis.edu/~gusfield/strmat.html" target="_blank">string matching and pattern discovery algorithms (C)</a>. Christian Kreibich's <a href="http://www.icir.org/christian/libstree/" target="_blank">libstree (C)</a> including depth- and breadth-first traversal, string update, and examples like LCS. Mark Nelson's great  <a href="https://marknelson.us/posts/1996/08/01/suffix-trees.html" target="_blank"><em>Fast String Searching With Suffix Trees</em> (C++)</a> explains Ukkonen's linear-time algorithm.  Dr. Dobb's Journal, August, 1996. Steven Skiena's <a href="https://algorist.com/problems/Suffix_Trees_and_Arrays.html" target="_blank">Suffix Trees and Arrays (C++, Python, and Java)</a>.
+<h2>More information</h2>
+<p>
+<strong>Edward M. McCreight</strong>, <em>A space-economical suffix tree construction algorithm</em>, Journal of the ACM, 23:262-272, 1976. </p> <p> <strong>Esko Ukkonen</strong>, <em>On-line construction of suffix trees</em>, Algorithmica, 14(3):249-260, September 1995.<br /> A linear time, forward construction algorithm.  See <a href="https://en.wikipedia.org/wiki/Ukkonen's_algorithm" target="_blank">Wikipedia entry</a> for links to PDF of Ukkonen's paper.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#8cfcedf9e0a2eee0edefe7cce2e5fff8a2ebe3fa">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 29 November 2021.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Stefan Edelkamp, "suffix tree", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 29 November 2021. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/suffixtree.html">https://www.nist.gov/dads/HTML/suffixtree.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a884f34d9686ff',t:'MTc5MjAwMTIwMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>Shell sort</title>
+<meta name="description"
+  content="Definition of Shell sort,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="Shell sort">
+<meta name="type" content="algorithm">
+<meta name="area" content="Sorting">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>Shell sort</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+The first <a href="diminishingIncSort.html"><em>diminishing increment sort</em></a>.  On each pass i sets of n/i items are sorted, typically with <a href="insertionSort.html"><em>insertion sort</em></a>.  On each succeeding pass, i is reduced until it is 1 for the last pass.  A good series of i values is important to efficiency.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="diminishingIncSort.html"><em>diminishing increment sort</em></a>.
+</p>
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="insertionSort.html"><em>insertion sort</em></a>.
+</p>
+
+<p>
+<em>Note:
+<a href="combSort.html"><em>Comb sort</em></a> does a single "bubbling" pass (ala <a href="bubblesort.html"><em>bubble sort</em></a>) over each set for each gap or increment, whereas Shell sort completely sorts each set. </p> 
+<p> Donald E. Knuth extensively analyzes this algorithm as 5.2.1D in  <a href="../terms.html#Knuth98">[Knuth98, 3:84]</a>.  A good set of increments is 2<sup>k</sup>+1, . . ., 9, 5, 3, 1 with the first increment no more than N/3.</em>
+</p>
+
+<p>Authors: <a href="../Other/contrib.html#authorPEB">PEB</a>,<a href="../Other/contrib.html#authorASK">ASK</a></p>
+<h2>Implementation</h2>
+Worst-case behavior <a href="https://www.auto.tuwien.ac.at/~blieb/woop/shell.html" target="_blank">annotated for real time (WOOP/ADA)</a>, including bibliography. Pat Morin's <a href="https://cglab.ca/~morin/misc/sortalg/" target="_blank">implementation (Java)</a>. <a href="https://www.geeksforgeeks.org/python-program-for-shellsort/" target="_blank">(Python)</a>. <a href="http://lib.stat.cmu.edu/apstat/304" target="_blank">scroll down to ALGORITHM AS 304.8 (Fortran)</a>, <a href="http://www.complang.tuwien.ac.at/forth/ftp.dei.isep.ipp.pt/pub/forth/docs/4thsort.txt" target="_blank">(Forth)</a>, <a href="http://outer-court.com/basic/echo/T469.HTM" target="_blank">strings (Basic)</a>.
+<h2>More information</h2>
+<p>
+Shell sort <a href="https://www.youtube.com/watch?v=g06hNBhoS1k&t=7" target="_blank">illustrated</a> followed by a race between Shell sort and insertion sort (and Shell sort with a gap sequence optimized for 10 items). <br /> <iframe src="https://www.youtube.com/embed/g06hNBhoS1k?start=7" frameborder="0" allowfullscreen></iframe> <br /> Shellsort illustrated through a <a href="https://www.youtube.com/watch?v=CmPA7zE8mx0" target="_blank">Hungarian folk dance: Cs&aacute;ng&oacute;</a>. Created at Sapientia University. <br /> <iframe src="https://www.youtube.com/embed/CmPA7zE8mx0" frameborder="0" allowfullscreen></iframe>
+</p>
+<p>
+<strong>Donald Lewis Shell</strong>, <em>A High-Speed Sorting Procedure</em>, CACM, 2(7):30-32, July 1959.
+</p>
+<p>
+<strong>Historical Note</strong><br>
+This algorithm was improperly called the Shell-Metzner sort by <strong>John P. Grillo</strong>, <em>A Comparison of Sorts</em>, Creative Computing, 2:76-80, Nov/Dec 1976. </p> <p> Grillo cites <strong>Fredric Stuart</strong>, <em>FORTRAN Programming</em>, John Wiley and Sons, New York, 1969, page 294. In crediting "one of the fastest" programs for sorting, Stuart says in a footnote, "Published by Marlene Metzner, Pratt &amp; Whitney Aircraft Company.  From a method described by D. L. Shell." </p> <p> On 3 April 2003 Marlene Metzner Norton wrote </p> <p> I had nothing to do with the sort, and my name should never have been attached to it. </p> <p> So, here's the scoop.  </p> <p> I graduated from college in 1956 with a degree in Math.  The math I took for a college degree in 1956 is pretty much all taught in high school now.  I applied for a job at GE in Evendale, Cincinnati.  (It was that or teach high school.)  They put me to work programming an IBM 704 in an assembly language called CAGE. I don't remember what it stood for, but the GE was General Electric. Probably "Computer Assembler by General Electric".  Don Shell worked in the same building, but he was manager of the Systems Analysts.  I was one of the many who got several pages of equations and turned them into code that would run via punched cards.  This was before Basic and Fortran.  The Systems Analysts wrote assemblers, ways to create buffers to make printing faster, etc.  I doubt that Don Shell even knew who I was.  About 1959 we started using Fortran -- just a little. </p> <p> I think Don Shell wrote up the theory of his sorting method for the Computing Dept. newsletter.  I thought it was interesting and held on to a copy. </p> <p> In 1960, I bought a convertible and moved to Florida.  Why?  I was young, single, the field was wide open and Florida sounded like fun. Accepted a job at Pratt &amp; Whitney in West Palm Beach.  Did the same kind of programming, but Pratt had a brand new IBM 7090.  They programmed in SAP.  It was similar to CAGE.  The logic was the same, but the instruction names differed just enough to be confusing.  </p> <p> Somewhere around 1961 or so, Pratt got an  <a href="https://en.wikipedia.org/wiki/IBM_1620" target="_blank">IBM 1620</a>.  This was a much smaller computer using punched paper tape instead of cards.   Colleges used it for teaching computers.  Pratt used it in the Engineering Dept. so engineers could handle smaller problems on their own instead of bringing them to the Computer Lab.   I was put in charge of co-ordinating the 1620 in Engineering with the Computer Dept.  IBM started a 1620 USER's group.  I was sent to the first meeting.  Being the only woman there, I was naturally voted in as Secretary-Treasurer.  Within the first year, a company in Germany bought one so now it was the IBM 1620 INTERNATIONAL USER'S GROUP.  </p> <p> The User's Group put out a Newsletter.  People wrote in with questions, suggestions, ideas, etc.  To help fill up one of the earlier editions, I pulled out Don Shell's sort method and coded it in Fortran.  Took about 10 lines of code, give or take five, and an equal amount of time.  Gave Don Shell complete credit. </p> <p> In 1963 I got married.  In 1964 I left P &amp; W to start a family. Taught the 1620 and the IBM 1401 at Palm Beach Junior College (now Palm Beach Community College) for a couple of years, but had no contact with P &amp; W  or the User's Group. </p> <p> Now I find someone who read it started calling it Shell-Metzner. It's a wonder Don Shell didn't hunt me down and sue! </p> <p> Marlene  </p> <p> PS.  On the up side, I emailed your website to my kids.  The reaction to the idea that Mom was once "smart" was worth the potential law suit.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#8dfdecf8e1a3efe1eceee6cde3e4fef9a3eae2fb">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 6 April 2023.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black and Art S. Kagel, "Shell sort", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 6 April 2023. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/shellsort.html">https://www.nist.gov/dads/HTML/shellsort.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a884fb9e160ed2',t:'MTc5MjAwMTIwMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

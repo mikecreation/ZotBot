@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>interpolation search</title>
+<meta name="description"
+  content="Definition of interpolation search,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="interpolation search">
+<meta name="type" content="algorithm">
+<meta name="area" content="Searching">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>interpolation search</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+Search a <a href="sortedarray.html"><em>sorted array</em></a> by estimating the next position to check based on a linear interpolation of the search <a href="key.html"><em>key</em></a> and the values at the ends of the search interval.
+</p>
+
+<p>
+<strong>Also known as</strong> extrapolation search.
+</p>
+
+<p>
+<strong>See also</strong>
+<a href="jumpsearch.html"><em>jump search</em></a>, <a href="secantSearch.html"><em>secant search</em></a>, <a href="binarySearch.html"><em>binary search</em></a>, <a href="fibonaccianSearch.html"><em>Fibonaccian search</em></a>.
+</p>
+
+<p>
+<em>Note:
+You probably use this when looking something up in the telephone book or dictionary.  For instance, "cold fusion" is probably near the front, so you open maybe 1/4 of the way in.  What you find there helps you decide whether to turn many pages or just a few.  Compare this with a <a href="linearSearch.html"><em>linear search</em></a>, where you check each entry in order from the beginning, or a <a href="binarySearch.html"><em>binary search</em></a>, where you always divide the search interval exactly in half. </p> 
+<p> Average run time is <a href="bigOnotation.html"><em>O(log log n)</em></a> assuming the keys are uniformly distributed. Worst case for any distribution is O(n). </p> 
+<p>  Perl, Itai, and Avni note that "When the difference between the indices of two successive iterations is small, it may be advantageous to switch to sequential search ..." Unless the data is very uniform, there are millions of records, or comparisons are very time-consuming, a binary search may be no slower: interpolation is usually time-consuming on a computer and a   binary search only takes log(n) comparisons anyway.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+<a href="https://www.auto.tuwien.ac.at/~blieb/woop/inter.html" target="_blank">annotated for real time (WOOP/ADA)</a>, including bibliography. <a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/3/322.srch.p" target="_blank">(Pascal)</a>
+<h2>More information</h2>
+<p>
+<strong> Yehoshua Perl, Alon Itai, and Haim Avni</strong>,  <em>Interpolation search-a log logN search</em>, CACM 21(7):550-553, July 1978.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#572736223b79353b36343c17393e242379303821">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 4 March 2019.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "interpolation search", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 4 March 2019. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/interpolationSearch.html">https://www.nist.gov/dads/HTML/interpolationSearch.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a884f7fdbbb266',t:'MTc5MjAwMTIwMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

@@ -1,0 +1,122 @@
+hash table
+hash table
+(data structure)
+Definition:
+A
+dictionary
+in which
+keys
+are mapped to
+array
+positions by
+hash functions
+.  Having the
+keys
+of more than one item map to the same position is called a
+collision
+. There are many
+collision resolution schemes
+, but they may be divided into
+open addressing
+,
+chaining
+, and keeping one special overflow area.
+Perfect hashing
+avoids collisions, but may be time-consuming to create.
+Also known as
+scatter storage.
+Specialization
+(... is a kind of me.)
+perfect hashing
+,
+dynamic hashing
+,
+2-left hashing
+,
+cuckoo hashing
+,
+2-choice hashing
+,
+hashbelt
+.
+Aggregate parent
+(I am a part of or used in ...)
+dictionary
+.
+Aggregate child
+(... is a part of or used in me.)
+load factor
+,
+hash table delete
+, collision resolution:
+coalesced chaining
+,
+linear probing
+,
+double hashing
+,
+quadratic probing
+,
+uniform hashing
+,
+simple uniform hashing
+,
+separate chaining
+,
+direct chaining
+,
+clustering
+.
+See also
+Bloom filter
+,
+huge sparse array
+.
+Note:
+Complexity depends on the hash function and collision resolution scheme, but may be constant (
+Θ(1)
+) if the table is big enough or grows.   Some open addressing schemes suffer from
+clustering
+more than others.
+The table may be an array of
+buckets
+, to handle some numbers of collisions easily, but some provision must still be made for bucket overflow.
+Author:
+PEB
+Implementation
+direct chaining:
+(C)
+. Bro. David Carlson's
+tutorial and code (C++)
+. linear probing hashing:
+insert (C)
+,
+look up (C)
+. Direct chaining:
+explanations, diagrams, and code (Visual Basic)
+. Mark Nelson's tutorial to using
+C++ Hash Table Memoization: [for] Simplifying Dynamic Programming (C++)
+.
+More information
+explanation and example of hashing and various collision resolution techniques
+.
+Historical Note
+"The idea of hashing appears to have been originated by H. P. Luhn, who wrote an internal IBM memorandum in January 1953"
+[Knuth98, 3:547, Sect. 6.4]
+.  He continues with more than a page of history.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 20 April 2022.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "hash table", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 20 April 2022. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/hashtab.html

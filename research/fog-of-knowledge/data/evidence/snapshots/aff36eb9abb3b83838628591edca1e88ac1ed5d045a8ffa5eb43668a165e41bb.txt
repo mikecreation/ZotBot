@@ -1,0 +1,76 @@
+binary search tree
+binary search tree
+(data structure)
+Definition:
+A
+binary tree
+where every
+node's
+left
+subtree
+has
+keys
+less than the node's key, and every right subtree has keys greater than the node's key.
+Generalization
+(I am a kind of ...)
+binary tree
+,
+search tree
+.
+Specialization
+(... is a kind of me.)
+AVL tree
+,
+splay tree
+,
+threaded tree
+,
+randomized binary search tree
+,
+discrete interval encoding tree
+.
+Aggregate parent
+(I am a part of or used in ...)
+treesort (1)
+.
+See also
+relaxed balance
+,
+ternary search tree
+,
+move-to-root heuristic
+,
+jump list
+.
+Note:
+A binary search tree is almost always implemented with pointers, but may have a variety of constraints on how it is composed.
+Author:
+PEB
+Implementation
+Ben Pfaff's
+insert, delete, search, copy, etc. (literate C)
+; Maksim Goleta's C# Collections uses it to
+implement sorted set (C#)
+.
+insert (C)
+,
+search (C)
+. Algorithms and Data Structures'
+explanation with links to add, delete, search, and output values in order (Java and C++)
+.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 30 August 2021.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "binary search tree", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 30 August 2021. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/binarySearchTree.html

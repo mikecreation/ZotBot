@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>hash function</title>
+<meta name="description"
+  content="Definition of hash function,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="hash function">
+<meta name="type" content="algorithm">
+<meta name="area" content="Searching">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>hash function</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A function that maps <a href="key.html"><em>keys</em></a> to integers, usually to get an even distribution on a smaller set of values.
+</p>
+
+<p>
+<strong>Also known as</strong> hash.
+</p>
+
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+different kinds: <a href="linearhash.html"><em>linear hash</em></a>, <a href="perfecthash.html"><em>perfect hashing</em></a>, <a href="minimalPerfectHash.html"><em>minimal perfect hashing</em></a>, <a href="orderPreservMinPerfectHash.html"><em>order-preserving minimal perfect hashing</em></a>, specific functions: <a href="pearsonshash.html"><em>Pearson's hash</em></a>, <a href="multiplicationMethod.html"><em>multiplication method</em></a>.
+</p>
+<p>
+<strong>Aggregate parent</strong> (I am a part of or used in ...)<br>
+<a href="hashtab.html"><em>hash table</em></a>, <a href="uniformhashn.html"><em>uniform hashing</em></a>, <a href="universalhsh.html"><em>universal hashing</em></a>, <a href="bloomFilter.html"><em>Bloom filter</em></a>, <a href="MerkleTree.html"><em>Merkle tree</em></a>, <a href="hyperloglog.html"><em>HyperLogLog</em></a>, <a href="localitySensitiveHashing.html"><em>locality-sensitive hashing</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="simpleUniformHashing.html"><em>simple uniform hashing</em></a>.
+</p>
+
+<p>
+<em>Note:
+The range of integers is typically [0&hellip; m-1] where m is a prime number or a power of 2.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+See the implementations at <a href="minimalPerfectHash.html"><em>minimal perfect hashing</em></a> and <a href="pearsonshash.html"><em>Pearson's hash</em></a>. Bob Jenkins' fast, parameterizable, broadly applicable <a href="http://burtleburtle.net/bob/hash/doobs.html" target="_blank">hash function (C)</a> including code for and evaluations of many other hash functions. <a href="http://www.isthe.com/chongo/tech/comp/fnv/" target="_blank">Fowler/Noll/Vo or FNV hash function (C)</a>. Arash Partow's implementations of various <a href="http://www.partow.net/programming/hashfunctions/#Download" target="_blank">General Hash Functions (C, C++, Pascal, Object Pascal, Java, Ruby, Python)</a> and Bloom filter for strings. Gonnet and Baeza-Yates's  <a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/3/331.hash.c.html" target="_blank">hash functions for strings.(C)</a>. Austin Appleby's fast <a href="http://sites.google.com/site/murmurhash/" target="_blank">MurmurHash (C)</a>, including avalanche diagrams for Hsieh SuperFastHash, Jenkin's lookup3, Murmur, Bernstein, FNV, and modified FNV.  
+<h2>More information</h2>
+<p>
+<a href="http://www.cs.auckland.ac.nz/software/AlgAnim/hash_func.html" target="_blank">Hashing Functions</a>.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#44342531286a262825272f042a2d37306a232b32">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 8 August 2023.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "hash function", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 8 August 2023. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/hash.html">https://www.nist.gov/dads/HTML/hash.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a884f3bae849f1',t:'MTc5MjAwMTIwMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

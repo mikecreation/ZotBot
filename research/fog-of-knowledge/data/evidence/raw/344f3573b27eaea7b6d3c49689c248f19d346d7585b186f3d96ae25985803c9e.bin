@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>external sort</title>
+<meta name="description"
+  content="Definition of external sort,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="external sort">
+<meta name="type" content="definition">
+<meta name="area" content="Sorting">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>external sort</h1>
+<p>
+(definition)
+</p>
+
+<p>
+<strong>Definition:</strong>
+Any <a href="sort.html"><em>sort</em></a> algorithm that uses external memory, such as tape or disk, during the sort.  Since most common sort algorithms assume high-speed random access to all intermediate memory, they are unsuitable if the values to be sorted don't fit in main memory.
+</p>
+
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="balancedMultiwayMerge.html"><em>balanced multiway merge</em></a>, <a href="https://en.wikipedia.org/wiki/Cascade_merge_sort" target="_blank"><em>Cascade_merge_sort [Wikipedia]</em></a>, <a href="optimalPolyphaseMergeSort.html"><em>optimal polyphase merge sort</em></a>, <a href="oscillatingMergeSort.html"><em>oscillating merge sort</em></a>, <a href="polyphmrgsrt.html"><em>polyphase merge sort</em></a>, <a href="externalRadixSort.html"><em>external radix sort</em></a>, <a href="externalQuicksort.html"><em>external quicksort</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="internalsort.html"><em>internal sort</em></a>, <a href="externalmerg.html"><em>external merge</em></a>, <a href="externalMemoryAlgo.html"><em>external memory algorithm</em></a>.
+</p>
+
+<p>
+<em>Note:
+Algorithms may read the initial values from magnetic tape or write sorted values to disk, but this is not using external memory during the sort.  Note that even though virtual memory may mask the use of disk, sorting sets of data much larger than main memory may be much faster using an explicit external sort. </p> 
+<p> See <a href="../terms.html#Knuth98">[Knuth98, vol. 3, Sect. 5.4]</a> for an extensive treatment.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>More information</h2>
+<p>
+The PhD dissertation of  <strong>Geeta Chaudhry</strong>  (<a href="https://digitalcommons.dartmouth.edu/dissertations/7/" target="_blank"><em>Parallel Out-of-Core Sorting: The Third Way</em></a>, Dartmouth College Ph.D. Dissertation 7, September 2004.) includes new external sort algorithms and comparisons with other external sort algorithms.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#7f0f1e0a13511d131e1c143f11160c0b51181009">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 26 July 2021.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "external sort", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 26 July 2021. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/externalsort.html">https://www.nist.gov/dads/HTML/externalsort.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a884fcbcc0e81c',t:'MTc5MjAwMTIwMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

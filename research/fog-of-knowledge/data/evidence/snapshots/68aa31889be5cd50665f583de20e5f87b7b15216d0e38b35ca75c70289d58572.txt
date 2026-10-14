@@ -1,0 +1,85 @@
+binary search
+binary search
+(algorithm)
+Definition:
+Search a
+sorted array
+by repeatedly dividing the search interval in half.  Begin with an interval covering the whole array. If the value of the search
+key
+is less than the item in the middle of the interval, narrow the interval to the lower half.  Otherwise narrow it to the upper half.  Repeatedly check until the value is found or the interval is empty.
+Generalization
+(I am a kind of ...)
+dichotomic search
+,
+search
+.
+Aggregate parent
+(I am a part of or used in ...)
+binary insertion sort
+,
+ideal merge
+,
+suffix array
+,
+inversion list
+.
+Aggregate child
+(... is a part of or used in me.)
+divide and conquer
+.
+See also
+linear search
+,
+interpolation search
+,
+Fibonaccian search
+,
+jump search
+.
+Note:
+Run time is
+O(ln n)
+.
+Finding the middle is often coded as
+mid = (high + low)/2;
+This overflows if high and low are close to the largest expressible integer.  The following gives the same result and never overflows, if high and low are non-negative.
+mid = low + (high - low)/2;
+Thanks to Colin D. Wright, 1 June 2005.
+Binary search may be effective with an
+ordered linked list
+. It makes O(n) traversals, as does
+linear search
+, but it only performs O(log n) comparisons.
+Author:
+PEB
+Implementation
+recursive and iterative implementation (Python)
+.
+search (C)
+, which uses
+0-based indexing
+. Flower Brackets
+explanation (Java)
+.  Algorithms and Data Structures'
+explanation (Java and C++)
+. Worst-case behavior
+annotated for real time (WOOP/ADA)
+, including bibliography.
+More information
+explanation
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 21 April 2022.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "binary search", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 21 April 2022. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/binarySearch.html

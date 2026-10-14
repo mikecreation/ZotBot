@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>hash table</title>
+<meta name="description"
+  content="Definition of hash table,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="hash table">
+<meta name="type" content="data structure">
+<meta name="area" content="Searching">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>hash table</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A <a href="dictionary.html"><em>dictionary</em></a> in which <a href="key.html"><em>keys</em></a> are mapped to  <a href="array.html"><em>array</em></a> positions by <a href="hash.html"><em>hash functions</em></a>.  Having the <a href="key.html"><em>keys</em></a> of more than one item map to the same position is called a <a href="collision.html"><em>collision</em></a>. There are many <a href="collisionres.html"><em>collision resolution schemes</em></a>, but they may be divided into <a href="openAddressing.html"><em>open addressing</em></a>, <a href="chaining.html"><em>chaining</em></a>, and keeping one special overflow area. <a href="perfecthash.html"><em>Perfect hashing</em></a> avoids collisions, but may be time-consuming to create.
+</p>
+
+<p>
+<strong>Also known as</strong> scatter storage.
+</p>
+
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="perfecthash.html"><em>perfect hashing</em></a>, <a href="dynamicHashing.html"><em>dynamic hashing</em></a>, <a href="twoLeftHashing.html"><em>2-left hashing</em></a>, <a href="cuckooHashing.html"><em>cuckoo hashing</em></a>, <a href="twoChoiceHashing.html"><em>2-choice hashing</em></a>, <a href="hashbelt.html"><em>hashbelt</em></a>.
+</p>
+<p>
+<strong>Aggregate parent</strong> (I am a part of or used in ...)<br>
+<a href="dictionary.html"><em>dictionary</em></a>.
+</p>
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="loadfactor.html"><em>load factor</em></a>, <a href="hashtabdelet.html"><em>hash table delete</em></a>, collision resolution: <a href="coalescedChaining.html"><em>coalesced chaining</em></a>, <a href="linearprobng.html"><em>linear probing</em></a>, <a href="doublehashng.html"><em>double hashing</em></a>, <a href="quadraticprb.html"><em>quadratic probing</em></a>, <a href="uniformhashn.html"><em>uniform hashing</em></a>, <a href="simpleUniformHashing.html"><em>simple uniform hashing</em></a>, <a href="separateChaining.html"><em>separate chaining</em></a>, <a href="directChaining.html"><em>direct chaining</em></a>, <a href="clustering.html"><em>clustering</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="bloomFilter.html"><em>Bloom filter</em></a>, <a href="hugeSparseArray.html"><em>huge sparse array</em></a>.
+</p>
+
+<p>
+<em>Note:
+Complexity depends on the hash function and collision resolution scheme, but may be constant (<a href="theta.html"><em>&Theta;(1)</em></a>) if the table is big enough or grows.   Some open addressing schemes suffer from <a href="clustering.html"><em>clustering</em></a> more than others. </p> 
+<p> The table may be an array of <a href="bucket.html"><em>buckets</em></a>, to handle some numbers of collisions easily, but some provision must still be made for bucket overflow.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+direct chaining: <a href="http://burtleburtle.net/bob/hash/hashtab.html" target="_blank">(C)</a>. Bro. David Carlson's <a href="http://cis.stvincent.edu/html/tutorials/swd/hash/hash.html" target="_blank">tutorial and code (C++)</a>. linear probing hashing: <a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/3/334.ins.c" target="_blank">insert (C)</a>, <a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/3/334.srch.c" target="_blank">look up (C)</a>. Direct chaining: <a href="http://epaperpress.com/vbhash/" target="_blank">explanations, diagrams, and code (Visual Basic)</a>. Mark Nelson's tutorial to using <a href="https://marknelson.us/posts/2007/08/01/memoization.html" target="_blank">C++ Hash Table Memoization: [for] Simplifying Dynamic Programming (C++)</a>.
+<h2>More information</h2>
+<p>
+<a href="http://www.cs.auckland.ac.nz/software/AlgAnim/hash_tables.html" target="_blank">explanation and example of hashing and various collision resolution techniques</a>.
+</p>
+<p>
+<strong>Historical Note</strong><br>
+"The idea of hashing appears to have been originated by H. P. Luhn, who wrote an internal IBM memorandum in January 1953"  <a href="../terms.html#Knuth98">[Knuth98, 3:547, Sect. 6.4]</a>.  He continues with more than a page of history.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#9dedfce8f1b3fff1fcfef6ddf3f4eee9b3faf2eb">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 20 April 2022.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "hash table", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 20 April 2022. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/hashtab.html">https://www.nist.gov/dads/HTML/hashtab.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a884e70e110042',t:'MTc5MjAwMTE5OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

@@ -1,0 +1,78 @@
+priority queue
+priority queue
+(data structure)
+Definition:
+An
+abstract data type
+to efficiently support finding the item with the highest priority across a series of operations.  The basic operations are: insert, find-minimum (or maximum), and delete-minimum (or maximum).  Some implementations also efficiently support join two priority queues (
+meld
+), delete an arbitrary item, and increase the priority of a item (decrease-key).
+Formal Definition:
+The operations new(), insert(v, PQ), find-minimum or min(PQ), and delete-minimum or dm(PQ) may be defined with
+axiomatic semantics
+as follows.
+new() returns a priority queue
+min(insert(v, new())) = v
+dm(insert(v, new())) = new()
+min(insert(v, insert(w, PQ))) = if priority(v) < 	priority(min(insert(w, PQ))) then v else  	min(insert(w, PQ))
+dm(insert(v, insert(w, PQ))) = if priority(v) < 	priority(min(insert(w, PQ))) then insert(w, PQ) 	else insert(v, dm(insert(w, PQ)))
+where PQ is a priority queue, v and w are items, and priority(v) is the priority of item v.
+Generalization
+(I am a kind of ...)
+abstract data type
+.
+Specialization
+(... is a kind of me.)
+pagoda
+,
+leftist tree
+,
+van Emde-Boas priority queue
+.
+Aggregate parent
+(I am a part of or used in ...)
+best-first search
+,
+Dijkstra's algorithm
+.
+Aggregate child
+(... is a part of or used in me.)
+heap
+,
+Fibonacci heap
+.
+See also
+discrete interval encoding tree
+,
+hash heap
+,
+calendar queue
+,
+queue
+.
+Note:
+It can be implemented efficiently with a
+heap
+. After LK.
+Author:
+PEB
+Implementation
+Links to
+implementations, dozens of papers, introductory material, etc.
+.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 22 November 2021.
+HTML page formatted Wed Oct 30 12:15:31 2024.
+Cite this as:
+Paul E. Black, "priority queue", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 22 November 2021. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/priorityque.html

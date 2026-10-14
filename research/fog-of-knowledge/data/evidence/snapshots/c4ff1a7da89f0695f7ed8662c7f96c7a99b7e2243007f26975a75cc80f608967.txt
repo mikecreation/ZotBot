@@ -1,0 +1,62 @@
+queue
+queue
+(data structure)
+Definition:
+A collection of items in which only the earliest added item may be accessed.  Basic operations are add (to the
+tail
+) or enqueue and delete (from the
+head
+) or dequeue.  Delete returns the item removed.  Also known as "first-in, first-out" or FIFO.
+Formal Definition:
+It is convenient to define delete or dequeue in terms of remove and a new operation, front.   The operations new(), add(v, Q), front(Q), and remove(Q) may be defined with
+axiomatic semantics
+as follows.
+new() returns a queue
+front(add(v, new())) = v
+remove(add(v, new())) = new()
+front(add(v, add(w, Q))) = front(add(w, Q))
+remove(add(v, add(w, Q))) = add(v, remove(add(w, Q)))
+where Q is a queue and v and w are values.
+Also known as
+FIFO.
+Generalization
+(I am a kind of ...)
+abstract data type
+.
+Specialization
+(... is a kind of me.)
+bounded queue
+.
+See also
+deque
+,
+stack
+,
+priority queue
+,
+first come, first served
+.
+Author:
+PEB
+Implementation
+Maksim Goleta's C# Collections
+linked-list implementation (C#)
+. Bro. David Carlson's
+tutorial and code (C++)
+using linked list.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 14 December 2020.
+HTML page formatted Wed Oct 30 12:15:31 2024.
+Cite this as:
+Paul E. Black, "queue", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 14 December 2020. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/queue.html

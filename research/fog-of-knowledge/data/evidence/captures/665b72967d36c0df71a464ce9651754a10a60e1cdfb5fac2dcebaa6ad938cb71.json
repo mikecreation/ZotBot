@@ -1,0 +1,15 @@
+{
+  "id": "nist-dads.queue",
+  "url": "https://xlinux.nist.gov/dads/HTML/queue.html",
+  "final_url": "https://xlinux.nist.gov/dads/HTML/queue.html",
+  "title": "NIST Dictionary of Algorithms and Data Structures: queue",
+  "source_kind": "secondary",
+  "retrieved_at": "2026-10-14T18:04:43.402220+00:00",
+  "text": "queue\nqueue\n(data structure)\nDefinition:\nA collection of items in which only the earliest added item may be accessed.  Basic operations are add (to the\ntail\n) or enqueue and delete (from the\nhead\n) or dequeue.  Delete returns the item removed.  Also known as \"first-in, first-out\" or FIFO.\nFormal Definition:\nIt is convenient to define delete or dequeue in terms of remove and a new operation, front.   The operations new(), add(v, Q), front(Q), and remove(Q) may be defined with\naxiomatic semantics\nas follows.\nnew() returns a queue\nfront(add(v, new())) = v\nremove(add(v, new())) = new()\nfront(add(v, add(w, Q))) = front(add(w, Q))\nremove(add(v, add(w, Q))) = add(v, remove(add(w, Q)))\nwhere Q is a queue and v and w are values.\nAlso known as\nFIFO.\nGeneralization\n(I am a kind of ...)\nabstract data type\n.\nSpecialization\n(... is a kind of me.)\nbounded queue\n.\nSee also\ndeque\n,\nstack\n,\npriority queue\n,\nfirst come, first served\n.\nAuthor:\nPEB\nImplementation\nMaksim Goleta's C# Collections\nlinked-list implementation (C#)\n. Bro. David Carlson's\ntutorial and code (C++)\nusing linked list.\nGo to the\nDictionary of Algorithms and Data\nStructures\nhome page.\nIf you have suggestions, corrections, or comments, please get in touch\nwith\nPaul Black\n.\nEntry modified 14 December 2020.\nHTML page formatted Wed Oct 30 12:15:31 2024.\nCite this as:\nPaul E. Black, \"queue\", in\nDictionary of Algorithms and Data Structures\n[online], Paul E. Black, ed. 14 December 2020. (accessed TODAY)\nAvailable from:\nhttps://www.nist.gov/dads/HTML/queue.html",
+  "sha256": "c4ff1a7da89f0695f7ed8662c7f96c7a99b7e2243007f26975a75cc80f608967",
+  "raw_sha256": "6c81b4b2a2f2ff492ccd692bdeeb65ca6db2edb67f2ea955643602679412d0ed",
+  "content_type": "text/html",
+  "charset": "utf-8",
+  "extraction_method": "http-html-data-lines/1",
+  "capture_id": "665b72967d36c0df71a464ce9651754a10a60e1cdfb5fac2dcebaa6ad938cb71"
+}

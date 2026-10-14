@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>Huffman coding</title>
+<meta name="description"
+  content="Definition of Huffman coding,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="Huffman coding">
+<meta name="type" content="algorithm">
+<meta name="area" content="Cryptography and Compression">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>Huffman coding</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A minimal variable-length character coding based on the frequency of  each character.  First, each character becomes a one-node <a href="binarytree.html"><em>binary tree</em></a>, with the character as the only <a href="node.html"><em>node</em></a>.  The character's frequency is the tree's frequency.  Two trees with the least frequencies are joined as the subtrees of a new root that is assigned the sum of their frequencies. Repeat until all characters are in one tree.  One code bit represents each <a href="level.html"><em>level</em></a>.  Thus more frequent characters are near the <a href="root.html"><em>root</em></a> and are coded with few bits, and rare characters are far from the root and are coded with many bits.
+</p>
+
+<p>
+<strong>Also known as</strong> static Huffman coding.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="greedyalgo.html"><em>greedy algorithm</em></a>.
+</p>
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="adaptiveHuffman.html"><em>adaptive Huffman coding</em></a>, <a href="karyHuffman.html"><em>k-ary Huffman coding</em></a>.
+</p>
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="codingTree.html"><em>coding tree</em></a>, <a href="fullBinaryTree.html"><em>full binary tree</em></a>, <a href="priorityque.html"><em>priority queue</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="orderPreservingHuffmanCoding.html"><em>order-preserving Huffman coding</em></a>, <a href="arithmeticCoding.html"><em>arithmetic coding</em></a>, <a href="optimalMerge.html"><em>optimal merge</em></a>, <a href="shannonFano.html"><em>Shannon-Fano coding</em></a>.
+</p>
+
+<p>
+<em>Note:
+The <a href="worstcase.html"><em>worst case</em></a> for Huffman coding (or, equivalently, the longest Huffman coding for a set of characters) is when the distribution of frequencies follows the <a href="fibonacciNumber.html"><em>Fibonacci numbers</em></a>.  (This and other relations came from Alex Vinokur "Fibonacci numbers, Lucas numbers and Huffman codes".) </p> 
+<p> Joining trees by frequency is the same as merging sequences by length in <a href="optimalMerge.html"><em>optimal merge</em></a>.  See the example there. Since a node with only one child is not optimal, any Huffman coding corresponds to a <a href="fullBinaryTree.html"><em>full binary tree</em></a>. </p> 
+<p> Huffman coding is one of many <a href="https://en.wikipedia.org/wiki/Category:Lossless_compression_algorithms" target="_blank">lossless compression algorithms</a>.  This algorithm produces a <a href="prefixcode.html"><em>prefix code</em></a>. </p> 
+<p> Shannon-Fano is a minimal prefix code. Huffman is optimal for character coding (one character-one code word) and simple to program.  Arithmetic coding is even more compact, since it can allocate fractional bits, but is more complicated and patents cover some uses.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+<a href="https://people.eng.unimelb.edu.au/ammoffat/abstracts/mk95wads.html" target="_blank">build tree in array (C)</a> --  also computes entropy and efficiency.
+<h2>More information</h2>
+<p>
+A <a href="http://www.ics.uci.edu/~dan/pubs/DC-Sec3.html" target="_blank">survey on data compression</a>, John Morris' <a href="http://www.cs.auckland.ac.nz/software/AlgAnim/huffman.html" target="_blank">explanation, example, and analysis</a>. Wikipedia's encyclopedic article on <a href="https://en.wikipedia.org/wiki/Huffman_coding" target="_blank">Huffman coding</a>.
+</p>
+<p>
+<strong>David A. Huffman</strong>, <em>A Method for The Construction of Minimum Redundancy Codes</em>,  Proceedings of IRE, 40(9):1098-1101, September 1952.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#ed9d8c9881c38f818c8e86ad83849e99c38a829b">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 11 January 2021.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "Huffman coding", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 11 January 2021. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/huffmanCoding.html">https://www.nist.gov/dads/HTML/huffmanCoding.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a884f9db8d7dd6',t:'MTc5MjAwMTIwMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

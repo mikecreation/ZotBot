@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>stack</title>
+<meta name="description"
+  content="Definition of stack,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="stack">
+<meta name="type" content="data structure">
+<meta name="area" content="Basic">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>stack</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A collection of items in which only the most recently added item may be removed.  The latest added item is at the top.  Basic operations are push and pop.  Often top and isEmpty are available, too. Also known as "last-in, first-out" or LIFO.
+</p>
+
+<p>
+<strong>Formal Definition:</strong> The operations new(), push(v, S), top(S), and popoff(S) may be defined with <a href="axiomaticSemantics.html"><em>axiomatic semantics</em></a> as follows. <ol> <li>new() returns a stack <li>popoff(push(v, S)) = S <li>top(push(v, S)) = v </ol> where S is a stack and v is a value.  The pop operation is a combination of top, to return the top value, and popoff, to remove the top value. </p> <p> The <a href="predicate.html"><em>predicate</em></a> isEmpty(S) may be defined with the following additional axioms. <ol start="4"> <li>isEmpty(new()) = true <li>isEmpty(push(v, S)) = false </ol>
+</p>
+<p>
+<strong>Also known as</strong> LIFO.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="abstractDataType.html"><em>abstract data type</em></a>.
+</p>
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="boundedstack.html"><em>bounded stack</em></a>, <a href="cactusstack.html"><em>cactus stack</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="queue.html"><em>queue</em></a>.
+</p>
+
+<p>
+<em>Note:
+Other operations may include index(i, S), return the ith item in the stack, isFull(S), and rotate(i, S), move i items from top to bottom or vice versa.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+Maksim Goleta's C# Collections <a href="https://github.com/Goleta/csharp-collections/blob/master/Goletas.Collections/LinkedStack.cs" target="_blank">linked-list implementation (C#)</a>. Bro. David Carlson's <a href="http://cis.stvincent.edu/html/tutorials/swd/stacks/stacks.html" target="_blank">tutorial and code (C++)</a>.
+<h2>More information</h2>
+<p>
+<a href="http://www.cs.auckland.ac.nz/software/AlgAnim/stacks.html" target="_blank">examples and code</a>.
+</p>
+<p>
+Origin is attributed to <strong>A. W. Burks, D. W. Warren</strong>, and <strong>J. B. Wright</strong>, <em>An analysis of a logical machine using parenthesis-free notation</em>, Mathematical Tables and Other Aids to Computation, 8(46):53-57, April 1954, and <strong>A. Newell</strong> and <strong>J. C. Shaw</strong>, <em>Programming the logic theory machine</em>, Proceedings of the 1957 Western Joint Computer Conference, pages 230-240, Institute of Radio Engineers, New York, February 1957.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#6c1c0d1900420e000d0f072c02051f18420b031a">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 1 October 2019.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "stack", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 1 October 2019. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/stack.html">https://www.nist.gov/dads/HTML/stack.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a88211dc6beb62',t:'MTc5MjAwMTA4Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

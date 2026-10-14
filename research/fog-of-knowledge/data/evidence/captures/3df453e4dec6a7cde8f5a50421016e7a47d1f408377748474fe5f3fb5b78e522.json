@@ -1,0 +1,15 @@
+{
+  "id": "nist-dads.binaryheap",
+  "url": "https://xlinux.nist.gov/dads/HTML/binaryheap.html",
+  "final_url": "https://xlinux.nist.gov/dads/HTML/binaryheap.html",
+  "title": "NIST Dictionary of Algorithms and Data Structures: binaryheap",
+  "source_kind": "secondary",
+  "retrieved_at": "2026-10-14T18:06:40.932551+00:00",
+  "text": "binary heap\nbinary heap\n(data structure)\nDefinition:\nA\ncomplete binary tree\nwhere every\nnode\nhas a\nkey\nmore extreme (greater or less) than or equal to the key of its\nparent\n.\nGeneralization\n(I am a kind of ...)\ncomplete binary tree\n,\nheap\n,\nk-ary heap\nwith k=2.\nSpecialization\n(... is a kind of me.)\ntreap\n.\nAggregate parent\n(I am a part of or used in ...)\nbuild-heap\n,\nheapify\n,\nheapsort\n,\npriority queue\n.\nAggregate child\n(... is a part of or used in me.)\narray\n.\nSee also\nFibonacci heap\n,\nbinomial heap\n.\nNote:\nInsertion is\nO(log\n2\nn)\nwhere n is the number of nodes. A binary heap can be efficiently implemented as an\narray\n, where a node at index i has children at indexes 2i and 2i+1 and a parent at index i/2, with\n1-based indexing\n.   If a child index is greater than the number of nodes, the child does not exist.\nThe above implementation is inefficient with virtual memories because (almost) every\nlevel\nis in a different page.\nB-heaps\nallocate subtrees to a single page for better virtual memory performance.\nMerging two binary heaps is\nO(n)\n: the best you can do is just concatenate two heap arrays and make a heap of the result. Two\nbinomial heaps\ncan be merged in O(ln n).   Two\nFibonacci heaps\ncan be merged in Θ(1).\nAuthor:\nCLK\nImplementation\ndelete (C)\nand\ninsert (C and Pascal)\nboth of which use the auxiliary function\nsiftup (C and Pascal)\n,\nexplanation, examples, and code (C)\n.\n(Fortran)\n.\nMore information\n\"... you just KNOW Billy's going to open the root present first, and then everyone will have to wait while the heap is rebuilt.\"\nFrom\nxkcd 835\nby Randall Munroe.\nCreative Commons Attribution-NonCommercial 2.5 License\n.\nGo to the\nDictionary of Algorithms and Data\nStructures\nhome page.\nIf you have suggestions, corrections, or comments, please get in touch\nwith\nPaul Black\n.\nEntry modified 25 July 2022.\nHTML page formatted Wed Oct 30 12:15:30 2024.\nCite this as:\nChris L. Kuszmaul, \"binary heap\", in\nDictionary of Algorithms and Data Structures\n[online], Paul E. Black, ed. 25 July 2022. (accessed TODAY)\nAvailable from:\nhttps://www.nist.gov/dads/HTML/binaryheap.html",
+  "sha256": "861a125cb6a5836bf6afb24204c429ae50e15df1cc008248cafb6c44ac7f2a6e",
+  "raw_sha256": "33e47e8d459789235d689400bcaf3e09204fe51bf50ac84e76aa36ef687115f6",
+  "content_type": "text/html",
+  "charset": "utf-8",
+  "extraction_method": "http-html-data-lines/1",
+  "capture_id": "3df453e4dec6a7cde8f5a50421016e7a47d1f408377748474fe5f3fb5b78e522"
+}

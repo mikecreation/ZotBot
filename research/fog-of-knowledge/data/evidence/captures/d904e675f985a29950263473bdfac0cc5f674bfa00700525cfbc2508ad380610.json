@@ -1,0 +1,15 @@
+{
+  "id": "nist-dads.memoize",
+  "url": "https://xlinux.nist.gov/dads/HTML/memoize.html",
+  "final_url": "https://xlinux.nist.gov/dads/HTML/memoize.html",
+  "title": "NIST Dictionary of Algorithms and Data Structures: memoize",
+  "source_kind": "secondary",
+  "retrieved_at": "2026-10-14T18:06:41.789612+00:00",
+  "text": "memoization\nmemoization\n(algorithmic technique)\nDefinition:\nSave (memoize) a computed answer for possible later reuse, rather than recomputing the answer.\nSee also\ndynamic programming\n.\nNote:\nThe term comes from \"memo\": \"A short note written as a reminder.\" [The American Heritage Dictionary of the English Language, © 1970, American Heritage Publishing]\nA naive program to compute\nFibonacci numbers\nis\nfib(n) {\nif n is 1 or 2, return 1;\nreturn fib(n-1) + fib(n-2);\n}\nBecause fib() is recomputed over and over for the same argument, run time for the above is\nΩ\n(1.6\nn\n). If instead we memoize (save) the value of fib(n) the first time we compute it, the run time is\nΘ\n(n).\nallocate array for memo;\nset all elements of memo to zero;\nfib(n) {\nif n is 1 or 2, return 1;\nif memo[n] is not zero, return memo[n];\nmemo[n] = fib(n-1) + fib(n-2);\nreturn memo[n];\n}\nOf course, computing Fibonacci numbers can be easily done in\nlogarithmic\ntime (see\nFibonacci numbers\n), but this illustrates memoization.\nAuthor:\nPEB\nImplementation\nMark Nelson's tutorial to using\nC++ Hash Table Memoization: [for] Simplifying Dynamic Programming (C++)\n.\nGo to the\nDictionary of Algorithms and Data\nStructures\nhome page.\nIf you have suggestions, corrections, or comments, please get in touch\nwith\nPaul Black\n.\nEntry modified 20 April 2022.\nHTML page formatted Wed Oct 30 12:15:30 2024.\nCite this as:\nPaul E. Black, \"memoization\", in\nDictionary of Algorithms and Data Structures\n[online], Paul E. Black, ed. 20 April 2022. (accessed TODAY)\nAvailable from:\nhttps://www.nist.gov/dads/HTML/memoize.html",
+  "sha256": "51257d9af5d6bb37c6264c693c98a439bcf13b71590d057be45ab847e4cd80b4",
+  "raw_sha256": "d6b3e2e802302e674cf75a8b7b333260e4d9319c4ea05acf3d9034d8ef0b04b9",
+  "content_type": "text/html",
+  "charset": "utf-8",
+  "extraction_method": "http-html-data-lines/1",
+  "capture_id": "d904e675f985a29950263473bdfac0cc5f674bfa00700525cfbc2508ad380610"
+}

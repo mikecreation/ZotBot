@@ -1,0 +1,15 @@
+{
+  "id": "nist-dads.priorityque",
+  "url": "https://xlinux.nist.gov/dads/HTML/priorityque.html",
+  "final_url": "https://xlinux.nist.gov/dads/HTML/priorityque.html",
+  "title": "NIST Dictionary of Algorithms and Data Structures: priorityque",
+  "source_kind": "secondary",
+  "retrieved_at": "2026-10-14T18:06:39.257009+00:00",
+  "text": "priority queue\npriority queue\n(data structure)\nDefinition:\nAn\nabstract data type\nto efficiently support finding the item with the highest priority across a series of operations.  The basic operations are: insert, find-minimum (or maximum), and delete-minimum (or maximum).  Some implementations also efficiently support join two priority queues (\nmeld\n), delete an arbitrary item, and increase the priority of a item (decrease-key).\nFormal Definition:\nThe operations new(), insert(v, PQ), find-minimum or min(PQ), and delete-minimum or dm(PQ) may be defined with\naxiomatic semantics\nas follows.\nnew() returns a priority queue\nmin(insert(v, new())) = v\ndm(insert(v, new())) = new()\nmin(insert(v, insert(w, PQ))) = if priority(v) < \tpriority(min(insert(w, PQ))) then v else  \tmin(insert(w, PQ))\ndm(insert(v, insert(w, PQ))) = if priority(v) < \tpriority(min(insert(w, PQ))) then insert(w, PQ) \telse insert(v, dm(insert(w, PQ)))\nwhere PQ is a priority queue, v and w are items, and priority(v) is the priority of item v.\nGeneralization\n(I am a kind of ...)\nabstract data type\n.\nSpecialization\n(... is a kind of me.)\npagoda\n,\nleftist tree\n,\nvan Emde-Boas priority queue\n.\nAggregate parent\n(I am a part of or used in ...)\nbest-first search\n,\nDijkstra's algorithm\n.\nAggregate child\n(... is a part of or used in me.)\nheap\n,\nFibonacci heap\n.\nSee also\ndiscrete interval encoding tree\n,\nhash heap\n,\ncalendar queue\n,\nqueue\n.\nNote:\nIt can be implemented efficiently with a\nheap\n. After LK.\nAuthor:\nPEB\nImplementation\nLinks to\nimplementations, dozens of papers, introductory material, etc.\n.\nGo to the\nDictionary of Algorithms and Data\nStructures\nhome page.\nIf you have suggestions, corrections, or comments, please get in touch\nwith\nPaul Black\n.\nEntry modified 22 November 2021.\nHTML page formatted Wed Oct 30 12:15:31 2024.\nCite this as:\nPaul E. Black, \"priority queue\", in\nDictionary of Algorithms and Data Structures\n[online], Paul E. Black, ed. 22 November 2021. (accessed TODAY)\nAvailable from:\nhttps://www.nist.gov/dads/HTML/priorityque.html",
+  "sha256": "32105ba757774ba6e94aa5875b4f3309c371e43ed73b48214d52b2de1dbd3cec",
+  "raw_sha256": "097539b9acb06409fab76271957ba5f9470797d8053efcd92c9927babebd9713",
+  "content_type": "text/html",
+  "charset": "utf-8",
+  "extraction_method": "http-html-data-lines/1",
+  "capture_id": "458c9f54ace8a8dfc3045b2eb6e112d31c802cddf05c0bf222fc0fc9d96b548f"
+}

@@ -1,0 +1,60 @@
+Fibonaccian search
+Fibonaccian search
+(algorithm)
+Definition:
+Search a
+sorted array
+by narrowing possible locations to progressively smaller intervals.  Begin with two
+Fibonacci numbers
+, p (F(n)) and q (F(n+1)), such that p < n ≤ q, where n is the size of the array.  The first step checks location p.  The size of the next interval is p, if the key is less than the item at that location, or q-p (F(n-1)) if it is greater.
+Aggregate child
+(... is a part of or used in me.)
+Fibonacci number
+, search locations are a
+Fibonacci tree
+.
+See also
+linear search
+,
+interpolation search
+,
+binary search
+,
+jump search
+.
+Note:
+This is similar to a
+binary search
+, but only needs subtraction, instead of divide by two or shift right, to compute the next position.
+Author:
+PEB
+Implementation
+Manolis Lourakis'
+fibsrch (C)
+. Worst-case behavior
+annotated for real time (WOOP/ADA)
+, including bibliography.  (Interpolation and secant search "guess more precisely where the key being sought falls".)
+More information
+David E. Ferguson
+,
+Fibonaccian Searching
+, CACM, 3(12):648, December 1960.
+Also
+[Knuth98, 3:417, Sect. 6.2.1]
+.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 14 December 2020.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "Fibonaccian search", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 14 December 2020. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/fibonaccianSearch.html

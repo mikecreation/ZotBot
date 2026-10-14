@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>heapsort</title>
+<meta name="description"
+  content="Definition of heapsort,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="heapsort">
+<meta name="type" content="algorithm">
+<meta name="area" content="Sorting">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>heapsort</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A <a href="sort.html"><em>sort</em></a> algorithm that builds a <a href="heap.html"><em>heap</em></a>, then repeatedly extracts the maximum item.  Run time is  <a href="bigOnotation.html"><em>O(n log n)</em></a>.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="inplacesort.html"><em>in-place sort</em></a>.
+</p>
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="adaptiveHeapSort.html"><em>adaptive heap sort</em></a>, <a href="smoothsort.html"><em>smoothsort</em></a>.
+</p>
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="buildHeap.html"><em>build-heap</em></a>, <a href="heap.html"><em>heap</em></a>, <a href="siftup.html"><em>sift up</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="selectionSort.html"><em>selection sort</em></a>.
+</p>
+
+<p>
+<em>Note:
+Heapsort can be seen as a variant of <a href="selectionSort.html"><em>selection sort</em></a> in which sorted items are arranged (in a <a href="heap.html"><em>heap</em></a>) to quickly find the next item. </p> 
+<p> Some times called "tournament sort" by analogy between a heap, with its <a href="heapproperty.html"><em>heap property</em></a>, and a tree of matches in a sports tournament.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+Prof. Dr. Hans Wener Lang's <a href="https://www.inf.hs-flensburg.de/lang/algorithmen/sortieren/heap/heapen.htm" target="_blank">definitions, explanations, diagrams, and pseudo-code (Java)</a>, Bro. David Carlson's <a href="http://cis.stvincent.edu/html/tutorials/swd/heaps/heaps.html" target="_blank">heaps and heapsort tutorial and code (C++)</a>. Paulo Roma's <a href="http://pascalprog.blogspot.com/2008/06/heap-sort-algorithm.html" target="_blank">(Pascal)</a> implementation. <a href="https://www.geeksforgeeks.org/python-program-for-heap-sort/" target="_blank">(Python)</a>. Worst-case behavior <a href="https://www.auto.tuwien.ac.at/~blieb/woop/heapsort.html" target="_blank">annotated for real time (WOOP/ADA)</a>, including bibliography.
+<h2>More information</h2>
+<p>
+<a href="http://www.azillionmonkeys.com/qed/sort.html" target="_blank">Comparison of quicksort, heapsort, and merge sort</a> on modern processors. <br /> <br /> An <a href="https://www.youtube.com/watch?v=H5kAcmGOn4Q&t=7" target="_blank">illustration</a> of heap sort followed by a <a href="https://www.youtube.com/watch?v=H5kAcmGOn4Q&t=248" target="_blank">race</a> between heap sort and merge sort. <br /> <iframe src="https://www.youtube.com/embed/H5kAcmGOn4Q?start=7" frameborder="0" allowfullscreen></iframe>
+</p>
+<p>
+<strong>Robert W. Floyd</strong>, <em>Algorithm 245 Treesort 3</em>, CACM, 7(12):701, December 1964.<br /> <strong>J. W. J. Williams</strong>, <em>Algorithm 232 Heapsort</em>, CACM, 7(6):378-348, June 1964.<br /> Although Williams clearly stated the idea of heapsort, Floyd gave a complete, efficient implementation nearly identical to what we use today.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#bacadbcfd694d8d6dbd9d1fad4d3c9ce94ddd5cc">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 6 April 2023.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "heapsort", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 6 April 2023. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/heapSort.html">https://www.nist.gov/dads/HTML/heapSort.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a884e41ef2da7a',t:'MTc5MjAwMTE5OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

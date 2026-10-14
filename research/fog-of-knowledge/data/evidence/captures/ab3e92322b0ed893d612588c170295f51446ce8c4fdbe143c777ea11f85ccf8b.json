@@ -1,0 +1,15 @@
+{
+  "id": "nist-dads.interpolationsearch",
+  "url": "https://xlinux.nist.gov/dads/HTML/interpolationSearch.html",
+  "final_url": "https://xlinux.nist.gov/dads/HTML/interpolationSearch.html",
+  "title": "NIST Dictionary of Algorithms and Data Structures: interpolationSearch",
+  "source_kind": "secondary",
+  "retrieved_at": "2026-10-14T18:06:42.001045+00:00",
+  "text": "interpolation search\ninterpolation search\n(algorithm)\nDefinition:\nSearch a\nsorted array\nby estimating the next position to check based on a linear interpolation of the search\nkey\nand the values at the ends of the search interval.\nAlso known as\nextrapolation search.\nSee also\njump search\n,\nsecant search\n,\nbinary search\n,\nFibonaccian search\n.\nNote:\nYou probably use this when looking something up in the telephone book or dictionary.  For instance, \"cold fusion\" is probably near the front, so you open maybe 1/4 of the way in.  What you find there helps you decide whether to turn many pages or just a few.  Compare this with a\nlinear search\n, where you check each entry in order from the beginning, or a\nbinary search\n, where you always divide the search interval exactly in half.\nAverage run time is\nO(log log n)\nassuming the keys are uniformly distributed. Worst case for any distribution is O(n).\nPerl, Itai, and Avni note that \"When the difference between the indices of two successive iterations is small, it may be advantageous to switch to sequential search ...\" Unless the data is very uniform, there are millions of records, or comparisons are very time-consuming, a binary search may be no slower: interpolation is usually time-consuming on a computer and a   binary search only takes log(n) comparisons anyway.\nAuthor:\nPEB\nImplementation\nannotated for real time (WOOP/ADA)\n, including bibliography.\n(Pascal)\nMore information\nYehoshua Perl, Alon Itai, and Haim Avni\n,\nInterpolation search-a log logN search\n, CACM 21(7):550-553, July 1978.\nGo to the\nDictionary of Algorithms and Data\nStructures\nhome page.\nIf you have suggestions, corrections, or comments, please get in touch\nwith\nPaul Black\n.\nEntry modified 4 March 2019.\nHTML page formatted Wed Oct 30 12:15:30 2024.\nCite this as:\nPaul E. Black, \"interpolation search\", in\nDictionary of Algorithms and Data Structures\n[online], Paul E. Black, ed. 4 March 2019. (accessed TODAY)\nAvailable from:\nhttps://www.nist.gov/dads/HTML/interpolationSearch.html",
+  "sha256": "8ca00d41b29165bdde46cacf01e22d74e575729715fa80d44c9387506c32205d",
+  "raw_sha256": "40f92e2c429b64a1c05bea37f4273d66823211995e919bf29d235308e094ee96",
+  "content_type": "text/html",
+  "charset": "utf-8",
+  "extraction_method": "http-html-data-lines/1",
+  "capture_id": "ab3e92322b0ed893d612588c170295f51446ce8c4fdbe143c777ea11f85ccf8b"
+}

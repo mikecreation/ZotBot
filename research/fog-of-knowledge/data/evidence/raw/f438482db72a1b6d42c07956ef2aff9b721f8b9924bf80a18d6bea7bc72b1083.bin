@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>array</title>
+<meta name="description"
+  content="Definition of array,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="array">
+<meta name="type" content="data structure">
+<meta name="area" content="Basic">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>array</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+An assemblage of items that are randomly accessible by integers, the index.
+</p>
+
+<p>
+<strong>Formal Definition:</strong> Ignoring size an array may be seen as an <a href="abstractDataType.html"><em>abstract data type</em></a> with the operations new(), set(i, v, A), and get(i, A),  where i is a numeric index, v is a value, and A is an array.  The operations may be defined with <a href="axiomaticSemantics.html"><em>axiomatic semantics</em></a> as follows. <ol> <li>new() returns an array <li>get(i, set(i, v, A)) = v <li>get(i, set(j, v, A)) = get(i, A) if i &ne; j </ol> Compare this with a <a href="dictionary.html"><em>dictionary</em></a> using integers as keys. </p> <p> If the contents of a new array are set to some implicit initial value v<sub>i</sub>, we could add the following rule for get. <ol start="4"> <li>get(i, new()) = v<sub>i</sub> </ol> <p> Typically arrays have a fixed size and use either <a href="zeroBasedIndexing.html"><em>0-based indexing</em></a> or <a href="oneBasedIndexing.html"><em>1-based indexing</em></a>.  Fixed initial size and 0-based indexing may incorporated as follows. <ol> <li>new(s) returns an array, which has a size s <li>size(new(s)) = s <li>size(set(i, v, A)) = size(A) <li>get(i, set(i, v, A)) = v if 0 &le; i &lt; size(A) <li>get(i, set(j, v, A)) = get(i, A) if i &ne; j </ol> One-based or other indexing may be defined similarly. </p>
+</p>
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="dynamicarray.html"><em>dynamic array</em></a>, <a href="sortedarray.html"><em>sorted array</em></a>.
+</p>
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="arrayindex.html"><em>array index</em></a>, <a href="oneBasedIndexing.html"><em>1-based indexing</em></a>, <a href="zeroBasedIndexing.html"><em>0-based indexing</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="assocarray.html"><em>associative array</em></a>, <a href="matrix.html"><em>matrix</em></a>, <a href="hugeSparseArray.html"><em>huge sparse array</em></a>.
+</p>
+
+<p>
+<em>Note:
+An unordered array must be searched with a <a href="linearSearch.html"><em>linear search</em></a>. Average search time may be improved using a <a href="movefront.html"><em>move-to-front heuristic</em></a> in some cases. An <a href="externalindx.html"><em>external index</em></a>, such as a <a href="hashtab.html"><em>hash table</em></a> or <a href="invertedIndex.html"><em>inverted index</em></a> may help make an <a href="arraysearch.html"><em>array search</em></a> quicker and speed overall processing if the array is not changed often. If the array is kept sorted, a <a href="binarySearch.html"><em>binary search</em></a> or <a href="interpolationSearch.html"><em>interpolation search</em></a> is faster. </p> 
+<p> Inserting into an array takes <a href="bigOnotation.html"><em>O(n)</em></a> time.  If that's too slow, use a <a href="balancedtree.html"><em>balanced tree</em></a>, <a href="skiplist.html"><em>skip list</em></a>, or a <a href="linkedList.html"><em>linked list</em></a>.   Knuth uses a balanced tree with a RANK field that supports  <a href="theta.html"><em>&Theta;</em></a>(log n) access by index and <a href="theta.html"><em>&Theta;</em></a>(log n) insert and delete. <a href="../terms.html#Knuth98">[Knuth98, 3:471, Sect. 6.2.3]</a> </p> 
+<p> If it takes too long to initialize a big array of size S, a  <a href="hugeSparseArray.html"><em>huge sparse array</em></a> takes time proportional to the number of accesses and only <a href="theta.html"><em>&Theta;</em></a>(S) extra space.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+Sedgewick &amp; Wayne's <a href="http://introcs.cs.princeton.edu/java/14array/" target="_blank">introduction and tutorial to arrays (Java)</a>. John Morris' <a href="http://www.cs.auckland.ac.nz/software/AlgAnim/arrays.html" target="_blank">Data Structures - Arrays(C)</a>. Bro. David Carlson's <a href="http://cis.stvincent.edu/html/tutorials/swd/arrays/arrays.html" target="_blank">search, access, complexity, etc. tutorial and code (C++)</a>. Hudak, Peterson, and Fasel's  section on <a href="http://www.cs.auckland.ac.nz/references/haskell/haskell-intro-html/arrays.html" target="_blank">arrays (Haskell)</a>. <a href="http://gams.nist.gov/serve.cgi/Class/N1" target="_blank">Read and write different arrays (Fortran, C++)</a>.
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#502031253c7e323c31333b103e3923247e373f26">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 16 November 2016.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "array", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 16 November 2016. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/array.html">https://www.nist.gov/dads/HTML/array.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a884eadb7b124e',t:'MTc5MjAwMTE5OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

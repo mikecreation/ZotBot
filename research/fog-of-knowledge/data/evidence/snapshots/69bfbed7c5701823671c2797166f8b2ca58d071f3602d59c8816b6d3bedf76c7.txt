@@ -1,0 +1,121 @@
+array
+array
+(data structure)
+Definition:
+An assemblage of items that are randomly accessible by integers, the index.
+Formal Definition:
+Ignoring size an array may be seen as an
+abstract data type
+with the operations new(), set(i, v, A), and get(i, A),  where i is a numeric index, v is a value, and A is an array.  The operations may be defined with
+axiomatic semantics
+as follows.
+new() returns an array
+get(i, set(i, v, A)) = v
+get(i, set(j, v, A)) = get(i, A) if i ≠ j
+Compare this with a
+dictionary
+using integers as keys.
+If the contents of a new array are set to some implicit initial value v
+i
+, we could add the following rule for get.
+get(i, new()) = v
+i
+Typically arrays have a fixed size and use either
+0-based indexing
+or
+1-based indexing
+.  Fixed initial size and 0-based indexing may incorporated as follows.
+new(s) returns an array, which has a size s
+size(new(s)) = s
+size(set(i, v, A)) = size(A)
+get(i, set(i, v, A)) = v if 0 ≤ i < size(A)
+get(i, set(j, v, A)) = get(i, A) if i ≠ j
+One-based or other indexing may be defined similarly.
+Specialization
+(... is a kind of me.)
+dynamic array
+,
+sorted array
+.
+Aggregate child
+(... is a part of or used in me.)
+array index
+,
+1-based indexing
+,
+0-based indexing
+.
+See also
+associative array
+,
+matrix
+,
+huge sparse array
+.
+Note:
+An unordered array must be searched with a
+linear search
+. Average search time may be improved using a
+move-to-front heuristic
+in some cases. An
+external index
+, such as a
+hash table
+or
+inverted index
+may help make an
+array search
+quicker and speed overall processing if the array is not changed often. If the array is kept sorted, a
+binary search
+or
+interpolation search
+is faster.
+Inserting into an array takes
+O(n)
+time.  If that's too slow, use a
+balanced tree
+,
+skip list
+, or a
+linked list
+.   Knuth uses a balanced tree with a RANK field that supports
+Θ
+(log n) access by index and
+Θ
+(log n) insert and delete.
+[Knuth98, 3:471, Sect. 6.2.3]
+If it takes too long to initialize a big array of size S, a
+huge sparse array
+takes time proportional to the number of accesses and only
+Θ
+(S) extra space.
+Author:
+PEB
+Implementation
+Sedgewick & Wayne's
+introduction and tutorial to arrays (Java)
+. John Morris'
+Data Structures - Arrays(C)
+. Bro. David Carlson's
+search, access, complexity, etc. tutorial and code (C++)
+. Hudak, Peterson, and Fasel's  section on
+arrays (Haskell)
+.
+Read and write different arrays (Fortran, C++)
+.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 16 November 2016.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "array", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 16 November 2016. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/array.html

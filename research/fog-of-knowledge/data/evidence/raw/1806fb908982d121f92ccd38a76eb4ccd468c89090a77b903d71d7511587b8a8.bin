@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>Fibonaccian search</title>
+<meta name="description"
+  content="Definition of Fibonaccian search,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="Fibonaccian search">
+<meta name="type" content="algorithm">
+<meta name="area" content="Searching">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>Fibonaccian search</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+Search a <a href="sortedarray.html"><em>sorted array</em></a> by narrowing possible locations to progressively smaller intervals.  Begin with two <a href="fibonacciNumber.html"><em>Fibonacci numbers</em></a>, p (F(n)) and q (F(n+1)), such that p &lt; n &le; q, where n is the size of the array.  The first step checks location p.  The size of the next interval is p, if the key is less than the item at that location, or q-p (F(n-1)) if it is greater.
+</p>
+
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="fibonacciNumber.html"><em>Fibonacci number</em></a>, search locations are a <a href="fibonacciTree.html"><em>Fibonacci tree</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="linearSearch.html"><em>linear search</em></a>, <a href="interpolationSearch.html"><em>interpolation search</em></a>, <a href="binarySearch.html"><em>binary search</em></a>, <a href="jumpsearch.html"><em>jump search</em></a>.
+</p>
+
+<p>
+<em>Note:
+This is similar to a <a href="binarySearch.html"><em>binary search</em></a>, but only needs subtraction, instead of divide by two or shift right, to compute the next position.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+Manolis Lourakis' <a href="http://users.ics.forth.gr/~lourakis/fibsrch/" target="_blank">fibsrch (C)</a>. Worst-case behavior <a href="https://www.auto.tuwien.ac.at/~blieb/woop/fibsearc.html" target="_blank">annotated for real time (WOOP/ADA)</a>, including bibliography.  (Interpolation and secant search "guess more precisely where the key being sought falls".)
+<h2>More information</h2>
+<p>
+<strong>David E. Ferguson</strong>, <em>Fibonaccian Searching</em>, CACM, 3(12):648, December 1960. <br /> Also <a href="../terms.html#Knuth98">[Knuth98, 3:417, Sect. 6.2.1]</a>.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#82f2e3f7eeace0eee3e1e9c2ecebf1f6ace5edf4">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 14 December 2020.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "Fibonaccian search", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 14 December 2020. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/fibonaccianSearch.html">https://www.nist.gov/dads/HTML/fibonaccianSearch.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a884f898bd37b9',t:'MTc5MjAwMTIwMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

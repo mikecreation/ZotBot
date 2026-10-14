@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>linked list</title>
+<meta name="description"
+  content="Definition of linked list,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="linked list">
+<meta name="type" content="data structure">
+<meta name="area" content="Basic">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>linked list</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A <a href="list.html"><em>list</em></a> implemented by each item having a <a href="link.html"><em>link</em></a> to the next item.  
+</p>
+
+<p>
+<strong>Also known as</strong> singly linked list.
+</p>
+
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="doublyLinkedList.html"><em>doubly linked list</em></a>, <a href="orderedLinkedList.html"><em>ordered linked list</em></a>, <a href="circularlist.html"><em>circular list</em></a>.
+</p>
+<p>
+<strong>Aggregate parent</strong> (I am a part of or used in ...)<br>
+<a href="jellyfish.html"><em>jelly-fish</em></a>, <a href="separateChaining.html"><em>separate chaining</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="movefront.html"><em>move-to-front heuristic</em></a>, <a href="skiplist.html"><em>skip list</em></a>, sort algorithms: <a href="radixsort.html"><em>radix sort</em></a>, <a href="strandSort.html"><em>strand sort</em></a>.
+</p>
+
+<p>
+<em>Note:
+The first item, or <a href="head.html"><em>head</em></a>, is accessed from a fixed location, called a "head pointer." An ordinary linked list must be searched with a  <a href="linearSearch.html"><em>linear search</em></a>.  Average search time may be improved using a  <a href="movefront.html"><em>move-to-front heuristic</em></a> or keeping it an <a href="orderedLinkedList.html"><em>ordered linked list</em></a>, in which binary search may be effective; see below. An <a href="externalindx.html"><em>external index</em></a>, such as a <a href="hashtab.html"><em>hash table</em></a>, <a href="invertedIndex.html"><em>inverted index</em></a>, or auxiliary <a href="searchtree.html"><em>search tree</em></a> may be used as a "cross index" to help find items quickly. </p> 
+<p> <a href="binarySearch.html"><em>Binary search</em></a> may be effective with an  <a href="orderedLinkedList.html"><em>ordered linked list</em></a>. It makes O(n) traversals, as does linear search, but it only performs O(log n) comparisons. </p> 
+<p> A linked list can be used to implement other data structures, such as a <a href="queue.html"><em>queue</em></a>, a <a href="stack.html"><em>stack</em></a>, or a <a href="sparsematrix.html"><em>sparse matrix</em></a>.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+Bro. David Carlson's <a href="http://cis.stvincent.edu/html/tutorials/swd/lists/lists.html" target="_blank">tutorial and code (C++)</a>. Maksim Goleta's C# Collections uses it to <a href="https://github.com/Goleta/csharp-collections/blob/master/Goletas.Collections/LinkedQueue.cs" target="_blank">implement queue (C#)</a>. Algorithms and Data Structures' <a href="https://www.algolist.net/Data_structures/Singly-linked_list" target="_blank">explanation (Java and C++)</a>. Alexander Georgiev's <a href="https://code.google.com/archive/p/singly-linked-list/" target="_blank">singly linked list (Java)</a>, including a merge and parallel merge sorts.
+<h2>More information</h2>
+<p>
+An <a href="http://www.cs.auckland.ac.nz/software/AlgAnim/lists.html" target="_blank">introduction</a>.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#98e8f9edf4b6faf4f9fbf3d8f6f1ebecb6fff7ee">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 24 January 2022.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "linked list", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 24 January 2022. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/linkedList.html">https://www.nist.gov/dads/HTML/linkedList.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a882123de36af6',t:'MTc5MjAwMTA4Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

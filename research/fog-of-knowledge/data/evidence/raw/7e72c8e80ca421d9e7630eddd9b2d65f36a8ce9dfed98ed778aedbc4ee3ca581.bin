@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>branch and bound</title>
+<meta name="description"
+  content="Definition of branch and bound,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="branch and bound">
+<meta name="type" content="algorithmic technique">
+<meta name="area" content="Searching">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>branch and bound</h1>
+<p>
+(algorithmic technique)
+</p>
+
+<p>
+<strong>Definition:</strong>
+An algorithmic technique to find the optimal solution by keeping the best solution found so far.  If a partial solution cannot improve on the best, it is abandoned.
+</p>
+
+<p>
+<strong>See also</strong>
+<a href="depthfirst.html"><em>depth-first search</em></a>, <a href="bestfirst.html"><em>best-first search</em></a>.
+</p>
+
+<p>
+<em>Note:
+For instance, suppose we want to find the shortest route from Zarahemla to Manti, and at some time the shortest route found until that time is 387 kilometers.  Suppose we are to next consider routes through Cumeni.  If the shortest distance from Zarahemla to Cumeni is 350 km and Cumeni is 46 km from Manti in a straight line, there is no reason to explore possible roads from Cumeni: they will be at least 396 km (350 + 46), which is worse than the shortest known route.  So we need not explore paths from Cumeni.   </p> 
+<p> This may be implemented as a <a href="backtrack.html"><em>backtracking</em></a> algorithm, which is a modified <a href="depthfirst.html"><em>depth-first search</em></a>, or using a <a href="priorityque.html"><em>priority queue</em></a> ordering partial solutions by lower bounds (current + least possible completion), which is a <a href="bestfirst.html"><em>best-first search</em></a>. </p> 
+<p> This technique is not helpful if all solutions are about the same or the initial solutions are very poor and better solutions are only found gradually.  In either case, the cost is similar to exploring the entire solution space.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#e79786928bc9858b86848ca7898e9493c9808891">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 10 February 2020.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "branch and bound", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 10 February 2020. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/branchNbound.html">https://www.nist.gov/dads/HTML/branchNbound.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a884f75cd52ced',t:'MTc5MjAwMTIwMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+
