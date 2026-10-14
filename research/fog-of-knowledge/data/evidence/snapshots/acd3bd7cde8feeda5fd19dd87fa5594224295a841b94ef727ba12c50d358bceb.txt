@@ -1,0 +1,59 @@
+UnShuffle sort
+UnShuffle sort
+(algorithm)
+Definition:
+A
+distribution sort
+with two phases.  In the first phase, the inputs are distributed among
+doubly-ended queues
+keeping the items in each queue ordered and creating a new queue when there is no place on an existing queue.  The second phase is an
+ideal merge
+in which the item to be removed is determined by keeping the queues in a
+priority queue
+.
+Generalization
+(I am a kind of ...)
+distribution sort
+.
+Aggregate child
+(... is a part of or used in me.)
+ideal merge
+,
+pile
+,
+priority queue
+.
+See also
+strand sort
+,
+merge sort
+.
+Note:
+The doubly-ended queue with ordered items is called a
+pile
+.  The UnShuffle algorithm is the most efficient available for sorting data streams that exhibit  low entropy, i.e., are already mostly sorted or contains runs of  sorted elements.  The run time is
+Θ
+(N) for sorted input.  The general case is NK/2 + N log K where K is the entropy of the input and is manifest in the number of piles generated during the distribution phase.
+Author:
+ASK
+More information
+Art S. Kagel
+,
+Unshuffle Algorithm, Not Quite a Sort?
+, Computer Language Magazine, 3(11), November 1985.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 14 December 2005.
+HTML page formatted Wed Oct 30 12:15:31 2024.
+Cite this as:
+Art S. Kagel, "UnShuffle sort", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 14 December 2005. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/unshufflsort.html

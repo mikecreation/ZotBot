@@ -1,0 +1,15 @@
+{
+  "id": "nist-dads.distributivepartitioningsort",
+  "url": "https://xlinux.nist.gov/dads/HTML/distributivePartitioningSort.html",
+  "final_url": "https://xlinux.nist.gov/dads/HTML/distributivePartitioningSort.html",
+  "title": "NIST Dictionary of Algorithms and Data Structures: distributivePartitioningSort",
+  "source_kind": "secondary",
+  "retrieved_at": "2026-10-14T19:46:02.532218+00:00",
+  "text": "distributive partitioning sort\ndistributive partitioning sort\n(algorithm)\nDefinition:\nStep 1: find the\nmedian\nkey\n. Step 2: distribute the n items into n/2\nbuckets\nlinearly covering the interval from the minimum to the median and n/2 buckets linearly covering the interval from the median to the maximum.   Step 3: compact the buckets, removing empty buckets.  Recursively start again at step 1 for any bucket with multiple items.\nLinked lists\nare used to avoid moving items until a final phase and to avoid bucket overflows.\nGeneralization\n(I am a kind of ...)\nbucket sort\n.\nAggregate child\n(... is a part of or used in me.)\nselect k\nth\nelement\n,\nlinked list\n.\nSee also\nshuffle sort\n,\nhistogram sort\n,\nlinear probing sort\n.\nNote:\nShuffle sort estimates the distribution of the items to be sorted by examining the first n/8 items.  Distributive partitioning sort estimates the distribution by linearly interpolating from the minimum to the median and from the median to the maximum.  Histogram sort counts the number of items in each (fixed) interval.  See the note at\nhistogram sort\non distributing according to a rank function R.\nThe second step, where the items are distributed, corresponds to a single-pass\nradix sort\nusing the entire key as one huge \"digit.\" For the first interval, the mapping to buckets is roughly\nbucket = n/2 * (key - minimum)/(median - minimum)\nFor the second interval, the mapping is roughly\nbucket = n/2 * (key - median)/(maximum - median)\nThe implementation outlined in the paper has a preliminary step.  The step finds the\nmedian\nand\npartitions\naround it, then sorts the lower half and the upper half with the defined algorithm.\nAuthor:\nPEB\nMore information\nWlodzimierz Dobosiewicz\n,\nSorting by Distributive Partitioning\n, Information Processing Letters, 7(1):1-7, January 1978.\nGo to the\nDictionary of Algorithms and Data\nStructures\nhome page.\nIf you have suggestions, corrections, or comments, please get in touch\nwith\nPaul Black\n.\nEntry modified 27 October 2017.\nHTML page formatted Wed Oct 30 12:15:30 2024.\nCite this as:\nPaul E. Black, \"distributive partitioning sort\", in\nDictionary of Algorithms and Data Structures\n[online], Paul E. Black, ed. 27 October 2017. (accessed TODAY)\nAvailable from:\nhttps://www.nist.gov/dads/HTML/distributivePartitioningSort.html",
+  "sha256": "0e9e86422870e42a2081cd2487dc0e9e771c6e7acba20c14594bf9c961f0677e",
+  "raw_sha256": "7ec5497d5fc89e0433096c472ca9807c8e415b7ff1ed9c2cf89b359b7b0ad540",
+  "content_type": "text/html",
+  "charset": "utf-8",
+  "extraction_method": "http-html-data-lines/1",
+  "capture_id": "2f2425cb04ff75bc67c06e1e419d17f4c60d9c7693a1f2749e49d8753092618b"
+}

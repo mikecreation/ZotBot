@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>pigeonhole sort</title>
+<meta name="description"
+  content="Definition of pigeonhole sort,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="pigeonhole sort">
+<meta name="type" content="algorithm">
+<meta name="area" content="Sorting">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>pigeonhole sort</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A 2-pass <a href="sort.html"><em>sort</em></a> algorithm that is efficient when the range of <a href="key.html"><em>keys</em></a> is approximately equal to the number of items.  The first pass allocates an <a href="array.html"><em>array</em></a> of <a href="bucket.html"><em>buckets</em></a>, one bucket for each possible <a href="key.html"><em>key</em></a> value, then moves each item to its key's bucket.  The second pass goes over the bucket array moving each item to the next place in the destination.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="rangesort.html"><em>range sort</em></a>.
+</p>
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="rapidSort.html"><em>rapid sort</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="countingsort.html"><em>counting sort</em></a>.
+</p>
+
+<p>
+<em>Note:
+The bucket array is called the pigeonhole array. </p> 
+<p> Pigeonhole sort moves items twice: once to the bucket array and again to the final destination.  Counting sort builds an auxiliary array then uses the array to compute each item's final destination and move the item there.  Since rapid sort only sorts keys, "moving an item in its key's bucket" is just incrementing a count and "moving each item to the destination" is writing the proper number of keys.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+<a href="https://www.geeksforgeeks.org/python-program-for-pigeonhole-sort/" target="_blank">(Python)</a>.
+<h2>More information</h2>
+<p>
+See the Wikipedia <a href="https://en.wikipedia.org/wiki/Pigeonhole_sort" target="_blank">entry</a>.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#215140544d0f434d40424a614f4852550f464e57">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 21 April 2022.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "pigeonhole sort", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 21 April 2022. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/pigeonholeSort.html">https://www.nist.gov/dads/HTML/pigeonholeSort.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a917023d3e1393',t:'MTc5MjAwNzE4Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

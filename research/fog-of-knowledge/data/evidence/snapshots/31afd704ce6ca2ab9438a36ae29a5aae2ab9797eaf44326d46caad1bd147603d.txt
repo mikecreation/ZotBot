@@ -1,0 +1,67 @@
+inverted index
+inverted index
+(data structure)
+Definition:
+An index into a set of
+texts
+of the words in the texts. The index is accessed by some
+search
+method. Each index entry gives the  word and a list of texts, possibly with locations  within the text, where the word occurs.
+Specialization
+(... is a kind of me.)
+block addressing index
+,
+full inverted index
+,
+inverted file index
+.
+See also
+index file
+,
+external index
+,
+forward index
+.
+Note:
+Suppose we want to search the texts "i love you," "god is love," "love is blind," and "blind justice". (The words of the text are all lower case for simplicity.)  If we index by (text, character within the text), the index with location in text is:
+blind   (3,8);(4,0)
+god     (2,0)
+i       (1,0)
+is      (2,4);(3,5)
+justice (4,6)
+love    (1,2);(2,7);(3,0)
+you     (1,7)
+The word "blind" is in document 3 ("love is blind") starting at character 8, so has an entry
+(3,8)
+. To find, for instance, documents with both "is" and "love," first look up the words in the index, then find the intersection of the texts in each list.  In this case, documents 2 and 3 have both words.  We can quickly find documents where the words appear close to each other by comparing the character within the text.
+The index may have the word number, instead of the character number. It may also have weights, frequencies, or other indicators.
+Some authors refer to inverted index as
+inversion list
+.
+Author:
+PEB
+More information
+Nivio Ziviani, Edleno Silva de Moura, Gonzalo Navarro, and Ricardo Baeza-Yates
+,
+Compression: A Key for Next-Generation Text Retrieval Systems
+, IEEE Computer, 33(11):37-44, November 2000, (page 42).
+Justin Zobel and Alistair Moffat
+,
+Inverted Files for Text Search Engines
+, ACM Computing Surveys, 38(2), article 6, July 2006.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 24 August 2017.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "inverted index", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 24 August 2017. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/invertedIndex.html

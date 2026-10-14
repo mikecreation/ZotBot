@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>sparse matrix</title>
+<meta name="description"
+  content="Definition of sparse matrix,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="sparse matrix">
+<meta name="type" content="data structure">
+<meta name="area" content="Basic">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>sparse matrix</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A <a href="matrix.html"><em>matrix</em></a> that has relatively few non-zero (or "interesting") entries.  It may be represented in much less than n &times; m space.
+</p>
+
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="list.html"><em>list</em></a>, <a href="orthogonalLists.html"><em>orthogonal lists</em></a>, <a href="array.html"><em>array</em></a>, or <a href="pointAccessMethod.html"><em>point access method</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="raggedmatrix.html"><em>ragged matrix</em></a>, <a href="hugeSparseArray.html"><em>huge sparse array</em></a>, <a href="adjacencyMatrixRep.html"><em>adjacency-matrix representation</em></a>, <a href="k2tree.html"><em>k&sup2;-tree</em></a>.
+</p>
+
+<p>
+<em>Note:
+A n &times; m matrix with k non-zero entries is sparse if k &lt;&lt; n &times; m.  It may be faster to represent the matrix compactly as a <a href="list.html"><em>list</em></a> of the non-zero entries in coordinate format (the value and its row/column position),  as a list or <a href="array.html"><em>array</em></a> of lists of entries (one list for each row), two <a href="orthogonalLists.html"><em>orthogonal lists</em></a> (one list for each column and one list for each row), by a <a href="pointAccessMethod.html"><em>point access method</em></a>, or a <a href="k2tree.html"><em>k&sup2;-tree</em></a>.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+Input/output for sparse matrices stored in <a href="http://gams.nist.gov/serve.cgi/Module/HBIO/HBIO/13020" target="_blank">Harwell-Boeing Format (C)</a>
+<h2>More information</h2>
+<p>
+Yousef Saad's  <a href="https://www-users.cse.umn.edu/~saad/PS/iter1.pdf" target="_blank">Iterative methods for sparse linear systems (PDF)</a>, chapters 1-3 of a textbook covering linear algebra and types of matrices.  Sparse matrix implementations, including the coordinate format, begin on page 85 (PDF page 97). Other <a href="https://www-users.cse.umn.edu/~saad/books.html" target="_blank">formats and information</a> on a newer edition.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#5b2b3a2e377539373a38301b3532282f753c342d">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 8 June 2023.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "sparse matrix", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 8 June 2023. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/sparsematrix.html">https://www.nist.gov/dads/HTML/sparsematrix.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a917468e94b7ac',t:'MTc5MjAwNzE5NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

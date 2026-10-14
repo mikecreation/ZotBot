@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>Jaro-Winkler</title>
+<meta name="description"
+  content="Definition of Jaro-Winkler,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="Jaro-Winkler">
+<meta name="type" content="algorithm">
+<meta name="area" content="Searching">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>Jaro-Winkler</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A measure of similarity between two <a href="string.html"><em>strings</em></a>.  The Jaro measure is the weighted sum of percentage of matched characters from each file and transposed characters.  Winkler increased this measure for matching initial characters, then rescaled it by a piecewise function, whose intervals and weights depend on the type of string (first name, last name, street, etc.).
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="stringMatchwError.html"><em>string matching with errors</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="Levenshtein.html"><em>Levenshtein distance</em></a>, <a href="phoneticCoding.html"><em>phonetic coding</em></a>.
+</p>
+
+<p>
+<em>Note:
+For "piecewise function", see the <a href="http://mathworld.wolfram.com/PiecewiseFunction.html" target="_blank">definition in MathWorld</a>.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+Cohen, Ravikumar, and Fienberg have an implementation in their <a href="http://secondstring.sourceforge.net/" target="_blank">SecondString (Java)</a> package.
+<h2>More information</h2>
+<p>
+<strong>William E. Winkler</strong> and <strong>Yves Thibaudeau</strong>, <em>An Application of the Fellegi-Sunter Model of Record Linkage to the 1990 U.S. Decennial Census</em>, Statistical Research Report Series RR91/09, U.S. Bureau of the Census, Washington, D.C., 1991. The <a href="https://www.census.gov/library/working-papers/1991/adrm/rr91-09.html" target="_blank">abstract</a> and <a href="https://www.census.gov/content/dam/Census/library/working-papers/1991/adrm/rr91-9.pdf" target="_blank">full paper</a> (PDF). <br /> <strong>Matthew A. Jaro</strong>, <em>Advances in Record-Linkage Methodology as Applied to Matching the 1985 Census of Tampa, Florida</em>, Journal of the American Statistical Association, 84(406):414-420, June 1989. <br /> <strong>Matthew A. Jaro</strong>, <em>UNIMATCH: A Record Linkage System: User's Manual</em>, Technical Report, U.S. Bureau of the Census, Washington, D.C., 1976.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#5c2c3d2930723e303d3f371c32352f28723b332a">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 2 August 2022.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "Jaro-Winkler", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 2 August 2022. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/jaroWinkler.html">https://www.nist.gov/dads/HTML/jaroWinkler.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a916b97d1deaf5',t:'MTc5MjAwNzE3Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

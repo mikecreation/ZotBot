@@ -1,0 +1,55 @@
+axiomatic semantics
+axiomatic semantics
+(definition)
+Definition:
+Defining the behavior of an
+abstract data type
+with axioms.
+Aggregate parent
+(I am a part of or used in ...)
+stack
+,
+bag
+,
+dictionary
+,
+priority queue
+,
+queue
+,
+set
+,
+cactus stack
+.
+Note:
+For example, the
+abstract data type
+stack
+has the operations new(), push(v, S) and popOff(S), among others.  These may be defined with the following axioms.
+new() returns a stack
+popOff(push(v, S)) = S
+top(push(v, S)) = v
+where S is a stack and v is a value.  What does this mean?  The first axiom says all we know about new() is that it returns a stack. Informally, we know it returns an empty stack, but "empty" is a concept we would have to define.  So we leave it.
+The second axiom says that if we push a value onto a stack then pop it off, the result is the same stack.  The "=" can be seen as a rewrite operation.  The axiom "X = Y" means any time we see X, we can rewrite it to be Y.  X may contain variables representing subexpressions. What is the meaning of "popOff(push(1776, new()))"?  The second axiom says it means the same as new().
+The third axiom assigns meaning to expressions like  top(push(1, push(2, new()))): it is 1.  This is reasonable, since the top element is the latest one pushed.  A series of push and popOff operations and a top operation may be reduced with these axioms.
+What stack does new() return, then?  We still haven't said; top(new()) is just not defined.  But that is how a stack works: the top of an empty stack is not defined.  So our formalism corresponds to our mental notion of a stack.  If we want to, we can add more axioms for richer semantics, as is done in the
+stack
+entry.
+Author:
+PEB
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 24 August 2005.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "axiomatic semantics", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 24 August 2005. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/axiomaticSemantics.html

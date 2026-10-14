@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>nondeterministic algorithm</title>
+<meta name="description"
+  content="Definition of nondeterministic algorithm,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="nondeterministic algorithm">
+<meta name="type" content="algorithmic technique">
+<meta name="area" content="Basic">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>nondeterministic algorithm</h1>
+<p>
+(algorithmic technique)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A conceptual <a href="algorithm.html"><em>algorithm</em></a> with more than one allowed step at certain times and which always takes the right or best step.   It is not random, as in <a href="randomizedAlgo.html"><em>randomized algorithm</em></a>, or indeterminate. Rather it has the supercomputational characteristic of choosing the optimal behavior.
+</p>
+
+<p>
+<strong>See also</strong>
+<a href="deterministicAlgorithm.html"><em>deterministic algorithm</em></a>, <a href="probablAlgo.html"><em>probabilistic algorithm</em></a>, <a href="randomizedAlgo.html"><em>randomized algorithm</em></a>, <a href="heuristic.html"><em>heuristic</em></a>.
+</p>
+
+<p>
+<em>Note:
+Conceptually a nondeterministic algorithm could run on a deterministic computer with an unlimited number of parallel processors.  Each time more than one step is possible, new processes are instantly forked to try all of them.  When one successfully finishes, that result is returned.  Thus the computation is as fast as if it always chooses the right step. </p> 
+<p> This notion is defined for theoretic analysis and specifying. Nondeterministic algorithms compute the same class of functions as <a href="deterministicAlgorithm.html"><em>deterministic algorithms</em></a>, but the <a href="complexity.html"><em>complexity</em></a> may be much less. Every nondeterministic algorithm can be turned into a deterministic algorithm, possibly with <a href="exponential.html"><em>exponential</em></a> slow down. </p> 
+<p> Consider searching an unordered <a href="array.html"><em>array</em></a>.  A <a href="linearSearch.html"><em>linear search</em></a> has <a href="theta.html"><em>&Theta;(n)</em></a> expected time.  A nondeterministic search has constant expected time. 
+<pre> int search(key k, array a)		<br /> {					<br />     return oracle(0, sizeof(a));	<br /> } </pre> where oracle() returns (the right) number between 0 and the size of the array in constant time.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#b3c3d2c6df9dd1dfd2d0d8f3dddac0c79dd4dcc5">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 7 December 2020.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "nondeterministic algorithm", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 7 December 2020. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/nondetermAlgo.html">https://www.nist.gov/dads/HTML/nondetermAlgo.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a916e50e2c6182',t:'MTc5MjAwNzE3OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

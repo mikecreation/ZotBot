@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>strongly connected component</title>
+<meta name="description"
+  content="Definition of strongly connected component,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="strongly connected component">
+<meta name="type" content="definition">
+<meta name="area" content="Graphs">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>strongly connected component</h1>
+<p>
+(definition)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A <a href="stronglyConnectedGraph.html"><em>strongly connected</em></a> <a href="subgraph.html"><em>subgraph</em></a>, S, of a <a href="directedGraph.html"><em>directed graph</em></a>, D, such that no <a href="vertex.html"><em>vertex</em></a> of D can be added to S and it still be strongly connected.  Informally, a maximal subgraph in which every vertex is <a href="reachable.html"><em>reachable</em></a> from every other vertex.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="maximallyConnectedComponent.html"><em>maximally connected component</em></a>, <a href="stronglyConnectedGraph.html"><em>strongly connected graph</em></a>, <a href="connectedGraph.html"><em>connected graph</em></a>.
+</p>
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="depthfirst.html"><em>depth-first search</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="cycle.html"><em>cycle</em></a>.
+</p>
+
+<p>
+<em>Note:
+If a graph is strongly connected, it has only one strongly connected component. </p> 
+<p> The strongly connected components <a href="partition.html"><em>partition</em></a> the vertices in the graph.  That is, every vertex is in exactly one strongly connected component. </p> 
+<p> After Robert Caswell (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5330322024362163621330207d2624327d3637267d3226">[email&#160;protected]</a>), 3 May 2002.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+<a href="https://algorist.com/problems/Connected_Components.html" target="_blank">(C++, C, Java, and Mathematica)</a>
+<h2>More information</h2>
+<p>
+<a href="http://www.cs.hut.fi/~enu/tc.html" target="_blank">Transitive closure</a> has a link to  <strong>Esko Nuutila</strong> and <strong>Eljas Soisalon-Soininen</strong>,  <a href="http://www.cs.hut.fi/~enu/ps/ipl-scc.ps" target="_blank"><em>On finding the strongly connected components in a directed graph</em></a> (PostScript&reg;), Information Processing Letters 49 (1993) 9-14. The paper has Tarjan's algorithm, references to other algorithms, and two faster algorithms in Pascal-like pseudo-code.
+</p>
+<p>
+This has a linear time algorithm for finding strongly connected components:<br /> <strong>Robert E. Tarjan</strong>,  <em>Depth-first search and linear graph algorithms</em>, SIAM Journal on Computing, 1(2):146-160, 1972.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#a2d2c3d7ce8cc0cec3c1c9e2cccbd1d68cc5cdd4">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 2 November 2020.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "strongly connected component", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 2 November 2020. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/stronglyConnectedCompo.html">https://www.nist.gov/dads/HTML/stronglyConnectedCompo.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a917538db750d3',t:'MTc5MjAwNzE5Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

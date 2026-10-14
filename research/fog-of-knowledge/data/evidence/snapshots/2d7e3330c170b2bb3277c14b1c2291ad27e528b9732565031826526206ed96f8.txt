@@ -1,0 +1,51 @@
+Johnson's algorithm
+Johnson's algorithm
+(algorithm)
+Definition:
+An algorithm to solve the
+all pairs shortest path
+problem in a
+sparse
+weighted, directed graph
+.  First, it adds a new
+node
+with zero weight edges from it to all other nodes, and runs the
+Bellman-Ford algorithm
+to check for negative weight
+cycles
+and find h(v), the least weight of a path from the new node to node v.  Next it reweights the edges using the nodes' h(v) values.  Finally for each node, it runs
+Dijkstra's algorithm
+and stores the computed least weight to other nodes, reweighted using the nodes' h(v) values, as the final weight. The time complexity is
+O(V²log V + VE)
+.
+Aggregate child
+(... is a part of or used in me.)
+Bellman-Ford algorithm
+,
+Dijkstra's algorithm
+.
+See also
+Floyd-Warshall algorithm
+.
+Note:
+After
+[CLR90, page 569]
+.
+Author:
+PEB
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 17 December 2004.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "Johnson's algorithm", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 17 December 2004. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/johnsonsAlgorithm.html

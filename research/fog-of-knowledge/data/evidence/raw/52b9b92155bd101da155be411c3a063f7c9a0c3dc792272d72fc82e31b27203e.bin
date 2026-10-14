@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>zipper</title>
+<meta name="description"
+  content="Definition of zipper,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="zipper">
+<meta name="type" content="data structure">
+<meta name="area" content="Trees">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>zipper</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A data structure equivalent to a <a href="binarytree.html"><em>binary tree</em></a> that is "opened" so that some <a href="node.html"><em>node</em></a> is accessible.  It consists of a pair: the current node, along with information to reconstruct the tree.  Reconstruction information is called the path or context.  A move-to-left-child operation returns the left subtree, along with a new path, which has (i) a Left value, (ii) the current node, (iii) the right subtree, and (iv) any previous path.  A similar operation moves to the right child.  A move-up operation returns a tree rebuilt from the path information and the current node, along with the previous path.
+</p>
+
+
+<p>
+<em>Note:
+In functional programming languages, a zipper acts as a "pointer" into a tree. The name comes from visualizing the move-to-child operation as unzipping a tree.  (Instead of two halves, though, move-to-child keeps the pieces in a <a href="karyTree.html"><em>k-ary tree</em></a>: the path.)</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>More information</h2>
+<p>
+A message on <a href="https://caml.inria.fr/pub/ml-archives/caml-list/2003/04/d9701aacd4580cf3feb60ae8cd7a1836.xml" target="_blank">Using zippers to handle huge trees</a>.
+</p>
+<p>
+<strong>G&eacute;rard Huet</strong>, <em>The Zipper</em>, Journal of Functional Programming, 7(5):549-554, 1997.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#5d2d3c2831733f313c3e361d33342e29733a322b">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 29 June 2021.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "zipper", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 29 June 2021. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/zipper.html">https://www.nist.gov/dads/HTML/zipper.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a91785587986ec',t:'MTc5MjAwNzIwNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

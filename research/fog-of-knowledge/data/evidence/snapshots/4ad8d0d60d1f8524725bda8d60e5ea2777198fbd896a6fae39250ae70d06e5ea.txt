@@ -1,0 +1,67 @@
+invertible Bloom lookup table
+invertible Bloom lookup table
+(data structure)
+Definition:
+Algorithms and an
+array
+of cells to store key/value pairs. Each cell has a
+count
+of how many pairs are mapped to the cell, the
+sum
+of the keys mapped to it, and the
+sum
+of the values mapped to it.  Using k
+hash functions
+, each pair is mapped to T[h
+1
+(k)], T[h
+2
+(k)], ..., T[h
+k
+(k)].
+Also known as
+IBLT.
+Generalization
+(I am a kind of ...)
+dictionary
+plus a listEntries() operation and the ability to handle duplicate keys with some implementations.
+Aggregate child
+(... is a part of or used in me.)
+array
+,
+hash function
+.
+See also
+Bloom filter
+.
+Note:
+The implementation details guarantee that with high probability, each key/value pair has at least one cell to itself, which has a count of 1.  The value and key can be retrieved from that cell.
+Special care must be taken to either (a) not insert keys multiple times or delete keys that are not present or (b) elaborate the algorithms and data structure.
+listEntries() reports the key/value pair in each cell with a count of 1, and then removes that key/value pair.
+Author:
+PEB
+More information
+Michael T. Goodrich
+and
+Michael Mitzenmacher
+,
+Invertible Bloom Lookup Tables
+, 2011. (V3 is October 2015.) Available at
+https://arxiv.org/pdf/1101.2245.pdf
+.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 8 June 2018.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "invertible Bloom lookup table", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 8 June 2018. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/invertibleBloomTable.html

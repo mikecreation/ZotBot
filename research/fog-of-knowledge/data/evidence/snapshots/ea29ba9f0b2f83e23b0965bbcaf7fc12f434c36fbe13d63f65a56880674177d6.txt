@@ -1,0 +1,57 @@
+coalesced chaining
+coalesced chaining
+(data structure)
+Definition:
+A scheme in which
+linked lists
+within the
+hash table
+handle
+collisions
+.  An item that collides is put in the next empty place in the array and added to the end of a
+list
+embedded in the array items.  Any
+open addressing
+method to compute possible new positions may be used to find the "next" empty place.
+Generalization
+(I am a kind of ...)
+chaining
+,
+collision resolution scheme
+.
+Aggregate parent
+(I am a part of or used in ...)
+hash table
+.
+See also
+separate chaining
+,
+open addressing
+.
+Note:
+Deletion may be hard because finding collisions again relies on not creating empty spots.  One solution is to mark an entry as deleted so it can be reused for insertion, but leaves the search list intact.
+Author:
+PEB
+Implementation
+Wikipedia article (C)
+(starts at the beginning of the array for empty places).
+insert (C)
+(starts at the end of the array for empty places),
+search (C)
+.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 12 February 2019.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "coalesced chaining", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 12 February 2019. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/coalescedChaining.html

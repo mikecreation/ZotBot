@@ -1,0 +1,78 @@
+Select
+Select
+(algorithm)
+Definition:
+A four-part algorithm to select the k
+th
+smallest element of an
+array
+.  Part 1) Consider the array as groups of 5 elements; sort and find the
+median
+of each group.  2) Use Select
+recursively
+to find
+x
+, the median of the medians. 3) Next
+partition
+the array around
+x
+.   4) Let i be the number of elements in the low side of the partition.  If k ≤ i, use Select recursively to find the k
+th
+element of the low side.  Otherwise Select the k-i
+th
+element of the high side.
+See also
+select and partition
+,
+select k
+th
+element
+,
+Find
+,
+MODIFIND
+,
+tournament
+,
+reservoir sampling
+.
+Note:
+After
+[CLR90, p 190]
+. Sometimes called "quick select".
+The number of comparisons to select the i
+th
+smallest of n numbers is n+min(i,n-i)+
+o(n)
+or
+Θ
+(n).
+Author:
+PEB
+More information
+Robert W. Floyd
+and
+Ronald L. Rivest
+,
+Expected time bounds for selection
+, CACM, 18(3):165-172, March 1975
+Robert W. Floyd and Ronald L. Rivest
+,
+Algorithm #489 SELECT
+, CACM, 18(3):173, March 1975
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 14 January 2009.
+HTML page formatted Wed Oct 30 12:15:31 2024.
+Cite this as:
+Paul E. Black, "Select", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 14 January 2009. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/select.html

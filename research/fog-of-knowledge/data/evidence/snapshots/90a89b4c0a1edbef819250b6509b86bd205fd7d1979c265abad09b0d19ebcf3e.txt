@@ -1,0 +1,49 @@
+star encoding
+star encoding
+(algorithm)
+Definition:
+Using a fixed
+dictionary
+, encode words in text with strings having many repeated characters, typically an asterisk or "star" (*).
+See also
+Huffman coding
+,
+Burrows-Wheeler transform
+.
+Note:
+This transformation does not compress the text, but prepares it for compression.  With many runs of stars, the encoded text may be much more compressible than the original text.  The sender and the receiver must communicate the dictionary somehow.
+The code string for a word is the same length as the word. Kruse and Mukherjee constructed a dictionary "from a large set of reference texts" and assigned codes solely by frequency. Mark Nelson built the dictionary from the input text and assigned codes based on the word.
+Author:
+PEB
+Implementation
+Mark Nelson's 2002
+Star-Encoding (C++)
+, includes a similar algorithm that assigns shorter codes to more frequent words.
+More information
+Holger Kruse
+and
+Amar Mukherjee
+,
+Data compression using text encryption
+, Proc. Data Compression Conference, Snowbird, Utah, USA, pp 447-,  March 1997.
+Holger Kruse
+and
+Amar Mukherjee
+Preprocessing text to improve compression ratios
+, Proc. Data Compression Conference, Snowbird, Utah, USA, pp 556-464, April 1998.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 20 April 2022.
+HTML page formatted Wed Oct 30 12:15:31 2024.
+Cite this as:
+Paul E. Black, "star encoding", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 20 April 2022. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/starEncoding.html

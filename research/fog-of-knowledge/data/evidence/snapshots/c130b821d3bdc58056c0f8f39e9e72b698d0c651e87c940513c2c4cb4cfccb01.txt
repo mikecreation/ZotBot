@@ -1,0 +1,75 @@
+Bloom filter
+Bloom filter
+(data structure)
+Definition:
+A data structure with a
+probabilistic algorithm
+to quickly test membership in a  large set using multiple
+hash functions
+into a single
+array
+of bits.
+Aggregate parent
+(I am a part of or used in ...)
+hsadelta
+.
+Aggregate child
+(... is a part of or used in me.)
+array
+of bits,
+hash function
+.
+See also
+invertible Bloom lookup table
+,
+locality-sensitive hashing
+.
+Note:
+A Bloom filter is good for secret sharing: giving a Bloom filter lets someone see if you have an item (it is found in the Bloom filter), but it is impractical to recreate the whole collection.
+Author:
+PEB
+Implementation
+Arash Partow's
+implementations (C++, Object Pascal)
+(go to Download, at the bottom).
+More information
+The Bose, Guo, Kranakis, et. al. paper below shows that "The actual false-positive rate is strictly larger than" Bloom's formula.
+Bloom_filter [Wikipedia]
+gives many variants and extensions.
+Trade-offs and engineering techniques
+with links to sites with recent papers, hash functions, etc.
+Another explanation
+typo: probability of false positive is missing a minus sign; exponent should be ... e
+-kn/m
+.
+Using Bloom filters
+.  Language is Perl. Jason Davies'
+interactive animation
+helps people understand how a Bloom filter works.
+Burton Bloom
+,
+Space/time trade-offs in hash coding with allowable errors
+, CACM, 13(7):422-426, July 1970.
+Prosenjit Bose, Hua Guo, Evangelos Kranakis, Anil Maheshwari, Pat Morin, Jason Morrison, Michiel Smid, and Yihui Tang
+,
+On the False-Positive Rate of Bloom Filters
+, Technical Report TR-07-07, Carleton University - School of Computer Science, 1 March 2007.
+They also conclude that "Our upper-bounds show that, for large enough values of m with small values of k, the difference between p
+k
+and the actual false-positive rate is negligible."
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 20 September 2024.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "Bloom filter", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 20 September 2024. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/bloomFilter.html

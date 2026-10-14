@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>Christofides algorithm</title>
+<meta name="description"
+  content="Definition of Christofides algorithm,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="Christofides algorithm">
+<meta name="type" content="algorithm">
+<meta name="area" content="Graphs">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>Christofides algorithm</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+(1) A <a href="heuristic.html"><em>heuristic</em></a> <a href="algorithm.html"><em>algorithm</em></a> to find a near-optimal solution to the <a href="travelingSalesman.html"><em>traveling salesman</em></a> problem.  Step 1: find a <a href="minimumSpanningTree.html"><em>minimum spanning tree</em></a> T.  Step 2: find a <a href="perfectmatch.html"><em>perfect matching</em></a> M among <a href="vertex.html"><em>vertices</em></a> with odd <a href="degree.html"><em>degree</em></a>.  Step 3: combine the <a href="edge.html"><em>edges</em></a> of M and T to make a <a href="multigraph.html"><em>multigraph</em></a> G.  Step 4: find an <a href="eulercycle.html"><em>Euler cycle</em></a> in G. Step 5: Turn the Euler cycle into a <a href="hamiltonianCycle.html"><em>Hamiltonian cycle</em></a> by skipping vertices already seen.  (2) An algorithm to find the <a href="chromatcnmbr.html"><em>chromatic number</em></a> of a graph.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="heuristic.html"><em>heuristic</em></a>.
+</p>
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="minimumSpanningTree.html"><em>minimum spanning tree</em></a>, <a href="perfectmatch.html"><em>perfect matching</em></a>, <a href="multigraph.html"><em>multigraph</em></a>, <a href="eulercycle.html"><em>Euler cycle</em></a>.
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>More information</h2>
+<p>
+(1) <strong>Nicos Christofides</strong>, <em>Worst-case analysis of a new heuristic for the travelling salesman problem</em>, Report 388, Graduate School of Industrial Administration, CMU, 1976. </p> <p> Also CMU Tech. Report CS-93-13, 1976. Also Sympos. on New Directions and Recent Results in Algorithms and Complexity, J. F. Traub ed., page 441, Academic Press, New York, NY, 1976. </p> <p> (2) <strong>Nicos Christofides</strong>, <em>An algorithm for the chromatic number of a graph</em>, Computer J., 14(1):38-39, February 1971.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#116170647d3f737d70727a517f7862653f767e67">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 24 November 2020.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "Christofides algorithm", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 24 November 2020. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/christofides.html">https://www.nist.gov/dads/HTML/christofides.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a9165fbf9b61b1',t:'MTc5MjAwNzE1Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

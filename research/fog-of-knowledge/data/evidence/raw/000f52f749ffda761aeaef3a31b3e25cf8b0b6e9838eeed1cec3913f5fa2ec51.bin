@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>dual-pivot quicksort</title>
+<meta name="description"
+  content="Definition of dual-pivot quicksort,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="dual-pivot quicksort">
+<meta name="type" content="algorithm">
+<meta name="area" content="Sorting">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>dual-pivot quicksort</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+Pick two elements from the <a href="array.html"><em>array</em></a> to be sorted (the pivots), partition the remaining elements into (i) those less than the lesser pivot, (ii) those between the pivots, and (iii) those greater than the greater pivot, and recursively sort these partitions.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="inplacesort.html"><em>in-place sort</em></a>.
+</p>
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="partition.html"><em>partition</em></a> (2).
+</p>
+<p>
+<strong>See also</strong>
+<a href="quicksort.html"><em>quicksort</em></a>.
+</p>
+
+<p>
+<em>Note:
+Dual-pivot quicksort is consistently faster than <a href="quicksort.html"><em>quicksort</em></a> in practice, although classical analysis suggests that it should be slower.  Sebastian Wild offers a plausible explanation why in <strong>Sebastian Wild</strong>, <em>Why Is Dual-Pivot Quicksort Fast?</em>, <a href="https://arxiv.org/pdf/1511.01138.pdf" target="_blank">arXiv:1511.01138</a> v2 28 Sep 2016.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+<a href="https://algs4.cs.princeton.edu/23quicksort/QuickDualPivot.java.html" target="_blank">Sedgewick and Wayne (Java)</a>, <a href="https://www.geeksforgeeks.org/dual-pivot-quicksort/" target="_blank">(C)</a>.
+<h2>More information</h2>
+<p>
+B.F. Lyon's <a href="https://learnforeverlearn.com/yaro_web/" target="_blank">animation showing partitioning</a>.
+</p>
+<p>
+<strong>Vladimir Yaroslavskiy</strong>, <em>Dual-Pivot Quicksort algorithm</em>, February 2009.  Available at <a href="http://codeblab.com/wp-content/uploads/2009/09/DualPivotQuicksort.pdf" target="_blank">http://codeblab.com/wp-content/uploads/2009/09/DualPivotQuicksort.pdf</a>.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#f18190849ddf939d90929ab19f988285df969e87">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 14 December 2020.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "dual-pivot quicksort", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 14 December 2020. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/dualPivotQuicksort.html">https://www.nist.gov/dads/HTML/dualPivotQuicksort.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a916805ebf1152',t:'MTc5MjAwNzE2Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

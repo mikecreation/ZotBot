@@ -1,0 +1,39 @@
+hash heap
+hash heap
+(data structure)
+Definition:
+An efficient implementation of a
+priority queue
+.  The
+linear hash
+function monotonically maps keys to
+buckets
+, and each bucket is a
+heap
+.
+See also
+bucket sort
+.
+Note:
+This is a bucket sort where the buckets are organized as heaps. The linear hash function maps increasing keys into nondecreasing values, that is, key1 > key2 implies h(key1) is greater than or equal to h(key2).  It is not clear what happens if a bucket gets full.
+Let R be the ratio between the key range and the range of the hash function.  If R is so large there is only one bucket, we have a regular heap.  If R is one, it is a direct mapped array.  This data structure was proposed by Chris L. Kuszmaul <
+[email protected]
+> in the news group comp.theory 13 January 1999.
+Author:
+PEB
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 17 December 2004.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "hash heap", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 17 December 2004. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/hashheap.html

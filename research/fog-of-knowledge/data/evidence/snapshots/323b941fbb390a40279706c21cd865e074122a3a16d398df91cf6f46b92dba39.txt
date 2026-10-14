@@ -1,0 +1,50 @@
+external quicksort
+external quicksort
+(algorithm)
+Definition:
+Read the M/2 first and last elements into a buffer (the buffer acts like the pivot in
+quicksort
+), and sort them.  Read the next element from the beginning or end to balance writing.  If the next element is less than the least of the buffer, write it to available space at the beginning.  If greater than the greatest, write it to the end.  Otherwise write the greatest or least of the buffer, and put the next element in the buffer.  Keep the maximum lower and minimum upper
+keys
+written to avoid resorting middle elements that are in order.   When done, write the buffer.
+Recursively
+sort the smaller partition, and loop to sort the remaining partition.
+Generalization
+(I am a kind of ...)
+external sort
+,
+in-place sort
+.
+Aggregate child
+(... is a part of or used in me.)
+partition
+,
+divide and conquer
+,
+recursion
+.
+See also
+quicksort
+.
+Note:
+Performance is terrible if the external memory does not have random (direct) access.
+Author:
+PEB
+Implementation
+(C)
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 12 February 2019.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "external quicksort", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 12 February 2019. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/externalQuicksort.html

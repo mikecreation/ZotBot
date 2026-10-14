@@ -1,0 +1,153 @@
+sieve of Eratosthenes
+sieve of Eratosthenes
+(algorithm)
+Definition:
+An algorithm to find all prime numbers up to a certain N. Begin with an (unmarked)
+array
+of integers from 2 to N.  The first unmarked integer, 2, is the first prime.  Mark every multiple of this prime.  Repeatedly take the next unmarked integer as the next prime and mark every multiple of the prime.
+Note:
+Invented by
+Eratosthenes of Cyrene
+(276 BC - 194 BC).
+For example, here's a beginning array.
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+Since 2 is unmarked, it is our first prime.  We mark every second integer, that is, 4, 6, 8, 10, 12, etc.
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+The next unmarked integer is 3, so it is prime.  We mark every third integer, i.e., 6, 9, 12, etc.  Note that we mark 6, 12, 18, etc. again.
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+Now 5 is the next prime, and we mark every fifth integer.  The only new integer marked in range is 25.
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+From here we find the primes 7, 11, 13, 17, 19, and 23.
+When we find the prime n, we can begin marking at n².   Why?  Any composite less than n² is a multiple of a lesser prime, and so will have been marked earlier.  As a corollary, we can stop marking when n² is greater than our range. That is, any unmarked numbers greater than the square root of the range are primes.
+The naive implementation is not practical for large N since the memory is
+Θ(N)
+.  More efficient implementations use a segmented sieve.
+Author:
+PEB
+Implementation
+(Python)
+. Peter Luschny's
+(Java 5 and C#)
+implementation.
+More information
+Chris Caldwell's
+explanation and (pseudocode)
+in the Prime pages. Larry Deering explains his
+Black Key Sieve
+which uses a sparse bit array of possible multiples.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 21 April 2022.
+HTML page formatted Wed Oct 30 12:15:31 2024.
+Cite this as:
+Paul E. Black, "sieve of Eratosthenes", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 21 April 2022. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/sieve.html

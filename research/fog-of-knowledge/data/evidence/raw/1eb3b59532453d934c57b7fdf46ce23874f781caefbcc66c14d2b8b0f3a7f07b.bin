@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>van Emde-Boas priority queue</title>
+<meta name="description"
+  content="Definition of van Emde-Boas priority queue,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="van Emde-Boas priority queue">
+<meta name="type" content="data structure">
+<meta name="area" content="Trees">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>van Emde-Boas priority queue</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+An efficient implementation of <a href="priorityque.html"><em>priority queues</em></a> where insert, delete, get minimum, get maximum, etc. take  <a href="bigOnotation.html"><em>O(log log N)</em></a> time, where N is the total possible number of <a href="key.html"><em>keys</em></a>.  Depending on the circumstance, the implementation is null (if the queue is empty), an integer (if the queue has one integer), a <a href="bitVector.html"><em>bit vector</em></a> of size N (if N is small), or a special <a href="dataStructure.html"><em>data structure</em></a>: an <a href="array.html"><em>array</em></a> of priority queues, called the bottom queues, and one more priority queue of array indexes of the bottom queues.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="priorityque.html"><em>priority queue</em></a>.
+</p>
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="bitVector.html"><em>bit vector</em></a>, <a href="array.html"><em>array</em></a>.
+</p>
+
+<p>
+<em>Note:
+After <a href="../terms.html#GBY91">[GBY91, pages 216-217]</a>.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>More information</h2>
+<p>
+<strong>P. van Emde-Boas, R. Kass, and E. Zijlstra</strong>,  <em>Design and Implementation of an Efficient Priority Queue</em>, Mathematical Systems Theory, 10:99-127, 1977.<br /> <strong>P. van Emde-Boas</strong>, <em>Preserving Order in a Forest in Less than Logarithmic Time and Linear Space</em>, Inf. Proc. Letters, 6(3):80-82, June 1977.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#b6c6d7c3da98d4dad7d5ddf6d8dfc5c298d1d9c0">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 14 August 2008.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "van Emde-Boas priority queue", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 14 August 2008. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/vanemdeboas.html">https://www.nist.gov/dads/HTML/vanemdeboas.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a9177a3e273eb5',t:'MTc5MjAwNzIwMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

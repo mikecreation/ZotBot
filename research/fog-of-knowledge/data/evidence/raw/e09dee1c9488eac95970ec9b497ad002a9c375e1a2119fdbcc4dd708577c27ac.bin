@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>BB(alpha) tree</title>
+<meta name="description"
+  content="Definition of BB(alpha) tree,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="BB(alpha) tree">
+<meta name="type" content="data structure">
+<meta name="area" content="Trees">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>BB(&alpha;) tree</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A <a href="binarytree.html"><em>binary tree</em></a> where the <a href="balance.html"><em>balance</em></a> of every subtree,  &rho;(T'), is bounded by &alpha; &le; &rho;(T') &le; 1-&alpha;.
+</p>
+
+<p>
+<strong>Also known as</strong> weight-balanced tree.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="binarytree.html"><em>binary tree</em></a>, <a href="balancedtree.html"><em>balanced tree</em></a>.
+</p>
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="DTree.html"><em>D-tree</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="heightBalancedTree.html"><em>height-balanced tree</em></a>.
+</p>
+
+<p>
+<em>Note:
+After <strong>Johann Blieberger</strong> &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0d6f6164686f4d6c7879622379787a646863236c6e236c79">[email&#160;protected]</a>&gt;, <em>Discrete Loops and Worst Case Performance</em>, page 22. </p> 
+<p> See <a href="../terms.html#GBY91">[GBY91, pages 100-102]</a>.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+Worst-case behavior of <a href="https://www.auto.tuwien.ac.at/~blieb/woop/euclid.html" target="_blank">traversal, annotated for real time (WOOP/ADA)</a>, including bibliography. <a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/3/3414.ins.c" target="_blank">insert (C and Pascal)</a> and <a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/3/3414.del.c" target="_blank">delete (C and Pascal)</a> that use <a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/3/3414.chckr.c" target="_blank">check root (C and Pascal)</a> (or <a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/3/3415.chckr.c" target="_blank">this one</a> or <a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/3/34155.chckr.c" target="_blank">this one</a>?),  <a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/3/3414.lrot.c" target="_blank">left rotation (C and Pascal)</a>, and <a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/3/3414.rrot.c" target="_blank">right rotation (C and Pascal)</a>.
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#ee9e8f9b82c08c828f8d85ae80879d9ac0898198">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 12 February 2019.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "BB(&alpha;) tree", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 12 February 2019. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/bbalphatree.html">https://www.nist.gov/dads/HTML/bbalphatree.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a916447cd62911',t:'MTc5MjAwNzE1Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

@@ -1,0 +1,63 @@
+secant search
+secant search
+(algorithm)
+Definition:
+Search a
+sorted array
+by estimating the next position to check based on the values at the two previous positions checked.
+See also
+binary search
+,
+interpolation search
+.
+Note:
+It is called "secant search" because it uses the secant of the function at two successive points to approximate the derivative in the Newton-Raphson formula.
+To find a
+key
+k in an array v with indexes from 0 to n-1, begin with x
+0
+= 0, x
+1
+= n-1, and i = 1. Compute the next position with
+x
+i+1
+= x
+i
+- (v[x
+i
+]-k) *  (x
+i
+- x
+i-1
+)/(v[x
+i
+] - v[x
+i-1
+]).
+If this lies outside the range, a different method (e.g., midpoint of the range) must be used to get the next position.
+Although the theoretical execution time is better than
+interpolation search
+or
+binary search
+, coding is tricky, and the gains from faster convergence are offset by higher costs per iteration.
+Richard Harter <
+[email protected]
+> January 2001.
+Author:
+PEB
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 14 August 2008.
+HTML page formatted Wed Oct 30 12:15:31 2024.
+Cite this as:
+Paul E. Black, "secant search", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 14 August 2008. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/secantSearch.html

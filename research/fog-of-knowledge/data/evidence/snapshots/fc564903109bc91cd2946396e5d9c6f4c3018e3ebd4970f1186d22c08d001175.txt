@@ -1,0 +1,52 @@
+extendible hashing
+extendible hashing
+(data structure)
+Definition:
+A
+hash table
+in which the
+hash function
+is the last few bits of the
+key
+and the table refers to
+buckets
+.  Table entries with the same final bits may use the same bucket.  If a bucket overflows, it splits, and if only one entry referred to it, the table doubles in size.  If a bucket is emptied by deletion, entries using it are changed to refer to an adjoining bucket, and the table may be halved.
+Generalization
+(I am a kind of ...)
+dynamic hashing
+.
+Note:
+The table may be seen as a flattened
+complete binary tree
+where the buckets are (possibly) shared
+leaf
+nodes.
+Author:
+PEB
+More information
+Ronald Fagin
+,
+Jürg Nievergelt
+,
+Nicholas Pippenger
+, and
+H. Raymond Strong
+,
+Extendible Hashing - A Fast Access Method for Dynamic Files
+, ACM Transactions on Database Systems, 4(3):315-344, 1979.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 17 August 2021.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "extendible hashing", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 17 August 2021. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/extendibleHashing.html

@@ -1,0 +1,61 @@
+histogram sort
+histogram sort
+(algorithm)
+Definition:
+An efficient 3-pass refinement of a
+bucket sort
+algorithm.   The first pass counts the number of items for each bucket in an auxiliary
+array
+, and then makes a running total so each auxiliary entry is the number of preceding items.  The second pass puts each item in its proper bucket according to the auxiliary entry for the
+key
+of that item.  The last pass sorts each bucket.
+Also known as
+interpolation sort.
+Generalization
+(I am a kind of ...)
+bucket sort
+.
+Specialization
+(... is a kind of me.)
+counting sort
+.
+See also
+American flag sort
+.
+Note:
+A bucket sort uses fixed-size buckets.  A histogram sort sets up buckets of exactly the right size in a first pass.  A counting sort is a histogram sort with one bucket per possible key value.
+The following note is due to Richard Harter,
+[email protected]
+, http://www.tiac.net/users/cri/, 8 January 2001, and is used by permission.
+The run time is effectively
+O(n log log n)
+. Let S be the data set to be sorted, where n=|S|.  R is an approximate rank function to sort the data into n bins.  R has the following properties.
+R is an integer valued function into [0, n-1].
+0 ≤ R(x) ≤ n-1 for x in S.
+For some x,y in S, R(x)=0 and R(y)=n-1.
+x < y implies R(x) ≤ R(y) for x,y in S.
+Each bin then has, on average, 1 entry.  Under some rather broad assumptions the number of entries in a bin will be Poisson distributed whence the observation that the sort is O(n log log n).
+Let T be the final array for the sorted data.  Allocate an auxiliary integer array H indexed 0 … n-1.   We make one pass through the data to count the number of items in each bin, recording the counts in H.  The array H is then converted into a cumulative array so each entry in H specifies the beginning bin position of the bin contents in T.  We then make a second pass through the data.  We copy each item x in S from S to T at H(R(x)), then increment H(R(x)) so the next item in the bin goes in the next location in T.  (The bin number R(x) could be saved in still another auxiliary array to trade off memory for computation.)
+For numeric data, there is a simple R function that works very well: Let min, max be the minimum and maximum of S.  Then R(x) = n*(x - min)/(max-min).
+This uses quite a bit of extra memory.  For large data sets, there could be slow downs because of page faults.  For large n it is more efficient to bound the number of bins.
+Author:
+PEB
+Implementation
+(C and Pascal)
+.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 12 February 2019.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "histogram sort", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 12 February 2019. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/histogramSort.html

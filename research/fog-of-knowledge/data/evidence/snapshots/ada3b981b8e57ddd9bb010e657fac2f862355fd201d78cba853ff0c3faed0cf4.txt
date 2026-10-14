@@ -1,0 +1,47 @@
+k-d tree
+k-d tree
+(data structure)
+Definition:
+A multidimensional
+search tree
+for points in k dimensional space.  Levels of the tree are split along successive dimensions at the points.
+See also
+binary search tree
+,
+adaptive k-d tree
+,
+point access method
+.
+Note:
+After
+[GG98]
+.   Robert Keith Oswald (
+[email protected]
+) explains, In a traditional binary search tree, records are  defined by only one key. In a k-d tree, records are defined  by k keys. Like a traditional binary search trees, records  are inserted and returned using < and ≥.  However, the key that determines the subtree to use  (i.e. left or right) varies with the level in the tree.  At level L, key number L mod k + 1 is used, where the  root is at level 0. Therefore, the first key is used  at the root, the second key at level 1, and so on until all keys have been used.  The keys are used again beginning at level k.
+Author:
+PEB
+Implementation
+C, C++, and Java
+,
+insert (C)
+,
+range search (C)
+, and
+search (C)
+.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 2 November 2020.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "k-d tree", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 2 November 2020. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/kdtree.html

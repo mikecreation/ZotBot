@@ -1,0 +1,40 @@
+collective recursion
+collective recursion
+(algorithmic technique)
+Definition:
+A special form of
+tail recursion
+, where the results are produced during the recursive calls and nothing is returned.  The recursion may be optimized away by executing the call in the current stack frame, rather than creating a new stack frame, or by deallocating the entire recursion stack at once rather than a little at each return.
+Note:
+The following program prints the values greater than limit in a list.
+int overlimit(list l, int limit)
+{
+if (null == l) {
+return;
+}
+if (limit
+<
+head(l)) {
+printf("%d\n", head(l));
+}
+overlimit(tail(l), limit);
+}
+At the return, the compiler can deallocate all the memory for the recursion stack at once.
+Author:
+PEB
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 14 August 2008.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "collective recursion", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 14 August 2008. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/collectiveRecursion.html

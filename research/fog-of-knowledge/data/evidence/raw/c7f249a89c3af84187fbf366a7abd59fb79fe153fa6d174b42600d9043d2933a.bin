@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>repeated squaring</title>
+<meta name="description"
+  content="Definition of repeated squaring,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="repeated squaring">
+<meta name="type" content="algorithm">
+<meta name="area" content="Numeric Computation">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>repeated squaring</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+Compute the n<sup>th</sup> power of an expression in  <a href="theta.html"><em>&Theta;(log n)</em></a> steps by repeatedly squaring an intermediate result and multiplying an accumulating value by the intermediate result when appropriate.
+</p>
+
+
+<p>
+<em>Note:
+To find x<sup>13</sup> one could multiple 13 x's together. This is slow if multiplication is time consuming  (e.g., matrix multiplication) or the exponent is very large. </p> 
+<p> Instead, write the exponent in binary notation. 
+<pre>     13 = 1101 </pre> Start with a "squares" value (s) equal x and an "accumulated" value (a) equal 1.  Reading from least significant bit to most significant, when there is a 1 in the binary notation, multiply a by s.  Keep squaring s. <table> 
+<tr align="center">     <th>&nbsp;&nbsp;s&nbsp;&nbsp;</th><th>&nbsp;&nbsp;a&nbsp;&nbsp;</th>     <th></th> </tr> 
+<tr align="center" valign="bottom">     <td>x<sup>1</sup></td>  <td>1</td>     <td></td> </tr> 
+<tr align="center" valign="bottom">     <td></td>  <td></td>     <td align="left">Least significant bit of exponent is 1, so multiply a = a * s</td> </tr> 
+<tr align="center" valign="bottom">     <td>x<sup>1</sup></td>  <td>x<sup>1</sup></td>     <td></td> </tr> 
+<tr align="center" valign="bottom">     <td></td>  <td></td>     <td align="left">Square s</td> </tr> 
+<tr align="center" valign="bottom">     <td>x&sup2;</td>  <td>x<sup>1</sup></td>     <td></td> </tr> 
+<tr align="center" valign="bottom">     <td></td>  <td></td>     <td align="left">Next bit is 0, so don't multiply</td> </tr> 
+<tr align="center" valign="bottom">     <td>x&sup2;</td>  <td>x<sup>1</sup></td>     <td></td> </tr> 
+<tr align="center" valign="bottom">     <td></td>  <td></td>     <td align="left">Square s</td> </tr> 
+<tr align="center" valign="bottom">     <td>x<sup>4</sup></td>  <td>x<sup>1</sup></td>     <td></td> </tr> 
+<tr align="center" valign="bottom">     <td></td>  <td></td>     <td align="left">Next bit is 1, so multiply</td> </tr> 
+<tr align="center" valign="bottom">     <td>x<sup>4</sup></td>  <td>x<sup>5</sup></td>     <td></td> </tr> 
+<tr align="center" valign="bottom">     <td></td>  <td></td>     <td align="left">Square s</td> </tr> 
+<tr align="center" valign="bottom">     <td>x<sup>8</sup></td>  <td>x<sup>5</sup></td>     <td></td> </tr> 
+<tr align="center" valign="bottom">     <td></td>  <td></td>     <td align="left">Highest bit is 1, so multiply</td> </tr> 
+<tr align="center" valign="bottom">     <td>x<sup>8</sup></td>  <td>x<sup>13</sup></td>     <td></td> </tr> </table> </p> 
+<p> Why does this work?  Consider the exponent decomposed into binary notation. 
+<pre>     x<sup>13</sup> = x<sup>1101</sup>			<br /> 						<br />         = x<sup>(1*2^3 + 1*2^2 + 0*2^1 + 1*2^0)</sup>		<br /> 						<br />         = x<sup>1*2^3</sup>* x<sup>1*2^2</sup>* x<sup>0*2^1</sup>* x<sup>1*2^0</sup>		<br /> 						<br />         = x<sup>2^3</sup>  * x<sup>2^2</sup>  *  1    * x<sup>2^0</sup> <br /> 						<br />         = x<sup>8</sup>    * x<sup>4</sup>            * x<sup>1</sup> <br /> </pre> The values to be multiplied are successive squares (variable s above).   By multiplying appropriate powers, we can compute an integral power in logarithmic time. </p> 
+<p> There are many variations.  For instance, to find  a<sup>n</sup> mod m for very large n, reduce modulo m along the way. <a href="fibonacciNumber.html"><em>Fibonacci numbers</em></a> can be computed quickly by repeated squaring of a suitable expression. If addition and doubling were much faster than multiplication, one  could multiply by repeatedly doubling and summing.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>More information</h2>
+<p>
+To work out  <a href="http://www.tricki.org/article/To_work_out_powers_mod_n_use_repeated_squaring" target="_blank">powers mod n</a>, use repeated squaring.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#7f0f1e0a13511d131e1c143f11160c0b51181009">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 22 November 2021.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "repeated squaring", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 22 November 2021. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/repeatedSquaring.html">https://www.nist.gov/dads/HTML/repeatedSquaring.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a9172699201044',t:'MTc5MjAwNzE4OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

@@ -1,0 +1,15 @@
+{
+  "id": "nist-dads.repeatedsquaring",
+  "url": "https://xlinux.nist.gov/dads/HTML/repeatedSquaring.html",
+  "final_url": "https://xlinux.nist.gov/dads/HTML/repeatedSquaring.html",
+  "title": "NIST Dictionary of Algorithms and Data Structures: repeatedSquaring",
+  "source_kind": "secondary",
+  "retrieved_at": "2026-10-14T19:46:29.611362+00:00",
+  "text": "repeated squaring\nrepeated squaring\n(algorithm)\nDefinition:\nCompute the n\nth\npower of an expression in\nΘ(log n)\nsteps by repeatedly squaring an intermediate result and multiplying an accumulating value by the intermediate result when appropriate.\nNote:\nTo find x\n13\none could multiple 13 x's together. This is slow if multiplication is time consuming  (e.g., matrix multiplication) or the exponent is very large.\nInstead, write the exponent in binary notation.\n13 = 1101\nStart with a \"squares\" value (s) equal x and an \"accumulated\" value (a) equal 1.  Reading from least significant bit to most significant, when there is a 1 in the binary notation, multiply a by s.  Keep squaring s.\ns\na\nx\n1\n1\nLeast significant bit of exponent is 1, so multiply a = a * s\nx\n1\nx\n1\nSquare s\nx²\nx\n1\nNext bit is 0, so don't multiply\nx²\nx\n1\nSquare s\nx\n4\nx\n1\nNext bit is 1, so multiply\nx\n4\nx\n5\nSquare s\nx\n8\nx\n5\nHighest bit is 1, so multiply\nx\n8\nx\n13\nWhy does this work?  Consider the exponent decomposed into binary notation.\nx\n13\n= x\n1101\n= x\n(1*2^3 + 1*2^2 + 0*2^1 + 1*2^0)\n= x\n1*2^3\n* x\n1*2^2\n* x\n0*2^1\n* x\n1*2^0\n= x\n2^3\n* x\n2^2\n*  1    * x\n2^0\n= x\n8\n* x\n4\n* x\n1\nThe values to be multiplied are successive squares (variable s above).   By multiplying appropriate powers, we can compute an integral power in logarithmic time.\nThere are many variations.  For instance, to find  a\nn\nmod m for very large n, reduce modulo m along the way.\nFibonacci numbers\ncan be computed quickly by repeated squaring of a suitable expression. If addition and doubling were much faster than multiplication, one  could multiply by repeatedly doubling and summing.\nAuthor:\nPEB\nMore information\nTo work out\npowers mod n\n, use repeated squaring.\nGo to the\nDictionary of Algorithms and Data\nStructures\nhome page.\nIf you have suggestions, corrections, or comments, please get in touch\nwith\nPaul Black\n.\nEntry modified 22 November 2021.\nHTML page formatted Wed Oct 30 12:15:31 2024.\nCite this as:\nPaul E. Black, \"repeated squaring\", in\nDictionary of Algorithms and Data Structures\n[online], Paul E. Black, ed. 22 November 2021. (accessed TODAY)\nAvailable from:\nhttps://www.nist.gov/dads/HTML/repeatedSquaring.html",
+  "sha256": "f8eaff86444a00e6a3da69c65099c97bdc0843a54d61c531cb8c6736c9e9da37",
+  "raw_sha256": "c7f249a89c3af84187fbf366a7abd59fb79fe153fa6d174b42600d9043d2933a",
+  "content_type": "text/html",
+  "charset": "utf-8",
+  "extraction_method": "http-html-data-lines/1",
+  "capture_id": "e3ddbb4f46f55185891e748cc97c8c37441d9eb2de99b138cf9d5636d81e71b8"
+}

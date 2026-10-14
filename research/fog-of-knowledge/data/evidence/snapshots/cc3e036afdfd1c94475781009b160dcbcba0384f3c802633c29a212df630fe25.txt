@@ -1,0 +1,90 @@
+dictionary
+dictionary
+(data structure)
+Definition:
+An
+abstract data type
+storing items, or values.  A value is accessed by an associated
+key
+. Basic operations are new, insert, find and delete.
+Formal Definition:
+The operations new(), insert(k, v, D), and find(k, D) may be defined with
+axiomatic semantics
+as follows.
+new() returns a dictionary
+find(k, insert(k, v, D)) = v
+find(k, insert(j, v, D)) = find(k, D) if k ≠ j
+where k and j are keys, v is a value, and D is a dictionary.
+The modifier function delete(k, D) may be defined as follows.
+delete(k, new()) = new()
+delete(k, insert(k, v, D)) = delete(k, D)
+delete(k, insert(j, v, D)) = insert(j, v, delete(k, D)) if k ≠ j
+If we want find to be a
+total function
+, we could define  find(k, new()) using a special value:
+fail
+. This only changes the return type of find.
+find(k, new()) =
+fail
+Also known as
+association list, map, property list.
+Generalization
+(I am a kind of ...)
+binary relation
+,
+abstract data type
+.
+Specialization
+(... is a kind of me.)
+associative array
+,
+invertible Bloom lookup table
+with high probability.
+See also
+total order
+,
+set
+Some implementations:
+linked list
+,
+hash table
+,
+B-tree
+,
+jump list
+,
+directed acyclic word graph
+.
+Note:
+The terms "association list" and "property list" are used with LISP-like languages and in the area of Artificial Intelligence.  These suggest a relatively small number of items, whereas a dictionary may be quite large.  Professionals in the Data Management area have specialized semantics for "dictionary" and related terms.
+A dictionary defines a
+binary relation
+that maps keys to values. The keys of a dictionary are a
+set
+.
+Contributions by Rob Stewart 16 March 2004.
+Author:
+PEB
+Implementation
+(C++, Pascal, and Fortran)
+. Maksim Goleta's C# Collections
+sorted (C#)
+and
+unordered (C#)
+.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 2 November 2020.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "dictionary", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 2 November 2020. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/dictionary.html

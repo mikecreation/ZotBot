@@ -1,0 +1,46 @@
+cactus stack
+cactus stack
+(data structure)
+Definition:
+A variant of
+stack
+in which one other cactus stack may be attached to the top.  An attached stack is called a "branch."  When a branch becomes empty, it is removed.  Pop is not allowed if there is a branch.  A branch is only accessible through the original reference; it is not accessible through the stack.
+Formal Definition:
+The operations new to this variant of stack, branch(S, T) and notch(v), may be defined with
+axiomatic semantics
+as follows.
+top(branch(S, T)) = top(S)
+notch(new()) = false
+notch(push(v, S)) = false
+notch(branch(S, T)) = true
+Also known as
+saguaro stack.
+Generalization
+(I am a kind of ...)
+stack
+,
+tree
+.
+Note:
+A saguaro is a kind of branching cactus.
+Author:
+PEB
+More information
+Pictures and a description
+of saguaro cactus.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 14 December 2020.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "cactus stack", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 14 December 2020. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/cactusstack.html

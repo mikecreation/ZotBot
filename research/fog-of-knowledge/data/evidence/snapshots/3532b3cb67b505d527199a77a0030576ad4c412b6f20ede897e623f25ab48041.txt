@@ -1,0 +1,43 @@
+DAG shortest paths
+DAG shortest paths
+(algorithm)
+Definition:
+Solve the
+single-source shortest-path problem
+in a
+weighted
+directed acyclic graph
+by 1) doing a
+topological sort
+on the
+vertices
+by
+edge
+so vertices with no incoming
+edges
+are first and vertices with only incoming
+edges
+are last, 2) assign an infinite distance to every vertex (dist(v)=∞) and a zero distance to the source, and 3) for each vertex v in sorted order, for each outgoing edge e(v,u), if dist(v) + weight(e) < dist(u), set dist(u)=dist(v) + weight(e) and the predecessor of u to v.
+See also
+Dijkstra's algorithm
+,
+Bellman-Ford algorithm
+.
+Author:
+PEB
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 19 April 2004.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "DAG shortest paths", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 19 April 2004. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/dagShortPath.html

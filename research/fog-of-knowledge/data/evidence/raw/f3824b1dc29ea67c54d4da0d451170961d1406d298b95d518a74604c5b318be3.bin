@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>Dutch national flag</title>
+<meta name="description"
+  content="Definition of Dutch national flag,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="Dutch national flag">
+<meta name="type" content="classic problem">
+<meta name="area" content="Sorting">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>Dutch national flag</h1>
+<p>
+(classic problem)
+</p>
+
+<p>
+<strong>Definition:</strong>
+Rearrange elements in an <a href="array.html"><em>array</em></a> into three groups: bottom, middle, and top. </p> <p> One algorithm is to have the top group grow down from the top of the array, the bottom group grow up from the bottom, and keep the middle group just above the bottom.  The algorithm stores the locations just below the top group, just above the bottom, and just above the middle in three indexes.  At each step, examine the element just above the middle. If it belongs to the top group, swap it with the element just below the top.  If it belongs in the bottom, swap it with the element just above the bottom.  If it is in the middle, leave it.  Update the appropriate index. Complexity is <a href="theta.html"><em>&Theta;(n)</em></a> moves and examinations.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="partition.html"><em>partition</em></a>.
+</p>
+<p>
+<strong>Aggregate parent</strong> (I am a part of or used in ...)<br>
+<a href="multikeyQuicksort.html"><em>multikey Quicksort</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="americanFlagSort.html"><em>American flag sort</em></a>.
+</p>
+
+<p>
+<em>Note:
+Using this algorithm in <a href="quicksort.html"><em>quicksort</em></a> to <a href="partition.html"><em>partition</em></a> elements, with the middle group being elements equal to the pivot, lets quicksort avoid "resorting" elements that equal the pivot.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>More information</h2>
+<p>
+A <a href="http://www.allisons.org/ll/AlgDS/Sort/Flag/" target="_blank">detailed tutorial</a> on the algorithm. The flag of the Netherlands or the <a href="https://www.geographic.org/flags/new1/netherlands_flags.html" target="_blank">Dutch national flag</a>.
+</p>
+<p>
+<strong>James R. Bitner</strong>, <em>An Asymptotically Optimal Algorithm for the Dutch National Flag Problem</em>, SIAM Journal on Computing, 11(2):243-262, May 1982. </p> <p> <strong>Colin L. McMaster</strong>, <em>An Analysis of Algorithms for the Dutch National Flag Problem</em>, CACM, 21(10):842-846, October 1978. </p> <p> <strong>E. W. Dijkstra</strong>, A Discipline of Programming, Prentice-Hall, 1976.
+</p>
+<p>
+<strong>Historical Note</strong><br>
+Lloyd Allison reports that Dijkstra used this problem as an exercise in program derivation and program proof.  Allison first heard about the problem at the Institute of Computer Science (ICS), London University, about 1973.  The algorithm is named for the problem of ordering red, white, and blue marbles into the order of the Dutch national flag.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#34445541581a565855575f745a5d47401a535b42">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 3 May 2021.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "Dutch national flag", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 3 May 2021. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/DutchNationalFlag.html">https://www.nist.gov/dads/HTML/DutchNationalFlag.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a9162d7bc3dd6d',t:'MTc5MjAwNzE0OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

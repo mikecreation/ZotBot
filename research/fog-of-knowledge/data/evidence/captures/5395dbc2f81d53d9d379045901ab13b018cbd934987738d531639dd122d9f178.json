@@ -1,0 +1,15 @@
+{
+  "id": "nist-dads.invertiblebloomtable",
+  "url": "https://xlinux.nist.gov/dads/HTML/invertibleBloomTable.html",
+  "final_url": "https://xlinux.nist.gov/dads/HTML/invertibleBloomTable.html",
+  "title": "NIST Dictionary of Algorithms and Data Structures: invertibleBloomTable",
+  "source_kind": "secondary",
+  "retrieved_at": "2026-10-14T19:46:11.881632+00:00",
+  "text": "invertible Bloom lookup table\ninvertible Bloom lookup table\n(data structure)\nDefinition:\nAlgorithms and an\narray\nof cells to store key/value pairs. Each cell has a\ncount\nof how many pairs are mapped to the cell, the\nsum\nof the keys mapped to it, and the\nsum\nof the values mapped to it.  Using k\nhash functions\n, each pair is mapped to T[h\n1\n(k)], T[h\n2\n(k)], ..., T[h\nk\n(k)].\nAlso known as\nIBLT.\nGeneralization\n(I am a kind of ...)\ndictionary\nplus a listEntries() operation and the ability to handle duplicate keys with some implementations.\nAggregate child\n(... is a part of or used in me.)\narray\n,\nhash function\n.\nSee also\nBloom filter\n.\nNote:\nThe implementation details guarantee that with high probability, each key/value pair has at least one cell to itself, which has a count of 1.  The value and key can be retrieved from that cell.\nSpecial care must be taken to either (a) not insert keys multiple times or delete keys that are not present or (b) elaborate the algorithms and data structure.\nlistEntries() reports the key/value pair in each cell with a count of 1, and then removes that key/value pair.\nAuthor:\nPEB\nMore information\nMichael T. Goodrich\nand\nMichael Mitzenmacher\n,\nInvertible Bloom Lookup Tables\n, 2011. (V3 is October 2015.) Available at\nhttps://arxiv.org/pdf/1101.2245.pdf\n.\nGo to the\nDictionary of Algorithms and Data\nStructures\nhome page.\nIf you have suggestions, corrections, or comments, please get in touch\nwith\nPaul Black\n.\nEntry modified 8 June 2018.\nHTML page formatted Wed Oct 30 12:15:30 2024.\nCite this as:\nPaul E. Black, \"invertible Bloom lookup table\", in\nDictionary of Algorithms and Data Structures\n[online], Paul E. Black, ed. 8 June 2018. (accessed TODAY)\nAvailable from:\nhttps://www.nist.gov/dads/HTML/invertibleBloomTable.html",
+  "sha256": "4ad8d0d60d1f8524725bda8d60e5ea2777198fbd896a6fae39250ae70d06e5ea",
+  "raw_sha256": "b50210265a3aafcdb2848c1d690f12f0090b8c862b8353a8e958b20809271c95",
+  "content_type": "text/html",
+  "charset": "utf-8",
+  "extraction_method": "http-html-data-lines/1",
+  "capture_id": "5395dbc2f81d53d9d379045901ab13b018cbd934987738d531639dd122d9f178"
+}

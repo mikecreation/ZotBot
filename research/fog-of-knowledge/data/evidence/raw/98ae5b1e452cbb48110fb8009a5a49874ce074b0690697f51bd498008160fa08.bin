@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>postorder traversal</title>
+<meta name="description"
+  content="Definition of postorder traversal,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="postorder traversal">
+<meta name="type" content="algorithm">
+<meta name="area" content="Trees">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>postorder traversal</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+Process all <a href="node.html"><em>nodes</em></a> of a <a href="tree.html"><em>tree</em></a> by <a href="recursion.html"><em>recursively</em></a> processing all subtrees, then finally processing the <a href="root.html"><em>root</em></a>.
+</p>
+
+<p>
+<strong>Also known as</strong> postfix traversal.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="treeTraversal.html"><em>tree traversal</em></a>, <a href="depthfirst.html"><em>depth-first search</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="inorderTraversal.html"><em>in-order traversal</em></a>, <a href="preorderTraversal.html"><em>preorder traversal</em></a>, <a href="levelOrderTraversal.html"><em>level-order traversal</em></a>, <a href="CupifGianniniTreeTraversal.html"><em>Cupif-Giannini tree traversal</em></a>.
+</p>
+
+<p>
+<em>Note:
+For instance, if the "processing" is just printing, a tree is printed as "(first subtree) (second subtree) ... (last subtree) root". Here is pseudocode for a <a href="binarytree.html"><em>binary tree</em></a>: 
+<pre> postorder(tree)<br /> begin<br />     if tree is null, return;<br /><br />     postorder(tree.left_subtree);<br />     postorder(tree.right_subtree);<br />     print(tree.root);<br /> end </pre></em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#6e1e0f1b02400c020f0d052e00071d1a40090118">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 22 April 2019.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "postorder traversal", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 22 April 2019. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/postorderTraversal.html">https://www.nist.gov/dads/HTML/postorderTraversal.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a9170a7fae0285',t:'MTc5MjAwNzE4NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

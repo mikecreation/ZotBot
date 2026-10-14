@@ -1,0 +1,15 @@
+{
+  "id": "nist-dads.sieve",
+  "url": "https://xlinux.nist.gov/dads/HTML/sieve.html",
+  "final_url": "https://xlinux.nist.gov/dads/HTML/sieve.html",
+  "title": "NIST Dictionary of Algorithms and Data Structures: sieve",
+  "source_kind": "secondary",
+  "retrieved_at": "2026-10-14T19:46:32.855805+00:00",
+  "text": "sieve of Eratosthenes\nsieve of Eratosthenes\n(algorithm)\nDefinition:\nAn algorithm to find all prime numbers up to a certain N. Begin with an (unmarked)\narray\nof integers from 2 to N.  The first unmarked integer, 2, is the first prime.  Mark every multiple of this prime.  Repeatedly take the next unmarked integer as the next prime and mark every multiple of the prime.\nNote:\nInvented by\nEratosthenes of Cyrene\n(276 BC - 194 BC).\nFor example, here's a beginning array.\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\nSince 2 is unmarked, it is our first prime.  We mark every second integer, that is, 4, 6, 8, 10, 12, etc.\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\nThe next unmarked integer is 3, so it is prime.  We mark every third integer, i.e., 6, 9, 12, etc.  Note that we mark 6, 12, 18, etc. again.\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\nNow 5 is the next prime, and we mark every fifth integer.  The only new integer marked in range is 25.\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\nFrom here we find the primes 7, 11, 13, 17, 19, and 23.\nWhen we find the prime n, we can begin marking at n².   Why?  Any composite less than n² is a multiple of a lesser prime, and so will have been marked earlier.  As a corollary, we can stop marking when n² is greater than our range. That is, any unmarked numbers greater than the square root of the range are primes.\nThe naive implementation is not practical for large N since the memory is\nΘ(N)\n.  More efficient implementations use a segmented sieve.\nAuthor:\nPEB\nImplementation\n(Python)\n. Peter Luschny's\n(Java 5 and C#)\nimplementation.\nMore information\nChris Caldwell's\nexplanation and (pseudocode)\nin the Prime pages. Larry Deering explains his\nBlack Key Sieve\nwhich uses a sparse bit array of possible multiples.\nGo to the\nDictionary of Algorithms and Data\nStructures\nhome page.\nIf you have suggestions, corrections, or comments, please get in touch\nwith\nPaul Black\n.\nEntry modified 21 April 2022.\nHTML page formatted Wed Oct 30 12:15:31 2024.\nCite this as:\nPaul E. Black, \"sieve of Eratosthenes\", in\nDictionary of Algorithms and Data Structures\n[online], Paul E. Black, ed. 21 April 2022. (accessed TODAY)\nAvailable from:\nhttps://www.nist.gov/dads/HTML/sieve.html",
+  "sha256": "22cdbc297a359d85a643bc5485fcb969adb9f95fec137a208b15b3bfab98420e",
+  "raw_sha256": "e687dd5ba9e4e37b152e43b13317b9170a6403adccfa3078df2ec2c33a6c3e2e",
+  "content_type": "text/html",
+  "charset": "utf-8",
+  "extraction_method": "http-html-data-lines/1",
+  "capture_id": "5fcfec9f756030ecacdf5523a68f29298ee307e548d9a99dfff257ebbddd178e"
+}

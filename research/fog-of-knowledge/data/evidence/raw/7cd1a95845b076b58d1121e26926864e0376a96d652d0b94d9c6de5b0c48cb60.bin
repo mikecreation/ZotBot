@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>Aho-Corasick</title>
+<meta name="description"
+  content="Definition of Aho-Corasick,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="Aho-Corasick">
+<meta name="type" content="algorithm">
+<meta name="area" content="Searching">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>Aho-Corasick</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A multiple <a href="stringMatching.html"><em>string matching</em></a> algorithm that constructs a  <a href="finiteStateMachine.html"><em>finite state machine</em></a> from a <a href="pattern.html"><em>pattern</em></a> (list of keywords), then uses the machine to locate all occurrences of the keywords in a body of text.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="stringMatching.html"><em>string matching</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="CommentzWalter.html"><em>Commentz-Walter</em></a> works from the back, like <a href="boyermoore.html"><em>Boyer-Moore</em></a>.
+</p>
+
+<p>
+<em>Note:
+Construction of the machine takes time proportional to the sum of the lengths of the keywords. The machine is used to process the text string in a single pass.  The number of transitions made by the machine is independent of the number of keywords.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorVO">VO</a></p>
+<h2>Implementation</h2>
+Bruce Watson's  <a href="https://www3.cs.stonybrook.edu/~algorith/implement/watson/implement.shtml" target="_blank">SPARE Parts, a string pattern recognition toolkit (C++)</a>.
+<h2>More information</h2>
+<p>
+<strong>Alfred V. Aho</strong> and <strong>Margaret J. Corasick</strong>, <em>Efficient string matching: an aid to bibliographic search</em>, CACM, 18(6):333-340, June 1975.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#6919081c05470b05080a022907001a1d470e061f">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 2 November 2020.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Vadim Okun, "Aho-Corasick", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 2 November 2020. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/ahoCorasick.html">https://www.nist.gov/dads/HTML/ahoCorasick.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a916357af61cd6',t:'MTc5MjAwNzE1MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

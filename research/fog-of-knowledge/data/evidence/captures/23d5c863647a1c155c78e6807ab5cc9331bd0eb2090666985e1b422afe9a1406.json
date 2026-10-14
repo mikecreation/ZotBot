@@ -1,0 +1,15 @@
+{
+  "id": "nist-dads.secantsearch",
+  "url": "https://xlinux.nist.gov/dads/HTML/secantSearch.html",
+  "final_url": "https://xlinux.nist.gov/dads/HTML/secantSearch.html",
+  "title": "NIST Dictionary of Algorithms and Data Structures: secantSearch",
+  "source_kind": "secondary",
+  "retrieved_at": "2026-10-14T19:46:31.454158+00:00",
+  "text": "secant search\nsecant search\n(algorithm)\nDefinition:\nSearch a\nsorted array\nby estimating the next position to check based on the values at the two previous positions checked.\nSee also\nbinary search\n,\ninterpolation search\n.\nNote:\nIt is called \"secant search\" because it uses the secant of the function at two successive points to approximate the derivative in the Newton-Raphson formula.\nTo find a\nkey\nk in an array v with indexes from 0 to n-1, begin with x\n0\n= 0, x\n1\n= n-1, and i = 1. Compute the next position with\nx\ni+1\n= x\ni\n- (v[x\ni\n]-k) *  (x\ni\n- x\ni-1\n)/(v[x\ni\n] - v[x\ni-1\n]).\nIf this lies outside the range, a different method (e.g., midpoint of the range) must be used to get the next position.\nAlthough the theoretical execution time is better than\ninterpolation search\nor\nbinary search\n, coding is tricky, and the gains from faster convergence are offset by higher costs per iteration.\nRichard Harter <\n[email protected]\n> January 2001.\nAuthor:\nPEB\nGo to the\nDictionary of Algorithms and Data\nStructures\nhome page.\nIf you have suggestions, corrections, or comments, please get in touch\nwith\nPaul Black\n.\nEntry modified 14 August 2008.\nHTML page formatted Wed Oct 30 12:15:31 2024.\nCite this as:\nPaul E. Black, \"secant search\", in\nDictionary of Algorithms and Data Structures\n[online], Paul E. Black, ed. 14 August 2008. (accessed TODAY)\nAvailable from:\nhttps://www.nist.gov/dads/HTML/secantSearch.html",
+  "sha256": "5a17c610e140f433ee499ed0b706c095882282b3690199a67ecb3fe254fd1312",
+  "raw_sha256": "cb133b6126a8ca50509b360ff4164f7cdfb710e414d7529370320e056aa39ce1",
+  "content_type": "text/html",
+  "charset": "utf-8",
+  "extraction_method": "http-html-data-lines/1",
+  "capture_id": "23d5c863647a1c155c78e6807ab5cc9331bd0eb2090666985e1b422afe9a1406"
+}

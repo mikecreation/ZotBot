@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>level-order traversal</title>
+<meta name="description"
+  content="Definition of level-order traversal,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="level-order traversal">
+<meta name="type" content="algorithm">
+<meta name="area" content="Trees">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>level-order traversal</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+Process all <a href="node.html"><em>nodes</em></a> of a <a href="tree.html"><em>tree</em></a> by <a href="depth.html"><em>depth</em></a>: first the <a href="root.html"><em>root</em></a>, then the <a href="child.html"><em>children</em></a> of the root, etc.  Equivalent to a <a href="breadthfirst.html"><em>breadth-first search</em></a> from the root.
+</p>
+
+<p>
+<strong>See also</strong>
+<a href="postorderTraversal.html"><em>postorder traversal</em></a>, <a href="preorderTraversal.html"><em>preorder traversal</em></a>, <a href="treeTraversal.html"><em>tree traversal</em></a>, <a href="CupifGianniniTreeTraversal.html"><em>Cupif-Giannini tree traversal</em></a>, <a href="level.html"><em>level</em></a> (1).
+</p>
+
+<p>
+<em>Note:
+For instance, if the "processing" is just printing, a tree is printed as "root, all children of the root, all grandchildren (children of children) of the root, etc." Here is pseudocode for an inefficient level-order traversal of a <a href="binarytree.html"><em>binary tree</em></a>: 
+<pre> levelorderAux(tree, level)<br /> begin<br />     if tree is null, return;<br /><br />     if level is 1, then<br />         print(tree.root);<br />     else if level greater than 1, then<br />         levelorderAux(tree.left_subtree, level-1);<br />         levelorderAux(tree.right_subtree, level-1);<br />     endif<br /> end<br /> <br /> levelorder(tree)<br /> begin<br />     for d = 1 to height(tree)<br />         levelorderAux(tree, d);<br />     endfor<br /> end </pre> </p> 
+<p> See <a href="../terms.html#Stand98">[Stand98, p. 251]</a>.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#f78796829bd9959b96949cb7999e8483d9909881">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 10 February 2017.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "level-order traversal", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 10 February 2017. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/levelOrderTraversal.html">https://www.nist.gov/dads/HTML/levelOrderTraversal.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a916c71dba125f',t:'MTc5MjAwNzE3NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

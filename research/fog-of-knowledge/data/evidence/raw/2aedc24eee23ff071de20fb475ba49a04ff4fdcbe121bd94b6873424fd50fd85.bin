@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>k2-tree</title>
+<meta name="description"
+  content="Definition of k2-tree,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="k2-tree">
+<meta name="type" content="data structure">
+<meta name="area" content="Trees">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>k&sup2;-tree</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A <a href="compactDataStruct.html"><em>compact</em></a> representation of a sparse <a href="directedGraph.html"><em>directed graph</em></a>.  It requires 1 to 3 <em>bits</em> per edge.  Many access functions, like successor(s), predecessor(s), and range (all links from a range of <a href="vertex.html"><em>vertices</em></a> to another range of vertices), have very efficient implementations.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="compactDataStruct.html"><em>compact data structure</em></a>.
+</p>
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="adjacencyMatrixRep.html"><em>adjacency-matrix representation</em></a>, <a href="quadtree.html"><em>quadtree</em></a>.
+</p>
+
+<p>
+<em>Note:
+A k&sup2;-tree is particularly useful for Web graphs, which are very sparse. This needs (N + <a href="littleOnotation.html"><em>o</em></a>(N))/N bits per edge, where N is the number of edges.  Checking if there is an edge from any vertex to another takes <a href="bigOnotation.html"><em>O</em></a>(log<sub>k</sub> N), where k is the branching factor.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>More information</h2>
+<p>
+<strong>Nieves R. Brisaboa</strong>, <strong>Susana Ladra</strong>, and <strong>Gonzalo Navarro</strong>, <em>Compact representation of Web graphs with extended functionality</em>, Information Systems vol 39, pages 152-174, 2014. doi <A href="https://doi.org/10.1016/j.is.2013.08.003" target="_blank">10.1016/j.is.2013.08.003</A>
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#6d1d0c1801430f010c0e062d03041e19430a021b">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 8 June 2023.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "k&sup2;-tree", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 8 June 2023. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/k2tree.html">https://www.nist.gov/dads/HTML/k2tree.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a916bab95ce7fc',t:'MTc5MjAwNzE3Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

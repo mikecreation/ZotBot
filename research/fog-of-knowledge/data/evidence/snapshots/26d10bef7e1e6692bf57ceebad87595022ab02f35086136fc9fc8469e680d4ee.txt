@@ -1,0 +1,48 @@
+jelly-fish
+jelly-fish
+(data structure)
+Definition:
+A theoretical data structure for n items. It starts with a
+balanced binary search tree
+of about  √(n) nodes.   The
+leaf
+nodes lead to "tentacles" or
+linked lists
+, each of about  √(n) nodes.
+Aggregate child
+(... is a part of or used in me.)
+balanced binary search tree
+,
+linked list
+.
+Note:
+It is described to prove a theorem, not as a useful data structure.
+Synder says the tentacles may be ordered, unordered, or semi-ordered. For faster access to the end of the tentacle for updates, there can be links from the beginning (
+head
+) to the end (
+tail
+).
+This note gives more details to justify the counts above.  The body consists of about  √(n) nodes, of which about  √(n)/2 would otherwise be considered leaf nodes.  Since each node has two subtrees, there are about 2 × √(n)/2 =  √(n) tentacles. Therefore each tentacle has about  (n -  √(n)) / √(n) =  √(n)-1 nodes.
+Author:
+PEB
+More information
+Lawrence Snyder
+,
+On Uniquely Represented Data Structures
+, Proc. 18th Annual Symposium on Foundations of Computer Science (FOCS), pp 142-146, 1977.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 29 August 2014.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "jelly-fish", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 29 August 2014. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/jellyfish.html

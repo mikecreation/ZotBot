@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>reservoir sampling</title>
+<meta name="description"
+  content="Definition of reservoir sampling,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="reservoir sampling">
+<meta name="type" content="algorithm">
+<meta name="area" content="Searching">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>reservoir sampling</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+Randomly select k items from a stream of items of unknown length.  Save the first k items in an <a href="array.html"><em>array</em></a> of size k. For each item j, j &gt; k, choose a random integer M from 1 to j (inclusive).  If M &le; k, replace item M of the array with item j.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="randomizedAlgo.html"><em>randomized algorithm</em></a>.
+</p>
+
+<p>
+<em>Note:
+Each possible selection of k items has an equal probability of occurring. </p> 
+<p> This algorithm is an in-memory variant of Knuth's Algorithm 3.4.2R <a href="../terms.html#Knuth97">[Knuth97, 2:144]</a>. He credits Alan G. Waterman.  This algorithm is suggested in exercise 10.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+<a href="https://webkist.wordpress.com/2008/10/01/reservoir-sampling-in-perl/" target="_blank">(Perl)</a>.
+<h2>More information</h2>
+<p>
+Sahil (Thaker?)'s <a href="https://docs.microsoft.com/en-us/archive/blogs/spt/reservoir-sampling" target="_blank">explanation of correctness</a>. The extension to distributed reservoir sampling is flawed.
+</p>
+<p>
+Vitter's algorithms X, Y, and Z use far fewer random numbers by choosing how many items to skip, rather than deciding whether or not to skip each item.<br /> <strong>Jeffrey Scott Vitter</strong>, <em>Random Sampling with a Reservoir</em>, ACM Transactions on Mathematical Software (TOMS), 11(1):37-57, March 1985.<br /> Available on-line, for instance at <a href="http://www.cs.umd.edu/~samir/498/vitter.pdf" target="_blank">http://www.cs.umd.edu/~samir/498/vitter.pdf</a>.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#8efeeffbe2a0ece2efede5cee0e7fdfaa0e9e1f8">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 21 January 2020.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "reservoir sampling", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 21 January 2020. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/reservoirSampling.html">https://www.nist.gov/dads/HTML/reservoirSampling.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a91727fe7c86ed',t:'MTc5MjAwNzE4OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

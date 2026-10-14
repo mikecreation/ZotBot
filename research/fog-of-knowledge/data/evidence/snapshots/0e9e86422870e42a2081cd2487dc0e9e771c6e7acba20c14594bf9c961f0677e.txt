@@ -1,0 +1,69 @@
+distributive partitioning sort
+distributive partitioning sort
+(algorithm)
+Definition:
+Step 1: find the
+median
+key
+. Step 2: distribute the n items into n/2
+buckets
+linearly covering the interval from the minimum to the median and n/2 buckets linearly covering the interval from the median to the maximum.   Step 3: compact the buckets, removing empty buckets.  Recursively start again at step 1 for any bucket with multiple items.
+Linked lists
+are used to avoid moving items until a final phase and to avoid bucket overflows.
+Generalization
+(I am a kind of ...)
+bucket sort
+.
+Aggregate child
+(... is a part of or used in me.)
+select k
+th
+element
+,
+linked list
+.
+See also
+shuffle sort
+,
+histogram sort
+,
+linear probing sort
+.
+Note:
+Shuffle sort estimates the distribution of the items to be sorted by examining the first n/8 items.  Distributive partitioning sort estimates the distribution by linearly interpolating from the minimum to the median and from the median to the maximum.  Histogram sort counts the number of items in each (fixed) interval.  See the note at
+histogram sort
+on distributing according to a rank function R.
+The second step, where the items are distributed, corresponds to a single-pass
+radix sort
+using the entire key as one huge "digit." For the first interval, the mapping to buckets is roughly
+bucket = n/2 * (key - minimum)/(median - minimum)
+For the second interval, the mapping is roughly
+bucket = n/2 * (key - median)/(maximum - median)
+The implementation outlined in the paper has a preliminary step.  The step finds the
+median
+and
+partitions
+around it, then sorts the lower half and the upper half with the defined algorithm.
+Author:
+PEB
+More information
+Wlodzimierz Dobosiewicz
+,
+Sorting by Distributive Partitioning
+, Information Processing Letters, 7(1):1-7, January 1978.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 27 October 2017.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "distributive partitioning sort", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 27 October 2017. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/distributivePartitioningSort.html

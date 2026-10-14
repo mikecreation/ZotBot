@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>postman's sort</title>
+<meta name="description"
+  content="Definition of postman's sort,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="postman's sort">
+<meta name="type" content="algorithm">
+<meta name="area" content="Sorting">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>postman's sort</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A highly engineered variant of <a href="topdownRadixSort.html"><em>top-down radix sort</em></a> where attributes of the <a href="key.html"><em>key</em></a> are described so the algorithm can allocate buckets and distribute efficiently.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="topdownRadixSort.html"><em>top-down radix sort</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="multikeyQuicksort.html"><em>multikey Quicksort</em></a>.
+</p>
+
+<p>
+<em>Note:
+This is the algorithm used by letter-sorting machines in the post office: first states, then post offices, then routes, etc.  Since keys are not compared against each other, sorting time is <a href="bigOnotation.html"><em>O(cn)</em></a>, where <em>c</em> depends on the size of the key and number of buckets.  You probably used a form  of this if you sorted lots of papers alphabetically: you put each paper in its pile (or bucket), A's, B's, C's, D's, etc., then sort each pile.   </p> 
+<p> This is similar to <a href="radixsort.html"><em>radix sort</em></a>, but works "top down" or "most significant digit first" while radix sort works "bottom up" or "least significant digit first".  Also this does not merge distributed items while radix sort does. </p> 
+<p> After Robert Ramey (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="beccdfd3dbc7fecccccdda90ddd1d3">[email&#160;protected]</a>)</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>More information</h2>
+<p>
+<strong>Robert Ramey</strong>, <em>The Postman's Sort</em>, C Users Journal, August 1992.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#81f1e0f4edafe3ede0e2eac1efe8f2f5afe6eef7">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 20 June 2011.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "postman's sort", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 20 June 2011. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/postmansort.html">https://www.nist.gov/dads/HTML/postmansort.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a9170a7c6cf4e6',t:'MTc5MjAwNzE4NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

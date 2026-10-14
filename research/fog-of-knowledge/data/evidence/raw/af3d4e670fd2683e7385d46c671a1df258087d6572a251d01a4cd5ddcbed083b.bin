@@ -1,0 +1,634 @@
+<!doctype html><html lang="en"><head>
+
+<title>MeSH Browser</title>
+
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+
+<link rel="stylesheet" href="/public/css/font-awesome.css">
+<link rel="stylesheet" href="/public/css/bootstrap.css">
+<link rel="stylesheet" href="/public/css/mongoMesh.css">
+<link rel="icon" type="image/jpeg" href="/public/img/meshLogo.jpg">
+
+<base href="/">
+<script src="https://www.nlm.nih.gov/coop_all_uswds.js?v=1792006136371"></script>
+
+<script>
+
+    if (document.domain != "localhost")
+        document.domain = "nlm.nih.gov";
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        try {
+
+            if (coopmsg
+                && !/(^|; *)shutdown-banner=/.test(document.cookie))
+
+                document.querySelector(
+                    "body > div"
+                ).insertAdjacentHTML(
+                    "afterbegin",
+                    "<div id='shutdown-banner'><p>" + coopmsg
+                    + "</p><button type='button' role='button'"
+                    + " aria-label='Close' onclick='"
+                    + 'document.getElementById("shutdown-banner")'
+                    + '.remove(); document.cookie ='
+                    + ' "shutdown-banner=hidden; path=/";'
+                    + "'>Close</button></div>"
+                );
+
+        } catch (error) {
+            /* The "coopmsg" variable is only defined during a
+             * shutdown. */
+            if (!(error instanceof ReferenceError))
+                throw error;
+        }
+
+    });
+
+    var dcmsLinks = false,
+        dcmsParam = dcmsLinks
+                    ? function (sep) { return sep + "dcmsLinks=true"; }
+                    : function (   ) { return ""                    ; };
+
+</script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){
+        var _fullPath = window.location.href;
+        var urlParams = _fullPath.slice(_fullPath.indexOf('?') + 1).split('&');
+        var IsOpen = "false";
+        if (urlParams != undefined && urlParams != null && urlParams != "") {
+            IsOpen = urlParams[0].split("=")[1];
+        }
+
+        if (IsOpen == "false" || IsOpen == undefined || IsOpen != "true") {
+            w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        }
+    })(window,document,'script','dataLayer','GTM-5QZ7KJZ');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe sandbox src="https://www.googletagmanager.com/ns.html?id=GTM-5QZ7KJZ"
+                  height="0" width="0" style="display:none;visibility:hidden" title="googletagmanager"></iframe></noscript> 
+<!-- End Google Tag Manager (noscript) -->
+
+<script src="/public/js/elemUtil.js"></script>
+
+<script src="/public/js/record.js"  ></script>
+<script src="/public/js/treeDom.js" ></script>
+</head><body>
+
+<div>
+
+    <header class="NLMheader">
+        <a href="https://www.nlm.nih.gov/">
+          <img height="80" alt="NLM Logo"
+               src="https://www.nlm.nih.gov/images/NLM_White.png">
+        </a>
+        <!--<img class="starLogo"src="/public/img/NLM_Star.png" alt="NLM Star">-->
+    </header>
+<nav class="navbar navbar-default">
+
+  <div class="container-fluid">
+
+        <div class="navbar-header">
+
+          <button class="navbar-toggle collapsed" type="button"
+                  aria-expanded="false"
+                  onclick="toggleCollapse('bs-example-navbar-collapse-1')">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://www.nlm.nih.gov/mesh/">
+                <img id="meshNavbarLogo" src="/public/img/meshLogo.jpg" alt="MeSH Logo">
+            </a>
+        </div>
+
+        <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse"
+             aria-expanded="false">
+            <ul class="nav navbar-nav">
+                
+                <li><a href="/" id="mainSearchButton">Search</a></li>
+                <li><a href="/treeView">Tree View</a></li>
+                <li><a href="/MeSHonDemand">MeSH on Demand</a> </li> <!--Delete the Span Tags after  a few months, once MeSH on Demand is no longer new-->
+                <li><a href="https://meshb-prev.nlm.nih.gov/" target="_blank">MeSH 2027</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/mbinfo.html" target="_blank">About</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/meshsugg.html" target="_blank">Suggestions</a> </li>
+                <li><a href="https://support.nlm.nih.gov/support/create-case/" target="_blank">Contact Us</a></li>
+            </ul>
+
+        </div>
+
+  </div>
+
+</nav>
+
+</div>
+
+<div class="container">
+
+
+
+
+<h1>Philology <small>MeSH Descriptor            Data 2026</small></h1>
+
+<ul class="nav nav-tabs">
+    <li id="details" class="active"
+        onclick="switchTab([ 'details', 'detailsTabContent' ])">
+        <a class="fakeLink">Details</a></li>
+    
+        <li id="qualifiers"
+            onclick="switchTab([ 'qualifiers', 'qualifiersTabContent' ])">
+            <a class="fakeLink">Qualifiers</a></li>
+        <li id="trees" onclick="switchTab([ 'trees', 'treesTabContent' ])">
+            <a class="fakeLink">MeSH Tree Structures</a></li>
+    
+    <li id="concepts" onclick="switchTab([ 'concepts', 'conceptsTabContent' ])">
+        <a class="fakeLink">Concepts</a></li>
+</ul>
+
+
+
+<div class="tab-content"><br>
+<div id="detailsTabContent" class="tab-pane active">
+
+    <dl id="descriptorDetails_Philology"
+        class="dl-horizontal">
+
+        <dt>MeSH Heading      </dt>
+
+        <dd>Philology</dd>
+
+        
+                    <dt>Tree Number(s)</dt>
+                    
+                        <dd><a id="treeNumber_0" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >K01.517.732</a></dd>
+                    
+
+        <dt>Unique ID</dt><dd>D010680</dd>
+
+        <dt>RDF Unique Identifier</dt>
+        <dd><a href="https://id.nlm.nih.gov/mesh/D010680.html">
+            http://id.nlm.nih.gov/mesh/D010680
+        </a></dd>
+
+        <span id="annotation">
+            <dt>Annotation</dt><dd>study of literature or language as used in literature; do not confuse with <a href="/record/ui?ui=D008091" class="textLink_LITERATURE">LITERATURE</a>, literary works; general or unspecified; prefer specifics</dd>
+        </span>
+                <span id="scopeNote">
+                    <dt>Scope Note</dt><dd>The study of literature in its widest sense, including grammar, etymology, criticism, literary history, language history, linguistic history, systems of writing, and anything else that is relevant to literature or language viewed as literature. Philology as a discipline has both philosophical and scientific overtones.</dd>
+                </span>
+            
+            <dt>Entry Version</dt><dd>PHILOL</dd>
+        
+        
+
+
+        
+                <dt>Date Introduced</dt>
+                <dd>1966/01/01</dd>
+            
+                <dt>Last Updated</dt>
+                <dd>1999/11/03</dd>
+            
+
+    </dl>
+
+</div>
+
+<div id="qualifiersTabContent" class="tab-pane">
+
+    <dl class="dl-horizontal">
+
+        
+<br>
+
+        
+                <span id="allowableQualifiers"><dt>Allowable Qualifiers</dt><dd>
+                <ul class="list-unstyled">
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000266">
+                            history
+                            (HI)
+                        </a></li>
+                    
+                </ul></dd></span>
+            
+
+    </dl>
+
+</div><div id="treesTabContent" class="tab-pane">
+
+    <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_K01"
+           
+               href="/record/ui?ui=D006809"
+           
+        ><span>Humanities [K01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_K01_517"
+           
+               href="/record/ui?ui=D008091"
+           
+        ><span>Literature [K01.517]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_K01_517_067"
+           
+               href="/record/ui?ui=D000739"
+           
+        ><span>Anecdotes as Topic [K01.517.067]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_517_116"
+           
+               href="/record/ui?ui=D001045"
+           
+        ><span>Aphorisms and Proverbs as Topic [K01.517.116]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_517_172"
+           
+               href="/record/ui?ui=D001633"
+           
+        ><span>Bible [K01.517.172]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_517_211"
+           
+               href="/record/ui?ui=D001680"
+           
+        ><span>Biographies as Topic [K01.517.211]</span>
+        </a>
+        
+            <i id="plus_Biographies_as_Topic" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Biographies_as_Topic" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_517_333"
+           
+               href="/record/ui?ui=D004324"
+           
+        ><span>Drama [K01.517.333]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_517_414"
+           
+               href="/record/ui?ui=D004882"
+           
+        ><span>Erotica [K01.517.414]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_517_455"
+           
+               href="/record/ui?ui=D005495"
+           
+        ><span>Folklore [K01.517.455]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_517_495"
+           
+               href="/record/ui?ui=D008092"
+           
+        ><span>Literature, Medieval [K01.517.495]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_517_533"
+           
+               href="/record/ui?ui=D008093"
+           
+        ><span>Literature, Modern [K01.517.533]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_517_584"
+           
+               href="/record/ui?ui=D008513"
+           
+        ><span>Medicine in Literature [K01.517.584]</span>
+        </a>
+        
+            <i id="plus_Medicine_in_Literature" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Medicine_in_Literature" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_517_647"
+           
+               href="/record/ui?ui=D009229"
+           
+        ><span>Mythology [K01.517.647]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_517_732"
+           
+               href="/record/ui?ui=D010680"
+           
+        ><strong>Philology [K01.517.732]</strong>
+        </a>
+        
+            <i id="plus_Philology" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Philology" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_K01_517_732_477"
+           
+               href="/record/ui?ui=D010681"
+           
+        ><span>Philology, Classical [K01.517.732.477]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_517_732_602"
+           
+               href="/record/ui?ui=D010682"
+           
+        ><span>Philology, Oriental [K01.517.732.602]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_517_732_727"
+           
+               href="/record/ui?ui=D010683"
+           
+        ><span>Philology, Romance [K01.517.732.727]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_517_781"
+           
+               href="/record/ui?ui=D011037"
+           
+        ><span>Poetry as Topic [K01.517.781]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_517_864"
+           
+               href="/record/ui?ui=D000075863"
+           
+        ><span>Science in Literature [K01.517.864]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_517_946"
+           
+               href="/record/ui?ui=D014925"
+           
+        ><span>Wit and Humor as Topic [K01.517.946]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+
+</div>
+
+<div id="conceptsTabContent" class="tab-pane">
+
+    <button id="ExpandAll" class="btn btn-default btn-sm pull-right"
+            onclick="toggleConcepts()">
+        <span id="expandConcepts"                        >  Expand All</span>
+        <span id="collapseConcepts" style="display: none">Collapse All</span>
+    </button>
+
+    
+
+        <div>
+        <span id="Nightwatch_cp_0_0"
+              onclick="toggleCollapse('cp_0_0', 'Nightwatch_cp_0_0')">
+        <a class="fakeLink"><b>
+            Philology
+            <i>Preferred</i>
+        </b></a></span>
+
+        <div id="cp_0_0" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0016595</dd>
+
+            
+                <dt>Scope Note</dt><dd>The study of literature in its widest sense, including grammar, etymology, criticism, literary history, language history, linguistic history, systems of writing, and anything else that is relevant to literature or language viewed as literature. Philology as a discipline has both philosophical and scientific overtones.</dd>
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_0_0"
+                      onclick="toggleCollapse('termName_0_0',
+                                              'Nightwatch_termName_0_0')">
+                    <a class="fakeLink"><b>Philology</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_0_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T031560<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>01/01/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1966)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+</div></div>
+
+<small class="pull-right">
+    page delivered in 0.137s
+</small>
+
+</div>
+
+<footer class="footer">
+    <div class="container-fluid"><div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/socialmedia/index.html">
+                    Connect with NLM
+                </a></p>
+                <ul class="list-inline">
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://twitter.com/NLM_NIH">
+                        <img src="https://www.nlm.nih.gov/images/Twitter_W.svg"
+                             alt="Twitter">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.facebook.com/nationallibraryofmedicine"
+                    ><img src="https://www.nlm.nih.gov/images/Facebook_W.svg"
+                          alt="Facebook">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.youtube.com/user/NLMNIH">
+                        <img src="https://www.nlm.nih.gov/images/YouTube_W.svg"
+                             alt="You Tube">
+                    </a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p>National Library of Medicine<br>
+                    <a href="https://www.google.com/maps/place/8600+Rockville+Pike,+Bethesda,+MD+20894/@38.9959508,-77.101021,17z/data=!3m1!4b1!4m5!3m4!1s0x89b7c95e25765ddb:0x19156f88b27635b8!8m2!3d38.9959508!4d-77.0988323">
+                        8600 Rockville Pike<br>
+                        Bethesda, MD 20894
+                    </a>
+                </p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/web_policies.html">
+                    Web Policies
+                </a><br>
+                <a href="https://www.nih.gov/institutes-nih/nih-office-director/office-communications-public-liaison/freedom-information-act-office">
+                    FOIA
+                </a><br>
+                <a href="https://www.hhs.gov/vulnerability-disclosure-policy/index.html">
+                    HHS Vulnerability Disclosure
+                </a></p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href=
+                      "https://support.nlm.nih.gov?from=https://www.nlm.nih.gov/">
+                    NLM Support Center
+                </a><br>
+                <a href="https://www.nlm.nih.gov/accessibility.html">
+                    Accessibility
+                </a><br>
+                <a href="https://www.nlm.nih.gov/careers/careers.html">
+                    Careers
+                </a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+              <p class="text-center"> <a href="https://www.nlm.nih.gov/">NLM</a> | <a href="https://www.nih.gov/">NIH</a> | <a href="https://www.hhs.gov/">HHS</a> | <a href="https://www.usa.gov/">USA.gov</a></p>
+            </div>
+        </div>
+    </div></div>
+<!--BEGIN QUALTRICS WEBSITE FEEDBACK SNIPPET-->
+<script type='text/javascript'>
+(function(){var g=function(e,h,f,g){
+this.get=function(a){for(var a=a+"=",c=document.cookie.split(";"),b=0,e=c.length;b<e;b++){for(var d=c[b];" "==d.charAt(0);)d=d.substring(1,d.length);if(0==d.indexOf(a))return d.substring(a.length,d.length)}return null};
+this.set=function(a,c){var b="",b=new Date;b.setTime(b.getTime()+6048E5);b="; expires="+b.toGMTString();document.cookie=a+"="+c+b+"; path=/; "};
+this.check=function(){var a=this.get(f);if(a)a=a.split(":");else if(100!=e)"v"==h&&(e=Math.random()>=e/100?0:100),a=[h,e,0],this.set(f,a.join(":"));else return!0;var c=a[1];if(100==c)return!0;switch(a[0]){case "v":return!1;case "r":return c=a[2]%Math.floor(100/c),a[2]++,this.set(f,a.join(":")),!c}return!0};
+this.go=function(){if(this.check()){var a=document.createElement("script");a.type="text/javascript";a.src=g;document.body&&document.body.appendChild(a)}};
+this.start=function(){var t=this;"complete"!==document.readyState?window.addEventListener?window.addEventListener("load",function(){t.go()},!1):window.attachEvent&&window.attachEvent("onload",function(){t.go()}):t.go()};};
+try{(new g(100,"r","QSI_S_ZN_cwOHfLkxRr4n4W2","https://zncwohflkxrr4n4w2-nlmenterprise.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_cwOHfLkxRr4n4W2")).start()}catch(i){}})();
+</script><div id='ZN_cwOHfLkxRr4n4W2'><!--DO NOT REMOVE-CONTENTS PLACED HERE--></div>
+<!--END WEBSITE FEEDBACK SNIPPET-->
+</footer>
+
+</body></html>
+

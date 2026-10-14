@@ -1,0 +1,15 @@
+{
+  "id": "nist-dads.axiomaticsemantics",
+  "url": "https://xlinux.nist.gov/dads/HTML/axiomaticSemantics.html",
+  "final_url": "https://xlinux.nist.gov/dads/HTML/axiomaticSemantics.html",
+  "title": "NIST Dictionary of Algorithms and Data Structures: axiomaticSemantics",
+  "source_kind": "secondary",
+  "retrieved_at": "2026-10-14T19:45:52.689851+00:00",
+  "text": "axiomatic semantics\naxiomatic semantics\n(definition)\nDefinition:\nDefining the behavior of an\nabstract data type\nwith axioms.\nAggregate parent\n(I am a part of or used in ...)\nstack\n,\nbag\n,\ndictionary\n,\npriority queue\n,\nqueue\n,\nset\n,\ncactus stack\n.\nNote:\nFor example, the\nabstract data type\nstack\nhas the operations new(), push(v, S) and popOff(S), among others.  These may be defined with the following axioms.\nnew() returns a stack\npopOff(push(v, S)) = S\ntop(push(v, S)) = v\nwhere S is a stack and v is a value.  What does this mean?  The first axiom says all we know about new() is that it returns a stack. Informally, we know it returns an empty stack, but \"empty\" is a concept we would have to define.  So we leave it.\nThe second axiom says that if we push a value onto a stack then pop it off, the result is the same stack.  The \"=\" can be seen as a rewrite operation.  The axiom \"X = Y\" means any time we see X, we can rewrite it to be Y.  X may contain variables representing subexpressions. What is the meaning of \"popOff(push(1776, new()))\"?  The second axiom says it means the same as new().\nThe third axiom assigns meaning to expressions like  top(push(1, push(2, new()))): it is 1.  This is reasonable, since the top element is the latest one pushed.  A series of push and popOff operations and a top operation may be reduced with these axioms.\nWhat stack does new() return, then?  We still haven't said; top(new()) is just not defined.  But that is how a stack works: the top of an empty stack is not defined.  So our formalism corresponds to our mental notion of a stack.  If we want to, we can add more axioms for richer semantics, as is done in the\nstack\nentry.\nAuthor:\nPEB\nGo to the\nDictionary of Algorithms and Data\nStructures\nhome page.\nIf you have suggestions, corrections, or comments, please get in touch\nwith\nPaul Black\n.\nEntry modified 24 August 2005.\nHTML page formatted Wed Oct 30 12:15:30 2024.\nCite this as:\nPaul E. Black, \"axiomatic semantics\", in\nDictionary of Algorithms and Data Structures\n[online], Paul E. Black, ed. 24 August 2005. (accessed TODAY)\nAvailable from:\nhttps://www.nist.gov/dads/HTML/axiomaticSemantics.html",
+  "sha256": "5081e223651984635ca8834f9eb4889a83b22dbbbcba9bb346f2990b233814ac",
+  "raw_sha256": "b81efa4d95e57d33ef769eb1f3a61b29e70214b3e867646649bbfa5b6902cbdd",
+  "content_type": "text/html",
+  "charset": "utf-8",
+  "extraction_method": "http-html-data-lines/1",
+  "capture_id": "f022ed617c79c5fe50ecf9c9811b543e0a663e8e2f57ae44aa2fe18e59060e7c"
+}

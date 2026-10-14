@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>blind trie</title>
+<meta name="description"
+  content="Definition of blind trie,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="blind trie">
+<meta name="type" content="data structure">
+<meta name="area" content="Trees">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>blind trie</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A specialized <a href="patriciatree.html"><em>Patricia tree</em></a> whose <a href="internalnode.html"><em>internal nodes</em></a> store only an integer, k, which is the length of the common <a href="prefix.html"><em>prefix</em></a> of the strings in the <a href="child.html"><em>children</em></a>.  Equivalently, the strings first differ in the (k+1)<sup>st</sup> character.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="patriciatree.html"><em>Patricia tree</em></a>.
+</p>
+<p>
+<strong>Aggregate parent</strong> (I am a part of or used in ...)<br>
+<a href="blindSort.html"><em>blind sort</em></a>.
+</p>
+
+<p>
+<em>Note:
+Used in a specialized algorithm, described in <em>Engineering a Lightweight Suffix Array Construction Algorithm</em>, to build <a href="suffixarray.html"><em>suffix arrays</em></a>. </p> 
+<p> The name comes from re<strong>TRIE</strong>val and is pronounced, "tree".  See the historical note at <a href="trie.html"><em>trie</em></a>.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>More information</h2>
+<p>
+Defined in the following, but called a Patricia tree<br /> <strong>Paolo Ferragina</strong> and <strong>Roberto Grossi</strong>, <em>The string B-tree: a new data structure for string search in external memory and its applications</em>, Journal of the ACM, 46(2): 236 - 280, (March 1999). </p> <p> Called "blind trie" in<br /> <strong>Giovanni Manzini</strong> and <strong>Paolo Ferragina</strong>, <em>Engineering a Lightweight Suffix Array Construction Algorithm</em>, Algorithmica, 40(1):33-50, (Jun 2004).
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#8efeeffbe2a0ece2efede5cee0e7fdfaa0e9e1f8">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 24 August 2017.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "blind trie", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 24 August 2017. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/blindTrie.html">https://www.nist.gov/dads/HTML/blindTrie.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a9164d9c6c73db',t:'MTc5MjAwNzE1NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

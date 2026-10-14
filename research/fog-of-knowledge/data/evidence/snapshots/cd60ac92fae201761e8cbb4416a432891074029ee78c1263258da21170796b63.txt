@@ -1,0 +1,27 @@
+bit vector
+bit vector
+(data structure)
+Definition:
+An
+array
+of bits.
+Note:
+A bit vector can often be handled very efficiently since a computer word is an array of bits.
+Author:
+PEB
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 17 December 2004.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "bit vector", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 17 December 2004. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/bitVector.html

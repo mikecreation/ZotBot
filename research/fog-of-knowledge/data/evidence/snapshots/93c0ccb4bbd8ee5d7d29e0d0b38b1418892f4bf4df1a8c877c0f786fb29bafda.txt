@@ -1,0 +1,69 @@
+level-order traversal
+level-order traversal
+(algorithm)
+Definition:
+Process all
+nodes
+of a
+tree
+by
+depth
+: first the
+root
+, then the
+children
+of the root, etc.  Equivalent to a
+breadth-first search
+from the root.
+See also
+postorder traversal
+,
+preorder traversal
+,
+tree traversal
+,
+Cupif-Giannini tree traversal
+,
+level
+(1).
+Note:
+For instance, if the "processing" is just printing, a tree is printed as "root, all children of the root, all grandchildren (children of children) of the root, etc." Here is pseudocode for an inefficient level-order traversal of a
+binary tree
+:
+levelorderAux(tree, level)
+begin
+if tree is null, return;
+if level is 1, then
+print(tree.root);
+else if level greater than 1, then
+levelorderAux(tree.left_subtree, level-1);
+levelorderAux(tree.right_subtree, level-1);
+endif
+end
+levelorder(tree)
+begin
+for d = 1 to height(tree)
+levelorderAux(tree, d);
+endfor
+end
+See
+[Stand98, p. 251]
+.
+Author:
+PEB
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 10 February 2017.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "level-order traversal", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 10 February 2017. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/levelOrderTraversal.html

@@ -1,0 +1,15 @@
+{
+  "id": "nist-dads.diminishingincsort",
+  "url": "https://xlinux.nist.gov/dads/HTML/diminishingIncSort.html",
+  "final_url": "https://xlinux.nist.gov/dads/HTML/diminishingIncSort.html",
+  "title": "NIST Dictionary of Algorithms and Data Structures: diminishingIncSort",
+  "source_kind": "secondary",
+  "retrieved_at": "2026-10-14T19:46:01.974202+00:00",
+  "text": "diminishing increment sort\ndiminishing increment sort\n(algorithm)\nDefinition:\nAn\nin-place sort\nalgorithm that repeatedly reorders different, small subsets of the input until the entire array is ordered. On each pass it handles i sets of n/i items, where n is the total number of items.  Each set is every i\nth\nitem, e.g. set 1 is item 1, 1+i, 1+2i, etc., set 2 is item 2, 2+i, etc.  On each succeeding pass, the increment or gap, i, is reduced until it is 1 for the last pass.\nGeneralization\n(I am a kind of ...)\nin-place sort\n.\nSpecialization\n(... is a kind of me.)\nShell sort\n,\ncomb sort\n.\nNote:\nSince items may move large distances at first, this method is quite efficient.\nComb sort\ndoes a single \"bubbling\" pass (ala\nbubble sort\n) over each set for each gap or increment, whereas\nShell sort\ncompletely sorts each set.\nShell had the first increment be half the number of items to be sorted, i.e., ⌊ n/2⌋, and each succeeding increment half the preceding increment.  This lowers efficiency since the same items are compared over and over.  Relatively prime increments are better.\nSince one of the sets can be visualized as those items where the teeth of a comb touch, this is sometimes called a comb sort.  Using this analogy, the teeth get closer on each pass. However, the term \"comb sort\" is used for a specific algorithm.  Knuth uses \"diminishing increment sort\" as a synonym of \"Shell sort\", but we include comb sort.\nAuthors:\nPEB\n,\nASK\nGo to the\nDictionary of Algorithms and Data\nStructures\nhome page.\nIf you have suggestions, corrections, or comments, please get in touch\nwith\nPaul Black\n.\nEntry modified 7 January 2005.\nHTML page formatted Wed Oct 30 12:15:30 2024.\nCite this as:\nPaul E. Black and Art S. Kagel, \"diminishing increment sort\", in\nDictionary of Algorithms and Data Structures\n[online], Paul E. Black, ed. 7 January 2005. (accessed TODAY)\nAvailable from:\nhttps://www.nist.gov/dads/HTML/diminishingIncSort.html",
+  "sha256": "a4ca64787e2e33292b2bb98a3c186857f0226fafdb02ec0388d433fc511412f2",
+  "raw_sha256": "ce9210895a1d26415069bee0fcb6c0a5b0b4f0d79f4a1307915d1ef3c1536442",
+  "content_type": "text/html",
+  "charset": "utf-8",
+  "extraction_method": "http-html-data-lines/1",
+  "capture_id": "fe3552b465fc8cfe77ef44e33d590adf391731722007cc2d033ee2a2e912406b"
+}
