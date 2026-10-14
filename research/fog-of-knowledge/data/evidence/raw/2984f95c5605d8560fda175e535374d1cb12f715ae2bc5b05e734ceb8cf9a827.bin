@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>AVL tree</title>
+<meta name="description"
+  content="Definition of AVL tree,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="AVL tree">
+<meta name="type" content="data structure">
+<meta name="area" content="Trees">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>AVL tree</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A <a href="balancedbitr.html"><em>balanced</em></a> <a href="binarySearchTree.html"><em>binary search tree</em></a> where the <a href="height.html"><em>height</em></a> of the two subtrees (<a href="child.html"><em>children</em></a>) of a node differs by at most one. Look-up, insertion, and deletion are <a href="bigOnotation.html"><em>O(log n)</em></a>, where n is the number of <a href="node.html"><em>nodes</em></a> in the tree.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="heightBalancedTree.html"><em>height-balanced tree</em></a>, <a href="balancedbitr.html"><em>balanced binary tree</em></a>, <a href="binarySearchTree.html"><em>binary search tree</em></a>, <a href="redblack.html"><em>red-black tree</em></a> (when colored).
+</p>
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="leftrotation.html"><em>left rotation</em></a>, <a href="rightrotatn.html"><em>right rotation</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="btree.html"><em>B-tree</em></a>, <a href="threadedtree.html"><em>threaded tree</em></a>, <a href="fibonacciTree.html"><em>Fibonacci tree</em></a>.
+</p>
+
+<p>
+<em>Note:
+The structure is named for the inventors, Adelson-Velskii and Landis. If necessary, the tree is rebalanced after insertions or deletions using rotations. </p> 
+<p> After Gary Grubb &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c6a1a1b4b3a4a486b5b4e8aeb6e8a5a9ab">[email&#160;protected]</a>&gt;. </p> 
+<p> An AVL tree is at least as balanced as a red-black tree.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+Ben Pfaff's  <a href="https://adtinfo.org/" target="_blank">explanations and code (C)</a>. Maksim Goleta's C# Collections uses it to <a href="https://github.com/Goleta/csharp-collections/blob/master/Goletas.Collections/SortedSet.cs" target="_blank">implement sorted set (C#)</a>. Bro. David Carlson's <a href="http://cis.stvincent.edu/html/tutorials/swd/avltrees/avltrees.html" target="_blank">tutorial and code (C++)</a>. Richard McGraw's <a href="gopher://sdf-eu.org/1/users/dasnar/res" target="_blank">Navl-latest.tar.bz2 (C#)</a>. Worst-case behavior of <a href="https://www.auto.tuwien.ac.at/~blieb/woop/avl.html" target="_blank">traversal, annotated for real time (WOOP/ADA)</a>.
+<h2>More information</h2>
+<p>
+<a href="http://www.cs.auckland.ac.nz/software/AlgAnim/AVL.html" target="_blank">explanation and example</a>.
+</p>
+<p>
+<strong>Georgii M. Adelson-Velskii</strong> and <strong>Evgenii M. Landis</strong>, <em>An algorithm for the organization of information</em>, Doklady Akademii Nauk SSSR, 146:263-266, 1962 (Russian). English translation by Myron J. Ricci in Soviet Math. Doklady, 3:1259-1263, 1962. <br />(Doklady is Russian for "Report".  Sometimes transliterated in English as Doclady or Dokladi.)
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#c7b7a6b2abe9a5aba6a4ac87a9aeb4b3e9a0a8b1">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 12 November 2019.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "AVL tree", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 12 November 2019. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/avltree.html">https://www.nist.gov/dads/HTML/avltree.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a8820fda28af01',t:'MTc5MjAwMTA4Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

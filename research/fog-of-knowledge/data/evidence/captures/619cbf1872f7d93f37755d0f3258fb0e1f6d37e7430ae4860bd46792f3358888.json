@@ -1,0 +1,15 @@
+{
+  "id": "nist-dads.gnomesort",
+  "url": "https://xlinux.nist.gov/dads/HTML/gnomeSort.html",
+  "final_url": "https://xlinux.nist.gov/dads/HTML/gnomeSort.html",
+  "title": "NIST Dictionary of Algorithms and Data Structures: gnomeSort",
+  "source_kind": "secondary",
+  "retrieved_at": "2026-10-14T18:06:42.595200+00:00",
+  "text": "gnome sort\ngnome sort\n(algorithm)\nDefinition:\nPut items in order by comparing the current item with the previous item.  If they are in order, move to the next item (or stop if the end is reached).  If they are out of order, swap them and move to the previous item.  If there is no previous item, move to the next item.\nGeneralization\n(I am a kind of ...)\nstable\nsort\n,\nin-place sort\n.\nSee also\ninsertion sort\n,\nbidirectional bubble sort\n.\nNote:\nComplexity is\nO(n\n2\n)\nfor arbitrary data, but approaches O(n) if the input list is nearly in order.\nThis can be seen as an\ninsertion sort\nthat only keeps track of the current item.  After having moved an item backward into place, it \"walks\" forward (checking the order of items as it goes) until it reaches the next out-of-place item, which is beyond where progress left off.\nTimothy Rolfe finds it \"convenient to think of [gnome sort] as 'a variant of insertion sort that hides the logic in a single loop.'\" This can be seen by commenting a minor rewrite, after Rolfe, of Dick Grune's implementation:\nvoid gnomesort(int n, int ar[]) {\nfor (int i = 0; i\n<\nn; ) {\nif (i == 0 || ar[i-1]\n<\n= ar[i]) {\n// Outer loop functionality --- scan to larger index\ni++;\n} else {\n// Inner loop functionality --- move to smaller index\nint tmp = ar[i]; ar[i] = ar[i-1]; ar[--i] = tmp;\n}\n}\n}\nThis can also be seen as a\nbidirectional bubble sort\nthat intelligently reverses direction, instead of making complete passes.\nDick Grune calls this \"the simplest sort algorithm.\"\nAuthor:\nPEB\nImplementation\n(Python)\n.\n(C)\nMore information\nHamid Sarbazi-Azad\n,\nStupid Sort: A new sorting algorithm\n,  Department of Computing Science Newsletter, University of Glasgow, 599:4, 2 October 2000.\nHistorical Note\nOriginally called \"stupid sort\". Dick Grune wrote, \"The earliest evidence [of inventing gnome sort] I can find is of March 22, 2003, but I'm pretty sure I thought of the idea much earlier.\"\nGo to the\nDictionary of Algorithms and Data\nStructures\nhome page.\nIf you have suggestions, corrections, or comments, please get in touch\nwith\nPaul Black\n.\nEntry modified 21 April 2022.\nHTML page formatted Wed Oct 30 12:15:30 2024.\nCite this as:\nPaul E. Black, \"gnome sort\", in\nDictionary of Algorithms and Data Structures\n[online], Paul E. Black, ed. 21 April 2022. (accessed TODAY)\nAvailable from:\nhttps://www.nist.gov/dads/HTML/gnomeSort.html",
+  "sha256": "1d373373f74207feb0122b220da59a13464ecf75fbe23f419bb3ac23c4718e5a",
+  "raw_sha256": "ee329cf52e324194151cad48d157dd6be61e52151107de9c2c1627091caec6db",
+  "content_type": "text/html",
+  "charset": "utf-8",
+  "extraction_method": "http-html-data-lines/1",
+  "capture_id": "619cbf1872f7d93f37755d0f3258fb0e1f6d37e7430ae4860bd46792f3358888"
+}

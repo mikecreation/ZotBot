@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>depth-first search</title>
+<meta name="description"
+  content="Definition of depth-first search,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="depth-first search">
+<meta name="type" content="algorithm">
+<meta name="area" content="Graphs">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>depth-first search</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+(1) Any search algorithm that considers outgoing <a href="edge.html"><em>edges</em></a> (<a href="child.html"><em>children</em></a>) of a <a href="vertex.html"><em>vertex</em></a> before any of the vertex's <a href="sibling.html"><em>siblings</em></a>, that is, outgoing  edges of the vertex's predecessor in the search.  Extremes are searched first.  This is easily implemented with <a href="recursion.html"><em>recursion</em></a>.  (2) An algorithm that marks all vertices in a <a href="directedGraph.html"><em>directed graph</em></a> in the order they are discovered and finished, partitioning the graph into a <a href="forest.html"><em>forest</em></a>.
+</p>
+
+<p>
+<strong>Also known as</strong> DFS.
+</p>
+
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="preorderTraversal.html"><em>preorder traversal</em></a>, <a href="inorderTraversal.html"><em>in-order traversal</em></a>, <a href="postorderTraversal.html"><em>postorder traversal</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="breadthfirst.html"><em>breadth-first search</em></a>, <a href="bestfirst.html"><em>best-first search</em></a>, <a href="SchorrWaiteGraphMarking.html"><em>Schorr-Waite graph marking algorithm</em></a>, <a href="CupifGianniniTreeTraversal.html"><em>Cupif-Giannini tree traversal</em></a>.
+</p>
+
+<p>
+<em>Note:
+Depth-first search doesn't specify if a vertex is considered before, during, or after its outgoing edges or children.  Thus it can be <a href="preorderTraversal.html"><em>preorder</em></a>, <a href="inorderTraversal.html"><em>in-order</em></a>, or <a href="postorderTraversal.html"><em>postorder traversal</em></a>. </p> 
+<p> <a href="../terms.html#CLR90">[CLR90, pages 477-485]</a></em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+Algorithms and Data Structures' <a href="https://www.algolist.net/Algorithms/Graph/Undirected/Depth-first_search" target="_blank">explanation and implementation (Java and C++)</a> for undirected graphs. Many algorithms using <a href="https://algs4.cs.princeton.edu/42digraph/" target="_blank">depth-first search (Java)</a> using Sedgewick and Wayne "Algorithms" 4th edition.
+<h2>More information</h2>
+<p>
+Lecture notes from Design and Analysis of Algorithms on <a href="http://www.ics.uci.edu/~eppstein/161/960215.html" target="_blank">Breadth-first search and depth-first search</a>. </p> <p> <img src="../Images/xkcd 0761 dfs.png"   alt="comic entitled Preparing for a Date. Man in towel evaluates   possible situations - medical emergency, dancing, food too   expensive, etc. - by depth-first search."> <br /> From <a href="https://xkcd.com/761/" target="_blank">xkcd 761</a> by Randall Munroe. <a href="https://xkcd.com/license.html" target="_blank">Creative Commons Attribution-NonCommercial 2.5 License</a>.
+</p>
+<p>
+An early mention of depth-first search:<br /> <strong>C. Cordell Green</strong> and <strong>Bertram Raphael</strong>, <a href="https://doi.acm.org/10.1145/800186.810578" target="_blank">The use  of theorem-proving techniques in question-answering systems</a>, Proc. 1968 23rd ACM national conference, pages 169-181, 1968. <br /> Uses just "depth-first search" in the body (page 5), but contrasts depth-first with breadth-first search in a footnote.   <br /><br /> An earlier description of what we would call depth-first search with pruning of infeasible solutions. <br /> <strong>Solomon W. Golomb</strong> and <strong>Leonard D. Baumert</strong>, <em>Backtrack Programming</em>, Journal of ACM, 12(4):516-524, Oct 1965.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#374756425b19555b56545c77595e444319505841">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 15 October 2021.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "depth-first search", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 15 October 2021. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/depthfirst.html">https://www.nist.gov/dads/HTML/depthfirst.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a884e87f376207',t:'MTc5MjAwMTE5OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

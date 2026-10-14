@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>gnome sort</title>
+<meta name="description"
+  content="Definition of gnome sort,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="gnome sort">
+<meta name="type" content="algorithm">
+<meta name="area" content="Sorting">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>gnome sort</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+Put items in order by comparing the current item with the previous item.  If they are in order, move to the next item (or stop if the end is reached).  If they are out of order, swap them and move to the previous item.  If there is no previous item, move to the next item.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="stable.html"><em>stable</em></a> <a href="sort.html"><em>sort</em></a>, <a href="inplacesort.html"><em>in-place sort</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="insertionSort.html"><em>insertion sort</em></a>, <a href="bidirectionalBubbleSort.html"><em>bidirectional bubble sort</em></a>.
+</p>
+
+<p>
+<em>Note:
+Complexity is <a href="bigOnotation.html"><em>O(n<sup>2</sup>)</em></a> for arbitrary data, but approaches O(n) if the input list is nearly in order. </p> 
+<p> This can be seen as an <a href="insertionSort.html"><em>insertion sort</em></a> that only keeps track of the current item.  After having moved an item backward into place, it "walks" forward (checking the order of items as it goes) until it reaches the next out-of-place item, which is beyond where progress left off. </p> 
+<p> Timothy Rolfe finds it "convenient to think of [gnome sort] as 'a variant of insertion sort that hides the logic in a single loop.'" This can be seen by commenting a minor rewrite, after Rolfe, of Dick Grune's implementation: 
+<pre> void gnomesort(int n, int ar[]) {              <br />     for (int i = 0; i < n; ) {                 <br />         if (i == 0 || ar[i-1] <= ar[i]) {      <br />             // Outer loop functionality --- scan to larger index  <br />             i++;                               <br /> 	} else {                               <br /> 	    // Inner loop functionality --- move to smaller index <br /> 	    int tmp = ar[i]; ar[i] = ar[i-1]; ar[--i] = tmp;      <br /> 	}                                      <br />     }                                          <br /> } </pre> </p> 
+<p> This can also be seen as a <a href="bidirectionalBubbleSort.html"><em>bidirectional bubble sort</em></a> that intelligently reverses direction, instead of making complete passes. </p> 
+<p> Dick Grune calls this "the simplest sort algorithm."</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+<a href="https://www.geeksforgeeks.org/python-program-for-gnome-sort/" target="_blank">(Python)</a>. <a href="https://www.cs.vu.nl/~dick/gnomesort.html" target="_blank">(C)</a>
+<h2>More information</h2>
+<p>
+<strong>Hamid Sarbazi-Azad</strong>, <em>Stupid Sort: A new sorting algorithm</em>,  Department of Computing Science Newsletter, University of Glasgow, 599:4, 2 October 2000.
+</p>
+<p>
+<strong>Historical Note</strong><br>
+Originally called "stupid sort". Dick Grune wrote, "The earliest evidence [of inventing gnome sort] I can find is of March 22, 2003, but I'm pretty sure I thought of the idea much earlier."
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#8fffeefae3a1ede3eeece4cfe1e6fcfba1e8e0f9">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 21 April 2022.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "gnome sort", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 21 April 2022. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/gnomeSort.html">https://www.nist.gov/dads/HTML/gnomeSort.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a884fba8f6e8fb',t:'MTc5MjAwMTIwMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

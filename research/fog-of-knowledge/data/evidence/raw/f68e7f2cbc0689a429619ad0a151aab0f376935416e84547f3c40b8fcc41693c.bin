@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>divide and conquer</title>
+<meta name="description"
+  content="Definition of divide and conquer,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="divide and conquer">
+<meta name="type" content="algorithmic technique">
+<meta name="area" content="Basic">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>divide and conquer</h1>
+<p>
+(algorithmic technique)
+</p>
+
+<p>
+<strong>Definition:</strong>
+Solve a problem, either directly because solving that instance is easy (typically, because the instance is small) or by <em>dividing</em> it into two or more smaller instances.  Each of these smaller instances is  <a href="recursion.html"><em>recursively</em></a> solved, and the solutions are combined to produce a solution for the original instance.
+</p>
+
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="easySplitHardMerge.html"><em>easy split, hard merge</em></a>, <a href="hardSplitEasyMerge.html"><em>hard split, easy merge</em></a>.
+</p>
+<p>
+<strong>Aggregate parent</strong> (I am a part of or used in ...)<br>
+<a href="heapify.html"><em>heapify</em></a>, <a href="mergesort.html"><em>merge sort</em></a>, <a href="quicksort.html"><em>quicksort</em></a>, <a href="binarySearch.html"><em>binary search</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="recursion.html"><em>recursion</em></a>, <a href="greedyalgo.html"><em>greedy algorithm</em></a>.
+</p>
+
+<p>
+<em>Note:
+The technique is named "divide and conquer" because a problem is conquered by dividing it into several smaller problems. </p> 
+<p> This technique yields elegant, simple and quite often very efficient algorithms.  Well-known examples include <a href="heapify.html"><em>heapify</em></a>, <a href="mergesort.html"><em>merge sort</em></a>, <a href="quicksort.html"><em>quicksort</em></a>, Strassen's fast matrix multiplication, fast multiplication (in O(n log n log log n), see E. A. Karatsuba's <a href="http://www.ccas.ru/personal/karatsuba/algen.htm" target="_blank">Fast Algorithms</a>), the Fast Fourier Transform (FFT), and <a href="binarySearch.html"><em>binary search</em></a>.  (Why is binary search included?  The dividing part picks which segment to search, and "the solutions are combined" trivially: take the answer from the segment searched.  Segments not searched are "recursively solved" by the null operation: they are ignored.)  A similar principle is at the heart of several important data structures such as  <a href="binarySearchTree.html"><em>binary search tree</em></a>, <a href="multiwaySearchTree.html"><em>multiway search trees</em></a>, <a href="trie.html"><em>tries</em></a>, <a href="skiplist.html"><em>skip lists</em></a>, multidimensional search trees (<a href="kdtree.html"><em>k-d trees</em></a>, <a href="quadtree.html"><em>quadtrees</em></a>), etc. </p> 
+<p> Here is the translation of "divide and conquer" in different languages: <table> 
+<tr><td>French</td>	<td>diviser pour r&eacute;gner</td></tr> 
+<tr><td>German</td>	<td>teile und herrsche</td></tr> 
+<tr><td>Latin</td>	<td>divide et impera</td></tr> 
+<tr><td>Spanish</td>	<td>divide y vencer&aacute;s</td></tr> 
+<tr><td></td>	<td></td></tr> </table></em>
+</p>
+
+<p>Authors: <a href="../Other/contrib.html#authorPEB">PEB</a>,<a href="../Other/contrib.html#authorCM">CM</a></p>
+<h2>More information</h2>
+<p>
+<a href="http://www.ics.uci.edu/~eppstein/161/960118.html" target="_blank">Three divide and conquer sorting algorithms</a>.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#374756425b19555b56545c77595e444319505841">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 14 June 2010.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black and Conrado Martinez, "divide and conquer", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 14 June 2010. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/divideAndConquer.html">https://www.nist.gov/dads/HTML/divideAndConquer.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a88217ce498e5c',t:'MTc5MjAwMTA4NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

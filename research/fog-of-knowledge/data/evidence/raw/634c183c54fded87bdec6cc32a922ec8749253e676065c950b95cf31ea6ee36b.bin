@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>double hashing</title>
+<meta name="description"
+  content="Definition of double hashing,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="double hashing">
+<meta name="type" content="algorithm">
+<meta name="area" content="Searching">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>double hashing</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A method of <a href="openAddressing.html"><em>open addressing</em></a> for a <a href="hashtab.html"><em>hash table</em></a> in which a <a href="collision.html"><em>collision</em></a> is resolved by searching the table for an empty place at intervals given by a different hash function, thus minimizing <a href="clustering.html"><em>clustering</em></a>.
+</p>
+
+<p>
+<strong>Also known as</strong> rehashing.
+</p>
+
+<p>
+<strong>See also</strong>
+<a href="linearprobng.html"><em>linear probing</em></a>, <a href="hashtab.html"><em>hash table</em></a>.
+</p>
+
+<p>
+<em>Note:
+Since a different hashing function is used to find a location in case of collision, colliding values should be spread out.  In <a href="linearprobng.html"><em>linear probing</em></a>, <a href="primaryClustering.html"><em>primary clustering</em></a> occurs when collisions fill up every space for long stretches.  Even in <a href="quadraticprb.html"><em>quadratic probing</em></a>, <a href="secondaryClustering.html"><em>secondary clustering</em></a> may develop since colliding values follow the same <a href="probesequenc.html"><em>probe sequence</em></a>.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+<a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/3/335.ins.c" target="_blank">insert (C and Pascal)</a>, <a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/3/335.srch.c" target="_blank">search (C and Pascal)</a>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#9eeeffebf2b0fcf2fffdf5def0f7edeab0f9f1e8">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 12 February 2019.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "double hashing", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 12 February 2019. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/doublehashng.html">https://www.nist.gov/dads/HTML/doublehashng.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a884f61a2af606',t:'MTc5MjAwMTIwMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

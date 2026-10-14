@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>radix sort</title>
+<meta name="description"
+  content="Definition of radix sort,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="radix sort">
+<meta name="type" content="algorithm">
+<meta name="area" content="Sorting">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>radix sort</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A multiple pass <a href="distributionSort.html"><em>distribution sort</em></a> algorithm that distributes each item to a <a href="bucket.html"><em>bucket</em></a> according to part of the item's <a href="key.html"><em>key</em></a> beginning with the least significant part of the key. After each pass, items are collected from the buckets, keeping the items in order, then redistributed according to the next most significant part of the key.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="distributionSort.html"><em>distribution sort</em></a>.
+</p>
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="countingsort.html"><em>counting sort</em></a> may be an appropriate algorithm for each pass.
+</p>
+<p>
+<strong>See also</strong>
+<a href="postmansort.html"><em>postman's sort</em></a>, <a href="bucketsort.html"><em>bucket sort</em></a>, <a href="americanFlagSort.html"><em>American flag sort</em></a>, <a href="topdownRadixSort.html"><em>top-down radix sort</em></a>.
+</p>
+
+<p>
+<em>Note:
+Here is a simple example of the sort.  Suppose the input keys are 34, 12, 42, 32, 44, 41, 34, 11, 32, and 23.  Four buckets are appropriate, since there are four different digits (1, 2, 3, and 4). The first pass distributes the keys into buckets by the least significant digit.  Half way through the first pass, the buckets contain the following, where each line is a bucket.<br /> B1: <br /> B2: 12 42 32<br /> B3: <br /> B4: 34 44<br /> <br /> When the first pass is done, we have the following.<br /> B1: 41 11<br /> B2: 12 42 32 32<br /> B3: 23<br /> B4: 34 44 34<br /> <br /> We collect these, keeping their relative order:  41 11 12 42 32 32 23 34 44 34. Now we distribute by the next most significant digit, which is the highest digit, and we get the following.<br /> B1: 11 12<br /> B2: 23<br /> B3: 32 32 34 34<br /> B4: 41 42 44<br /> <br /> When we collect them, they are in order:  11 12 23 32 32 34 34 41 42 44. </p> 
+<p> Radix sort can be particularly effective on a <a href="linkedList.html"><em>linked list</em></a>.  Rather than buckets, put items in linked lists.  At the end of a pass collect the items  by "sewing" the lists together: make the <a href="tail.html"><em>tail</em></a> of each list point to the <a href="head.html"><em>head</em></a> of the next list.  (After <strong>Steven Pigeon</strong>, <em>QuickSort and Radix Sorts on Lists</em>, Dr. Dobb's Journal, May 2002, pages 89-94.)</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+<a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/4/424.sort.c" target="_blank">(C and Pascal)</a>. John Morris' <a href="http://www.cs.auckland.ac.nz/software/AlgAnim/radixsort.html" target="_blank">analysis, explanation, and code (C)</a>. <a href="http://cubic.org/docs/radix.htm" target="_blank">tutorial with examples and code (C++)</a>. <a href="https://www.geeksforgeeks.org/python-program-for-radix-sort/" target="_blank">(Python)</a>.
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#4939283c25672b25282a220927203a3d672e263f">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 21 April 2022.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "radix sort", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 21 April 2022. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/radixsort.html">https://www.nist.gov/dads/HTML/radixsort.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a884e57ee43ef3',t:'MTc5MjAwMTE5OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

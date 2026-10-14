@@ -1,0 +1,82 @@
+set
+set
+(data structure)
+Definition:
+An unordered collection of values where each value occurs at most once. A group of elements with three properties: (1) all elements belong to a
+universe
+, (2) either each element is a
+member
+of the set or it is not, and (3) the elements are unordered.
+Formal Definition:
+As an
+abstract data type
+, a set has a single query function, isIn(v, S), which tells whether an element is a member of the set or not, and two modifier functions, add(v, S) and remove(v, S). These may be defined with
+axiomatic semantics
+as follows.
+new() returns a set
+isIn(v, new()) = false
+isIn(v, add(v, S)) = true
+isIn(v, add(u, S)) = isIn(v , S) if v ≠ u
+remove(v, new()) = new()
+remove(v, add(v, S)) = remove(v, S)
+remove(v, add(u, S)) = add(u, remove(v, S)) if v ≠ u
+where S is a set and u and v are elements.
+The
+predicate
+isEmpty(S) may be defined with the following additional axioms.
+isEmpty(new()) = true
+isEmpty(add(v, S)) = false
+Generalization
+(I am a kind of ...)
+bag
+,
+abstract data type
+.
+Specialization
+(... is a kind of me.)
+poset
+suggested by Norman T. Thornton 25 January 2016.
+See also
+intersection
+,
+union
+,
+complement
+,
+difference
+,
+list
+,
+set cover
+.
+Note:
+Sets may be implemented with an
+array
+of bits.  A set that is many ranges may be efficiently implemented as an
+inversion list
+.
+Authors:
+PR
+,
+PEB
+Implementation
+(C++ and Pascal)
+. Maksim Goleta's C# Collections
+sorted set (C#)
+.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 2 November 2020.
+HTML page formatted Wed Oct 30 12:15:31 2024.
+Cite this as:
+Patrick Rodgers and Paul E. Black, "set", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 2 November 2020. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/set.html

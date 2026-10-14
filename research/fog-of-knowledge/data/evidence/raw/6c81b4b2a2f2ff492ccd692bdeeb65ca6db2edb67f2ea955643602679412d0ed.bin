@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>queue</title>
+<meta name="description"
+  content="Definition of queue,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="queue">
+<meta name="type" content="data structure">
+<meta name="area" content="Basic">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>queue</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A collection of items in which only the earliest added item may be accessed.  Basic operations are add (to the <a href="tail.html"><em>tail</em></a>) or enqueue and delete (from the <a href="head.html"><em>head</em></a>) or dequeue.  Delete returns the item removed.  Also known as "first-in, first-out" or FIFO.
+</p>
+
+<p>
+<strong>Formal Definition:</strong> It is convenient to define delete or dequeue in terms of remove and a new operation, front.   The operations new(), add(v, Q), front(Q), and remove(Q) may be defined with <a href="axiomaticSemantics.html"><em>axiomatic semantics</em></a> as follows. <ol> <li>new() returns a queue <li>front(add(v, new())) = v <li>remove(add(v, new())) = new() <li>front(add(v, add(w, Q))) = front(add(w, Q)) <li>remove(add(v, add(w, Q))) = add(v, remove(add(w, Q))) </ol> where Q is a queue and v and w are values.
+</p>
+<p>
+<strong>Also known as</strong> FIFO.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="abstractDataType.html"><em>abstract data type</em></a>.
+</p>
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="boundedqueue.html"><em>bounded queue</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="deque.html"><em>deque</em></a>, <a href="stack.html"><em>stack</em></a>, <a href="priorityque.html"><em>priority queue</em></a>, <a href="firstcome.html"><em>first come, first served</em></a>.
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+Maksim Goleta's C# Collections <a href="https://github.com/Goleta/csharp-collections/blob/master/Goletas.Collections/LinkedQueue.cs" target="_blank">linked-list implementation (C#)</a>. Bro. David Carlson's <a href="http://cis.stvincent.edu/html/tutorials/swd/queues/queues.html" target="_blank">tutorial and code (C++)</a> using linked list.
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#c4b4a5b1a8eaa6a8a5a7af84aaadb7b0eaa3abb2">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 14 December 2020.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "queue", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 14 December 2020. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/queue.html">https://www.nist.gov/dads/HTML/queue.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a88211dd11e82c',t:'MTc5MjAwMTA4Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

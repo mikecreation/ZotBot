@@ -1,0 +1,57 @@
+arithmetic coding
+arithmetic coding
+(algorithm)
+Definition:
+A minimal variable-length message coding based on the frequency of each character.  The message is represented by a fraction which is the repeated offset-plus-product reduction of the range (offset) and probability (product) of each character.
+See also
+Huffman coding
+,
+Shannon-Fano coding
+.
+Note:
+Shannon-Fano is a minimal prefix code. Huffman is optimal for character coding (one character-one code word) and simple to program.  Arithmetic coding is even more compact, since it can allocate fractional bits, but is more complicated and patents cover some uses.
+Range encoding is essentially the same, but uses integers and integer ranges instead of fractions.  The implementation in
+Martin
+1979 is thought to not be covered by patents.
+Author:
+PEB
+Implementation
+Jürgen Abel's excellent Range and
+Arithmetic Coding resources (C, Java, C++)
+, with links to papers, people, and implementations. Mark Nelson's 2014 article on
+Data Compression With Arithmetic Coding (C)
+.
+More information
+An
+introduction to data compression
+methods. Wikipedia entries for
+Arithmetic coding
+and
+Range encoding
+.
+Ian H. Witten, Radford M. Neal
+, and
+John G. Cleary
+,
+Arithmetic Coding for Data Compression
+, CACM 30(6):520-540, June 1987.
+G. N. N. Martin
+,
+Range encoding: an algorithm for removing redundancy from a digitised message
+, Video & Data Recording Conference, Southampton, UK, July 1979.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 6 January 2022.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "arithmetic coding", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 6 January 2022. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/arithmeticCoding.html

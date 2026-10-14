@@ -1,0 +1,15 @@
+{
+  "id": "nist-dads.radixsort",
+  "url": "https://xlinux.nist.gov/dads/HTML/radixsort.html",
+  "final_url": "https://xlinux.nist.gov/dads/HTML/radixsort.html",
+  "title": "NIST Dictionary of Algorithms and Data Structures: radixsort",
+  "source_kind": "secondary",
+  "retrieved_at": "2026-10-14T18:06:39.052557+00:00",
+  "text": "radix sort\nradix sort\n(algorithm)\nDefinition:\nA multiple pass\ndistribution sort\nalgorithm that distributes each item to a\nbucket\naccording to part of the item's\nkey\nbeginning with the least significant part of the key. After each pass, items are collected from the buckets, keeping the items in order, then redistributed according to the next most significant part of the key.\nGeneralization\n(I am a kind of ...)\ndistribution sort\n.\nAggregate child\n(... is a part of or used in me.)\ncounting sort\nmay be an appropriate algorithm for each pass.\nSee also\npostman's sort\n,\nbucket sort\n,\nAmerican flag sort\n,\ntop-down radix sort\n.\nNote:\nHere is a simple example of the sort.  Suppose the input keys are 34, 12, 42, 32, 44, 41, 34, 11, 32, and 23.  Four buckets are appropriate, since there are four different digits (1, 2, 3, and 4). The first pass distributes the keys into buckets by the least significant digit.  Half way through the first pass, the buckets contain the following, where each line is a bucket.\nB1:\nB2: 12 42 32\nB3:\nB4: 34 44\nWhen the first pass is done, we have the following.\nB1: 41 11\nB2: 12 42 32 32\nB3: 23\nB4: 34 44 34\nWe collect these, keeping their relative order:  41 11 12 42 32 32 23 34 44 34. Now we distribute by the next most significant digit, which is the highest digit, and we get the following.\nB1: 11 12\nB2: 23\nB3: 32 32 34 34\nB4: 41 42 44\nWhen we collect them, they are in order:  11 12 23 32 32 34 34 41 42 44.\nRadix sort can be particularly effective on a\nlinked list\n.  Rather than buckets, put items in linked lists.  At the end of a pass collect the items  by \"sewing\" the lists together: make the\ntail\nof each list point to the\nhead\nof the next list.  (After\nSteven Pigeon\n,\nQuickSort and Radix Sorts on Lists\n, Dr. Dobb's Journal, May 2002, pages 89-94.)\nAuthor:\nPEB\nImplementation\n(C and Pascal)\n. John Morris'\nanalysis, explanation, and code (C)\n.\ntutorial with examples and code (C++)\n.\n(Python)\n.\nGo to the\nDictionary of Algorithms and Data\nStructures\nhome page.\nIf you have suggestions, corrections, or comments, please get in touch\nwith\nPaul Black\n.\nEntry modified 21 April 2022.\nHTML page formatted Wed Oct 30 12:15:31 2024.\nCite this as:\nPaul E. Black, \"radix sort\", in\nDictionary of Algorithms and Data Structures\n[online], Paul E. Black, ed. 21 April 2022. (accessed TODAY)\nAvailable from:\nhttps://www.nist.gov/dads/HTML/radixsort.html",
+  "sha256": "a100bba766cbf8977c872a6521a1311d6aba58ec69121272ed871660b4e07282",
+  "raw_sha256": "1af3c6a5355d5c9868fad021c9ccb3ce77c472e16728499622057dd9259ddc10",
+  "content_type": "text/html",
+  "charset": "utf-8",
+  "extraction_method": "http-html-data-lines/1",
+  "capture_id": "c3c090f21509b26467cd401b34fd24adea91bdcd28436a6567301f85d6cfae8c"
+}

@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>finite state machine</title>
+<meta name="description"
+  content="Definition of finite state machine,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="finite state machine">
+<meta name="type" content="definition">
+<meta name="area" content="Automata and State Machines">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>finite state machine</h1>
+<p>
+(definition)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A <a href="modelOfComputation.html"><em>model of computation</em></a> consisting of a set of <a href="state.html"><em>states</em></a>, a <a href="startstate.html"><em>start state</em></a>, an input <a href="alphabet.html"><em>alphabet</em></a>, and a <a href="transitionfn.html"><em>transition function</em></a> that maps input symbols and current states to a <a href="nextstate.html"><em>next state</em></a>. Computation begins in the start state with an input string.  It changes to new states depending on the transition function. There are many variants, for instance, machines having actions (outputs) associated with transitions (<a href="mealyMachine.html"><em>Mealy machine</em></a>) or states (<a href="mooreMachine.html"><em>Moore machine</em></a>), multiple start states, transitions conditioned on no input symbol (a null) or more than one transition for a given symbol and state (<a href="nondetermFiniteStateMach.html"><em>nondeterministic finite state machine</em></a>), one or more states designated as <a href="acceptingstt.html"><em>accepting states</em></a> (<a href="recognizer.html"><em>recognizer</em></a>), etc.
+</p>
+
+<p>
+<strong>Also known as</strong> finite state automaton.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="modelOfComputation.html"><em>model of computation</em></a>, <a href="turingMachine.html"><em>Turing machine</em></a>, <a href="statemachine.html"><em>state machine</em></a>.
+</p>
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="determFinitStateMach.html"><em>deterministic finite state machine</em></a>, <a href="nondetermFiniteStateMach.html"><em>nondeterministic finite state machine</em></a>, <a href="kripkeStruct.html"><em>Kripke structure</em></a>, <a href="finiteStateTransducer.html"><em>finite state transducer</em></a>, <a href="markovchain.html"><em>Markov chain</em></a>, <a href="hiddenMarkovModel.html"><em>hidden Markov model</em></a>, <a href="mealyMachine.html"><em>Mealy machine</em></a>, <a href="mooreMachine.html"><em>Moore machine</em></a>.
+</p>
+
+<p>
+<em>Note:
+Equivalent to a restricted <a href="turingMachine.html"><em>Turing machine</em></a> where the head is read-only and shifts only from left to right. After Algorithms and Theory of Computation Handbook, page 24-19, Copyright &copy; 1999 by CRC Press LLC. Appearing in the Dictionary of Computer Science, Engineering and Technology, Copyright &copy; 2000 CRC Press LLC.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+Jan Daciuk's <a href="http://www.jandaciuk.pl/fsa.html" target="_blank">Finite state utilities (C++)</a> including many links to other code, papers, etc. David Lutterkort's <a href="http://augeas.net/libfa/" target="_blank">Finite Automata library - libfa (C)</a>, which is part of Augeas, supports many operations like "compile" a regular expression into a finite automaton, minimize, union, intersect, and minus. Gertjan van Noord's <a href="http://www.let.rug.nl/~vannoord/Fsa/" target="_blank">Finite State Automata Utilities (Prolog)</a>, which generate C code, minimize, visualize, etc.  Page has binaries, too. For regular expressions <a href="https://www.cs.kent.ac.uk/people/staff/sjt/craft2e/regExp.html" target="_blank">generate NFSM, make deterministic, and optimize (Haskell)</a>. Oleg Kiselyov's program to <a href="https://okmij.org/ftp/Prolog/minimizer.prl" target="_blank">minimize a finite state machine (Prolog)</a>.
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#364657435a18545a57555d76585f454218515940">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 3 April 2024.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "finite state machine", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 3 April 2024. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/finiteStateMachine.html">https://www.nist.gov/dads/HTML/finiteStateMachine.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a882183f6af155',t:'MTc5MjAwMTA4NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

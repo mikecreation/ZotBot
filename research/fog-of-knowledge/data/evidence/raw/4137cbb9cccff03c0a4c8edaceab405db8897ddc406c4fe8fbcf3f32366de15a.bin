@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>graph</title>
+<meta name="description"
+  content="Definition of graph,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="graph">
+<meta name="type" content="data structure">
+<meta name="area" content="Graphs">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>graph</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A set of items connected by <a href="edge.html"><em>edges</em></a>.  Each item is called a <a href="vertex.html"><em>vertex</em></a> or <a href="node.html"><em>node</em></a>.  Formally, a graph is a <a href="set.html"><em>set</em></a> of vertices and a <a href="binaryRelation.html"><em>binary relation</em></a> between vertices, adjacency.
+</p>
+
+<p>
+<strong>Formal Definition:</strong> A graph G can be defined as a pair (V,E), where V is a set of vertices, and E is a set of edges between the vertices E &sube; {(u,v) | u, v &isin; V}. If the graph is undirected, the adjacency relation defined by the edges is <a href="symmetric.html"><em>symmetric</em></a>, or E &sube; {{u,v} | u, v &isin; V} (sets of vertices rather than ordered pairs). If the graph does not allow <a href="selfloop.html"><em>self-loops</em></a>, adjacency is <a href="irreflexive.html"><em>irreflexive</em></a>.
+</p>
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="directedGraph.html"><em>directed graph</em></a>, <a href="undirectedGraph.html"><em>undirected graph</em></a>, <a href="acyclicgraph.html"><em>acyclic graph</em></a>, <a href="directAcycGraph.html"><em>directed acyclic graph</em></a>, <a href="planargraph.html"><em>planar graph</em></a>, <a href="connectedGraph.html"><em>connected graph</em></a>, <a href="biconnectedGraph.html"><em>biconnected graph</em></a>, <a href="bipartgraph.html"><em>bipartite graph</em></a>, <a href="completeGraph.html"><em>complete graph</em></a>, <a href="densegraph.html"><em>dense graph</em></a>, <a href="sparsegraph.html"><em>sparse graph</em></a>, <a href="hypergraph.html"><em>hypergraph</em></a>, <a href="multigraph.html"><em>multigraph</em></a>, <a href="labeledgraph.html"><em>labeled graph</em></a>, <a href="weightedGraph.html"><em>weighted graph</em></a>, <a href="tree.html"><em>tree</em></a>.
+</p>
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="vertex.html"><em>vertex</em></a>, <a href="edge.html"><em>edge</em></a>, <a href="path.html"><em>path</em></a>, <a href="cycle.html"><em>cycle</em></a>, Implementations:  <a href="adjacencyListRep.html"><em>adjacency-list representation</em></a>, <a href="adjacencyMatrixRep.html"><em>adjacency-matrix representation</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+Relations between vertices: <a href="adjacent.html"><em>adjacent</em></a>, <a href="selfloop.html"><em>self-loop</em></a>, Relations between graphs: <a href="isomorphic.html"><em>isomorphic</em></a>, <a href="homeomorphic.html"><em>homeomorphic</em></a>, <a href="dual.html"><em>dual</em></a>, <a href="subgraph.html"><em>subgraph</em></a>, Properties: <a href="diameter.html"><em>diameter</em></a>, <a href="degree.html"><em>degree</em></a>, Other: <a href="graphdrawing.html"><em>graph drawing</em></a>, <a href="graphPartition.html"><em>graph partition</em></a>.
+</p>
+
+<p>
+<em>Note:
+Graphs are so general that many other data structures, such as <a href="tree.html"><em>trees</em></a>, are just special kinds of graphs. </p> 
+<p> A graph is like a road map.  Cities are vertices.  Roads from city to city are edges.  (How about junctions or branches in a road? You could consider junctions to be vertices, too.  If you don't want to count them as vertices, a road may connect more than two cities. So strictly speaking you have <a href="hyperedge.html"><em>hyperedges</em></a> in a <a href="hypergraph.html"><em>hypergraph</em></a>.  If you want to allow more than one road between each pair of cities, you have a <a href="multigraph.html"><em>multigraph</em></a>, instead.  It all depends on how you want to define it.) </p> 
+<p>  Another way to think of a graph is as a bunch of dots connected by lines.  Because mathematicians stopped talking to regular people long ago, the dots in a graph are called vertices, and the lines that connect the dots are called edges.  The important things are edges and the vertices: the dots and the connections between them.  The actual position of a given dot or the length or straightness of a given line isn't at issue. Thus the dots can be anywhere, and the lines that join them are infinitely stretchy.  Moreover, a mathematical graph is not a comparison chart, nor a diagram with an x- and y-axis, nor a squiggly line on a stock report.  A graph is simply dots and lines between them---pardon me, vertices and edges. <br /> &nbsp;&nbsp;&nbsp;&nbsp;Michael Bolton &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cfa2ad8fa2a6aca7aeaaa3ada0a3bba0a1e1a1aabb">[email&#160;protected]</a>&gt; 22 February 2000</em>
+</p>
+
+<p>Authors: <a href="../Other/contrib.html#authorPEB">PEB</a>,<a href="../Other/contrib.html#authorPJT">PJT</a></p>
+<h2>Implementation</h2>
+GraphEd -- <a href="https://www3.cs.stonybrook.edu/~algorith/implement/graphed/implement.shtml" target="_blank">Graph Editor and Layout Program (C)</a>, <a href="https://algorist.com/problems/Graph_Data_Structures.html" target="_blank">graph manipulation (C++, C, Mathematica, and Pascal)</a>, <a href="https://jgrapht.org/" target="_blank">JGraphT (Java)</a> build, traverse, and display directed and undirected graphs. <a href="https://algorist.com/problems/Generating_Graphs.html" target="_blank">Graph generating (C, Mathematica, Pascal, C++, and Fortran)</a>, <a href="https://www.boost.org/doc/libs/1_43_0/libs/graph/doc/" target="_blank">BGL -  the Boost Graph Library (C++)</a>. LLX's <a href="https://sourceforge.net/projects/lsgtl/" target="_blank">Static Graph Template Library (LSGTL) (C)</a>. <a href="https://github.com/gt4j/annas/" target="_blank">Annas (Java)</a>, for graph theory, AI, path finding, distributed systems, etc.  The main libraries are Annas.Graph, graph manipulation and visualization and Annas.Math, comprehensive math functions. <a href="http://jung.sourceforge.net/" target="_blank">JUNG (Java)</a>, the Java Universal Network/Graph framework. <a href="http://cs.brown.edu/cgc/jdsl/" target="_blank">JDSL (Java)</a>, the Data Structures Library in Java. Algorithms and Data Structures' <a href="https://www.algolist.net/Data_structures/Graph" target="_blank">explanation</a> and <a href="https://www.algolist.net/Data_structures/Graph/Internal_representation" target="_blank">adjacency matrix implementation (Java and C++)</a>.
+<h2>More information</h2>
+<p>
+Journal of Combinatorics dynamic surveys DS8 and DS9 are  <a href="https://www.combinatorics.org/ojs/index.php/eljc/issue/view/Surveys" target="_blank">a bibliography (DS8) and glossary (DS9) of signed and gain graphs</a>. <strong>Deepayan Chakrabarti</strong> and <strong>Christos Faloutsos</strong>, <em>Graph Mining: Laws, Generators, and Algorithms</em>,  ACM Computing Surveys, Vol. 38, March 2006, Article 2. <br /> A great list of graph generators and their strengths and weaknesses.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#b0c0d1c5dc9ed2dcd1d3dbf0ded9c3c49ed7dfc6">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 18 July 2022.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black and Paul J. Tanenbaum, "graph", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 18 July 2022. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/graph.html">https://www.nist.gov/dads/HTML/graph.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a882141f95608e',t:'MTc5MjAwMTA4Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

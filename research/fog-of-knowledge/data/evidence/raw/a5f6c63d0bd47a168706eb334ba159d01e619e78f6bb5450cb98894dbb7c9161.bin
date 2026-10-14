@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>set</title>
+<meta name="description"
+  content="Definition of set,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="set">
+<meta name="type" content="data structure">
+<meta name="area" content="Basic">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>set</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+An unordered collection of values where each value occurs at most once. A group of elements with three properties: (1) all elements belong to a <a href="universe.html"><em>universe</em></a>, (2) either each element is a <em>member</em> of the set or it is not, and (3) the elements are unordered.
+</p>
+
+<p>
+<strong>Formal Definition:</strong> As an <a href="abstractDataType.html"><em>abstract data type</em></a>, a set has a single query function, isIn(v, S), which tells whether an element is a member of the set or not, and two modifier functions, add(v, S) and remove(v, S). These may be defined with <a href="axiomaticSemantics.html"><em>axiomatic semantics</em></a> as follows. <ol> <li>new() returns a set <li>isIn(v, new()) = false <li>isIn(v, add(v, S)) = true <li>isIn(v, add(u, S)) = isIn(v , S) if v &ne; u <li>remove(v, new()) = new() <li>remove(v, add(v, S)) = remove(v, S) <li>remove(v, add(u, S)) = add(u, remove(v, S)) if v &ne; u </ol> where S is a set and u and v are elements. </p> <p> The <a href="predicate.html"><em>predicate</em></a> isEmpty(S) may be defined with the following additional axioms. <ol start="8"> <li>isEmpty(new()) = true <li>isEmpty(add(v, S)) = false </ol>
+</p>
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="bag.html"><em>bag</em></a>, <a href="abstractDataType.html"><em>abstract data type</em></a>.
+</p>
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="poset.html"><em>poset</em></a> suggested by Norman T. Thornton 25 January 2016.
+</p>
+<p>
+<strong>See also</strong>
+<a href="intersection.html"><em>intersection</em></a>, <a href="union.html"><em>union</em></a>, <a href="complement.html"><em>complement</em></a>, <a href="difference.html"><em>difference</em></a>, <a href="list.html"><em>list</em></a>, <a href="setcover.html"><em>set cover</em></a>.
+</p>
+
+<p>
+<em>Note:
+Sets may be implemented with an <a href="array.html"><em>array</em></a> of bits.  A set that is many ranges may be efficiently implemented as an <a href="inversionList.html"><em>inversion list</em></a>.</em>
+</p>
+
+<p>Authors: <a href="../Other/contrib.html#authorPR">PR</a>,<a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+<a href="https://algorist.com/problems/Set_Data_Structures.html" target="_blank">(C++ and Pascal)</a>. Maksim Goleta's C# Collections <a href="https://github.com/Goleta/csharp-collections/blob/master/Goletas.Collections/SortedSet.cs" target="_blank">sorted set (C#)</a>.
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#f08091859cde929c91939bb09e998384de979f86">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 2 November 2020.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Patrick Rodgers and Paul E. Black, "set", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 2 November 2020. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/set.html">https://www.nist.gov/dads/HTML/set.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a884eb5d73c474',t:'MTc5MjAwMTE5OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

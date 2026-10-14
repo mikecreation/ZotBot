@@ -1,0 +1,59 @@
+memoization
+memoization
+(algorithmic technique)
+Definition:
+Save (memoize) a computed answer for possible later reuse, rather than recomputing the answer.
+See also
+dynamic programming
+.
+Note:
+The term comes from "memo": "A short note written as a reminder." [The American Heritage Dictionary of the English Language, © 1970, American Heritage Publishing]
+A naive program to compute
+Fibonacci numbers
+is
+fib(n) {
+if n is 1 or 2, return 1;
+return fib(n-1) + fib(n-2);
+}
+Because fib() is recomputed over and over for the same argument, run time for the above is
+Ω
+(1.6
+n
+). If instead we memoize (save) the value of fib(n) the first time we compute it, the run time is
+Θ
+(n).
+allocate array for memo;
+set all elements of memo to zero;
+fib(n) {
+if n is 1 or 2, return 1;
+if memo[n] is not zero, return memo[n];
+memo[n] = fib(n-1) + fib(n-2);
+return memo[n];
+}
+Of course, computing Fibonacci numbers can be easily done in
+logarithmic
+time (see
+Fibonacci numbers
+), but this illustrates memoization.
+Author:
+PEB
+Implementation
+Mark Nelson's tutorial to using
+C++ Hash Table Memoization: [for] Simplifying Dynamic Programming (C++)
+.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 20 April 2022.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "memoization", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 20 April 2022. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/memoize.html

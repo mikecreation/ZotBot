@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>B-tree</title>
+<meta name="description"
+  content="Definition of B-tree,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="B-tree">
+<meta name="type" content="data structure">
+<meta name="area" content="Trees">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>B-tree</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A <a href="balancedtree.html"><em>balanced</em></a> <a href="searchtree.html"><em>search tree</em></a> in which every <a href="node.html"><em>node</em></a> has between &lceil; m/2&rceil; and m <a href="child.html"><em>children</em></a>, where m&gt;1 is a fixed integer.  m is the <a href="order.html"><em>order</em></a>.  The <a href="root.html"><em>root</em></a> may have as few as 2 children. This is a good structure if much of the tree is in slow memory (disk), since the <a href="height.html"><em>height</em></a>, and hence the number of accesses, can be kept small, say one or two, by picking a large m.
+</p>
+
+<p>
+<strong>Also known as</strong> balanced multiway tree.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="balancedtree.html"><em>balanced tree</em></a>, <a href="searchtree.html"><em>search tree</em></a>.
+</p>
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="two34tree.html"><em>2-3-4 tree</em></a>, <a href="bstartree.html"><em>B*-tree</em></a>, <a href="two3tree.html"><em>2-3 tree</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="bplustree.html"><em>B<sup>+</sup>-tree</em></a>, <a href="multiwaytree.html"><em>multiway tree</em></a>, <a href="ubtree.html"><em>UB-tree</em></a> for multidimensional indexing, <a href="externalMemoryDataStr.html"><em>external memory data structure</em></a>.
+</p>
+
+<p>
+<em>Note:
+<table> 
+<tr> <td width="5%"></td> <td> The origin of "B-tree" has never been explained by the authors. ... "balanced," "broad," or "bushy" might apply.  Others suggest that the "B" stands for Boeing. [Bayer and McCreight were at Boeing Scientific Research Labs in 1972.] Because of his contributions, however, it seems appropriate to think of B-trees as "Bayer"-trees. </td> <td width="10%"></td> </tr> 
+<tr> <td></td> <td>  &nbsp; &nbsp; - &nbsp; <strong>Douglas Comer</strong>, <em>The Ubiquitous  B-Tree</em>,  Computing Surveys, 11(2):123, June 1979. </td> <td></td> </tr> </table> </p> 
+<p> After <a href="../terms.html#HS83">[HS83, page 499]</a>.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+<a href="http://perl.plover.com/BTree/" target="_blank">tutorial of how B-trees work and code (Perl)</a>, Bro. David Carlson's <a href="http://cis.stvincent.edu/html/tutorials/swd/btree/btree.html" target="_blank">tutorial and code (C++)</a>. <a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/3/342.data.c" target="_blank">data structure definition (C and Pascal)</a>, <a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/3/342.ins.c" target="_blank">insert (C and Pascal)</a> using <a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/3/342.iin.c" target="_blank">auxiliary functions (C and Pascal)</a>,  <a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/3/342.srch.c" target="_blank">search (C and Pascal)</a>, <a href="https://sites.google.com/site/masteraddressfile/btp/btp" target="_blank">(Pick Basic)</a> commented source code at the bottom.
+<h2>More information</h2>
+<p>
+ A <a href="https://sites.google.com/site/masteraddressfile/btp/algo" target="_blank">tutorial on the basics</a>, and <a href="https://sites.google.com/site/masteraddressfile/btp/var" target="_blank">variants</a>. An animation illustrating <a href="https://youtu.be/K1a2Bk8NrYQ" target="_blank">B-trees, including insertion and deletion</a> operations.
+</p>
+<p>
+<strong>Rudolf Bayer</strong> and <strong>Edward M. McCreight</strong>, <em>Organization and Maintenance of Large Ordered Indices</em>, Acta Informatica, 1:173-189, 1972. 
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#671706120b49050b06040c27090e141349000811">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 15 May 2024.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "B-tree", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 15 May 2024. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/btree.html">https://www.nist.gov/dads/HTML/btree.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a884e9bb3d14ce',t:'MTc5MjAwMTE5OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

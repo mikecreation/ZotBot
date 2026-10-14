@@ -1,0 +1,75 @@
+stack
+stack
+(data structure)
+Definition:
+A collection of items in which only the most recently added item may be removed.  The latest added item is at the top.  Basic operations are push and pop.  Often top and isEmpty are available, too. Also known as "last-in, first-out" or LIFO.
+Formal Definition:
+The operations new(), push(v, S), top(S), and popoff(S) may be defined with
+axiomatic semantics
+as follows.
+new() returns a stack
+popoff(push(v, S)) = S
+top(push(v, S)) = v
+where S is a stack and v is a value.  The pop operation is a combination of top, to return the top value, and popoff, to remove the top value.
+The
+predicate
+isEmpty(S) may be defined with the following additional axioms.
+isEmpty(new()) = true
+isEmpty(push(v, S)) = false
+Also known as
+LIFO.
+Generalization
+(I am a kind of ...)
+abstract data type
+.
+Specialization
+(... is a kind of me.)
+bounded stack
+,
+cactus stack
+.
+See also
+queue
+.
+Note:
+Other operations may include index(i, S), return the ith item in the stack, isFull(S), and rotate(i, S), move i items from top to bottom or vice versa.
+Author:
+PEB
+Implementation
+Maksim Goleta's C# Collections
+linked-list implementation (C#)
+. Bro. David Carlson's
+tutorial and code (C++)
+.
+More information
+examples and code
+.
+Origin is attributed to
+A. W. Burks, D. W. Warren
+, and
+J. B. Wright
+,
+An analysis of a logical machine using parenthesis-free notation
+, Mathematical Tables and Other Aids to Computation, 8(46):53-57, April 1954, and
+A. Newell
+and
+J. C. Shaw
+,
+Programming the logic theory machine
+, Proceedings of the 1957 Western Joint Computer Conference, pages 230-240, Institute of Radio Engineers, New York, February 1957.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 1 October 2019.
+HTML page formatted Wed Oct 30 12:15:31 2024.
+Cite this as:
+Paul E. Black, "stack", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 1 October 2019. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/stack.html

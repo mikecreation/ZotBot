@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>quicksort</title>
+<meta name="description"
+  content="Definition of quicksort,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="quicksort">
+<meta name="type" content="algorithm">
+<meta name="area" content="Sorting">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>quicksort</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+Pick an element from the array (the pivot), <a href="partition.html"><em>partition</em></a> the remaining elements into those greater than and less than this pivot, and <a href="recursion.html"><em>recursively</em></a> sort the partitions. There are many variants of the basic scheme above: to select the pivot, to partition the array, to stop the recursion or switch to another algorithm for small partitions, etc.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="inplacesort.html"><em>in-place sort</em></a>, <a href="lasVegas.html"><em>Las Vegas algorithm</em></a> when the pivot is picked randomly.
+</p>
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="balancedqsrt.html"><em>balanced quicksort</em></a>, <a href="multikeyQuicksort.html"><em>multikey Quicksort</em></a>, <a href="introspectiveSort.html"><em>introspective sort</em></a>.
+</p>
+<p>
+<strong>Aggregate parent</strong> (I am a part of or used in ...)<br>
+<a href="qsort.html"><em>q sort</em></a>.
+</p>
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="partition.html"><em>partition</em></a>, <a href="divideAndConquer.html"><em>divide and conquer</em></a>, <a href="recursion.html"><em>recursion</em></a>, <a href="select.html"><em>Select</em></a>, <a href="sublinearTimeAlgo.html"><em>sublinear time algorithm</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="externalQuicksort.html"><em>external quicksort</em></a>, <a href="dualPivotQuicksort.html"><em>dual-pivot quicksort</em></a>.
+</p>
+
+<p>
+<em>Note:
+Quicksort has running time  <a href="theta.html"><em>&Theta;(n&sup2;)</em></a> in the <a href="worstcase.html"><em>worst case</em></a>, but it is typically  <a href="bigOnotation.html"><em>O(n log n)</em></a>.  In practical situations, a finely tuned implementation of quicksort beats most sort algorithms, including sort algorithms whose theoretical complexity is  O(n log n) in the worst case. </p> 
+<p> <a href="select.html"><em>Select</em></a> can be used to always pick good pivots, thus giving a variant with <a href="bigOnotation.html"><em>O(n log n)</em></a> worst-case running time. </p> 
+<p> Newer variants, such as <a href="dualPivotQuicksort.html"><em>dual-pivot quicksort</em></a>, are faster because they access less memory.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorCM">CM</a></p>
+<h2>Implementation</h2>
+<a href="https://www.geeksforgeeks.org/python-program-for-quicksort/" target="_blank">(Python)</a>. <a href="https://en.wikipedia.org/wiki/Quicksort" target="_blank">Wikipedia entry with extended discussion and alternatives (C, Python, Haskell, pseudocode)</a>. <a href="https://www.algolist.net/Algorithms/Sorting/Quicksort" target="_blank">explanation (Java and C++)</a>. Flower Brackets <a href="https://www.flowerbrackets.com/quicksort-java/" target="_blank">explanation, including code and complexity (Java)</a>. 
+<h2>More information</h2>
+<p>
+<a href="http://www.azillionmonkeys.com/qed/sort.html" target="_blank">Comparison of quicksort, heapsort, and merge sort</a> on modern processors. <br /> <br /> Quicksort sort <a href="https://www.youtube.com/watch?v=aXXWXz5rF64&t=55" target="_blank">illustrated</a> followed by a race between Quicksort and bubble sort. <br /> <iframe src="https://www.youtube.com/embed/aXXWXz5rF64?start=55" frameborder="0" allowfullscreen></iframe> <br /> An <a href="https://www.youtube.com/watch?v=TZRWRjq2CAg&t=171" target="_blank">analysis</a> of bubble sort, insertion sort, and quick sort. <br /> <iframe src="https://www.youtube.com/embed/TZRWRjq2CAg?start=171" frameborder="0" allowfullscreen></iframe> <br /> Merge sort vs. quick sort <a href="https://www.youtube.com/watch?v=es2T6KY45cA&t=140" target="_blank">race</a>. First a random permutation, then a near-worst case for merge sort. <br /> <iframe src="https://www.youtube.com/embed/es2T6KY45cA?start=140" frameborder="0" allowfullscreen></iframe> <br /> Quicksort illustrated through a <a href="https://www.youtube.com/watch?v=ywWBy6J5gz8" target="_blank">Hungarian folk dance: K&uuml;k&uuml;ll&#337;menti leg&eacute;nyes</a>.   Created at Sapientia University. <br /> <iframe src="https://www.youtube.com/embed/ywWBy6J5gz8" frameborder="0" allowfullscreen></iframe>
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#35455440591b575954565e755b5c46411b525a43">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 6 April 2023.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Conrado Martinez, "quicksort", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 6 April 2023. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/quicksort.html">https://www.nist.gov/dads/HTML/quicksort.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a8820cff5745f5',t:'MTc5MjAwMTA4Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

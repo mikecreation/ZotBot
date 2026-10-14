@@ -1,0 +1,83 @@
+radix sort
+radix sort
+(algorithm)
+Definition:
+A multiple pass
+distribution sort
+algorithm that distributes each item to a
+bucket
+according to part of the item's
+key
+beginning with the least significant part of the key. After each pass, items are collected from the buckets, keeping the items in order, then redistributed according to the next most significant part of the key.
+Generalization
+(I am a kind of ...)
+distribution sort
+.
+Aggregate child
+(... is a part of or used in me.)
+counting sort
+may be an appropriate algorithm for each pass.
+See also
+postman's sort
+,
+bucket sort
+,
+American flag sort
+,
+top-down radix sort
+.
+Note:
+Here is a simple example of the sort.  Suppose the input keys are 34, 12, 42, 32, 44, 41, 34, 11, 32, and 23.  Four buckets are appropriate, since there are four different digits (1, 2, 3, and 4). The first pass distributes the keys into buckets by the least significant digit.  Half way through the first pass, the buckets contain the following, where each line is a bucket.
+B1:
+B2: 12 42 32
+B3:
+B4: 34 44
+When the first pass is done, we have the following.
+B1: 41 11
+B2: 12 42 32 32
+B3: 23
+B4: 34 44 34
+We collect these, keeping their relative order:  41 11 12 42 32 32 23 34 44 34. Now we distribute by the next most significant digit, which is the highest digit, and we get the following.
+B1: 11 12
+B2: 23
+B3: 32 32 34 34
+B4: 41 42 44
+When we collect them, they are in order:  11 12 23 32 32 34 34 41 42 44.
+Radix sort can be particularly effective on a
+linked list
+.  Rather than buckets, put items in linked lists.  At the end of a pass collect the items  by "sewing" the lists together: make the
+tail
+of each list point to the
+head
+of the next list.  (After
+Steven Pigeon
+,
+QuickSort and Radix Sorts on Lists
+, Dr. Dobb's Journal, May 2002, pages 89-94.)
+Author:
+PEB
+Implementation
+(C and Pascal)
+. John Morris'
+analysis, explanation, and code (C)
+.
+tutorial with examples and code (C++)
+.
+(Python)
+.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 21 April 2022.
+HTML page formatted Wed Oct 30 12:15:31 2024.
+Cite this as:
+Paul E. Black, "radix sort", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 21 April 2022. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/radixsort.html

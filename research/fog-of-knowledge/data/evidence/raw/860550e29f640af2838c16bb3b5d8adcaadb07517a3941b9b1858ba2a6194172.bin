@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>merge sort</title>
+<meta name="description"
+  content="Definition of merge sort,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="merge sort">
+<meta name="type" content="algorithm">
+<meta name="area" content="Sorting">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>merge sort</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A <a href="sort.html"><em>sort</em></a> algorithm that splits the items to be sorted into two groups, <a href="recursion.html"><em>recursively</em></a> sorts each group, and  <a href="merge.html"><em>merges</em></a> them into a final, sorted sequence.   Run time is <a href="theta.html"><em>&Theta;</em></a>(n log n).
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="sort.html"><em>sort</em></a>.
+</p>
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="kwayMergeSort.html"><em>k-way merge sort</em></a>, <a href="balanckwayms.html"><em>balanced k-way merge sort</em></a>, <a href="polyphmrgsrt.html"><em>polyphase merge sort</em></a>.
+</p>
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="divideAndConquer.html"><em>divide and conquer</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="externalsort.html"><em>external sort</em></a>, <a href="bitonicSort.html"><em>bitonic sort</em></a>, <a href="strandSort.html"><em>strand sort</em></a>.
+</p>
+
+<p>
+<em>Note:
+There seem to be some references to linear-time <a href="inplacesort.html"><em>in-place</em></a> merging; look for papers by Geffert, Katajainen &amp; Pasanen.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+<a href="https://www.geeksforgeeks.org/python-program-for-merge-sort/" target="_blank">(Python)</a>. <a href="https://www3.cs.stonybrook.edu/~algorith/implement/handbook/distrib/handbook/algs/4/421.sort.c" target="_blank">(C)</a> that needs <a href="https://www3.cs.stonybrook.edu/~algorith/implement/handbook/distrib/handbook/algs/4/431.merge.c" target="_blank">list merge (C)</a> or <a href="https://www3.cs.stonybrook.edu/~algorith/implement/handbook/distrib/handbook/algs/4/432.merge.c" target="_blank">array merge (C)</a>, <a href="https://www3.cs.stonybrook.edu/~algorith/implement/handbook/distrib/handbook/algs/4/421.sort.p" target="_blank">(Pascal)</a>  that needs <a href="https://www3.cs.stonybrook.edu/~algorith/implement/handbook/distrib/handbook/algs/4/431.merge.p" target="_blank">list merge (Pascal)</a> or <a href="https://www3.cs.stonybrook.edu/~algorith/implement/handbook/distrib/handbook/algs/4/432.merge.p" target="_blank">array merge (Pascal)</a>; Worst-case behavior <a href="https://www.auto.tuwien.ac.at/~blieb/woop/merge.html" target="_blank">annotated for real time (WOOP/ADA)</a>, including bibliography. Siegfried Sielaff's description and code of an <a href="http://www.siegfried.sielaff.at/" target="_blank">in-place, stable variant he calls Swap Sort (C)</a> (click the British flag for an English translation). Other implementations may be available through the <a href="https://algorist.com/problems/Sorting.html" target="_blank">Stony Brook Algorithm Repository, Sorting</a>. Alexander Georgiev's <a href="https://code.google.com/archive/p/singly-linked-list/" target="_blank"> merge sort (Java)</a> implemented as part of a linked-list package. Includes a parallel merge sort, too. Flower Brackets <a href="https://www.flowerbrackets.com/merge-sort-java/" target="_blank">(Java)</a>. 
+<h2>More information</h2>
+<p>
+<a href="http://www.azillionmonkeys.com/qed/sort.html" target="_blank">Comparison of quicksort, heapsort, and merge sort</a> on modern processors. <br /> <br /> Merge sort <a href="https://www.youtube.com/watch?v=es2T6KY45cA&t=6" target="_blank">illustrated</a>. <br /> <iframe src="https://www.youtube.com/embed/es2T6KY45cA?start=6" frameborder="0" allowfullscreen></iframe> <br /> Merge sort vs. quick sort <a href="https://www.youtube.com/watch?v=es2T6KY45cA&t=140" target="_blank">race</a>. First a random permutation, then a near-worst case for merge sort. <br /> <iframe src="https://www.youtube.com/embed/es2T6KY45cA?start=140" frameborder="0" allowfullscreen></iframe> <br /> Heap sort vs. merge sort <a href="https://www.youtube.com/watch?v=H5kAcmGOn4Q&t=248" target="_blank">race</a>. <br /> <iframe src="https://www.youtube.com/embed/H5kAcmGOn4Q?start=248" frameborder="0" allowfullscreen></iframe> <br /> Merge sort illustrated through a <a href="https://www.youtube.com/watch?v=XaqR3G_NVoo" target="_blank">Transylvanian-saxon (German) folk dance</a>. Created at Sapientia University. <br /> <iframe src="https://www.youtube.com/embed/XaqR3G_NVoo" frameborder="0" allowfullscreen></iframe>
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#9dedfce8f1b3fff1fcfef6ddf3f4eee9b3faf2eb">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 6 April 2023.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "merge sort", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 6 April 2023. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/mergesort.html">https://www.nist.gov/dads/HTML/mergesort.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a884e3febb7073',t:'MTc5MjAwMTE5OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

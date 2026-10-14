@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>binomial heap</title>
+<meta name="description"
+  content="Definition of binomial heap,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="binomial heap">
+<meta name="type" content="data structure">
+<meta name="area" content="Trees">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>binomial heap</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A <a href="heap.html"><em>heap</em></a> made of a <a href="forest.html"><em>forest</em></a> of <a href="binomialtree.html"><em>binomial trees</em></a> with the <a href="heapproperty.html"><em>heap property</em></a> numbered k=0, 1, 2, &hellip;, n, each containing either 0 or 2<sup>k</sup> <a href="node.html"><em>nodes</em></a>. Each tree is formed by linking two of its predecessors, by joining one at the <a href="root.html"><em>root</em></a> of the other.  The operations of insert a value, decrease a value, delete a value, and merge or join (<a href="meld.html"><em>meld</em></a>) two queues take <a href="bigOnotation.html"><em>O(log n)</em></a> time.  The find minimum operation is a constant <a href="theta.html"><em>&Theta;(1)</em></a>.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="heap.html"><em>heap</em></a>.
+</p>
+<p>
+<strong>Aggregate parent</strong> (I am a part of or used in ...)<br>
+<a href="priorityque.html"><em>priority queue</em></a>, <a href="dijkstraalgo.html"><em>Dijkstra's algorithm</em></a>.
+</p>
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="binomialtree.html"><em>binomial tree</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="fibonacciHeap.html"><em>Fibonacci heap</em></a>.
+</p>
+
+<p>
+<em>Note:
+Binomial heaps are so called because the number of nodes at each <a href="level.html"><em>level</em></a> of each subtree is a binomial coefficient.  Sometimes called a binomial queue. After LK.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#235342564f0d414f424048634d4a50570d444c55">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 26 May 2011.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "binomial heap", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 26 May 2011. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/binomialheap.html">https://www.nist.gov/dads/HTML/binomialheap.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a884f2de841f93',t:'MTc5MjAwMTIwMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>counting sort</title>
+<meta name="description"
+  content="Definition of counting sort,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="counting sort">
+<meta name="type" content="algorithm">
+<meta name="area" content="Sorting">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>counting sort</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A 2-pass <a href="sort.html"><em>sort</em></a> algorithm that is efficient when the number of distinct <a href="key.html"><em>keys</em></a> is small compared to the number of items.  The first pass counts the occurrences of each key in an auxiliary <a href="array.html"><em>array</em></a>, and then makes a running total so each auxiliary entry is the number of preceding keys.  The second pass puts each item in its final place according to the auxiliary entry for that key.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="histogramSort.html"><em>histogram sort</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="americanFlagSort.html"><em>American flag sort</em></a>, <a href="bingosort.html"><em>bingo sort</em></a>, <a href="pigeonholeSort.html"><em>pigeonhole sort</em></a>.
+</p>
+
+<p>
+<em>Note:
+A bucket sort uses fixed-size buckets.  A histogram sort sets up buckets of exactly the right size in a first pass.  A counting sort is a histogram sort with one bucket per possible key value.  A pigeonhole sort is a counting sort that moves items to the auxiliary array instead of counting them.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorASK">ASK</a></p>
+<h2>Implementation</h2>
+<a href="https://www.geeksforgeeks.org/python-program-for-counting-sort/" target="_blank">(Python)</a>.
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#cebeafbba2e0aca2afada58ea0a7bdbae0a9a1b8">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 21 April 2022.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Art S. Kagel, "counting sort", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 21 April 2022. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/countingsort.html">https://www.nist.gov/dads/HTML/countingsort.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a884e53870d94a',t:'MTc5MjAwMTE5OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

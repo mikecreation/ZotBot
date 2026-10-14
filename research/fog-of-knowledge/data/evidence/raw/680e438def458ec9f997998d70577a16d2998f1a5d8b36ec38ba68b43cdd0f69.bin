@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>suffix array</title>
+<meta name="description"
+  content="Definition of suffix array,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="suffix array">
+<meta name="type" content="data structure">
+<meta name="area" content="Searching">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>suffix array</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+An <a href="array.html"><em>array</em></a> of all starting positions of <a href="suffix.html"><em>suffixes</em></a> of a <a href="string.html"><em>string</em></a> arranged in <a href="lexicgrphcl.html"><em>lexicographical order</em></a>. This allows a <a href="binarySearch.html"><em>binary search</em></a> or fast substring search.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="array.html"><em>array</em></a>.
+</p>
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="suffix.html"><em>suffix</em></a>, <a href="binarySearch.html"><em>binary search</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="suffixtree.html"><em>suffix tree</em></a>, <a href="inverseSuffixArray.html"><em>inverse suffix array</em></a>, <a href="suffixautmtn.html"><em>suffix automaton</em></a>.
+</p>
+
+<p>
+<em>Note:
+Consider the string "good".  In lexicographical order, the suffixes are "d", "good", "od", and "ood". In <a href="oneBasedIndexing.html"><em>1-based indexing</em></a>, the suffix array is [4, 1, 3, 2].  (For convenience, a special character is usually appended to the string.) </p> 
+<p> A suffix array can be constructed in  <a href="bigOnotation.html"><em>O(n log n)</em></a> time, where n is the length of the string, by sorting the suffixes, or in <a href="bigOnotation.html"><em>O(n)</em></a> time by building the <a href="suffixtree.html"><em>suffix tree</em></a>, then doing a <a href="depthfirst.html"><em>depth-first search</em></a>. Many other algorithms build suffix arrays quickly.   For a comprehensive survey, see <strong>Simon J. Puglisi, W. F. Smyth, and Andrew H. Turpin</strong>,  <em>A taxonomy of suffix array construction algorithms</em>, ACM Computing Surveys, 39(2) Article #4, 2007. </p> 
+<p> From Algorithms and Theory of Computation Handbook, page 11-23, Copyright &copy; 1999 by CRC Press LLC. Appearing in the Dictionary of Computer Science, Engineering and Technology, Copyright &copy; 2000 CRC Press LLC.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorCRC-A">CRC-A</a></p>
+<h2>Implementation</h2>
+Steven Skiena's <a href="https://algorist.com/problems/Suffix_Trees_and_Arrays.html" target="_blank">Suffix Trees and Arrays (C++, Python, and Java)</a>.
+<h2>More information</h2>
+<p>
+<strong>Udi Manber and Gene Myers</strong>,  <em>Suffix Arrays: A New Method for On-Line String Searches</em>, SIAM Journal on Computing 22(5):935-948, 1993.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#85f5e4f0e9abe7e9e4e6eec5ebecf6f1abe2eaf3">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 2 November 2020.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Algorithms and Theory of Computation Handbook, CRC Press LLC, 1999, "suffix array", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 2 November 2020. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/suffixarray.html">https://www.nist.gov/dads/HTML/suffixarray.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a884f39e0610ed',t:'MTc5MjAwMTIwMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

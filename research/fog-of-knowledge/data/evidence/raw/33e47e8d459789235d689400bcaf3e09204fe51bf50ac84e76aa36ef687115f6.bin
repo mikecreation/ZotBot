@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>binary heap</title>
+<meta name="description"
+  content="Definition of binary heap,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="binary heap">
+<meta name="type" content="data structure">
+<meta name="area" content="Trees">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>binary heap</h1>
+<p>
+(data structure)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A <a href="completeBinaryTree.html"><em>complete binary tree</em></a> where every <a href="node.html"><em>node</em></a> has a <a href="key.html"><em>key</em></a> more extreme (greater or less) than or equal to the key of its  <a href="parent.html"><em>parent</em></a>.
+</p>
+
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="completeBinaryTree.html"><em>complete binary tree</em></a>, <a href="heap.html"><em>heap</em></a>, <a href="karyheap.html"><em>k-ary heap</em></a> with k=2.
+</p>
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="treap.html"><em>treap</em></a>.
+</p>
+<p>
+<strong>Aggregate parent</strong> (I am a part of or used in ...)<br>
+<a href="buildHeap.html"><em>build-heap</em></a>, <a href="heapify.html"><em>heapify</em></a>, <a href="heapSort.html"><em>heapsort</em></a>, <a href="priorityque.html"><em>priority queue</em></a>.
+</p>
+<p>
+<strong>Aggregate child</strong> (... is a part of or used in me.)<br>
+<a href="array.html"><em>array</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="fibonacciHeap.html"><em>Fibonacci heap</em></a>, <a href="binomialheap.html"><em>binomial heap</em></a>.
+</p>
+
+<p>
+<em>Note:
+Insertion is <a href="bigOnotation.html"><em>O(log<sub>2</sub> n)</em></a> where n is the number of nodes. A binary heap can be efficiently implemented as an <a href="array.html"><em>array</em></a>, where a node at index i has children at indexes 2i and 2i+1 and a parent at index i/2, with <a href="oneBasedIndexing.html"><em>1-based indexing</em></a>.   If a child index is greater than the number of nodes, the child does not exist. </p> 
+<p> The above implementation is inefficient with virtual memories because (almost) every <a href="level.html"><em>level</em></a> is in a different page. <a href="https://en.wikipedia.org/wiki/B-heap" target="_blank">B-heaps</a> allocate subtrees to a single page for better virtual memory performance. </p> 
+<p> Merging two binary heaps is <a href="bigOnotation.html"><em>O(n)</em></a>: the best you can do is just concatenate two heap arrays and make a heap of the result. Two <a href="binomialheap.html"><em>binomial heaps</em></a> can be merged in O(ln n).   Two <a href="fibonacciHeap.html"><em>Fibonacci heaps</em></a> can be merged in &Theta;(1).</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorCLK">CLK</a></p>
+<h2>Implementation</h2>
+<a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/5/513.del.c" target="_blank">delete (C)</a> and <a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/5/513.ins.c" target="_blank">insert (C and Pascal)</a> both of which use the auxiliary function <a href="https://users.dcc.uchile.cl/~rbaeza/handbook/algs/5/513.sift.c" target="_blank">siftup (C and Pascal)</a>, <a href="http://www.cs.auckland.ac.nz/software/AlgAnim/heaps.html" target="_blank">explanation, examples, and code (C)</a>. <a href="https://netlib.org/toms/561" target="_blank">(Fortran)</a>.
+<h2>More information</h2>
+<p>
+<img src="../Images/xkcd 0835 tree.png"><br /> "... you just KNOW Billy's going to open the root present first, and then everyone will have to wait while the heap is rebuilt."<br /> From <a href="https://xkcd.com/835/" target="_blank">xkcd 835</a> by Randall Munroe. <a href="https://xkcd.com/license.html" target="_blank">Creative Commons Attribution-NonCommercial 2.5 License</a>.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#87f7e6f2eba9e5ebe6e4ecc7e9eef4f3a9e0e8f1">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 25 July 2022.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Chris L. Kuszmaul, "binary heap", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 25 July 2022. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/binaryheap.html">https://www.nist.gov/dads/HTML/binaryheap.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a884f14fd96155',t:'MTc5MjAwMTIwMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

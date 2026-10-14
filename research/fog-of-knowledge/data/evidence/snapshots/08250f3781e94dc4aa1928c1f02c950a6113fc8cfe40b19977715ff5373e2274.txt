@@ -1,0 +1,96 @@
+cuckoo hashing
+cuckoo hashing
+(data structure)
+Definition:
+A
+dictionary
+implemented with two
+hash tables
+, T
+1
+and T
+2
+, and two different
+hash functions
+, h
+1
+and h
+2
+.  Each
+key
+, k, is either in T
+1
+[h
+1
+(k)] or T
+2
+[h
+2
+(k)].  A new
+key
+, k, is stored in T
+1
+[h
+1
+(k)].  If that location is already occupied by another key, l, the other key is moved to T
+2
+[h
+2
+(l)].  Keys are moved back and forth until a key moves to an empty location or a limit is reached. If the limit is reached, new hash functions are chosen, and the tables are rehashed.  For tables that are a bit less than half full and with carefully chosen
+universal hashing
+functions, performance is good.  A key is deleted by removing it from a table.
+Generalization
+(I am a kind of ...)
+hash table
+.
+Aggregate parent
+(I am a part of or used in ...)
+dictionary
+.
+Aggregate child
+(... is a part of or used in me.)
+array
+,
+hash function
+.
+See also
+2-left hashing
+.
+Note:
+The name comes from the
+European cuckoo
+, whose young pushes other, competing eggs out of the nest.
+Author:
+PEB
+More information
+Rasmus Pagh
+and
+Flemming Friche Rodler
+,
+Cuckoo Hashing
+, Proceedings of ESA 2001, Lecture Notes in Computer Science, vol. 2161, pages 121-?, 2001.
+Generalized in
+Úlfar Erlingsson
+,
+Mark Manasse
+, and
+Frank McSherry
+,
+A  cool and practical alternative to traditional hash tables
+, proc 7th Workshop on Distributed Data and Structures (WDAS'06), Santa Clara, CA, January 2006.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 11 February 2019.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "cuckoo hashing", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 11 February 2019. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/cuckooHashing.html

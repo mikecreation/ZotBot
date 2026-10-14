@@ -1,0 +1,57 @@
+interpolation search
+interpolation search
+(algorithm)
+Definition:
+Search a
+sorted array
+by estimating the next position to check based on a linear interpolation of the search
+key
+and the values at the ends of the search interval.
+Also known as
+extrapolation search.
+See also
+jump search
+,
+secant search
+,
+binary search
+,
+Fibonaccian search
+.
+Note:
+You probably use this when looking something up in the telephone book or dictionary.  For instance, "cold fusion" is probably near the front, so you open maybe 1/4 of the way in.  What you find there helps you decide whether to turn many pages or just a few.  Compare this with a
+linear search
+, where you check each entry in order from the beginning, or a
+binary search
+, where you always divide the search interval exactly in half.
+Average run time is
+O(log log n)
+assuming the keys are uniformly distributed. Worst case for any distribution is O(n).
+Perl, Itai, and Avni note that "When the difference between the indices of two successive iterations is small, it may be advantageous to switch to sequential search ..." Unless the data is very uniform, there are millions of records, or comparisons are very time-consuming, a binary search may be no slower: interpolation is usually time-consuming on a computer and a   binary search only takes log(n) comparisons anyway.
+Author:
+PEB
+Implementation
+annotated for real time (WOOP/ADA)
+, including bibliography.
+(Pascal)
+More information
+Yehoshua Perl, Alon Itai, and Haim Avni
+,
+Interpolation search-a log logN search
+, CACM 21(7):550-553, July 1978.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 4 March 2019.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "interpolation search", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 4 March 2019. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/interpolationSearch.html

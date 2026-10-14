@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>recursion</title>
+<meta name="description"
+  content="Definition of recursion,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="recursion">
+<meta name="type" content="algorithmic technique">
+<meta name="area" content="Basic">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>recursion</h1>
+<p>
+(algorithmic technique)
+</p>
+
+<p>
+<strong>Definition:</strong>
+An algorithmic technique where a function, in order to accomplish a task, calls itself with some part of the task.
+</p>
+
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="tailRecursion.html"><em>tail recursion</em></a>, <a href="collectiveRecursion.html"><em>collective recursion</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="iteration.html"><em>iteration</em></a>, <a href="divideAndConquer.html"><em>divide and conquer</em></a>, <a href="dividemarrig.html"><em>divide and marriage before conquest</em></a>, <a href="recursive.html"><em>recursive</em></a>, <a href="recurrence.html"><em>recurrence relation</em></a>.
+</p>
+
+<p>
+<em>Note:
+Every recursive solution involves two major parts or cases, the second part having three components. <ul> 
+<li><strong>base case(s)</strong>, in which the problem is simple enough to be solved directly, and  
+<li><strong>recursive case(s)</strong>.  A recursive case has three components:  <ol> 
+<li><strong>divide</strong> the problem into one or more simpler or smaller parts of the problem,  
+<li><strong>call</strong> the function (recursively) on each part, and  
+<li><strong>combine</strong> the solutions of the parts into a solution for the problem. </ol> </ul> Depending on the problem, any of these may be trivial or complex. </p> 
+<p> Here are some exercises to help you learn recursion.  Although recursion may not be the best way to write some of these functions, it is good practice. <ol> 
+<li>Write a function to compute the sum of all numbers from 1 to n. 
+<li>Write a function to compute 2 to the power of a non-negative integer. 
+<li>Write a function to compute any number  to the power of a non-negative integer. 
+<li>Write a function to compute the nth <a href="fibonacciNumber.html"><em>Fibonacci number</em></a>. 
+<li>Write a function to compute the greatest common divisor (GCD) of two positive integers with <a href="euclidalgo.html"><em>Euclid's algorithm</em></a>. 
+<li>Write a function to compute GCD based on the following relations <ul> 
+<li>GCD(2m, 2n) = 2 * GCD(m, n) 
+<li>GCD(2m, 2n+1) = GCD(m, 2n+1) 
+<li>GCD(2m+1, 2n+1) = GCD(n-m, 2m+1)  if m &lt; n 
+<li>GCD(m, m) = m </ul> (after "ML for the Working Programmer", page 49). 
+<li>Write a function to compute any number to the power of a non-negative integer using <a href="repeatedSquaring.html"><em>repeated squaring</em></a>, that is, x<sup>2n</sup> = (x<sup>n</sup>)&sup2; and x<sup>2n+1</sup> = x &times; x<sup>2n</sup>. (after "ML for the Working Programmer", pages 45 and 46). 
+<li>Write a function to compute the integer square root of a non-negative integer using square_root(4x) = 2*square_root(x). (after "ML for the Working Programmer", pages 48 and 49). </ol></em>
+</p>
+
+<p>Authors: <a href="../Other/contrib.html#authorPEB">PEB</a>,<a href="../Other/contrib.html#authorPR">PR</a></p>
+<h2>More information</h2>
+<p>
+See <a href="http://www.cs.auckland.ac.nz/software/AlgAnim/dynamic.html#fibonacci" target="_blank">dynamic algorithms</a> for an example of one trade-off between speed and clarity for a recursive vs. an iterative implementation.   See the notes for <a href="towersOfHanoi.html"><em>towers of Hanoi</em></a>, a puzzle that has another recursive and iterative solution. Bro. David Carlson's <a href="http://cis.stvincent.edu/html/tutorials/swd/recur/recur.html" target="_blank">tutorial and code (C++)</a> with examples for factorial, Fibonacci, quicksort, and merge sort.
+</p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#4a3a2b3f266428262b29210a2423393e642d253c">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 30 September 2013.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black and Patrick Rodgers, "recursion", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 30 September 2013. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/recursion.html">https://www.nist.gov/dads/HTML/recursion.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a884f61a12114b',t:'MTc5MjAwMTIwMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

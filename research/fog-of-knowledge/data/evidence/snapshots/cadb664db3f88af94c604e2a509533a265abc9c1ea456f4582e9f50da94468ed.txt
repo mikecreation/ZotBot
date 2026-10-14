@@ -1,0 +1,97 @@
+Shell sort
+Shell sort
+(algorithm)
+Definition:
+The first
+diminishing increment sort
+.  On each pass i sets of n/i items are sorted, typically with
+insertion sort
+.  On each succeeding pass, i is reduced until it is 1 for the last pass.  A good series of i values is important to efficiency.
+Generalization
+(I am a kind of ...)
+diminishing increment sort
+.
+Aggregate child
+(... is a part of or used in me.)
+insertion sort
+.
+Note:
+Comb sort
+does a single "bubbling" pass (ala
+bubble sort
+) over each set for each gap or increment, whereas Shell sort completely sorts each set.
+Donald E. Knuth extensively analyzes this algorithm as 5.2.1D in
+[Knuth98, 3:84]
+.  A good set of increments is 2
+k
++1, . . ., 9, 5, 3, 1 with the first increment no more than N/3.
+Authors:
+PEB
+,
+ASK
+Implementation
+Worst-case behavior
+annotated for real time (WOOP/ADA)
+, including bibliography. Pat Morin's
+implementation (Java)
+.
+(Python)
+.
+scroll down to ALGORITHM AS 304.8 (Fortran)
+,
+(Forth)
+,
+strings (Basic)
+.
+More information
+Shell sort
+illustrated
+followed by a race between Shell sort and insertion sort (and Shell sort with a gap sequence optimized for 10 items).
+Shellsort illustrated through a
+Hungarian folk dance: Csángó
+. Created at Sapientia University.
+Donald Lewis Shell
+,
+A High-Speed Sorting Procedure
+, CACM, 2(7):30-32, July 1959.
+Historical Note
+This algorithm was improperly called the Shell-Metzner sort by
+John P. Grillo
+,
+A Comparison of Sorts
+, Creative Computing, 2:76-80, Nov/Dec 1976.
+Grillo cites
+Fredric Stuart
+,
+FORTRAN Programming
+, John Wiley and Sons, New York, 1969, page 294. In crediting "one of the fastest" programs for sorting, Stuart says in a footnote, "Published by Marlene Metzner, Pratt & Whitney Aircraft Company.  From a method described by D. L. Shell."
+On 3 April 2003 Marlene Metzner Norton wrote
+I had nothing to do with the sort, and my name should never have been attached to it.
+So, here's the scoop.
+I graduated from college in 1956 with a degree in Math.  The math I took for a college degree in 1956 is pretty much all taught in high school now.  I applied for a job at GE in Evendale, Cincinnati.  (It was that or teach high school.)  They put me to work programming an IBM 704 in an assembly language called CAGE. I don't remember what it stood for, but the GE was General Electric. Probably "Computer Assembler by General Electric".  Don Shell worked in the same building, but he was manager of the Systems Analysts.  I was one of the many who got several pages of equations and turned them into code that would run via punched cards.  This was before Basic and Fortran.  The Systems Analysts wrote assemblers, ways to create buffers to make printing faster, etc.  I doubt that Don Shell even knew who I was.  About 1959 we started using Fortran -- just a little.
+I think Don Shell wrote up the theory of his sorting method for the Computing Dept. newsletter.  I thought it was interesting and held on to a copy.
+In 1960, I bought a convertible and moved to Florida.  Why?  I was young, single, the field was wide open and Florida sounded like fun. Accepted a job at Pratt & Whitney in West Palm Beach.  Did the same kind of programming, but Pratt had a brand new IBM 7090.  They programmed in SAP.  It was similar to CAGE.  The logic was the same, but the instruction names differed just enough to be confusing.
+Somewhere around 1961 or so, Pratt got an
+IBM 1620
+.  This was a much smaller computer using punched paper tape instead of cards.   Colleges used it for teaching computers.  Pratt used it in the Engineering Dept. so engineers could handle smaller problems on their own instead of bringing them to the Computer Lab.   I was put in charge of co-ordinating the 1620 in Engineering with the Computer Dept.  IBM started a 1620 USER's group.  I was sent to the first meeting.  Being the only woman there, I was naturally voted in as Secretary-Treasurer.  Within the first year, a company in Germany bought one so now it was the IBM 1620 INTERNATIONAL USER'S GROUP.
+The User's Group put out a Newsletter.  People wrote in with questions, suggestions, ideas, etc.  To help fill up one of the earlier editions, I pulled out Don Shell's sort method and coded it in Fortran.  Took about 10 lines of code, give or take five, and an equal amount of time.  Gave Don Shell complete credit.
+In 1963 I got married.  In 1964 I left P & W to start a family. Taught the 1620 and the IBM 1401 at Palm Beach Junior College (now Palm Beach Community College) for a couple of years, but had no contact with P & W  or the User's Group.
+Now I find someone who read it started calling it Shell-Metzner. It's a wonder Don Shell didn't hunt me down and sue!
+Marlene
+PS.  On the up side, I emailed your website to my kids.  The reaction to the idea that Mom was once "smart" was worth the potential law suit.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 6 April 2023.
+HTML page formatted Wed Oct 30 12:15:31 2024.
+Cite this as:
+Paul E. Black and Art S. Kagel, "Shell sort", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 6 April 2023. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/shellsort.html

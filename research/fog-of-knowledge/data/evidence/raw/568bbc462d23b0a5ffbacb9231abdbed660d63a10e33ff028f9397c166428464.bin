@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>abstract data type</title>
+<meta name="description"
+  content="Definition of abstract data type,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="abstract data type">
+<meta name="type" content="definition">
+<meta name="area" content="Basic">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>abstract data type</h1>
+<p>
+(definition)
+</p>
+
+<p>
+<strong>Definition:</strong>
+A set of data values and associated operations that are precisely specified independent of any particular implementation.
+</p>
+
+<p>
+<strong>Also known as</strong> ADT.
+</p>
+
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="dictionary.html"><em>dictionary</em></a>, <a href="stack.html"><em>stack</em></a>, <a href="queue.html"><em>queue</em></a>, <a href="priorityque.html"><em>priority queue</em></a>, <a href="set.html"><em>set</em></a>, <a href="bag.html"><em>bag</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="dataStructure.html"><em>data structure</em></a>.
+</p>
+
+<p>
+<em>Note:
+Since the data values and operations are defined with mathematical precision, rather than as an implementation in a computer language, we may reason about effects of the operations, relations to other abstract data types, whether a program implements the data type, etc. </p> 
+<p> One of the simplest abstract data types is the <a href="stack.html"><em>stack</em></a>.   The operations new(), push(v, S), top(S), and popOff(S) may be defined with <a href="axiomaticSemantics.html"><em>axiomatic semantics</em></a> as following. <ol> 
+<li>new() returns a stack 
+<li>popOff(push(v, S)) = S 
+<li>top(push(v, S)) = v </ol> where S is a stack and v is a value.  (The usual pop operation is a combination of top, to return the top value, and popOff, to remove the top value.) Contrast this with the <a href="axiomaticSemantics.html"><em>axiomatic semantics</em></a> definition of a <a href="set.html"><em>set</em></a>, a <a href="dictionary.html"><em>dictionary</em></a>, or a <a href="queue.html"><em>queue</em></a>. </p> 
+<p> From these axioms, one may define equality between stacks, define a pop function which returns the top value in a non-empty stack, etc.  For instance, the <a href="predicate.html"><em>predicate</em></a> isEmpty(S) may be  added and defined with the following additional axioms. <ol start="4"> 
+<li>isEmpty(new()) = true 
+<li>isEmpty(push(v, S)) = false </ol> </p> 
+<p> After Nell Dale &lt;<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="79171d18151c391a0a570c0d1c01180a571c1d0c">[email&#160;protected]</a>&gt; May 2001.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#c2b2a3b7aeeca0aea3a1a982acabb1b6eca5adb4">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 10 February 2005.<br>
+HTML page formatted Wed Oct 30 12:15:30 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "abstract data type", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 10 February 2005. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/abstractDataType.html">https://www.nist.gov/dads/HTML/abstractDataType.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a884f0bd55dd56',t:'MTc5MjAwMTIwMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+

@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD W3 HTML 2.0//EN">
+<html lang="en-US">
+<head>
+<title>sort</title>
+<meta name="description"
+  content="Definition of sort,
+	possibly with links to more information and implementations.">
+<meta name="keywords" content="sort">
+<meta name="type" content="algorithm">
+<meta name="area" content="Sorting">
+<!-- turn off Microsoft's added smart tags -->
+<meta name="MSSmartTagsPreventParsing" content="TRUE">
+<link rel="stylesheet" type="text/css" href="https://www.nist.gov/dads/dads.css">
+
+</head>
+<body>
+<center>
+<a href="https://www.nist.gov/" target="_blank"><img
+src="../Images/webidblue_1linecentr.gif" border=0 height=43 width=229
+alt="NIST"></a>
+</center>
+<h1>sort</h1>
+<p>
+(algorithm)
+</p>
+
+<p>
+<strong>Definition:</strong>
+Arrange items in a predetermined order.  There are dozens of algorithms, the choice of which depends on factors such as the number of items relative to working memory, knowledge of the orderliness of the items or the range of the <a href="key.html"><em>keys</em></a>, the cost of comparing keys vs. the cost of moving items, etc.  Most algorithms can be implemented as an <a href="inplacesort.html"><em>in-place sort</em></a>, and many can be implemented so they are <a href="stable.html"><em>stable</em></a>, too.
+</p>
+
+<p>
+<strong>Formal Definition:</strong> The sort operation may be defined in terms of an initial array, S, of N items and a final array, S&prime;, as follows. <ol> <li>S&prime;<sub>i</sub> &le; S&prime;<sub>i+1</sub>, 0 &lt; i &lt; N <br /> (the items are in order) and <li>S&prime; is a <a href="permutation.html"><em>permutation</em></a> of S. </ol>
+</p>
+<p>
+<strong>Generalization</strong> (I am a kind of ...)<br>
+<a href="permutation.html"><em>permutation</em></a>.
+</p>
+<p>
+<strong>Specialization</strong> (... is a kind of me.)<br>
+<a href="quicksort.html"><em>quicksort</em></a>, <a href="heapSort.html"><em>heapsort</em></a>, <a href="shellsort.html"><em>Shell sort</em></a>, <a href="combSort.html"><em>comb sort</em></a>, <a href="radixsort.html"><em>radix sort</em></a>, <a href="bucketsort.html"><em>bucket sort</em></a>, <a href="insertionSort.html"><em>insertion sort</em></a>, <a href="selectionSort.html"><em>selection sort</em></a>, <a href="mergesort.html"><em>merge sort</em></a>, <a href="countingsort.html"><em>counting sort</em></a>, <a href="histogramSort.html"><em>histogram sort</em></a>, <a href="strandSort.html"><em>strand sort</em></a>, <a href="qsort.html"><em>q sort</em></a>, <a href="j_sort.html"><em>J sort</em></a>, <a href="shuffleSort.html"><em>shuffle sort</em></a>, <a href="americanFlagSort.html"><em>American flag sort</em></a>, <a href="gnomeSort.html"><em>gnome sort</em></a>, <a href="bubblesort.html"><em>bubble sort</em></a>, <a href="bidirectionalBubbleSort.html"><em>bidirectional bubble sort</em></a>, <a href="treesort1.html"><em>treesort (1)</em></a>, <a href="adaptiveHeapSort.html"><em>adaptive heap sort</em></a>, <a href="multikeyQuicksort.html"><em>multikey Quicksort</em></a>, <a href="topologicalSort.html"><em>topological sort</em></a>.
+</p>
+<p>
+<strong>See also</strong>
+<a href="externalsort.html"><em>external sort</em></a>, <a href="internalsort.html"><em>internal sort</em></a>, <a href="comparisnsrt.html"><em>comparison sort</em></a>, <a href="distributionSort.html"><em>distribution sort</em></a>, <a href="easySplitHardMerge.html"><em>easy split, hard merge</em></a>, <a href="hardSplitEasyMerge.html"><em>hard split, easy merge</em></a>, <a href="derangement.html"><em>derangement</em></a>.
+</p>
+
+<p>
+<em>Note:
+Any sorting algorithm can be made stable by appending the original position to the <a href="key.html"><em>key</em></a>.  When otherwise-equal keys are compared, the positions "break the tie" and the original order is maintained. </p> 
+<p> Knuth notes <a href="../terms.html#Knuth98">[Knuth98, 3:1, Chap. 5]</a> that this operation might be called "order".  In standard English,  "to sort" means to arrange by kind or to classify.  The term "sort" came to be used in Computer Science because the earliest automated ordering procedures used punched card machines, which classified cards by their holes, to implement <a href="radixsort.html"><em>radix sort</em></a>.</em>
+</p>
+
+<p>Author: <a href="../Other/contrib.html#authorPEB">PEB</a></p>
+<h2>Implementation</h2>
+Specific implementations can be found under the specific sort routines or at <a href="https://algorist.com/problems/Sorting.html" target="_blank">(Pascal, C++, Fortran, and Mathematica)</a>. Thomas Baudel's  <a href="http://thomas.baudel.name/Visualisation/VisuTri/" target="_blank">sort algorithm visualizer (Java)</a> with a dozen algorithms.
+
+<hr>
+
+Go to the
+<a href="https://www.nist.gov/dads/">Dictionary of Algorithms and Data
+Structures</a> home page.
+
+<hr>
+
+<p>
+If you have suggestions, corrections, or comments, please get in touch
+with <a href="/cdn-cgi/l/email-protection#5d2d3c2831733f313c3e361d33342e29733a322b">Paul Black</a>.
+
+</p>
+
+<p>
+Entry modified 2 November 2020.<br>
+HTML page formatted Wed Oct 30 12:15:31 2024.
+</p>
+
+<p>
+Cite this as:<br>
+Paul E. Black, "sort", in
+<a href="https://www.nist.gov/dads/"><em>Dictionary of Algorithms and Data Structures</em></a> [online], Paul E. Black, ed. 2 November 2020. (accessed TODAY)
+Available from: <a href="https://www.nist.gov/dads/HTML/sort.html">https://www.nist.gov/dads/HTML/sort.html</a>
+</p>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"9ef5b487afff42a68917b2d63593a474","spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4a8820a38d41123',t:'MTc5MjAwMTA4MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+
