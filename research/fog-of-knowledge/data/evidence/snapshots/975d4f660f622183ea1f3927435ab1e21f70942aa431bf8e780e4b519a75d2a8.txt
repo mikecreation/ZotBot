@@ -1,0 +1,110 @@
+merge
+merge
+(definition)
+Definition:
+Combine two or more sorted sequences of data into a single sorted  sequence.
+Formal Definition:
+For simplicity, let input be two sequences, A={a
+1
+, …, a
+n
+} and B={b
+1
+, …, b
+m
+}, each sorted according to some
+total order
+, ≤.  The output is a single sequence, merge(A,B), which is a sorted
+permutation
+of {a
+1
+, …, a
+n
+, b
+1
+, …, b
+m
+}.
+merge(A, B) is
+A, if B is empty,
+B, if A is empty,
+{a
+1
+}.merge({a
+2
+, …, a
+n
+}, B) if a
+1
+<
+= b
+1
+, and
+{b
+1
+}.merge(A, {b
+2
+, …, b
+m
+}) otherwise.
+The symbol "." stands for concatenation, for example, {a
+1
+, …, a
+n
+}.{b
+1
+, …, b
+m
+} = {a
+1
+, …, a
+n
+, b
+1
+, …, b
+m
+}.
+Formalization by Mustafa Ege <
+[email protected]
+>.
+Specialization
+(... is a kind of me.)
+multiway merge
+,
+k-way merge
+,
+simple merge
+,
+ideal merge
+,
+optimal merge
+.
+See also
+two-way merge sort
+,
+three-way merge sort
+,
+k-way merge sort
+,
+balanced merge sort
+,
+nonbalanced merge sort
+.
+Author:
+ASK
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 2 March 2015.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Art S. Kagel, "merge", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 2 March 2015. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/merge.html

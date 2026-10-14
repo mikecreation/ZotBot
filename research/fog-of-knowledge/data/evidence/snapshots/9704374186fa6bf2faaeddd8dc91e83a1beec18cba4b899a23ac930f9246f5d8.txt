@@ -1,0 +1,135 @@
+binary tree representation of trees
+binary tree representation of trees
+(data structure)
+Definition:
+A way to represent a
+multiway tree
+as a
+binary tree
+.  The leftmost
+child
+, c, of a
+node
+, n, in the multiway tree is the left child, c', of the corresponding node, n', in the binary tree. The immediately right
+sibling
+of c is the right child of c'.
+Formal Definition:
+A multiway tree T can be represented by a corresponding binary tree B. Let {n
+1
+,…, n
+k
+} be nodes of the multiway tree, T.  Let {n'
+1
+,…, n'
+k
+} be nodes of the corresponding binary tree B.   Node n
+k
+corresponds to n'
+k
+.  In particular,  nodes n
+k
+and n'
+k
+have the same labels and if n
+k
+is the root of T, n'
+k
+is the root of B. Connections correspond as follows:
+If n
+l
+is the leftmost child of n
+k
+, n'
+l
+is the left child of n'
+k
+. (If n
+k
+has no children, n'
+k
+has no left child.)
+If n
+s
+is the next (immediately right) sibling of n
+k
+, n'
+s
+is the right child of n'
+k
+.
+Also known as
+first child-next sibling binary tree, doubly-chained tree, filial-heir chain.
+Aggregate parent
+(I am a part of or used in ...)
+multiway tree
+,
+k-ary tree
+,
+Schorr-Waite graph marking algorithm
+.
+Note:
+See
+[Knuth97, 1:333, Sect. 2.3.2]
+.
+The
+binary tree
+representation of a
+multiway tree
+or
+k-ary tree
+is based on first child-next sibling representation of the tree. In this representation every node is linked with its leftmost child and its next (right nearest) sibling.
+Let us see one example.  Consider the following multiway tree
+1
+/|\
+/ | \
+/  |  \
+2   3   4
+/ \      |
+5   6     7
+/ \
+8   9
+This tree can be represented in first child-next sibling manner as follows
+1
+/
+/
+/
+2---3---4
+/       /
+5---6   7
+/
+8---9
+Now, if we look at the first child-next sibling representation of the tree closely, we will see that it forms a binary tree.  To see this better, we can rotate every next-sibling edge 45 degrees  clockwise.  After that we get the following binary tree:
+1
+/
+2
+/ \
+5   3
+\   \
+6   4
+/
+7
+/
+8
+\
+9
+This is binary tree representation of the given (multiway) tree.
+Authors:
+AL
+,
+PEB
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 20 November 2008.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Alen Lovrencic and Paul E. Black, "binary tree representation of trees", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 20 November 2008. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/binaryTreeRepofTree.html

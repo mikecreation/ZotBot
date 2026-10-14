@@ -1,0 +1,67 @@
+Fisher-Yates shuffle
+Fisher-Yates shuffle
+(algorithm)
+Definition:
+Randomly permute N elements by exchanging each element e
+i
+with a random element from i to N. It consumes
+Θ(N log N)
+bits and runs in
+linear
+time.
+Generalization
+(I am a kind of ...)
+ideal random shuffle
+,
+permutation
+.
+See also
+Johnson-Trotter
+,
+pseudo-random number generator
+.
+Note:
+The algorithm can be viewed as a reverse
+selection sort
+.  It is described in some detail as algorithm 3.4.2P in
+[Knuth97, 2:145]
+.
+For even a rather small number of elements (or cards), the total number of permutations is far larger than the period of most pseudo-random number generators.  This implies that most permutations will never be generated.  (After documentation for random.shuffle() in Python, particularly v2.6.1.)
+Author:
+PEB
+Implementation
+Ben Pfaff's answer to
+how can I shuffle the contents of an array? (C)
+. Mike Bostock's
+animations with code (JavaScript)
+. An
+implementation (Java)
+due to Sedgewick and Wayne (search for Shuffling).
+More information
+Fisher-Yates shuffle
+illustrated
+with argument for correctness and error of naive shuffle.
+R. A. Fisher
+and
+F. Yates
+, Example 12, Statistical Tables, London, 1938.
+Richard Durstenfeld
+,
+Algorithm 235: Random permutation
+, CACM 7(7):420, July 1964.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 5 April 2023.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "Fisher-Yates shuffle", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 5 April 2023. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/fisherYatesShuffle.html

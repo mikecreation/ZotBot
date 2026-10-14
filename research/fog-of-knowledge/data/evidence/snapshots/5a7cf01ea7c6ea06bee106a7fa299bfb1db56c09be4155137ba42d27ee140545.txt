@@ -1,0 +1,167 @@
+CSE548, AMS542:  Analysis of Algorithms, Spring 2014                  Date:  Apr 28
+                                            Homework #4
+                                                    ( Due:  May 12 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+               (a)                                                                   (b)                                                                   (c)                                                                   (d)
+
+Figure 1:  Three possible triangulations of a convex polygon.  The triangulation in (c) is the best as
+it has the smallest weight.
+
+
+Task 1. [ 200 Points ] Optimal Polygon Triangulation.  Let P  be a convex polygon deﬁned
+by a sequence of n vertices⟨v1, v2, . . . , vn⟩.  Since P  is convex, for every pair of distinct vertices vi
+and vj (1≤ i, j≤ n), the straight line joining the two vertices will lie completely inside the polygon.
+By len(vi, vj)  we  denote  the  length  of  the  straight  line  joining vi  and vj.   Figure  1(a)  shows  an
+example convex polygon containing 5 vertices with len(v1, v2) = 13, len(v2, v3) = 5, len(v3, v4) = 4,
+len(v4, v5) = 5 and len(v5, v1) = 13.
+We deﬁne a weight function w for triangles formed by the vertices of P .  If vi, vk and vj  are three
+distinct vertices of P , we deﬁne w(i, k, j) = len(vi, vk) + len(vk, vj) + len(vj, vi).  For example, in
+Figure 1(b), w(1, 2, 3) = len(v1, v2) + len(v2, v3) + len(v3, v1) = 13 + 5 + 2√65 = 18 + 2√65.  If the
+vertices are not distinct (e.g., at least two of them are the same), we deﬁne w(i, k, j) = 0.  Other
+weight functions are also possible.
+The optimal polygon triangulation problem asks for decomposing a given convex polygon into non-
+overlapping triangles such that the total weight of all those triangles is minimized.  The triangles
+must  cover  the  entire  polygon.   For  example,  Figures  1(b),  1(c)  and  1(d)  show  three  possible
+triangulations of the convex polygon shown in Figure 1(a).  Figure 1(b) decomposes the polygon into
+triangles∆v1v2v3,∆v1v3v4 and∆v1v4v5 with a total weight of w(1, 2, 3) + w(1, 3, 4) + w(1, 4, 5) =
+(13 + 5 + 2√65) + (2√65 + 4 + 2√65) + (13 + 5 + 2√65)  =  60 + 8√65≈  100.5.   Among  the
+three triangulations the one in Figure 1(c) has the smallest weight which is,  indeed,  an optimal
+triangulation of the given polygon.
+
+                                                                1
+
+Let t[1 : n, 1 : n] be an n× n matrix in which entry t[i, j] stores the total weight of an optimal
+triangulation of the convex polygon formed by the sequence⟨vi, vi+1, . . . , vj⟩, where 1≤ i < j≤ n.
+Then the total weight of an optimal triangulation of P  is given by t[1, n] which can be computed
+using the following recurrence relation:
+                             ∞                                                       if 1≤ i = j≤ n,
+
+                   t[i, j] = 0                                                         if 1≤ i = j− 1 < n,                 (1)
+                                mini≤k≤j{t[i, k] + t[k, j] + w(i, k, j)} if 1≤ i < j− 1 < n.
+
+
+
+ Iterative-Triangulation( t,  n )
+ (Input is an   n× n matrix t[1 : n, 1 : n] with t[i, j] = 0 for 1≤ i = j− 1 < n and t[i, j] =∞ otherwise (i.e.,
+ i⁄= j− 1).  This function updates all t[i, j] with 1≤ i < j− 1 < n based on Recurrence 1.)
+     1.  for i← n− 1 downto 1 do
+     2.        for j← i + 2 to n do
+     3.              for k← i to j do
+     4.                 t[i, j]← min{ t[i, j],  t[i, k] + t[k, j] + w(i, k, j)}
+
+                              Figure 2:  Iterative implementation of Recurrence 1.
+
+  (a)  [ 20 Points ] An iterative algorithm for computing Recurrence 1 using three nested for loops
+       is given in Figure 2.  Explain how you would correctly parallelize this algorithm using only
+       parallel for loops.  Compute its work, span and parallelism on an input matrix of size n× n.
+
+  (b)  [ 50 Points ] Consider the recursive divide-and-conquer algorithm given in Figure 3 for solv-
+       ing Recurrence 1. Explain how you would correctly parallelize this algorithm using spawn and
+       sync  .  Compute its work, span and parallelism on an input matrix of size n× n (assuming
+       n to be a power of 2).  You are not allowed to use any extra space.
+
+  (c)  [ 50 Points ] If you are allowed to use extra space for storing intermediate values of sub-
+       matrices of t in the parallel version of the algorithm given in Figure 3 (the same way we did
+       for recursive matrix multiplication), does that lead to a span that is asymptotically shorter
+       than the one you obtained in part (b)?  Compute the work, span, parallelism and extra space
+       usage of this new algorithm on an input matrix of size n× n (assuming n to be a power of 2).
+
+  (d)  [ 15 Points ] Is the parallel algorithm you obtained in part (a) scalable?  If so, if you increase
+       p by a factor of 2, by what factor you must increase n so that its eﬃciency remains constant?
+       Answer the same questions for your parallel algorithms in parts (b) and (c).
+
+  (e)  [ 15 Points ] Analyze the cache complexity of the serial iterative algorithm given in Figure
+       2 on an input matrix of size n× n.
+
+ (f)  [ 50 Points ] Analyze the cache complexity of the serial recursive algorithm given in Figure
+       3 on an input matrix of size n× n (assuming n to be a power of 2).
+
+
+
+
+                                                               2
+
+  Aopt−tri( X  )
+  (X points to an m× m square submatrix of the n× n input matrix t such that the top-left to bottom-right diagonal of X lies on
+  the top-left to bottom-right diagonal of t.  Both n and m are assumed to be powers of 2.  Initial call to the function is Aopt−tri(t).)
+
+       1.   if X is not a 1× 1 matrix then
+
+       2.        Aopt−tri( X11  )
+       3.        Aopt−tri( X22  )
+
+       4.        Bopt−tri( X12,  X11,  X22  )
+
+
+  Bopt−tri( X,  U,  V  )                                                               Copt−tri( X,  U,  V  )
+  (X,  U  and V  are m× m  disjoint  submatrices  of  the n× n                         (X,  U  and V  are m× m  disjoint  submatrices  of  the n× n
+  input matrix t such that X  lies entirely above the top-left to                      input  matrix t  each  of  which  lies  entirely  above  the  top-left
+  bottom-right  diagonal  of t,  and  the  top-left  to  bottom-right                  to  bottom-right  diagonal  of t.   The  submatrix U  lies  to  the
+  diagonals of U and V  lie on that of t.  Submatrix U lies to the                     left of submatrix X, and both lie on the same rows of t.  The
+  left of X, and both lie on the same rows of t.  Submatrix V                          submatrix V  lies below submatrix X, and both lie on the same
+  lies below X, and both lie on the same columns of t.  Both n                         columns of t.  Both n and m are assumed to be powers of 2.)
+  and m are assumed to be powers of 2.)
+
+       1.   if X is a 1× 1 matrix then                                                      1.   if X is a 1× 1 matrix then
+
+       2.      Let    X≡ t[i, j],  U≡ t[i, k],  V ≡ t[k, j]                                 2.      Let    X≡ t[i, j],  U≡ t[i, k],  V ≡ t[k, j]
+
+       3.        t[i, j]← min{ t[i, j],  t[i, k] + t[k, j] + w(i, k, j)}                    3.        t[i, j]← min{ t[i, j],  t[i, k] + t[k, j] + w(i, k, j)}
+           else                                                                                 else
+
+       4.        Bopt−tri( X21,  U22,  V11  )                                               4.        Copt−tri( X11,  U11,  V11  )
+       5.        Copt−tri( X11,  U12,  X21  )                                               5.        Copt−tri( X12,  U11,  V12  )
+
+       6.        Copt−tri( X22,  X21,  V12  )                                               6.        Copt−tri( X21,  U21,  V11  )
+
+       7.        Bopt−tri( X11,  U11,  V11  )                                               7.        Copt−tri( X22,  U21,  V12  )
+       8.        Bopt−tri( X22,  U22,  V22  )                                               8.        Copt−tri( X11,  U12,  V21  )
+
+       9.        Copt−tri( X12,  U12,  X22  )                                               9.        Copt−tri( X12,  U12,  V22  )
+      10.        Copt−tri( X12,  X11,  V12  )                                              10.        Copt−tri( X21,  U22,  V21  )
+
+      11.        Bopt−tri( X12,  U11,  V22  )                                              11.        Copt−tri( X22,  U22,  V22  )
+Figure 3: Recursive divide-and-conquer algorithm for the optimal polygon triangulation problem deﬁned
+by recurrence 1.  Initial call is Aopt−tri( t ) for an n× n input matrix t[1 : n, 1 : n] with t[i, j] = 0 for
+1≤ i  = j− 1 < n  and t[i, j]  =∞  otherwise  (i.e.,  i⁄= j− 1).   This  function  updates  all t[i, j]  for
+1≤ i < j− 1 < n based on Recurrence 1.  We assume that n is a power of 2.
+
+
+
+
+
+
+
+
+                                                                              3

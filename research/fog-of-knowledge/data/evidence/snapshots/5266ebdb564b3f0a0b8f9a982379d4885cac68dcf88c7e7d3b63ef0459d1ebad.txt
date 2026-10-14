@@ -1,0 +1,85 @@
+Fibonacci number
+Fibonacci number
+(definition)
+Definition:
+A member of the sequence of numbers such that each number is  the sum of the preceding two.   The first seven numbers are 1, 1, 2, 3, 5, 8, and 13. F(n) ≈ round(Φ
+n
+/√ 5), where Φ=(1+√ 5)/2.
+Formal Definition:
+The n
+th
+Fibonacci number is
+F(n) = F(n-1) + F(n-2), where F(1)=1 and F(2)=1, or
+F(n) = (Φ
+n
+- φ
+n
+)/√ 5, where Φ=(1+√ 5)/2 and φ=(1-√ 5)/2.
+Aggregate parent
+(I am a part of or used in ...)
+Fibonacci tree
+,
+Fibonaccian search
+.
+See also
+kth order Fibonacci numbers
+,
+memoization
+.
+Note:
+Fibonacci, or more correctly Leonardo of Pisa, discovered the series in 1202 when he was studying how fast rabbits could breed in ideal circumstances.
+Computing Fibonacci numbers with the recursive formula is an example in the notes for
+memoization
+.  The N
+th
+Fibonacci number can be computed in log N steps.  The following method is by Bill Gosper & Gene Salamin, Hakmem Item 12, M.I.T.
+Let pair-wise multiplication be
+(A,B)(C,D) = (AC+AD+BC,AC+BD)
+This is just (AX+B)*(CX+D) mod X²-X-1, and so is associative and commutative.  Note that (A,B)(1,0) = (A+B,A) which is the Fibonacci recurrence.  Thus,
+(1,0)^N = (F(N),F(N-1))
+which can be computed in log N steps by
+repeated squaring
+.
+As an example, here is a table of pair-wise Fibonacci numbers:
+b^pow   pow
+(1,0)	1
+(1,0)(1,0) =  (1,1)	2
+(1,1)(1,0) =  (2,1)	3
+(2,1)(1,0) =  (3,2)	4
+(3,2)(1,0) =  (5,3)	5
+(5,3)(1,0) =  (8,5)	6
+(8,5)(1,0) = (13,8)	7
+(13,8)(1,0) = (21,13)	8
+and here are some "Fibonacci" multiplications
+(1,1)(1,1) = (3,2)			b^2 * b^2 = b^4
+(3,2)(3,2) = (9+6+6,9+4) = (21,13)	b^4 * b^4 = b^8
+(1,1)(5,3) = (5+3+5,5+3) = (13,8)	b^2 * b^5 = b^7
+They also note that for general second order recurrences
+G(N+1) = XG(N) + YG(N-1)
+we have the rule
+(A,B)(C,D) = (AD+BC+XAC,BD+YAC)
+Inverses and fractional powers are given also.
+Author:
+PR
+Implementation
+Find the n-th Fibonacci number with
+five different approaches (Python)
+. Worst-case behavior to
+generate nth number, annotated for real time (WOOP/ADA)
+.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 21 April 2022.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Patrick Rodgers, "Fibonacci number", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 21 April 2022. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/fibonacciNumber.html

@@ -1,0 +1,77 @@
+2-choice hashing
+2-choice hashing
+(data structure)
+Definition:
+A variant of a
+hash table
+in which
+keys
+are added by hashing with two
+hash functions
+.  The key is put in the
+array
+position with the fewer (colliding) keys.   Some
+collision resolution scheme
+is needed, unless keys are kept in
+buckets
+.  The
+average-case cost
+of a successful search is
+O(2 + (m-1)/n)
+, where m is the number of keys and n is the size of the array. The most collisions is log
+2
+ln n +
+Θ
+(m/n) with high probability.
+Generalization
+(I am a kind of ...)
+hash table
+.
+Aggregate parent
+(I am a part of or used in ...)
+dictionary
+.
+Aggregate child
+(... is a part of or used in me.)
+array
+,
+hash function
+.
+See also
+2-left hashing
+.
+Note:
+Called "2-way chaining" in the paper.
+Although the average lookup time is similar to a table with a single hash function, the maximum number of collisions is exponentially smaller.  This make using buckets or use in real-time systems far more practical.  Additional hash functions only decrease the maximum by a constant factor.
+Buckets or lists can be searched in parallel.
+Michael Mitzenmacher extensively studied and analyzed 2-left and 2-choice hashing.
+Author:
+PEB
+More information
+Yossi Azar
+,
+Andrei Z. Broder
+,
+Anna R. Karlin
+,
+Eli Upfal
+,
+Balanced Allocations
+, SIAM J. Comput. 29(1):180-200, 1999.
+An earlier version appeared in STOC 1994.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 14 August 2008.
+HTML page formatted Wed Oct 30 12:15:31 2024.
+Cite this as:
+Paul E. Black, "2-choice hashing", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 14 August 2008. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/twoChoiceHashing.html

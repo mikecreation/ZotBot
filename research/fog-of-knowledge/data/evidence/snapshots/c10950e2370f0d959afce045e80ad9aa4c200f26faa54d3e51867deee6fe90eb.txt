@@ -1,0 +1,72 @@
+ViC* Papers
+ViC*
+People
+Papers
+Current Work
+Software
+Why ViC*?
+Virtual-Memory C* Compiler Project
+Papers
+Overview of ViC*
+Alex Colvin and Thomas H. Cormen.
+ViC*: A Compiler for
+Virtual-Memory C*
+.
+Dartmouth College Computer Science Technical Report PCS-TR97-303,
+November 1997.  Submitted to HIPS '98.
+A description of why the ViC* compiler is necessary, what it does, and
+how good the resulting code is.
+ViC* and the Parallel Disk Model
+Thomas H. Cormen and Melissa Hirschl.
+Early Experiences in Evaluating
+the Parallel Disk Model with the ViC* Implementation
+.
+Parallel Computing
+, 23:4-5, June 1997, pp. 571-600.
+This paper shows that analysis for the PDM is a good indicator of
+actual performance, with some minor caveats.  It describes
+implementations of PDM algorithms for out-of-core BMMC permutations
+and external radix sort, and shows how their measured performance
+matches the predicated performance when PDM parameters vary.
+Papers that use the ViC* software
+Thomas H. Cormen and David M. Nicol.
+Out-of-Core FFTs with Parallel Disks
+.
+ACM SIGMETRICS
+Performance Evaluation Review
+, 25:3, December
+1997, pp. 3-12.
+A compilation of the following two papers.
+Thomas H. Cormen and David M. Nicol.
+Performing Out-of-Core FFTs on Parallel Disk Systems
+.
+To appear in
+Parallel Computing
+. Also
+Dartmouth
+College Computer Science Technical Report PCS-TR96-294
+, August
+1996, revised September 1996, and ICASE Report 96-70, December
+1996.
+We show how to perform out-of-core FFTs on a uniprocessor with
+multiple disks.  We get speedups of up to a factor of 140 compared to
+running Cooley-Tukey with demand paging.  (We cheat slightly to obtain
+a speedup of 140 times, but the improvement is real.)
+Thomas H. Cormen, Jake Wegmann, and David M. Nicol.
+Multiprocessor Out-of-Core FFTs
+with Distributed Memory and Parallel Disks
+.
+IOPADS '97, November 1997, pp. 68-78.
+We extend the uniprocessor out-of-core FFT method for multiprocessors
+in a way that requires no interprocessor communication during the
+butterfly operations.  Communication that would normally occur during
+butterfly operations is folded into permutations (BMMC, in fact) that
+are performed anyway.  The result on one platform (a network of 8
+RS6000's) is about a 10% speedup.  Not earthshaking, but it is faster,
+and it was easy to program.
+For other related papers...
+...see Tom Cormen's
+papers
+page.
+Thomas H. Cormen <thc@cs.dartmouth.edu>
+Last modified: Fri Dec  5 16:48:50 1997

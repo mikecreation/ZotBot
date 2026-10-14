@@ -1,0 +1,185 @@
+Skip Search algorithm
+Next:
+KmpSkip Search algorithm
+Up:
+ESMAJ
+Previous:
+Maximal Shift algorithm
+Skip Search algorithm
+Main features
+uses buckets of positions for each character of the alphabet;
+preprocessing phase in
+O
+(
+m
++
+) time and space complexity;
+searching phase in
+O
+(
+m
+n
+) time complexity;
+O
+(
+n
+) expected text character comparisons.
+Description
+For each character of the alphabet, a bucket collects all the positions of that character in
+x
+. When a character occurs
+k
+times in the pattern, there are
+k
+corresponding positions in the bucket of the character. When the word is much shorter than the alphabet, many buckets are empty.
+The preprocessing phase of the Skip Search algorithm consists in computing the buckets for all the characters of the alphabet: for
+c
+in
+z
+[
+c
+] = {
+i
+:
+0
+i
+m
+-1 and
+x
+[
+i
+] =
+c
+} The space and time complexity of this preprocessing phase is
+O
+(
+m
++
+).
+The main loop of the search phase consists in examining every
+m
+-
+th
+text character,
+y
+[
+j
+] (so there will be
+n
+/
+m
+main iterations). For
+y
+[
+j
+], it uses each position in the bucket
+z
+[
+y
+[
+j
+]] to obtain a possible starting position
+p
+of
+x
+in
+y
+. It performs a comparison of
+x
+with
+y
+beginning at position
+p
+, character by character, until there is a mismatch, or until all match.
+The Skip Search algorithm has a quadratic worst case time complexity but the expected number of text character inspections is
+O
+(
+n
+).
+The C code
+The description of a linked list
+List
+can be found in the introduction section
+implementation
+.
+void SKIP(char *x, int m, char *y, int n) {
+   int i, j;
+   List ptr, z[ASIZE];
+
+   /* Preprocessing */
+   memset(z, NULL, ASIZE*sizeof(List));
+   for (i = 0; i < m; ++i) {
+      ptr = (List)malloc(sizeof(struct _cell));
+      if (ptr == NULL)
+         error("SKIP");
+      ptr->element = i;
+      ptr->next = z[x[i]];
+      z[x[i]] = ptr;
+   }
+  
+   /* Searching */
+   for (j = m - 1; j < n; j += m)
+      for (ptr = z[y[j]]; ptr != NULL; ptr = ptr->next)
+         if (memcmp(x, y + j - ptr->element, m) == 0) {
+            if (j - ptr->element <= n - m)
+               OUTPUT(j - ptr->element);
+         }
+         else
+            break;
+}
+In practice the test
+j - ptr->element <= n - m
+can be omitted and the algorithm becomes :
+void SKIP(char *x, int m, char *y, int n) {
+   int i, j;
+   List ptr, z[ASIZE];
+
+   /* Preprocessing */
+   memset(z, NULL, ASIZE*sizeof(List));
+   for (i = 0; i < m; ++i) {
+      ptr = (List)malloc(sizeof(struct _cell));
+      if (ptr == NULL)
+         error("SKIP");
+      ptr->element = i;
+      ptr->next = z[x[i]];
+      z[x[i]] = ptr;
+   }
+  
+   /* Searching */
+   for (j = m - 1; j < n; j += m)
+      for (ptr = z[y[j]]; ptr != NULL; ptr = ptr->next)
+         if (memcmp(x, y + j - ptr->element, m) == 0)
+            OUTPUT(j - ptr->element);
+}
+The example
+Preprocessing phase
+Z table used by Skip Search algorithm.
+Searching
+phase
+References
+C
+HARRAS
+C
+.,
+L
+ECROQ
+T.
+,
+P
+EHOUSHEK
+J.D.
+, 1998, A very fast string matching algorithm for small alphabets and long patterns, in
+Proceedings of the 9th Annual Symposium on Combinatorial Pattern Matching
+, M. Farach-Colton ed., Piscataway, New Jersey, Lecture Notes in Computer Science 1448, pp 55-64, Springer-Verlag, Berlin.
+Next:
+KmpSkip Search algorithm
+Up:
+ESMAJ
+Previous:
+Maximal Shift algorithm
+e-mails: {
+Christian.Charras
+,
+Thierry.Lecroq
+}@laposte.net
+Tue Jan 14 15:03:31 MET 1997

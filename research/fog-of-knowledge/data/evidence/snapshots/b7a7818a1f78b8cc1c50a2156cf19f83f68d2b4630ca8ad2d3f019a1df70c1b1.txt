@@ -1,0 +1,97 @@
+hidden Markov model
+hidden Markov model
+(data structure)
+Definition:
+A variant of a
+finite state machine
+having a set of
+states
+, Q, an output
+alphabet
+, O, transition probabilities, A, output probabilities, B, and initial state probabilities, Π.  The current state is not observable.  Instead, each state produces an output with a certain probability (B).  Usually the states, Q, and outputs, O, are understood, so an HMM is said to be a triple,  (A, B, Π).
+Formal Definition:
+After Michael Cohen's lectures for  CN760.
+A = {a
+ij
+= P(q
+j
+at t+1 | q
+i
+at t)}, where P(a | b) is the conditional probability of a given b,  t ≥ 1 is time, and q
+i
+∈ Q.
+Informally, A is the probability that the next state is q
+j
+given that the current state is q
+i
+.
+B = {b
+ik
+= P(o
+k
+| q
+i
+)},  where o
+k
+∈ O.
+Informally, B is the probability that the output is o
+k
+given that the current state is q
+i
+.
+Π = {p
+i
+= P(q
+i
+at t=1)}.
+Also known as
+HMM.
+Generalization
+(I am a kind of ...)
+finite state machine
+.
+Aggregate parent
+(I am a part of or used in ...)
+Baum Welch algorithm
+,
+Viterbi algorithm
+.
+See also
+Markov chain
+.
+Note:
+Computing a model given sets of sequences of observed outputs is very difficult, since the states are not directly observable and transitions are probabilistic.  One method is the
+Baum Welch algorithm
+.
+Although the states cannot, by definition, be directly observed, the most likely sequence of sets for a given sequence of observed outputs can be computed in O(nt), where n is the number of states and t is the length of the sequence.  One method is the
+Viterbi algorithm
+.
+Thanks to Arvind <
+[email protected]
+> May 2002.
+Named after
+Andrei Andreyevich Markov
+(1856 - 1922), who studied poetry and other texts as stochastic sequences of characters.
+Author:
+PEB
+More information
+L. E. Baum
+,
+An inequality and associated maximization technique in statistical estimation for probabilistic functions of Markov processes
+, Inequalities, 3:1-8, 1972.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 21 December 2020.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "hidden Markov model", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 21 December 2020. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/hiddenMarkovModel.html

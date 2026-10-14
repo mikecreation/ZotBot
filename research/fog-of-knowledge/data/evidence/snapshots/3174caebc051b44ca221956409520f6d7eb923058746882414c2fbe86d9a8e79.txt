@@ -1,0 +1,79 @@
+Cupif-Giannini tree traversal
+Cupif-Giannini tree traversal
+(algorithm)
+Definition:
+Visit every
+leaf
+of a
+perfect binary tree
+with maximum dispersion (see note).  For a tree of
+height
+n, use an n-bit "count" integer.  The least significant bit of count indicates whether to go to the left or right
+child
+from the
+root
+. Each more significant bit indicates whether to go left or right.  Regular binary counting generates the list of 2
+n
+paths
+to the leaves.
+To randomly
+permute
+the order of leaf visits, choose a random n-bit "key" at the beginning. Use the
+xor
+of the key and the count to indicate which child to visit.
+See also
+depth-first search
+,
+tree traversal
+.
+Note:
+"Dispersion" means the next leaf visited is as far from other leaves visited as possible.  More formally, the next leaf has the maximum
+shortest path
+to the preceding leaf (with less importance given to be far from more distantly preceeding leaves).
+It doesn't matter to the dispersion whether a 0 bit means left (and 1 means right) or 0 means right (and 1 means left).  Also the initial value of count doesn't matter, as long as overflow is handled.
+To picture the algorithm, consider starting with a count of 000...00, indicating going down all left branches to the first leaf.  The next count is 000...01, which has a shortest path distance of 2n: from the first leaf, go up to the root, take the right branch, then down to the second leaf.  The next count is 000...10. This third leaf is 2n from the immediately preceding leaf (the second one) and 2n-1 from the first leaf: up to one below the root, then down to the first leaf.
+Here is pseudocode for an inefficient Cupif-Giannini tree traversal with Xor "randomization" (** is the power operator, and ^ is xor):
+visitNode(tree, nodeNumber, bitNumber)
+begin
+if isLeaf(tree), then
+print(tree.root);
+else
+if the bitNumber-th bit of nodeNumber is 1, then
+visitNode(tree.left_subtree, nodeNumber, bitNumber+1);
+else
+visitNode(tree.right_subtree, nodeNumber, bitNumber+1);
+endif
+endif
+end
+cupifGiannini(tree)
+begin
+key = random();
+for n = 0 to 2**height(tree)-1
+visitNode(tree, n ^ key, 1);
+endfor
+end
+Author:
+PEB
+More information
+Jérôme François, Abdelkader Lahmadi, Valentin Giannini, Damien Cupif, Frederic Beck
+, and
+Bertrand Wallrich
+,
+Optimizing internet scanning for assessing industrial systems exposure
+, 2016 International Wireless Communications and Mobile Computing Conference (IWCMC), pp. 516-522, 2016.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 4 April 2019.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "Cupif-Giannini tree traversal", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 4 April 2019. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/CupifGianniniTreeTraversal.html

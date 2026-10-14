@@ -1,0 +1,55 @@
+HyperLogLog
+HyperLogLog
+(algorithm)
+Definition:
+Estimate the number of unique items by setting m = 2
+b
+counters to maximum value (e.g. all 1 bits).
+Hash
+each item to get an L bit result. The first b bits of the result indicate a counter.  Set that counter to the minimum of the remaining L-b bits and the counter value. When finished with all items, compute the harmonic mean of the number of leading zeros in each counter's value, Z.  The estimate of the number of distinct items is α m² Z.
+Aggregate child
+(... is a part of or used in me.)
+hash function
+.
+See also
+count-distinct problem [Wikipedia]
+.
+Note:
+This can estimate cardinalities of more than a billion items with a 2% standard error using only 1 500 bytes of memory.
+The number of counters, m, is small, usually less than 2
+8
+= 256. The approximation factor, α, is about 0.7. It is tedious to compute exactly.
+Counting the number of unique items in a (large) collection is the Count-distinct problem in Computer Science or Cardinality estimation problem in Applied Mathematics.
+Author:
+PEB
+More information
+Philippe Flajolet
+,
+Éric Fusy
+,
+Olivier Gandouet
+, and
+Frédéric Meunier
+,
+HyperLogLog: the analysis of a near-optimal cardinality estimation algorithm
+, Proc. 2007 Intern'l Conf. on Analysis of Algorithms (AOFA '07).
+Cheng-Wei Hu
+,
+HyperLogLog: A Simple but Powerful Algorithm for Data Scientists
+, January 2021.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 10 August 2023.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "HyperLogLog", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 10 August 2023. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/hyperloglog.html

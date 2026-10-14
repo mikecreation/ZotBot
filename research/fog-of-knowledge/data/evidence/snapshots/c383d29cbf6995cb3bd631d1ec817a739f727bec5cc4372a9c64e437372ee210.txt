@@ -1,0 +1,58 @@
+Schorr-Waite graph marking algorithm
+Schorr-Waite graph marking algorithm
+(algorithm)
+Definition:
+A class of algorithms to mark all reachable
+nodes
+in a
+directed graph
+by reversing pointers on the way down, then restoring them upon leaving.  It uses only a few bits of extra space per node and a few work pointers.
+Aggregate child
+(... is a part of or used in me.)
+directed graph
+,
+binary tree representation of trees
+.
+See also
+depth-first search
+.
+Note:
+The graph must be a binary graph, that is, nodes have
+out-degree
+at most two.  Any graph may be represented as a binary graph using a technique like
+binary tree representation of trees
+. This algorithm works for graphs with
+cycles
+, so is not limited to
+binary trees
+.
+This is used in garbage collection to mark all nodes in use.  Any node still unmarked after the algorithm finishes is unused and may be collected.
+Although a depth-first search to mark nodes is easy to write, it takes extra space proportional to the maximum search depth, which could be all nodes.
+Author:
+PEB
+More information
+Herbert Schorr and William M. Waite
+,
+An efficient machine-independent procedure for garbage collection in various list structures
+, CACM, 10(8):501-506, August 1967.
+There are many variants, better presentations, and proofs of correctness.
+Historical Note
+Knuth says this method was "discovered independently by Peter Deutsch and by Herbert Schorr and W. M. Waite in 1965"
+[Knuth97, 1:418, Sect. 2.3.5]
+, but I cannot find any other documentation crediting Deutsch.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 28 May 2019.
+HTML page formatted Wed Oct 30 12:15:31 2024.
+Cite this as:
+Paul E. Black, "Schorr-Waite graph marking algorithm", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 28 May 2019. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/SchorrWaiteGraphMarking.html

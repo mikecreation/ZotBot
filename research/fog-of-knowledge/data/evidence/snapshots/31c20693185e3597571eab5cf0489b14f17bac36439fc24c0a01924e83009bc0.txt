@@ -1,0 +1,267 @@
+Morris-Pratt algorithm
+Next:
+Knuth-Morris-Pratt algorithm
+Up:
+ESMAJ
+Prev:
+Shift Or algorithm
+Morris-Pratt algorithm
+Main features
+performs the comparisons from left to right;
+preprocessing phase in
+O
+(
+m
+) space and time complexity;
+searching phase in
+O
+(
+n
++
+m
+) time complexity (independent from the alphabet size);
+performs at most 2
+n
+-1 information gathered during the scan of the text;
+delay bounded by
+m
+.
+Description
+The design of the Morris-Pratt algorithm follows a tight analysis of the
+Brute Force
+algorithm, and especially on the way this latter wastes the information gathered during the scan of the text.
+Let us look more closely at the brute force algorithm. It is possible to improve the length of the shifts and simultaneously remember some portions of the text that match the pattern. This saves comparisons between characters of the pattern and characters of the text and consequently increases the speed of the search.
+Consider an attempt at a left position
+j
+on
+y
+, that is when the window is positioned on the text factor
+y
+[
+j
+..
+j
++
+m
+-1]
+. Assume that the first mismatch occurs between
+x
+[
+i
+] and
+y
+[
+i
++
+j
+]
+with
+0 <
+i
+<
+m
+. Then,
+x
+[0..
+i
+-1] =
+y
+[
+j
+..
+i
++
+j
+-1] =
+u
+and
+a
+= x[
+i
+]
+y
+[
+i
++
+j
+]=
+b
+.
+When shifting, it is reasonable to expect that a prefix
+v
+of the pattern matches some suffix of the portion
+u
+of the text. The longest such prefix
+v
+is called the
+border
+of
+u
+(it occurs at both ends of
+u
+). This introduces the notation: let
+mpNext
+[
+i
+] be the length of the longest border of
+x
+[0 ..
+i
+-1] for 0 <
+i
+m
+. Then, after a shift, the comparisons can resume between characters
+c
+=
+x
+[
+mpNext
+[
+i
+]]
+and
+y
+[
+i
++
+j
+]=
+b
+without missing any occurrence of
+x
+in
+y
+, and avoiding a backtrack on the text (see figure 6.1). The value of
+mpNext
+[0] is set to -1.
+Figure 6.1:
+Shift in the Morris-Pratt algorithm (
+v
+border of
+u
+).
+The table
+mpNext
+can be computed in
+O
+(
+m
+) space and time before the searching phase, applying the same searching algorithm to the pattern itself, as if
+x
+=
+y
+.
+Then the searching phase can be done in
+O
+(
+m
++
+n
+) time. The Morris-Pratt algorithm performs at most 2
+n
+-1 text character comparisons during the searching phase. The
+delay
+(maximal number of comparisons for a single text character) is bounded by
+m
+.
+The C code
+void preMp(char *x, int m, int mpNext[]) {
+   int i, j;
+
+   i = 0;
+   j = mpNext[0] = -1;
+   while (i < m) {
+      while (j > -1 && x[i] != x[j])
+         j = mpNext[j];
+      mpNext[++i] = ++j;
+   }
+}
+
+
+void MP(char *x, int m, char *y, int n) {
+   int i, j, mpNext[XSIZE];
+
+   /* Preprocessing */
+   preMp(x, m, mpNext);
+
+   /* Searching */
+   i = j = 0;
+   while (j < n) {
+      while (i > -1 && x[i] != y[j])
+         i = mpNext[i];
+      i++;
+      j++;
+      if (i >= m) {
+         OUTPUT(j - i);
+         i = mpNext[i];
+      }
+   }
+}
+The example
+Preprocessing phase
+The
+mpNext
+table.
+Searching
+phase
+References
+A
+HO
+, A.V., H
+OPCROFT
+, J.E., U
+LLMAN
+, J.D., 1974,
+The design and analysis of computer algorithms
+, 2nd Edition, Chapter 9, pp. 317--361, Addison-Wesley Publishing Company.
+B
+EAUQUIER
+, D., B
+ERSTEL
+, J., C
+HRÉTIENNE
+, P., 1992,
+Éléments d'algorithmique
+, Chapter 10, pp 337-377, Masson, Paris.
+C
+ROCHEMORE
+, M., 1997. Off-line serial exact string searching, in
+Pattern Matching Algorithms
+, ed. A. Apostolico and Z. Galil, Chapter 1, pp 1-53, Oxford University Press.
+H
+ANCART
+, C., 1992, Une analyse en moyenne de l'algorithme de Morris et Pratt et de ses raffinements, in
+Théorie des Automates et Applications, Actes des 2
+e
+Journées Franco-Belges
+, D. Krob ed., Rouen, France, 1991, PUR 176, Rouen, France, 99-110.
+H
+ANCART
+, C., 1993.
+Analyse exacte et en moyenne d'algorithmes de recherche d'un motif dans un texte
+, Ph. D. Thesis, University Paris 7, France.
+M
+ORRIS
+(
+Jr
+)
+J.H.
+,
+P
+RATT
+V.R.
+, 1970,
+A linear pattern-matching algorithm
+, Technical Report 40, University of California, Berkeley.
+Next:
+Knuth-Morris-Pratt algorithm
+Up:
+ESMAJ
+Prev:
+Shift Or algorithm
+e-mails: {
+Christian.Charras
+,
+Thierry.Lecroq
+}@laposte.net
+Tue Jan 14 15:03:31 MET 1997

@@ -1,0 +1,59 @@
+spiral storage
+spiral storage
+(data structure)
+Definition:
+A
+dynamic hashing
+table that grows a few slots at a time.  It uses a
+hash function
+, h, with a
+range
+of [0,1).  For a key, k, an intermediate value, x=⌈ S-h(k)⌉ +h(k), is computed to find the final slot, ⌊ d
+x
+⌋, where d>1 is called the growth factor.  To increase the number of slots, increase S to S' and rehash any keys from  ⌊ d
+S
+⌋ to ⌊ d
+S'
+⌋-1.
+Generalization
+(I am a kind of ...)
+dynamic hashing
+.
+See also
+linear hashing
+.
+Note:
+Choosing d=2 and S=log
+2
+N, the number of slots, every expansion retires one slot and creates two new slots.  Since slots in use go from ⌊ d
+S
+⌋ to  ⌊ d
+S+1
+⌋-1, they are usually remapped to physical storage.
+Author:
+PEB
+More information
+G. N. N. Martin
+,
+Spiral storage: Incrementally augmentable hash addressed storage
+, Theory of Computation Rep. 27, Univ. of Warwick, England, 1979.
+Per-Åke Larson
+,
+Dynamic Hash Tables
+, CACM 31(4):446-457, April 1988.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 25 July 2006.
+HTML page formatted Wed Oct 30 12:15:31 2024.
+Cite this as:
+Paul E. Black, "spiral storage", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 25 July 2006. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/spiralStorage.html

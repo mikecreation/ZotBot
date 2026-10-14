@@ -1,0 +1,354 @@
+                                      Augmented  Search  Trees
+                                                              (CLRS  14)
+
+
+
+
+1      Red-Black  Trees
+
+    •  Last  time  we  discussed  red-black  trees:
+
+           –    Balanced  binary  trees—all  elements  in  left  (right)  subtree      of  node  x  are  <  x  (>  x).
+                                                                     e
+
+
+
+
+
+                                                             < e            >  e
+
+           –    Every  node  is  colored  Red  or  Black  and  we  maintained  red-blue  invariant:
+
+                    ∗  Root  is  Black.
+                    ∗  A  Red  node  can  only  have  Black  children.
+                    ∗  Every   path   from   the   root   to   a   leaf   contains   the   same   number   of
+                       Black  nodes.
+
+    •  We  saw  how  the  red-blue  invariant  guaranteed  O(log n)  height.
+
+    •  We  could  reestablish  the  red-blue  invariant  after  an  insertion  or  deletion  in  O(log n)  time
+
+           –    O(log n)  node  recolorings  (no  structural  changes).
+           –    O(1)  rotations:
+                                                      y                              x
+
+
+                                               x                                           y
+
+                                                            C                                  A
+
+
+                                          A                   B                       B                   C
+
+
+                                                   AxByC                             AxByC
+
+    •  Red-black   tree   also   supports   Search,   Successor,   and   Predecessor   in   O(log n)   as   in
+        binary  search  trees.
+
+    •  We will now discuss how to develop data structures supporting other operations by augmenting
+        red-black  tree.
+
+
+
+                                                                     1
+
+2      Augmented  Data  Structures
+
+    •  We  want  to  add  an  operation  Select(i)  to  a  red-black  tree
+
+           –    We  have  previously  seen  how  to  select  the  i’th  element  among  n  elements  in  O(n)  time.
+           –    Can  we  support  it  faster  if  we  have  the  elements  stored  in  a  data  structure?
+           –    We  can  of  course  support  the  operation  in  O(1)  time  if  we  have  the  elements  sorted  in
+               an  array  but  what  is  we  also  want  to  be  able  to  insert  and  delete  elements?
+
+    •  We  augment  every  node  x  in  red-black  tree  with  a  ﬁeld   size(x)  equal  to  the  number  of  nodes
+        in  the  subtree  rooted  in  x
+
+           –    size(x)  =  size(lef t(x)) + size(right(x))  + 1
+
+        Example:
+                                                                           26
+                                                                           20
+
+                                                          17                                41
+                                                          12                                 7
+
+
+                                                 14                21                30             47
+                                                  7                 4                5              1
+
+                                             10       16       19       21       28      38
+                                             4        2        2        1        1        3
+
+                                           7   12  14            20     key            35   39
+                                           2   1    1            1      size            1   1
+
+
+                                       3
+                                       1
+
+    •  We  can  use  this  ﬁeld  to  implement   Select(i):
+
+
+                 Select(x, i  )
+                       r  =  size(lef t(x)) + 1
+                       IF  i  =  r  THEN  Return  x
+                       IF  i  <  r  THEN  Return  Select(lef t(x), i  )
+                       IF  i  >  r  THEN  Return  Select(right(x), i − r)
+
+        Example  (Select(17)):
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                     2
+
+                                                                         26
+                                                                         20        Select elem. 17−(12+1)=4
+
+                                                       17                                   41
+                                                       12                    Select elem. 4 7
+
+                                              14                 21                 30              47
+                                              7                  4                  5               1
+                                                                                        Select elem. 4−(1+1)=2
+                                         10       16        19       21        28        38
+                                         4         2        2         1        1         3
+
+                                       7   12   14            20      key             35   39
+                                       2    1   1              1      size             1   1
+
+                                   3
+                                   1
+   ⇓
+   Since  we  only  follow  one  root-leaf  path  the  operation  takes  O(log n)  time.
+
+•  Actually,   we  can  also  use  the  ﬁeld  to  perform  the  “opposite”  o   peration  in  O(log n)  time—
+   determining  the  rank  of  the  element  in  node  x:
+
+     Rank(x)
+             r  =  size(lef t(x)) + 1
+             y  =  x
+             WHILE  y ⁄=  root  of  tree  DO
+                    IF  y  =  right(parent(y))  THEN
+                          r  =  r  + size(lef t(parent(y))) + 1
+                          y  =  parent(y)
+                    FI
+             OD
+             Return  r
+
+   Example  (Rank  of  element  38):
+
+                                                                           26   r=4+13=17
+                                                                           20
+
+                                                         17                                   41 r=4
+                                                         12                                   7
+
+                                               14                  21                 30 r=2+2=4      47
+                                                7                  4                  5               1
+
+                                           10       16        19       21        28        38 r=2
+                                           4         2        2         1        1         3
+
+
+                                         7   12   14            20      key             35   39
+                                         2    1   1              1      size             1   1
+
+                                     3
+                                     1
+
+•  We  need  to  maintain  the  extra  ﬁeld  during  updates:
+
+       –    Insert(i):
+
+
+                                                                     3
+
+             ∗  Search  down  one  root-leaf  part  as  usual  for  position  where  i  should  be  inserted.
+             ∗  Increment   size(x)   for   all   nodes  x   on   root-leaf   path   (these   are   the  only   nodes  for
+                 which  the  size  ﬁeld  change).
+
+                 Example  (Insertion  of  element  32)
+
+                                                                         26
+                                                                         21
+
+                                                        17                                 41
+                                                        12                                 8
+
+                                              14                 21                30             47
+                                               7                 4                  6              1
+
+                                          10       16       19       21        28       38
+                                          4        2         2        1        1        4
+
+                                        7   12   14           20                     35   39
+                                        2    1   1             1                      2   1
+
+                                    3                                             32
+                                    1                                             1
+             ∗  Rebalancing  using  Red-black  tree  rules—recall  that  we  do      O(log n)  recolorings  and
+                 O(1)  rotations:
+                    · Color  change  rules  do  not  aﬀect  extra  ﬁeld
+                    · Rotations  do  aﬀect  size  extra  ﬁelds  but  we  can  still  easily  pe   rform  a  rotation  in
+                       O(1)  time
+
+
+                                                          y                                       x’
+
+
+                                                x                                                         y’
+
+                                                                  C                                  A
+
+
+                                          A                   B                                     B                   C
+                         size(y′)  =  size(root(B)) + size(root(C)) + 1
+                         size(x′)  =  size(y)  =  size(root(A)) + size(root(B)) + size(root(C)) + 2
+
+                 ⇓
+                 Insert  performed  in  O(log n)  time.
+       –    Delete(i):
+             ∗  Find  element  to  delete  and  decrement  size  ﬁeld  on  one  root-le af   path  (recall   that
+                 conceptually  we  always  delete  a  node  with  at  most  one  child).
+             ∗  Rebalance  using  rotations.
+          ⇓
+          Delete  performed  in  O(log n)  time.
+
+•  Note:   The  key  to  maintaining  the  size  ﬁeld  during  updates  is  t hat  the  ﬁeld  of  node    x  only
+   depend  on  the  ﬁeld  of  the  children  of   x ⇒
+
+       –    Insertion  or  deletion  only  aﬀect  one  root-leaf  path.
+
+
+                                                                   4
+
+            –    Rotations  can  be  handled  in  O(1)  time  locally.
+     •  In  general  we  can  easily  prove  the  following:
+          A  ﬁeld   f   in  a  red-black  tree  can  be  maintained  in  O(log n)  time  during
+          updates  if  f (x)  can  be  computed  using  only  information  in  x,  lef t(x)
+          and  right(x)  (including  f (lef t(x))  and  f (right(x))
+
+            –    When  changing  ﬁeld  in  a  node   x,  f   can  only  change  for  the  O(log n)  ancestors  of  x  on
+                the  path  to  the  root.
+            –    Rotations  can  be  handled  in  O(1)  time  locally.
+
+3      Interval  Tree
+
+     •  We  now  consider  a  slightly  more  complicated  augmentation.   We  want  so  solve  the  following
+        problem:
+            –    Maintain   a   set  of   n  intervals   [i1, i  2]   such   that   one  of   the  intervals   containing   a   query
+                point  q  (if  any)  can  be  found  eﬃciently.
+        Example:   A  set  of  intervals.   A  query  with  q  =  9  returns  [6,   10]  or  [8,   9].   A  query  with  q  =  23
+        returns  [15,   23].
+
+
+
+
+
+
+
+
+
+
+
+
+                                            0               5              10             15             20             25             30
+     •  To  solve  the  problem  we  use  the  so-called  “Interval  tree”:
+            –    Red-black  tree  with  intervals  in  nodes
+                   ∗  Key  is  left  endpoint
+            –    Node  x  augmented  with  maximal  right  endpoint  in  subtree  rooted  in  x
+        Example:   Interval  tree  on  intervals  from  previous  ﬁgure:
+
+
+
+                                                                          [16,21]
+                                                                             30
+
+
+
+                                                      [8,9]                                     [25,30]        Interval
+                                                       23                                          30          Max
+
+
+
+                                          [5,8]                 [15.23]              [17,19]                [26,26]
+                                           10                     23                   20                     26
+
+
+
+                                   [0,3]         [6,10]                                      [19,20]
+                                    3              10                                          20
+
+
+                                                                           5
+
+•  We   can   maintain   the   interval   tree   dynamically   during  insertions   and   deletions   in   O(log n)
+   time
+       –    because  augmented  ﬁeld  in   x  only  depends  on  augmented  ﬁelds  in  the  children  of   x  and
+           the  interval  stored  in  x.
+       –    max(x)  =  max(rightendpoint(x), max  (lef t(x)), max  (right(x)))
+•  We  can  also  answer  a  query  in  O(log n)  time:
+      1.   We  ﬁrst  check  if   q  is  contained  in  interval  stored  in  root  r—if  it  is  we  are  done.
+      2.   Next  we  check  if  q  is  on  left  side  of  left  endpoint  of  interval  in  r—if  it  is  we  recursively
+           search  in  left  subtree  (q  cannot  be  contained  in  any  interval  in  right  subtree).
+      3.   If  q  is  to  the  right  of  left  endpoint  of  interval  in  r  we  have  two  cases:
+           (a)   If  max(lef t(r))  >  q   there  must  be  a  segment  in  left  subtree  containing  q   and  we
+                 recurse  left.
+           (b)   If  max(lef t(r))  <  q  there  is  no  segment  in  left  subtree  containing  q  and  we  recurse
+                 right.
+
+
+                                  Case 1          q                 Case 3a                         q
+
+
+
+                                  Case 2    q                       Case 3b                         q
+
+
+                    Query(x, q  )
+                         IF  q  contained  in  x  interval  THEN  Return
+                         x
+                         IF  max(lef t(x)) ≥   q  THEN
+                              Return  Query(lef t(x), q  )
+                         ELSE
+                              Return  Query(right(x), q  )
+                         FI
+
+   ⇓
+   We  search  down  one  root-leaf  path ⇒    O(log n)  time.
+   Example:   Query  with  q  =  23:
+
+
+
+                                                               case 2 [16,21]
+                                                                       30
+
+
+
+                                                     [8,9]  case 3b                    [25,30]
+                                                      23                                 30
+
+
+
+                                            [5,8]            [15.23]          [17,19]           [26,26]
+                                             10                23               20                26
+
+
+
+                                      [0,3]       [6,10]                            [19,20]
+                                        3          10                                 20
+
+
+                                                                    6

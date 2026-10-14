@@ -1,0 +1,327 @@
+Balanced Search Trees
+Balanced Search Trees
+Steven J. Zeil
+Last modified: Jul 7, 2024
+Contents:
+1 Thinking about tree heights
+2 AVL Trees
+2.1 Example
+2.2 Single Rotations
+2.3 Double Rotations
+2.4 Inserting into AVL Trees
+2.5 Complexity
+3 B Trees
+3.1 Properties of B-Trees
+3.2 Complexity of BTree operations
+4 2-3-4 trees
+5 Red-Black Trees
+We’ve seen that the performance of the main BST operations is bounded  by the height of the tree, which can range from an ideal of O(log N) for balanced trees to an all-too-common O(N) for degenerate trees.
+Various algorithms have been developed for building search trees that  remain balanced. We’ll look at these:
+AVL trees
+B trees
+2-3-4- trees
+red-black trees
+1 Thinking about tree heights
+Clearly, our tree-based algorithms will run faster if our trees are as short as possible. But how short a tree can get depends upon how many nodes we have.
+We can imagine trying to fill in a binary tree starting at the root, then filling in all of the depth 1 children, then all of the depth 2 children, and so on.
+A binary tree is said to be
+full
+when, for some value k, every possible position at a depth $\leq$ k has a node and no nodes occur at depths > k. Alternatively, we can say that a binary tree is full when all nodes have either zero or two children and all the leaves are at the same depth.
+Here is an example of a full binary tree.
+Not all sets of data that we might want to put into a binary search tree could be arranged into a full tree. Only certain numbers of nodes can be formed into a full tree. (Question to you: what numbers are these?).
+Answer
+The number of nodes must be a number of the form $2^k - 1$.
+An intermediate stage that, like a full tree, packs nodes into the shortest possible tree is the complete tree. A binary tree of height k is
+complete
+when all positions at depths < k are filled and the nodes at depth k are arranged from left to right.
+The full tree shown earlier is also a complete tree. The tree shown here is complete, but is not full.
+In practice, most approaches to generating well-balanced binary search trees do not yield complete trees, either. But complete trees do arise in some later data structures, and they are useful as an ideal against which tree balancing algorithms may be compared.
+2 AVL Trees
+An
+AVL tree
+(Adelson-Velskii and Landis) is a binary search tree for which each node’s children differ in height by at most 1.
+Guarantees that the height of the tree is $O(\log N)$.
+Need to maintain height info in each node.
+AVL insertion starts out identical to normal binary search tree insertion. But after the new node has been created and put in place, each of its ancestors must check to see if still balanced.
+If any are unbalanced, the balance is restored by a process called
+rotation
+.
+public class avlNode<T extends Comparable<T>> {
+
+	T value;
+	avlNode<T> leftChild;
+	avlNode<T> rightChild;
+    byte balanceFactor;
+       ⋮
+  }
+Conceptually, an AVL tree node looks like an ordinary BST node except for the addition of a new integer data member to hold the height of the node.
+As it turns out, however, it’s not really necessary to record the exact height. Because we will never allow our AVL tree to ever get out of balance by more than 1, we can simply get by with an integer value that records the difference in heights between the right and left subtrees. (Hence the use of the small integer
+byte
+type.)
+In a balanced tree, this difference must be -1, 0, or 1. 0 means that both subtrees have the same height. -1 means that the left tree is higher (by 1), and 1 means that the right tree is higher.
+Suppose that we started with an AVL tree, made an insertion, and then discovered that a node is no longer balanced:
+Call that node
+U
+(for unbalanced)
+Difference in height between
+U
+’s children must be 2
+Designate the “heavier” or “higher” of the two children as
+H
+.
+The diagram here shows one possible arrangement (the mirror image is also possible). The large triangles represent entire subtrees, possibly empty, possibly containing an arbitrarily large number of nodes.
+Question
+: Now, all these nodes must  still satisfy the BST ordering properties. For example, what can we say  about the nodes in the subtree “y”?
+They must have values less than that of U.
+They must have values greater than that of U but less than that  of H.
+They must have values greater than that of H.
+None of the above
+Answer:
+Because the nodes that make up the subtree “y” are right descendants of U, they must have greater values than U. Because they are left descendants of H, they must have values smaller than H.
+In fact, we can state that all the tree components, arranged into  ascending order, would be:
+x U y H z
+Keep that in mind — it will be important later.
+2.1 Example
+For the sake of example, let’s say that U has height 18. Now, because we are assuming that U is unbalanced, we know that the height of its children must differ by 2, and we have already said that H is the higher child. So H must have height 17, and x must have height 15.
+There are two possibilities for the heights of H’s children. They could both be height 16, or one could be 16 and the other 15. We’ll use the values shown in the diagram for example’s sake.
+2.2 Single Rotations
+Most texts seem to have a lot of trouble explaining the rotation  process and wind up giving the code with little intuitive justification  for how it works.
+For me, the rotation process become easy to understand when I started to think of the tree nodes as beads connected by strings. When we start out, the whole assembly is “hanging” from its root, U.
+But now, picture what would happen if we hoisted the entire assembly of beads by node H instead …
+You can see that the entire assembly is shorter and somewhat more balanced. It is not, however, a binary tree any longer, as H now has 3 children.
+In fact, if you look closely, you’ll see that U is still unbalanced, because it is left with only a single child.
+We can solve both of these problems by shifting the “y” subtree over to become a child of U. The resulting tree is balanced, and is shorter than it had been. But is it still a BST?
+We said that, before the rotation, the elements of the tree arranged into ascending order would be:
+x U y H z
+Look at the rotated tree. U is a left child of H and so must have a lower value. x is the set of U’s left descendants, all of which must be less than U. y is the set of right descendants of U but are also left descendants of H, so everything in y needs to be greater than U and less than H. z is the set of right descendants of H and so must be greater. In other words, the BST ordering rules suggest that the elements of the rotated tree, in ascending order, would be:
+x U y H z
+.
+So the implied ordering is the same as before, and this is still a BST after the rotation.
+This transformation is called a
+single left rotation
+. If H had originally been a right child of U, we could perform the mirror-image transformation, a single right rotation.
+Here you see the code to effect a single left rotation of a node.
+private avlNode<T> singleRotateLeft() {
+        // perform single rotation rooted at current node
+
+        // U is the Unbalanced node, H is the Higher child,
+        // and I is the interior grandchild
+
+        avlNode<T> U = this;           ➀
+        avlNode<T> H = U.rightChild;
+        avlNode<T> I = H.leftChild;    ➁
+
+        U.rightChild = I;              ➂
+        H.leftChild = U;               ➃
+
+        // now update the balance factors
+        int Ubf = U.balanceFactor;
+        int Hbf = H.balanceFactor;
+        if (Hbf <= 0) {
+            if (Ubf >= 1)
+                H.balanceFactor = Hbf - 1;
+            else
+                H.balanceFactor = Ubf + Hbf - 2;
+            U.balanceFactor = Ubf - 1;
+        } else {
+            if (Ubf <= Hbf)
+                H.balanceFactor = Ubf - 2;
+            else
+                H.balanceFactor = Hbf - 1;
+            U.balanceFactor = (Ubf - Hbf) - 1;
+        }
+        return H;                                  ➄
+    }
+The basic steps are
+➀
+Let U be the unbalanced node and H the higher of U’s two  children.
+➁
+Let I be the “interior” child of H, the child  reached by stepping in the opposite direction used in going from U  to H. For example, if H is a left child of U, then I would be the  right child of H
+➂
+In U, replace the pointer to H by I.
+➃
+In H, replace the pointer to I by U.
+➄
+Return H as the new root of the resulting structure.
+In fact, these same steps work for right rotations as  well, it’s just that for left rotations, H is a right child and for right  rotations, H is a left child.
+Once the nodes have been rearranged, we have to recompute the heights of the affected nodes. Because we are using balance factors (+1, 0, -1) instead of heights, this gets a trifle messier, but it still not too bad.
+2.3 Double Rotations
+A single rotation doesn’t always do the job. In setting up our  rotation example, we assumed that subtree z was higher than y.
+What would happen if y were the higher of the two?
+In this case, the rotation does not produce a balanced tree.
+A single rotation produces a balanced tree only if the interior subtree of H is no higher than the other subtree of H.
+But, we can note that a left rotation shifts height from the right of the root to the left. Similarly, a right rotation shifts height from left to right.
+So in this case, we are faced with a problem in that  “y” is too high compared to “z”. The solution  is to do a single right rotation of H to shift height to the right,  making “z” higher, then do the single left rotation of  U.
+This combination is called a
+double left rotation
+. (There is, of course, a mirror image “double right rotation” as well.)
+So the process of rebalancing a node consists mainly of determining whether we need a single or double rotation, then applying  the appropriate rotation routines.
+private avlNode<T> balance() {
+        // balance tree rooted at node
+        // using single or double rotations as appropriate
+        if (balanceFactor < 0) {
+            if (leftChild.balanceFactor <= 0) {
+                // perform single rotation
+                return singleRotateRight();
+            } else {
+                // perform double rotation
+                leftChild = leftChild.singleRotateLeft();// !
+                return singleRotateRight();
+            }
+        } else {
+            if (rightChild.balanceFactor >= 0) {
+                return singleRotateLeft();
+            } else {
+                // perform double rotation
+                rightChild = rightChild.singleRotateRight();
+                return singleRotateLeft();
+            }
+        }
+    }
+2.4 Inserting into AVL Trees
+We bring this all together in the AVL insert routine shown here.
+public avlNode<T> insert(T val)
+    // insert a new element into balanced AVL tree
+    {
+        if (val.compareTo(value) < 0) {                   ➀
+            if (leftChild != null) {
+                int oldbf = leftChild.balanceFactor;
+                leftChild = leftChild.insert(val);
+                // check to see if tree grew              ➁
+                if ((leftChild.balanceFactor != oldbf) &&
+                        leftChild.balanceFactor != 0)
+                    balanceFactor--;
+            } else {
+                leftChild = new avlNode<T>(val);
+                balanceFactor--;
+            }
+        } else { // insert into right subtree
+            if (rightChild != null) {
+                int oldbf = rightChild.balanceFactor;
+                rightChild = rightChild.insert(val);
+                // check to see if tree grew               ➁
+                if ((rightChild.balanceFactor != oldbf) &&
+                        rightChild.balanceFactor != 0)
+                    balanceFactor++;
+            } else {
+                rightChild = new avlNode<T>(val);
+                balanceFactor++;
+            }
+        }
+
+        // check if we are now out of balance, if so balance
+        if ((balanceFactor < -1) || (balanceFactor > 1))     ➂
+            return balance();
+        else
+            return this;
+    }
+➀
+This routine starts as a conventional BST insert.
+➁
+There’s a little bit of extra code to update the balance  factors as we insert.
+➂
+Then at the end, we check to see if this node is out of  balance because of the insert. If so, we invoke the balance  routine.
+The code discussed here is available as an
+animation
+that
+you can run
+to see how it works.
+2.5 Complexity
+An AVL tree is balanced, so its height is $O(\log N)$ where $N$ is the number of nodes.
+The rotation routines are all themselves $O(1)$ (messy as they are, notice that they have no loops or recursion), so they don’t significantly impact the
+insert
+operation complexity, which is still $O(k)$ where $k$ is the height of the tree. But as noted before, this height is $O(\log N)$, so insertion into an AVL tree has a worst case $O(\log N)$.
+Searching an AVL tree is completely unchanged from BST’s, and so also takes time proportional to the height of the tree, making $O(\log N)$.
+Removing nodes from a binary tree also requires rotations, but remains $O(\log N)$ as well.
+3 B Trees
+B-trees are a form of balanced search tree based upon general trees (trees that are not restricted to two children).
+A B-tree node can contain several data elements, rather than just one as in binary search trees.
+They are especially useful for search structures stored on disk. Disks have different retrieval characteristics than internal memory (RAM).
+Obviously, disk access is much, much slower.
+Furthermore, data is arranged in concentric circles (called
+tracks
+) on each side of a disk  “platter”. (Most disks these days have a single  platter, but some disks are a stack of platters.) A disk is read by  read/write heads mounted on an arm that is moved in and out from  track to track. Moving that arm takes time, so there is a real  timing benefit to grouping data so that it can be read without  moving the arm. The amount of data that can be read without moving  the arm (from both sides of all platters) is called a
+cylinder
+. It’s much faster to read an entire  cylinder than to read a little, move the arm, read a little more,  move the arm, etc., even if the total amount of data in a cylinder  is much more than we need.
+B-trees are a good match for on-disk storage and  searching because we can choose the node size to match the cylinder size.  In doing so, we will store many data members in each node, making the tree  flatter, so fewer node-to-node transitions will be needed.
+3.1 Properties of B-Trees
+For a B-tree of order m:
+All data is in leaves. Keys (only) can be replicated in  interior nodes.(This assumes that the tree is  implementing a map, where we have distinct data types  for keys and the associated data. For sets, the two  types are the same.)
+The root is either
+a leaf, or
+an interior node with 2 … m children
+All interior nodes other than the root have $\lfloor m/2 \rfloor … m$ children
+All leaves are at the same depth.
+Here is an example of a B-tree of order 4.
+The
+find
+operation for B-trees is similar to that of  binary search trees.
+BTree find (const Etype & x, BTree t) 
+{
+  if (t is a leaf)
+     return t;
+  else
+    {
+     i = 1;
+     while ((i < m) && (x >= t->key[i]))
+        ++i;
+     return find(x, t->child[i]);
+    }
+}
+Inserting into a B-tree starts out by “
+find
+”ing the  leaf in which to insert.
+If there is room in the leaf for another data item, then  we’re done.
+If the leaf already has
+m
+items, then there’s  no room.
+Split the overfull node in half and pass the middle  value up to the parent for insertion there.
+If the value passed up to the parent causes the parent  to be over-full, then it too splits and passes the middle  value up to its parent.
+Deletion is usually lazy or semi-lazy (delete from leaf but do not  remove keys within the interior nodes).
+3.2 Complexity of BTree operations
+The maximum depth of an order m BTree is $\lfloor \log_{\lfloor  m/2 \rfloor}(n) \rfloor$
+At each node, we do $O(\log m)$ work to choose branch
+An insert or delete may need $O(m)$ work to fix up info in a node
+Worst cases are:
+find: $O(\log(m) * \log_{m}(n))$
+But, since $\log_{m}(n) = \frac{\log(n)}{\log(m)}$, this simplifies to $O(\log(n))$.
+insert/delete: $O(m \log_{m}(n)) = O\left(\frac{m}{\log(m)}  \log(n)\right)$
+4 2-3-4 trees
+B-trees are generally used with a fairly high width (order). That’s because the most common application of B-trees is for search trees stored on disks, and the physical and electronic properties of a disk generally give the best performance to programs that read and process an entire sector or cylinder of the disk at a time. An on-disk B-tree is therefore usually configured to fill an entire sector or cylinder of the disk.
+A closely related data structure arises when we take a B-tree of  order 4 and relax just a few rules, including not storing all the data in  the leaves but allowing some data to reside in the internal tree  nodes.
+The result is called a
+2-3-4 tree
+because each non-leaf node will, depending upon how full it is, have either 2, 3, or 4 children.
+2-3-4 trees are, like all B-trees, a balanced tree whose height grows no faster than the log of the number of elements in tree.
+Unlike B-trees, 2-3-4 trees are commonly used for in-memory data structures. But programmers seldom implement 2-3-4 trees directly. Instead, there is a fairly simple way to map 2-3-4 trees onto binary trees to which a “color” has been added.
+5 Red-Black Trees
+class <T extends <Comparable<T>> RedBlackNode 
+{
+   ⋮
+  T value;
+  RedBlackNode<T> parent;
+  RedBlackNode<T> left;
+  RedBlackNode<T> right;
+  boolean color;  // true=red, false=black
+};
+A 2-3-4 node with 2 children (1 data value) is represented by a black binary tree node whose children are either leaves or black nodes.
+A 2-3-4 node with 3 children (2 data values) is  represented by a black binary tree node with one red child, the  other child being a leaf or a black node. (Either child could be the  red one, so the mirror image of the binary tree in this diagram is  also legal.)
+A 2-3-4 node with 4 children (3 data values) is  represented by a black binary tree node with two red  children.
+In essence, the red nodes define a kind of extension of their parent node. Each red node can be thought of as adding one extra data field and child pointer to its parent.
+Here is an example of the red-black equivalent to a 2-3-4 search  tree.
+Some things to note:
+The root of a red-black tree is always black.
+No red node will ever have a red child.
+The red-black tree is a binary search tree and can be searched  using the conventional binary search tree “find” algorithm.
+The height of a red-black tree is no more than twice the  height of the equivalent 2-3-4 tree.
+And we have already noted that the height of B-trees, including  2-3-4 trees, is $O(\log N)$ where $N$ is the number of data items  in the tree.
+We therefore know that the height of a red-black tree is also $O(\log N)$.
+And that searches on a red-black tree have a $O(\log N)$ worst case.
+The algorithms to insert nodes into a red-black tree add no more than  a constant time for each node in the path from the root to the  newly added leaf. Consequently, insertions into a red-black tree  are worst case $O(\log N)$. In fact the code for red-black trees  are based on rotations very similar to those of AVL trees.
+Interestingly, the code for red-black trees winds up using the same rotations that we have already discussed for AVL trees.
+Red-black trees are used to implement the Java
+TreeMap
+, which in turn is used to implement
+TreeSet
+. Red-black trees are also used for the tree-based containers in the C++ standard library.
+© 2016-2026, Old Dominion Univ.

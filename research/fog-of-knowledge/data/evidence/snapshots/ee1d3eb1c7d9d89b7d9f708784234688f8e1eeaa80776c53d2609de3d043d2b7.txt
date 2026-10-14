@@ -1,0 +1,60 @@
+binary GCD
+binary GCD
+(algorithm)
+Definition:
+Compute the
+greatest common divisor
+of two integers, u and v, expressed in binary.  The run time complexity is
+O((log
+2
+u v)²)
+bit operations.
+See also
+Euclid's algorithm
+.
+Note:
+Discovered by J. Stein in 1967.  Another source says discovered by R. Silver and J. Tersian in 1962 and published by G. Stein in 1967.
+The algorithm uses the following observations.
+If u and v are both even, gcd(u,v) = 2 gcd(u/2, v/2).
+If u is even and v is odd, gcd(u,v) = gcd(u/2, v).
+Otherwise both are odd, and gcd(u,v) = gcd(|u-v|/2, v).  (Euclid's algorithm with a division by 2 since the difference of two odd numbers is even.)
+Here is the algorithm.  It is especially efficient for operations on binary representations.
+g = 1
+while u is even and v is even
+u = u/2 (right shift)
+v = v/2
+g = 2*g (left shift)
+now u or v (or both) are odd
+while u > 0
+if u is even, u = u/2
+else if v is even, v = v/2
+else
+t = |u-v|/2
+if u
+<
+v, then v = t else u = t
+return v*g
+Knuth calls this algorithm 4.5.2B in
+[Knuth97, 2:338]
+. Torsten Eichstädt suggested incrementing g in step 2.3 (g++) and  returning v left shifted g times in step 4 (return v<<g). 4 April 2006.
+Author:
+PEB
+More information
+Binary Euclid's Algorithm
+including examples and references.
+Go to the
+Dictionary of Algorithms and Data
+Structures
+home page.
+If you have suggestions, corrections, or comments, please get in touch
+with
+Paul Black
+.
+Entry modified 2 November 2020.
+HTML page formatted Wed Oct 30 12:15:30 2024.
+Cite this as:
+Paul E. Black, "binary GCD", in
+Dictionary of Algorithms and Data Structures
+[online], Paul E. Black, ed. 2 November 2020. (accessed TODAY)
+Available from:
+https://www.nist.gov/dads/HTML/binaryGCD.html

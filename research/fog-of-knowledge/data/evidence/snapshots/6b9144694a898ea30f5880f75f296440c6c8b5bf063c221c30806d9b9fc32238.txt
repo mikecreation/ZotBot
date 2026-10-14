@@ -1,0 +1,8498 @@
+2 The Lagrangian Formalism
+Classical Dynamics
+by David Tong
+1
+Newton's Laws of Motion
+2
+The Lagrangian Formalism
+2.1
+The Principle of Least Action
+2.2
+Changing Coordinate Systems
+2.2.1
+Example: Rotating Coordinate Systems
+2.2.2
+Example: Hyperbolic Coordinates
+2.3
+Constraints and Generalised Coordinates
+2.3.1
+Holonomic Constraints
+2.3.2
+Non-Holonomic Constraints
+2.3.3
+Summary
+2.3.4
+Joseph-Louis Lagrange (1736-1813)
+2.4
+Noether’s Theorem and Symmetries
+2.4.1
+Noether’s Theorem
+2.5
+Applications
+2.5.1
+Bead on a Rotating Hoop
+2.5.2
+Double Pendulum
+2.5.3
+Spherical Pendulum
+2.5.4
+Two Body Problem
+2.5.5
+Restricted Three Body Problem
+2.5.6
+Purely Kinetic Lagrangians
+2.5.7
+Particles in Electromagnetic Fields
+2.6
+Small Oscillations and Stability
+2.6.1
+Example: The Double Pendulum
+2.6.2
+Example: The Linear Triatomic Molecule
+3
+The Motion of Rigid Bodies
+4
+The Hamiltonian Formalism
+1
+Newton’s Laws of Motion
+3
+The Motion of Rigid Bodies
+2
+The Lagrangian Formalism
+When I was in high school, my physics teacher called me down one
+day after class and said, “You look bored, I want to tell you something
+interesting”. Then he told me something I have always found fascinating. Every time
+the subject comes up I work on it.
+Richard Feynman
+Feynman’s teacher told him about the “Principle of Least Action”,
+one of the most profound results in physics.
+2.1
+The Principle of Least Action
+Firstly, let’s get our notation right. Part of the power of the
+Lagrangian formulation over the Newtonian approach is that it does
+away with vectors in favour of more general coordinates. We start by
+doing this trivially. Let’s rewrite the positions of
+N
+particles
+with coordinates
+𝐫
+i
+as
+x
+A
+where
+A
+=
+1
+,
+…
+⁢
+3
+⁢
+N
+. Then
+Newton’s equations read
+p
+˙
+A
+=
+-
+∂
+⁡
+V
+∂
+⁡
+x
+A
+(2.26)
+where
+p
+A
+=
+m
+A
+⁢
+x
+˙
+A
+. The number of
+degrees of freedom
+of
+the system is said to be
+3
+⁢
+N
+. These parameterise a
+3
+⁢
+N
+-dimensional
+space known as the
+configuration space
+C
+. Each point in
+C
+specifies a configuration of the system (i.e. the positions of all
+N
+particles). Time evolution gives rise to a curve in
+C
+.
+Figure 2:
+The path of particles in real space (on the left) and in configuration space (on the right).
+The Lagrangian
+Define the
+Lagrangian
+to be a function of the positions
+x
+A
+and the velocities
+x
+˙
+A
+of all the particles, given by
+L
+⁢
+(
+x
+A
+,
+x
+˙
+A
+)
+=
+T
+⁢
+(
+x
+˙
+A
+)
+-
+V
+⁢
+(
+x
+A
+)
+(2.27)
+where
+T
+=
+1
+2
+⁢
+∑
+A
+m
+A
+⁢
+(
+x
+˙
+A
+)
+2
+is the kinetic energy, and
+V
+⁢
+(
+x
+A
+)
+is the potential energy. Note the minus sign between
+T
+and
+V
+! To
+describe the principle of least action, we consider all smooth paths
+x
+A
+⁢
+(
+t
+)
+in
+C
+with fixed end points so that
+x
+A
+⁢
+(
+t
+i
+)
+=
+x
+initial
+A
+and
+x
+A
+⁢
+(
+t
+f
+)
+=
+x
+final
+A
+(2.28)
+Figure 3:
+Of all these possible paths, only one is the true path taken by the
+system. Which one? To each path, let us assign a number called the
+action
+S
+defined as
+S
+⁢
+[
+x
+A
+⁢
+(
+t
+)
+]
+=
+∫
+t
+i
+t
+f
+L
+⁢
+(
+x
+A
+⁢
+(
+t
+)
+,
+x
+˙
+A
+⁢
+(
+t
+)
+)
+⁢
+𝑑
+t
+(2.29)
+The action is
+a functional (i.e. a function of the path which is itself a
+function). The principle of least action is the following result:
+Theorem (Principle of Least Action): The actual path taken by the system is an extremum of
+S
+.
+Proof: Consider varying a given path slightly, so
+x
+A
+⁢
+(
+t
+)
+→
+x
+A
+⁢
+(
+t
+)
++
+δ
+⁢
+x
+A
+⁢
+(
+t
+)
+(2.30)
+where we fix the end points of the path by demanding
+δ
+⁢
+x
+A
+⁢
+(
+t
+i
+)
+=
+δ
+⁢
+x
+A
+⁢
+(
+t
+f
+)
+=
+0
+.
+Then the change in the action is
+δ
+⁢
+S
+=
+δ
+⁢
+[
+∫
+t
+i
+t
+f
+L
+⁢
+𝑑
+t
+]
+(2.31)
+=
+∫
+t
+i
+t
+f
+δ
+⁢
+L
+⁢
+𝑑
+t
+=
+∫
+t
+i
+t
+f
+(
+∂
+⁡
+L
+∂
+⁡
+x
+A
+⁢
+δ
+⁢
+x
+A
++
+∂
+⁡
+L
+∂
+⁡
+x
+˙
+A
+⁢
+δ
+⁢
+x
+˙
+A
+)
+⁢
+𝑑
+t
+At this point we integrate the second term by parts
+to get
+δ
+⁢
+S
+=
+∫
+t
+i
+t
+f
+(
+∂
+⁡
+L
+∂
+⁡
+x
+A
+-
+d
+d
+⁢
+t
+⁢
+(
+∂
+⁡
+L
+∂
+⁡
+x
+˙
+A
+)
+)
+⁢
+δ
+⁢
+x
+A
+⁢
+𝑑
+t
++
+[
+∂
+⁡
+L
+∂
+⁡
+x
+˙
+A
+⁢
+δ
+⁢
+x
+A
+]
+t
+i
+t
+f
+(2.32)
+But the final term vanishes since we have
+fixed the end points of the path so
+δ
+⁢
+x
+A
+⁢
+(
+t
+i
+)
+=
+δ
+⁢
+x
+A
+⁢
+(
+t
+f
+)
+=
+0
+. The requirement that the action is an extremum says
+that
+δ
+⁢
+S
+=
+0
+for all changes in the path
+δ
+⁢
+x
+A
+⁢
+(
+t
+)
+. We
+see that this holds if and only if
+∂
+⁡
+L
+∂
+⁡
+x
+A
+-
+d
+d
+⁢
+t
+⁢
+(
+∂
+⁡
+L
+∂
+⁡
+x
+˙
+A
+)
+=
+0
+for
+⁢
+each
+⁢
+A
+=
+1
+,
+…
+⁢
+3
+⁢
+N
+(2.33)
+These
+are known as
+Lagrange’s equations
+(or sometimes as the
+Euler-Lagrange equations). To finish the proof, we need only show
+that Lagrange’s equations are equivalent to Newton’s. From the
+definition of the Lagrangian (
+2.27
+), we have
+∂
+⁡
+L
+/
+∂
+⁡
+x
+A
+=
+-
+∂
+⁡
+V
+/
+∂
+⁡
+x
+A
+, while
+∂
+⁡
+L
+/
+∂
+⁡
+x
+˙
+A
+=
+p
+A
+. It’s then easy to see that equations
+(
+2.33
+) are indeed equivalent to (
+2.26
+).
+□
+Some remarks on this important result:
+•
+This is an example of a variational principle which you already met
+in the eponymous “variational principles” course.
+•
+The principle
+of
+least
+action is a slight misnomer. The proof only requires that
+δ
+⁢
+S
+=
+0
+, and does not specify whether it is a maxima or minima of
+S
+.
+Since
+L
+=
+T
+-
+V
+, we can
+always increase
+S
+by taking a very fast, wiggly
+path with
+T
+≫
+0
+, so the true path is never a maximum. However,
+it may be either a minimum or a saddle point. So “Principle of
+stationary action” would be a more accurate, but less catchy, name. It is
+sometimes called “Hamilton’s principle”.
+•
+All
+the
+fundamental laws of physics can be written in terms of an action
+principle. This includes electromagnetism, general relativity, the
+standard model of particle physics, and attempts to go beyond the
+known laws of physics such as string theory. For example, (nearly)
+everything we know about the universe is captured in the
+Lagrangian
+L
+=
+g
+⁢
+(
+R
+-
+1
+2
+⁢
+F
+μ
+⁢
+ν
+⁢
+F
+μ
+⁢
+ν
++
+ψ
+¯
+⁢
+/
+⁢
+D
+⁢
+ψ
+)
+(2.34)
+where the terms carry the names of Einstein, Maxwell (or Yang
+and Mills) and Dirac respectively, and describe gravity, the
+forces of nature (electromagnetism and the nuclear forces) and the
+dynamics of particles like electrons and quarks. If you want to
+understand what the terms in this equation really mean, then you can find explanations in the lectures on
+General Relativity
+,
+Electromagnetism
+, and
+Quantum Field Theory
+.
+•
+There is a beautiful
+generalisation of the action principle to quantum mechanics due to
+Feynman in which the particle takes
+all paths
+with some
+probability determined by
+S
+. We will describe this in Section
+4.8.
+•
+Back to classical mechanics, there are two very important
+reasons for working with Lagrange’s equations rather than
+Newton’s. The first is that Lagrange’s equations hold in any
+coordinate system, while Newton’s are restricted to an inertial
+frame. The second is the ease with which we can deal with
+constraints in the Lagrangian system. We’ll look at these two
+aspects in the next two subsections.
+2.2
+Changing Coordinate Systems
+We shall now show that Lagrange’s equations hold in any coordinate
+system. In fact, this follows immediately from the action principle,
+which is a statement about paths and not about coordinates. But here
+we shall be a little more pedestrian in order to explain exactly
+what we mean by changing coordinates, and why it’s useful. Let
+q
+a
+=
+q
+a
+⁢
+(
+x
+1
+,
+…
+,
+x
+3
+⁢
+N
+,
+t
+)
+(2.35)
+where we’ve included the
+possibility of using a coordinate system which changes with time
+t
+. Then, by the chain rule, we can write
+q
+˙
+a
+=
+d
+⁢
+q
+a
+d
+⁢
+t
+=
+∂
+⁡
+q
+a
+∂
+⁡
+x
+A
+⁢
+x
+˙
+A
++
+∂
+⁡
+q
+a
+∂
+⁡
+t
+(2.36)
+In this equation, and for the rest of this course, we’re using the
+“summation convention” in which repeated indices are summed over.
+Note also that we won’t be too careful about whether indices are up
+or down - it won’t matter for the purposes of this course. To be a
+good coordinate system, we should be able to invert the relationship
+so that
+x
+A
+=
+x
+A
+⁢
+(
+q
+a
+,
+t
+)
+which we can do as long as we have
+det
+⁡
+(
+∂
+⁡
+x
+A
+/
+∂
+⁡
+q
+a
+)
+≠
+0
+. Then we have,
+x
+˙
+A
+=
+∂
+⁡
+x
+A
+∂
+⁡
+q
+a
+⁢
+q
+˙
+a
++
+∂
+⁡
+x
+A
+∂
+⁡
+t
+(2.37)
+Now we can examine
+L
+⁢
+(
+x
+A
+,
+x
+˙
+A
+)
+when we substitute in
+x
+A
+⁢
+(
+q
+a
+,
+t
+)
+. Using (
+2.37
+) we have
+∂
+⁡
+L
+∂
+⁡
+q
+a
+=
+∂
+⁡
+L
+∂
+⁡
+x
+A
+⁢
+∂
+⁡
+x
+A
+∂
+⁡
+q
+a
++
+∂
+⁡
+L
+∂
+⁡
+x
+˙
+A
+⁢
+(
+∂
+2
+⁡
+x
+A
+∂
+⁡
+q
+a
+⁢
+∂
+⁡
+q
+b
+⁢
+q
+˙
+b
++
+∂
+2
+⁡
+x
+A
+∂
+⁡
+t
+⁢
+∂
+⁡
+q
+a
+)
+(2.38)
+while
+∂
+⁡
+L
+∂
+⁡
+q
+˙
+a
+=
+∂
+⁡
+L
+∂
+⁡
+x
+˙
+A
+⁢
+∂
+⁡
+x
+˙
+A
+∂
+⁡
+q
+˙
+a
+(2.39)
+We now use the
+fact that we can “cancel the dots” and
+∂
+⁡
+x
+˙
+A
+/
+∂
+⁡
+q
+˙
+a
+=
+∂
+⁡
+x
+A
+/
+∂
+⁡
+q
+a
+which we
+can prove by substituting the expression for
+x
+˙
+A
+into the
+LHS. Taking the time derivative of (
+2.39
+) gives us
+d
+d
+⁢
+t
+⁢
+(
+∂
+⁡
+L
+∂
+⁡
+q
+˙
+a
+)
+=
+d
+d
+⁢
+t
+⁢
+(
+∂
+⁡
+L
+∂
+⁡
+x
+˙
+A
+)
+⁢
+∂
+⁡
+x
+A
+∂
+⁡
+q
+a
++
+∂
+⁡
+L
+∂
+⁡
+x
+˙
+A
+⁢
+(
+∂
+2
+⁡
+x
+A
+∂
+⁡
+q
+a
+⁢
+∂
+⁡
+q
+b
+⁢
+q
+˙
+b
++
+∂
+2
+⁡
+x
+A
+∂
+⁡
+q
+a
+⁢
+∂
+⁡
+t
+)
+(2.40)
+So combining (
+2.38
+) with
+(
+2.40
+) we find
+d
+d
+⁢
+t
+⁢
+(
+∂
+⁡
+L
+∂
+⁡
+q
+˙
+a
+)
+-
+∂
+⁡
+L
+∂
+⁡
+q
+a
+=
+[
+d
+d
+⁢
+t
+⁢
+(
+∂
+⁡
+L
+∂
+⁡
+x
+˙
+A
+)
+-
+∂
+⁡
+L
+∂
+⁡
+x
+A
+]
+⁢
+∂
+⁡
+x
+A
+∂
+⁡
+q
+a
+(2.41)
+Equation (
+2.41
+) is our final result. We see that if
+Lagrange’s equation is solved in the
+x
+A
+coordinate system (so
+that
+[
+…
+]
+on the RHS vanishes) then it is also solved in the
+q
+a
+coordinate system. (Conversely, if it is satisfied in the
+q
+a
+coordinate system, so the LHS vanishes, then it is also
+satisfied in the
+x
+A
+coordinate system as long as our choice of
+coordinates is invertible: i.e
+det
+⁡
+(
+∂
+⁡
+x
+A
+/
+∂
+⁡
+q
+a
+)
+≠
+0
+).
+So the form of Lagrange’s equations holds in
+any
+coordinate system. This is
+in contrast to Newton’s equations which are only valid in an inertial frame. Let’s
+illustrate the power of this fact with a couple of simple examples
+2.2.1
+Example: Rotating Coordinate Systems
+Consider a free particle with Lagrangian given by
+L
+=
+1
+2
+⁢
+m
+⁢
+𝐫
+˙
+2
+(2.42)
+with
+𝐫
+=
+(
+x
+,
+y
+,
+z
+)
+. Now measure the motion of the
+particle with respect to a coordinate system which is rotating with
+angular velocity
+𝝎
+=
+(
+0
+,
+0
+,
+ω
+)
+about the
+z
+axis. If
+𝐫
+′
+=
+(
+x
+′
+,
+y
+′
+,
+z
+′
+)
+are the coordinates in the
+rotating system, we have the relationship
+x
+′
+=
+x
+⁢
+cos
+⁡
+ω
+⁢
+t
++
+y
+⁢
+sin
+⁡
+ω
+⁢
+t
+y
+′
+=
+y
+⁢
+cos
+⁡
+ω
+⁢
+t
+-
+x
+⁢
+sin
+⁡
+ω
+⁢
+t
+z
+′
+=
+z
+(2.43)
+Then we can substitute these expressions into the Lagrangian to find
+L
+in terms of the rotating coordinates,
+L
+=
+1
+2
+⁢
+m
+⁢
+[
+(
+x
+˙
+′
+-
+ω
+⁢
+y
+′
+)
+2
++
+(
+y
+˙
+′
++
+ω
+⁢
+x
+′
+)
+2
++
+z
+˙
+2
+]
+=
+1
+2
+⁢
+m
+⁢
+(
+𝐫
+˙
+′
++
+𝝎
+×
+𝐫
+′
+)
+2
+(2.44)
+In this rotating frame, we can use Lagrange’s
+equations to derive the equations of motion. Taking derivatives, we
+have
+∂
+⁡
+L
+∂
+⁡
+𝐫
+′
+=
+m
+⁢
+(
+𝐫
+˙
+′
+×
+𝝎
+-
+𝝎
+×
+(
+𝝎
+×
+𝐫
+′
+)
+)
+d
+d
+⁢
+t
+⁢
+(
+∂
+⁡
+L
+∂
+⁡
+𝐫
+˙
+′
+)
+=
+m
+⁢
+(
+𝐫
+¨
+′
++
+𝝎
+×
+𝐫
+˙
+′
+)
+(2.45)
+so Lagrange’s equation reads
+d
+d
+⁢
+t
+⁢
+(
+∂
+⁡
+L
+∂
+⁡
+𝐫
+˙
+′
+)
+-
+∂
+⁡
+L
+∂
+⁡
+𝐫
+′
+=
+m
+⁢
+(
+𝐫
+¨
+′
++
+𝝎
+×
+(
+𝝎
+×
+𝐫
+′
+)
++
+2
+⁢
+𝝎
+×
+𝐫
+˙
+′
+)
+=
+0
+(2.46)
+Figure 4:
+In the northern hemisphere, a particle is deflected in a
+clockwise direction; in the southern hemisphere in an anti-clockwise
+direction.
+The second and third terms in this expression are the centrifugal
+and coriolis forces respectively. These are examples of the
+“fictitious forces” that you were warned about in the first
+year. They’re called fictitious because they’re a consequence of
+the reference frame, rather than any interaction. But don’t
+underestimate their importance just because they’re “fictitious”!
+According to Einstein’s theory of
+General Relativity
+, the force of
+gravity is on the same footing as these fictitious forces.
+The centrifugal force
+𝐅
+cent
+=
+-
+m
+⁢
+𝝎
+×
+(
+𝝎
+×
+𝐫
+′
+)
+points outwards in the plane perpendicular to
+𝝎
+with magnitude
+m
+⁢
+ω
+2
+⁢
+|
+𝐫
+⟂
+′
+|
+=
+m
+⁢
+|
+𝐯
+⟂
+|
+2
+/
+|
+𝐫
+⟂
+′
+|
+where
+⟂
+denotes the projection perpendicular to
+𝝎
+.
+The coriolis force
+𝐅
+cor
+=
+-
+2
+⁢
+m
+⁢
+𝝎
+×
+𝐫
+˙
+′
+is responsible for the large
+scale circulation of oceans and the atmosphere. For a particle
+travelling on the surface of the rotating earth, the direction of
+the coriolis force is drawn in figure
+4
+. We see that a
+particle thrown in the northern hemisphere will be seen to rotate in
+a clockwise direction; a particle thrown in the southern hemisphere
+rotates in an anti-clockwise direction. For a particle moving along
+the equator, the coriolis force points directly upwards, so has no
+effect on the particle.
+More details on the effect of the Coriolis force in various circumstances can be found in the
+Dynamics and Relativity
+lecture notes. Questions discussed include:
+•
+The coriolis force is responsible for the formation of hurricanes. These rotate in
+different directions in the northern and southern hemisphere, and
+never form within 500 miles of the equator where the coriolis force
+is irrelevant. But hurricanes rotate
+anti-clockwise
+in the
+northern hemisphere. This is the opposite direction from what we
+deduced above for a projected particle! What did we miss?
+•
+Estimate the magnitude of the coriolis force. Do you think that it
+really
+affects the motion of
+water going down a plughole? What about the direction in which a CD spins?
+•
+Stand on top of a tower at the equator and drop a ball. As the ball falls, the
+earth turns underneath from west to east. Does the ball land
+1.
+At the base of the tower?
+2.
+To the east?
+3.
+To the west?
+2.2.2
+Example: Hyperbolic Coordinates
+Figure 5:
+Hyperbolic coordinates.
+A particle
+moves in the
+(
+x
+,
+y
+)
+plane with a force directed towards the
+origin
+O
+with magnitude proportional to the distance from
+O
+.
+How does it move? In Cartesian coordinates, this problem is easy.
+We have the Lagrangian
+L
+=
+1
+2
+⁢
+m
+⁢
+(
+x
+˙
+2
++
+y
+˙
+2
+)
+-
+1
+2
+⁢
+k
+⁢
+(
+x
+2
++
+y
+2
+)
+(2.47)
+Let’s set
+m
+=
+k
+=
+1
+for simplicity. The equation of motion for this
+system is simply
+x
+¨
+=
+-
+x
+and
+y
+¨
+=
+-
+y
+(2.48)
+Now suppose we want to know the motion of the system in
+hyperbolic coordinates
+defined as
+2
+x
+y
+=
+μ
+,
+x
+2
+-
+y
+2
+=
+λ
+(2.49)
+The coordinates
+μ
+and
+λ
+are curvilinear and
+orthogonal (i.e. two hyperbolics intersect at
+90
+o
+). We could
+try solving this problem by substituting the change of
+coordinates directly into the equations of motion. It’s a mess.
+(Try if you don’t believe me!). A much simpler way is to derive
+expressions
+for
+x
+,
+y
+,
+x
+˙
+and
+y
+˙
+in terms
+of the new coordinates and substitute into the Lagrangian to find,
+L
+=
+1
+8
+⁢
+λ
+˙
+2
++
+μ
+˙
+2
+λ
+2
++
+μ
+2
+-
+1
+2
+⁢
+λ
+2
++
+μ
+2
+(2.50)
+From which we can easily derive the equation of motion for
+λ
+d
+d
+⁢
+t
+⁢
+(
+∂
+⁡
+L
+∂
+⁡
+λ
+˙
+)
+-
+∂
+⁡
+L
+∂
+⁡
+λ
+=
+d
+d
+⁢
+t
+⁢
+(
+λ
+˙
+4
+⁢
+λ
+2
++
+μ
+2
+)
++
+1
+8
+⁢
+(
+λ
+˙
+2
++
+μ
+˙
+2
+)
+⁢
+λ
+(
+λ
+2
++
+μ
+2
+)
+3
+/
+2
+-
+1
+2
+⁢
+λ
+(
+λ
+2
++
+μ
+2
+)
+3
+/
+2
+(2.51)
+=
+0
+Which is also a mess! But it’s a mess that was much simpler to derive. Moreover, we don’t need
+to do any more work to get the second equation for
+μ
+: the symmetry of the Lagrangian
+means that it must be the same as (
+2.51
+) with
+λ
+↔
+μ
+interchanged.
+2.3
+Constraints and Generalised Coordinates
+Now we turn to the second advantage of the Lagrangian formulation.
+In writing
+𝐩
+˙
+i
+=
+-
+∇
+i
+⁡
+V
+, we implicitly assume that each
+particle can happily roam anywhere in space
+𝐑
+3
+. What if there are
+constraints? In Newtonian mechanics, we introduce “constraint
+forces”. These are things like the tension of ropes, and normal
+forces applied by surfaces. In the Lagrangian formulation, we don’t
+have to worry about such things. In this section, we’ll show why.
+An Example: The Pendulum
+Figure 6:
+The simple pendulum has a single dynamical degree of freedom
+θ
+, the angle the pendulum makes with the vertical. The
+position of the mass
+m
+in the plane is described by two
+cartesian coordinates
+x
+and
+y
+subject to a constraint
+x
+2
++
+y
+2
+=
+l
+2
+. We can parameterise this as
+x
+=
+l
+⁢
+sin
+⁡
+θ
+and
+y
+=
+l
+⁢
+cos
+⁡
+θ
+. Employing the Newtonian method to solve this
+system, we introduce the tension
+T
+as shown in the diagram and
+resolve the force vectors to find,
+m
+x
+¨
+=
+-
+T
+x
+/
+l
+,
+m
+y
+¨
+=
+m
+g
+-
+T
+y
+/
+l
+(2.52)
+To determine the motion of the system, we impose the constraints at the level of the
+equation of motion, and then easily find
+θ
+¨
+=
+-
+(
+g
+/
+l
+)
+sin
+θ
+,
+T
+=
+m
+l
+θ
+˙
+2
++
+m
+g
+cos
+θ
+(2.53)
+While this example was pretty straightforward to solve
+using Newtonian methods, things get rapidly harder when we
+consider more complicated constraints (and we’ll see plenty
+presently). Moreover, you may have noticed that half of the work
+of the calculation went into computing the tension
+T
+. On
+occasion we’ll be interested in this. (For example, we might want
+to know how fast we can spin the pendulum before it breaks). But
+often we won’t care about these constraint forces, but will only
+want to know the motion of the pendulum itself. In this case it
+seems like a waste of effort to go through the motions of
+computing
+T
+. We’ll now see how we can avoid this extra work in
+the Lagrangian formulation. Firstly, let’s define what we mean by
+constraints more rigorously.
+2.3.1
+Holonomic Constraints
+Holonomic Constraints
+are relationships between the
+coordinates of the form
+f
+α
+⁢
+(
+x
+A
+,
+t
+)
+=
+0
+α
+=
+1
+,
+…
+,
+3
+⁢
+N
+-
+n
+(2.54)
+In general the constraints can be time dependent and our notation
+above allows for this. Holonomic constraints can be solved in
+terms of
+n
+generalised coordinates
+q
+i
+,
+i
+=
+1
+,
+…
+⁢
+n
+.
+So
+x
+A
+=
+x
+A
+⁢
+(
+q
+1
+,
+…
+,
+q
+n
+)
+(2.55)
+The system is said to have
+n
+degrees of freedom. For the pendulum example above, the system has
+a single degree of freedom,
+q
+=
+θ
+.
+Now let’s see how the Lagrangian formulation deals with constraints of this form. We
+introduce
+3
+⁢
+N
+-
+n
+new variables
+λ
+α
+, called
+Lagrange multipliers
+and
+define a new Lagrangian
+L
+′
+=
+L
+⁢
+(
+x
+A
+,
+x
+˙
+A
+)
++
+λ
+α
+⁢
+f
+α
+⁢
+(
+x
+A
+,
+t
+)
+(2.56)
+We treat
+λ
+α
+like new coordinates. Since
+L
+′
+doesn’t depend on
+λ
+˙
+α
+, Lagrange’s equations for
+λ
+α
+are
+∂
+⁡
+L
+′
+∂
+⁡
+λ
+α
+=
+f
+α
+⁢
+(
+x
+A
+,
+t
+)
+=
+0
+(2.57)
+which gives us back the constraints. Meanwhile, the equations for
+x
+A
+are
+d
+d
+⁢
+t
+⁢
+(
+∂
+⁡
+L
+∂
+⁡
+x
+˙
+A
+)
+-
+∂
+⁡
+L
+∂
+⁡
+x
+A
+=
+λ
+α
+⁢
+∂
+⁡
+f
+α
+∂
+⁡
+x
+A
+(2.58)
+The LHS is the equation of motion for the unconstrained system. The RHS is the manifestation
+of the constraint forces in the system. We can now solve these equations as we
+did in the Newtonian formulation.
+The Pendulum Example Again
+The Lagrangian for the pendulum is given by that for a free particle
+moving in the plane, augmented by the Lagrange multiplier term for
+the constraints. It is
+L
+′
+=
+1
+2
+⁢
+m
+⁢
+(
+x
+˙
+2
++
+y
+˙
+2
+)
++
+m
+⁢
+g
+⁢
+y
++
+1
+2
+⁢
+λ
+⁢
+(
+x
+2
++
+y
+2
+-
+l
+2
+)
+(2.59)
+From
+which we can calculate the two equations of motion for
+x
+and
+y
+,
+m
+⁢
+x
+¨
+=
+λ
+⁢
+x
+and
+y
+¨
+=
+m
+⁢
+g
++
+λ
+⁢
+y
+(2.60)
+while the equation of motion for
+λ
+reproduces the constraint
+x
+2
++
+y
+2
+-
+l
+2
+=
+0
+. Comparing with the
+Newtonian approach (
+2.52
+), we again see that the Lagrange
+multiplier
+λ
+is proportional to the tension:
+λ
+=
+-
+T
+/
+l
+.
+So we see that we can easily incorporate constraint forces into the
+Lagrangian setup using Lagrange multipliers. But the big news is
+that we don’t have to! Often we don’t care about the tension
+T
+or
+other constraint forces, but only want to know what the generalised
+coordinates
+q
+i
+are doing. In this case we have the following
+useful theorem
+Theorem: For constrained systems, we may derive
+the equations of motion directly in generalised coordinates
+q
+i
+L
+⁢
+[
+q
+i
+,
+q
+˙
+i
+,
+t
+]
+=
+L
+⁢
+[
+x
+A
+⁢
+(
+q
+i
+,
+t
+)
+,
+x
+˙
+A
+⁢
+(
+q
+i
+,
+q
+˙
+i
+,
+t
+)
+]
+(2.61)
+Proof: Let’s work with
+L
+′
+=
+L
++
+λ
+α
+⁢
+f
+α
+and change coordinates
+to
+x
+A
+→
+{
+q
+i
+i
+=
+1
+,
+…
+,
+n
+f
+α
+α
+=
+1
+,
+…
+⁢
+3
+⁢
+N
+-
+n
+(2.62)
+We know that Lagrange’s equations take the same form in these
+new coordinates. In particular, we may look at the equations for
+q
+i
+,
+d
+d
+⁢
+t
+⁢
+(
+∂
+⁡
+L
+∂
+⁡
+q
+˙
+i
+)
+-
+∂
+⁡
+L
+∂
+⁡
+q
+i
+=
+λ
+α
+⁢
+∂
+⁡
+f
+α
+∂
+⁡
+q
+i
+(2.63)
+But, by definition,
+∂
+⁡
+f
+α
+/
+∂
+⁡
+q
+i
+=
+0
+. So we
+are left with Lagrange’s equations purely in terms of
+q
+i
+, with
+no sign of the constraint forces. If we are only interested in the
+dynamics of the generalised coordinates
+q
+i
+, we may ignore the
+Lagrange multipliers and work entirely with the unconstrained Lagrangian
+L
+⁢
+(
+q
+i
+,
+q
+˙
+i
+,
+t
+)
+defined in (
+2.61
+) where we just substitute
+in
+x
+A
+=
+x
+A
+⁢
+(
+q
+i
+,
+t
+)
+.
+□
+The Pendulum Example for the Last Time
+Let’s see how this works in the simple example of the pendulum. We
+can parameterise the constraints in terms of the generalised
+coordinate
+θ
+so that
+x
+=
+l
+⁢
+sin
+⁡
+θ
+and
+y
+=
+l
+⁢
+cos
+⁡
+θ
+. We
+now substitute this directly into the Lagrangian for a particle
+moving in the plane under the effect of gravity, to get
+L
+=
+1
+2
+⁢
+m
+⁢
+(
+x
+˙
+2
++
+y
+˙
+2
+)
++
+m
+⁢
+g
+⁢
+y
+(2.64)
+=
+1
+2
+⁢
+m
+⁢
+l
+2
+⁢
+θ
+˙
+2
++
+m
+⁢
+g
+⁢
+l
+⁢
+cos
+⁡
+θ
+From which we may derive Lagrange’s equations using the coordinate
+θ
+directly
+d
+d
+⁢
+t
+⁢
+(
+∂
+⁡
+L
+∂
+⁡
+θ
+˙
+)
+-
+∂
+⁡
+L
+∂
+⁡
+θ
+=
+m
+⁢
+l
+2
+⁢
+θ
+¨
++
+m
+⁢
+g
+⁢
+l
+⁢
+sin
+⁡
+θ
+=
+0
+(2.65)
+which indeed reproduces the
+equation of motion for the pendulum (
+2.53
+). Note that, as
+promised, we haven’t calculated the tension
+T
+using this method.
+This has the advantage that we’ve needed to do less work. If we need
+to figure out the tension, we have to go back to the more laborious
+Lagrange multiplier method.
+2.3.2
+Non-Holonomic Constraints
+For completeness, let’s quickly review a couple of non-holonomic
+constraints. There’s no general theory to solve systems of this
+type, although it turns out that both of the examples we describe
+here can be solved with relative ease using different methods. We
+won’t discuss non-holonomic constraints for the rest of this course,
+and include a brief description here simply to inform you of the
+sort of stuff we won’t see!
+Inequalities
+Consider a particle moving under gravity on the outside of a sphere
+of radius
+R
+. It is constrained to satisfy
+x
+2
++
+y
+2
++
+z
+2
+≥
+R
+2
+.
+This type of constraint, involving an inequality, is non-holonomic.
+When the particle lies close to the top of the sphere, we know that
+it will remain in contact with the surface and we can treat the
+constraint effectively as holonomic. But at some point the particle
+will fall off. To determine when this happens requires different
+methods from those above (although it is not particularly
+difficult).
+Velocity Dependent Constraints
+Figure 7:
+The coin rolling down a slope leads to velocity dependant,
+non-holonomic constraints.
+Constraints of the form
+g
+⁢
+(
+x
+A
+,
+x
+˙
+A
+,
+t
+)
+=
+0
+which
+cannot be integrated to give
+f
+⁢
+(
+x
+A
+,
+t
+)
+=
+0
+are non-holonomic. For
+example, consider a coin of radius
+R
+rolling down a slope as shown
+in figure
+7
+. The coordinates
+(
+x
+,
+y
+)
+fix the coin’s
+position on the slope. But the coin has other degrees of freedom as
+well: the angle
+θ
+it makes with the path of steepest descent,
+and the angle
+ϕ
+that a marked point on the rim of the coin
+makes with the vertical. If the coin rolls without slipping, then
+there are constraints on the evolution of these coordinates. We must
+have that the velocity of the rim is
+v
+rim
+=
+R
+⁢
+ϕ
+˙
+. So,
+in terms of our four coordinates, we have the constraint
+x
+˙
+=
+R
+ϕ
+˙
+sin
+θ
+,
+y
+˙
+=
+R
+ϕ
+˙
+cos
+θ
+(2.66)
+But these cannot be integrated to
+give constraints of the form
+f
+⁢
+(
+x
+,
+y
+,
+θ
+,
+ϕ
+)
+=
+0
+. They are
+non-holonomic.
+2.3.3
+Summary
+Let’s review what we’ve learnt so far. A system is described by
+n
+generalised coordinates
+q
+i
+which define a point in an
+n
+-dimensional
+configuration space
+C
+. Time evolution is a
+curve in
+C
+governed by the
+Lagrangian
+L
+⁢
+(
+q
+i
+,
+q
+˙
+i
+,
+t
+)
+(2.67)
+such that the
+q
+i
+obey
+d
+d
+⁢
+t
+⁢
+(
+∂
+⁡
+L
+∂
+⁡
+q
+˙
+i
+)
+-
+∂
+⁡
+L
+∂
+⁡
+q
+i
+=
+0
+(2.68)
+These are
+n
+coupled
+2
+nd
+order (usually) non-linear
+differential equations. Before we move on, let’s take this
+opportunity to give an important definition. The quantity
+p
+i
+=
+∂
+⁡
+L
+∂
+⁡
+q
+˙
+i
+(2.69)
+is called the
+generalised momentum
+conjugate to
+q
+i
+. (It only coincides with
+the real momentum in Cartesian coordinates). We can now rewrite
+Lagrange’s equations (
+2.68
+) as
+p
+˙
+i
+=
+∂
+⁡
+L
+/
+∂
+⁡
+q
+i
+. The generalised momenta will play an important role in
+Section 4.
+Note: The Lagrangian
+L
+is not unique. We may
+make the transformation
+L
+′
+=
+α
+⁢
+L
+for
+⁢
+α
+∈
+𝐑
+or
+L
+′
+=
+L
++
+d
+⁢
+f
+d
+⁢
+t
+(2.70)
+for any function
+f
+and the equations of motion
+remain unchanged. To see that the last statement is true, we could
+either plug
+L
+′
+into Lagrange’s equations or, alternatively,
+recall that Lagrange’s equations can be derived from an action
+principle and the action (which is the time integral of the
+Lagrangian) changes only by a constant under the transformation. (As
+an aside: A system no longer remains invariant under these
+transformations in quantum mechanics. The number
+α
+is related
+to Planck’s constant, while transformations of the second type lead
+to rather subtle and interesting effects related to the mathematics
+of topology).
+2.3.4
+Joseph-Louis Lagrange (1736-1813)
+Lagrange
+1
+1
+1
+You can read all about the lives of mathematicians at
+http://www-gap.dcs.st-and.ac.uk/ history/BiogIndex.html
+started off life studying law but changed his mind and turned to mathematics
+after reading a book on optics by Halley (of comet fame). Despite being
+mostly self-taught,
+by the age of 19 he was a professor in his home town of Turin.
+He stayed in Italy, somewhat secluded, for the next 11 years although
+he communicated often with Euler and, in 1766, moved to Berlin to take
+up Euler’s recently vacated position. It was there he did his famous
+work on mechanics and the calculus of variations that we’ve seen
+above. In 1787 he moved once again, now to Paris. He was just in time
+for the French revolution and only survived a law ordering the arrest
+of all foreigners after the intervention of the chemist Lavoisier
+who was a rather powerful political figure. (One year later, Lavoisier
+lost his power, followed quickly by his head.)
+Lagrange published his collected works on mechanics in 1788 in a
+book called “Mechanique Analytique”. He considered the work to be
+pure mathematics and boasts in the introduction that it contains
+no figures, thereby putting the anal in analytique.
+Since I started with a quote about Newton’s teaching, I’ll
+include here a comment on Lagrange’s lectures by one of his more
+famous students:
+“His voice is very feeble, at least in that he does not become heated; he
+has a very pronounced Italian accent and pronounces the s like z … The
+students, of whom the majority are incapable of appreciating him, give him
+little welcome, but the professors make amends for it.”
+Fourier analysis of Lagrange
+2.4
+Noether’s Theorem and Symmetries
+In this subsection we shall discuss the appearance of conservation
+laws in the Lagrangian formulation and, in particular, a beautiful
+and important theorem due to Noether relating conserved quantities
+to symmetries.
+Let’s start with a definition. A function
+F
+⁢
+(
+q
+i
+,
+q
+˙
+i
+,
+t
+)
+of
+the coordinates, their time derivatives and (possibly) time
+t
+is
+called a
+constant of motion
+(or a
+conserved quantity
+) if
+the total time derivative vanishes
+d
+⁢
+F
+d
+⁢
+t
+=
+∑
+j
+=
+1
+n
+(
+∂
+⁡
+F
+∂
+⁡
+q
+j
+⁢
+q
+˙
+j
++
+∂
+⁡
+F
+∂
+⁡
+q
+˙
+j
+⁢
+q
+¨
+j
+)
++
+∂
+⁡
+F
+∂
+⁡
+t
+=
+0
+(2.71)
+whenever
+q
+i
+⁢
+(
+t
+)
+satisfy Lagrange’s equations. This means that
+F
+remains constant along the path followed by the system. Here’s a
+couple of examples:
+Claim: If
+L
+does not depend explicitly on
+time
+t
+(i.e.
+∂
+L
+/
+∂
+t
+=
+0
+)
+then
+H
+=
+∑
+j
+q
+˙
+j
+⁢
+∂
+⁡
+L
+∂
+⁡
+q
+˙
+j
+-
+L
+(2.72)
+is
+constant. When
+H
+is written as a function of
+q
+i
+and
+p
+i
+, it
+is known as the Hamiltonian. It is usually identified with the total
+energy of the system.
+Proof
+d
+⁢
+H
+d
+⁢
+t
+=
+∑
+j
+(
+q
+¨
+j
+⁢
+∂
+⁡
+L
+∂
+⁡
+q
+˙
+j
++
+q
+˙
+j
+⁢
+d
+d
+⁢
+t
+⁢
+(
+∂
+⁡
+L
+∂
+⁡
+q
+˙
+j
+)
+-
+∂
+⁡
+L
+∂
+⁡
+q
+j
+⁢
+q
+˙
+j
+-
+∂
+⁡
+L
+∂
+⁡
+q
+˙
+j
+⁢
+q
+¨
+j
+)
+(2.73)
+which vanishes whenever Lagrange’s equations (
+2.68
+)
+hold.
+□
+Claim: Suppose
+∂
+⁡
+L
+/
+∂
+⁡
+q
+j
+=
+0
+for
+some
+q
+j
+. Then
+q
+j
+is said to be
+ignorable
+(or
+cyclic
+). We have the conserved quantity
+p
+j
+=
+∂
+⁡
+L
+∂
+⁡
+q
+˙
+j
+(2.74)
+Proof:
+d
+⁢
+p
+j
+d
+⁢
+t
+=
+d
+d
+⁢
+t
+⁢
+(
+∂
+⁡
+L
+∂
+⁡
+q
+˙
+j
+)
+=
+∂
+⁡
+L
+∂
+⁡
+q
+j
+=
+0
+(2.75)
+where we
+have used Lagrange’s equations (
+2.68
+) in the second equality.
+□
+2.4.1
+Noether’s Theorem
+Consider a one-parameter family of maps
+q
+i
+⁢
+(
+t
+)
+→
+Q
+i
+⁢
+(
+s
+,
+t
+)
+s
+∈
+𝐑
+(2.76)
+such that
+Q
+i
+⁢
+(
+0
+,
+t
+)
+=
+q
+i
+⁢
+(
+t
+)
+. Then this transformation is said to be a
+continuous
+symmetry
+of the Lagrangian
+L
+if
+∂
+∂
+⁡
+s
+⁢
+L
+⁢
+(
+Q
+i
+⁢
+(
+s
+,
+t
+)
+,
+Q
+˙
+i
+⁢
+(
+s
+,
+t
+)
+,
+t
+)
+=
+0
+(2.77)
+Noether’s theorem states that for each such symmetry there exists a
+conserved quantity.
+Proof of Noether’s Theorem:
+∂
+⁡
+L
+∂
+⁡
+s
+=
+∂
+⁡
+L
+∂
+⁡
+Q
+i
+⁢
+∂
+⁡
+Q
+i
+∂
+⁡
+s
++
+∂
+⁡
+L
+∂
+⁡
+Q
+˙
+i
+⁢
+∂
+⁡
+Q
+˙
+i
+∂
+⁡
+s
+(2.78)
+so we have
+0
+=
+∂
+⁡
+L
+∂
+⁡
+s
+|
+s
+=
+0
+=
+∂
+⁡
+L
+∂
+⁡
+q
+i
+⁢
+∂
+⁡
+Q
+i
+∂
+⁡
+s
+|
+s
+=
+0
++
+∂
+⁡
+L
+∂
+⁡
+q
+˙
+i
+⁢
+∂
+⁡
+Q
+˙
+i
+∂
+⁡
+s
+|
+s
+=
+0
+(2.79)
+=
+d
+d
+⁢
+t
+⁢
+(
+∂
+⁡
+L
+∂
+⁡
+q
+˙
+i
+)
+⁢
+∂
+⁡
+Q
+i
+∂
+⁡
+s
+|
+s
+=
+0
++
+∂
+⁡
+L
+∂
+⁡
+q
+˙
+i
+⁢
+∂
+⁡
+Q
+˙
+i
+∂
+⁡
+s
+|
+s
+=
+0
+(By Lagrange)
+=
+d
+d
+⁢
+t
+⁢
+(
+∂
+⁡
+L
+∂
+⁡
+q
+˙
+i
+⁢
+∂
+⁡
+Q
+i
+∂
+⁡
+s
+|
+s
+=
+0
+)
+and the quantity
+∑
+i
+(
+∂
+⁡
+L
+/
+∂
+⁡
+q
+˙
+i
+)
+⁢
+(
+∂
+⁡
+Q
+i
+/
+∂
+⁡
+s
+)
+,
+evaluated at
+s
+=
+0
+, is constant for all time.
+□
+Example: Homogeneity of Space
+Consider the closed system of
+N
+particles discussed in Section 1
+with Lagrangian
+L
+=
+1
+2
+⁢
+∑
+i
+m
+i
+⁢
+𝐫
+˙
+i
+2
+-
+V
+⁢
+(
+|
+𝐫
+i
+-
+𝐫
+j
+|
+)
+(2.80)
+This Lagrangian has the symmetry of translation:
+𝐫
+i
+→
+𝐫
+i
++
+s
+⁢
+𝐧
+for any vector
+𝐧
+and for
+any real number
+s
+. This means that
+L
+⁢
+(
+𝐫
+i
+,
+𝐫
+˙
+i
+,
+t
+)
+=
+L
+⁢
+(
+𝐫
+i
++
+s
+⁢
+𝐧
+,
+𝐫
+˙
+i
+,
+t
+)
+(2.81)
+This is the statement that space is homogeneous and a translation of
+the system by
+s
+⁢
+𝐧
+does nothing to the equations of motion.
+These translations are elements of the Galilean group that we met in
+section 1.2. From Noether’s theorem, we can compute the conserved
+quantity associated with translations. It is
+∑
+i
+∂
+⁡
+L
+∂
+⁡
+𝐫
+˙
+i
+⋅
+𝐧
+=
+∑
+i
+𝐩
+i
+⋅
+𝐧
+(2.82)
+which we recognise as the the total linear momentum in the direction
+𝐧
+. Since this holds for all
+𝐧
+, we conclude that
+∑
+i
+𝐩
+i
+is conserved. But this is very familiar. It is simply
+the conservation of total linear momentum. To summarise
+Homogeneity of Space
+⇒
+Translation
+Invariance of
+L
+⇒
+Conservation of Total
+Linear Momentum
+This statement should be intuitively clear. One point in space is
+much the same as any other. So why would a system of particles speed
+up to get over there, when here is just as good? This manifests
+itself as conservation of linear momentum.
+Example: Isotropy of Space
+The isotropy of space is the statement that a closed system,
+described by the Lagrangian (
+2.80
+) is invariant under
+rotations around an axis
+𝐧
+^
+, so all
+𝐫
+i
+→
+𝐫
+i
+′
+are rotated by the same amount. To work out the
+corresponding conserved quantities it will suffice to work with the
+infinitesimal form of the rotations
+𝐫
+i
+→
+𝐫
+i
++
+δ
+⁢
+𝐫
+i
+(2.83)
+=
+𝐫
+i
++
+α
+⁢
+𝐧
+^
+×
+𝐫
+i
+where
+α
+is considered infinitesimal. To see that this is
+indeed a rotation, you could calculate the length of the vector
+and notice that it’s preserved to linear order in
+α
+. Then
+we have
+Figure 8:
+L
+⁢
+(
+𝐫
+i
+,
+𝐫
+˙
+i
+)
+=
+L
+⁢
+(
+𝐫
+i
++
+α
+⁢
+𝐧
+^
+×
+𝐫
+i
+,
+𝐫
+˙
+i
++
+α
+⁢
+𝐧
+^
+×
+𝐫
+˙
+i
+)
+(2.84)
+which gives rise to the conserved quantity
+∑
+i
+∂
+⁡
+L
+∂
+⁡
+𝐫
+˙
+i
+⋅
+(
+𝐧
+^
+×
+𝐫
+i
+)
+=
+∑
+i
+𝐧
+^
+⋅
+(
+𝐫
+i
+×
+𝐩
+i
+)
+=
+𝐧
+^
+⋅
+𝐋
+(2.85)
+This is the component of the total angular momentum in the direction
+𝐧
+^
+. Since the vector
+𝐧
+^
+is arbitrary, we get
+the result
+Isotropy of Space
+⇒
+Rotational
+Invariance of
+L
+⇒
+Conservation of Total
+Angular Momentum
+Example: Homogeneity of Time
+What about homogeneity of time? In mathematical language, this means
+L
+is invariant under
+t
+→
+t
++
+s
+or, in other words,
+∂
+⁡
+L
+/
+∂
+⁡
+t
+=
+0
+. But we already saw earlier in this
+section that this implies
+H
+=
+∑
+i
+q
+˙
+i
+⁢
+(
+∂
+⁡
+L
+/
+∂
+⁡
+q
+˙
+i
+)
+-
+L
+is conserved. In the systems we’re considering, this
+is simply the total energy. We see that the existence of a conserved
+quantity which we call energy can be traced to the homogeneous
+passage of time. Or
+Time is to Energy as Space is to Momentum
+Recall from the lectures on
+Special Relativity
+that energy and
+3-momentum fit together to form a 4-vector which rotates under
+spacetime transformations. Here we see that the link between
+energy-momentum and time-space exists even in the non-relativistic
+framework of Newtonian physics. You don’t have to be Einstein to see it.
+You just have to be Emmy Noether.
+Remarks: It turns out that
+all
+conservation laws in nature are related to symmetries through
+Noether’s theorem. This includes the conservation of electric charge
+and the conservation of particles such as protons and neutrons
+(known as baryons).
+There are also
+discrete
+symmetries in Nature which don’t depend on a continuous parameter.
+For example, many theories are invariant under reflection (known as parity) in which
+𝐫
+i
+→
+-
+𝐫
+i
+. These types of symmetries do not give rise to conservation laws in
+classical physics (although they do in quantum physics).
+2.5
+Applications
+Having developed all of these tools, let’s now apply them to a few
+examples.
+2.5.1
+Bead on a Rotating Hoop
+This is an example of a system with a time dependent holonomic
+constraint. The hoop is of radius
+a
+and rotates with frequency
+ω
+as shown in figure 9. The bead, of mass
+m
+, is threaded on the hoop and moves
+without friction. We want to
+determine its motion. There is a single degree of freedom
+ψ
+,
+the angle the bead makes with the vertical. In terms of Cartesian
+coordinates
+(
+x
+,
+y
+,
+z
+)
+the position of the bead is
+x
+=
+a
+sin
+ψ
+cos
+ω
+t
+,
+y
+=
+a
+sin
+ψ
+sin
+ω
+t
+,
+z
+=
+a
+-
+a
+cos
+ψ
+(2.86)
+To determine the Lagrangian in terms of the generalised coordinate
+ψ
+we must substitute these expressions into the Lagrangian for
+the free particle. For the kinetic energy
+T
+we have
+T
+=
+1
+2
+⁢
+m
+⁢
+(
+x
+˙
+2
++
+y
+˙
+2
++
+z
+˙
+2
+)
+=
+1
+2
+⁢
+m
+⁢
+a
+2
+⁢
+[
+ψ
+˙
+2
++
+ω
+2
+⁢
+sin
+2
+⁡
+ψ
+]
+(2.87)
+Figure 9:
+while the potential energy
+V
+is given by (ignoring an
+overall constant)
+V
+=
+m
+⁢
+g
+⁢
+z
+=
+-
+m
+⁢
+g
+⁢
+a
+⁢
+cos
+⁡
+ψ
+(2.88)
+So, replacing
+x
+,
+y
+and
+z
+by
+ψ
+, we have the Lagrangian
+L
+=
+m
+⁢
+a
+2
+⁢
+(
+1
+2
+⁢
+ψ
+˙
+2
+-
+V
+eff
+)
+(2.89)
+where the effective potential is
+V
+eff
+=
+1
+m
+⁢
+a
+2
+⁢
+(
+-
+m
+⁢
+g
+⁢
+a
+⁢
+cos
+⁡
+ψ
+-
+1
+2
+⁢
+m
+⁢
+a
+2
+⁢
+ω
+2
+⁢
+sin
+2
+⁡
+ψ
+)
+(2.90)
+We can now derive the equations of motion for the bead simply from
+Lagrange’s equations which read
+ψ
+¨
+=
+-
+∂
+⁡
+V
+eff
+∂
+⁡
+ψ
+(2.91)
+Let’s look for stationary solutions of these equations in which the
+bead doesn’t move (i.e solutions of the form
+ψ
+¨
+=
+ψ
+˙
+=
+0
+). From the equation of motion, we must
+solve
+∂
+⁡
+V
+eff
+/
+∂
+⁡
+ψ
+=
+0
+to find that the bead
+can remain stationary at points satisfying
+g
+⁢
+sin
+⁡
+ψ
+=
+a
+⁢
+ω
+2
+⁢
+sin
+⁡
+ψ
+⁢
+cos
+⁡
+ψ
+(2.92)
+Figure 10:
+The effective potential for the bead depends on how fast the hoop is
+rotating
+There are at most three such points:
+ψ
+=
+0
+,
+ψ
+=
+π
+or
+cos
+⁡
+ψ
+=
+g
+/
+a
+⁢
+ω
+2
+. Note that the first two solutions always
+exist, while the third stationary point is only there if the hoop is
+spinning fast enough so that
+ω
+2
+≥
+g
+/
+a
+. Which of these stationary
+points is stable depends on whether
+V
+eff
+⁢
+(
+ψ
+)
+has a local
+minimum (stable) or maximum (unstable). This
+in turn depends on the
+value of
+ω
+.
+V
+eff
+is drawn for several values of
+ω
+in
+figure
+10
+. For
+ω
+2
+<
+g
+/
+a
+,
+the point
+ψ
+=
+0
+at the bottom of the hoop is stable, while for
+ω
+2
+>
+g
+/
+a
+, the position at the bottom becomes unstable and the
+new solution at
+cos
+⁡
+ψ
+=
+g
+/
+a
+⁢
+ω
+2
+is the stable point. For
+all values of
+ω
+the bead perched at the top of the hoop
+ψ
+=
+π
+is unstable.
+2.5.2
+Double Pendulum
+Figure 11:
+A double pendulum is drawn in figure 11, consisting of
+two particles of mass
+m
+1
+and
+m
+2
+, connected by light rods of
+length
+l
+1
+and
+l
+2
+. For the first particle, the kinetic energy
+T
+1
+and the potential energy
+V
+1
+are the same as for a simple
+pendulum
+T
+1
+=
+1
+2
+⁢
+m
+1
+⁢
+l
+1
+2
+⁢
+θ
+˙
+1
+2
+and
+V
+1
+=
+-
+m
+1
+⁢
+g
+⁢
+l
+1
+⁢
+cos
+⁡
+θ
+1
+(2.93)
+For the second particle it’s a
+little more involved. Consider the position of the second particle
+in the
+(
+x
+,
+y
+)
+plane in which the pendulum swings (where we take the
+origin to be the pivot of the first pendulum with
+y
+increasing
+downwards)
+x
+2
+=
+l
+1
+⁢
+sin
+⁡
+θ
+1
++
+l
+2
+⁢
+sin
+⁡
+θ
+2
+and
+y
+2
+=
+l
+1
+⁢
+cos
+⁡
+θ
+1
++
+l
+2
+⁢
+cos
+⁡
+θ
+2
+(2.94)
+Which we can
+substitute into the kinetic energy for the second particle
+T
+2
+=
+1
+2
+⁢
+m
+2
+⁢
+(
+x
+˙
+2
++
+y
+˙
+2
+)
+(2.95)
+=
+1
+2
+⁢
+m
+2
+⁢
+(
+l
+1
+2
+⁢
+θ
+˙
+1
+2
++
+l
+2
+2
+⁢
+θ
+˙
+2
+2
++
+2
+⁢
+l
+1
+⁢
+l
+2
+⁢
+cos
+⁡
+(
+θ
+1
+-
+θ
+2
+)
+⁢
+θ
+˙
+1
+⁢
+θ
+˙
+2
+)
+while the potential energy is given by
+V
+2
+=
+-
+m
+2
+⁢
+g
+⁢
+y
+2
+=
+-
+m
+2
+⁢
+g
+⁢
+(
+l
+1
+⁢
+cos
+⁡
+θ
+1
++
+l
+2
+⁢
+cos
+⁡
+θ
+2
+)
+(2.96)
+The Lagrangian is given by the sum of the kinetic energies, minus
+the sum of the potential energies
+L
+=
+1
+2
+⁢
+(
+m
+1
++
+m
+2
+)
+⁢
+l
+1
+2
+⁢
+θ
+˙
+1
+2
++
+1
+2
+⁢
+m
+2
+⁢
+l
+2
+2
+⁢
+θ
+˙
+2
+2
++
+m
+2
+⁢
+l
+1
+⁢
+l
+2
+⁢
+cos
+⁡
+(
+θ
+1
+-
+θ
+2
+)
+⁢
+θ
+˙
+1
+⁢
+θ
+˙
+2
+(2.97)
++
+(
+m
+1
++
+m
+2
+)
+⁢
+g
+⁢
+l
+1
+⁢
+cos
+⁡
+θ
+1
++
+m
+2
+⁢
+g
+⁢
+l
+2
+⁢
+cos
+⁡
+θ
+2
+The equations of motion follow by simple calculus using Lagrange’s
+two equations (one for
+θ
+1
+and one for
+θ
+2
+). The solutions to
+these equations are complicated. In fact, above a certain energy, the motion
+is chaotic.
+2.5.3
+Spherical Pendulum
+Figure 12:
+The spherical pendulum is
+allowed to rotate in three dimensions. The system has two degrees of
+freedom drawn in figure 12 which cover the range
+0
+≤
+θ
+<
+π
+and
+⁢
+0
+≤
+ϕ
+<
+2
+⁢
+π
+(2.98)
+In terms of
+cartesian coordinates, we have
+x
+=
+l
+cos
+ϕ
+sin
+θ
+,
+y
+=
+l
+sin
+ϕ
+sin
+θ
+,
+z
+=
+-
+l
+cos
+θ
+We substitute these constraints into the Lagrangian for a free
+particle to get
+L
+=
+1
+2
+⁢
+m
+⁢
+(
+x
+˙
+2
++
+y
+˙
+2
++
+z
+˙
+2
+)
+-
+m
+⁢
+g
+⁢
+z
+(2.99)
+=
+1
+2
+⁢
+m
+⁢
+l
+2
+⁢
+(
+θ
+˙
+2
++
+ϕ
+˙
+2
+⁢
+sin
+2
+⁡
+θ
+)
++
+m
+⁢
+g
+⁢
+l
+⁢
+cos
+⁡
+θ
+Notice that the coordinate
+ϕ
+is ignorable. From Noether’s
+theorem, we know that the quantity
+J
+=
+∂
+⁡
+L
+∂
+⁡
+ϕ
+˙
+=
+m
+⁢
+l
+2
+⁢
+ϕ
+˙
+⁢
+sin
+2
+⁡
+θ
+(2.100)
+is constant. This is the component of angular momentum in the
+ϕ
+direction. The equation of motion for
+θ
+follows from
+Lagrange’s equations and is
+m
+⁢
+l
+2
+⁢
+θ
+¨
+=
+m
+⁢
+l
+2
+⁢
+ϕ
+˙
+2
+⁢
+sin
+⁡
+θ
+⁢
+cos
+⁡
+θ
+-
+m
+⁢
+g
+⁢
+l
+⁢
+sin
+⁡
+θ
+(2.101)
+We can substitute
+ϕ
+˙
+for the constant
+J
+in this
+expression to get an equation entirely in terms of
+θ
+which we
+chose to write as
+θ
+¨
+=
+-
+∂
+⁡
+V
+eff
+∂
+⁡
+θ
+(2.102)
+where the effective potential is defined to be
+V
+eff
+⁢
+(
+θ
+)
+=
+-
+g
+l
+⁢
+cos
+⁡
+θ
++
+J
+2
+2
+⁢
+m
+2
+⁢
+l
+4
+⁢
+1
+sin
+2
+⁡
+θ
+(2.103)
+An important point here: we must substitute for
+J
+into the
+equations of motion. If you substitute
+J
+for
+ϕ
+˙
+directly
+into the Lagrangian, you will derive an equation that looks like the
+one above, but you’ll get a minus sign wrong! This is because
+Lagrange’s equations are derived under the assumption that
+θ
+and
+ϕ
+are independent.
+Figure 13:
+The effective potential for the spherical pendulum.
+As well as the conservation of angular momentum
+J
+, we also have
+∂
+⁡
+L
+/
+∂
+⁡
+t
+=
+0
+so energy is conserved. This is given by
+E
+=
+1
+2
+⁢
+θ
+˙
+2
++
+V
+eff
+⁢
+(
+θ
+)
+(2.104)
+where
+E
+is a constant. In fact we can invert this equation for
+E
+to
+solve for
+θ
+in terms of an integral
+t
+-
+t
+0
+=
+1
+2
+⁢
+∫
+d
+⁢
+θ
+E
+-
+V
+eff
+⁢
+(
+θ
+)
+(2.105)
+If we succeed in writing the solution to a problem
+in terms of an integral like this then we say we’ve “reduced the
+problem to quadrature”. It’s kind of a cute way of saying we can’t
+do the integral. But at least we have an expression for the solution
+that we can play with or, if all else fails, we can simply plot on a
+computer.
+Figure 14:
+Once we have an expression for
+θ
+⁢
+(
+t
+)
+we can solve for
+ϕ
+⁢
+(
+t
+)
+using the expression for
+J
+,
+ϕ
+=
+∫
+J
+m
+⁢
+l
+2
+⁢
+1
+sin
+2
+⁡
+θ
+⁢
+𝑑
+t
+=
+J
+2
+⁢
+m
+⁢
+l
+2
+⁢
+∫
+1
+E
+-
+V
+eff
+⁢
+(
+θ
+)
+⁢
+1
+sin
+2
+⁡
+θ
+⁢
+𝑑
+θ
+which gives us
+ϕ
+=
+ϕ
+⁢
+(
+θ
+)
+=
+ϕ
+⁢
+(
+t
+)
+. Let’s get more of a handle on what
+these solutions look like. We plot the function
+V
+eff
+in
+figure
+13
+. For a given energy
+E
+, the particle is
+restricted to the region
+V
+eff
+≤
+E
+(which follows from
+(
+2.104
+)). So from the figure we see that the motion is pinned
+between two points
+θ
+1
+and
+θ
+2
+. If we draw the motion
+of the pendulum in real space, it must therefore look something like
+figure 14, in which the bob oscillates between the two extremes:
+θ
+1
+≤
+θ
+≤
+θ
+2
+. Note that we could make more
+progress in understanding the motion of the spherical pendulum than
+for the double pendulum. The reason for this is the existence of two
+conservation laws for the spherical pendulum (energy and angular
+momentum) compared to just one (energy) for the double pendulum.
+There is a stable orbit which lies between the two extremal points at
+θ
+=
+θ
+0
+, corresponding to the minimum of
+V
+eff
+.
+This occurs if we balance the angular momentum
+J
+and the energy
+E
+just right. We can look at small oscillations around this point
+by expanding
+θ
+=
+θ
+0
++
+δ
+⁢
+θ
+. Substituting into the
+equation of motion (
+2.102
+), we have
+δ
+⁢
+θ
+¨
+=
+-
+(
+∂
+2
+⁡
+V
+eff
+∂
+⁡
+θ
+2
+|
+θ
+=
+θ
+0
+)
+⁢
+δ
+⁢
+θ
++
+𝒪
+⁢
+(
+δ
+⁢
+θ
+2
+)
+(2.106)
+so small oscillations about
+θ
+=
+θ
+0
+have frequency
+ω
+2
+=
+(
+∂
+2
+⁡
+V
+eff
+/
+∂
+⁡
+θ
+2
+)
+evaluated at
+θ
+=
+θ
+0
+.
+2.5.4
+Two Body Problem
+We now turn to the study of two objects interacting through a
+central force. The most famous example of this type is the
+gravitational interaction between two bodies in the solar system
+which leads to the elliptic orbits of planets and the hyperbolic
+orbits of comets. Let’s see how to frame this famous physics
+problem in the Lagrangian setting. We start by rewriting the
+Lagrangian in terms of the centre of mass
+𝐑
+and the separation
+𝐫
+12
+=
+𝐫
+1
+-
+𝐫
+2
+and work with an arbitrary potential
+V
+⁢
+(
+|
+𝐫
+12
+|
+)
+L
+=
+1
+2
+⁢
+m
+1
+⁢
+𝐫
+˙
+1
+2
++
+1
+2
+⁢
+m
+2
+⁢
+𝐫
+˙
+2
+2
+-
+V
+⁢
+(
+|
+𝐫
+12
+|
+)
+(2.107)
+=
+1
+2
+⁢
+(
+m
+1
++
+m
+2
+)
+⁢
+𝐑
+˙
+2
++
+1
+2
+⁢
+μ
+⁢
+𝐫
+˙
+12
+2
+-
+V
+⁢
+(
+|
+𝐫
+12
+|
+)
+where
+μ
+=
+m
+1
+⁢
+m
+2
+/
+(
+m
+1
++
+m
+2
+)
+is the
+reduced mass
+. The
+Lagrangian splits into a piece describing the centre of mass
+𝐑
+and a piece describing the separation. This is familiar from
+Section 1.3.2. From now on we neglect the centre of mass piece and
+focus on the separation. We know from Noether’s theorem that
+𝐋
+=
+𝐫
+12
+×
+𝐩
+12
+is conserved, where
+𝐩
+12
+is the
+momentum conjugate to
+𝐫
+12
+. Since
+𝐋
+is perpendicular
+to
+𝐫
+12
+, the motion of the orbit must lie in a plane
+perpendicular to
+𝐋
+. Using polar coordinates
+(
+r
+,
+ϕ
+)
+in
+that plane, the Lagrangian is
+L
+=
+1
+2
+⁢
+μ
+⁢
+(
+r
+˙
+2
++
+r
+2
+⁢
+ϕ
+˙
+2
+)
+-
+V
+⁢
+(
+r
+)
+(2.108)
+To make further progress, notice that
+ϕ
+is ignorable so, once
+again using Noether’s theorem, we have the conserved quantity
+J
+=
+μ
+⁢
+r
+2
+⁢
+ϕ
+˙
+(2.109)
+This is also conservation of angular momentum: to reduce to the
+Lagrangian (
+2.108
+), we used the fact that the direction of
+𝐋
+is fixed; the quantity
+J
+is related to the magnitude of
+𝐋
+. To figure out the motion we calculate Lagrange’s equation
+for
+r
+from (
+2.108
+)
+d
+d
+⁢
+t
+⁢
+(
+∂
+⁡
+L
+∂
+⁡
+r
+˙
+)
+-
+∂
+⁡
+L
+∂
+⁡
+r
+=
+μ
+⁢
+r
+¨
+-
+μ
+⁢
+r
+⁢
+ϕ
+˙
+2
++
+∂
+⁡
+V
+∂
+⁡
+r
+=
+0
+(2.110)
+We can eliminate
+ϕ
+˙
+from this equation by writing it in
+terms of the constant
+J
+to get a differential equation for the
+orbit purely in terms of
+r
+,
+μ
+⁢
+r
+¨
+=
+-
+∂
+∂
+⁡
+r
+⁢
+V
+eff
+⁢
+(
+r
+)
+(2.111)
+where the
+effective potential is given by
+V
+eff
+⁢
+(
+r
+)
+=
+V
+⁢
+(
+r
+)
++
+J
+2
+2
+⁢
+μ
+⁢
+r
+2
+(2.112)
+The last term is known as the
+“angular momentum barrier”. Let me reiterate the warning of the
+spherical pendulum: do
+not
+substitute
+J
+=
+μ
+⁢
+r
+2
+⁢
+ϕ
+˙
+directly into the Lagrangian – you will get a minus sign wrong! You
+must substitute it into the equations of motion.
+Figure 15:
+The effective potential for two bodies interacting gravitationally.
+So far, you may recognise that the analysis has been rather similar
+to that of the spherical pendulum. Let’s continue following that
+path. Since
+∂
+⁡
+L
+/
+∂
+⁡
+t
+=
+0
+, Noether tells us that energy
+is conserved and
+E
+=
+1
+2
+⁢
+μ
+⁢
+r
+˙
+2
++
+V
+eff
+⁢
+(
+r
+)
+(2.113)
+is
+constant throughout the motion. We can use this fact to “reduce to
+quadrature”,
+t
+-
+t
+0
+=
+μ
+2
+⁢
+∫
+d
+⁢
+r
+E
+-
+V
+eff
+⁢
+(
+r
+)
+(2.114)
+Up to this point the analysis is for an arbitrary potential
+V
+⁢
+(
+r
+)
+.
+At this point let’s specialise to the case of two bodies interacting
+gravitationally with
+V
+⁢
+(
+r
+)
+=
+-
+G
+⁢
+m
+1
+⁢
+m
+2
+r
+(2.115)
+where
+G
+is Newton’s constant. For this potential, the different
+solutions were studied in your Part I mechanics course where
+Kepler’s laws were derived. The orbits fall into two categories:
+elliptic if
+E
+<
+0
+and hyperbolic if
+E
+>
+0
+as shown in figure
+15
+.
+It’s worth noting the methodology we used to solve this problem. We
+started with 6 degrees of freedom describing the positions of two
+particles. Eliminating the centre of mass reduced this to 3 degrees
+of freedom describing the separation. We then used conservation of
+the direction of
+𝐋
+to reduce to 2 degrees of freedom
+(
+r
+and
+ϕ
+), and conservation of the magnitude of
+𝐋
+to
+reduce to a single variable
+r
+. Finally conservation of
+E
+allowed
+us to solve the problem. You might now be getting an idea about how
+important conservation laws are to help us solve problems!
+2.5.5
+Restricted Three Body Problem
+Consider three masses
+m
+1
+,
+m
+2
+and
+m
+3
+interacting
+gravitationally. In general this problem does not have an analytic
+solution and we must resort to numerical methods (i.e. putting it on
+a computer). However, suppose that
+m
+3
+≪
+m
+1
+and
+m
+2
+. Then it
+is a good approximation to first solve for the motion of
+m
+1
+and
+m
+2
+interacting alone, and then solve for the motion of
+m
+3
+in
+the time dependent potential set up by
+m
+1
+and
+m
+2
+. Let’s see
+how this works.
+For simplicity, let’s assume
+m
+1
+and
+m
+2
+are in a circular orbit
+with
+ϕ
+=
+ω
+⁢
+t
+. We saw in the previous section that the
+circular orbit occurs for
+∂
+⁡
+V
+eff
+/
+∂
+⁡
+r
+=
+0
+, from
+which we get an expression relating the angular velocity of the
+orbit to the distance
+ω
+2
+=
+G
+⁢
+(
+m
+1
++
+m
+2
+)
+r
+3
+(2.116)
+which
+is a special case of Kepler’s third law. Let’s further assume that
+m
+3
+moves in the same plane as
+m
+1
+and
+m
+2
+(which is a pretty
+good assumption for the sun-earth-moon system). To solve for the
+motion of
+m
+3
+in this background, we use our ability to change
+coordinates. Let’s go to a frame which rotates with
+m
+1
+and
+m
+2
+with the centre of mass at the origin. The particle
+m
+1
+is a
+distance
+r
+⁢
+μ
+/
+m
+1
+from the origin, while
+m
+2
+is a distance
+r
+⁢
+μ
+/
+m
+2
+from the origin.
+Figure 16:
+Then, from the example of Section 2.2.1, the Lagrangian for
+m
+3
+in
+the rotating frame is
+L
+=
+1
+2
+⁢
+m
+3
+⁢
+[
+(
+x
+˙
+-
+ω
+⁢
+y
+)
+2
++
+(
+y
+˙
++
+ω
+⁢
+x
+)
+2
+]
+-
+V
+where
+V
+is the gravitational potential for
+m
+3
+interacting with
+m
+1
+and
+m
+2
+V
+=
+-
+G
+⁢
+m
+1
+⁢
+m
+3
+r
+13
+-
+G
+⁢
+m
+2
+⁢
+m
+3
+r
+23
+(2.117)
+The separations are given by
+r
+13
+2
+=
+(
+x
++
+r
+μ
+/
+m
+1
+)
+2
++
+y
+2
+,
+r
+23
+2
+=
+(
+x
+-
+r
+μ
+/
+m
+2
+)
+2
++
+y
+2
+(2.118)
+Be aware that
+x
+and
+y
+are the dynamical coordinates in this system, while
+r
+is the fixed
+separation between
+m
+1
+and
+m
+2
+. The equations of motion arising
+from
+L
+are
+m
+3
+⁢
+x
+¨
+=
+2
+⁢
+m
+3
+⁢
+ω
+⁢
+y
+˙
++
+m
+3
+⁢
+ω
+2
+⁢
+x
+-
+∂
+⁡
+V
+∂
+⁡
+x
+m
+3
+⁢
+y
+¨
+=
+-
+2
+⁢
+m
+3
+⁢
+ω
+⁢
+x
+˙
++
+m
+3
+⁢
+ω
+2
+⁢
+y
+-
+∂
+⁡
+V
+∂
+⁡
+y
+(2.119)
+The full solutions to these equations are interesting and
+complicated. In fact, in 1889, Poincaré studied the restricted
+three-body system and discovered the concept of chaos in dynamical systems
+for the first time (and, in the process, won 2,500 krona and lost
+3,500 krona). We’ll be a little less ambitious here and try to find
+solutions of the form
+x
+˙
+=
+y
+˙
+=
+0
+. This is where the third
+body sits stationary to the other two and the whole system rotates
+together. Physically, the centrifugal force of the third body
+exactly cancels its gravitational force. The equations we have to
+solve are
+m
+3
+⁢
+ω
+2
+⁢
+x
+=
+∂
+⁡
+V
+∂
+⁡
+x
+=
+G
+⁢
+m
+1
+⁢
+m
+3
+⁢
+x
++
+r
+⁢
+μ
+/
+m
+1
+r
+13
+3
++
+G
+⁢
+m
+2
+⁢
+m
+3
+⁢
+x
+-
+r
+⁢
+μ
+/
+m
+2
+r
+23
+3
+(2.120)
+m
+3
+⁢
+ω
+2
+⁢
+y
+=
+∂
+⁡
+V
+∂
+⁡
+y
+=
+G
+⁢
+m
+1
+⁢
+m
+3
+⁢
+y
+r
+13
+3
++
+G
+⁢
+m
+2
+⁢
+m
+3
+⁢
+y
+r
+23
+3
+(2.121)
+There are five solutions to these equations. Firstly suppose that
+y
+=
+0
+so that
+m
+3
+sits on the same line as
+m
+1
+and
+m
+2
+. Then
+we have to solve the algebraic equation
+ω
+2
+⁢
+x
+=
+G
+⁢
+m
+1
+⁢
+x
++
+r
+⁢
+μ
+/
+m
+1
+|
+x
++
+r
+⁢
+μ
+/
+m
+1
+|
+3
++
+G
+⁢
+m
+2
+⁢
+x
+-
+r
+⁢
+μ
+/
+m
+2
+|
+x
+-
+r
+⁢
+μ
+/
+m
+2
+|
+3
+(2.122)
+In figure
+17
+, we have plotted the LHS and RHS of this equation
+to demonstrate the three solutions, one in each of the regimes:
+Figure 17:
+The three solutions sitting on
+y
+=
+0
+.
+x
+<
+-
+r
+⁢
+μ
+m
+1
+,
+-
+r
+⁢
+μ
+m
+1
+<
+x
+<
+r
+⁢
+μ
+m
+2
+,
+x
+>
+r
+⁢
+μ
+m
+2
+(2.123)
+Now let’s look for solutions with
+y
+≠
+0
+. From
+(
+2.121
+) we have
+G
+⁢
+m
+2
+r
+23
+3
+=
+ω
+2
+-
+G
+⁢
+m
+1
+r
+13
+3
+(2.124)
+which we can
+substitute into (
+2.120
+) and, after a little algebra, we find
+the condition for solutions to be
+ω
+2
+=
+G
+⁢
+(
+m
+1
++
+m
+2
+)
+r
+13
+3
+=
+G
+⁢
+(
+m
+1
++
+m
+2
+)
+r
+23
+3
+(2.125)
+which means that we must have
+r
+13
+=
+r
+23
+=
+r
+. There are two such
+points.
+Figure 18:
+The five Lagrange points.
+X marks the spots.
+In general there are five stationary points drawn
+in the figure. These are called Lagrange points. It turns out that
+L
+1
+,
+L
+2
+and
+L
+3
+are unstable,
+while
+L
+4
+and
+L
+5
+are stable as long as
+m
+2
+is sufficiently
+less than
+m
+1
+.
+For the earth-sun system, NASA and ESA make use of the Lagrange points
+L
+2
+and
+L
+3
+to place satellites. There are solar observatories
+at
+L
+3
+; satellites such as WMAP and PLANCK which measure the cosmic
+microwave background radiation (the afterglow of the big bang) gather their data from
+L
+2
+. Apparently, there is a large collection of cosmic dust
+which has accumulated at
+L
+4
+and
+L
+5
+. Other planetary systems
+(e.g. the sun-jupiter and sun-mars systems) have large asteroids,
+known as trojans, trapped at their
+L
+4
+and
+L
+5
+.
+2.5.6
+Purely Kinetic Lagrangians
+Often in physics, one
+is interested in systems with only kinetic energy and no potential
+energy. For a system with
+n
+dynamical degrees of freedom
+q
+a
+,
+a
+=
+1
+,
+…
+,
+n
+, the most general form of the Lagrangian with just a
+kinetic term is
+L
+=
+1
+2
+⁢
+g
+a
+⁢
+b
+⁢
+(
+q
+c
+)
+⁢
+q
+˙
+a
+⁢
+q
+˙
+b
+(2.126)
+The functions
+g
+a
+⁢
+b
+=
+g
+b
+⁢
+a
+depend on all
+the generalised coordinates. Assume that
+det
+⁡
+(
+g
+a
+⁢
+b
+)
+≠
+0
+so
+that the inverse matrix
+g
+a
+⁢
+b
+exists (
+g
+a
+⁢
+b
+⁢
+g
+b
+⁢
+c
+=
+δ
+c
+a
+). It is a short exercise to show that Lagrange’s equation for
+this system are given by
+q
+¨
+a
++
+Γ
+b
+⁢
+c
+a
+⁢
+q
+˙
+b
+⁢
+q
+˙
+c
+=
+0
+(2.127)
+where
+Γ
+b
+⁢
+c
+a
+=
+1
+2
+⁢
+g
+a
+⁢
+d
+⁢
+(
+∂
+⁡
+g
+b
+⁢
+d
+∂
+⁡
+q
+c
++
+∂
+⁡
+g
+c
+⁢
+d
+∂
+⁡
+q
+b
+-
+∂
+⁡
+g
+b
+⁢
+c
+∂
+⁡
+q
+d
+)
+(2.128)
+The functions
+g
+a
+⁢
+b
+define a
+metric
+on the configuration space, and the
+equations (
+2.127
+) are known as the
+geodesic
+equations.
+They appear naturally in
+General Relativity
+where they describe a
+particle moving in curved spacetime. Lagrangians of the form
+(
+2.126
+) also appear in many other areas of physics,
+including the condensed matter physics, the theory of nuclear forces
+and string theory. In these contexts, the systems are referred to as
+sigma models
+.
+2.5.7
+Particles in Electromagnetic Fields
+We saw from the beginning that the Lagrangian formulation works with
+conservative forces which can be written in terms of a potential. It
+is no good at dealing with friction forces which are often of the
+type
+F
+=
+-
+k
+⁢
+x
+˙
+. But there are other velocity dependent forces
+which arise in the fundamental laws of Nature. It’s a crucial fact
+about Nature that all of these can be written in Lagrangian form.
+Let’s illustrate this in an important example.
+Recall that the electric field
+𝐄
+and the magnetic field
+𝐁
+can be written in terms of a vector potential
+𝐀
+⁢
+(
+𝐫
+,
+t
+)
+and a scalar potential
+ϕ
+⁢
+(
+𝐫
+,
+t
+)
+𝐁
+=
+∇
+×
+𝐀
+,
+𝐄
+=
+-
+∇
+ϕ
+-
+∂
+⁡
+𝐀
+∂
+⁡
+t
+(2.129)
+Let’s study the Lagrangian for a particle of electric charge
+e
+of the form,
+L
+=
+1
+2
+⁢
+m
+⁢
+𝐫
+˙
+2
+-
+e
+⁢
+(
+ϕ
+-
+𝐫
+˙
+⋅
+𝐀
+)
+(2.130)
+The
+momentum conjugate to
+𝐫
+is
+𝐩
+=
+∂
+⁡
+L
+∂
+⁡
+𝐫
+˙
+=
+m
+⁢
+𝐫
+˙
++
+e
+⁢
+𝐀
+(2.131)
+Notice that the
+momentum is not simply
+m
+⁢
+𝐫
+˙
+; it’s modified in the presence
+of electric and magnetic fields. Now we can calculate Lagrange’s
+equations
+d
+d
+⁢
+t
+⁢
+(
+∂
+⁡
+L
+∂
+⁡
+𝐫
+˙
+)
+-
+∂
+⁡
+L
+∂
+⁡
+𝐫
+=
+d
+d
+⁢
+t
+⁢
+(
+m
+⁢
+𝐫
+˙
++
+e
+⁢
+𝐀
+)
++
+e
+⁢
+∇
+⁡
+ϕ
+-
+e
+⁢
+∇
+⁡
+(
+𝐫
+˙
+⋅
+𝐀
+)
+=
+0
+(2.132)
+To disentangle this,
+let’s work with indices
+a
+,
+b
+=
+1
+,
+2
+,
+3
+on the Cartesian coordinates,
+and rewrite the equation of motion as
+m
+⁢
+r
+¨
+a
+=
+-
+e
+⁢
+(
+∂
+⁡
+ϕ
+∂
+⁡
+r
+a
++
+∂
+⁡
+A
+a
+∂
+⁡
+t
+)
++
+e
+⁢
+(
+∂
+⁡
+A
+b
+∂
+⁡
+r
+a
+-
+∂
+⁡
+A
+a
+∂
+⁡
+r
+b
+)
+⁢
+r
+˙
+b
+(2.133)
+Now we use our definitions of the
+𝐄
+and
+𝐁
+fields (
+2.129
+)
+which, in terms of indices, read
+E
+a
+=
+-
+∂
+⁡
+ϕ
+∂
+⁡
+r
+a
+-
+∂
+⁡
+A
+a
+∂
+⁡
+t
+,
+B
+c
+=
+ϵ
+c
+⁢
+a
+⁢
+b
+∂
+⁡
+A
+b
+∂
+⁡
+r
+a
+(2.134)
+The last of these can be equivalently written as
+∂
+⁡
+A
+b
+/
+∂
+⁡
+r
+a
+-
+∂
+⁡
+A
+a
+/
+∂
+⁡
+r
+b
+=
+ϵ
+a
+⁢
+b
+⁢
+c
+⁢
+B
+c
+. The equation of motion then reads
+m
+⁢
+r
+¨
+a
+=
+e
+⁢
+E
+a
++
+e
+⁢
+ϵ
+a
+⁢
+b
+⁢
+c
+⁢
+r
+˙
+b
+⁢
+B
+c
+or,
+reverting to vector notation,
+m
+⁢
+𝐫
+¨
+=
+e
+⁢
+(
+𝐄
++
+𝐫
+˙
+×
+𝐁
+)
+(2.135)
+which
+is the Lorentz force law.
+Gauge Invariance: The scalar and vector
+potentials are not unique. We may make a change of the form
+ϕ
+→
+ϕ
+-
+∂
+⁡
+χ
+∂
+⁡
+t
+,
+𝐀
+→
+𝐀
++
+∇
+χ
+(2.136)
+These give the same
+𝐄
+and
+𝐁
+fields for
+any function
+χ
+. This is known as a
+gauge
+transformation
+. Under this change, we have
+L
+→
+L
++
+e
+⁢
+∂
+⁡
+χ
+∂
+⁡
+t
++
+e
+⁢
+𝐫
+˙
+⋅
+∇
+⁡
+χ
+=
+L
++
+e
+⁢
+d
+⁢
+χ
+d
+⁢
+t
+(2.137)
+but we know that the equations of motion remain invariant under the
+addition of a total derivative to the Lagrangian. This concept of
+gauge invariance underpins much of modern physics. You can learn more about this in the
+lectures on Electromagnetism
+.
+2.6
+Small Oscillations and Stability
+“Physics is that subset of human experience which can be reduced to
+coupled harmonic oscillators”
+Michael Peskin
+Peskin doesn’t say this to knock physics. He’s just a fan of harmonic
+oscillators. And rightly so. By studying the simple
+harmonic oscillator and its relatives in ever more inventive ways we
+understand why the stars shine and why lasers shine and, thanks to Hawking,
+why even black holes shine.
+In this section we’ll see one reason why the simple harmonic
+oscillator is so important to us. We will study the motion of
+systems close to equilibrium and see that the dynamics is described
+by
+n
+decoupled
+simple harmonic oscillators, each ringing at a
+different frequency.
+Let’s start with a single degree of freedom
+x
+. We’ve already seen
+several examples where we get an equation of the form
+x
+¨
+=
+f
+⁢
+(
+x
+)
+(2.138)
+An
+equilibrium point
+,
+x
+=
+x
+0
+, of this
+system satisfies
+f
+⁢
+(
+x
+0
+)
+=
+0
+. This means that if we start with the
+initial conditions
+x
+=
+x
+0
+and
+x
+˙
+=
+0
+(2.139)
+then the system will stay there forever. But what if we start
+slightly away from
+x
+=
+x
+0
+? To analyse this, we write
+x
+⁢
+(
+t
+)
+=
+x
+0
++
+η
+⁢
+(
+t
+)
+(2.140)
+where
+η
+is assumed to be small so that we can Taylor expand
+f
+⁢
+(
+x
+)
+to find
+η
+¨
+=
+f
+′
+⁢
+(
+x
+0
+)
+⁢
+η
++
+𝒪
+⁢
+(
+η
+2
+)
+(2.141)
+and we neglect the terms quadratic in
+η
+and higher. There are
+two possible behaviours of this system
+1.
+f
+′
+⁢
+(
+x
+0
+)
+<
+0
+. In this case the restoring force sends us back to
+η
+=
+0
+and
+the solution is
+η
+⁢
+(
+t
+)
+=
+A
+⁢
+cos
+⁡
+(
+ω
+⁢
+(
+t
+-
+t
+0
+)
+)
+(2.142)
+where
+A
+and
+t
+0
+are integration constants, while
+ω
+2
+=
+-
+f
+′
+⁢
+(
+x
+0
+)
+.
+The system undergoes stable oscillations about
+x
+=
+x
+0
+at frequency
+ω
+.
+2.
+f
+′
+⁢
+(
+x
+0
+)
+>
+0
+. In this case, the force pushes us away from equilibrium and the
+solution is
+η
+⁢
+(
+t
+)
+=
+A
+⁢
+e
+λ
+⁢
+t
++
+B
+⁢
+e
+-
+λ
+⁢
+t
+(2.143)
+where
+A
+and
+B
+are integration constants, while
+λ
+2
+=
+f
+′
+⁢
+(
+x
+0
+)
+. In this case,
+there is a very special initial condition
+A
+=
+0
+such that
+x
+→
+x
+0
+at late
+times. But for generic initial conditions,
+η
+gets rapidly large and the approximation
+that
+η
+is small breaks down. We say the system has a
+linear instability
+.
+Now let’s generalise this discussion to
+n
+degrees of freedom with
+equations of motion of the form,
+q
+¨
+i
+=
+f
+i
+⁢
+(
+q
+1
+,
+…
+,
+q
+n
+)
+i
+=
+1
+,
+…
+,
+n
+(2.144)
+An equilibrium point
+q
+i
+0
+must satisfy
+f
+i
+⁢
+(
+q
+1
+0
+,
+…
+,
+q
+n
+0
+)
+=
+0
+for all
+i
+=
+1
+⁢
+…
+,
+n
+. Consider small
+perturbations away from the equilibrium point
+q
+i
+⁢
+(
+t
+)
+=
+q
+i
+0
++
+η
+i
+⁢
+(
+t
+)
+(2.145)
+where, again, we take the
+η
+i
+to be small so that we can Taylor
+expand the
+f
+i
+, and neglect the quadratic terms and higher. We
+have
+η
+¨
+i
+≈
+∂
+⁡
+f
+i
+∂
+⁡
+q
+j
+|
+q
+k
+=
+q
+k
+0
+⁢
+η
+j
+(2.146)
+where the sum over
+j
+=
+1
+,
+…
+,
+n
+is implicit. It’s useful to write
+this in matrix form. We define the vector
+𝜼
+and the
+n
+×
+n
+matrix
+F
+as
+𝜼
+=
+(
+η
+1
+⋮
+η
+n
+)
+,
+F
+=
+(
+∂
+⁡
+f
+1
+∂
+⁡
+q
+1
+…
+∂
+⁡
+f
+1
+∂
+⁡
+q
+n
+⋮
+⋮
+∂
+⁡
+f
+n
+∂
+⁡
+q
+1
+…
+∂
+⁡
+f
+n
+∂
+⁡
+q
+n
+)
+(2.147)
+where each partial derivative in the matrix
+F
+is evaluated at
+q
+i
+=
+q
+i
+0
+. The equation now becomes simply
+𝜼
+¨
+=
+F
+⁢
+𝜼
+(2.148)
+Our strategy is simple: we search for eigenvectors of
+F
+. If
+F
+were a symmetric matrix, it would have a complete
+set of orthogonal eigenvectors with real eigenvalues. Unfortunately, we can’t assume
+that
+F
+is symmetric. Nonetheless, it is true that for
+equations of the form (
+2.148
+) arising from physical Lagrangian
+systems, the eigenvalues will be real. We shall postpone a proof of
+this fact for a couple of paragraphs and continue under the
+assumption that
+F
+has real eigenvalues. In general,
+F
+will have
+different left and right eigenvectors,
+F
+𝝁
+a
+=
+λ
+a
+2
+𝝁
+a
+,
+𝜻
+a
+T
+F
+=
+λ
+a
+2
+𝜻
+a
+T
+a
+=
+1
+,
+…
+,
+n
+(2.149)
+where there’s no sum over
+a
+in these equations. The left and right
+eigenvectors satisfy
+𝜻
+a
+⋅
+𝝁
+b
+=
+δ
+a
+⁢
+b
+. Note that
+although the eigenvectors differ, the eigenvalues
+λ
+a
+2
+for
+a
+=
+1
+,
+…
+,
+n
+are the same. Although
+λ
+a
+2
+are real for the
+physical systems of interest (to be proved shortly) they are
+not always positive. The most general solution to
+𝜼
+¨
+=
+F
+⁢
+𝜼
+is
+𝜼
+⁢
+(
+t
+)
+=
+∑
+a
+𝝁
+a
+⁢
+[
+A
+a
+⁢
+e
+λ
+a
+⁢
+t
++
+B
+a
+⁢
+e
+-
+λ
+a
+⁢
+t
+]
+(2.150)
+where
+A
+a
+and
+B
+a
+are
+2
+⁢
+n
+integration constants. Again, we have
+two possibilities for each eigenvalue
+1.
+λ
+a
+2
+<
+0
+In this case
+±
+λ
+a
+=
+i
+⁢
+ω
+a
+for some real number
+ω
+a
+.
+The system will be stable in the corresponding direction
+𝜼
+=
+𝝁
+a
+.
+2.
+λ
+a
+2
+>
+0
+. Now
+±
+λ
+a
+are real and the system exhibits a linear instability
+in the direction
+𝜼
+=
+𝝁
+a
+The eigenvectors
+𝝁
+a
+are called
+normal modes
+. The
+equilibrium point is only stable if
+λ
+a
+2
+<
+0
+for every
+a
+=
+1
+,
+…
+,
+n
+. If this is the case the system will typically
+oscillate around the equilibrium point as a linear superposition of
+all the normal modes, each at a different frequency.
+To keep things real, we can write the most general solution as
+𝜼
+⁢
+(
+t
+)
+=
+∑
+a
+,
+λ
+a
+2
+>
+0
+𝝁
+a
+⁢
+[
+A
+a
+⁢
+e
+λ
+a
+⁢
+t
++
+B
+a
+⁢
+e
+-
+λ
+a
+⁢
+t
+]
++
+∑
+a
+,
+λ
+a
+2
+<
+0
+𝝁
+a
+⁢
+A
+a
+⁢
+cos
+⁡
+(
+ω
+a
+⁢
+(
+t
+-
+t
+a
+)
+)
+(2.151)
+where now
+A
+a
+,
+B
+a
+and
+t
+a
+are the
+2
+⁢
+n
+integration constants.
+The Reality of the Eigenvalues
+Finally, let’s show what we put off above: that the eigenvalues
+λ
+a
+2
+are
+real for matrices
+F
+derived from a physical Lagrangian system. Consider a
+general Lagrangian of the form,
+L
+=
+1
+2
+⁢
+T
+i
+⁢
+j
+⁢
+(
+q
+)
+⁢
+q
+˙
+i
+⁢
+q
+˙
+j
+-
+V
+⁢
+(
+q
+)
+(2.152)
+We will require that
+T
+i
+⁢
+j
+⁢
+(
+q
+)
+is invertible and positive definite for all
+q
+. Expanding about an
+equilibrium point as in (
+2.145
+), to linear order in
+η
+i
+the equations read
+T
+i
+⁢
+j
+⁢
+η
+¨
+j
+=
+-
+V
+i
+⁢
+j
+⁢
+η
+j
+(2.153)
+where
+T
+i
+⁢
+j
+=
+T
+i
+⁢
+j
+⁢
+(
+q
+0
+)
+and
+V
+i
+⁢
+j
+=
+∂
+2
+⁡
+V
+/
+∂
+⁡
+q
+i
+⁢
+∂
+⁡
+q
+j
+, evaluated
+at
+q
+i
+=
+q
+i
+0
+. Then in the matrix notation of (
+2.148
+), we have
+F
+=
+-
+T
+-
+1
+⁢
+V
+. Both
+T
+i
+⁢
+j
+and
+V
+i
+⁢
+j
+are symmetric, but not necessarily simultaneously diagonalisable.
+This means that
+F
+i
+⁢
+j
+is not necessarily symmetric. Nevertheless,
+F
+does have real
+eigenvalues. To see this, look at
+F
+⁢
+𝝁
+=
+λ
+2
+⁢
+𝝁
+⇒
+V
+⁢
+𝝁
+=
+-
+λ
+2
+⁢
+T
+⁢
+𝝁
+(2.154)
+So far, both
+𝝁
+and
+λ
+2
+could be complex. We will now show that they’re not.
+Take the inner product of this equation with the complex conjugate eigenvector
+𝝁
+¯
+.
+We have
+𝝁
+¯
+⋅
+V
+⁢
+𝝁
+=
+λ
+2
+⁢
+𝝁
+¯
+⋅
+T
+⁢
+𝝁
+. But for any symmetric
+matrix
+S
+, the quantity
+𝝁
+¯
+⋅
+S
+⁢
+𝝁
+is real. (This follows from
+expanding
+𝝁
+in the complete set of real, orthogonal eigenvectors of
+S
+, each
+of which has a real eigenvalue). Therefore both
+𝝁
+¯
+⋅
+V
+⁢
+𝝁
+and
+𝝁
+¯
+⋅
+T
+⁢
+𝝁
+are both real. Since we have assumed that
+T
+is invertible and positive definite, we
+know that
+𝝁
+¯
+⋅
+T
+⁢
+𝝁
+≠
+0
+so, from (
+2.154
+), we conclude that the
+eigenvalue
+λ
+2
+is indeed real.
+2.6.1
+Example: The Double Pendulum
+In section 2.5.2, we derived the Lagrangian for the double pendulum.
+Restricting to the case where the two masses are the same
+m
+1
+=
+m
+2
+=
+m
+and the two lengths are the same
+l
+1
+=
+l
+2
+=
+l
+, we derived
+the Lagrangian (
+2.97
+) for arbitrary oscillations
+L
+=
+m
+⁢
+l
+2
+⁢
+θ
+˙
+1
+2
++
+1
+2
+⁢
+m
+⁢
+l
+2
+⁢
+θ
+˙
+2
+2
++
+m
+⁢
+l
+2
+⁢
+cos
+⁡
+(
+θ
+1
+-
+θ
+2
+)
+⁢
+θ
+˙
+1
+⁢
+θ
+˙
+2
++
+2
+⁢
+m
+⁢
+g
+⁢
+l
+⁢
+cos
+⁡
+θ
+1
++
+m
+⁢
+g
+⁢
+l
+⁢
+cos
+⁡
+θ
+2
+The stable equilibrium point is clearly
+θ
+1
+=
+θ
+2
+=
+0
+. (You
+could check mathematically if you’re dubious). Let’s expand for
+small
+θ
+1
+and
+θ
+2
+. If we want to linearise the
+equations of motion for
+θ
+, then we must expand the Lagrangian
+to second order (so that after we take derivatives, there’s still a
+θ
+left standing). We have
+L
+≈
+m
+⁢
+l
+2
+⁢
+θ
+˙
+1
+2
++
+1
+2
+⁢
+m
+⁢
+l
+2
+⁢
+θ
+˙
+2
+2
++
+m
+⁢
+l
+2
+⁢
+θ
+˙
+1
+⁢
+θ
+˙
+2
+-
+m
+⁢
+g
+⁢
+l
+⁢
+θ
+1
+2
+-
+1
+2
+⁢
+m
+⁢
+g
+⁢
+l
+⁢
+θ
+2
+2
+(2.155)
+where we’ve thrown away an irrelevant constant. From this we can use
+Lagrange’s equations to derive the two linearised equations of
+motion
+2
+⁢
+m
+⁢
+l
+2
+⁢
+θ
+¨
+1
++
+m
+⁢
+l
+2
+⁢
+θ
+¨
+2
+=
+-
+2
+⁢
+m
+⁢
+g
+⁢
+l
+⁢
+θ
+1
+m
+⁢
+l
+2
+⁢
+θ
+¨
+2
++
+m
+⁢
+l
+2
+⁢
+θ
+¨
+1
+=
+-
+m
+⁢
+g
+⁢
+l
+⁢
+θ
+2
+(2.156)
+Figure 19:
+The two normal modes of the double pendulum
+Or, writing
+𝜽
+=
+(
+θ
+1
+,
+θ
+2
+)
+T
+, this becomes
+(
+2
+1
+1
+1
+)
+⁢
+𝜽
+¨
+=
+-
+g
+l
+⁢
+(
+2
+0
+0
+1
+)
+⁢
+𝜽
+⇒
+𝜽
+¨
+=
+-
+g
+l
+⁢
+(
+2
+-
+1
+-
+2
+2
+)
+⁢
+𝜽
+(2.157)
+We have two eigenvectors. They are
+1.
+𝝁
+1
+=
+(
+1
+2
+)
+which has
+eigenvalue
+λ
+1
+2
+=
+-
+(
+g
+/
+l
+)
+⁢
+(
+2
+-
+2
+)
+. This corresponds to the motion shown in
+figure
+19
+for the first normal mode.
+2.
+𝝁
+2
+=
+(
+1
+-
+2
+)
+which has
+eigenvalue
+λ
+2
+2
+=
+-
+(
+g
+/
+l
+)
+⁢
+(
+2
++
+2
+)
+. This corresponds to the motion
+shown in figure
+19
+for the second normal mode.
+We see that the frequency of the mode in which the two rods oscillate in different
+directions should be higher than that in which they oscillate together.
+2.6.2
+Example: The Linear Triatomic Molecule
+Figure 20:
+Consider the molecule drawn
+in the figure. It’s a rough approximation of
+C
+⁢
+O
+2
+. We’ll only
+consider motion in the direction parallel to the molecule for each
+atom, in which case the Lagrangian for this object takes the form,
+L
+=
+1
+2
+⁢
+m
+⁢
+x
+˙
+1
+2
++
+1
+2
+⁢
+M
+⁢
+x
+˙
+2
+2
++
+1
+2
+⁢
+m
+⁢
+x
+˙
+3
+2
+-
+V
+⁢
+(
+x
+1
+-
+x
+2
+)
+-
+V
+⁢
+(
+x
+2
+-
+x
+3
+)
+(2.158)
+The function
+V
+is some rather complicated interatomic
+potential. But, the point of this section is that if we’re
+interested in oscillations around equilibrium, this doesn’t matter.
+Assume that
+x
+i
+=
+x
+i
+0
+in equilibrium. By symmetry, we have
+|
+x
+1
+0
+-
+x
+2
+0
+|
+=
+|
+x
+2
+0
+-
+x
+3
+0
+|
+=
+r
+0
+. We write deviations from
+equilibrium as
+x
+i
+⁢
+(
+t
+)
+=
+x
+i
+0
++
+η
+i
+⁢
+(
+t
+)
+(2.159)
+Figure 21:
+The three normal modes of the triatomic molecule
+Taylor expanding the potential about the equilibrium point,
+V
+⁢
+(
+r
+)
+=
+V
+⁢
+(
+r
+0
+)
++
+∂
+⁡
+V
+∂
+⁡
+r
+|
+r
+=
+r
+0
+⁢
+(
+r
+-
+r
+0
+)
++
+1
+2
+⁢
+∂
+2
+⁡
+V
+∂
+⁡
+r
+2
+|
+r
+=
+r
+0
+⁢
+(
+r
+-
+r
+0
+)
+2
++
+…
+(2.160)
+Here the first term
+V
+⁢
+(
+r
+0
+)
+is a constant and can be ignored, while
+the second term
+∂
+⁡
+V
+/
+∂
+⁡
+r
+vanishes since we are in equilibrium.
+Substituting into the Lagrangian, we have
+L
+≈
+1
+2
+⁢
+m
+⁢
+η
+˙
+1
+2
++
+1
+2
+⁢
+M
+⁢
+η
+˙
+2
+2
++
+1
+2
+⁢
+m
+⁢
+η
+˙
+3
+2
+-
+k
+2
+⁢
+[
+(
+η
+1
+-
+η
+2
+)
+2
++
+(
+η
+2
+-
+η
+3
+)
+2
+]
+(2.161)
+where
+k
+=
+∂
+2
+⁡
+V
+/
+∂
+⁡
+r
+2
+evaluated at
+r
+=
+r
+0
+. Then the equations of
+motion are
+(
+m
+⁢
+η
+¨
+1
+M
+⁢
+η
+¨
+2
+m
+⁢
+η
+¨
+3
+)
+=
+-
+k
+⁢
+(
+η
+1
+-
+η
+2
+(
+η
+2
+-
+η
+1
+)
++
+(
+η
+2
+-
+η
+3
+)
+η
+3
+-
+η
+2
+)
+(2.162)
+or, putting it in the form
+𝜼
+¨
+=
+F
+⁢
+𝜼
+, we have
+F
+=
+(
+-
+k
+/
+m
+k
+/
+m
+0
+k
+/
+M
+-
+2
+⁢
+k
+/
+M
+k
+/
+M
+0
+k
+/
+m
+-
+k
+/
+m
+)
+(2.163)
+Again, we must look for eigenvectors of
+F
+. There are three:
+1.
+𝝁
+=
+(
+1
+,
+1
+,
+1
+)
+T
+which has eigenvalue
+λ
+1
+2
+=
+0
+. But this is just an
+overall translation of the molecule. It’s not an oscillation.
+2.
+𝝁
+2
+=
+(
+1
+,
+0
+,
+-
+1
+)
+T
+which has eigenvalue
+λ
+2
+2
+=
+-
+k
+/
+m
+. In this motion,
+the outer two atoms oscillate out of phase, while the middle atom remains
+stationary. The oscillation has frequency
+ω
+2
+=
+k
+/
+m
+.
+3.
+𝝁
+3
+=
+(
+1
+,
+-
+2
+⁢
+m
+/
+M
+,
+1
+)
+T
+which has eigenvalue
+λ
+3
+2
+=
+-
+(
+k
+/
+m
+)
+⁢
+(
+1
++
+2
+⁢
+m
+/
+M
+)
+.
+This oscillation is a
+little less obvious. The two outer atoms move in the same direction,
+while the middle atom moves in the opposite direction. The frequency of this vibration
+ω
+3
+=
+-
+λ
+3
+2
+is greater than that of the second normal mode.
+All motions are drawn in figure
+21
+. For small deviations from equilibrium,
+the most general motion is a superposition of all of these modes.
+𝜼
+⁢
+(
+t
+)
+=
+𝝁
+1
+⁢
+(
+A
++
+B
+⁢
+t
+)
++
+𝝁
+2
+⁢
+C
+⁢
+cos
+⁡
+(
+ω
+2
+⁢
+(
+t
+-
+t
+2
+)
+)
++
+𝝁
+3
+⁢
+D
+⁢
+cos
+⁡
+(
+ω
+3
+⁢
+(
+t
+-
+t
+3
+)
+)
+(2.164)
+1
+Newton’s Laws of Motion
+3
+The Motion of Rigid Bodies
+Generated  on Thu Mar 24 09:29:54 2022 by
+LaTeXML

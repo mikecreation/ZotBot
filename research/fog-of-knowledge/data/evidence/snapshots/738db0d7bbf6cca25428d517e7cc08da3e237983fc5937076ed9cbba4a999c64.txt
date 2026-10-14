@@ -1,0 +1,1639 @@
+Classical Dynamics by David Tong
+Classical Dynamics
+by David Tong
+1
+Newton’s Laws of Motion
+1.1
+Introduction
+1.2
+Newtonian Mechanics: A Single Particle
+1.2.1
+Angular Momentum
+1.2.2
+Conservation Laws
+1.2.3
+Energy
+1.2.4
+Examples
+1.3
+Newtonian Mechanics: Many Particles
+1.3.1
+Momentum Revisited
+1.3.2
+Energy Revisited
+1.3.3
+An Example
+2
+The Lagrangian Formalism
+3
+The Motion of Rigid Bodies
+4
+The Hamiltonian Formalism
+2
+The Lagrangian Formalism
+1
+Newton's Laws of Motion
+"So few went to hear him, and fewer understood him, that oftimes
+he did, for want of hearers, read to the walls. He usually
+stayed about half an hour; when he had no auditors he commonly
+returned in a quarter of that time."
+Appraisal of a Cambridge lecturer in classical
+mechanics, circa 1690
+1.1
+Introduction
+The fundamental principles of classical mechanics were laid down by
+Galileo and Newton in the 16
+th
+and 17
+th
+centuries. In 1686, Newton wrote the
+Principia
+where he
+gave us three laws of motion, one law of gravity and pretended he
+didn’t know calculus. Probably the single greatest scientific
+achievement in history, you might think this pretty much wraps it up
+for classical mechanics. And, in a sense, it does. Given a
+collection of particles, acted upon by a collection of forces, you
+have to draw a nice diagram, with the particles as points and the
+forces as arrows. The forces are then added up and Newton’s famous
+“
+F
+=
+m
+⁢
+a
+” is employed to figure out where the particle’s velocities
+are heading next. All you need is enough patience and a big enough
+computer and you’re done.
+From a modern perspective this is a little unsatisfactory on several
+levels: it’s messy and inelegant; it’s hard to deal with
+problems that involve extended objects rather than point particles;
+it obscures certain features of dynamics so that concepts such as chaos
+theory took over 200 years to discover; and it’s not at all clear what
+the relationship is between Newton’s classical laws and quantum physics.
+The purpose of this course is to resolve these issues by presenting
+new perspectives on Newton’s ideas. We shall describe the
+advances that took place during the 150 years after Newton when the
+laws of motion were reformulated using more powerful techniques and
+ideas developed by some of the giants of mathematical physics:
+people such as Euler, Lagrange, Hamilton and Jacobi. This will give
+us an immediate practical advantage, allowing us to solve certain
+complicated problems with relative ease (the strange motion of
+spinning tops is a good example). But, perhaps more importantly, it
+will provide an elegant viewpoint from which we’ll see the profound
+basic principles which underlie Newton’s familiar laws of motion.
+We shall prise open “
+F
+=
+m
+⁢
+a
+” to reveal the structures and
+symmetries that lie beneath.
+Moreover, the formalisms that we’ll develop here are the basis for
+all
+of fundamental modern physics. Every theory of Nature, from
+electromagnetism and general relativity, to the standard model of
+particle physics and more speculative pursuits such as string
+theory, is best described in the language we shall develop in this
+course. The new formalisms that we’ll see here also provide the
+bridge between the classical world and the quantum world.
+There are phenomena in Nature for which these formalisms are not
+particularly useful. Systems which are dissipative, for example,
+are not so well suited to these new techniques.
+But if you want to understand
+the dynamics of planets and stars and galaxies as they orbit and
+spin, or you want to understand what’s happening at the LHC where
+protons are collided at unprecedented energies, or you want
+to know how
+electrons meld together in
+solids to form new states of matter, then the foundations that we’ll lay
+in in
+this course are a must.
+1.2
+Newtonian Mechanics: A Single Particle
+In the rest of this section, we’ll take a flying tour through the
+basic ideas of classical mechanics handed down to us by Newton.
+More details can be found in the
+lectures on Dynamics and Relativity
+.
+We’ll start with a single particle.. A
+particle
+is defined to be an object of insignificant size.
+e.g. an electron, a tennis ball or a planet. Obviously the validity
+of this statement depends on the context: to first approximation,
+the earth can be treated as a particle when computing its orbit
+around the sun. But if you want to understand its spin, it must be
+treated as an extended object.
+The motion of a particle of mass
+m
+at the position
+𝐫
+is governed by
+Newton’s Second Law
+𝐅
+=
+m
+⁢
+𝐚
+or, more precisely,
+𝐅
+⁢
+(
+𝐫
+,
+𝐫
+˙
+)
+=
+𝐩
+˙
+(1.1)
+where
+𝐅
+is the force
+which, in general, can depend on both the position
+𝐫
+as well as
+the velocity
+𝐫
+˙
+(for example, friction forces depend on
+𝐫
+˙
+) and
+𝐩
+=
+m
+⁢
+𝐫
+˙
+is the momentum. Both
+𝐅
+and
+𝐩
+are 3-vectors which we denote by the bold font. Equation
+(
+1.1
+) reduces to
+𝐅
+=
+m
+⁢
+𝐚
+if
+m
+˙
+=
+0
+. But if
+m
+=
+m
+⁢
+(
+t
+)
+(e.g. in rocket science) then the form with
+𝐩
+˙
+is
+correct.
+General theorems governing differential equations guarantee that if
+we are given
+𝐫
+and
+𝐫
+˙
+at an initial time
+t
+=
+t
+0
+, we
+can integrate equation (
+1.1
+) to determine
+𝐫
+⁢
+(
+t
+)
+for all
+t
+(as long as
+𝐅
+remains finite). This is the goal of classical
+dynamics.
+Equation (
+1.1
+) is not quite correct as stated: we must add
+the caveat that it holds only in an
+inertial frame
+. This is
+defined to be a frame in which a free particle with
+m
+˙
+=
+0
+travels in a straight line,
+𝐫
+=
+𝐫
+0
++
+𝐯
+⁢
+t
+(1.2)
+Newtons’s first law
+is the statement that such frames exist.
+An inertial frame is not unique. In fact, there are an infinite
+number of inertial frames. Let
+S
+be an inertial frame. Then
+there are 10 linearly independent transformations
+S
+→
+S
+′
+such that
+S
+′
+is also an inertial frame (i.e. if
+(
+1.2
+) holds in
+S
+, then it also holds in
+S
+′
+).
+These are
+•
+3 Rotations:
+𝐫
+′
+=
+O
+⁢
+𝐫
+where
+O
+is a
+3
+×
+3
+orthogonal matrix.
+•
+3 Translations:
+𝐫
+′
+=
+𝐫
++
+𝐜
+for a
+constant vector
+𝐜
+.
+•
+3 Boosts:
+𝐫
+′
+=
+𝐫
++
+𝐮
+⁢
+t
+for a
+constant velocity
+𝐮
+.
+•
+1 Time Translation:
+t
+′
+=
+t
++
+c
+for a
+constant real number
+c
+If motion is uniform in
+S
+, it will also be uniform in
+S
+′
+.
+These transformations make up the
+Galilean Group
+under which
+Newton’s laws are invariant. They will be important in section 2.4
+where we will see that these symmetries of space and time are the
+underlying reason for conservation laws. As a parenthetical remark,
+recall from
+special relativity
+that Einstein’s laws of motion are
+invariant under Lorentz transformations which, together with
+translations, make up the Poincaré group. We can recover the
+Galilean group from the Poincaré group by taking the speed of
+light to infinity.
+1.2.1
+Angular Momentum
+We define the
+angular momentum
+𝐋
+of a particle and the
+torque
+𝝉
+acting upon it as
+𝐋
+=
+𝐫
+×
+𝐩
+,
+𝝉
+=
+𝐫
+×
+𝐅
+(1.3)
+Note that, unlike
+linear momentum
+𝐩
+, both
+𝐋
+and
+𝝉
+depend on where we
+take the origin: we measure angular momentum with respect to a
+particular point. Let us cross both sides of equation (
+1.1
+)
+with
+𝐫
+. Using the fact that
+𝐫
+˙
+is parallel to
+𝐩
+, we
+can write
+d
+d
+⁢
+t
+⁢
+(
+𝐫
+×
+𝐩
+)
+=
+𝐫
+×
+𝐩
+˙
+. Then we
+get a version of Newton’s second law that holds for angular
+momentum:
+𝝉
+=
+𝐋
+˙
+(1.4)
+1.2.2
+Conservation Laws
+From (
+1.1
+) and (
+1.4
+), two important conservation laws follow
+immediately.
+•
+If
+𝐅
+=
+0
+then
+𝐩
+is constant throughout the motion
+•
+If
+𝝉
+=
+0
+then
+𝐋
+is constant throughout the motion
+Notice that
+𝝉
+=
+0
+does not require
+𝐅
+=
+0
+, but only
+𝐫
+×
+𝐅
+=
+0
+. This means that
+𝐅
+must be parallel to
+𝐫
+. This is the
+definition of a
+central force
+. An example is given by the
+gravitational force between the earth and the sun: the earth’s
+angular momentum about the sun is constant. As written above in
+terms of forces and torques, these conservation laws appear trivial.
+In section 2.4, we’ll see how they arise as a property of the
+symmetry of space as encoded in the Galilean group.
+1.2.3
+Energy
+Let’s now recall the definitions of energy. We firstly define the
+kinetic energy
+T
+as
+T
+=
+1
+2
+⁢
+m
+⁢
+𝐫
+˙
+⋅
+𝐫
+˙
+(1.5)
+Suppose from now on that the mass is constant. We can compute the
+change of kinetic energy with time:
+d
+⁢
+T
+d
+⁢
+t
+=
+𝐩
+˙
+⋅
+𝐫
+˙
+=
+𝐅
+⋅
+𝐫
+˙
+. If the
+particle travels from position
+𝐫
+1
+at time
+t
+1
+to position
+𝐫
+2
+at time
+t
+2
+then this change in kinetic energy is given by
+T
+⁢
+(
+t
+2
+)
+-
+T
+⁢
+(
+t
+1
+)
+=
+∫
+t
+1
+t
+2
+d
+⁢
+T
+d
+⁢
+t
+⁢
+𝑑
+t
+=
+∫
+t
+1
+t
+2
+𝐅
+⋅
+𝐫
+˙
+⁢
+𝑑
+t
+=
+∫
+𝐫
+1
+𝐫
+2
+𝐅
+⋅
+𝑑
+𝐫
+(1.6)
+where the
+final expression involving the integral of the force over the path
+is called the
+work done
+by the force. So we see that the work
+done is equal to the change in kinetic energy. From now on we will
+mostly focus on a very special type of force known as a
+conservative
+force. Such a force depends only on position
+𝐫
+rather than velocity
+𝐫
+˙
+and is such that the work done is
+independent of the path taken. In particular, for a closed path, the
+work done vanishes.
+∮
+𝐅
+⋅
+𝑑
+𝐫
+=
+0
+⇔
+∇
+×
+𝐅
+=
+0
+(1.7)
+It is a deep
+property of flat space
+𝐑
+3
+that this property implies we may
+write the force as
+𝐅
+=
+-
+∇
+⁡
+V
+⁢
+(
+𝐫
+)
+(1.8)
+for some
+potential
+V
+⁢
+(
+𝐫
+)
+. Systems which admit a potential of this form
+include gravitational, electrostatic and interatomic forces. When we
+have a conservative force, we necessarily have a conservation law
+for energy. To see this, return to equation (
+1.6
+) which now
+reads
+T
+⁢
+(
+t
+2
+)
+-
+T
+⁢
+(
+t
+1
+)
+=
+-
+∫
+𝐫
+1
+𝐫
+2
+∇
+⁡
+V
+⋅
+d
+⁢
+𝐫
+=
+-
+V
+⁢
+(
+t
+2
+)
++
+V
+⁢
+(
+t
+1
+)
+(1.9)
+or, rearranging things,
+T
+⁢
+(
+t
+1
+)
++
+V
+⁢
+(
+t
+1
+)
+=
+T
+⁢
+(
+t
+2
+)
++
+V
+⁢
+(
+t
+2
+)
+≡
+E
+(1.10)
+So
+E
+=
+T
++
+V
+is also a
+constant of motion. It is the energy. When the energy is considered to be a
+function of position
+𝐫
+and momentum
+𝐩
+it is referred to as
+the
+Hamiltonian
+H
+. In section 4 we will be seeing much more of
+the Hamiltonian.
+1.2.4
+Examples
+•
+Example 1: The Simple Harmonic Oscillator
+This is a one-dimensional system with a force proportional to the
+distance
+x
+to the origin:
+F
+⁢
+(
+x
+)
+=
+-
+k
+⁢
+x
+. This force arises from a
+potential
+V
+=
+1
+2
+⁢
+k
+⁢
+x
+2
+. Since
+F
+≠
+0
+, momentum is not
+conserved (the object oscillates backwards and forwards) and,
+since the system lives in only one dimension, angular momentum is
+not defined. But energy
+E
+=
+1
+2
+⁢
+m
+⁢
+x
+˙
+2
++
+1
+2
+⁢
+k
+⁢
+x
+2
+is
+conserved.
+•
+Example 2: The Damped Simple Harmonic Oscillator
+We now include a friction term so that
+F
+⁢
+(
+x
+,
+x
+˙
+)
+=
+-
+k
+⁢
+x
+-
+γ
+⁢
+x
+˙
+. Since
+F
+is not conservative,
+energy is not conserved. This system loses energy until it
+comes to rest.
+•
+Example 3: Particle Moving Under Gravity
+Consider a particle of mass
+m
+moving in 3 dimensions under the
+gravitational pull of a much larger particle of mass
+M
+. The force
+is
+𝐅
+=
+-
+(
+G
+⁢
+M
+⁢
+m
+/
+r
+2
+)
+⁢
+𝐫
+^
+which arises from the potential
+V
+=
+-
+G
+⁢
+M
+⁢
+m
+/
+r
+. Again, the linear momentum
+𝐩
+of the smaller particle
+is not conserved, but the force is both central and conservative,
+ensuring the particle’s total energy
+E
+and the angular momentum
+𝐋
+are conserved.
+1.3
+Newtonian Mechanics: Many Particles
+It’s easy to generalise the above discussion to many particles: we
+simply add an index to everything in sight! Let particle
+i
+have
+mass
+m
+i
+and position
+𝐫
+i
+where
+i
+=
+1
+,
+…
+,
+N
+is the number
+of particles. Newton’s law now reads
+𝐅
+i
+=
+𝐩
+˙
+i
+(1.11)
+where
+𝐅
+i
+is the force on the
+i
+th
+particle. The subtlety is that forces can now be working between
+particles. In general, we can decompose the force in the following
+way:
+𝐅
+i
+=
+∑
+j
+≠
+i
+𝐅
+i
+⁢
+j
++
+𝐅
+i
+ext
+(1.12)
+where
+𝐅
+i
+⁢
+j
+is the force acting on the
+i
+th
+particle due to
+the
+j
+th
+particle, while
+𝐅
+i
+ext
+is the external
+force on the
+i
+th
+particle. We now sum over all
+N
+particles
+∑
+i
+𝐅
+i
+=
+∑
+i
+,
+j
+⁢
+with
+⁢
+j
+≠
+i
+𝐅
+i
+⁢
+j
++
+∑
+i
+𝐅
+i
+ext
+(1.13)
+=
+∑
+i
+<
+j
+(
+𝐅
+i
+⁢
+j
++
+𝐅
+j
+⁢
+i
+)
++
+∑
+i
+𝐅
+i
+ext
+where, in the second line, we’ve re-written the sum to be over all pairs
+i
+<
+j
+. At this
+stage we make use of
+Newton’s third law of motion
+: every action has an
+equal and opposite reaction. Or, in other words,
+𝐅
+i
+⁢
+j
+=
+-
+𝐅
+j
+⁢
+i
+. We see that
+the first term vanishes and we are left simply with
+∑
+i
+𝐅
+i
+=
+𝐅
+ext
+(1.14)
+where we’ve defined the total external force to be
+𝐅
+ext
+=
+∑
+i
+𝐅
+i
+ext
+.
+We now define the total mass of the system
+M
+=
+∑
+i
+m
+i
+as well as the
+centre of mass
+𝐑
+𝐑
+=
+∑
+i
+m
+i
+⁢
+𝐫
+i
+M
+(1.15)
+Then using (
+1.11
+), and summing over all particles, we arrive at the simple
+formula,
+𝐅
+ext
+=
+M
+⁢
+𝐑
+¨
+(1.16)
+which is identical to that of a single particle. This is an important formula. It tells
+that the centre of mass of a system of particles acts just as if all the mass were concentrated
+there. In other words, it doesn’t matter if you throw a tennis ball or a very lively cat:
+the center of mass of each traces the same path.
+1.3.1
+Momentum Revisited
+The
+total momentum
+is defined to be
+𝐏
+=
+∑
+i
+𝐩
+i
+and,
+from the formulae above, it is simple to derive
+𝐏
+˙
+=
+𝐅
+ext
+. So we find the conservation law of total linear momentum for
+a system of many particles:
+𝐏
+is constant if
+𝐅
+ext
+vanishes.
+Similarly, we define
+total angular momentum
+to be
+𝐋
+=
+∑
+i
+𝐋
+i
+. Now let’s
+see what happens when we compute the time derivative.
+𝐋
+˙
+=
+∑
+i
+𝐫
+i
+×
+𝐩
+˙
+i
+(1.17)
+=
+∑
+i
+𝐫
+i
+×
+(
+∑
+j
+≠
+i
+𝐅
+i
+⁢
+j
++
+𝐅
+i
+ext
+)
+=
+∑
+i
+,
+j
+⁢
+with
+⁢
+i
+≠
+j
+𝐫
+i
+×
+𝐅
+j
+⁢
+i
++
+∑
+i
+𝐫
+i
+×
+𝐅
+i
+ext
+(1.18)
+The last term in
+this expression is the definition of
+total external torque
+:
+𝝉
+ext
+=
+∑
+i
+𝐫
+i
+×
+𝐅
+i
+ext
+. But what are we
+going to do with the first term on the right hand side? Ideally we
+would like it to vanish! Let’s look at the circumstances under which
+this will happen. We can again rewrite it as a sum over pairs
+i
+<
+j
+to get
+∑
+i
+<
+j
+(
+𝐫
+i
+-
+𝐫
+j
+)
+×
+𝐅
+i
+⁢
+j
+(1.19)
+which will
+vanish if and only if the force
+𝐅
+i
+⁢
+j
+is parallel to the line
+joining to two particles
+(
+𝐫
+i
+-
+𝐫
+j
+)
+. This is the strong form of Newton’s
+third law. If this is true, then we
+have a statement about the conservation of total angular momentum,
+namely
+𝐋
+is constant if
+𝝉
+ext
+=
+0
+.
+Figure 1:
+The magnetic field for two particles.
+Most forces do indeed obey both forms of Newton’s third law:
+𝐅
+i
+⁢
+j
+=
+-
+𝐅
+j
+⁢
+i
+and
+𝐅
+i
+⁢
+j
+is parallel to
+(
+𝐫
+i
+-
+𝐫
+j
+)
+. For
+example, gravitational and electrostatic forces have this property.
+And the total momentum and angular momentum are both conserved in
+these systems. But some forces don’t have these properties! The most
+famous example is the Lorentz force on two moving particles with
+electric charge
+Q
+. This is given by,
+𝐅
+i
+⁢
+j
+=
+Q
+⁢
+𝐯
+i
+×
+𝐁
+j
+(1.20)
+where
+𝐯
+i
+is the velocity of the
+i
+th
+particle and
+𝐁
+j
+is the magnetic field generated by the
+j
+th
+particle. Consider two particles crossing each other in
+a “T” as shown in the diagram. The force on particle 1 from
+particle 2 vanishes.
+Meanwhile, the force on particle 2 from particle 1 is non-zero, and in the
+direction
+𝐅
+21
+∼
+↑
+×
+⊗
+∼
+←
+(1.21)
+Does this mean that conservation of
+total linear and angular momentum is violated? Thankfully, no! We
+need to realise that the electromagnetic field itself carries
+angular momentum which restores the conservation law. Once we realise
+this, it becomes a rather cheap counterexample to Newton’s third law, little
+different from an underwater swimmer who can appear to violate Newton’s third
+law if we don’t take into account the momentum of the water.
+1.3.2
+Energy Revisited
+The total kinetic energy of a system of many particles is
+T
+=
+1
+2
+⁢
+∑
+i
+m
+i
+⁢
+𝐫
+˙
+i
+2
+. Let us decompose the position
+vector
+𝐫
+i
+as
+𝐫
+i
+=
+𝐑
++
+𝐫
+~
+i
+(1.22)
+where
+𝐫
+~
+i
+is the distance from the centre of mass to the
+particle
+i
+. Then we can write the total kinetic energy as
+T
+=
+1
+2
+⁢
+M
+⁢
+𝐑
+˙
+2
++
+1
+2
+⁢
+∑
+i
+m
+i
+⁢
+𝐫
+~
+˙
+i
+2
+(1.23)
+Which shows us that the kinetic energy splits up into the kinetic
+energy of the centre of mass, together with an
+internal energy
+describing how the system is moving around its centre of mass. As
+for a single particle, we may calculate the change in the total
+kinetic energy,
+T
+⁢
+(
+t
+2
+)
+-
+T
+⁢
+(
+t
+1
+)
+=
+∑
+i
+∫
+𝐅
+i
+ext
+⋅
+𝑑
+𝐫
+i
++
+∑
+i
+≠
+j
+∫
+𝐅
+i
+⁢
+j
+⋅
+𝑑
+𝐫
+i
+(1.24)
+Like before,
+we need to consider conservative forces to get energy conservation.
+But now we need both
+•
+Conservative external forces:
+𝐅
+i
+ext
+=
+-
+∇
+i
+⁡
+V
+i
+⁢
+(
+𝐫
+1
+,
+…
+,
+𝐫
+N
+)
+•
+Conservative internal forces:
+𝐅
+i
+⁢
+j
+=
+-
+∇
+i
+⁡
+V
+i
+⁢
+j
+⁢
+(
+𝐫
+1
+,
+…
+,
+𝐫
+N
+)
+where
+∇
+i
+≡
+∂
+/
+∂
+⁡
+𝐫
+i
+.
+To get Newton’s third law
+𝐅
+i
+⁢
+j
+=
+-
+𝐅
+j
+⁢
+i
+together with the requirement
+that this is parallel to
+(
+𝐫
+i
+-
+𝐫
+j
+)
+, we should take the internal potentials
+to satisfy
+V
+i
+⁢
+j
+=
+V
+j
+⁢
+i
+with
+V
+i
+⁢
+j
+⁢
+(
+𝐫
+1
+,
+…
+⁢
+𝐫
+N
+)
+=
+V
+i
+⁢
+j
+⁢
+(
+|
+𝐫
+i
+-
+𝐫
+j
+|
+)
+(1.25)
+so that
+V
+i
+⁢
+j
+depends only on the distance between the
+i
+th
+and
+j
+th
+particles. We also insist on a restriction for the external forces,
+V
+i
+⁢
+(
+𝐫
+1
+,
+…
+,
+𝐫
+N
+)
+=
+V
+i
+⁢
+(
+𝐫
+i
+)
+, so that the force on particle
+i
+does not depend
+on the positions of the other particles. Then, following the steps we took in the single
+particle case, we can define the
+total potential energy
+V
+=
+∑
+i
+V
+i
++
+∑
+i
+<
+j
+V
+i
+⁢
+j
+and we can show that
+H
+=
+T
++
+V
+is conserved.
+1.3.3
+An Example
+Let us return to the case of gravitational attraction between two
+bodies but, unlike in Section 1.2.4, now including both particles.
+We have
+T
+=
+1
+2
+⁢
+m
+1
+⁢
+𝐫
+˙
+1
+2
++
+1
+2
+⁢
+m
+2
+⁢
+𝐫
+˙
+2
+2
+. The
+potential is
+V
+=
+-
+G
+⁢
+m
+1
+⁢
+m
+2
+/
+|
+𝐫
+1
+-
+𝐫
+2
+|
+. This system has total linear
+momentum and total angular mometum conserved, as well as the total energy
+H
+=
+T
++
+V
+.
+2
+The Lagrangian Formalism
+Generated  on Thu Mar 24 09:29:54 2022 by
+LaTeXML

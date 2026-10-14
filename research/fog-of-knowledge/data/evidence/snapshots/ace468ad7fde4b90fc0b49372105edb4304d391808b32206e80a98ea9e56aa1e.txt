@@ -1,0 +1,597 @@
+        Integ rating  the UB -Tree into a Database S y stem K ernel
+
+
+    Frank Ramsak1, Vo lker Markl1,  R o  be r t   Fe nk 1, Mart in Zirkel2, Klaus Elhardt 3, Rudo lf Bayer1,2
+
+
+1Bayerisches Forschungszentrum                              2Institut für Informatik                      3TransAction Software GmbH
+   für Wissensbasierte Systeme                                    TU München                              Gustav-Heinemann-Ring 109,
+          Orleansstraße 34,                                    Orleansstraße 34,                          D-81739 München, Germany
+  D- 81667 München, Germany                             D-81667 München, Germany
+
+   {frank.ramsak, robert.fenk, volker.markl}@forwiss.de, {zirkel, bayer}@in.tum.de, klaus.elhardt@transaction.de
+
+
+
+                           Abstract                                       1 Introduction
+    Multidimensional access methods have shown
+    high  potential for significant performance im-                       Var ious  r esear ch   appr oach es in  th e past h ave sh own  th at
+    provements in various application domains.                            multidimensional access meth ods (MAMs) h ave a h igh
+    However, only few approaches have made their                          impact  on   differ en t  database application  domain s like data
+    way into commercial products. In commercial                           warehousing, data mining, or geographical information
+    database management systems (DBMSs) the B-                            syst em s.   However ,   despi t e t h e va st  r esea r ch  effor t  MAMs
+    Tree is still the prevalent indexing technique.                       have not made their way into commercial database
+    Integrating  new indexing methods into existing                       man agemen t  systems  on   a  br oad scale. Th is is mostly due
+    database  kernels is in general a very complex                        to the fact that the integration of these complex data
+    and costly task. Exceptions exist, as our experi-                     structures into an existing database kernel is fairly
+    ence of integrating the UB-Tree into TransBase,                       complicated.  Especially  con cur r en cy an d r ecover y issues,
+    a  commercial DBMS,  shows.  The UB-Tree is a                         which are as important as performance issues for
+    very promising multidimensional index, which                          commercial systems, are major obstacles. For most
+    has shown its superiority over traditional access                     MAMs  n ew  sol ut i on s t o t h ese pr obl em s,  e. g. ,  l ocki n g for
+    methods in different scenarios, especially in                         R-Tr ees  [KB95,  CM98], h ave to be developed, as th e n ew
+    OLAP applications. In this paper we discuss the                       concepts  do  not allow reusing standard techniques. This
+    major issues of a UB-Tree integration. As we                          makes the kernel integration of an MAM  a ver y costly
+    will  show,  the  complexity  and cost of this task is                task in the range of multiple man-years. As consequence
+    reduced  significantly  due to the fact that the UB-                  many DBMS producers have not integrated the new
+    Tree relies on the classical B-Tree. Even though                      tech n ology in to th eir  systems, but offer  it on ly as add-on
+    commercial  DBMSs  provide interfaces for index                       features. So, are MAMs just another nice research
+    extensions, we favor the kernel integration be-                       gimmick,  but commercially not affordable? No, in this
+    cause of the tight coupling with the query opti-                      paper we will show that there are MAMs,  wh i ch  pr ovi de
+    mizer, which allows for optimal usage of the UB-                      good per for m a n ce on  on e si de a n d ca n  sm oot h l y be
+    Tree in execution plans. Measurements on a                            integrated into a DBMS kernel on the other side. A
+    real-world  data warehouse show that the kernel                       categor y of MAMs is based on  th e combin ation of one-
+    integration leads to an additional performance                        dimensional index structures and space-filling curves.
+    improvement  compared  to our prototype imple-                        On e  pr omin en t example is th e UB-Tr ee [Bay97], wh ich
+    mentation and competing index methods.                                combines  the  B-Tree  and  the Z-curve. Together with its
+Permission  to  copy without fee all or part of this material is          soph isticated  quer y  pr ocessin g algor ith ms it h as pr oven  its
+granted provided that the copies are not made or distributed for          performance advantages in numerous application
+direct commercial advantage, the VLDB copyright notice and                domains. Because the UB-Tree is based on the standard
+the title of the publication and its date appear, and notice is           B-Tr ee,  wh ich   is th e basic in dex str uctur e in  almost ever y
+given that copying is by permission of the Very Large Data Base           commer cial DBMS, th e task of in tegr atin g th is MAM i n  t o
+Endowment.  To copy otherwise, or to republish, requires a fee            an  existing  kernel  becomes less complex and less costly.
+and/or special permission from the Endowment.                             The  kernel  integration  of the UB-Tree into TransBase
+Proceedings  of the 26th International Conference on Very                 [Tra98] (as part of an ESPRIT project funded by the
+Large Databases, Cairo, Egypt, 2000
+
+European Commission) has been accomplished within                                                                                         The fundamental innovation of UB-Trees is the concept
+one year. TransBase is a full-scale relational database                                                                                   of    Z-Regions   to create a disjunctive partitioning of the
+system, which conforms to the SQL-92 standard.                                                                                            multidimensional space. This allows for very efficient
+TransBase, which handles databases up to 8 Terabyte of                                                                                    pr ocessin g of multidimen sion al r an ge quer ies (see Section
+data, is used especially in the field of CD-ROM retrieval                                                                                 4). A Z-Region  [α  : β ]  is  th e  space cover ed by an  in ter val
+systems, and has an installation base of well beyond                                                                                      on  th e Z-Cur ve an d is defin ed by two Z-Addr esses α  an d
+50,000 sites wor ldwide.                                                                                                                  β. We call β  the region address of [ α  : β ]. Each Z-
+In this paper, we will present the major issues and                                                                                       Region  maps exactly on to on e page on  secon dar y stor age,
+problems  that have to be tackled and solved for a suc-                                                                                   i.e., to on e leaf page of th e B-Tr ee.
+cessful UB-Tree kernel integration. The paper is                                                                                          For  an  2  dimensional universe of size 8×        8, Figur e 2-1b
+organized  as follows: Section 2 presents the basic con-                                                                                  sh ows th e cor r espon din g Z-addr esses. Figur e 2-1c sh ows
+cepts  behind  the  UB-Tree and Section 3 deals with the                                                                                  th e  Z-r egion   [4:  20]  an d Figur e 2-1d sh ows a par tition in g
+issue of the UB-Tree address representation and the                                                                                       with  five Z-r egion s [0 : 3],[4 : 20], [21 : 35], [36 : 47] an d
+implementation of the standard UB-Tree operations.                                                                                        [48 : 63]. Assumin g a page capacity of 2 poin ts, Figur e
+Section 4 addresses the specific query operation of the                                                                                   2-1e  shows ten points, which create the partitioning of
+UB-Tree and Section 5 tackles the important topic of                                                                                      Figur e 2-1d.
+required optimizer extensions to efficiently support the                                                                                  Th e details of th e UB-Tr ee algor ith ms ar e descr ibed in  th e
+UB-Tree. Section 6 covers additional enhancements for                                                                                     followin g section s.
+th e UB-Tr ee an d Section  7 pr esen ts th e per for man ce
+evaluation. Section 8 summarizes related work and                                                                                         3        UB-Tree Address Representation and
+Section  9 con cludes th e paper .                                                                                                                   Standard Operations
+2                                                 B asic Concept of the UB -Tree                                                          For  the  rest of the paper we will refer to the function
+Th e  basic  idea  of  th e  UB-Tr ee [Bay97] is to use a space-                                                                          computin g th e Z-Addr esses as UBKEY an d to th e keys as
+filling curve to map a multidimensional universe to one-                                                                                  Z-values. It is important to note that the UB-Tree
+dimen sion al space. Usin g th e Z-Cur ve (Figur e 2-1a) for                                                                              algorithms can be implemented and integrated without
+preserving multidimensional clustering as good as                                                                                         fundamental changes to the query processing of the
+possible it is a var ian t of th e zkd-B-Tr ee [OM84].                                                                                    database kernel. They do not require special tuple
+                                                                                                                                          handling or other significant modifications, as the
+                                                                      0                                                                                  3   1  2                                                                                   5   4                                                                                 7   6   followin g section s sh ow.
+                                                                 0    0                                                                                  5   1  4                                                            17 16                                                        21  20
+                                                                 1    2                                                                                  7   3  6                                                            19 18                                                        23  22 3.1                                                     Address Representation and Z-value Computation
+                                                                 2    8                                                                  13  9  12                                                    25 24                                                        29  28 An  impor tan t question  for  th e implemen tation  of th e UB-
+                                                                 3    10                                                        15  11  14                                                    27 26                                                        31  30
+                                                                 4    32                                                        37  33  36                                                    49 48                                                        53  52 Tr ee in side th e database ker n el is h ow to r epr esen t th e Z-
+                                                                 5    34                                                        39  35  38                                                    51 50                                                        55  54 values.  All  algorithms  for the UB-Tree basically rely on
+                                                                 6    40                                                        45  41  44                                                    57 56                                                        61  60
+                                                                 7    42                                                        47  43  46                                                    59 58                                                        63  62 Z-values in the format of variable length bitstrings
+                                 (a) (b)                                                                                                  (trailing zeros are omitted to reduce storage
+                                                                                                                                          requirements). The operations on Z-values manipulate
+                                                                                                                                          single  bits  and copy parts of the bitstring. The UBKEY
+                                                                                                                                          function can be efficiently implemented, as it requires
+                                                                                                                                          only  reading  the specified index attributes bitwise and
+                                                                                                                                          writing the bits at the corresponding positions in the
+                                                                                                                                          r esultin g Z-value. As in put th e UBKEY fun ction  r equir es
+                                    (c )                                                                                                                                                                                                                                                                                        (d  )  a bitstring representation of the attribute values. The
+                                                                                                                                          natural order       ≤      of the attribute values in the original
+                                                                                                                                          domain   A has to correspond to the bit-lexicographical
+                                                                                                                                          or d er                                                                                            bitstr≤    on bitstrings, i.e.,
+                                                                                                                                           a                                                                                                                                                                                                                                                                                      ≤i                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          a                                                                                                                                                                                                                                                                                                                                           bitstr                                                                                                                                                                    j≤                              , where aj⇔bitstr(ai)bitstr()
+
+                                                            (e )                                                                                                                                                                                                                                                                                                                                                   bitstr                                                                                                                               generates the corresponding :                                                                                                                                                                                                                                                                                              *A→                                                                                   b{b|∈[]0,1}
+                    Figur e 2-1 Z-Addr esses an d Z-Region s                                                                              bitstring. For example, in case of unsigned integers and
+A       Z-Address      α  = Z(x) is the ordinal number of the key                                                                         strings                                                                                                    identitybitstr                =:                                                                       while for signed integers the
+attributes of a tuple x on the Z-Curve, which can be                                                                                      bitstr fun ction  h as to take car e of th e sign  bit.
+effi ci en t l y  com p u t ed   by bi t - i n t er l ea vi n g  ( see Sect i on  3 . 1 ) .                                               To  compute  th e  Z-value  of a tuple, we in ter leave th e bits
+A  standard  B-Tree is used to index the tuples taking the                                                                                of the bitstring representation of the key attributes (see
+Z-Addr ess of th e tuples as keys.                                                                                                        Figur e 3-1).
+
+                       Bitstring  1             Bitstring  d                               Note  that complex normalization may lead to significant
+                          0 1 1         ...          1 0 1                                 performance  overhead,  which may then not be neglected
+                                                                                           any more. Our standard normalization techniques just
+                                                                                           r equi r e  a  few m i cr osecon ds of CPU cycl es a n d t h er efor e
+                         0 ...1                                                                                  1 ...0                                                                                   1 ...1  do n ot affect th e addr ess calculation  per for man ce.
+                        Ste p0                                                               Ste p1                                                              Ste p2  3.2                                                     Insertion, Deletion, Update
+
+                                    Z-value                                                The basic algorithms of the UB-Tree are handled by the
+Figur e 3-1 Calculation  of Z-values by bit-in ter leavin g th e                           underlying B-Tree. To perform an insertion, deletion or
+                          tr an sfor med attr ibutes                                       u p d a t e  on  e  ju st  h  a s t o com p u t e t h  e Z- va l u e cor  r  esp on  d i n  g
+                                                                                           to the tuple. The underlying B-Tree uses that Z-value to
+For  th e followin g illustr ation  we assume th at all bitstr in gs                       d et er  m i n  e t h  e p a g e wh  er  e t h  e t u p l e i s st or  ed  a n  d  p r  ocesses
+have the same length steplength; t[i] returns the ith                                      the operation as usual. As consequence, the same
+attribute of tuple t;            bitstr[i] returns the ith bit of the                      per for man ce  guar an tees as for  th e basic oper ation s on  B-
+bitstring bitstr (the highest order bit has number 0). We                                  Trees  can also be given for the basic operations of the
+partition a Z-value into steps. A step  consists of all bits                               UB-Tr ee. Figur e 3-3 sh ows th e code for  in ser tion , wh ich
+fr om th e in put bitstr in gs, wh ich  h ave th e same bit or din al,                     is similar  to deletion  an d update.
+i.e., step 0 contains the highest order bits from all input                                Status UBTree_insertTuple(Tuple t)
+values (see Figure 3-1). We require the number of                                          {
+dimensions d (we assume that the key attributes are the                                    return BTree_insertTuple(UBKEY(t),t); //call to B-Tree
+fi r st  d attr ibutes of th e tuple) of th e used UB-Tr ee. Figur e                       standard insertion algorithm, inserting tuple t with key UBKEY(t)
+3-2 sh ows th e pseudo code for  th e basic bit-in ter leavin g                            }
+algor ith m.                                                                                                   Figur e 3-3: In ser tion  Fun ction
+
+Z-value UBKEY(Tuple t){                                                                    3.3 Page Splitting
+int i,s;                                                                                   Th e split algor ith m of th e un der lyin g B-Tr ee h an dles th e
+int bp;                                                                                       //th e  b it p o sitio n  in  th e  Z-v a lu e
+Z-value addr;     //th e  re su lt Z-v a lu e                                              page splitting in UB-Trees. Only the calculation of the
+Bitstring bs[dimno]; // b itstrin g  re p re se n ta tio n  o f th e                       page separator has to be modified, as the page split (i.e.,
+//a ttrib u te  v a lu e s                                                                 r egion   split for  UB-Tr ees) str ategy is cr ucial for  th e r an ge
+//Transformation of the key attributes                                                     query performance of the UB-Tree by influencing the
+for (i=0; i < d; i++) {                                                                    space par tition in g. Th is modification  adds n o complexity
+// transformation of the attribute to a bitstring depends on the
+// a ttrib u te  ty p e                                                                    to  th e  split  costs  as it is don e in  O(n) bit oper ation s, wh er e
+                               bs[i] = TransformAttribute(t[i]);                           n  is  the  length  of the Z-value in bits, and the worst case
+}                                                                                          page utilization  of 50% is still guar an teed [Mar 99].
+//Bit-in te rle a v in g  – Calculation of the Z-value                                     The goal of region splitting is to create rectangular
+bp=0;  //sta rtin g  with  th e  first b it o f th e  Z-v a lu e
+//looping first over dimensions then over steps realizes the                               r egion s wh en ever  possible to r educe th e n umber  of
+//b it-in te rle a v in g                                                                  regions overlapped by a range query. This can be
+for (s=0;s < steplength; s++) {                                                            ach ieved by ch oosin g th e shortest Z-value (i.e., the Z-
+        for(i=0; i < d; i++) {                                                             value that has as many trailing zero bits as possible)
+                                  // th e  b p th b it o f th e  Z-v a lu e  is
+                                              // se t to  th e  s th b it o f th e  ith b itstrin g between the two middle tuples s and t as new separator,
+             addr[bp]=bs[i][s];                                                            in stead of s,         t  or  another  Z-value in the middle of the
+             bp++; //advance to next bit of Z-value                                        page. Figur e 3-4 sh ows th e split algor ith m of UB-Tr ees.
+             }}
+return addr;}                                                                              Status UBTree_splitPage(Page P, Tuple s, Tuple
+                Figur e 3-2: Basic UBKEY Fun ction                                         t) {
+                                                                                           Z-value sep;
+It  is  also possible to use oth er  tr an sfor mation  fun ction s for                    sep=UBTree_calculateSeparator(UBKEY(s),UBKEY(t));
+gen er atin g  th e bitstr in g for  an  attr ibute value, allowin g a                     //Calculating  the best separator between two Z-values, i.e., the shortest
+more powerful semantics, e.g., soundex codes or case                                       Z-value between UBKEY(s) and UBKEY(t)
+insensitive search on strings. As consequence, the bitstr                                  BTree_splitPage(P,s,t,sep);       // Btree_splitPage is the
+                                                                                           //standard algorithm of the Btree: It splits  page P between the two tuples
+function has to be adapted for the individual data types                                   // s and t with sep as the separator between the two generated pages
+supported by the UB-Tree. If possible, it is useful to                                     }
+n or malize attr ibutes to un sign ed in teger s star tin g with  0 as                               Figur e 3-4 Page Split algor ith m of UB-Tr ees
+one step of the transformation, as this allows for a much                                  Th e advan tage of th is split str ategy is twofold: fir st, better
+better space partitioning with shorter Z-values. One                                       r an ge quer y per for man ce on  aver age; secon d, sh or ter
+example for normalization for complex data types is                                        separators  lead to a more compact index part of the UB-
+MHC [MRB99]. Other possibilities for normalization                                         Tree, a phenomenon also exploited in Prefix-B-Trees
+include hashing or more complex non-linear methods.                                        [BU77].
+
+4                                                 Range Query Processing                                                          for pipelining. However it requires post filtering of the
+Processing a multidimensional range query, a UB-Tree                                                                              r etr ieved pages.
+retrieves all Z-regions, which are properly intersected by                                                                        Th e  iter ative  r an ge  quer y algor ith m (see Figur e 4-2) for
+the query box [Mar99]. Due to the mapping of the                                                                                  the UB-Tree works as follows. Let the multidimensional
+multidimen sion al space to Z-values, th is r esults in  a set of                                                                 range restriction be specified by a query box Q with a
+in ter vals on  th e B-Tr ee stor in g th e Z-values (Figur e 4-1).                                                               starting corner and an ending corner, which are given by
+                                                                                                                                  the two tuples ql resp.         qh (UBKEY(ql) < UBKEY(qh)).
+                                                                                                                                  First  the  algorithm computes the Z-values for ql and qh,
+                                                                                                                                  th en  th e r egion  con tain in g ql is located1. Let P,  Q be t wo
+                                                               I1                                                                                                                                                       I2I1                                                                                                                                                       I2adjacen t pages in  th e UB-Tr ee an d th e Z-value se p be t h  e
+                                                                                                                                  separator between the two pages with
+                                                                        I3                                                                                  I4I3                                                                                  I4∀                                                                                                                                                                                                                                                                             . We th en  t∈P,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         s∀s∈Q:UBKEY(t)≤sep<UBKEY()
+                                                                                                                                  call  sep the end or  region address of th e r egion
+                                                                                                                                  cor r espon din g to page P.  Th e  r an ge quer y algor ith m th en
+                                                                                                                                  iteratively determines all the regions intersected by the
+                                                                                                                                  quer y box. Th is is ach ieved by calculatin g th e Z-value for
+                                                                                                                                  the  next  intersection  point  of the Z-curve with the query
+                                                                                                                                  box based on  th e cur r en tly pr ocessed r egion /page (see
+                                                                                                                                  next section).
+             Index pages                                                                                                          Status UBTree_Range_Query(Tuple ql, Tuple qh) {
+                                                                                                                                  Z-value start = UBKEY(ql);
+                                                                                                                                  Z-value end = UBKEY(qh);
+                                                                      jump                                                        Z-value cur = start;
+                                                                                                                                  While (1) { //continue as long we are in the query box
+                                                                                                                                                                 cur = getRegionSeparator(cur); // getting the
+             Data  pages                                                                                                          address of the region containing cur
+                                                        I1                                                                                                                                                                                                                In FilterTuples(GetPage(cur), ql, qh); //post-
+                                                                                                                                  filte rin g  o f th e  tu p le s in  th e  re g io n
+     Figur e 4-1: How quer y boxes map to a set of Z-value                                                                         if (cur >= end) break; //stop once we covered the
+                                                   in ter vals                                                                    whole query box
+                                                                                                                                                                 cur = getNextZvalue(&cur, start, end);
+A B-Tree answers sets of interval restrictions on its key                                                                         //calculation of next region
+efficiently by traversing the corresponding intervals of                                                                          }}
+pages  directly  on  the leaf node level. For large B-Trees,                                                                                             Figur e 4-2: Ran ge Quer y Algor ith m
+i.e., wh en  th e in dex par t can n ot be completely cach ed, th e                                                               All th ese steps ar e per for med in  O(n) bit oper ation s wh  er  e
+pr ocessin g is impr oved in  Tr an sBase as it suppor ts jumps                                                                   n      is th e len gth  of th e Z-value [Mar 99]. Th e separ ator
+in the index part of the B-Tree, instead of starting at the                                                                       computation   an d  fetch in g of th e page can  be per for med by
+r oot for  each  in ter val. Relyin g on  th is stan dar d tech n ique,                                                           on e B-Tr ee access. After  filter in g out all match in g tuples
+th e  main   task  of th e UB-Tr ee r an ge quer y algor ith m is to                                                              of a fetch ed page, th ey can  be piped for  fur th er  pr ocessin g
+efficiently calculate the set of one-dimensional intervals                                                                        by t h e DBMS.
+of Z-values fr om on e multidimen sion al in ter val.                                                                             4.2                                                     Calculating the next intersection point
+4.1                                                     UB-Tree Range Query Algorithm                                             Calculating the next intersection point is the crucial part
+On e  possibility  of  pr ocessin g UB-Tr ee r an ge quer ies is to                                                               of  the UB-Tree range query algorithm. In the following
+compute  all Z-value in ter vals (cf. Figur e 4-1) for  a quer y                                                                  we  will  sh ow  th at th is step on ly r equir es bit oper ation s on
+box  i n   a dva n ce befor e a ccessi n g t h e B-T r ee.  Due t o t h e                                                         Z-values and no I/O or B-Tree search is necessary.
+nature of the Z-curve this may lead to a large set of                                                                             Star tin g poin t for  getNextZvalue is th e r egion  addr ess cur
+intervals, many of which may be located in the same Z-                                                                            of the current region. The task now is to find the next
+Region . Th is n aive appr oach  will eith er  r esult in  multiple                                                               in ter section  poin t of th e Z-Cur ve with  th e quer y box Q.
+accesses to the same B-Tree page or will require                                                                                  Th is in ter section  poin t nisp is th e min imal Z-value lar ger
+calculation   effor t  to iden tify all in ter vals belon gin g to on e                                                           than  the  current  region address, which is inside Q, i.e.,
+page.  The resulting processing overhead is avoided by                                                                             nisp                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  ∈=                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          min                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               Q(){}UBKEY(x)UBKEY(x)>cur∧(x)
+con str uctin g th e in ter vals on  th e fly, pr ocessin g th e quer y
+box page-by-page. As a con sequen ce we use th e page-by-
+page approach for the kernel integration. Iteratively                                                                             1 Note: ql an d qh do n ot h ave to be tuples existin g in  th e
+con str uctin g  th e  in ter vals  on  th e fly also h as th e advan tage                                                        database  – it is only important to which regions they are
+of providing the first result tuples earlier, which is good                                                                       mapped accor din g to th e space par tition in g.
+
+Figure 4-3 illustrates two examples of the next                                                                        by bitwise compar in g with  th e Z-values of ql an d qh – we
+in ter section  poin t calculation  for  th e dotted quer y box Q.                                                     do not have to transform nisp back to Cartesian
+                                                                                                                       coordinates. During the comparison we also determine
+                                                                                                                       addition al in for mation  for  each  dimen sion  i:
+                                                                                                                                          −1      if   nisp     has    fallen      below       the    minimum
+                                                                                                                                                 of    qb   in dimension              i
+                                                                                                                         flag    []i  =   0       if  nisp     is  in qb      in dimension             i
+                                                                                                                                          
+                                                                   BB                                                                     1       if   nisp     has    exceeded          the    maximum
+                                                                                                                                                  of    qb   in dimension              i
+                                                               AA                                                                         
+                                                                                                                        outStep        []i      the   step     in dimension             i
+                                                                                                                                                where       qb    has    been      left;    ∞   if  nisp      in qb      in dimension             i
+                                                                                                                        saveMin                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   []ithestepin dimension i where the
+                                                                                                                                               minimum             has    been      exceeded
+                                                                                                                        saveMax          []i   the   step     in dimension              i where       nisp
+                                                                                                                                               has    fallen      below       the    maximum
+                                                      (a )(a )                                                          If           nisp is in qb  th en   we h ave alr eady foun d our  n ext
+          Region  A dd ress                                                                                                                                                                                                                                N ext In tersection       Poin tin ter section   poin t.  If  n ot, we h ave to deter min e th e bits we
+                                                                                                                        h ave to set to 1 an d set to 0 to get th e cor r ect nisp. Let be
+                                                                                                                        outStep         =                                                                                                 , and d the corresponding min(                                                                                                                                          ioutstep[])
+                                                                                                                       dimension. We have to distinguish two cases: first, if
+                                                                                                                       flag[d]=-1 then we have found the bit
+                                                                                                                       changeBP=BP(d,outstep)  th at  we can  safely set to 1 such
+                                                                                                                       th at nisp > cur. Second, if flag[d]=1 th en  we h ave to fin d
+              τ1τ1                                                                                                     a lower  bit position  in  nisp  we  ca n    set  t o 1 ,  beca u se t h  e bi t
+                                                            D                                                                                                                                                                                                                                                                                 CD                                                                                                                                                                                                                                                                                 Cspeci fi ed by outstep h as to be set to 0.  In  both  cases th e
+                                   τ2τ2                                                                                bits following the changed bit have to be adapted
+                                                                                                                       accor din gly (see Figur e 4-4).
+              τ3                                                                                                                                                                                                 τ4τ3                                                                                                                                                                                                 τ4υυBP changeBP=BP(d,outstep); //we start with the minimal bit
+                                                                                                                       position that has to be changed
+                                                                                                                       int i;
+                                                                                                                       if (flag[d] == 1)    // we cannot set this bit to 1, therefore we
+                                                       (b  )(b  )                                                      h a v e  to  fin d  a  lo we r b it p o sitio n  we  c a n  sa fe ly  se t
+ Figur e 4-3 Region  Addr ess an d Next In ter section  Poin ts                                                        then {
+                                                                                                                                        changeBP=max({bp|bp<changeBP and bp >=
+In Figure 4-3a, the region address cur=A of r egi on  ρ                                                                saveMax[Dim(bp)] and Val(nisp,bp)=0}); //maximal
+yields  B of r  eg i on   σ  as th e n ext in ter section  poin t with  Q.                                             b itp o sitio n  th a t is sa v e  to  se t to  1
+Consequently the range query algorithm will continue                                                                                    saveMin[DIM(changeBP)]=STEP(changeBP);
+                                                                                                                                        flag[DIM(changeBP)]=0;
+with  pr ocessin g r egion  σ. In this case, B i s t h e di r ect                                                                       }
+successor  of A on  th e Z-Cur ve, i.e., B=A+1. In  Figur e                                                            // now we can change the rest of the Z-value
+4-3b we ar e lookin g for  th e n ext in ter section  poin t for  th e                                                 for(i=0;i<dimno;i++) { //for each dimension we determine
+region address cur=C of r egion  σ. The call to                                                                        how to change the bits
+                                                                                                                       if(flag[i]>=0)    // we have not fallen below the minimum in this
+getNextZvalue yields the Z-value D causin g to pr ocess                                                                dimension
+r egion  υ n ext, skippin g th e four  r egion s τ1, τ2, τ3, an d τ4.                                                  then {
+In for mally,  th e algor ith m deter min es for  th e successor  of                                                                                  if(changeBP > BP(i,saveMin[i]))
+                                                                                                                                                      then “set all bits of dim with bit positions
+a region address in which dimensions it is not contained                                                               > changeBP to 0”
+in  the  query  box.  From this information it identifies the                                                                                         else “set all bits of dim with bit positions
+bits that have to be modified to generate the correct next                                                             > changeBP to the minimum of the query box in
+in ter section  poin t.                                                                                                this dim”
+                                                                                                                       }
+For   th e detailed descr iption  of th e algor ith m we in tr oduce                                                   else { //  if  we  h a ve  fa llen   b elo w th e min  in  th is d imen sio n  th e lo west
+the following functions: BP(i,s) returns for each bit posi-                                                            possible value is the min itself
+tion/step  of a dimension i to which bit position in the                                                                                   “set the bits to the minimum of the query
+r esultin g  Z-value  it  cor r espon ds; given  a bit position  bp in                                                 box in this dim”
+                                                                                                                       }}
+a Z-value the functions DIM(bp) and STEP(bp) will                                                                              Figur e 4-4 Pseudo code for  par ts of getNextZvalue
+return the corresponding dimension resp. step.
+The first step is to increment the region address by one,
+i.e., nisp=cur+1. We then test if nisp is in the query box
+
+5                                                 Query Engine Extensions                                                                                                       attributes of R with attribute
+One  of  the  major  benefits of a kernel integration of the                                                                                                                      A                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                maxi                                                    A∈                                                                                                                                                                                                                         . The query box                                                                                                                                                                                                                                                                                                                                                                                            ihaving thedomain []min;i
+UB-Tr ee is th e tigh t in tegr ation  with  th e quer y en gin e. In                                                                                                           qb  specifies  for each attribute the restricted range, i.e.,
+the following we will discuss the most important issues                                                                                                                                         ...                ...     
+that  enable the query engine to use the UB-Tree in the                                                                                                                          qb                                                                                                                                                                                                                                                                                                                                                                                                                              ;=                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     2. For each qlqhfor A∈[]ql
+m ost  effi ci en  t  wa y.                                                                                                                                                                             i                                                                                                                                                                                                                                                                                                                                        qhiiii
+                                                                                                                                                                                                ...                ...     
+5.1 General Extensions                                                                                                                                                                                                     
+Supporting a new index method usually requires                                                                                                                                    A                                                                                                                                                                                                ii             ∈                                                                                                                                                           specifies  the selectivity of attribute A,                                                                                                                        qbS(A,)
+exten sion  of sch ema in for mation  an d DDL of th e DBMS.                                                                                                                      A               in  qb.  i
+For the UB-Tree the database catalog does not have to                                                                                                                           Each  restriction  on  a table specified by the predicate       Ψ
+store additional information except the transformation                                                                                                                          in the WHERE clause is represented by the logical
+function  for  each  key attribute. The rest is also required                                                                                                                   operator                                                                                                                                                            )σ                . This is transformed to (   R
+by other index structures, for example, the index                                                                                                                                                                         Ψ
+attributes, the number of dimensions, the domain of each                                                                                                                         σ     Ψ                                                                       =                                                                  σ(                                                                                                                                                                                                                                        RR                                                                                                                                         Ρ)σΞ(())with  Ρ  corresponding to the set
+attr ibute, etc.                                                                                                                                                                of multidimensional query boxes on           R, i.e.,
+A new storage clause (CLUSTERING UBTREE ON                                                                                                                                       Ρ                                                                                                                                                                                                                                                                                                               ρ=ρ                                            , and ∨...∨ρ where=nA[]aiji
+{<set  of  attr ibutes>}) in  th e DDL statemen t for  cr eatin g a                                                                                                                              1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ;mi                                                                                                                                                                                                                                                   bj=                                                     ∈1jj
+table specifies the creation of a UB-Tree index.                                                                                                                                 Ξ     corresponding to the restrictions, which cannot be
+Additionally, specifying the actual domains for the                                                                                                                             mapped to multidimensional query boxes, e.g.,                                                                                                                               jA                   <                                                          .
+attributes  indexed  by the UB-Tree by check constraints                                                                                                                                                                                                                                                                       i                                                      A
+allows for optimal multidimensional clustering. Figure                                                                                                                          We ca n   t h  er  efor  e wr  i t e:                                                                                                                                                                                                                                                                                                                                                                                                                                        )σ                                                                                                                                                   Ξ(                                                                                                                         UR                                                                                                                                                                                                                                        i)σ(σ(R)
+5-1 shows the creation of a three-dimensional UB-Tree                                                                                                                                                                                                       Ψ                                                                       =                                                                                                                                                                                                                                                                            . ρ
+with  two addition al attr ibutes.                                                                                                                                                                                                                                                                 i
+                                                                                                                                                                                Example: Th e SQL statemen t
+CREATE TABLE fact(                                                                                                                                                                                       SELECT coun t(*)
+date DATETIME [YY:DD] CHECK(date BETWEEN ‘1997-                                                                                                                                                          FROM R
+1-1’ AND ‘2020-12-31’,
+region INTEGER CHECK(region BETWEEN 0 AND 2047),                                                                                                                                                         WHERE A1  BE T WE E N 0 AND 10 AND A2 IN
+product INTEGER CHECK(product BETWEEN 0 AND                                                                                                                                                              [3, 12, 31] AND A3 BE T WE E N 3 AND 9
+999999),                                                                                                                                                                                                 leads to th e pr edicate descr ibin g 3 quer y boxes:
+price NUMERIC (12,2),
+quantity NUMERIC(8,2),                                                                                                                                                                                    Ρ     =    ()A1      ∈     []        []       []0;10∧A2   ∈      3,3        ∧      A3      ∈      3;9          ∨
+PRIMARY KEY (product, date, region),                                                                                                                                                                      ()A       ∈     []       [  ]       []0;10∧A   ∈      12,12             ∧     A       ∈      3;9           ∨
+CLUSTERING UBTREE ON {product, date, region})                                                                                                                                                                   1                                    2                                      3
+                     Figur e 5-1 Cr eate statemen t for  a UB-Tr ee                                                                                                                                         ()A1      ∈     []        [  ]       []0;10∧A2 ∈      31,31            ∧      A3      ∈      3;9
+With the kernel integration the UB-Tree query                                                                                                                                   As  the  example  shows, the identification of query boxes
+fun ction ality  is  h idden   by th e stan dar d SQL in ter face, i.e.,                                                                                                        fr om  ar bitr ar y pr edicates is a complex pr oblem by its own
+no extension of the DML is required. The extensions of                                                                                                                          the query optimizer needed to be enhanced for. The
+the query engine, especially of the optimizer, will take                                                                                                                        TransBase  optimizer already recognized a special subset
+care of the appropriate usage of the new index, e.g.,                                                                                                                           of multidimen sion al in ter vals, n amely th ose, wh ich  can  be
+processing  a  multidimensional range query on the UB-                                                                                                                          directly processed by B-Tree intervals. This greatly
+T r  ee i f p ossi bl e.                                                                                                                                                        facilitated the extension of the optimizer to general
+                                                                                                                                                                                multidimen sion al in ter vals.
+5.2                                                     Handling Multidimensional Range Queries                                                                                 Let                                                                                                           AP⊆                        be the set of attributes of R, which are
+On e  of t h e bi g a dva n t a ges of t h e UB-T r ee i s t h e effi ci en t                                                                                                   specified in                                      iρ.  We can  specify th e followin g r ule to
+processing of multidimensional range queries. State-of-                                                                                                                         cr  ea t e t h  e cor  r  esp on  d i n  g  q u er  y box :
+the-art query engines usually only extract the most                                                                                                                              REPLACE                           σ           (R)           BY           RQ(R,qb)
+selective predicate from the query to pass it down to the                                                                                                                                                                ρi
+sel ect ed i n dex.  In  ca se of t h e UB-T r ee t h e quer y en gi n e                                                                                                         with ql                  =                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ∈aiifAiPandqh=                                                                                                                                                       ∈biifAi
+h as to take car e of gen er atin g a suitable quer y box or  a set                                                                                                                                  i                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             Pminotherwiseimaxotherwise
+of query boxes from the query predicate. This requires                                                                                                                                                                       i                                                                              i
+passin g down  a mor e complex str uctur e in stead of a sin gle
+r an ge to th e un der lyin g in dex module. We will specify an                                                                                                                 2  Note:  In this paper we only deal with closed intervals
+optimizer   r ule  th at allows for  gen er atin g a quer y box fr om
+the query. We introduce the physical operator                                                                                                                                   (                                          ≤≥,                          )  for  restrictions. Other restrictions (                                          <>,                          ), wh ich
+ RQ                                                                                  t h a t  r epr esen t s a  r a n ge quer y speci fi ed by (                                                   qbR,)cannot be mapped to closed intervals (e.g., for non-
+th e quer y box qb on a relation R. Let A be the set of                                                                                                                         discrete domains), are handled with appropriate post
+                                                                                                                                                                                filter in g.
+
+Given  such  a  query  box, the optimizer then can decide                                                         25%
+wh ich  access meth od to use to an swer  th e quer y.
+                                                                                                                  20%
+6 UB-Tree Enhancements
+                                                                                                                  15%
+This  section  deals  with some enhancements of the UB-
+Tree and its algorithms, which have not been integrated                                                           10%
+into  the  TransBase  kernel yet. These improvements are
+                                                                                                                   5%
+n ot  n ecessar y for  a successful in tegr ation  of th e UB-Tr ee,
+but th ey pr ovide fur th er  per for man ce optimization s.                                                       0%
+
+                                                                                                                          0%                                            1%                                           3%                                           5%                                           6%                                            8%                                       10%                                   16%                              100%
+6.1                                                     Optimizing Space Partitioning for Range Queries                                                Eps ilon
+T h e  UB-T r ee  r a n ge  quer y  per for m a n ce i s en h a n ced by a                            Figur e 6-2 In fluen ce of Epsilon  Splittin g on  Ran ge Quer y
+modification of the page splitting algorithm leading to a                                                                                  Per for man ce
+better  space par tition in g. Th e so-called ε-Split ch  ooses t h  e                                For          ε >15% no significant improvements in the space
+split point in an interval of ε% of the page capacity                                                 par tition in g  ar e  obser ved. It is impor tan t to n ote th at th e ε-
+around the middle of the page and not directly in the                                                 Split has the same complexity as the regular split
+middle.                                                                                               algorithm, and that for the individual UB-Tree ε is a
+Th at  is,  it  ch ooses th e optimal split poin t accor din g to th e                                per for man ce tun in g par ameter .
+space par tition in g in  a cer tain  r an ge of tuples ar oun d th e
+middle of th e page, but n ot on ly between  th e two tuples in                                       6.2                                                     Dealing with multiple query boxes
+the middle. The cost for the optimal splitting is the                                                 Often   complex quer ies do n ot on ly lead to on e quer y box,
+reduced page utilization guarantee of                                                                                                                                                                      %50%−                                                          . The εbut to a set of quer y boxes on  th e multidimen sion al space.
+enhanced  split  algorithm requires the two tuples, which                                             Processing  the  set of query boxes sequentially with the
+are                             %ε away to th e left an d to th e r igh t fr om th e middle           UB-Tree range query algorithm may lead to unnecessary
+of  the  page, whereas the standard version takes just the                                            pa ge a ccesses i n  t h e ca ses wh er e quer y boxes over l a p t h e
+two tuples to th e left an d r igh t of th e page middle. Figur e                                     same r egion s. As con sequen ce, per for man ce pr oblems
+6-1 shows the same two-dimensional UB-tree with                                                       a r i se i f t h e a l r ea dy a ccessed pa ge ca n n ot  be ca ch ed over
+stan dar d split poin t calculation  an d with  ε-Split ( ε = 14%):                                   the total processing of the query box set. The algorithm
+t h  e effect  i s cl ea r  l y vi si bl e.                                                           pr esen ted in  [FMB99] solves th is pr oblem by h an dlin g all
+                                                                                                      query boxes simultaneously. It guarantees that each
+                                                                                                      region/page  is  accessed only once, leading to significant
+                                                                                                      performance improvement over the standard UB-Tree
+                                                                                                      r an ge quer y algor ith m in  case of quer y boxes over lappin g
+                                                                                                      man y pages togeth er .
+                                                                                                      6.3               Reducing Post Filtering of the Range Query
+                                                                                                                 Algorithm
+                                                                                                      Post filtering is only necessary for regions not fully
+          (a) w /o (a) w /o -S plit                                                                                                                                                                                   (b) w ith-S plit                                                                                                                                                                                   (b) w ith-Split-Split                                                                                                            con tain ed with in  th e quer y box. We pr ovide an  algor ith m
+                                                                                                      similar  to getNextZvalue and with the same complexity,
+     Figur e 6-1: In fluen ce of Epsilon -Split on  th e Space                                        which determines for a region if it is completely
+                                     Par tition in g                                                  overlapped by a query box or not. This is an important
+The optimal choice of ε presents a tradeoff between                                                   performance optimization for large query boxes as most
+storage  utilization  and  quality of space partitioning: the                                         r egion s will be completely in side of th e quer y box.
+h igh er                ε the better the space partitioning and as                                    7 Performance Evaluation
+con sequen ce t h e r a n ge quer y per for m a n ce but  t h e l ower                                In   th is  section   we pr ovide some measur emen t r esults th at
+th e wor st-case stor age guar an tee. However , empir ical
+results (Figure 6-2 shows the results of 6-dimensional                                                show the performance gains that are achieved by the
+range queries with varying volume and location on a 6D                                                kernel integration of the UB-Tree into the TransBase
+UB-Tr ee for  gr owin g ε)  h ave sh own  th at alr eady a small ε                                    database  system  (called TransBase Hyper Cube, Figure
+(around 5%) leads to significant improvement of the                                                   7-1b). We are comparing with our prototype
+space par tition in g.                                                                                implementation of the UB-Tree (called UB/API, Figure
+                                                                                                      7-1a) and the native TransBase B-Tree. Our previous
+                                                                                                      comparisons of the UB-Tree with competing index
+                                                                                                      meth ods of Tr an sBase an d oth er  RDBMSs [MZB99,
+                                                                                                      MRB99], based on the UB/API, yielded significant
+
+performance improvements. The speed-up achieved by                               The  significant  performance improvement of the kernel
+th e ker n el in tegr ation  applies dir ectly to th e r esults of our           integration can be explained by the design of UB/API.
+previous comparisons, yielding a speed-up of several                             First,  each  fetch  of  a page requires one SQL statement;
+orders of magnitude of UB-Trees compared to the                                  this leads to heavy client/server communication together
+meth ods used in  th ese paper s.                                                with  the  DBMS  overhead of processing the query, which
+Our   pr ototype implemen tation  of th e UB-Tr ee is r ealized                  sums  up  to  about  30%  of the total processing time of a
+as an application on top of an existing DBMS using the                           r an ge  quer y.  Secon d, we h ad to implemen t some database
+standard SQL interface (currently TransBase, Oracle,                             functionality, like page and tuple handling, post filtering
+In for mix, SQL Ser ver  7, an d DB2 ar e suppor ted). Th e                      etc., which causes additional overhead. Putting all
+leaf  pages of th e UB-Tr ee ar e stor ed as sin gle tuples in  a                t oget h er ,  t h e a bove m en t i on ed speedup factor fits our
+r elation   an d  th e  in dex  par t is mapped to th e B-Tr ee in dex           expectation.
+of th e un der lyin g system.
+        A pplic ati on                   A pplication                            8 Related Work
+                                                                                 Integrating new index methods into a database kernel is
+        UB-Library                                                               often  regarded  as a too costly task. On the other side,
+
+                                                              Inter     proces s database vendors have recognized the need for more
+                                                             communicat ion      flexible, powerful indexing methods, often tailored to
+         Trans Base                      TransBase                               specific application domains. As consequence, most
+                                         Hyper Cube                              ven dor s h ave exten ded th eir  stan dar d B-Tr ees an d pr ovide
+                                                                                 interfaces that allow the users to include their own
+   (a)  UB/ API                                                                                                                                                                                                                (b)  Tr ansBase H ype r Cu b efunctions for the index key computation. Some systems
+Figur e 7-1: Implemen tation  as UB/API ver sus Tr an sBase                      even allow the user to implement their own index
+                              Hyper  Cube                                        structures in external modules. We will point out the
+                                                                                 d efi ci en  ci es of t h  ese a p p r  oa ch  es i n   t h  i s sect i on  .
+The measurements were conducted on a real world data                             8.1                                                     Function-based B-Trees
+wa r eh ouse pr ovi ded by on e of our  pr oject  pa r t n er s,  a              For standard B-Trees the key of the index consists of a
+market  research  company. The measurements consist of                           subset  of  th e attr ibutes of th e un der lyin g table T. A more
+604 real world reports on a three dimensional (time,                             gen er al idea is to use a fun ction  to compute th e key values
+products,  segments)  star-schema  with a total of around                        for   t h  e t u p l es                                                                     Tt        ∈                                                 . We will r efer  to th is type of B-Tr ees
+4GB of data. The reports represent typical analysis of                           as function-based B-Trees or   s h  or  t  BF- T r  ees.
+product hitlists in a given period, market share, market
+trends,  and  the  like, which result in three-dimensional                       Example: A standard B-Tree is a special instance of the
+r  a n  g e q u er  i es on   t h  e fa ct  t a bl e.                            BF-T r ee wh er e F  is  the projection of the key attributes
+We created three instances of the fact table: two indexed                        fr om  t h e t upl e.  B-T r ees st or i n g SOUNDE X codes or  ca se-
+by UB-Tr ees (in tegr ated an d exter n al), an d on e in dexed                  in sen sitive keys ar e oth er  well-kn own  examples.
+by a compoun d B-Tr ee on  th e th r ee dimen sion  keys. Fr om                  BF-Tr ees wer e motivated by th e n eed to suppor t in dexin g
+th e r epor ts we on ly measur ed th e fact table access, as th e                on user-defined types in object-relational systems.
+fur th er  pr ocessin g is iden tical for  all meth ods. Table 7-1               Commercial  implementations are provided for example
+sh ows th e measur emen t r esults over  all 604 r epor ts.                      by fun ction -based in dexes in  Or acle8i [Or a99], fun ction al
+On  average,  the  integrated UB-Tree is about 2-3 times                         indexes in Informix [Inf99], the high level indexing
+faster   th an   UB/API  (see Table 7-1). As men tion ed above,                  framework of IBM DB2 [CCF+99], or as indexes on
+this speed up applies directly to the performance                                computed columns in MS SQL Server 2000 [MS00].
+advan tage over  both  cluster in g compoun d B-Tr ees as well                   However ,  BF-Trees do not allow for the integration of
+as index intersection of multiple secondary B-Trees or                           new query algorithms, like the UB-Tree range query
+bitmap in dexes.                                                                 algor ith m. Th er efor e, implemen tin g th e UB-Tr ee as a BF-
+                                                                                 Tree with UBKEY as F will not lead to the expected
+                        Speedup Factor Speedup Factor                            per for man ce.
+                        UB /API / HCI            Compound/HCI                    8.2                                                     Extended Index Interfaces
+Average           2,8 11,5 Some  commer cial database man agemen t systems pr ovide
+1. Q uartil           2,3 8,5 even   mor e  en h an ced in dexin g in ter faces, wh ich  allow for
+Max     3,0 5,0 implemen tation  of ar bitr ar y in dex str uctur es by th e user  in
+Min     3,0 2,3 external modules (e.g., Extensible Indexing API by
+3. Q uartil           2,8 13,2 Oracle [ORA99], Informix Datablade API [Inf99]).
+ Table 7-1 Summar y of Repor t Results (aver age r espon se                      An alogous to th e GiST fr amewor k (see n ext section ), th e
+                          times in  secon ds)                                    user has to provide a set of functions/operators that are
+                                                                                 used by th e database ser ver  to access th e in dex. Th e in dex
+
+itself can be either stored inside the database (e.g., as an                       9                                                 Summary and Conclusion
+IOT  in   Or acle)  or   in  exter n al files. Th e pr oblem of th ese             Multidimensional access methods are not widely
+index interfaces is threefold: performance of the index,                           supported by commercial database management systems
+optimizer support, and locking and recovery. The                                   despite  their performance impacts in various application
+performance problem of extended index interfaces has                               domains. This is mostly due to the fact that a kernel
+two aspects: first, only non-clustered indexes are                                 integration of these sophisticated data structures is
+supported. Index structures, whose performance is                                  considered to be a very costly and complex task. In this
+ach ieved by appr opr iate cluster in g, like th e UB-Tr ee th at                  paper   we h ave sh own  th at th is is n ot th e case for  th e UB-
+clusters according to multiple dimensions, can therefore                           Tree, as it heavily relies on the well-known B-Tree,
+not be implemented via these interfaces. In addition, as                           r educin g th e complexity of th e addition al algor ith ms to a
+th e DBMS in ter n al modules can n ot be used, efficien t page                    minimum.  The  UB-Tree  was integrated within one year,
+and  tuple handling has to be implemented. This leads to                           and  by now TransBase Hyper Cube is a commercially
+significant  coding effort for the index implementation.                           available product. Figure 9-1 shows the changes of the
+The coupling of the external index with the query                                  individual database kernel modules required by the UB-
+optimizer  is achieved by providing cost functions for the                         Tr ee in tegr ation .
+index operations. However, to our knowledge, there is no
+way  to  add  rules to guide the optimizer with heuristics,                                                  Commun icati on ManagerCommun icati on Manager
+which is very important to achieve optimal query plans.
+Another significant drawback of these ‘add-on’
+approaches  is  the  handling of locking and recovery. The                                                             SQLSQL
+                                                                                                               Comp il er/ Inte rprete rComp il er/ Inte rprete r
+external indexes are not tightly coupled with the DMBS                                                           Extend    Parser   with Extend    Parser   with
+l ock i n g   a n d   r ecover y ser vi ces.  As con seq u en ce,  t h e i n d ex                                DDL statementsDDL statements
+                                                                                                                 for UB-Treesfor UB-Trees
+implementation  has  to  take care of recovery issues itself
+[BSS+99], an d th e lock gr an ular ity is often  th e complete                                        Quer yQuer y
+in dex itself.                                                                                       OptimizerOptimizer
+
+                                                                                                  New Rul es+Cost M odelNew Rul es+Cost M odelCatalogCatalog
+Taking all these aspects into account, in case of the UB-                                                                          Ma n a ge  rMa n a ge  r
+                                                                                                      for    UB-Treesfor    UB-Trees
+Tree the kernel integration is much more favorable than
+an  implemen tation  as an  exter n al in dex.                                                         Quer y Quer y           Creation of  U B-TreesCreation of  U B-Trees
+                                                                                                     ProcessorProcessor
+8.3 GiST – Framework
+                                                                                                    UB-Tree Range UB-Tree Range
+Th e Gen er al Sear ch  Tr ee (GiST) appr oach  of [HNP95]                                          Query SupportQuery Support
+provides a single framework for any tree-based index                                            LockLock                 Acce ss Struc ture Acce ss Struc ture
+structure. The GiST framework provides the basic                                              ManagerManager                 ManagerManager
+functionality for trees, e.g., insertion, deletion, splitting,                                                             UB-Tree Modules:UB-Tree Modules:
+                                                                                                                  Transformation Functions, Page Splitting, Transformation Functions, Page Splitting,
+search,  etc.  The  individual semantics of the index are                                                         Range QueryRange Query
+provided by the user with a key class, which implements                                    BufferBuffer              StorageStorage             Rec overy Rec overy
+six key functions the basic functions rely on. As                                          Ma n a ge  rMa n a ge  r  ManagerManager             Manage rManage r
+consequence, the user has only to change a small part of
+the code to implement various index methods (e.g., B+-                                      Configuration      and      minor      extensionConfiguration      and      minor      extensionNe w         m od ul e sNe w         m od ul e s
+Trees,  R-Trees).  In  general, the UB-Tree fits perfectly                                  Ext ensi o n of        exi st in g cod eExt ensi o n of        exi st in g cod e
+into  the  GiST framework, but efficient implementation                                      Figur e 9-1 Affected Modules of Tr an sBase
+would  require  more  user control at two points: search
+algorithm and splitting. The major drawback of the first                           The shaded boxes mark the modifications in the single
+GiST appr oach  is th e fixed quer y fun ction ality – th e user                   modules, where the darker shading signals the more
+can n ot adapt th e sear ch  algor ith m to th e specific in dexin g               complex modification s. Th e per for man ce gain s sh ow th at
+tech n ique,  wh ich  in  man y application  scen ar ios will lead                 th e  effor t  of  th e  in tegr ation  is wor th  it: with  up to a factor
+to  sign ifican t per for man ce pr oblems. Th e UB-Tr ee r an ge                  of  3 faster  th an  th e pr ototype implemen tation  on  top of a
+query algorithm is one example of such a search                                    DBMS, the kernel integrated UB-Tree provides
+algorithm. The extension of [Aok98], which gives the                               significantly better performance than traditional access
+user  th e con tr ol of th e tr ee tr aver sal dur in g sear ch , sh ould          methods in various application domains. The big
+suffice for an efficient range query implementation.                               advantage of the kernel integration in comparison with
+Putting  all  together,  if the extended GiST framework is                         other approaches is the tight coupling with the query
+available, th e ben efits descr ibed in  [Kor 99] apply to th e                    optimizer . Th is allows for  optimal usage of th e UB-Tr ee.
+UB-Tr ee in tegr ation  as well.                                                   As we do not rely on any TransBase specific features for
+                                                                                   the  UB-Tree algorithms, we expect the same integration
+                                                                                   effort for other database systems as well, as long they
+                                                                                   pr ovide cluster in g B-Tr ees on  computed keys.
+
+An  issue n ot addr essed in  th is paper  is th e question , wh en                            (DWACOS), Baden -Baden , Ger man y, 1999
+to use th e UB-Tr ee for  a specific application  scen ar io an d             [HNP95]                                J.  M. Heller stein , J. F. Naugh ton , an d A.
+wh ich  UB-Tr ee or gan ization  (e.g., n umber  of dimen sion s)                              Pfeffer .        Generalized Search Trees for
+is optimal. This problem is addressed in what we call                                          Database Systems. Proc. of 21st VLDB,
+physical data modeling and we are in the progress of                                           Zur ich , Switzer lan d, 1995.
+identifying  design rules for optimal indexing strategies                     [HR96]                                                    E.P. Harris, and K. Ramamohanarao. Join
+with  UB-Tr ees.                                                                               algorithm costs revisited.   VLDB  Jour n a l ,  5,
+Summarizing our experiences, UB-Trees smoothly                                                 1996
+in tegr ate in to th e in dexin g en gin e an d exten d th e B-Tr ee          [Inf99] Informix Software Incorporation. Informix
+concept in order to handle multiple dimensions                                                 Dynamic Server with Universal Data
+symmetrically. They are extremely useful for both                                              Option Version 9.1.X Documentation.  1999.
+clustering  tables  as  well as covering secondary indexes                    [LKC99]                                                  J.-H. Lee, D.-H. Kim, C.-W. Ch un g. Multi-
+(secon dar y in dexes th at con tain  all attr ibutes r equir ed by a                          dimensional Selectivity Estimation Using
+given  quer y) to speed up multidimen sion al r an ge quer ies.                                Compressed  Histogram Information. Proc.
+Extending the optimizer allows for good combination                                            of SIGMOD99,  Ph iladelph ia, U.S.A., 1999
+with single attribute access methods in physical data                         [KB95]                M. Kornacker and D. Banks. High-
+modeling and query processing, which will lead to                                              Concurrency Locking in R-Trees. Proc. of
+efficien t an d flexible in dex sch emes.                                                      21st  VLDB, Zür ich , Switzer lan d, 1995.
+                                                                              [Kor99] M. Kornacker. High-Performance
+Acknowledgements                                                                               Extensible Indexing. Proc. of the 25th
+We  thank  our  project partners the European Commission,                                      VLDB, Edin bur gh , Scotlan d, 1999.
+Teijin  Systems Technology, and Microsoft Research for                        [Mar99] V. Markl. MISTRAL: Processing Relational
+funding this research work. We also thank our master                                           Queries using a Multidimensional Access
+student Stephan Merkel for his effort in doing the                                             Technique. Ph.D. Thesis, Technische
+performance measurements reported in this paper. In                                            Un iver sität Mün ch en , 1999.
+addition we thank Goetz Graefe for his constructive                           [MRB99]           V. Markl, F. Ramsak, and R. Bayer.
+comments.                                                                                      Improving OLAP Performance by
+                                                                                               Multidimensional Hierarchical Clustering.
+References                                                                                     Proc. of IDEAS’99, Montreal, Canada,
+                                                                                               1999.
+[Aok98]                    P. M. Aoki. Generalizing “Search” in               [MS00] Microsoft Coperation. SQL Server 2000
+                 Generalized Search Trees. Proc. of ICDE                                       B ook s Onl i ne . 2000.
+                 1998.                                                        [MZB99]          V. Markl, M. Zirkel, and R. Bayer.
+[Bay97]                 R. Bayer.  The universal B-Tree for                                    Processing  Operations with Restrictions in
+                 multidimensional Indexing: General                                            Relational  Database Management Systems
+                 Concepts.  Wor ld-Wide Computin g an d Its                                    without external Sorting. Proc. of ICDE,
+                 Applications ‘97 (WWCA ‘97).  Tsukuba,                                        Sydn ey, Austr alia, 1999.
+                 Japan ,  10-11, Lectur e Notes on  Computer                  [OM84]                                                                           J. A. Or en stein  an d T.H. Mer r et.  A Class of
+                 Scien ce, Spr in ger  Ver lag, Mar ch , 1997.                                 Data Structures for Associate Searching.
+[BSS+99]                              R.  Bliujute, S. Salen tis, G. Slivin skas, an d         Proc. of ACM SIGMOD-PODS Conf.,
+                 C. S.  Jen sen .  Developing  a DataBlade for a                               Por tlan d, Or egon , 1984, pp. 294-305.
+                 New Index. Pr oc. of ICDE 1999.                              [Ora99] Oracle Corporation. Oracle 8i Server,
+[BU77]                                                                 R. Bayer  an d K. Un ter auer . Prefix B-Trees. Release 8.1.5 Documentation. 1999.
+                 ACM TODS 2(1),  1977,  pp.  11-26.                           [PI97]                                                                    V. Poosala, an d Y.E. Ioan n idis. Selectivity
+[CCF+99]      W. Chen, J.-H. Chow, Y.C. Fuh, J.                                                Estimation Without the Attribute Value
+                 Gr an dbois, M. Jou, N. Mattos, B. Tr an , an d                               Independence Assumption.  Pr oc of t h e 2 3 th
+                 Y. Wan g. High Level Indexing of User-                                        VLDB, 1997
+                 Defined Types. Proc. of 25th VLDB,                           [Tra98]                           TransAction Software GmbH. TransBase
+                 Edin bur gh , Scotlan d, 1999.                                                Documentation. 1998.
+[CM98]                                               K.  Ch akr abar ti an d S. Meh r otr a. Dynamic [WKW94]              K.Y. Whang, S.W. Kim, G. Wiederhold.
+                 Granular Locking Approach to Phantom                                          Dynamic  Maintenance  of Data Distribution
+                 Protection in R-Trees. Pr oc. of ICDE, 1998.                                  for Selectivity Estimation. VLDB Jour n al
+[FMB99]                                                         R. Fen k, V. Mar kl, an d R. Bayer . Improving Vol. 3, No. 1, 1994
+                 Multidimensional Range Queries of non
+                 rectangular  Volumes specified by a Query
+                 Box Set. Proc. of International Symposium
+                 on   Database, Web an d Cooper ative Systems
