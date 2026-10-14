@@ -10,3 +10,7 @@ Contact: [mike@ZotBot.Ai](mailto:mike@ZotBot.Ai)
 - [Paper 2 - When Invisible Differences Stay Invisible: Machine-Certified All-Order Congruence for Temporal Reconstruction](research/navier-stokes-spc/temporal-closure/)
 
 Paper 1 develops the Structural Path Compression architecture. Paper 2 publishes the exact Lean proof and reproducibility package for one machine-certified all-order congruence required by the later quotient program.
+
+## Restricted Autonomy–Stimulation Conditioning (RASC)
+
+- [Restricted Autonomy, Stimulation Seeking, and Threat-Linked Relief](research/restricted-autonomy-stimulation-conditioning/) — theoretical hypothesis and proposed research studies (October 2026; untested).
