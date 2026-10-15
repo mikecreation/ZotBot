@@ -1,0 +1,1362 @@
+<!doctype html><html lang="en"><head>
+
+<title>MeSH Browser</title>
+
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+
+<link rel="stylesheet" href="/public/css/font-awesome.css">
+<link rel="stylesheet" href="/public/css/bootstrap.css">
+<link rel="stylesheet" href="/public/css/mongoMesh.css">
+<link rel="icon" type="image/jpeg" href="/public/img/meshLogo.jpg">
+
+<base href="/">
+<script src="https://www.nlm.nih.gov/coop_all_uswds.js?v=1792066875322"></script>
+
+<script>
+
+    if (document.domain != "localhost")
+        document.domain = "nlm.nih.gov";
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        try {
+
+            if (coopmsg
+                && !/(^|; *)shutdown-banner=/.test(document.cookie))
+
+                document.querySelector(
+                    "body > div"
+                ).insertAdjacentHTML(
+                    "afterbegin",
+                    "<div id='shutdown-banner'><p>" + coopmsg
+                    + "</p><button type='button' role='button'"
+                    + " aria-label='Close' onclick='"
+                    + 'document.getElementById("shutdown-banner")'
+                    + '.remove(); document.cookie ='
+                    + ' "shutdown-banner=hidden; path=/";'
+                    + "'>Close</button></div>"
+                );
+
+        } catch (error) {
+            /* The "coopmsg" variable is only defined during a
+             * shutdown. */
+            if (!(error instanceof ReferenceError))
+                throw error;
+        }
+
+    });
+
+    var dcmsLinks = false,
+        dcmsParam = dcmsLinks
+                    ? function (sep) { return sep + "dcmsLinks=true"; }
+                    : function (   ) { return ""                    ; };
+
+</script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){
+        var _fullPath = window.location.href;
+        var urlParams = _fullPath.slice(_fullPath.indexOf('?') + 1).split('&');
+        var IsOpen = "false";
+        if (urlParams != undefined && urlParams != null && urlParams != "") {
+            IsOpen = urlParams[0].split("=")[1];
+        }
+
+        if (IsOpen == "false" || IsOpen == undefined || IsOpen != "true") {
+            w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        }
+    })(window,document,'script','dataLayer','GTM-5QZ7KJZ');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe sandbox src="https://www.googletagmanager.com/ns.html?id=GTM-5QZ7KJZ"
+                  height="0" width="0" style="display:none;visibility:hidden" title="googletagmanager"></iframe></noscript> 
+<!-- End Google Tag Manager (noscript) -->
+
+<script src="/public/js/elemUtil.js"></script>
+
+<script src="/public/js/record.js"  ></script>
+<script src="/public/js/treeDom.js" ></script>
+</head><body>
+
+<div>
+
+    <header class="NLMheader">
+        <a href="https://www.nlm.nih.gov/">
+          <img height="80" alt="NLM Logo"
+               src="https://www.nlm.nih.gov/images/NLM_White.png">
+        </a>
+        <!--<img class="starLogo"src="/public/img/NLM_Star.png" alt="NLM Star">-->
+    </header>
+<nav class="navbar navbar-default">
+
+  <div class="container-fluid">
+
+        <div class="navbar-header">
+
+          <button class="navbar-toggle collapsed" type="button"
+                  aria-expanded="false"
+                  onclick="toggleCollapse('bs-example-navbar-collapse-1')">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://www.nlm.nih.gov/mesh/">
+                <img id="meshNavbarLogo" src="/public/img/meshLogo.jpg" alt="MeSH Logo">
+            </a>
+        </div>
+
+        <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse"
+             aria-expanded="false">
+            <ul class="nav navbar-nav">
+                
+                <li><a href="/" id="mainSearchButton">Search</a></li>
+                <li><a href="/treeView">Tree View</a></li>
+                <li><a href="/MeSHonDemand">MeSH on Demand</a> </li> <!--Delete the Span Tags after  a few months, once MeSH on Demand is no longer new-->
+                <li><a href="https://meshb-prev.nlm.nih.gov/" target="_blank">MeSH 2027</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/mbinfo.html" target="_blank">About</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/meshsugg.html" target="_blank">Suggestions</a> </li>
+                <li><a href="https://support.nlm.nih.gov/support/create-case/" target="_blank">Contact Us</a></li>
+            </ul>
+
+        </div>
+
+  </div>
+
+</nav>
+
+</div>
+
+<div class="container">
+
+
+
+
+<h1>Neoplasms <small>MeSH Descriptor            Data 2026</small></h1>
+
+<ul class="nav nav-tabs">
+    <li id="details" class="active"
+        onclick="switchTab([ 'details', 'detailsTabContent' ])">
+        <a class="fakeLink">Details</a></li>
+    
+        <li id="qualifiers"
+            onclick="switchTab([ 'qualifiers', 'qualifiersTabContent' ])">
+            <a class="fakeLink">Qualifiers</a></li>
+        <li id="trees" onclick="switchTab([ 'trees', 'treesTabContent' ])">
+            <a class="fakeLink">MeSH Tree Structures</a></li>
+    
+    <li id="concepts" onclick="switchTab([ 'concepts', 'conceptsTabContent' ])">
+        <a class="fakeLink">Concepts</a></li>
+</ul>
+
+
+
+<div class="tab-content"><br>
+<div id="detailsTabContent" class="tab-pane active">
+
+    <dl id="descriptorDetails_Neoplasms"
+        class="dl-horizontal">
+
+        <dt>MeSH Heading      </dt>
+
+        <dd>Neoplasms</dd>
+
+        
+                    <dt>Tree Number(s)</dt>
+                    
+                        <dd><a id="treeNumber_0" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >C04</a></dd>
+                    
+
+        <dt>Unique ID</dt><dd>D009369</dd>
+
+        <dt>RDF Unique Identifier</dt>
+        <dd><a href="https://id.nlm.nih.gov/mesh/D009369.html">
+            http://id.nlm.nih.gov/mesh/D009369
+        </a></dd>
+
+        <span id="annotation">
+            <dt>Annotation</dt><dd>general; prefer specifics; familial: consider also <a href="/record/ui?ui=D009386" class="textLink_NEOPLASTICSYNDROMESHEREDITARY">NEOPLASTIC SYNDROMES, HEREDITARY</a>; metastatic cancer of unknown origin: index <a href="/record/ui?ui=D009362" class="textLink_NEOPLASMMETASTASIS">NEOPLASM METASTASIS</a></dd>
+        </span>
+                <span id="scopeNote">
+                    <dt>Scope Note</dt><dd>New abnormal growth of tissue. Malignant neoplasms show a greater degree of anaplasia and have the properties of invasion and metastasis, compared to benign neoplasms.</dd>
+                </span>
+            
+            <dt>Entry Version</dt><dd>NEOPL</dd>
+        
+                <dt>Entry Term(s)</dt>
+                <dd>
+                    Benign Neoplasm
+                    
+                </dd><dd>
+                    Benign Neoplasms
+                    
+                </dd><dd>
+                    Cancer
+                    
+                </dd><dd>
+                    Malignancy
+                    
+                </dd><dd>
+                    Malignant Neoplasm
+                    
+                </dd><dd>
+                    Malignant Neoplasms
+                    
+                </dd><dd>
+                    Neoplasia
+                    
+                </dd><dd>
+                    Neoplasm
+                    
+                </dd><dd>
+                    Neoplasms, Benign
+                    
+                </dd><dd>
+                    Tumor
+                    
+                </dd><dd>
+                    Tumors
+                    
+                </dd>
+            <dt>Consider Also</dt>
+            <dd>consider also terms at CANCER,  <a id="regexLink_CARCINO" class="textLink_CARCINO" href="/search?searchInField=termDescriptor&sort=&size=20&searchType=exactMatch&searchMethod=SubString&q=CARCINO">CARCINO-</a>,  <a id="regexLink_ONCO" class="textLink_ONCO" href="/search?searchInField=termDescriptor&sort=&size=20&searchType=exactMatch&searchMethod=SubString&q=ONCO">ONCO-</a>, and TUMOR</dd>
+        
+            <dt>Public MeSH Note</dt><dd>/diagnosis was NEOPLASM DIAGNOSIS 1964-65; /etiology was NEOPLASM ETIOLOGY 1964-65; /immunology was NEOPLASM IMMUNOLOGY 1964-65; /radiotherapy was NEOPLASM RADIOTHERAPY 1964-65; /therapy was NEOPLASM THERAPY 1964-65; NEOPLASM STATISTICS was heading 1964-65; CARCINOGENESIS was heading 1977</dd>
+        
+            <dt>History Note</dt><dd>/diagnosis was NEOPLASM DIAGNOSIS 1964-65; /etiology was NEOPLASM ETIOLOGY 1964-65; /immunology was NEOPLASM IMMUNOLOGY 1964-65; /radiotherapy was NEOPLASM RADIOTHERAPY 1964-65; /therapy was NEOPLASM THERAPY 1964-65; NEOPLASM STATISTICS was heading 1964-65; CARCINOGENESIS was heading 1977</dd>
+        
+        
+        <dt>Entry Combination</dt>
+        
+            <dd><a id="secondary_Neoplasm Metastasis"
+                   href="/record/ui?ui=D009362"
+                >secondary:Neoplasm Metastasis</a>
+            
+            </dd>
+        
+
+
+        
+                <dt>Date Introduced</dt>
+                <dd>1966/01/01</dd>
+            
+                <dt>Last Updated</dt>
+                <dd>2021/06/30</dd>
+            
+
+    </dl>
+
+</div>
+
+<div id="qualifiersTabContent" class="tab-pane">
+
+    <dl class="dl-horizontal">
+
+        
+        <dt>Entry Combination</dt>
+        
+            <dd><a id="secondary_Neoplasm Metastasis"
+                   href="/record/ui?ui=D009362"
+                >secondary:Neoplasm Metastasis</a>
+            
+            </dd>
+        
+<br>
+
+        
+                <span id="allowableQualifiers"><dt>Allowable Qualifiers</dt><dd>
+                <ul class="list-unstyled">
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000097">
+                            blood
+                            (BL)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000098">
+                            blood supply
+                            (BS)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000134">
+                            cerebrospinal fluid
+                            (CF)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000139">
+                            chemically induced
+                            (CI)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000737">
+                            chemistry
+                            (CH)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000145">
+                            classification
+                            (CL)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000150">
+                            complications
+                            (CO)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000151">
+                            congenital
+                            (CN)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000175">
+                            diagnosis
+                            (DI)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000000981">
+                            diagnostic imaging
+                            (DG)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000178">
+                            diet therapy
+                            (DH)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000188">
+                            drug therapy
+                            (DT)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000191">
+                            economics
+                            (EC)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000196">
+                            embryology
+                            (EM)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000201">
+                            enzymology
+                            (EN)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000453">
+                            epidemiology
+                            (EP)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000208">
+                            ethnology
+                            (EH)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000209">
+                            etiology
+                            (ET)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000235">
+                            genetics
+                            (GE)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000266">
+                            history
+                            (HI)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000276">
+                            immunology
+                            (IM)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000378">
+                            metabolism
+                            (ME)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000382">
+                            microbiology
+                            (MI)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000401">
+                            mortality
+                            (MO)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000451">
+                            nursing
+                            (NU)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000469">
+                            parasitology
+                            (PS)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000473">
+                            pathology
+                            (PA)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000503">
+                            physiopathology
+                            (PP)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000517">
+                            prevention &amp; control
+                            (PC)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000523">
+                            psychology
+                            (PX)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000532">
+                            radiotherapy
+                            (RT)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000534">
+                            rehabilitation
+                            (RH)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000601">
+                            surgery
+                            (SU)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000628">
+                            therapy
+                            (TH)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000648">
+                            ultrastructure
+                            (UL)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000652">
+                            urine
+                            (UR)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000662">
+                            veterinary
+                            (VE)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000821">
+                            virology
+                            (VI)
+                        </a></li>
+                    
+                </ul></dd></span>
+            
+
+    </dl>
+
+</div><div id="treesTabContent" class="tab-pane">
+
+    <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_C04"
+           
+               href="/record/ui?ui=D009369"
+           
+        ><strong>Neoplasms [C04]</strong>
+        </a>
+        
+            <i id="plus_Neoplasms" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Neoplasms" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_C04_182"
+           
+               href="/record/ui?ui=D003560"
+           
+        ><span>Cysts [C04.182]</span>
+        </a>
+        
+            <i id="plus_Cysts" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Cysts" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C04_445"
+           
+               href="/record/ui?ui=D006222"
+           
+        ><span>Hamartoma [C04.445]</span>
+        </a>
+        
+            <i id="plus_Hamartoma" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Hamartoma" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C04_557"
+           
+               href="/record/ui?ui=D009370"
+           
+        ><span>Neoplasms by Histologic Type [C04.557]</span>
+        </a>
+        
+            <i id="plus_Neoplasms_by_Histologic_Type" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Neoplasms_by_Histologic_Type" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C04_588"
+           
+               href="/record/ui?ui=D009371"
+           
+        ><span>Neoplasms by Site [C04.588]</span>
+        </a>
+        
+            <i id="plus_Neoplasms_by_Site" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Neoplasms_by_Site" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C04_619"
+           
+               href="/record/ui?ui=D009374"
+           
+        ><span>Neoplasms, Experimental [C04.619]</span>
+        </a>
+        
+            <i id="plus_Neoplasms_Experimental" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Neoplasms_Experimental" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C04_626"
+           
+               href="/record/ui?ui=D009376"
+           
+        ><span>Neoplasms, Hormone-Dependent [C04.626]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C04_651"
+           
+               href="/record/ui?ui=D009378"
+           
+        ><span>Neoplasms, Multiple Primary [C04.651]</span>
+        </a>
+        
+            <i id="plus_Neoplasms_Multiple_Primary" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Neoplasms_Multiple_Primary" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C04_666"
+           
+               href="/record/ui?ui=D017169"
+           
+        ><span>Neoplasms, Post-Traumatic [C04.666]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C04_682"
+           
+               href="/record/ui?ui=D009381"
+           
+        ><span>Neoplasms, Radiation-Induced [C04.682]</span>
+        </a>
+        
+            <i id="plus_Neoplasms_Radiation-Induced" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Neoplasms_Radiation-Induced" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C04_692"
+           
+               href="/record/ui?ui=D016609"
+           
+        ><span>Neoplasms, Second Primary [C04.692]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C04_697"
+           
+               href="/record/ui?ui=D009385"
+           
+        ><span>Neoplastic Processes [C04.697]</span>
+        </a>
+        
+            <i id="plus_Neoplastic_Processes" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Neoplastic_Processes" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C04_700"
+           
+               href="/record/ui?ui=D009386"
+           
+        ><span>Neoplastic Syndromes, Hereditary [C04.700]</span>
+        </a>
+        
+            <i id="plus_Neoplastic_Syndromes_Hereditary" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Neoplastic_Syndromes_Hereditary" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C04_730"
+           
+               href="/record/ui?ui=D010257"
+           
+        ><span>Paraneoplastic Syndromes [C04.730]</span>
+        </a>
+        
+            <i id="plus_Paraneoplastic_Syndromes" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Paraneoplastic_Syndromes" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C04_834"
+           
+               href="/record/ui?ui=D011230"
+           
+        ><span>Precancerous Conditions [C04.834]</span>
+        </a>
+        
+            <i id="plus_Precancerous_Conditions" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Precancerous_Conditions" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C04_850"
+           
+               href="/record/ui?ui=D011252"
+           
+        ><span>Pregnancy Complications, Neoplastic [C04.850]</span>
+        </a>
+        
+            <i id="plus_Pregnancy_Complications_Neoplastic" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Pregnancy_Complications_Neoplastic" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+
+</div>
+
+<div id="conceptsTabContent" class="tab-pane">
+
+    <button id="ExpandAll" class="btn btn-default btn-sm pull-right"
+            onclick="toggleConcepts()">
+        <span id="expandConcepts"                        >  Expand All</span>
+        <span id="collapseConcepts" style="display: none">Collapse All</span>
+    </button>
+
+    
+
+        <div>
+        <span id="Nightwatch_cp_0_0"
+              onclick="toggleCollapse('cp_0_0', 'Nightwatch_cp_0_0')">
+        <a class="fakeLink"><b>
+            Neoplasms
+            <i>Preferred</i>
+        </b></a></span>
+
+        <div id="cp_0_0" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0014585</dd>
+
+            
+                <dt>Scope Note</dt><dd>New abnormal growth of tissue. Malignant neoplasms show a greater degree of anaplasia and have the properties of invasion and metastasis, compared to benign neoplasms.</dd>
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_0_0"
+                      onclick="toggleCollapse('termName_0_0',
+                                              'Nightwatch_termName_0_0')">
+                    <a class="fakeLink"><b>Neoplasms</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_0_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T027926<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>01/01/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1966)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_1"
+                      onclick="toggleCollapse('termName_0_1',
+                                              'Nightwatch_termName_0_1')">
+                    <a class="fakeLink"><b>Tumors</b></a></span>
+
+                
+
+                <div id="termName_0_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T027929<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>03/30/1974<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        UNK (19XX)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_2"
+                      onclick="toggleCollapse('termName_0_2',
+                                              'Nightwatch_termName_0_2')">
+                    <a class="fakeLink"><b>Neoplasia</b></a></span>
+
+                
+
+                <div id="termName_0_2" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T811769<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/15/2011<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        OMIM (2013)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_3"
+                      onclick="toggleCollapse('termName_0_3',
+                                              'Nightwatch_termName_0_3')">
+                    <a class="fakeLink"><b>Neoplasm</b></a></span>
+
+                
+
+                <div id="termName_0_3" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T811770<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/15/2011<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        OMIM (2013)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_4"
+                      onclick="toggleCollapse('termName_0_4',
+                                              'Nightwatch_termName_0_4')">
+                    <a class="fakeLink"><b>Tumor</b></a></span>
+
+                
+
+                <div id="termName_0_4" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T001089278<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>09/30/2020<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2022)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_1_1"
+              onclick="toggleCollapse('cp_1_1', 'Nightwatch_cp_1_1')">
+        <a class="fakeLink"><b>
+            Cancer
+            <i>Narrower</i>
+        </b></a></span>
+
+        <div id="cp_1_1" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0014584</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_1_0"
+                      onclick="toggleCollapse('termName_1_0',
+                                              'Nightwatch_termName_1_0')">
+                    <a class="fakeLink"><b>Cancer</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_1_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T027925<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>03/30/1974<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        <br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_1_1"
+                      onclick="toggleCollapse('termName_1_1',
+                                              'Nightwatch_termName_1_1')">
+                    <a class="fakeLink"><b>Malignant Neoplasm</b></a></span>
+
+                
+
+                <div id="termName_1_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T001089280<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>09/30/2020<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2022)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_1_2"
+                      onclick="toggleCollapse('termName_1_2',
+                                              'Nightwatch_termName_1_2')">
+                    <a class="fakeLink"><b>Malignancy</b></a></span>
+
+                
+
+                <div id="termName_1_2" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T000898778<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>04/12/2016<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2017)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_1_3"
+                      onclick="toggleCollapse('termName_1_3',
+                                              'Nightwatch_termName_1_3')">
+                    <a class="fakeLink"><b>Malignant Neoplasms</b></a></span>
+
+                
+
+                <div id="termName_1_3" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T000922801<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>04/27/2017<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2018)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_2_2"
+              onclick="toggleCollapse('cp_2_2', 'Nightwatch_cp_2_2')">
+        <a class="fakeLink"><b>
+            Benign Neoplasms
+            <i>Narrower</i>
+        </b></a></span>
+
+        <div id="cp_2_2" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0014586</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_2_0"
+                      onclick="toggleCollapse('termName_2_0',
+                                              'Nightwatch_termName_2_0')">
+                    <a class="fakeLink"><b>Benign Neoplasms</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_2_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T027928<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>01/29/1993<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1994)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_2_1"
+                      onclick="toggleCollapse('termName_2_1',
+                                              'Nightwatch_termName_2_1')">
+                    <a class="fakeLink"><b>Neoplasms, Benign</b></a></span>
+
+                
+
+                <div id="termName_2_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T027927<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>10/21/1991<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        POPLINE (1991)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_2_2"
+                      onclick="toggleCollapse('termName_2_2',
+                                              'Nightwatch_termName_2_2')">
+                    <a class="fakeLink"><b>Benign Neoplasm</b></a></span>
+
+                
+
+                <div id="termName_2_2" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T001089279<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>09/30/2020<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2022)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+</div></div>
+
+<small class="pull-right">
+    page delivered in 0.139s
+</small>
+
+</div>
+
+<footer class="footer">
+    <div class="container-fluid"><div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/socialmedia/index.html">
+                    Connect with NLM
+                </a></p>
+                <ul class="list-inline">
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://twitter.com/NLM_NIH">
+                        <img src="https://www.nlm.nih.gov/images/Twitter_W.svg"
+                             alt="Twitter">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.facebook.com/nationallibraryofmedicine"
+                    ><img src="https://www.nlm.nih.gov/images/Facebook_W.svg"
+                          alt="Facebook">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.youtube.com/user/NLMNIH">
+                        <img src="https://www.nlm.nih.gov/images/YouTube_W.svg"
+                             alt="You Tube">
+                    </a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p>National Library of Medicine<br>
+                    <a href="https://www.google.com/maps/place/8600+Rockville+Pike,+Bethesda,+MD+20894/@38.9959508,-77.101021,17z/data=!3m1!4b1!4m5!3m4!1s0x89b7c95e25765ddb:0x19156f88b27635b8!8m2!3d38.9959508!4d-77.0988323">
+                        8600 Rockville Pike<br>
+                        Bethesda, MD 20894
+                    </a>
+                </p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/web_policies.html">
+                    Web Policies
+                </a><br>
+                <a href="https://www.nih.gov/institutes-nih/nih-office-director/office-communications-public-liaison/freedom-information-act-office">
+                    FOIA
+                </a><br>
+                <a href="https://www.hhs.gov/vulnerability-disclosure-policy/index.html">
+                    HHS Vulnerability Disclosure
+                </a></p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href=
+                      "https://support.nlm.nih.gov?from=https://www.nlm.nih.gov/">
+                    NLM Support Center
+                </a><br>
+                <a href="https://www.nlm.nih.gov/accessibility.html">
+                    Accessibility
+                </a><br>
+                <a href="https://www.nlm.nih.gov/careers/careers.html">
+                    Careers
+                </a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+              <p class="text-center"> <a href="https://www.nlm.nih.gov/">NLM</a> | <a href="https://www.nih.gov/">NIH</a> | <a href="https://www.hhs.gov/">HHS</a> | <a href="https://www.usa.gov/">USA.gov</a></p>
+            </div>
+        </div>
+    </div></div>
+<!--BEGIN QUALTRICS WEBSITE FEEDBACK SNIPPET-->
+<script type='text/javascript'>
+(function(){var g=function(e,h,f,g){
+this.get=function(a){for(var a=a+"=",c=document.cookie.split(";"),b=0,e=c.length;b<e;b++){for(var d=c[b];" "==d.charAt(0);)d=d.substring(1,d.length);if(0==d.indexOf(a))return d.substring(a.length,d.length)}return null};
+this.set=function(a,c){var b="",b=new Date;b.setTime(b.getTime()+6048E5);b="; expires="+b.toGMTString();document.cookie=a+"="+c+b+"; path=/; "};
+this.check=function(){var a=this.get(f);if(a)a=a.split(":");else if(100!=e)"v"==h&&(e=Math.random()>=e/100?0:100),a=[h,e,0],this.set(f,a.join(":"));else return!0;var c=a[1];if(100==c)return!0;switch(a[0]){case "v":return!1;case "r":return c=a[2]%Math.floor(100/c),a[2]++,this.set(f,a.join(":")),!c}return!0};
+this.go=function(){if(this.check()){var a=document.createElement("script");a.type="text/javascript";a.src=g;document.body&&document.body.appendChild(a)}};
+this.start=function(){var t=this;"complete"!==document.readyState?window.addEventListener?window.addEventListener("load",function(){t.go()},!1):window.attachEvent&&window.attachEvent("onload",function(){t.go()}):t.go()};};
+try{(new g(100,"r","QSI_S_ZN_cwOHfLkxRr4n4W2","https://zncwohflkxrr4n4w2-nlmenterprise.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_cwOHfLkxRr4n4W2")).start()}catch(i){}})();
+</script><div id='ZN_cwOHfLkxRr4n4W2'><!--DO NOT REMOVE-CONTENTS PLACED HERE--></div>
+<!--END WEBSITE FEEDBACK SNIPPET-->
+</footer>
+
+</body></html>
+

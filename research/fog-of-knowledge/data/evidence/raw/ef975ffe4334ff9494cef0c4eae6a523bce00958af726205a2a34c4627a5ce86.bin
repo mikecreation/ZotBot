@@ -1,0 +1,2160 @@
+<!doctype html><html lang="en"><head>
+
+<title>MeSH Browser</title>
+
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+
+<link rel="stylesheet" href="/public/css/font-awesome.css">
+<link rel="stylesheet" href="/public/css/bootstrap.css">
+<link rel="stylesheet" href="/public/css/mongoMesh.css">
+<link rel="icon" type="image/jpeg" href="/public/img/meshLogo.jpg">
+
+<base href="/">
+<script src="https://www.nlm.nih.gov/coop_all_uswds.js?v=1792066976607"></script>
+
+<script>
+
+    if (document.domain != "localhost")
+        document.domain = "nlm.nih.gov";
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        try {
+
+            if (coopmsg
+                && !/(^|; *)shutdown-banner=/.test(document.cookie))
+
+                document.querySelector(
+                    "body > div"
+                ).insertAdjacentHTML(
+                    "afterbegin",
+                    "<div id='shutdown-banner'><p>" + coopmsg
+                    + "</p><button type='button' role='button'"
+                    + " aria-label='Close' onclick='"
+                    + 'document.getElementById("shutdown-banner")'
+                    + '.remove(); document.cookie ='
+                    + ' "shutdown-banner=hidden; path=/";'
+                    + "'>Close</button></div>"
+                );
+
+        } catch (error) {
+            /* The "coopmsg" variable is only defined during a
+             * shutdown. */
+            if (!(error instanceof ReferenceError))
+                throw error;
+        }
+
+    });
+
+    var dcmsLinks = false,
+        dcmsParam = dcmsLinks
+                    ? function (sep) { return sep + "dcmsLinks=true"; }
+                    : function (   ) { return ""                    ; };
+
+</script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){
+        var _fullPath = window.location.href;
+        var urlParams = _fullPath.slice(_fullPath.indexOf('?') + 1).split('&');
+        var IsOpen = "false";
+        if (urlParams != undefined && urlParams != null && urlParams != "") {
+            IsOpen = urlParams[0].split("=")[1];
+        }
+
+        if (IsOpen == "false" || IsOpen == undefined || IsOpen != "true") {
+            w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        }
+    })(window,document,'script','dataLayer','GTM-5QZ7KJZ');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe sandbox src="https://www.googletagmanager.com/ns.html?id=GTM-5QZ7KJZ"
+                  height="0" width="0" style="display:none;visibility:hidden" title="googletagmanager"></iframe></noscript> 
+<!-- End Google Tag Manager (noscript) -->
+
+<script src="/public/js/elemUtil.js"></script>
+
+<script src="/public/js/record.js"  ></script>
+<script src="/public/js/treeDom.js" ></script>
+</head><body>
+
+<div>
+
+    <header class="NLMheader">
+        <a href="https://www.nlm.nih.gov/">
+          <img height="80" alt="NLM Logo"
+               src="https://www.nlm.nih.gov/images/NLM_White.png">
+        </a>
+        <!--<img class="starLogo"src="/public/img/NLM_Star.png" alt="NLM Star">-->
+    </header>
+<nav class="navbar navbar-default">
+
+  <div class="container-fluid">
+
+        <div class="navbar-header">
+
+          <button class="navbar-toggle collapsed" type="button"
+                  aria-expanded="false"
+                  onclick="toggleCollapse('bs-example-navbar-collapse-1')">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://www.nlm.nih.gov/mesh/">
+                <img id="meshNavbarLogo" src="/public/img/meshLogo.jpg" alt="MeSH Logo">
+            </a>
+        </div>
+
+        <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse"
+             aria-expanded="false">
+            <ul class="nav navbar-nav">
+                
+                <li><a href="/" id="mainSearchButton">Search</a></li>
+                <li><a href="/treeView">Tree View</a></li>
+                <li><a href="/MeSHonDemand">MeSH on Demand</a> </li> <!--Delete the Span Tags after  a few months, once MeSH on Demand is no longer new-->
+                <li><a href="https://meshb-prev.nlm.nih.gov/" target="_blank">MeSH 2027</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/mbinfo.html" target="_blank">About</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/meshsugg.html" target="_blank">Suggestions</a> </li>
+                <li><a href="https://support.nlm.nih.gov/support/create-case/" target="_blank">Contact Us</a></li>
+            </ul>
+
+        </div>
+
+  </div>
+
+</nav>
+
+</div>
+
+<div class="container">
+
+
+
+
+<h1>Nervous System Malformations <small>MeSH Descriptor            Data 2026</small></h1>
+
+<ul class="nav nav-tabs">
+    <li id="details" class="active"
+        onclick="switchTab([ 'details', 'detailsTabContent' ])">
+        <a class="fakeLink">Details</a></li>
+    
+        <li id="qualifiers"
+            onclick="switchTab([ 'qualifiers', 'qualifiersTabContent' ])">
+            <a class="fakeLink">Qualifiers</a></li>
+        <li id="trees" onclick="switchTab([ 'trees', 'treesTabContent' ])">
+            <a class="fakeLink">MeSH Tree Structures</a></li>
+    
+    <li id="concepts" onclick="switchTab([ 'concepts', 'conceptsTabContent' ])">
+        <a class="fakeLink">Concepts</a></li>
+</ul>
+
+
+
+<div class="tab-content"><br>
+<div id="detailsTabContent" class="tab-pane active">
+
+    <dl id="descriptorDetails_NervousSystemMalformations"
+        class="dl-horizontal">
+
+        <dt>MeSH Heading      </dt>
+
+        <dd>Nervous System Malformations</dd>
+
+        
+                    <dt>Tree Number(s)</dt>
+                    
+                        <dd><a id="treeNumber_0" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >C10.500</a></dd>
+                    
+                        <dd><a id="treeNumber_1" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >C16.131.666</a></dd>
+                    
+
+        <dt>Unique ID</dt><dd>D009421</dd>
+
+        <dt>RDF Unique Identifier</dt>
+        <dd><a href="https://id.nlm.nih.gov/mesh/D009421.html">
+            http://id.nlm.nih.gov/mesh/D009421
+        </a></dd>
+
+        <span id="annotation">
+            <dt>Annotation</dt><dd>for congenital structural abnormalities only; general or unspecified; prefer specifics or specific organ/abnorm</dd>
+        </span>
+                <span id="scopeNote">
+                    <dt>Scope Note</dt><dd>Structural abnormalities of the central or peripheral nervous system resulting primarily from defects of embryogenesis.</dd>
+                </span>
+            
+                <dt>Entry Term(s)</dt>
+                <dd>
+                    Abnormalities, Congenital, Nervous System
+                    
+                </dd><dd>
+                    Abnormalities, Nervous System
+                    
+                </dd><dd>
+                    Anomalies, Nervous System
+                    
+                </dd><dd>
+                    Congenital Abnormalities, Nervous System
+                    
+                </dd><dd>
+                    Congenital Anomalies, Nervous System
+                    
+                </dd><dd>
+                    Congenital Malformations, Nervous System
+                    
+                </dd><dd>
+                    Cranioschisis
+                    
+                </dd><dd>
+                    Malformations, Nervous System, Congenital
+                    
+                </dd><dd>
+                    Nervous System Abnormalities
+                    
+                </dd><dd>
+                    Nervous System Anomalies
+                    
+                </dd><dd>
+                    Nervous System Congenital Abnormalities
+                    
+                </dd><dd>
+                    Nervous System Congenital Malformations
+                    
+                </dd><dd>
+                    Nervous System Malformations, Congenital
+                    
+                </dd>
+                <dt>Previous Indexing</dt>
+                
+                    <dd>Nervous System/abnormalities (1966-1997)</dd>
+                
+            <dt>Public MeSH Note</dt><dd>2000; see NERVOUS SYSTEM ABNORMALITIES 1966-1999</dd>
+        
+            <dt>History Note</dt><dd>2000(1966); use explode 1971-1997</dd>
+        
+        
+
+
+        
+                <dt>Date Introduced</dt>
+                <dd>1998/01/01</dd>
+            
+                <dt>Last Updated</dt>
+                <dd>2019/05/24</dd>
+            
+
+    </dl>
+
+</div>
+
+<div id="qualifiersTabContent" class="tab-pane">
+
+    <dl class="dl-horizontal">
+
+        
+<br>
+
+        
+                <span id="allowableQualifiers"><dt>Allowable Qualifiers</dt><dd>
+                <ul class="list-unstyled">
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000097">
+                            blood
+                            (BL)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000134">
+                            cerebrospinal fluid
+                            (CF)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000139">
+                            chemically induced
+                            (CI)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000145">
+                            classification
+                            (CL)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000150">
+                            complications
+                            (CO)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000175">
+                            diagnosis
+                            (DI)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000000981">
+                            diagnostic imaging
+                            (DG)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000178">
+                            diet therapy
+                            (DH)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000188">
+                            drug therapy
+                            (DT)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000191">
+                            economics
+                            (EC)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000196">
+                            embryology
+                            (EM)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000201">
+                            enzymology
+                            (EN)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000453">
+                            epidemiology
+                            (EP)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000208">
+                            ethnology
+                            (EH)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000209">
+                            etiology
+                            (ET)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000235">
+                            genetics
+                            (GE)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000266">
+                            history
+                            (HI)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000276">
+                            immunology
+                            (IM)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000378">
+                            metabolism
+                            (ME)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000382">
+                            microbiology
+                            (MI)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000401">
+                            mortality
+                            (MO)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000451">
+                            nursing
+                            (NU)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000469">
+                            parasitology
+                            (PS)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000473">
+                            pathology
+                            (PA)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000503">
+                            physiopathology
+                            (PP)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000517">
+                            prevention &amp; control
+                            (PC)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000523">
+                            psychology
+                            (PX)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000532">
+                            radiotherapy
+                            (RT)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000534">
+                            rehabilitation
+                            (RH)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000601">
+                            surgery
+                            (SU)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000628">
+                            therapy
+                            (TH)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000652">
+                            urine
+                            (UR)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000662">
+                            veterinary
+                            (VE)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000821">
+                            virology
+                            (VI)
+                        </a></li>
+                    
+                </ul></dd></span>
+            
+
+    </dl>
+
+</div><div id="treesTabContent" class="tab-pane">
+
+    <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_C10"
+           
+               href="/record/ui?ui=D009422"
+           
+        ><span>Nervous System Diseases [C10]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_C10_114"
+           
+               href="/record/ui?ui=D020274"
+           
+        ><span>Autoimmune Diseases of the Nervous System [C10.114]</span>
+        </a>
+        
+            <i id="plus_Autoimmune_Diseases_of_the_Nervous_System" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Autoimmune_Diseases_of_the_Nervous_System" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_177"
+           
+               href="/record/ui?ui=D001342"
+           
+        ><span>Autonomic Nervous System Diseases [C10.177]</span>
+        </a>
+        
+            <i id="plus_Autonomic_Nervous_System_Diseases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Autonomic_Nervous_System_Diseases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_228"
+           
+               href="/record/ui?ui=D002493"
+           
+        ><span>Central Nervous System Diseases [C10.228]</span>
+        </a>
+        
+            <i id="plus_Central_Nervous_System_Diseases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Central_Nervous_System_Diseases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_281"
+           
+               href="/record/ui?ui=D021081"
+           
+        ><span>Chronobiology Disorders [C10.281]</span>
+        </a>
+        
+            <i id="plus_Chronobiology_Disorders" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Chronobiology_Disorders" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_292"
+           
+               href="/record/ui?ui=D003389"
+           
+        ><span>Cranial Nerve Diseases [C10.292]</span>
+        </a>
+        
+            <i id="plus_Cranial_Nerve_Diseases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Cranial_Nerve_Diseases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_314"
+           
+               href="/record/ui?ui=D003711"
+           
+        ><span>Demyelinating Diseases [C10.314]</span>
+        </a>
+        
+            <i id="plus_Demyelinating_Diseases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Demyelinating_Diseases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_500"
+           
+               href="/record/ui?ui=D009421"
+           
+        ><strong>Nervous System Malformations [C10.500]</strong>
+        </a>
+        
+            <i id="plus_Nervous_System_Malformations" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Nervous_System_Malformations" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_C10_500_034"
+           
+               href="/record/ui?ui=D061085"
+           
+        ><span>Agenesis of Corpus Callosum [C10.500.034]</span>
+        </a>
+        
+            <i id="plus_Agenesis_of_Corpus_Callosum" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Agenesis_of_Corpus_Callosum" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_500_142"
+           
+               href="/record/ui?ui=D020863"
+           
+        ><span>Central Nervous System Cysts [C10.500.142]</span>
+        </a>
+        
+            <i id="plus_Central_Nervous_System_Cysts" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Central_Nervous_System_Cysts" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_500_190"
+           
+               href="/record/ui?ui=D020785"
+           
+        ><span>Central Nervous System Vascular Malformations [C10.500.190]</span>
+        </a>
+        
+            <i id="plus_Central_Nervous_System_Vascular_Malformations" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Central_Nervous_System_Vascular_Malformations" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_500_198"
+           
+               href="/record/ui?ui=D000093922"
+           
+        ><span>Congenital Cranial Dysinnervation Disorders [C10.500.198]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_500_205"
+           
+               href="/record/ui?ui=D003616"
+           
+        ><span>Dandy-Walker Syndrome [C10.500.205]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_500_250"
+           
+               href="/record/ui?ui=D009477"
+           
+        ><span>Hereditary Sensory and Autonomic Neuropathies [C10.500.250]</span>
+        </a>
+        
+            <i id="plus_Hereditary_Sensory_and_Autonomic_Neuropathies" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Hereditary_Sensory_and_Autonomic_Neuropathies" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_500_300"
+           
+               href="/record/ui?ui=D015417"
+           
+        ><span>Hereditary Sensory and Motor Neuropathy [C10.500.300]</span>
+        </a>
+        
+            <i id="plus_Hereditary_Sensory_and_Motor_Neuropathy" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Hereditary_Sensory_and_Motor_Neuropathy" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_500_450"
+           
+               href="/record/ui?ui=D006832"
+           
+        ><span>Hydranencephaly [C10.500.450]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_500_507"
+           
+               href="/record/ui?ui=D054220"
+           
+        ><span>Malformations of Cortical Development [C10.500.507]</span>
+        </a>
+        
+            <i id="plus_Malformations_of_Cortical_Development" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Malformations_of_Cortical_Development" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_500_680"
+           
+               href="/record/ui?ui=D009436"
+           
+        ><span>Neural Tube Defects [C10.500.680]</span>
+        </a>
+        
+            <i id="plus_Neural_Tube_Defects" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Neural_Tube_Defects" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_500_760"
+           
+               href="/record/ui?ui=D000080344"
+           
+        ><span>Optic Nerve Hypoplasia [C10.500.760]</span>
+        </a>
+        
+            <i id="plus_Optic_Nerve_Hypoplasia" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Optic_Nerve_Hypoplasia" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_551"
+           
+               href="/record/ui?ui=D009423"
+           
+        ><span>Nervous System Neoplasms [C10.551]</span>
+        </a>
+        
+            <i id="plus_Nervous_System_Neoplasms" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Nervous_System_Neoplasms" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_562"
+           
+               href="/record/ui?ui=D020752"
+           
+        ><span>Neurocutaneous Syndromes [C10.562]</span>
+        </a>
+        
+            <i id="plus_Neurocutaneous_Syndromes" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Neurocutaneous_Syndromes" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_574"
+           
+               href="/record/ui?ui=D019636"
+           
+        ><span>Neurodegenerative Diseases [C10.574]</span>
+        </a>
+        
+            <i id="plus_Neurodegenerative_Diseases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Neurodegenerative_Diseases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_586"
+           
+               href="/record/ui?ui=D000090862"
+           
+        ><span>Neuroinflammatory Diseases [C10.586]</span>
+        </a>
+        
+            <i id="plus_Neuroinflammatory_Diseases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Neuroinflammatory_Diseases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_597"
+           
+               href="/record/ui?ui=D009461"
+           
+        ><span>Neurologic Manifestations [C10.597]</span>
+        </a>
+        
+            <i id="plus_Neurologic_Manifestations" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Neurologic_Manifestations" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_668"
+           
+               href="/record/ui?ui=D009468"
+           
+        ><span>Neuromuscular Diseases [C10.668]</span>
+        </a>
+        
+            <i id="plus_Neuromuscular_Diseases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Neuromuscular_Diseases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_720"
+           
+               href="/record/ui?ui=D020258"
+           
+        ><span>Neurotoxicity Syndromes [C10.720]</span>
+        </a>
+        
+            <i id="plus_Neurotoxicity_Syndromes" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Neurotoxicity_Syndromes" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_803"
+           
+               href="/record/ui?ui=D012148"
+           
+        ><span>Restless Legs Syndrome [C10.803]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_886"
+           
+               href="/record/ui?ui=D012893"
+           
+        ><span>Sleep Wake Disorders [C10.886]</span>
+        </a>
+        
+            <i id="plus_Sleep_Wake_Disorders" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Sleep_Wake_Disorders" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_900"
+           
+               href="/record/ui?ui=D020196"
+           
+        ><span>Trauma, Nervous System [C10.900]</span>
+        </a>
+        
+            <i id="plus_Trauma_Nervous_System" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Trauma_Nervous_System" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_C16"
+           
+               href="/record/ui?ui=D009358"
+           
+        ><span>Congenital, Hereditary, and Neonatal Diseases and Abnormalities [C16]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_C16_131"
+           
+               href="/record/ui?ui=D000013"
+           
+        ><span>Congenital Abnormalities [C16.131]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_C16_131_042"
+           
+               href="/record/ui?ui=D000014"
+           
+        ><span>Abnormalities, Drug-Induced [C16.131.042]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_077"
+           
+               href="/record/ui?ui=D000015"
+           
+        ><span>Abnormalities, Multiple [C16.131.077]</span>
+        </a>
+        
+            <i id="plus_Abnormalities_Multiple" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Abnormalities_Multiple" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_080"
+           
+               href="/record/ui?ui=D000016"
+           
+        ><span>Abnormalities, Radiation-Induced [C16.131.080]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_085"
+           
+               href="/record/ui?ui=D009008"
+           
+        ><span>Abnormalities, Severe Teratoid [C16.131.085]</span>
+        </a>
+        
+            <i id="plus_Abnormalities_Severe_Teratoid" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Abnormalities_Severe_Teratoid" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_162"
+           
+               href="/record/ui?ui=D058540"
+           
+        ><span>Aicardi Syndrome [C16.131.162]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_240"
+           
+               href="/record/ui?ui=D018376"
+           
+        ><span>Cardiovascular Abnormalities [C16.131.240]</span>
+        </a>
+        
+            <i id="plus_Cardiovascular_Abnormalities" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Cardiovascular_Abnormalities" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_260"
+           
+               href="/record/ui?ui=D025063"
+           
+        ><span>Chromosome Disorders [C16.131.260]</span>
+        </a>
+        
+            <i id="plus_Chromosome_Disorders" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Chromosome_Disorders" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_287"
+           
+               href="/record/ui?ui=D065817"
+           
+        ><span>Congenital Microtia [C16.131.287]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_314"
+           
+               href="/record/ui?ui=D004065"
+           
+        ><span>Digestive System Abnormalities [C16.131.314]</span>
+        </a>
+        
+            <i id="plus_Digestive_System_Abnormalities" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Digestive_System_Abnormalities" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_384"
+           
+               href="/record/ui?ui=D005124"
+           
+        ><span>Eye Abnormalities [C16.131.384]</span>
+        </a>
+        
+            <i id="plus_Eye_Abnormalities" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Eye_Abnormalities" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_433"
+           
+               href="/record/ui?ui=D065630"
+           
+        ><span>Hernias, Diaphragmatic, Congenital [C16.131.433]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_482"
+           
+               href="/record/ui?ui=D044148"
+           
+        ><span>Lymphatic Abnormalities [C16.131.482]</span>
+        </a>
+        
+            <i id="plus_Lymphatic_Abnormalities" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Lymphatic_Abnormalities" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_621"
+           
+               href="/record/ui?ui=D009139"
+           
+        ><span>Musculoskeletal Abnormalities [C16.131.621]</span>
+        </a>
+        
+            <i id="plus_Musculoskeletal_Abnormalities" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Musculoskeletal_Abnormalities" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_666"
+           
+               href="/record/ui?ui=D009421"
+           
+        ><strong>Nervous System Malformations [C16.131.666]</strong>
+        </a>
+        
+            <i id="plus_Nervous_System_Malformations" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Nervous_System_Malformations" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_C16_131_666_034"
+           
+               href="/record/ui?ui=D061085"
+           
+        ><span>Agenesis of Corpus Callosum [C16.131.666.034]</span>
+        </a>
+        
+            <i id="plus_Agenesis_of_Corpus_Callosum" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Agenesis_of_Corpus_Callosum" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_666_142"
+           
+               href="/record/ui?ui=D020863"
+           
+        ><span>Central Nervous System Cysts [C16.131.666.142]</span>
+        </a>
+        
+            <i id="plus_Central_Nervous_System_Cysts" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Central_Nervous_System_Cysts" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_666_190"
+           
+               href="/record/ui?ui=D020785"
+           
+        ><span>Central Nervous System Vascular Malformations [C16.131.666.190]</span>
+        </a>
+        
+            <i id="plus_Central_Nervous_System_Vascular_Malformations" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Central_Nervous_System_Vascular_Malformations" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_666_198"
+           
+               href="/record/ui?ui=D000093922"
+           
+        ><span>Congenital Cranial Dysinnervation Disorders [C16.131.666.198]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_666_205"
+           
+               href="/record/ui?ui=D003616"
+           
+        ><span>Dandy-Walker Syndrome [C16.131.666.205]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_666_300"
+           
+               href="/record/ui?ui=D015417"
+           
+        ><span>Hereditary Sensory and Motor Neuropathy [C16.131.666.300]</span>
+        </a>
+        
+            <i id="plus_Hereditary_Sensory_and_Motor_Neuropathy" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Hereditary_Sensory_and_Motor_Neuropathy" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_666_310"
+           
+               href="/record/ui?ui=D009477"
+           
+        ><span>Hereditary Sensory and Autonomic Neuropathies [C16.131.666.310]</span>
+        </a>
+        
+            <i id="plus_Hereditary_Sensory_and_Autonomic_Neuropathies" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Hereditary_Sensory_and_Autonomic_Neuropathies" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_666_450"
+           
+               href="/record/ui?ui=D006832"
+           
+        ><span>Hydranencephaly [C16.131.666.450]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_666_507"
+           
+               href="/record/ui?ui=D054220"
+           
+        ><span>Malformations of Cortical Development [C16.131.666.507]</span>
+        </a>
+        
+            <i id="plus_Malformations_of_Cortical_Development" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Malformations_of_Cortical_Development" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_666_680"
+           
+               href="/record/ui?ui=D009436"
+           
+        ><span>Neural Tube Defects [C16.131.666.680]</span>
+        </a>
+        
+            <i id="plus_Neural_Tube_Defects" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Neural_Tube_Defects" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_666_763"
+           
+               href="/record/ui?ui=D000080344"
+           
+        ><span>Optic Nerve Hypoplasia [C16.131.666.763]</span>
+        </a>
+        
+            <i id="plus_Optic_Nerve_Hypoplasia" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Optic_Nerve_Hypoplasia" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_703"
+           
+               href="/record/ui?ui=D000099245"
+           
+        ><span>Omphalocele [C16.131.703]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_740"
+           
+               href="/record/ui?ui=D015619"
+           
+        ><span>Respiratory System Abnormalities [C16.131.740]</span>
+        </a>
+        
+            <i id="plus_Respiratory_System_Abnormalities" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Respiratory_System_Abnormalities" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_810"
+           
+               href="/record/ui?ui=D012857"
+           
+        ><span>Situs Inversus [C16.131.810]</span>
+        </a>
+        
+            <i id="plus_Situs_Inversus" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Situs_Inversus" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_831"
+           
+               href="/record/ui?ui=D012868"
+           
+        ><span>Skin Abnormalities [C16.131.831]</span>
+        </a>
+        
+            <i id="plus_Skin_Abnormalities" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Skin_Abnormalities" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_850"
+           
+               href="/record/ui?ui=D018640"
+           
+        ><span>Stomatognathic System Abnormalities [C16.131.850]</span>
+        </a>
+        
+            <i id="plus_Stomatognathic_System_Abnormalities" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Stomatognathic_System_Abnormalities" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_894"
+           
+               href="/record/ui?ui=D050033"
+           
+        ><span>Thyroid Dysgenesis [C16.131.894]</span>
+        </a>
+        
+            <i id="plus_Thyroid_Dysgenesis" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Thyroid_Dysgenesis" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C16_131_939"
+           
+               href="/record/ui?ui=D014564"
+           
+        ><span>Urogenital Abnormalities [C16.131.939]</span>
+        </a>
+        
+            <i id="plus_Urogenital_Abnormalities" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Urogenital_Abnormalities" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+
+</div>
+
+<div id="conceptsTabContent" class="tab-pane">
+
+    <button id="ExpandAll" class="btn btn-default btn-sm pull-right"
+            onclick="toggleConcepts()">
+        <span id="expandConcepts"                        >  Expand All</span>
+        <span id="collapseConcepts" style="display: none">Collapse All</span>
+    </button>
+
+    
+
+        <div>
+        <span id="Nightwatch_cp_0_0"
+              onclick="toggleCollapse('cp_0_0', 'Nightwatch_cp_0_0')">
+        <a class="fakeLink"><b>
+            Nervous System Malformations
+            <i>Preferred</i>
+        </b></a></span>
+
+        <div id="cp_0_0" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0014666</dd>
+
+            
+                <dt>Scope Note</dt><dd>Structural abnormalities of the central or peripheral nervous system resulting primarily from defects of embryogenesis.</dd>
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_0_0"
+                      onclick="toggleCollapse('termName_0_0',
+                                              'Nightwatch_termName_0_0')">
+                    <a class="fakeLink"><b>Nervous System Malformations</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_0_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T365650<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/08/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2000)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_1"
+                      onclick="toggleCollapse('termName_0_1',
+                                              'Nightwatch_termName_0_1')">
+                    <a class="fakeLink"><b>Nervous System Congenital Abnormalities</b></a></span>
+
+                
+
+                <div id="termName_0_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T365658<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/08/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2000)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_2"
+                      onclick="toggleCollapse('termName_0_2',
+                                              'Nightwatch_termName_0_2')">
+                    <a class="fakeLink"><b>Nervous System Congenital Malformations</b></a></span>
+
+                
+
+                <div id="termName_0_2" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T365659<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/08/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2000)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_3"
+                      onclick="toggleCollapse('termName_0_3',
+                                              'Nightwatch_termName_0_3')">
+                    <a class="fakeLink"><b>Nervous System Malformations, Congenital</b></a></span>
+
+                
+
+                <div id="termName_0_3" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T365660<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/08/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2000)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_4"
+                      onclick="toggleCollapse('termName_0_4',
+                                              'Nightwatch_termName_0_4')">
+                    <a class="fakeLink"><b>Congenital Anomalies, Nervous System</b></a></span>
+
+                
+
+                <div id="termName_0_4" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T373372<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/08/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2000)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_5"
+                      onclick="toggleCollapse('termName_0_5',
+                                              'Nightwatch_termName_0_5')">
+                    <a class="fakeLink"><b>Abnormalities, Nervous System</b></a></span>
+
+                
+
+                <div id="termName_0_5" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T028090<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>02/20/1997<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1998)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_6"
+                      onclick="toggleCollapse('termName_0_6',
+                                              'Nightwatch_termName_0_6')">
+                    <a class="fakeLink"><b>Nervous System Abnormalities</b></a></span>
+
+                
+
+                <div id="termName_0_6" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T028091<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>01/01/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1966)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_7"
+                      onclick="toggleCollapse('termName_0_7',
+                                              'Nightwatch_termName_0_7')">
+                    <a class="fakeLink"><b>Abnormalities, Congenital, Nervous System</b></a></span>
+
+                
+
+                <div id="termName_0_7" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T365652<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/08/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2000)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_8"
+                      onclick="toggleCollapse('termName_0_8',
+                                              'Nightwatch_termName_0_8')">
+                    <a class="fakeLink"><b>Anomalies, Nervous System</b></a></span>
+
+                
+
+                <div id="termName_0_8" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T365653<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/08/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2000)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_9"
+                      onclick="toggleCollapse('termName_0_9',
+                                              'Nightwatch_termName_0_9')">
+                    <a class="fakeLink"><b>Congenital Abnormalities, Nervous System</b></a></span>
+
+                
+
+                <div id="termName_0_9" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T365654<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/08/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2000)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_10"
+                      onclick="toggleCollapse('termName_0_10',
+                                              'Nightwatch_termName_0_10')">
+                    <a class="fakeLink"><b>Congenital Malformations, Nervous System</b></a></span>
+
+                
+
+                <div id="termName_0_10" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T365655<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/08/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2000)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_11"
+                      onclick="toggleCollapse('termName_0_11',
+                                              'Nightwatch_termName_0_11')">
+                    <a class="fakeLink"><b>Nervous System Anomalies</b></a></span>
+
+                
+
+                <div id="termName_0_11" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T365657<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/08/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2000)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_12"
+                      onclick="toggleCollapse('termName_0_12',
+                                              'Nightwatch_termName_0_12')">
+                    <a class="fakeLink"><b>Malformations, Nervous System, Congenital</b></a></span>
+
+                
+
+                <div id="termName_0_12" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T365656<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/08/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2000)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_1_1"
+              onclick="toggleCollapse('cp_1_1', 'Nightwatch_cp_1_1')">
+        <a class="fakeLink"><b>
+            Cranioschisis
+            <i>Narrower</i>
+        </b></a></span>
+
+        <div id="cp_1_1" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0333688</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_1_0"
+                      onclick="toggleCollapse('termName_1_0',
+                                              'Nightwatch_termName_1_0')">
+                    <a class="fakeLink"><b>Cranioschisis</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_1_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T365661<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/08/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2000)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+</div></div>
+
+<small class="pull-right">
+    page delivered in 0.165s
+</small>
+
+</div>
+
+<footer class="footer">
+    <div class="container-fluid"><div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/socialmedia/index.html">
+                    Connect with NLM
+                </a></p>
+                <ul class="list-inline">
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://twitter.com/NLM_NIH">
+                        <img src="https://www.nlm.nih.gov/images/Twitter_W.svg"
+                             alt="Twitter">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.facebook.com/nationallibraryofmedicine"
+                    ><img src="https://www.nlm.nih.gov/images/Facebook_W.svg"
+                          alt="Facebook">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.youtube.com/user/NLMNIH">
+                        <img src="https://www.nlm.nih.gov/images/YouTube_W.svg"
+                             alt="You Tube">
+                    </a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p>National Library of Medicine<br>
+                    <a href="https://www.google.com/maps/place/8600+Rockville+Pike,+Bethesda,+MD+20894/@38.9959508,-77.101021,17z/data=!3m1!4b1!4m5!3m4!1s0x89b7c95e25765ddb:0x19156f88b27635b8!8m2!3d38.9959508!4d-77.0988323">
+                        8600 Rockville Pike<br>
+                        Bethesda, MD 20894
+                    </a>
+                </p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/web_policies.html">
+                    Web Policies
+                </a><br>
+                <a href="https://www.nih.gov/institutes-nih/nih-office-director/office-communications-public-liaison/freedom-information-act-office">
+                    FOIA
+                </a><br>
+                <a href="https://www.hhs.gov/vulnerability-disclosure-policy/index.html">
+                    HHS Vulnerability Disclosure
+                </a></p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href=
+                      "https://support.nlm.nih.gov?from=https://www.nlm.nih.gov/">
+                    NLM Support Center
+                </a><br>
+                <a href="https://www.nlm.nih.gov/accessibility.html">
+                    Accessibility
+                </a><br>
+                <a href="https://www.nlm.nih.gov/careers/careers.html">
+                    Careers
+                </a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+              <p class="text-center"> <a href="https://www.nlm.nih.gov/">NLM</a> | <a href="https://www.nih.gov/">NIH</a> | <a href="https://www.hhs.gov/">HHS</a> | <a href="https://www.usa.gov/">USA.gov</a></p>
+            </div>
+        </div>
+    </div></div>
+<!--BEGIN QUALTRICS WEBSITE FEEDBACK SNIPPET-->
+<script type='text/javascript'>
+(function(){var g=function(e,h,f,g){
+this.get=function(a){for(var a=a+"=",c=document.cookie.split(";"),b=0,e=c.length;b<e;b++){for(var d=c[b];" "==d.charAt(0);)d=d.substring(1,d.length);if(0==d.indexOf(a))return d.substring(a.length,d.length)}return null};
+this.set=function(a,c){var b="",b=new Date;b.setTime(b.getTime()+6048E5);b="; expires="+b.toGMTString();document.cookie=a+"="+c+b+"; path=/; "};
+this.check=function(){var a=this.get(f);if(a)a=a.split(":");else if(100!=e)"v"==h&&(e=Math.random()>=e/100?0:100),a=[h,e,0],this.set(f,a.join(":"));else return!0;var c=a[1];if(100==c)return!0;switch(a[0]){case "v":return!1;case "r":return c=a[2]%Math.floor(100/c),a[2]++,this.set(f,a.join(":")),!c}return!0};
+this.go=function(){if(this.check()){var a=document.createElement("script");a.type="text/javascript";a.src=g;document.body&&document.body.appendChild(a)}};
+this.start=function(){var t=this;"complete"!==document.readyState?window.addEventListener?window.addEventListener("load",function(){t.go()},!1):window.attachEvent&&window.attachEvent("onload",function(){t.go()}):t.go()};};
+try{(new g(100,"r","QSI_S_ZN_cwOHfLkxRr4n4W2","https://zncwohflkxrr4n4w2-nlmenterprise.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_cwOHfLkxRr4n4W2")).start()}catch(i){}})();
+</script><div id='ZN_cwOHfLkxRr4n4W2'><!--DO NOT REMOVE-CONTENTS PLACED HERE--></div>
+<!--END WEBSITE FEEDBACK SNIPPET-->
+</footer>
+
+</body></html>
+
