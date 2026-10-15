@@ -1,0 +1,1362 @@
+<!doctype html><html lang="en"><head>
+
+<title>MeSH Browser</title>
+
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+
+<link rel="stylesheet" href="/public/css/font-awesome.css">
+<link rel="stylesheet" href="/public/css/bootstrap.css">
+<link rel="stylesheet" href="/public/css/mongoMesh.css">
+<link rel="icon" type="image/jpeg" href="/public/img/meshLogo.jpg">
+
+<base href="/">
+<script src="https://www.nlm.nih.gov/coop_all_uswds.js?v=1792014866322"></script>
+
+<script>
+
+    if (document.domain != "localhost")
+        document.domain = "nlm.nih.gov";
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        try {
+
+            if (coopmsg
+                && !/(^|; *)shutdown-banner=/.test(document.cookie))
+
+                document.querySelector(
+                    "body > div"
+                ).insertAdjacentHTML(
+                    "afterbegin",
+                    "<div id='shutdown-banner'><p>" + coopmsg
+                    + "</p><button type='button' role='button'"
+                    + " aria-label='Close' onclick='"
+                    + 'document.getElementById("shutdown-banner")'
+                    + '.remove(); document.cookie ='
+                    + ' "shutdown-banner=hidden; path=/";'
+                    + "'>Close</button></div>"
+                );
+
+        } catch (error) {
+            /* The "coopmsg" variable is only defined during a
+             * shutdown. */
+            if (!(error instanceof ReferenceError))
+                throw error;
+        }
+
+    });
+
+    var dcmsLinks = false,
+        dcmsParam = dcmsLinks
+                    ? function (sep) { return sep + "dcmsLinks=true"; }
+                    : function (   ) { return ""                    ; };
+
+</script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){
+        var _fullPath = window.location.href;
+        var urlParams = _fullPath.slice(_fullPath.indexOf('?') + 1).split('&');
+        var IsOpen = "false";
+        if (urlParams != undefined && urlParams != null && urlParams != "") {
+            IsOpen = urlParams[0].split("=")[1];
+        }
+
+        if (IsOpen == "false" || IsOpen == undefined || IsOpen != "true") {
+            w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        }
+    })(window,document,'script','dataLayer','GTM-5QZ7KJZ');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe sandbox src="https://www.googletagmanager.com/ns.html?id=GTM-5QZ7KJZ"
+                  height="0" width="0" style="display:none;visibility:hidden" title="googletagmanager"></iframe></noscript> 
+<!-- End Google Tag Manager (noscript) -->
+
+<script src="/public/js/elemUtil.js"></script>
+
+<script src="/public/js/record.js"  ></script>
+<script src="/public/js/treeDom.js" ></script>
+</head><body>
+
+<div>
+
+    <header class="NLMheader">
+        <a href="https://www.nlm.nih.gov/">
+          <img height="80" alt="NLM Logo"
+               src="https://www.nlm.nih.gov/images/NLM_White.png">
+        </a>
+        <!--<img class="starLogo"src="/public/img/NLM_Star.png" alt="NLM Star">-->
+    </header>
+<nav class="navbar navbar-default">
+
+  <div class="container-fluid">
+
+        <div class="navbar-header">
+
+          <button class="navbar-toggle collapsed" type="button"
+                  aria-expanded="false"
+                  onclick="toggleCollapse('bs-example-navbar-collapse-1')">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://www.nlm.nih.gov/mesh/">
+                <img id="meshNavbarLogo" src="/public/img/meshLogo.jpg" alt="MeSH Logo">
+            </a>
+        </div>
+
+        <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse"
+             aria-expanded="false">
+            <ul class="nav navbar-nav">
+                
+                <li><a href="/" id="mainSearchButton">Search</a></li>
+                <li><a href="/treeView">Tree View</a></li>
+                <li><a href="/MeSHonDemand">MeSH on Demand</a> </li> <!--Delete the Span Tags after  a few months, once MeSH on Demand is no longer new-->
+                <li><a href="https://meshb-prev.nlm.nih.gov/" target="_blank">MeSH 2027</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/mbinfo.html" target="_blank">About</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/meshsugg.html" target="_blank">Suggestions</a> </li>
+                <li><a href="https://support.nlm.nih.gov/support/create-case/" target="_blank">Contact Us</a></li>
+            </ul>
+
+        </div>
+
+  </div>
+
+</nav>
+
+</div>
+
+<div class="container">
+
+
+
+
+<h1>Specialties, Surgical <small>MeSH Descriptor            Data 2026</small></h1>
+
+<ul class="nav nav-tabs">
+    <li id="details" class="active"
+        onclick="switchTab([ 'details', 'detailsTabContent' ])">
+        <a class="fakeLink">Details</a></li>
+    
+        <li id="qualifiers"
+            onclick="switchTab([ 'qualifiers', 'qualifiersTabContent' ])">
+            <a class="fakeLink">Qualifiers</a></li>
+        <li id="trees" onclick="switchTab([ 'trees', 'treesTabContent' ])">
+            <a class="fakeLink">MeSH Tree Structures</a></li>
+    
+    <li id="concepts" onclick="switchTab([ 'concepts', 'conceptsTabContent' ])">
+        <a class="fakeLink">Concepts</a></li>
+</ul>
+
+
+
+<div class="tab-content"><br>
+<div id="detailsTabContent" class="tab-pane active">
+
+    <dl id="descriptorDetails_Specialties,Surgical"
+        class="dl-horizontal">
+
+        <dt>MeSH Heading      </dt>
+
+        <dd>Specialties, Surgical</dd>
+
+        
+                    <dt>Tree Number(s)</dt>
+                    
+                        <dd><a id="treeNumber_0" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >H02.403.810</a></dd>
+                    
+
+        <dt>Unique ID</dt><dd>D013043</dd>
+
+        <dt>RDF Unique Identifier</dt>
+        <dd><a href="https://id.nlm.nih.gov/mesh/D013043.html">
+            http://id.nlm.nih.gov/mesh/D013043
+        </a></dd>
+
+        <span id="annotation">
+            <dt>Annotation</dt><dd>coordinate IM with the field or subject (IM); note many specific surgical specialties are available including <a href="/record/ui?ui=D013502" class="textLink_GENERALSURGERY">GENERAL SURGERY</a>; military surgery specialty = <a href="/record/ui?ui=D008887" class="textLink_MILITARYMEDICINE">MILITARY MEDICINE</a> (IM) + <a href="/record/ui?ui=D013043" class="textLink_SPECIALTIESSURGICAL">SPECIALTIES, SURGICAL</a> (IM); DF: SURG</dd>
+        </span>
+                <span id="scopeNote">
+                    <dt>Scope Note</dt><dd>Various branches of surgical practice limited to specialized areas.</dd>
+                </span>
+            
+            <dt>Entry Version</dt><dd>SPECIALTIES SURG</dd>
+        
+                <dt>Entry Term(s)</dt>
+                <dd>
+                    Surgical Specialties
+                    
+                </dd>
+            <dt>NLM Classification #</dt>
+            <dd>WO 21</dd>
+        
+                <dt>Previous Indexing</dt>
+                
+                    <dd>Certification (1968-1977)</dd>
+                
+                    <dd>Specialty Boards (1977-1979)</dd>
+                
+                    <dd>Surgery (1966-1979)</dd>
+                
+            <dt>Public MeSH Note</dt><dd>80</dd>
+        
+            <dt>History Note</dt><dd>80</dd>
+        
+        
+
+
+        
+                <dt>Date Introduced</dt>
+                <dd>1980/01/01</dd>
+            
+                <dt>Last Updated</dt>
+                <dd>2013/07/09</dd>
+            
+
+    </dl>
+
+</div>
+
+<div id="qualifiersTabContent" class="tab-pane">
+
+    <dl class="dl-horizontal">
+
+        
+<br>
+
+        
+                <span id="allowableQualifiers"><dt>Allowable Qualifiers</dt><dd>
+                <ul class="list-unstyled">
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000145">
+                            classification
+                            (CL)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000191">
+                            economics
+                            (EC)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000193">
+                            education
+                            (ED)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000941">
+                            ethics
+                            (ES)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000266">
+                            history
+                            (HI)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000295">
+                            instrumentation
+                            (IS)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000331">
+                            legislation &amp; jurisprudence
+                            (LJ)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000379">
+                            methods
+                            (MT)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000458">
+                            organization &amp; administration
+                            (OG)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000592">
+                            standards
+                            (ST)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000706">
+                            statistics &amp; numerical data
+                            (SN)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000639">
+                            trends
+                            (TD)
+                        </a></li>
+                    
+                </ul></dd></span>
+            
+
+    </dl>
+
+</div><div id="treesTabContent" class="tab-pane">
+
+    <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_H02"
+           
+               href="/record/ui?ui=D006281"
+           
+        ><span>Health Occupations [H02]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_H02_403"
+           
+               href="/record/ui?ui=D008511"
+           
+        ><span>Medicine [H02.403]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_H02_403_007"
+           
+               href="/record/ui?ui=D000073316"
+           
+        ><span>Addiction Medicine [H02.403.007]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_014"
+           
+               href="/record/ui?ui=D000295"
+           
+        ><span>Adolescent Medicine [H02.403.014]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_029"
+           
+               href="/record/ui?ui=D000337"
+           
+        ><span>Aerospace Medicine [H02.403.029]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_044"
+           
+               href="/record/ui?ui=D000486"
+           
+        ><span>Allergy and Immunology [H02.403.044]</span>
+        </a>
+        
+            <i id="plus_Allergy_and_Immunology" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Allergy_and_Immunology" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_066"
+           
+               href="/record/ui?ui=D000776"
+           
+        ><span>Anesthesiology [H02.403.066]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_074"
+           
+               href="/record/ui?ui=D052938"
+           
+        ><span>Bariatric Medicine [H02.403.074]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_090"
+           
+               href="/record/ui?ui=D001524"
+           
+        ><span>Behavioral Medicine [H02.403.090]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_200"
+           
+               href="/record/ui?ui=D015510"
+           
+        ><span>Clinical Medicine [H02.403.200]</span>
+        </a>
+        
+            <i id="plus_Clinical_Medicine" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Clinical_Medicine" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_220"
+           
+               href="/record/ui?ui=D003154"
+           
+        ><span>Community Medicine [H02.403.220]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_225"
+           
+               href="/record/ui?ui=D003880"
+           
+        ><span>Dermatology [H02.403.225]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_230"
+           
+               href="/record/ui?ui=D054597"
+           
+        ><span>Disaster Medicine [H02.403.230]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_250"
+           
+               href="/record/ui?ui=D004635"
+           
+        ><span>Emergency Medicine [H02.403.250]</span>
+        </a>
+        
+            <i id="plus_Emergency_Medicine" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Emergency_Medicine" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_330"
+           
+               href="/record/ui?ui=D005554"
+           
+        ><span>Forensic Medicine [H02.403.330]</span>
+        </a>
+        
+            <i id="plus_Forensic_Medicine" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Forensic_Medicine" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_335"
+           
+               href="/record/ui?ui=D000099079"
+           
+        ><span>Functional Medicine [H02.403.335]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_340"
+           
+               href="/record/ui?ui=D058006"
+           
+        ><span>General Practice [H02.403.340]</span>
+        </a>
+        
+            <i id="plus_General_Practice" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_General_Practice" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_350"
+           
+               href="/record/ui?ui=D005826"
+           
+        ><span>Genetics, Medical [H02.403.350]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_352"
+           
+               href="/record/ui?ui=D062306"
+           
+        ><span>Geography, Medical [H02.403.352]</span>
+        </a>
+        
+            <i id="plus_Geography_Medical" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Geography_Medical" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_355"
+           
+               href="/record/ui?ui=D005853"
+           
+        ><span>Geriatrics [H02.403.355]</span>
+        </a>
+        
+            <i id="plus_Geriatrics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Geriatrics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_371"
+           
+               href="/record/ui?ui=D014943"
+           
+        ><span>Global Health [H02.403.371]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_377"
+           
+               href="/record/ui?ui=D064416"
+           
+        ><span>Hospital Medicine [H02.403.377]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_400"
+           
+               href="/record/ui?ui=D055048"
+           
+        ><span>Integrative Medicine [H02.403.400]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_429"
+           
+               href="/record/ui?ui=D007388"
+           
+        ><span>Internal Medicine [H02.403.429]</span>
+        </a>
+        
+            <i id="plus_Internal_Medicine" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Internal_Medicine" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_500"
+           
+               href="/record/ui?ui=D008887"
+           
+        ><span>Military Medicine [H02.403.500]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_530"
+           
+               href="/record/ui?ui=D062346"
+           
+        ><span>Molecular Medicine [H02.403.530]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_560"
+           
+               href="/record/ui?ui=D009326"
+           
+        ><span>Naval Medicine [H02.403.560]</span>
+        </a>
+        
+            <i id="plus_Naval_Medicine" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Naval_Medicine" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_600"
+           
+               href="/record/ui?ui=D009462"
+           
+        ><span>Neurology [H02.403.600]</span>
+        </a>
+        
+            <i id="plus_Neurology" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Neurology" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_640"
+           
+               href="/record/ui?ui=D010021"
+           
+        ><span>Osteopathic Medicine [H02.403.640]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_645"
+           
+               href="/record/ui?ui=D065126"
+           
+        ><span>Palliative Medicine [H02.403.645]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_650"
+           
+               href="/record/ui?ui=D010336"
+           
+        ><span>Pathology [H02.403.650]</span>
+        </a>
+        
+            <i id="plus_Pathology" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Pathology" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_670"
+           
+               href="/record/ui?ui=D010372"
+           
+        ><span>Pediatrics [H02.403.670]</span>
+        </a>
+        
+            <i id="plus_Pediatrics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Pediatrics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_675"
+           
+               href="/record/ui?ui=D000079645"
+           
+        ><span>Perioperative Medicine [H02.403.675]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_680"
+           
+               href="/record/ui?ui=D010810"
+           
+        ><span>Physical and Rehabilitation Medicine [H02.403.680]</span>
+        </a>
+        
+            <i id="plus_Physical_and_Rehabilitation_Medicine" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Physical_and_Rehabilitation_Medicine" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_690"
+           
+               href="/record/ui?ui=D011570"
+           
+        ><span>Psychiatry [H02.403.690]</span>
+        </a>
+        
+            <i id="plus_Psychiatry" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Psychiatry" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_720"
+           
+               href="/record/ui?ui=D011634"
+           
+        ><span>Public Health [H02.403.720]</span>
+        </a>
+        
+            <i id="plus_Public_Health" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Public_Health" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_740"
+           
+               href="/record/ui?ui=D011871"
+           
+        ><span>Radiology [H02.403.740]</span>
+        </a>
+        
+            <i id="plus_Radiology" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Radiology" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_750"
+           
+               href="/record/ui?ui=D044968"
+           
+        ><span>Regenerative Medicine [H02.403.750]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_763"
+           
+               href="/record/ui?ui=D018456"
+           
+        ><span>Reproductive Medicine [H02.403.763]</span>
+        </a>
+        
+            <i id="plus_Reproductive_Medicine" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Reproductive_Medicine" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_800"
+           
+               href="/record/ui?ui=D012936"
+           
+        ><span>Social Medicine [H02.403.800]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_810"
+           
+               href="/record/ui?ui=D013043"
+           
+        ><strong>Specialties, Surgical [H02.403.810]</strong>
+        </a>
+        
+            <i id="plus_Specialties_Surgical" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Specialties_Surgical" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_H02_403_810_104"
+           
+               href="/record/ui?ui=D000096725"
+           
+        ><span>Acute Care Surgery [H02.403.810.104]</span>
+        </a>
+        
+            <i id="plus_Acute_Care_Surgery" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Acute_Care_Surgery" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_810_208"
+           
+               href="/record/ui?ui=D003107"
+           
+        ><span>Colorectal Surgery [H02.403.810.208]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_810_300"
+           
+               href="/record/ui?ui=D013502"
+           
+        ><span>General Surgery [H02.403.810.300]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_810_310"
+           
+               href="/record/ui?ui=D006176"
+           
+        ><span>Gynecology [H02.403.810.310]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_810_425"
+           
+               href="/record/ui?ui=D009493"
+           
+        ><span>Neurosurgery [H02.403.810.425]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_810_450"
+           
+               href="/record/ui?ui=D009774"
+           
+        ><span>Obstetrics [H02.403.810.450]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_810_468"
+           
+               href="/record/ui?ui=D009885"
+           
+        ><span>Ophthalmology [H02.403.810.468]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_810_481"
+           
+               href="/record/ui?ui=D057909"
+           
+        ><span>Orthognathic Surgery [H02.403.810.481]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_810_494"
+           
+               href="/record/ui?ui=D009985"
+           
+        ><span>Orthopedics [H02.403.810.494]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_810_526"
+           
+               href="/record/ui?ui=D010036"
+           
+        ><span>Otolaryngology [H02.403.810.526]</span>
+        </a>
+        
+            <i id="plus_Otolaryngology" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Otolaryngology" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_810_788"
+           
+               href="/record/ui?ui=D013518"
+           
+        ><span>Surgery, Plastic [H02.403.810.788]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_810_796"
+           
+               href="/record/ui?ui=D000071077"
+           
+        ><span>Surgical Oncology [H02.403.810.796]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_810_803"
+           
+               href="/record/ui?ui=D013903"
+           
+        ><span>Thoracic Surgery [H02.403.810.803]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_810_860"
+           
+               href="/record/ui?ui=D014572"
+           
+        ><span>Urology [H02.403.810.860]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_830"
+           
+               href="/record/ui?ui=D013178"
+           
+        ><span>Sports Medicine [H02.403.830]</span>
+        </a>
+        
+            <i id="plus_Sports_Medicine" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Sports_Medicine" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_840"
+           
+               href="/record/ui?ui=D017216"
+           
+        ><span>Telemedicine [H02.403.840]</span>
+        </a>
+        
+            <i id="plus_Telemedicine" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Telemedicine" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_845"
+           
+               href="/record/ui?ui=D000068936"
+           
+        ><span>Theranostic Nanomedicine [H02.403.845]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_850"
+           
+               href="/record/ui?ui=D057236"
+           
+        ><span>Travel Medicine [H02.403.850]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_879"
+           
+               href="/record/ui?ui=D014330"
+           
+        ><span>Tropical Medicine [H02.403.879]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_894"
+           
+               href="/record/ui?ui=D000078782"
+           
+        ><span>Vaccinology [H02.403.894]</span>
+        </a>
+        
+            <i id="plus_Vaccinology" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Vaccinology" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_909"
+           
+               href="/record/ui?ui=D014686"
+           
+        ><span>Venereology [H02.403.909]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H02_403_959"
+           
+               href="/record/ui?ui=D055813"
+           
+        ><span>Wilderness Medicine [H02.403.959]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+
+</div>
+
+<div id="conceptsTabContent" class="tab-pane">
+
+    <button id="ExpandAll" class="btn btn-default btn-sm pull-right"
+            onclick="toggleConcepts()">
+        <span id="expandConcepts"                        >  Expand All</span>
+        <span id="collapseConcepts" style="display: none">Collapse All</span>
+    </button>
+
+    
+
+        <div>
+        <span id="Nightwatch_cp_0_0"
+              onclick="toggleCollapse('cp_0_0', 'Nightwatch_cp_0_0')">
+        <a class="fakeLink"><b>
+            Specialties, Surgical
+            <i>Preferred</i>
+        </b></a></span>
+
+        <div id="cp_0_0" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0020219</dd>
+
+            
+                <dt>Scope Note</dt><dd>Various branches of surgical practice limited to specialized areas.</dd>
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_0_0"
+                      onclick="toggleCollapse('termName_0_0',
+                                              'Nightwatch_termName_0_0')">
+                    <a class="fakeLink"><b>Specialties, Surgical</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_0_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T038436<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>01/01/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1980)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_1"
+                      onclick="toggleCollapse('termName_0_1',
+                                              'Nightwatch_termName_0_1')">
+                    <a class="fakeLink"><b>Surgical Specialties</b></a></span>
+
+                
+
+                <div id="termName_0_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T038434<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>01/01/1986<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        UNK (19XX)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+</div></div>
+
+<small class="pull-right">
+    page delivered in 0.137s
+</small>
+
+</div>
+
+<footer class="footer">
+    <div class="container-fluid"><div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/socialmedia/index.html">
+                    Connect with NLM
+                </a></p>
+                <ul class="list-inline">
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://twitter.com/NLM_NIH">
+                        <img src="https://www.nlm.nih.gov/images/Twitter_W.svg"
+                             alt="Twitter">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.facebook.com/nationallibraryofmedicine"
+                    ><img src="https://www.nlm.nih.gov/images/Facebook_W.svg"
+                          alt="Facebook">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.youtube.com/user/NLMNIH">
+                        <img src="https://www.nlm.nih.gov/images/YouTube_W.svg"
+                             alt="You Tube">
+                    </a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p>National Library of Medicine<br>
+                    <a href="https://www.google.com/maps/place/8600+Rockville+Pike,+Bethesda,+MD+20894/@38.9959508,-77.101021,17z/data=!3m1!4b1!4m5!3m4!1s0x89b7c95e25765ddb:0x19156f88b27635b8!8m2!3d38.9959508!4d-77.0988323">
+                        8600 Rockville Pike<br>
+                        Bethesda, MD 20894
+                    </a>
+                </p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/web_policies.html">
+                    Web Policies
+                </a><br>
+                <a href="https://www.nih.gov/institutes-nih/nih-office-director/office-communications-public-liaison/freedom-information-act-office">
+                    FOIA
+                </a><br>
+                <a href="https://www.hhs.gov/vulnerability-disclosure-policy/index.html">
+                    HHS Vulnerability Disclosure
+                </a></p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href=
+                      "https://support.nlm.nih.gov?from=https://www.nlm.nih.gov/">
+                    NLM Support Center
+                </a><br>
+                <a href="https://www.nlm.nih.gov/accessibility.html">
+                    Accessibility
+                </a><br>
+                <a href="https://www.nlm.nih.gov/careers/careers.html">
+                    Careers
+                </a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+              <p class="text-center"> <a href="https://www.nlm.nih.gov/">NLM</a> | <a href="https://www.nih.gov/">NIH</a> | <a href="https://www.hhs.gov/">HHS</a> | <a href="https://www.usa.gov/">USA.gov</a></p>
+            </div>
+        </div>
+    </div></div>
+<!--BEGIN QUALTRICS WEBSITE FEEDBACK SNIPPET-->
+<script type='text/javascript'>
+(function(){var g=function(e,h,f,g){
+this.get=function(a){for(var a=a+"=",c=document.cookie.split(";"),b=0,e=c.length;b<e;b++){for(var d=c[b];" "==d.charAt(0);)d=d.substring(1,d.length);if(0==d.indexOf(a))return d.substring(a.length,d.length)}return null};
+this.set=function(a,c){var b="",b=new Date;b.setTime(b.getTime()+6048E5);b="; expires="+b.toGMTString();document.cookie=a+"="+c+b+"; path=/; "};
+this.check=function(){var a=this.get(f);if(a)a=a.split(":");else if(100!=e)"v"==h&&(e=Math.random()>=e/100?0:100),a=[h,e,0],this.set(f,a.join(":"));else return!0;var c=a[1];if(100==c)return!0;switch(a[0]){case "v":return!1;case "r":return c=a[2]%Math.floor(100/c),a[2]++,this.set(f,a.join(":")),!c}return!0};
+this.go=function(){if(this.check()){var a=document.createElement("script");a.type="text/javascript";a.src=g;document.body&&document.body.appendChild(a)}};
+this.start=function(){var t=this;"complete"!==document.readyState?window.addEventListener?window.addEventListener("load",function(){t.go()},!1):window.attachEvent&&window.attachEvent("onload",function(){t.go()}):t.go()};};
+try{(new g(100,"r","QSI_S_ZN_cwOHfLkxRr4n4W2","https://zncwohflkxrr4n4w2-nlmenterprise.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_cwOHfLkxRr4n4W2")).start()}catch(i){}})();
+</script><div id='ZN_cwOHfLkxRr4n4W2'><!--DO NOT REMOVE-CONTENTS PLACED HERE--></div>
+<!--END WEBSITE FEEDBACK SNIPPET-->
+</footer>
+
+</body></html>
+
