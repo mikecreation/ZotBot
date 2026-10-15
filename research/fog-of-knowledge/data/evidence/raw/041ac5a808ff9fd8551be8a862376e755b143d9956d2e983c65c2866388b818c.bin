@@ -1,0 +1,1806 @@
+<!doctype html><html lang="en"><head>
+
+<title>MeSH Browser</title>
+
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+
+<link rel="stylesheet" href="/public/css/font-awesome.css">
+<link rel="stylesheet" href="/public/css/bootstrap.css">
+<link rel="stylesheet" href="/public/css/mongoMesh.css">
+<link rel="icon" type="image/jpeg" href="/public/img/meshLogo.jpg">
+
+<base href="/">
+<script src="https://www.nlm.nih.gov/coop_all_uswds.js?v=1792066972325"></script>
+
+<script>
+
+    if (document.domain != "localhost")
+        document.domain = "nlm.nih.gov";
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        try {
+
+            if (coopmsg
+                && !/(^|; *)shutdown-banner=/.test(document.cookie))
+
+                document.querySelector(
+                    "body > div"
+                ).insertAdjacentHTML(
+                    "afterbegin",
+                    "<div id='shutdown-banner'><p>" + coopmsg
+                    + "</p><button type='button' role='button'"
+                    + " aria-label='Close' onclick='"
+                    + 'document.getElementById("shutdown-banner")'
+                    + '.remove(); document.cookie ='
+                    + ' "shutdown-banner=hidden; path=/";'
+                    + "'>Close</button></div>"
+                );
+
+        } catch (error) {
+            /* The "coopmsg" variable is only defined during a
+             * shutdown. */
+            if (!(error instanceof ReferenceError))
+                throw error;
+        }
+
+    });
+
+    var dcmsLinks = false,
+        dcmsParam = dcmsLinks
+                    ? function (sep) { return sep + "dcmsLinks=true"; }
+                    : function (   ) { return ""                    ; };
+
+</script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){
+        var _fullPath = window.location.href;
+        var urlParams = _fullPath.slice(_fullPath.indexOf('?') + 1).split('&');
+        var IsOpen = "false";
+        if (urlParams != undefined && urlParams != null && urlParams != "") {
+            IsOpen = urlParams[0].split("=")[1];
+        }
+
+        if (IsOpen == "false" || IsOpen == undefined || IsOpen != "true") {
+            w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        }
+    })(window,document,'script','dataLayer','GTM-5QZ7KJZ');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe sandbox src="https://www.googletagmanager.com/ns.html?id=GTM-5QZ7KJZ"
+                  height="0" width="0" style="display:none;visibility:hidden" title="googletagmanager"></iframe></noscript> 
+<!-- End Google Tag Manager (noscript) -->
+
+<script src="/public/js/elemUtil.js"></script>
+
+<script src="/public/js/record.js"  ></script>
+<script src="/public/js/treeDom.js" ></script>
+</head><body>
+
+<div>
+
+    <header class="NLMheader">
+        <a href="https://www.nlm.nih.gov/">
+          <img height="80" alt="NLM Logo"
+               src="https://www.nlm.nih.gov/images/NLM_White.png">
+        </a>
+        <!--<img class="starLogo"src="/public/img/NLM_Star.png" alt="NLM Star">-->
+    </header>
+<nav class="navbar navbar-default">
+
+  <div class="container-fluid">
+
+        <div class="navbar-header">
+
+          <button class="navbar-toggle collapsed" type="button"
+                  aria-expanded="false"
+                  onclick="toggleCollapse('bs-example-navbar-collapse-1')">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://www.nlm.nih.gov/mesh/">
+                <img id="meshNavbarLogo" src="/public/img/meshLogo.jpg" alt="MeSH Logo">
+            </a>
+        </div>
+
+        <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse"
+             aria-expanded="false">
+            <ul class="nav navbar-nav">
+                
+                <li><a href="/" id="mainSearchButton">Search</a></li>
+                <li><a href="/treeView">Tree View</a></li>
+                <li><a href="/MeSHonDemand">MeSH on Demand</a> </li> <!--Delete the Span Tags after  a few months, once MeSH on Demand is no longer new-->
+                <li><a href="https://meshb-prev.nlm.nih.gov/" target="_blank">MeSH 2027</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/mbinfo.html" target="_blank">About</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/meshsugg.html" target="_blank">Suggestions</a> </li>
+                <li><a href="https://support.nlm.nih.gov/support/create-case/" target="_blank">Contact Us</a></li>
+            </ul>
+
+        </div>
+
+  </div>
+
+</nav>
+
+</div>
+
+<div class="container">
+
+
+
+
+<h1>Autonomic Nervous System Diseases <small>MeSH Descriptor            Data 2026</small></h1>
+
+<ul class="nav nav-tabs">
+    <li id="details" class="active"
+        onclick="switchTab([ 'details', 'detailsTabContent' ])">
+        <a class="fakeLink">Details</a></li>
+    
+        <li id="qualifiers"
+            onclick="switchTab([ 'qualifiers', 'qualifiersTabContent' ])">
+            <a class="fakeLink">Qualifiers</a></li>
+        <li id="trees" onclick="switchTab([ 'trees', 'treesTabContent' ])">
+            <a class="fakeLink">MeSH Tree Structures</a></li>
+    
+    <li id="concepts" onclick="switchTab([ 'concepts', 'conceptsTabContent' ])">
+        <a class="fakeLink">Concepts</a></li>
+</ul>
+
+
+
+<div class="tab-content"><br>
+<div id="detailsTabContent" class="tab-pane active">
+
+    <dl id="descriptorDetails_AutonomicNervousSystemDiseases"
+        class="dl-horizontal">
+
+        <dt>MeSH Heading      </dt>
+
+        <dd>Autonomic Nervous System Diseases</dd>
+
+        
+                    <dt>Tree Number(s)</dt>
+                    
+                        <dd><a id="treeNumber_0" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >C10.177</a></dd>
+                    
+
+        <dt>Unique ID</dt><dd>D001342</dd>
+
+        <dt>RDF Unique Identifier</dt>
+        <dd><a href="https://id.nlm.nih.gov/mesh/D001342.html">
+            http://id.nlm.nih.gov/mesh/D001342
+        </a></dd>
+
+        
+                <span id="scopeNote">
+                    <dt>Scope Note</dt><dd>Diseases of the <a href="/record/ui?ui=D001341" class="textLink_AUTONOMICNERVOUSSYSTEM">AUTONOMIC NERVOUS SYSTEM</a>, including sympathetic, parasympathetic, and enteric nervous systems.</dd>
+                </span>
+            
+            <dt>Entry Version</dt><dd>AUTONOMIC NERVOUS SYSTEM DIS</dd>
+        
+                <dt>Entry Term(s)</dt>
+                <dd>
+                    ANS (Autonomic Nervous System) Diseases
+                    
+                </dd><dd>
+                    ANS Diseases
+                    
+                </dd><dd>
+                    Autonomic Central Nervous System Diseases
+                    
+                </dd><dd>
+                    Autonomic Diseases
+                    
+                </dd><dd>
+                    Autonomic Disorders
+                    
+                </dd><dd>
+                    Autonomic Nervous System Disorders
+                    
+                </dd><dd>
+                    Autonomic Peripheral Nervous System Diseases
+                    
+                </dd><dd>
+                    Central Autonomic Nervous System Diseases
+                    
+                </dd><dd>
+                    Disorders of the Autonomic Nervous System
+                    
+                </dd><dd>
+                    Dysautonomia
+                    
+                </dd><dd>
+                    Nervous System Diseases, Autonomic
+                    
+                </dd><dd>
+                    Nervous System Diseases, Parasympathetic
+                    
+                </dd><dd>
+                    Nervous System Diseases, Sympathetic
+                    
+                </dd><dd>
+                    Non-Familial Dysautonomia
+                    
+                </dd><dd>
+                    Parasympathetic Nervous System Diseases
+                    
+                </dd><dd>
+                    Peripheral Autonomic Nervous System Diseases
+                    
+                </dd><dd>
+                    Segmental Autonomic Dysfunction
+                    
+                </dd><dd>
+                    Sympathetic Nervous System Diseases
+                    
+                </dd>
+                <dt>Previous Indexing</dt>
+                
+                    <dd>Autonomic Nervous System (1966-1980)</dd>
+                
+                    <dd>Nervous System Diseases (1966-1980)</dd>
+                
+            <dt>Public MeSH Note</dt><dd>1981; was AUTONOMIC SYSTEM DISEASES (NON MESH) before 1981, for DYSAUTONOMIA see AUTONOMIC NERVOUS SYSTEM DISEASES 1989-2008, PRIMARY DYSAUTONOMIAS 2009-2022</dd>
+        
+            <dt>History Note</dt><dd>1981; was AUTONOMIC SYSTEM DISEASES (NON MESH) before 1981, for DYSAUTONOMIA use AUTONOMIC NERVOUS SYSTEM DISEASES 1989-2008, PRIMARY DYSAUTONOMIAS 2009-2022</dd>
+        
+        
+
+
+        
+                <dt>Date Introduced</dt>
+                <dd>1981/01/01</dd>
+            
+                <dt>Last Updated</dt>
+                <dd>2023/06/01</dd>
+            
+
+    </dl>
+
+</div>
+
+<div id="qualifiersTabContent" class="tab-pane">
+
+    <dl class="dl-horizontal">
+
+        
+<br>
+
+        
+                <span id="allowableQualifiers"><dt>Allowable Qualifiers</dt><dd>
+                <ul class="list-unstyled">
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000097">
+                            blood
+                            (BL)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000134">
+                            cerebrospinal fluid
+                            (CF)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000139">
+                            chemically induced
+                            (CI)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000145">
+                            classification
+                            (CL)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000150">
+                            complications
+                            (CO)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000151">
+                            congenital
+                            (CN)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000175">
+                            diagnosis
+                            (DI)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000000981">
+                            diagnostic imaging
+                            (DG)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000178">
+                            diet therapy
+                            (DH)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000188">
+                            drug therapy
+                            (DT)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000191">
+                            economics
+                            (EC)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000196">
+                            embryology
+                            (EM)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000201">
+                            enzymology
+                            (EN)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000453">
+                            epidemiology
+                            (EP)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000208">
+                            ethnology
+                            (EH)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000209">
+                            etiology
+                            (ET)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000235">
+                            genetics
+                            (GE)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000266">
+                            history
+                            (HI)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000276">
+                            immunology
+                            (IM)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000378">
+                            metabolism
+                            (ME)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000382">
+                            microbiology
+                            (MI)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000401">
+                            mortality
+                            (MO)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000451">
+                            nursing
+                            (NU)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000469">
+                            parasitology
+                            (PS)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000473">
+                            pathology
+                            (PA)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000503">
+                            physiopathology
+                            (PP)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000517">
+                            prevention &amp; control
+                            (PC)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000523">
+                            psychology
+                            (PX)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000532">
+                            radiotherapy
+                            (RT)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000534">
+                            rehabilitation
+                            (RH)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000601">
+                            surgery
+                            (SU)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000628">
+                            therapy
+                            (TH)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000652">
+                            urine
+                            (UR)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000662">
+                            veterinary
+                            (VE)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000821">
+                            virology
+                            (VI)
+                        </a></li>
+                    
+                </ul></dd></span>
+            
+
+    </dl>
+
+</div><div id="treesTabContent" class="tab-pane">
+
+    <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_C10"
+           
+               href="/record/ui?ui=D009422"
+           
+        ><span>Nervous System Diseases [C10]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_C10_114"
+           
+               href="/record/ui?ui=D020274"
+           
+        ><span>Autoimmune Diseases of the Nervous System [C10.114]</span>
+        </a>
+        
+            <i id="plus_Autoimmune_Diseases_of_the_Nervous_System" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Autoimmune_Diseases_of_the_Nervous_System" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_177"
+           
+               href="/record/ui?ui=D001342"
+           
+        ><strong>Autonomic Nervous System Diseases [C10.177]</strong>
+        </a>
+        
+            <i id="plus_Autonomic_Nervous_System_Diseases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Autonomic_Nervous_System_Diseases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_C10_177_045"
+           
+               href="/record/ui?ui=D000270"
+           
+        ><span>Adie Syndrome [C10.177.045]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_177_090"
+           
+               href="/record/ui?ui=D020211"
+           
+        ><span>Autonomic Dysreflexia [C10.177.090]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_177_195"
+           
+               href="/record/ui?ui=D020918"
+           
+        ><span>Complex Regional Pain Syndromes [C10.177.195]</span>
+        </a>
+        
+            <i id="plus_Complex_Regional_Pain_Syndromes" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Complex_Regional_Pain_Syndromes" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_177_350"
+           
+               href="/record/ui?ui=D006732"
+           
+        ><span>Horner Syndrome [C10.177.350]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_177_575"
+           
+               href="/record/ui?ui=D054969"
+           
+        ><span>Primary Dysautonomias [C10.177.575]</span>
+        </a>
+        
+            <i id="plus_Primary_Dysautonomias" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Primary_Dysautonomias" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_177_825"
+           
+               href="/record/ui?ui=D013547"
+           
+        ><span>Sweating, Gustatory [C10.177.825]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_228"
+           
+               href="/record/ui?ui=D002493"
+           
+        ><span>Central Nervous System Diseases [C10.228]</span>
+        </a>
+        
+            <i id="plus_Central_Nervous_System_Diseases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Central_Nervous_System_Diseases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_281"
+           
+               href="/record/ui?ui=D021081"
+           
+        ><span>Chronobiology Disorders [C10.281]</span>
+        </a>
+        
+            <i id="plus_Chronobiology_Disorders" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Chronobiology_Disorders" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_292"
+           
+               href="/record/ui?ui=D003389"
+           
+        ><span>Cranial Nerve Diseases [C10.292]</span>
+        </a>
+        
+            <i id="plus_Cranial_Nerve_Diseases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Cranial_Nerve_Diseases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_314"
+           
+               href="/record/ui?ui=D003711"
+           
+        ><span>Demyelinating Diseases [C10.314]</span>
+        </a>
+        
+            <i id="plus_Demyelinating_Diseases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Demyelinating_Diseases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_500"
+           
+               href="/record/ui?ui=D009421"
+           
+        ><span>Nervous System Malformations [C10.500]</span>
+        </a>
+        
+            <i id="plus_Nervous_System_Malformations" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Nervous_System_Malformations" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_551"
+           
+               href="/record/ui?ui=D009423"
+           
+        ><span>Nervous System Neoplasms [C10.551]</span>
+        </a>
+        
+            <i id="plus_Nervous_System_Neoplasms" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Nervous_System_Neoplasms" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_562"
+           
+               href="/record/ui?ui=D020752"
+           
+        ><span>Neurocutaneous Syndromes [C10.562]</span>
+        </a>
+        
+            <i id="plus_Neurocutaneous_Syndromes" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Neurocutaneous_Syndromes" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_574"
+           
+               href="/record/ui?ui=D019636"
+           
+        ><span>Neurodegenerative Diseases [C10.574]</span>
+        </a>
+        
+            <i id="plus_Neurodegenerative_Diseases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Neurodegenerative_Diseases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_586"
+           
+               href="/record/ui?ui=D000090862"
+           
+        ><span>Neuroinflammatory Diseases [C10.586]</span>
+        </a>
+        
+            <i id="plus_Neuroinflammatory_Diseases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Neuroinflammatory_Diseases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_597"
+           
+               href="/record/ui?ui=D009461"
+           
+        ><span>Neurologic Manifestations [C10.597]</span>
+        </a>
+        
+            <i id="plus_Neurologic_Manifestations" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Neurologic_Manifestations" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_668"
+           
+               href="/record/ui?ui=D009468"
+           
+        ><span>Neuromuscular Diseases [C10.668]</span>
+        </a>
+        
+            <i id="plus_Neuromuscular_Diseases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Neuromuscular_Diseases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_720"
+           
+               href="/record/ui?ui=D020258"
+           
+        ><span>Neurotoxicity Syndromes [C10.720]</span>
+        </a>
+        
+            <i id="plus_Neurotoxicity_Syndromes" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Neurotoxicity_Syndromes" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_803"
+           
+               href="/record/ui?ui=D012148"
+           
+        ><span>Restless Legs Syndrome [C10.803]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_886"
+           
+               href="/record/ui?ui=D012893"
+           
+        ><span>Sleep Wake Disorders [C10.886]</span>
+        </a>
+        
+            <i id="plus_Sleep_Wake_Disorders" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Sleep_Wake_Disorders" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C10_900"
+           
+               href="/record/ui?ui=D020196"
+           
+        ><span>Trauma, Nervous System [C10.900]</span>
+        </a>
+        
+            <i id="plus_Trauma_Nervous_System" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Trauma_Nervous_System" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+
+</div>
+
+<div id="conceptsTabContent" class="tab-pane">
+
+    <button id="ExpandAll" class="btn btn-default btn-sm pull-right"
+            onclick="toggleConcepts()">
+        <span id="expandConcepts"                        >  Expand All</span>
+        <span id="collapseConcepts" style="display: none">Collapse All</span>
+    </button>
+
+    
+
+        <div>
+        <span id="Nightwatch_cp_0_0"
+              onclick="toggleCollapse('cp_0_0', 'Nightwatch_cp_0_0')">
+        <a class="fakeLink"><b>
+            Autonomic Nervous System Diseases
+            <i>Preferred</i>
+        </b></a></span>
+
+        <div id="cp_0_0" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0002014</dd>
+
+            
+                <dt>Scope Note</dt><dd>Diseases of the <a href="/record/ui?ui=D001341" class="textLink_AUTONOMICNERVOUSSYSTEM">AUTONOMIC NERVOUS SYSTEM</a>, including sympathetic, parasympathetic, and enteric nervous systems.</dd>
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_0_0"
+                      onclick="toggleCollapse('termName_0_0',
+                                              'Nightwatch_termName_0_0')">
+                    <a class="fakeLink"><b>Autonomic Nervous System Diseases</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_0_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T003944<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>01/01/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1981)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_1"
+                      onclick="toggleCollapse('termName_0_1',
+                                              'Nightwatch_termName_0_1')">
+                    <a class="fakeLink"><b>Dysautonomia</b></a></span>
+
+                
+
+                <div id="termName_0_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T003947<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>06/07/1988<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        UNK (19XX)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_2"
+                      onclick="toggleCollapse('termName_0_2',
+                                              'Nightwatch_termName_0_2')">
+                    <a class="fakeLink"><b>ANS (Autonomic Nervous System) Diseases</b></a></span>
+
+                
+
+                <div id="termName_0_2" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T368975<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/08/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    ABX<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2000)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_3"
+                      onclick="toggleCollapse('termName_0_3',
+                                              'Nightwatch_termName_0_3')">
+                    <a class="fakeLink"><b>ANS Diseases</b></a></span>
+
+                
+
+                <div id="termName_0_3" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T003945<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>03/16/1981<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    ABX<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        UNK (19XX)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_4"
+                      onclick="toggleCollapse('termName_0_4',
+                                              'Nightwatch_termName_0_4')">
+                    <a class="fakeLink"><b>Autonomic Diseases</b></a></span>
+
+                
+
+                <div id="termName_0_4" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T003946<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>12/22/1992<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1994)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_5"
+                      onclick="toggleCollapse('termName_0_5',
+                                              'Nightwatch_termName_0_5')">
+                    <a class="fakeLink"><b>Autonomic Nervous System Disorders</b></a></span>
+
+                
+
+                <div id="termName_0_5" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T368974<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/08/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2000)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_6"
+                      onclick="toggleCollapse('termName_0_6',
+                                              'Nightwatch_termName_0_6')">
+                    <a class="fakeLink"><b>Autonomic Disorders</b></a></span>
+
+                
+
+                <div id="termName_0_6" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T001131625<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>12/27/2022<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2024)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_7"
+                      onclick="toggleCollapse('termName_0_7',
+                                              'Nightwatch_termName_0_7')">
+                    <a class="fakeLink"><b>Disorders of the Autonomic Nervous System</b></a></span>
+
+                
+
+                <div id="termName_0_7" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T368972<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/08/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2000)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_8"
+                      onclick="toggleCollapse('termName_0_8',
+                                              'Nightwatch_termName_0_8')">
+                    <a class="fakeLink"><b>Nervous System Diseases, Autonomic</b></a></span>
+
+                
+
+                <div id="termName_0_8" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T368973<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/08/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2000)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_1_1"
+              onclick="toggleCollapse('cp_1_1', 'Nightwatch_cp_1_1')">
+        <a class="fakeLink"><b>
+            Nervous System Diseases, Parasympathetic
+            <i>Narrower</i>
+        </b></a></span>
+
+        <div id="cp_1_1" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0335517</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_1_0"
+                      onclick="toggleCollapse('termName_1_0',
+                                              'Nightwatch_termName_1_0')">
+                    <a class="fakeLink"><b>Nervous System Diseases, Parasympathetic</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_1_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T368976<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/08/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2000)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_1_1"
+                      onclick="toggleCollapse('termName_1_1',
+                                              'Nightwatch_termName_1_1')">
+                    <a class="fakeLink"><b>Parasympathetic Nervous System Diseases</b></a></span>
+
+                
+
+                <div id="termName_1_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T368977<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/08/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2000)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_2_2"
+              onclick="toggleCollapse('cp_2_2', 'Nightwatch_cp_2_2')">
+        <a class="fakeLink"><b>
+            Nervous System Diseases, Sympathetic
+            <i>Narrower</i>
+        </b></a></span>
+
+        <div id="cp_2_2" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0335518</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_2_0"
+                      onclick="toggleCollapse('termName_2_0',
+                                              'Nightwatch_termName_2_0')">
+                    <a class="fakeLink"><b>Nervous System Diseases, Sympathetic</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_2_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T368978<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/08/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2000)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_2_1"
+                      onclick="toggleCollapse('termName_2_1',
+                                              'Nightwatch_termName_2_1')">
+                    <a class="fakeLink"><b>Sympathetic Nervous System Diseases</b></a></span>
+
+                
+
+                <div id="termName_2_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T368979<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/08/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2000)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_3_3"
+              onclick="toggleCollapse('cp_3_3', 'Nightwatch_cp_3_3')">
+        <a class="fakeLink"><b>
+            Peripheral Autonomic Nervous System Diseases
+            <i>Narrower</i>
+        </b></a></span>
+
+        <div id="cp_3_3" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0335519</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_3_0"
+                      onclick="toggleCollapse('termName_3_0',
+                                              'Nightwatch_termName_3_0')">
+                    <a class="fakeLink"><b>Peripheral Autonomic Nervous System Diseases</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_3_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T368980<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/08/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2000)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_3_1"
+                      onclick="toggleCollapse('termName_3_1',
+                                              'Nightwatch_termName_3_1')">
+                    <a class="fakeLink"><b>Autonomic Peripheral Nervous System Diseases</b></a></span>
+
+                
+
+                <div id="termName_3_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T368981<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/08/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2000)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_4_4"
+              onclick="toggleCollapse('cp_4_4', 'Nightwatch_cp_4_4')">
+        <a class="fakeLink"><b>
+            Segmental Autonomic Dysfunction
+            <i>Narrower</i>
+        </b></a></span>
+
+        <div id="cp_4_4" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0335521</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_4_0"
+                      onclick="toggleCollapse('termName_4_0',
+                                              'Nightwatch_termName_4_0')">
+                    <a class="fakeLink"><b>Segmental Autonomic Dysfunction</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_4_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T368983<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/08/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2000)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_5_5"
+              onclick="toggleCollapse('cp_5_5', 'Nightwatch_cp_5_5')">
+        <a class="fakeLink"><b>
+            Autonomic Central Nervous System Diseases
+            <i>Narrower</i>
+        </b></a></span>
+
+        <div id="cp_5_5" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M000761865</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_5_0"
+                      onclick="toggleCollapse('termName_5_0',
+                                              'Nightwatch_termName_5_0')">
+                    <a class="fakeLink"><b>Autonomic Central Nervous System Diseases</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_5_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T368982<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/08/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2000)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_5_1"
+                      onclick="toggleCollapse('termName_5_1',
+                                              'Nightwatch_termName_5_1')">
+                    <a class="fakeLink"><b>Central Autonomic Nervous System Diseases</b></a></span>
+
+                
+
+                <div id="termName_5_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T368971<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/08/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2000)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_6_6"
+              onclick="toggleCollapse('cp_6_6', 'Nightwatch_cp_6_6')">
+        <a class="fakeLink"><b>
+            Non-Familial Dysautonomia
+            <i>Narrower</i>
+        </b></a></span>
+
+        <div id="cp_6_6" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M000761866</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_6_0"
+                      onclick="toggleCollapse('termName_6_0',
+                                              'Nightwatch_termName_6_0')">
+                    <a class="fakeLink"><b>Non-Familial Dysautonomia</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_6_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T001131628<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>12/27/2022<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2024)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+</div></div>
+
+<small class="pull-right">
+    page delivered in 0.152s
+</small>
+
+</div>
+
+<footer class="footer">
+    <div class="container-fluid"><div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/socialmedia/index.html">
+                    Connect with NLM
+                </a></p>
+                <ul class="list-inline">
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://twitter.com/NLM_NIH">
+                        <img src="https://www.nlm.nih.gov/images/Twitter_W.svg"
+                             alt="Twitter">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.facebook.com/nationallibraryofmedicine"
+                    ><img src="https://www.nlm.nih.gov/images/Facebook_W.svg"
+                          alt="Facebook">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.youtube.com/user/NLMNIH">
+                        <img src="https://www.nlm.nih.gov/images/YouTube_W.svg"
+                             alt="You Tube">
+                    </a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p>National Library of Medicine<br>
+                    <a href="https://www.google.com/maps/place/8600+Rockville+Pike,+Bethesda,+MD+20894/@38.9959508,-77.101021,17z/data=!3m1!4b1!4m5!3m4!1s0x89b7c95e25765ddb:0x19156f88b27635b8!8m2!3d38.9959508!4d-77.0988323">
+                        8600 Rockville Pike<br>
+                        Bethesda, MD 20894
+                    </a>
+                </p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/web_policies.html">
+                    Web Policies
+                </a><br>
+                <a href="https://www.nih.gov/institutes-nih/nih-office-director/office-communications-public-liaison/freedom-information-act-office">
+                    FOIA
+                </a><br>
+                <a href="https://www.hhs.gov/vulnerability-disclosure-policy/index.html">
+                    HHS Vulnerability Disclosure
+                </a></p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href=
+                      "https://support.nlm.nih.gov?from=https://www.nlm.nih.gov/">
+                    NLM Support Center
+                </a><br>
+                <a href="https://www.nlm.nih.gov/accessibility.html">
+                    Accessibility
+                </a><br>
+                <a href="https://www.nlm.nih.gov/careers/careers.html">
+                    Careers
+                </a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+              <p class="text-center"> <a href="https://www.nlm.nih.gov/">NLM</a> | <a href="https://www.nih.gov/">NIH</a> | <a href="https://www.hhs.gov/">HHS</a> | <a href="https://www.usa.gov/">USA.gov</a></p>
+            </div>
+        </div>
+    </div></div>
+<!--BEGIN QUALTRICS WEBSITE FEEDBACK SNIPPET-->
+<script type='text/javascript'>
+(function(){var g=function(e,h,f,g){
+this.get=function(a){for(var a=a+"=",c=document.cookie.split(";"),b=0,e=c.length;b<e;b++){for(var d=c[b];" "==d.charAt(0);)d=d.substring(1,d.length);if(0==d.indexOf(a))return d.substring(a.length,d.length)}return null};
+this.set=function(a,c){var b="",b=new Date;b.setTime(b.getTime()+6048E5);b="; expires="+b.toGMTString();document.cookie=a+"="+c+b+"; path=/; "};
+this.check=function(){var a=this.get(f);if(a)a=a.split(":");else if(100!=e)"v"==h&&(e=Math.random()>=e/100?0:100),a=[h,e,0],this.set(f,a.join(":"));else return!0;var c=a[1];if(100==c)return!0;switch(a[0]){case "v":return!1;case "r":return c=a[2]%Math.floor(100/c),a[2]++,this.set(f,a.join(":")),!c}return!0};
+this.go=function(){if(this.check()){var a=document.createElement("script");a.type="text/javascript";a.src=g;document.body&&document.body.appendChild(a)}};
+this.start=function(){var t=this;"complete"!==document.readyState?window.addEventListener?window.addEventListener("load",function(){t.go()},!1):window.attachEvent&&window.attachEvent("onload",function(){t.go()}):t.go()};};
+try{(new g(100,"r","QSI_S_ZN_cwOHfLkxRr4n4W2","https://zncwohflkxrr4n4w2-nlmenterprise.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_cwOHfLkxRr4n4W2")).start()}catch(i){}})();
+</script><div id='ZN_cwOHfLkxRr4n4W2'><!--DO NOT REMOVE-CONTENTS PLACED HERE--></div>
+<!--END WEBSITE FEEDBACK SNIPPET-->
+</footer>
+
+</body></html>
+

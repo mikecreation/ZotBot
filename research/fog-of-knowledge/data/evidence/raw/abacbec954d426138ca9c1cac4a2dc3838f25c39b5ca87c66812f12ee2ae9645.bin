@@ -1,0 +1,1116 @@
+<!doctype html><html lang="en"><head>
+
+<title>MeSH Browser</title>
+
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+
+<link rel="stylesheet" href="/public/css/font-awesome.css">
+<link rel="stylesheet" href="/public/css/bootstrap.css">
+<link rel="stylesheet" href="/public/css/mongoMesh.css">
+<link rel="icon" type="image/jpeg" href="/public/img/meshLogo.jpg">
+
+<base href="/">
+<script src="https://www.nlm.nih.gov/coop_all_uswds.js?v=1792067151081"></script>
+
+<script>
+
+    if (document.domain != "localhost")
+        document.domain = "nlm.nih.gov";
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        try {
+
+            if (coopmsg
+                && !/(^|; *)shutdown-banner=/.test(document.cookie))
+
+                document.querySelector(
+                    "body > div"
+                ).insertAdjacentHTML(
+                    "afterbegin",
+                    "<div id='shutdown-banner'><p>" + coopmsg
+                    + "</p><button type='button' role='button'"
+                    + " aria-label='Close' onclick='"
+                    + 'document.getElementById("shutdown-banner")'
+                    + '.remove(); document.cookie ='
+                    + ' "shutdown-banner=hidden; path=/";'
+                    + "'>Close</button></div>"
+                );
+
+        } catch (error) {
+            /* The "coopmsg" variable is only defined during a
+             * shutdown. */
+            if (!(error instanceof ReferenceError))
+                throw error;
+        }
+
+    });
+
+    var dcmsLinks = false,
+        dcmsParam = dcmsLinks
+                    ? function (sep) { return sep + "dcmsLinks=true"; }
+                    : function (   ) { return ""                    ; };
+
+</script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){
+        var _fullPath = window.location.href;
+        var urlParams = _fullPath.slice(_fullPath.indexOf('?') + 1).split('&');
+        var IsOpen = "false";
+        if (urlParams != undefined && urlParams != null && urlParams != "") {
+            IsOpen = urlParams[0].split("=")[1];
+        }
+
+        if (IsOpen == "false" || IsOpen == undefined || IsOpen != "true") {
+            w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        }
+    })(window,document,'script','dataLayer','GTM-5QZ7KJZ');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe sandbox src="https://www.googletagmanager.com/ns.html?id=GTM-5QZ7KJZ"
+                  height="0" width="0" style="display:none;visibility:hidden" title="googletagmanager"></iframe></noscript> 
+<!-- End Google Tag Manager (noscript) -->
+
+<script src="/public/js/elemUtil.js"></script>
+
+<script src="/public/js/record.js"  ></script>
+<script src="/public/js/treeDom.js" ></script>
+</head><body>
+
+<div>
+
+    <header class="NLMheader">
+        <a href="https://www.nlm.nih.gov/">
+          <img height="80" alt="NLM Logo"
+               src="https://www.nlm.nih.gov/images/NLM_White.png">
+        </a>
+        <!--<img class="starLogo"src="/public/img/NLM_Star.png" alt="NLM Star">-->
+    </header>
+<nav class="navbar navbar-default">
+
+  <div class="container-fluid">
+
+        <div class="navbar-header">
+
+          <button class="navbar-toggle collapsed" type="button"
+                  aria-expanded="false"
+                  onclick="toggleCollapse('bs-example-navbar-collapse-1')">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://www.nlm.nih.gov/mesh/">
+                <img id="meshNavbarLogo" src="/public/img/meshLogo.jpg" alt="MeSH Logo">
+            </a>
+        </div>
+
+        <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse"
+             aria-expanded="false">
+            <ul class="nav navbar-nav">
+                
+                <li><a href="/" id="mainSearchButton">Search</a></li>
+                <li><a href="/treeView">Tree View</a></li>
+                <li><a href="/MeSHonDemand">MeSH on Demand</a> </li> <!--Delete the Span Tags after  a few months, once MeSH on Demand is no longer new-->
+                <li><a href="https://meshb-prev.nlm.nih.gov/" target="_blank">MeSH 2027</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/mbinfo.html" target="_blank">About</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/meshsugg.html" target="_blank">Suggestions</a> </li>
+                <li><a href="https://support.nlm.nih.gov/support/create-case/" target="_blank">Contact Us</a></li>
+            </ul>
+
+        </div>
+
+  </div>
+
+</nav>
+
+</div>
+
+<div class="container">
+
+
+
+
+<h1>Motivation <small>MeSH Descriptor            Data 2026</small></h1>
+
+<ul class="nav nav-tabs">
+    <li id="details" class="active"
+        onclick="switchTab([ 'details', 'detailsTabContent' ])">
+        <a class="fakeLink">Details</a></li>
+    
+        <li id="qualifiers"
+            onclick="switchTab([ 'qualifiers', 'qualifiersTabContent' ])">
+            <a class="fakeLink">Qualifiers</a></li>
+        <li id="trees" onclick="switchTab([ 'trees', 'treesTabContent' ])">
+            <a class="fakeLink">MeSH Tree Structures</a></li>
+    
+    <li id="concepts" onclick="switchTab([ 'concepts', 'conceptsTabContent' ])">
+        <a class="fakeLink">Concepts</a></li>
+</ul>
+
+
+
+<div class="tab-content"><br>
+<div id="detailsTabContent" class="tab-pane active">
+
+    <dl id="descriptorDetails_Motivation"
+        class="dl-horizontal">
+
+        <dt>MeSH Heading      </dt>
+
+        <dd>Motivation</dd>
+
+        
+                    <dt>Tree Number(s)</dt>
+                    
+                        <dd><a id="treeNumber_0" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >F01.658</a></dd>
+                    
+                        <dd><a id="treeNumber_1" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >F01.752.543.500.750</a></dd>
+                    
+
+        <dt>Unique ID</dt><dd>D009042</dd>
+
+        <dt>RDF Unique Identifier</dt>
+        <dd><a href="https://id.nlm.nih.gov/mesh/D009042.html">
+            http://id.nlm.nih.gov/mesh/D009042
+        </a></dd>
+
+        <span id="annotation">
+            <dt>Annotation</dt><dd>human & animal</dd>
+        </span>
+                <span id="scopeNote">
+                    <dt>Scope Note</dt><dd>Those factors which cause an organism to behave or act in either a goal-seeking or satisfying manner. They may be influenced by physiological drives or by external stimuli.</dd>
+                </span>
+            
+                <dt>Entry Term(s)</dt>
+                <dd>
+                    Disincentives
+                    
+                </dd><dd>
+                    Incentives
+                    
+                </dd>
+                <dt>See Also</dt>
+                
+                    <dd><a id="seeAlso_CognitiveDissonance"
+                           href="/record/ui?ui=D003073"
+                        >Cognitive Dissonance</a></dd>
+                
+                    <dd><a id="seeAlso_Intention"
+                           href="/record/ui?ui=D033182"
+                        >Intention</a></dd>
+                
+                    <dd><a id="seeAlso_Libido"
+                           href="/record/ui?ui=D007989"
+                        >Libido</a></dd>
+                
+        
+
+
+        
+                <dt>Date Introduced</dt>
+                <dd>1966/01/01</dd>
+            
+                <dt>Last Updated</dt>
+                <dd>2024/08/09</dd>
+            
+
+    </dl>
+
+</div>
+
+<div id="qualifiersTabContent" class="tab-pane">
+
+    <dl class="dl-horizontal">
+
+        
+<br>
+
+        
+                <span id="allowableQualifiers"><dt>Allowable Qualifiers</dt><dd>
+                <ul class="list-unstyled">
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000145">
+                            classification
+                            (CL)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000187">
+                            drug effects
+                            (DE)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000941">
+                            ethics
+                            (ES)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000235">
+                            genetics
+                            (GE)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000502">
+                            physiology
+                            (PH)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000528">
+                            radiation effects
+                            (RE)
+                        </a></li>
+                    
+                </ul></dd></span>
+            
+
+    </dl>
+
+</div><div id="treesTabContent" class="tab-pane">
+
+    <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_F01"
+           
+               href="/record/ui?ui=D001520"
+           
+        ><span>Behavior and Behavior Mechanisms [F01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_F01_058"
+           
+               href="/record/ui?ui=D000223"
+           
+        ><span>Adaptation, Psychological [F01.058]</span>
+        </a>
+        
+            <i id="plus_Adaptation_Psychological" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Adaptation_Psychological" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_100"
+           
+               href="/record/ui?ui=D001290"
+           
+        ><span>Attitude [F01.100]</span>
+        </a>
+        
+            <i id="plus_Attitude" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Attitude" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145"
+           
+               href="/record/ui?ui=D001519"
+           
+        ><span>Behavior [F01.145]</span>
+        </a>
+        
+            <i id="plus_Behavior" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Behavior" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_318"
+           
+               href="/record/ui?ui=D002668"
+           
+        ><span>Child Rearing [F01.318]</span>
+        </a>
+        
+            <i id="plus_Child_Rearing" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Child_Rearing" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_393"
+           
+               href="/record/ui?ui=D003674"
+           
+        ><span>Defense Mechanisms [F01.393]</span>
+        </a>
+        
+            <i id="plus_Defense_Mechanisms" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Defense_Mechanisms" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_470"
+           
+               href="/record/ui?ui=D004644"
+           
+        ><span>Emotions [F01.470]</span>
+        </a>
+        
+            <i id="plus_Emotions" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Emotions" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_490"
+           
+               href="/record/ui?ui=D000099056"
+           
+        ><span>Outcome Expectations [F01.490]</span>
+        </a>
+        
+            <i id="plus_Outcome_Expectations" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Outcome_Expectations" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_510"
+           
+               href="/record/ui?ui=D040821"
+           
+        ><span>Human Characteristics [F01.510]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_525"
+           
+               href="/record/ui?ui=D006803"
+           
+        ><span>Human Development [F01.525]</span>
+        </a>
+        
+            <i id="plus_Human_Development" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Human_Development" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_590"
+           
+               href="/record/ui?ui=D016743"
+           
+        ><span>Mental Competency [F01.590]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_658"
+           
+               href="/record/ui?ui=D009042"
+           
+        ><strong>Motivation [F01.658]</strong>
+        </a>
+        
+            <i id="plus_Motivation" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Motivation" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_F01_658_059"
+           
+               href="/record/ui?ui=D000124"
+           
+        ><span>Achievement [F01.658.059]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_658_100"
+           
+               href="/record/ui?ui=D001240"
+           
+        ><span>Aspirations, Psychological [F01.658.100]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_658_209"
+           
+               href="/record/ui?ui=D003220"
+           
+        ><span>Conflict, Psychological [F01.658.209]</span>
+        </a>
+        
+            <i id="plus_Conflict_Psychological" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Conflict_Psychological" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_658_293"
+           
+               href="/record/ui?ui=D004328"
+           
+        ><span>Drive [F01.658.293]</span>
+        </a>
+        
+            <i id="plus_Drive" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Drive" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_658_370"
+           
+               href="/record/ui?ui=D005106"
+           
+        ><span>Exploratory Behavior [F01.658.370]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_658_433"
+           
+               href="/record/ui?ui=D005508"
+           
+        ><span>Food Deprivation [F01.658.433]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_658_500"
+           
+               href="/record/ui?ui=D006040"
+           
+        ><span>Goals [F01.658.500]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_658_556"
+           
+               href="/record/ui?ui=D006234"
+           
+        ><span>Handling, Psychological [F01.658.556]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_658_642"
+           
+               href="/record/ui?ui=D007323"
+           
+        ><span>Instinct [F01.658.642]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_658_650"
+           
+               href="/record/ui?ui=D033182"
+           
+        ><span>Intention [F01.658.650]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_658_780"
+           
+               href="/record/ui?ui=D011209"
+           
+        ><span>Power, Psychological [F01.658.780]</span>
+        </a>
+        
+            <i id="plus_Power_Psychological" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Power_Psychological" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_658_859"
+           
+               href="/record/ui?ui=D000099023"
+           
+        ><span>Sense of Agency [F01.658.859]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_658_938"
+           
+               href="/record/ui?ui=D014868"
+           
+        ><span>Water Deprivation [F01.658.938]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_700"
+           
+               href="/record/ui?ui=D019954"
+           
+        ><span>Neurobehavioral Manifestations [F01.700]</span>
+        </a>
+        
+            <i id="plus_Neurobehavioral_Manifestations" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Neurobehavioral_Manifestations" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_752"
+           
+               href="/record/ui?ui=D010551"
+           
+        ><span>Personality [F01.752]</span>
+        </a>
+        
+            <i id="plus_Personality" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Personality" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_829"
+           
+               href="/record/ui?ui=D011593"
+           
+        ><span>Psychology, Social [F01.829]</span>
+        </a>
+        
+            <i id="plus_Psychology_Social" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Psychology_Social" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_872"
+           
+               href="/record/ui?ui=D000083623"
+           
+        ><span>Psychosocial Functioning [F01.872]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_914"
+           
+               href="/record/ui?ui=D013695"
+           
+        ><span>Temperance [F01.914]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_F01"
+           
+               href="/record/ui?ui=D001520"
+           
+        ><span>Behavior and Behavior Mechanisms [F01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_F01_752"
+           
+               href="/record/ui?ui=D010551"
+           
+        ><span>Personality [F01.752]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_F01_752_543"
+           
+               href="/record/ui?ui=D007360"
+           
+        ><span>Intelligence [F01.752.543]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_F01_752_543_500"
+           
+               href="/record/ui?ui=D056348"
+           
+        ><span>Emotional Intelligence [F01.752.543.500]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_F01_752_543_500_250"
+           
+               href="/record/ui?ui=D000066498"
+           
+        ><span>Emotional Adjustment [F01.752.543.500.250]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_F01_752_543_500_500"
+           
+               href="/record/ui?ui=D004645"
+           
+        ><span>Empathy [F01.752.543.500.500]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_F01_752_543_500_750"
+           
+               href="/record/ui?ui=D009042"
+           
+        ><strong>Motivation [F01.752.543.500.750]</strong>
+        </a>
+        
+            <i id="plus_Motivation" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Motivation" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_F01_752_543_500_750_500"
+           
+               href="/record/ui?ui=D000099023"
+           
+        ><span>Sense of Agency [F01.752.543.500.750.500]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+
+</div>
+
+<div id="conceptsTabContent" class="tab-pane">
+
+    <button id="ExpandAll" class="btn btn-default btn-sm pull-right"
+            onclick="toggleConcepts()">
+        <span id="expandConcepts"                        >  Expand All</span>
+        <span id="collapseConcepts" style="display: none">Collapse All</span>
+    </button>
+
+    
+
+        <div>
+        <span id="Nightwatch_cp_0_0"
+              onclick="toggleCollapse('cp_0_0', 'Nightwatch_cp_0_0')">
+        <a class="fakeLink"><b>
+            Motivation
+            <i>Preferred</i>
+        </b></a></span>
+
+        <div id="cp_0_0" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0014109</dd>
+
+            
+                <dt>Scope Note</dt><dd>Those factors which cause an organism to behave or act in either a goal-seeking or satisfying manner. They may be influenced by physiological drives or by external stimuli.</dd>
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_0_0"
+                      onclick="toggleCollapse('termName_0_0',
+                                              'Nightwatch_termName_0_0')">
+                    <a class="fakeLink"><b>Motivation</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_0_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T027017<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>01/01/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1974)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_1_1"
+              onclick="toggleCollapse('cp_1_1', 'Nightwatch_cp_1_1')">
+        <a class="fakeLink"><b>
+            Disincentives
+            <i>Narrower</i>
+        </b></a></span>
+
+        <div id="cp_1_1" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0014107</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_1_0"
+                      onclick="toggleCollapse('termName_1_0',
+                                              'Nightwatch_termName_1_0')">
+                    <a class="fakeLink"><b>Disincentives</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_1_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T027015<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>12/26/1978<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        UNK (19XX)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_2_2"
+              onclick="toggleCollapse('cp_2_2', 'Nightwatch_cp_2_2')">
+        <a class="fakeLink"><b>
+            Incentives
+            <i>Narrower</i>
+        </b></a></span>
+
+        <div id="cp_2_2" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0014108</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_2_0"
+                      onclick="toggleCollapse('termName_2_0',
+                                              'Nightwatch_termName_2_0')">
+                    <a class="fakeLink"><b>Incentives</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_2_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T027016<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>03/17/1977<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NL<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+</div></div>
+
+<small class="pull-right">
+    page delivered in 0.144s
+</small>
+
+</div>
+
+<footer class="footer">
+    <div class="container-fluid"><div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/socialmedia/index.html">
+                    Connect with NLM
+                </a></p>
+                <ul class="list-inline">
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://twitter.com/NLM_NIH">
+                        <img src="https://www.nlm.nih.gov/images/Twitter_W.svg"
+                             alt="Twitter">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.facebook.com/nationallibraryofmedicine"
+                    ><img src="https://www.nlm.nih.gov/images/Facebook_W.svg"
+                          alt="Facebook">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.youtube.com/user/NLMNIH">
+                        <img src="https://www.nlm.nih.gov/images/YouTube_W.svg"
+                             alt="You Tube">
+                    </a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p>National Library of Medicine<br>
+                    <a href="https://www.google.com/maps/place/8600+Rockville+Pike,+Bethesda,+MD+20894/@38.9959508,-77.101021,17z/data=!3m1!4b1!4m5!3m4!1s0x89b7c95e25765ddb:0x19156f88b27635b8!8m2!3d38.9959508!4d-77.0988323">
+                        8600 Rockville Pike<br>
+                        Bethesda, MD 20894
+                    </a>
+                </p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/web_policies.html">
+                    Web Policies
+                </a><br>
+                <a href="https://www.nih.gov/institutes-nih/nih-office-director/office-communications-public-liaison/freedom-information-act-office">
+                    FOIA
+                </a><br>
+                <a href="https://www.hhs.gov/vulnerability-disclosure-policy/index.html">
+                    HHS Vulnerability Disclosure
+                </a></p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href=
+                      "https://support.nlm.nih.gov?from=https://www.nlm.nih.gov/">
+                    NLM Support Center
+                </a><br>
+                <a href="https://www.nlm.nih.gov/accessibility.html">
+                    Accessibility
+                </a><br>
+                <a href="https://www.nlm.nih.gov/careers/careers.html">
+                    Careers
+                </a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+              <p class="text-center"> <a href="https://www.nlm.nih.gov/">NLM</a> | <a href="https://www.nih.gov/">NIH</a> | <a href="https://www.hhs.gov/">HHS</a> | <a href="https://www.usa.gov/">USA.gov</a></p>
+            </div>
+        </div>
+    </div></div>
+<!--BEGIN QUALTRICS WEBSITE FEEDBACK SNIPPET-->
+<script type='text/javascript'>
+(function(){var g=function(e,h,f,g){
+this.get=function(a){for(var a=a+"=",c=document.cookie.split(";"),b=0,e=c.length;b<e;b++){for(var d=c[b];" "==d.charAt(0);)d=d.substring(1,d.length);if(0==d.indexOf(a))return d.substring(a.length,d.length)}return null};
+this.set=function(a,c){var b="",b=new Date;b.setTime(b.getTime()+6048E5);b="; expires="+b.toGMTString();document.cookie=a+"="+c+b+"; path=/; "};
+this.check=function(){var a=this.get(f);if(a)a=a.split(":");else if(100!=e)"v"==h&&(e=Math.random()>=e/100?0:100),a=[h,e,0],this.set(f,a.join(":"));else return!0;var c=a[1];if(100==c)return!0;switch(a[0]){case "v":return!1;case "r":return c=a[2]%Math.floor(100/c),a[2]++,this.set(f,a.join(":")),!c}return!0};
+this.go=function(){if(this.check()){var a=document.createElement("script");a.type="text/javascript";a.src=g;document.body&&document.body.appendChild(a)}};
+this.start=function(){var t=this;"complete"!==document.readyState?window.addEventListener?window.addEventListener("load",function(){t.go()},!1):window.attachEvent&&window.attachEvent("onload",function(){t.go()}):t.go()};};
+try{(new g(100,"r","QSI_S_ZN_cwOHfLkxRr4n4W2","https://zncwohflkxrr4n4w2-nlmenterprise.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_cwOHfLkxRr4n4W2")).start()}catch(i){}})();
+</script><div id='ZN_cwOHfLkxRr4n4W2'><!--DO NOT REMOVE-CONTENTS PLACED HERE--></div>
+<!--END WEBSITE FEEDBACK SNIPPET-->
+</footer>
+
+</body></html>
+

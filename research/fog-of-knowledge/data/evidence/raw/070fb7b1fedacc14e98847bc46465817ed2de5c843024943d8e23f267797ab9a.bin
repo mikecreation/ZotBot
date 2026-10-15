@@ -1,0 +1,1103 @@
+<!doctype html><html lang="en"><head>
+
+<title>MeSH Browser</title>
+
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+
+<link rel="stylesheet" href="/public/css/font-awesome.css">
+<link rel="stylesheet" href="/public/css/bootstrap.css">
+<link rel="stylesheet" href="/public/css/mongoMesh.css">
+<link rel="icon" type="image/jpeg" href="/public/img/meshLogo.jpg">
+
+<base href="/">
+<script src="https://www.nlm.nih.gov/coop_all_uswds.js?v=1792066459436"></script>
+
+<script>
+
+    if (document.domain != "localhost")
+        document.domain = "nlm.nih.gov";
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        try {
+
+            if (coopmsg
+                && !/(^|; *)shutdown-banner=/.test(document.cookie))
+
+                document.querySelector(
+                    "body > div"
+                ).insertAdjacentHTML(
+                    "afterbegin",
+                    "<div id='shutdown-banner'><p>" + coopmsg
+                    + "</p><button type='button' role='button'"
+                    + " aria-label='Close' onclick='"
+                    + 'document.getElementById("shutdown-banner")'
+                    + '.remove(); document.cookie ='
+                    + ' "shutdown-banner=hidden; path=/";'
+                    + "'>Close</button></div>"
+                );
+
+        } catch (error) {
+            /* The "coopmsg" variable is only defined during a
+             * shutdown. */
+            if (!(error instanceof ReferenceError))
+                throw error;
+        }
+
+    });
+
+    var dcmsLinks = false,
+        dcmsParam = dcmsLinks
+                    ? function (sep) { return sep + "dcmsLinks=true"; }
+                    : function (   ) { return ""                    ; };
+
+</script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){
+        var _fullPath = window.location.href;
+        var urlParams = _fullPath.slice(_fullPath.indexOf('?') + 1).split('&');
+        var IsOpen = "false";
+        if (urlParams != undefined && urlParams != null && urlParams != "") {
+            IsOpen = urlParams[0].split("=")[1];
+        }
+
+        if (IsOpen == "false" || IsOpen == undefined || IsOpen != "true") {
+            w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        }
+    })(window,document,'script','dataLayer','GTM-5QZ7KJZ');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe sandbox src="https://www.googletagmanager.com/ns.html?id=GTM-5QZ7KJZ"
+                  height="0" width="0" style="display:none;visibility:hidden" title="googletagmanager"></iframe></noscript> 
+<!-- End Google Tag Manager (noscript) -->
+
+<script src="/public/js/elemUtil.js"></script>
+
+<script src="/public/js/record.js"  ></script>
+<script src="/public/js/treeDom.js" ></script>
+</head><body>
+
+<div>
+
+    <header class="NLMheader">
+        <a href="https://www.nlm.nih.gov/">
+          <img height="80" alt="NLM Logo"
+               src="https://www.nlm.nih.gov/images/NLM_White.png">
+        </a>
+        <!--<img class="starLogo"src="/public/img/NLM_Star.png" alt="NLM Star">-->
+    </header>
+<nav class="navbar navbar-default">
+
+  <div class="container-fluid">
+
+        <div class="navbar-header">
+
+          <button class="navbar-toggle collapsed" type="button"
+                  aria-expanded="false"
+                  onclick="toggleCollapse('bs-example-navbar-collapse-1')">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://www.nlm.nih.gov/mesh/">
+                <img id="meshNavbarLogo" src="/public/img/meshLogo.jpg" alt="MeSH Logo">
+            </a>
+        </div>
+
+        <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse"
+             aria-expanded="false">
+            <ul class="nav navbar-nav">
+                
+                <li><a href="/" id="mainSearchButton">Search</a></li>
+                <li><a href="/treeView">Tree View</a></li>
+                <li><a href="/MeSHonDemand">MeSH on Demand</a> </li> <!--Delete the Span Tags after  a few months, once MeSH on Demand is no longer new-->
+                <li><a href="https://meshb-prev.nlm.nih.gov/" target="_blank">MeSH 2027</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/mbinfo.html" target="_blank">About</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/meshsugg.html" target="_blank">Suggestions</a> </li>
+                <li><a href="https://support.nlm.nih.gov/support/create-case/" target="_blank">Contact Us</a></li>
+            </ul>
+
+        </div>
+
+  </div>
+
+</nav>
+
+</div>
+
+<div class="container">
+
+
+
+
+<h1>Ethical Relativism <small>MeSH Descriptor            Data 2026</small></h1>
+
+<ul class="nav nav-tabs">
+    <li id="details" class="active"
+        onclick="switchTab([ 'details', 'detailsTabContent' ])">
+        <a class="fakeLink">Details</a></li>
+    
+        <li id="qualifiers"
+            onclick="switchTab([ 'qualifiers', 'qualifiersTabContent' ])">
+            <a class="fakeLink">Qualifiers</a></li>
+        <li id="trees" onclick="switchTab([ 'trees', 'treesTabContent' ])">
+            <a class="fakeLink">MeSH Tree Structures</a></li>
+    
+    <li id="concepts" onclick="switchTab([ 'concepts', 'conceptsTabContent' ])">
+        <a class="fakeLink">Concepts</a></li>
+</ul>
+
+
+
+<div class="tab-content"><br>
+<div id="detailsTabContent" class="tab-pane active">
+
+    <dl id="descriptorDetails_EthicalRelativism"
+        class="dl-horizontal">
+
+        <dt>MeSH Heading      </dt>
+
+        <dd>Ethical Relativism</dd>
+
+        
+                    <dt>Tree Number(s)</dt>
+                    
+                        <dd><a id="treeNumber_0" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >K01.752.566.479.116</a></dd>
+                    
+                        <dd><a id="treeNumber_1" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >N05.350.247</a></dd>
+                    
+
+        <dt>Unique ID</dt><dd>D028781</dd>
+
+        <dt>RDF Unique Identifier</dt>
+        <dd><a href="https://id.nlm.nih.gov/mesh/D028781.html">
+            http://id.nlm.nih.gov/mesh/D028781
+        </a></dd>
+
+        
+                <span id="scopeNote">
+                    <dt>Scope Note</dt><dd>The philosophical view that conceptions of truth and moral values are not absolute but are relative to the persons or groups holding them. (from American Heritage Dictionary of the English Language, 4th ed)</dd>
+                </span>
+            
+                <dt>Previous Indexing</dt>
+                
+                    <dd>Ethics (1979-2001)</dd>
+                
+                <dt>See Also</dt>
+                
+                    <dd><a id="seeAlso_CulturalDiversity"
+                           href="/record/ui?ui=D018864"
+                        >Cultural Diversity</a></dd>
+                
+                    <dd><a id="seeAlso_RetrospectiveMoralJudgment"
+                           href="/record/ui?ui=D035481"
+                        >Retrospective Moral Judgment</a></dd>
+                
+            <dt>Public MeSH Note</dt><dd>2002</dd>
+        
+            <dt>History Note</dt><dd>2002</dd>
+        
+        
+
+
+        
+                <dt>Date Introduced</dt>
+                <dd>2002/01/01</dd>
+            
+                <dt>Last Updated</dt>
+                <dd>2015/06/22</dd>
+            
+
+    </dl>
+
+</div>
+
+<div id="qualifiersTabContent" class="tab-pane">
+
+    <dl class="dl-horizontal">
+
+        
+<br>
+
+        
+                <span id="allowableQualifiers"><dt>Allowable Qualifiers</dt><dd>
+                <ul class="list-unstyled">
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000266">
+                            history
+                            (HI)
+                        </a></li>
+                    
+                </ul></dd></span>
+            
+
+    </dl>
+
+</div><div id="treesTabContent" class="tab-pane">
+
+    <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_K01"
+           
+               href="/record/ui?ui=D006809"
+           
+        ><span>Humanities [K01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_K01_752"
+           
+               href="/record/ui?ui=D010684"
+           
+        ><span>Philosophy [K01.752]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_K01_752_566"
+           
+               href="/record/ui?ui=D009014"
+           
+        ><span>Morals [K01.752.566]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_K01_752_566_479"
+           
+               href="/record/ui?ui=D004989"
+           
+        ><span>Ethics [K01.752.566.479]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_K01_752_566_479_023"
+           
+               href="/record/ui?ui=D026688"
+           
+        ><span>Bioethical Issues [K01.752.566.479.023]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_752_566_479_045"
+           
+               href="/record/ui?ui=D001675"
+           
+        ><span>Bioethics [K01.752.566.479.045]</span>
+        </a>
+        
+            <i id="plus_Bioethics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Bioethics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_752_566_479_068"
+           
+               href="/record/ui?ui=D032781"
+           
+        ><span>Codes of Ethics [K01.752.566.479.068]</span>
+        </a>
+        
+            <i id="plus_Codes_of_Ethics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Codes_of_Ethics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_752_566_479_090"
+           
+               href="/record/ui?ui=D028661"
+           
+        ><span>Complicity [K01.752.566.479.090]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_752_566_479_095"
+           
+               href="/record/ui?ui=D016265"
+           
+        ><span>Conflict of Interest [K01.752.566.479.095]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_752_566_479_101"
+           
+               href="/record/ui?ui=D034723"
+           
+        ><span>Double Effect Principle [K01.752.566.479.101]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_752_566_479_113"
+           
+               href="/record/ui?ui=D026689"
+           
+        ><span>Ethical Analysis [K01.752.566.479.113]</span>
+        </a>
+        
+            <i id="plus_Ethical_Analysis" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Ethical_Analysis" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_752_566_479_115"
+           
+               href="/record/ui?ui=D000098463"
+           
+        ><span>Ethical Dilemmas [K01.752.566.479.115]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_752_566_479_116"
+           
+               href="/record/ui?ui=D028781"
+           
+        ><strong>Ethical Relativism [K01.752.566.479.116]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_752_566_479_117"
+           
+               href="/record/ui?ui=D026724"
+           
+        ><span>Ethical Review [K01.752.566.479.117]</span>
+        </a>
+        
+            <i id="plus_Ethical_Review" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Ethical_Review" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_752_566_479_118"
+           
+               href="/record/ui?ui=D028663"
+           
+        ><span>Ethical Theory [K01.752.566.479.118]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_752_566_479_119"
+           
+               href="/record/ui?ui=D026822"
+           
+        ><span>Ethicists [K01.752.566.479.119]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_752_566_479_147"
+           
+               href="/record/ui?ui=D017041"
+           
+        ><span>Ethics Committees [K01.752.566.479.147]</span>
+        </a>
+        
+            <i id="plus_Ethics_Committees" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Ethics_Committees" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_752_566_479_161"
+           
+               href="/record/ui?ui=D040861"
+           
+        ><span>Ethics, Business [K01.752.566.479.161]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_752_566_479_168"
+           
+               href="/record/ui?ui=D004991"
+           
+        ><span>Ethics, Institutional [K01.752.566.479.168]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_752_566_479_171"
+           
+               href="/record/ui?ui=D004995"
+           
+        ><span>Ethics, Professional [K01.752.566.479.171]</span>
+        </a>
+        
+            <i id="plus_Ethics_Professional" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Ethics_Professional" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_752_566_479_173"
+           
+               href="/record/ui?ui=D032984"
+           
+        ><span>Ethics, Research [K01.752.566.479.173]</span>
+        </a>
+        
+            <i id="plus_Ethics_Research" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Ethics_Research" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_752_566_479_174"
+           
+               href="/record/ui?ui=D006808"
+           
+        ><span>Humanism [K01.752.566.479.174]</span>
+        </a>
+        
+            <i id="plus_Humanism" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Humanism" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_752_566_479_417"
+           
+               href="/record/ui?ui=D000072577"
+           
+        ><span>Moral Status [K01.752.566.479.417]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_752_566_479_660"
+           
+               href="/record/ui?ui=D028723"
+           
+        ><span>Personhood [K01.752.566.479.660]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_752_566_479_830"
+           
+               href="/record/ui?ui=D028662"
+           
+        ><span>Principle-Based Ethics [K01.752.566.479.830]</span>
+        </a>
+        
+            <i id="plus_Principle-Based_Ethics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Principle-Based_Ethics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_K01_752_566_479_915"
+           
+               href="/record/ui?ui=D028743"
+           
+        ><span>Professional Misconduct [K01.752.566.479.915]</span>
+        </a>
+        
+            <i id="plus_Professional_Misconduct" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Professional_Misconduct" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_N05"
+           
+               href="/record/ui?ui=D017530"
+           
+        ><span>Health Care Quality, Access, and Evaluation [N05]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_N05_350"
+           
+               href="/record/ui?ui=D004989"
+           
+        ><span>Ethics [N05.350]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_N05_350_100"
+           
+               href="/record/ui?ui=D026688"
+           
+        ><span>Bioethical Issues [N05.350.100]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N05_350_200"
+           
+               href="/record/ui?ui=D001675"
+           
+        ><span>Bioethics [N05.350.200]</span>
+        </a>
+        
+            <i id="plus_Bioethics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Bioethics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N05_350_213"
+           
+               href="/record/ui?ui=D032781"
+           
+        ><span>Codes of Ethics [N05.350.213]</span>
+        </a>
+        
+            <i id="plus_Codes_of_Ethics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Codes_of_Ethics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N05_350_219"
+           
+               href="/record/ui?ui=D028661"
+           
+        ><span>Complicity [N05.350.219]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N05_350_225"
+           
+               href="/record/ui?ui=D016265"
+           
+        ><span>Conflict of Interest [N05.350.225]</span>
+        </a>
+        
+            <i id="plus_Conflict_of_Interest" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Conflict_of_Interest" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N05_350_238"
+           
+               href="/record/ui?ui=D034723"
+           
+        ><span>Double Effect Principle [N05.350.238]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N05_350_244"
+           
+               href="/record/ui?ui=D026689"
+           
+        ><span>Ethical Analysis [N05.350.244]</span>
+        </a>
+        
+            <i id="plus_Ethical_Analysis" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Ethical_Analysis" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N05_350_247"
+           
+               href="/record/ui?ui=D028781"
+           
+        ><strong>Ethical Relativism [N05.350.247]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N05_350_250"
+           
+               href="/record/ui?ui=D026724"
+           
+        ><span>Ethical Review [N05.350.250]</span>
+        </a>
+        
+            <i id="plus_Ethical_Review" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Ethical_Review" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N05_350_256"
+           
+               href="/record/ui?ui=D028663"
+           
+        ><span>Ethical Theory [N05.350.256]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N05_350_262"
+           
+               href="/record/ui?ui=D026822"
+           
+        ><span>Ethicists [N05.350.262]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N05_350_268"
+           
+               href="/record/ui?ui=D017041"
+           
+        ><span>Ethics Committees [N05.350.268]</span>
+        </a>
+        
+            <i id="plus_Ethics_Committees" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Ethics_Committees" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N05_350_297"
+           
+               href="/record/ui?ui=D040861"
+           
+        ><span>Ethics, Business [N05.350.297]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N05_350_325"
+           
+               href="/record/ui?ui=D004991"
+           
+        ><span>Ethics, Institutional [N05.350.325]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N05_350_340"
+           
+               href="/record/ui?ui=D004995"
+           
+        ><span>Ethics, Professional [N05.350.340]</span>
+        </a>
+        
+            <i id="plus_Ethics_Professional" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Ethics_Professional" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N05_350_670"
+           
+               href="/record/ui?ui=D032984"
+           
+        ><span>Ethics, Research [N05.350.670]</span>
+        </a>
+        
+            <i id="plus_Ethics_Research" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Ethics_Research" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N05_350_835"
+           
+               href="/record/ui?ui=D006808"
+           
+        ><span>Humanism [N05.350.835]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N05_350_917"
+           
+               href="/record/ui?ui=D028723"
+           
+        ><span>Personhood [N05.350.917]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N05_350_958"
+           
+               href="/record/ui?ui=D028662"
+           
+        ><span>Principle-Based Ethics [N05.350.958]</span>
+        </a>
+        
+            <i id="plus_Principle-Based_Ethics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Principle-Based_Ethics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N05_350_979"
+           
+               href="/record/ui?ui=D028743"
+           
+        ><span>Professional Misconduct [N05.350.979]</span>
+        </a>
+        
+            <i id="plus_Professional_Misconduct" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Professional_Misconduct" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+
+</div>
+
+<div id="conceptsTabContent" class="tab-pane">
+
+    <button id="ExpandAll" class="btn btn-default btn-sm pull-right"
+            onclick="toggleConcepts()">
+        <span id="expandConcepts"                        >  Expand All</span>
+        <span id="collapseConcepts" style="display: none">Collapse All</span>
+    </button>
+
+    
+
+        <div>
+        <span id="Nightwatch_cp_0_0"
+              onclick="toggleCollapse('cp_0_0', 'Nightwatch_cp_0_0')">
+        <a class="fakeLink"><b>
+            Ethical Relativism
+            <i>Preferred</i>
+        </b></a></span>
+
+        <div id="cp_0_0" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0007834</dd>
+
+            
+                <dt>Scope Note</dt><dd>The philosophical view that conceptions of truth and moral values are not absolute but are relative to the persons or groups holding them. (from American Heritage Dictionary of the English Language, 4th ed)</dd>
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_0_0"
+                      onclick="toggleCollapse('termName_0_0',
+                                              'Nightwatch_termName_0_0')">
+                    <a class="fakeLink"><b>Ethical Relativism</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_0_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T015230<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>03/17/1977<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        <br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+</div></div>
+
+<small class="pull-right">
+    page delivered in 0.123s
+</small>
+
+</div>
+
+<footer class="footer">
+    <div class="container-fluid"><div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/socialmedia/index.html">
+                    Connect with NLM
+                </a></p>
+                <ul class="list-inline">
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://twitter.com/NLM_NIH">
+                        <img src="https://www.nlm.nih.gov/images/Twitter_W.svg"
+                             alt="Twitter">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.facebook.com/nationallibraryofmedicine"
+                    ><img src="https://www.nlm.nih.gov/images/Facebook_W.svg"
+                          alt="Facebook">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.youtube.com/user/NLMNIH">
+                        <img src="https://www.nlm.nih.gov/images/YouTube_W.svg"
+                             alt="You Tube">
+                    </a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p>National Library of Medicine<br>
+                    <a href="https://www.google.com/maps/place/8600+Rockville+Pike,+Bethesda,+MD+20894/@38.9959508,-77.101021,17z/data=!3m1!4b1!4m5!3m4!1s0x89b7c95e25765ddb:0x19156f88b27635b8!8m2!3d38.9959508!4d-77.0988323">
+                        8600 Rockville Pike<br>
+                        Bethesda, MD 20894
+                    </a>
+                </p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/web_policies.html">
+                    Web Policies
+                </a><br>
+                <a href="https://www.nih.gov/institutes-nih/nih-office-director/office-communications-public-liaison/freedom-information-act-office">
+                    FOIA
+                </a><br>
+                <a href="https://www.hhs.gov/vulnerability-disclosure-policy/index.html">
+                    HHS Vulnerability Disclosure
+                </a></p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href=
+                      "https://support.nlm.nih.gov?from=https://www.nlm.nih.gov/">
+                    NLM Support Center
+                </a><br>
+                <a href="https://www.nlm.nih.gov/accessibility.html">
+                    Accessibility
+                </a><br>
+                <a href="https://www.nlm.nih.gov/careers/careers.html">
+                    Careers
+                </a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+              <p class="text-center"> <a href="https://www.nlm.nih.gov/">NLM</a> | <a href="https://www.nih.gov/">NIH</a> | <a href="https://www.hhs.gov/">HHS</a> | <a href="https://www.usa.gov/">USA.gov</a></p>
+            </div>
+        </div>
+    </div></div>
+<!--BEGIN QUALTRICS WEBSITE FEEDBACK SNIPPET-->
+<script type='text/javascript'>
+(function(){var g=function(e,h,f,g){
+this.get=function(a){for(var a=a+"=",c=document.cookie.split(";"),b=0,e=c.length;b<e;b++){for(var d=c[b];" "==d.charAt(0);)d=d.substring(1,d.length);if(0==d.indexOf(a))return d.substring(a.length,d.length)}return null};
+this.set=function(a,c){var b="",b=new Date;b.setTime(b.getTime()+6048E5);b="; expires="+b.toGMTString();document.cookie=a+"="+c+b+"; path=/; "};
+this.check=function(){var a=this.get(f);if(a)a=a.split(":");else if(100!=e)"v"==h&&(e=Math.random()>=e/100?0:100),a=[h,e,0],this.set(f,a.join(":"));else return!0;var c=a[1];if(100==c)return!0;switch(a[0]){case "v":return!1;case "r":return c=a[2]%Math.floor(100/c),a[2]++,this.set(f,a.join(":")),!c}return!0};
+this.go=function(){if(this.check()){var a=document.createElement("script");a.type="text/javascript";a.src=g;document.body&&document.body.appendChild(a)}};
+this.start=function(){var t=this;"complete"!==document.readyState?window.addEventListener?window.addEventListener("load",function(){t.go()},!1):window.attachEvent&&window.attachEvent("onload",function(){t.go()}):t.go()};};
+try{(new g(100,"r","QSI_S_ZN_cwOHfLkxRr4n4W2","https://zncwohflkxrr4n4w2-nlmenterprise.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_cwOHfLkxRr4n4W2")).start()}catch(i){}})();
+</script><div id='ZN_cwOHfLkxRr4n4W2'><!--DO NOT REMOVE-CONTENTS PLACED HERE--></div>
+<!--END WEBSITE FEEDBACK SNIPPET-->
+</footer>
+
+</body></html>
+

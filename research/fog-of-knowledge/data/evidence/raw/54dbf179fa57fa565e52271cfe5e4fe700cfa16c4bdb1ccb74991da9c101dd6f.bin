@@ -1,0 +1,1411 @@
+<!doctype html><html lang="en"><head>
+
+<title>MeSH Browser</title>
+
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+
+<link rel="stylesheet" href="/public/css/font-awesome.css">
+<link rel="stylesheet" href="/public/css/bootstrap.css">
+<link rel="stylesheet" href="/public/css/mongoMesh.css">
+<link rel="icon" type="image/jpeg" href="/public/img/meshLogo.jpg">
+
+<base href="/">
+<script src="https://www.nlm.nih.gov/coop_all_uswds.js?v=1792067240541"></script>
+
+<script>
+
+    if (document.domain != "localhost")
+        document.domain = "nlm.nih.gov";
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        try {
+
+            if (coopmsg
+                && !/(^|; *)shutdown-banner=/.test(document.cookie))
+
+                document.querySelector(
+                    "body > div"
+                ).insertAdjacentHTML(
+                    "afterbegin",
+                    "<div id='shutdown-banner'><p>" + coopmsg
+                    + "</p><button type='button' role='button'"
+                    + " aria-label='Close' onclick='"
+                    + 'document.getElementById("shutdown-banner")'
+                    + '.remove(); document.cookie ='
+                    + ' "shutdown-banner=hidden; path=/";'
+                    + "'>Close</button></div>"
+                );
+
+        } catch (error) {
+            /* The "coopmsg" variable is only defined during a
+             * shutdown. */
+            if (!(error instanceof ReferenceError))
+                throw error;
+        }
+
+    });
+
+    var dcmsLinks = false,
+        dcmsParam = dcmsLinks
+                    ? function (sep) { return sep + "dcmsLinks=true"; }
+                    : function (   ) { return ""                    ; };
+
+</script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){
+        var _fullPath = window.location.href;
+        var urlParams = _fullPath.slice(_fullPath.indexOf('?') + 1).split('&');
+        var IsOpen = "false";
+        if (urlParams != undefined && urlParams != null && urlParams != "") {
+            IsOpen = urlParams[0].split("=")[1];
+        }
+
+        if (IsOpen == "false" || IsOpen == undefined || IsOpen != "true") {
+            w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        }
+    })(window,document,'script','dataLayer','GTM-5QZ7KJZ');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe sandbox src="https://www.googletagmanager.com/ns.html?id=GTM-5QZ7KJZ"
+                  height="0" width="0" style="display:none;visibility:hidden" title="googletagmanager"></iframe></noscript> 
+<!-- End Google Tag Manager (noscript) -->
+
+<script src="/public/js/elemUtil.js"></script>
+
+<script src="/public/js/record.js"  ></script>
+<script src="/public/js/treeDom.js" ></script>
+</head><body>
+
+<div>
+
+    <header class="NLMheader">
+        <a href="https://www.nlm.nih.gov/">
+          <img height="80" alt="NLM Logo"
+               src="https://www.nlm.nih.gov/images/NLM_White.png">
+        </a>
+        <!--<img class="starLogo"src="/public/img/NLM_Star.png" alt="NLM Star">-->
+    </header>
+<nav class="navbar navbar-default">
+
+  <div class="container-fluid">
+
+        <div class="navbar-header">
+
+          <button class="navbar-toggle collapsed" type="button"
+                  aria-expanded="false"
+                  onclick="toggleCollapse('bs-example-navbar-collapse-1')">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://www.nlm.nih.gov/mesh/">
+                <img id="meshNavbarLogo" src="/public/img/meshLogo.jpg" alt="MeSH Logo">
+            </a>
+        </div>
+
+        <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse"
+             aria-expanded="false">
+            <ul class="nav navbar-nav">
+                
+                <li><a href="/" id="mainSearchButton">Search</a></li>
+                <li><a href="/treeView">Tree View</a></li>
+                <li><a href="/MeSHonDemand">MeSH on Demand</a> </li> <!--Delete the Span Tags after  a few months, once MeSH on Demand is no longer new-->
+                <li><a href="https://meshb-prev.nlm.nih.gov/" target="_blank">MeSH 2027</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/mbinfo.html" target="_blank">About</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/meshsugg.html" target="_blank">Suggestions</a> </li>
+                <li><a href="https://support.nlm.nih.gov/support/create-case/" target="_blank">Contact Us</a></li>
+            </ul>
+
+        </div>
+
+  </div>
+
+</nav>
+
+</div>
+
+<div class="container">
+
+
+
+
+<h1>Smoking <small>MeSH Descriptor            Data 2026</small></h1>
+
+<ul class="nav nav-tabs">
+    <li id="details" class="active"
+        onclick="switchTab([ 'details', 'detailsTabContent' ])">
+        <a class="fakeLink">Details</a></li>
+    
+        <li id="qualifiers"
+            onclick="switchTab([ 'qualifiers', 'qualifiersTabContent' ])">
+            <a class="fakeLink">Qualifiers</a></li>
+        <li id="trees" onclick="switchTab([ 'trees', 'treesTabContent' ])">
+            <a class="fakeLink">MeSH Tree Structures</a></li>
+    
+    <li id="concepts" onclick="switchTab([ 'concepts', 'conceptsTabContent' ])">
+        <a class="fakeLink">Concepts</a></li>
+</ul>
+
+
+
+<div class="tab-content"><br>
+<div id="detailsTabContent" class="tab-pane active">
+
+    <dl id="descriptorDetails_Smoking"
+        class="dl-horizontal">
+
+        <dt>MeSH Heading      </dt>
+
+        <dd>Smoking</dd>
+
+        
+                    <dt>Tree Number(s)</dt>
+                    
+                        <dd><a id="treeNumber_0" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >F01.145.805</a></dd>
+                    
+
+        <dt>Unique ID</dt><dd>D012907</dd>
+
+        <dt>RDF Unique Identifier</dt>
+        <dd><a href="https://id.nlm.nih.gov/mesh/D012907.html">
+            http://id.nlm.nih.gov/mesh/D012907
+        </a></dd>
+
+        <span id="annotation">
+            <dt>Annotation</dt><dd>note specific types of smoking are available; smokers' patches, smokers' tongue = <a href="/record/ui?ui=D007972" class="textLink_LEUKOPLAKIAORAL">LEUKOPLAKIA, ORAL</a>; cancer caused by smoking = neoplasm term with <a id='etiol' class='textLink_etiol' href='/record/ui?ui=Q000209'>/&zwnj;etiol</a> (not <a id='chem_ind' class='textLink_chem_ind' href='/record/ui?ui=Q000139'>/&zwnj;chem&nbsp;ind</a>) + <a href="/record/ui?ui=D012907" class="textLink_SMOKING">SMOKING</a> <a id='adv_eff' class='textLink_adv_eff' href='/record/ui?ui=Q000009'>/&zwnj;adv&nbsp;eff</a> (not <a href="/record/ui?ui=D014029" class="textLink_TOBACCOUSEDISORDER">TOBACCO USE DISORDER</a>); behavioral and psychological aspects of smoking = <a href="/record/ui?ui=D012907" class="textLink_SMOKING">SMOKING</a> <a id='psychol' class='textLink_psychol' href='/record/ui?ui=Q000523'>/&zwnj;psychol</a></dd>
+        </span>
+                <span id="scopeNote">
+                    <dt>Scope Note</dt><dd>Willful or deliberate act of inhaling and exhaling <a href="/record/ui?ui=D012906" class="textLink_SMOKE">SMOKE</a> from burning substances or agents held by hand.</dd>
+                </span>
+            
+                <dt>Entry Term(s)</dt>
+                <dd>
+                    Smoking Behaviors
+                    
+                </dd><dd>
+                    Smoking Habit
+                    
+                </dd>
+                <dt>See Also</dt>
+                
+                    <dd><a id="seeAlso_MarijuanaSmoking"
+                           href="/record/ui?ui=D008385"
+                        >Marijuana Smoking</a></dd>
+                
+                    <dd><a id="seeAlso_TobaccoSmokePollution"
+                           href="/record/ui?ui=D014028"
+                        >Tobacco Smoke Pollution</a></dd>
+                
+                    <dd><a id="seeAlso_TobaccoUseDisorder"
+                           href="/record/ui?ui=D014029"
+                        >Tobacco Use Disorder</a></dd>
+                
+        
+        <dt>Entry Combination</dt>
+        
+            <dd><a id="prevention &amp; control_Smoking Prevention"
+                   href="/record/ui?ui=D000074606"
+                >prevention &amp; control:Smoking Prevention</a>
+            
+            </dd>
+        
+
+
+        
+                <dt>Date Introduced</dt>
+                <dd>1966/01/01</dd>
+            
+                <dt>Last Updated</dt>
+                <dd>2024/11/06</dd>
+            
+
+    </dl>
+
+</div>
+
+<div id="qualifiersTabContent" class="tab-pane">
+
+    <dl class="dl-horizontal">
+
+        
+        <dt>Entry Combination</dt>
+        
+            <dd><a id="prevention &amp; control_Smoking Prevention"
+                   href="/record/ui?ui=D000074606"
+                >prevention &amp; control:Smoking Prevention</a>
+            
+            </dd>
+        
+<br>
+
+        
+                <span id="allowableQualifiers"><dt>Allowable Qualifiers</dt><dd>
+                <ul class="list-unstyled">
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000009">
+                            adverse effects
+                            (AE)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000097">
+                            blood
+                            (BL)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000134">
+                            cerebrospinal fluid
+                            (CF)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000188">
+                            drug therapy
+                            (DT)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000191">
+                            economics
+                            (EC)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000453">
+                            epidemiology
+                            (EP)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000208">
+                            ethnology
+                            (EH)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000235">
+                            genetics
+                            (GE)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000266">
+                            history
+                            (HI)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000276">
+                            immunology
+                            (IM)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000331">
+                            legislation &amp; jurisprudence
+                            (LJ)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000378">
+                            metabolism
+                            (ME)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000401">
+                            mortality
+                            (MO)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000473">
+                            pathology
+                            (PA)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000503">
+                            physiopathology
+                            (PP)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000523">
+                            psychology
+                            (PX)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000628">
+                            therapy
+                            (TH)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000639">
+                            trends
+                            (TD)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000652">
+                            urine
+                            (UR)
+                        </a></li>
+                    
+                </ul></dd></span>
+            
+
+    </dl>
+
+</div><div id="treesTabContent" class="tab-pane">
+
+    <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_F01"
+           
+               href="/record/ui?ui=D001520"
+           
+        ><span>Behavior and Behavior Mechanisms [F01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_F01_145"
+           
+               href="/record/ui?ui=D001519"
+           
+        ><span>Behavior [F01.145]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_F01_145_015"
+           
+               href="/record/ui?ui=D000057"
+           
+        ><span>Accident Proneness [F01.145.015]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_022"
+           
+               href="/record/ui?ui=D000294"
+           
+        ><span>Adolescent Behavior [F01.145.022]</span>
+        </a>
+        
+            <i id="plus_Adolescent_Behavior" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Adolescent_Behavior" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_113"
+           
+               href="/record/ui?ui=D001522"
+           
+        ><span>Behavior, Animal [F01.145.113]</span>
+        </a>
+        
+            <i id="plus_Behavior_Animal" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Behavior_Animal" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_126"
+           
+               href="/record/ui?ui=D001526"
+           
+        ><span>Behavioral Symptoms [F01.145.126]</span>
+        </a>
+        
+            <i id="plus_Behavioral_Symptoms" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Behavioral_Symptoms" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_179"
+           
+               href="/record/ui?ui=D002652"
+           
+        ><span>Child Behavior [F01.145.179]</span>
+        </a>
+        
+            <i id="plus_Child_Behavior" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Child_Behavior" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_194"
+           
+               href="/record/ui?ui=D017004"
+           
+        ><span>Codependency, Psychological [F01.145.194]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_209"
+           
+               href="/record/ui?ui=D003142"
+           
+        ><span>Communication [F01.145.209]</span>
+        </a>
+        
+            <i id="plus_Communication" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Communication" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_236"
+           
+               href="/record/ui?ui=D003258"
+           
+        ><span>Consumer Behavior [F01.145.236]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_250"
+           
+               href="/record/ui?ui=D000066479"
+           
+        ><span>Criminal Behavior [F01.145.250]</span>
+        </a>
+        
+            <i id="plus_Criminal_Behavior" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Criminal_Behavior" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_263"
+           
+               href="/record/ui?ui=D003617"
+           
+        ><span>Dangerous Behavior [F01.145.263]</span>
+        </a>
+        
+            <i id="plus_Dangerous_Behavior" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Dangerous_Behavior" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_317"
+           
+               href="/record/ui?ui=D004327"
+           
+        ><span>Drinking Behavior [F01.145.317]</span>
+        </a>
+        
+            <i id="plus_Drinking_Behavior" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Drinking_Behavior" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_342"
+           
+               href="/record/ui?ui=D058999"
+           
+        ><span>Drug-Seeking Behavior [F01.145.342]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_367"
+           
+               href="/record/ui?ui=D004924"
+           
+        ><span>Escape Reaction [F01.145.367]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_387"
+           
+               href="/record/ui?ui=D005106"
+           
+        ><span>Exploratory Behavior [F01.145.387]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_407"
+           
+               href="/record/ui?ui=D005247"
+           
+        ><span>Feeding Behavior [F01.145.407]</span>
+        </a>
+        
+            <i id="plus_Feeding_Behavior" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Feeding_Behavior" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_466"
+           
+               href="/record/ui?ui=D006184"
+           
+        ><span>Habits [F01.145.466]</span>
+        </a>
+        
+            <i id="plus_Habits" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Habits" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_477"
+           
+               href="/record/ui?ui=D040261"
+           
+        ><span>Harm Reduction [F01.145.477]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_488"
+           
+               href="/record/ui?ui=D015438"
+           
+        ><span>Health Behavior [F01.145.488]</span>
+        </a>
+        
+            <i id="plus_Health_Behavior" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Health_Behavior" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_493"
+           
+               href="/record/ui?ui=D060845"
+           
+        ><span>Hoarding [F01.145.493]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_496"
+           
+               href="/record/ui?ui=D000081762"
+           
+        ><span>Human-Animal Interaction [F01.145.496]</span>
+        </a>
+        
+            <i id="plus_Human-Animal_Interaction" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Human-Animal_Interaction" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_499"
+           
+               href="/record/ui?ui=D055809"
+           
+        ><span>Illness Behavior [F01.145.499]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_510"
+           
+               href="/record/ui?ui=D007100"
+           
+        ><span>Imitative Behavior [F01.145.510]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_527"
+           
+               href="/record/ui?ui=D007175"
+           
+        ><span>Impulsive Behavior [F01.145.527]</span>
+        </a>
+        
+            <i id="plus_Impulsive_Behavior" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Impulsive_Behavior" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_535"
+           
+               href="/record/ui?ui=D057226"
+           
+        ><span>Information Seeking Behavior [F01.145.535]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_544"
+           
+               href="/record/ui?ui=D007266"
+           
+        ><span>Inhibition, Psychological [F01.145.544]</span>
+        </a>
+        
+            <i id="plus_Inhibition_Psychological" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Inhibition_Psychological" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_610"
+           
+               href="/record/ui?ui=D000074609"
+           
+        ><span>Marijuana Use [F01.145.610]</span>
+        </a>
+        
+            <i id="plus_Marijuana_Use" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Marijuana_Use" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_632"
+           
+               href="/record/ui?ui=D009043"
+           
+        ><span>Motor Activity [F01.145.632]</span>
+        </a>
+        
+            <i id="plus_Motor_Activity" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Motor_Activity" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_666"
+           
+               href="/record/ui?ui=D000073456"
+           
+        ><span>Multitasking Behavior [F01.145.666]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_677"
+           
+               href="/record/ui?ui=D010549"
+           
+        ><span>Personal Satisfaction [F01.145.677]</span>
+        </a>
+        
+            <i id="plus_Personal_Satisfaction" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Personal_Satisfaction" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_683"
+           
+               href="/record/ui?ui=D000084783"
+           
+        ><span>Recreational Drug Use [F01.145.683]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_688"
+           
+               href="/record/ui?ui=D043762"
+           
+        ><span>Reproductive Behavior [F01.145.688]</span>
+        </a>
+        
+            <i id="plus_Reproductive_Behavior" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Reproductive_Behavior" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_699"
+           
+               href="/record/ui?ui=D040242"
+           
+        ><span>Risk Reduction Behavior [F01.145.699]</span>
+        </a>
+        
+            <i id="plus_Risk_Reduction_Behavior" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Risk_Reduction_Behavior" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_722"
+           
+               href="/record/ui?ui=D012309"
+           
+        ><span>Risk-Taking [F01.145.722]</span>
+        </a>
+        
+            <i id="plus_Risk-Taking" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Risk-Taking" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_749"
+           
+               href="/record/ui?ui=D057185"
+           
+        ><span>Sedentary Behavior [F01.145.749]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_775"
+           
+               href="/record/ui?ui=D012653"
+           
+        ><span>Self Stimulation [F01.145.775]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_802"
+           
+               href="/record/ui?ui=D012725"
+           
+        ><span>Sexual Behavior [F01.145.802]</span>
+        </a>
+        
+            <i id="plus_Sexual_Behavior" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Sexual_Behavior" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_805"
+           
+               href="/record/ui?ui=D012907"
+           
+        ><strong>Smoking [F01.145.805]</strong>
+        </a>
+        
+            <i id="plus_Smoking" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Smoking" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_F01_145_805_063"
+           
+               href="/record/ui?ui=D000073868"
+           
+        ><span>Pipe Smoking [F01.145.805.063]</span>
+        </a>
+        
+            <i id="plus_Pipe_Smoking" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Pipe_Smoking" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_805_157"
+           
+               href="/record/ui?ui=D000074264"
+           
+        ><span>Smoking Reduction [F01.145.805.157]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_805_250"
+           
+               href="/record/ui?ui=D000073847"
+           
+        ><span>Smoking, Non-Tobacco Products [F01.145.805.250]</span>
+        </a>
+        
+            <i id="plus_Smoking_Non-Tobacco_Products" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Smoking_Non-Tobacco_Products" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_805_375"
+           
+               href="/record/ui?ui=D000073869"
+           
+        ><span>Tobacco Smoking [F01.145.805.375]</span>
+        </a>
+        
+            <i id="plus_Tobacco_Smoking" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Tobacco_Smoking" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_805_500"
+           
+               href="/record/ui?ui=D000072137"
+           
+        ><span>Vaping [F01.145.805.500]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_813"
+           
+               href="/record/ui?ui=D012919"
+           
+        ><span>Social Behavior [F01.145.813]</span>
+        </a>
+        
+            <i id="plus_Social_Behavior" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Social_Behavior" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_875"
+           
+               href="/record/ui?ui=D013037"
+           
+        ><span>Spatial Behavior [F01.145.875]</span>
+        </a>
+        
+            <i id="plus_Spatial_Behavior" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Spatial_Behavior" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_896"
+           
+               href="/record/ui?ui=D013239"
+           
+        ><span>Stereotyped Behavior [F01.145.896]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_916"
+           
+               href="/record/ui?ui=D013391"
+           
+        ><span>Sucking Behavior [F01.145.916]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_145_958"
+           
+               href="/record/ui?ui=D064424"
+           
+        ><span>Tobacco Use [F01.145.958]</span>
+        </a>
+        
+            <i id="plus_Tobacco_Use" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Tobacco_Use" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+
+</div>
+
+<div id="conceptsTabContent" class="tab-pane">
+
+    <button id="ExpandAll" class="btn btn-default btn-sm pull-right"
+            onclick="toggleConcepts()">
+        <span id="expandConcepts"                        >  Expand All</span>
+        <span id="collapseConcepts" style="display: none">Collapse All</span>
+    </button>
+
+    
+
+        <div>
+        <span id="Nightwatch_cp_0_0"
+              onclick="toggleCollapse('cp_0_0', 'Nightwatch_cp_0_0')">
+        <a class="fakeLink"><b>
+            Smoking
+            <i>Preferred</i>
+        </b></a></span>
+
+        <div id="cp_0_0" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0019985</dd>
+
+            
+                <dt>Scope Note</dt><dd>Willful or deliberate act of inhaling and exhaling <a href="/record/ui?ui=D012906" class="textLink_SMOKE">SMOKE</a> from burning substances or agents held by hand.</dd>
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_0_0"
+                      onclick="toggleCollapse('termName_0_0',
+                                              'Nightwatch_termName_0_0')">
+                    <a class="fakeLink"><b>Smoking</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_0_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T038030<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>01/01/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        <br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_1_1"
+              onclick="toggleCollapse('cp_1_1', 'Nightwatch_cp_1_1')">
+        <a class="fakeLink"><b>
+            Smoking Behaviors
+            <i>Narrower</i>
+        </b></a></span>
+
+        <div id="cp_1_1" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M000625505</dd>
+
+            
+                <dt>Scope Note</dt><dd>Psychological aspects of <a href="/record/ui?ui=D012907" class="textLink_SMOKING">SMOKING</a>.</dd>
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_1_0"
+                      onclick="toggleCollapse('termName_1_0',
+                                              'Nightwatch_termName_1_0')">
+                    <a class="fakeLink"><b>Smoking Behaviors</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_1_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T000914271<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>01/17/2017<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2018)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_2_2"
+              onclick="toggleCollapse('cp_2_2', 'Nightwatch_cp_2_2')">
+        <a class="fakeLink"><b>
+            Smoking Habit
+            <i>Narrower</i>
+        </b></a></span>
+
+        <div id="cp_2_2" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M000627120</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_2_0"
+                      onclick="toggleCollapse('termName_2_0',
+                                              'Nightwatch_termName_2_0')">
+                    <a class="fakeLink"><b>Smoking Habit</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_2_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T000916602<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>03/02/2017<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2018)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+</div></div>
+
+<small class="pull-right">
+    page delivered in 0.146s
+</small>
+
+</div>
+
+<footer class="footer">
+    <div class="container-fluid"><div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/socialmedia/index.html">
+                    Connect with NLM
+                </a></p>
+                <ul class="list-inline">
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://twitter.com/NLM_NIH">
+                        <img src="https://www.nlm.nih.gov/images/Twitter_W.svg"
+                             alt="Twitter">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.facebook.com/nationallibraryofmedicine"
+                    ><img src="https://www.nlm.nih.gov/images/Facebook_W.svg"
+                          alt="Facebook">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.youtube.com/user/NLMNIH">
+                        <img src="https://www.nlm.nih.gov/images/YouTube_W.svg"
+                             alt="You Tube">
+                    </a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p>National Library of Medicine<br>
+                    <a href="https://www.google.com/maps/place/8600+Rockville+Pike,+Bethesda,+MD+20894/@38.9959508,-77.101021,17z/data=!3m1!4b1!4m5!3m4!1s0x89b7c95e25765ddb:0x19156f88b27635b8!8m2!3d38.9959508!4d-77.0988323">
+                        8600 Rockville Pike<br>
+                        Bethesda, MD 20894
+                    </a>
+                </p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/web_policies.html">
+                    Web Policies
+                </a><br>
+                <a href="https://www.nih.gov/institutes-nih/nih-office-director/office-communications-public-liaison/freedom-information-act-office">
+                    FOIA
+                </a><br>
+                <a href="https://www.hhs.gov/vulnerability-disclosure-policy/index.html">
+                    HHS Vulnerability Disclosure
+                </a></p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href=
+                      "https://support.nlm.nih.gov?from=https://www.nlm.nih.gov/">
+                    NLM Support Center
+                </a><br>
+                <a href="https://www.nlm.nih.gov/accessibility.html">
+                    Accessibility
+                </a><br>
+                <a href="https://www.nlm.nih.gov/careers/careers.html">
+                    Careers
+                </a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+              <p class="text-center"> <a href="https://www.nlm.nih.gov/">NLM</a> | <a href="https://www.nih.gov/">NIH</a> | <a href="https://www.hhs.gov/">HHS</a> | <a href="https://www.usa.gov/">USA.gov</a></p>
+            </div>
+        </div>
+    </div></div>
+<!--BEGIN QUALTRICS WEBSITE FEEDBACK SNIPPET-->
+<script type='text/javascript'>
+(function(){var g=function(e,h,f,g){
+this.get=function(a){for(var a=a+"=",c=document.cookie.split(";"),b=0,e=c.length;b<e;b++){for(var d=c[b];" "==d.charAt(0);)d=d.substring(1,d.length);if(0==d.indexOf(a))return d.substring(a.length,d.length)}return null};
+this.set=function(a,c){var b="",b=new Date;b.setTime(b.getTime()+6048E5);b="; expires="+b.toGMTString();document.cookie=a+"="+c+b+"; path=/; "};
+this.check=function(){var a=this.get(f);if(a)a=a.split(":");else if(100!=e)"v"==h&&(e=Math.random()>=e/100?0:100),a=[h,e,0],this.set(f,a.join(":"));else return!0;var c=a[1];if(100==c)return!0;switch(a[0]){case "v":return!1;case "r":return c=a[2]%Math.floor(100/c),a[2]++,this.set(f,a.join(":")),!c}return!0};
+this.go=function(){if(this.check()){var a=document.createElement("script");a.type="text/javascript";a.src=g;document.body&&document.body.appendChild(a)}};
+this.start=function(){var t=this;"complete"!==document.readyState?window.addEventListener?window.addEventListener("load",function(){t.go()},!1):window.attachEvent&&window.attachEvent("onload",function(){t.go()}):t.go()};};
+try{(new g(100,"r","QSI_S_ZN_cwOHfLkxRr4n4W2","https://zncwohflkxrr4n4w2-nlmenterprise.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_cwOHfLkxRr4n4W2")).start()}catch(i){}})();
+</script><div id='ZN_cwOHfLkxRr4n4W2'><!--DO NOT REMOVE-CONTENTS PLACED HERE--></div>
+<!--END WEBSITE FEEDBACK SNIPPET-->
+</footer>
+
+</body></html>
+

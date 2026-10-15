@@ -1,0 +1,2126 @@
+<!doctype html><html lang="en"><head>
+
+<title>MeSH Browser</title>
+
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+
+<link rel="stylesheet" href="/public/css/font-awesome.css">
+<link rel="stylesheet" href="/public/css/bootstrap.css">
+<link rel="stylesheet" href="/public/css/mongoMesh.css">
+<link rel="icon" type="image/jpeg" href="/public/img/meshLogo.jpg">
+
+<base href="/">
+<script src="https://www.nlm.nih.gov/coop_all_uswds.js?v=1792066954515"></script>
+
+<script>
+
+    if (document.domain != "localhost")
+        document.domain = "nlm.nih.gov";
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        try {
+
+            if (coopmsg
+                && !/(^|; *)shutdown-banner=/.test(document.cookie))
+
+                document.querySelector(
+                    "body > div"
+                ).insertAdjacentHTML(
+                    "afterbegin",
+                    "<div id='shutdown-banner'><p>" + coopmsg
+                    + "</p><button type='button' role='button'"
+                    + " aria-label='Close' onclick='"
+                    + 'document.getElementById("shutdown-banner")'
+                    + '.remove(); document.cookie ='
+                    + ' "shutdown-banner=hidden; path=/";'
+                    + "'>Close</button></div>"
+                );
+
+        } catch (error) {
+            /* The "coopmsg" variable is only defined during a
+             * shutdown. */
+            if (!(error instanceof ReferenceError))
+                throw error;
+        }
+
+    });
+
+    var dcmsLinks = false,
+        dcmsParam = dcmsLinks
+                    ? function (sep) { return sep + "dcmsLinks=true"; }
+                    : function (   ) { return ""                    ; };
+
+</script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){
+        var _fullPath = window.location.href;
+        var urlParams = _fullPath.slice(_fullPath.indexOf('?') + 1).split('&');
+        var IsOpen = "false";
+        if (urlParams != undefined && urlParams != null && urlParams != "") {
+            IsOpen = urlParams[0].split("=")[1];
+        }
+
+        if (IsOpen == "false" || IsOpen == undefined || IsOpen != "true") {
+            w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        }
+    })(window,document,'script','dataLayer','GTM-5QZ7KJZ');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe sandbox src="https://www.googletagmanager.com/ns.html?id=GTM-5QZ7KJZ"
+                  height="0" width="0" style="display:none;visibility:hidden" title="googletagmanager"></iframe></noscript> 
+<!-- End Google Tag Manager (noscript) -->
+
+<script src="/public/js/elemUtil.js"></script>
+
+<script src="/public/js/record.js"  ></script>
+<script src="/public/js/treeDom.js" ></script>
+</head><body>
+
+<div>
+
+    <header class="NLMheader">
+        <a href="https://www.nlm.nih.gov/">
+          <img height="80" alt="NLM Logo"
+               src="https://www.nlm.nih.gov/images/NLM_White.png">
+        </a>
+        <!--<img class="starLogo"src="/public/img/NLM_Star.png" alt="NLM Star">-->
+    </header>
+<nav class="navbar navbar-default">
+
+  <div class="container-fluid">
+
+        <div class="navbar-header">
+
+          <button class="navbar-toggle collapsed" type="button"
+                  aria-expanded="false"
+                  onclick="toggleCollapse('bs-example-navbar-collapse-1')">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://www.nlm.nih.gov/mesh/">
+                <img id="meshNavbarLogo" src="/public/img/meshLogo.jpg" alt="MeSH Logo">
+            </a>
+        </div>
+
+        <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse"
+             aria-expanded="false">
+            <ul class="nav navbar-nav">
+                
+                <li><a href="/" id="mainSearchButton">Search</a></li>
+                <li><a href="/treeView">Tree View</a></li>
+                <li><a href="/MeSHonDemand">MeSH on Demand</a> </li> <!--Delete the Span Tags after  a few months, once MeSH on Demand is no longer new-->
+                <li><a href="https://meshb-prev.nlm.nih.gov/" target="_blank">MeSH 2027</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/mbinfo.html" target="_blank">About</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/meshsugg.html" target="_blank">Suggestions</a> </li>
+                <li><a href="https://support.nlm.nih.gov/support/create-case/" target="_blank">Contact Us</a></li>
+            </ul>
+
+        </div>
+
+  </div>
+
+</nav>
+
+</div>
+
+<div class="container">
+
+
+
+
+<h1>Zoonoses <small>MeSH Descriptor            Data 2026</small></h1>
+
+<ul class="nav nav-tabs">
+    <li id="details" class="active"
+        onclick="switchTab([ 'details', 'detailsTabContent' ])">
+        <a class="fakeLink">Details</a></li>
+    
+        <li id="qualifiers"
+            onclick="switchTab([ 'qualifiers', 'qualifiersTabContent' ])">
+            <a class="fakeLink">Qualifiers</a></li>
+        <li id="trees" onclick="switchTab([ 'trees', 'treesTabContent' ])">
+            <a class="fakeLink">MeSH Tree Structures</a></li>
+    
+    <li id="concepts" onclick="switchTab([ 'concepts', 'conceptsTabContent' ])">
+        <a class="fakeLink">Concepts</a></li>
+</ul>
+
+
+
+<div class="tab-content"><br>
+<div id="detailsTabContent" class="tab-pane active">
+
+    <dl id="descriptorDetails_Zoonoses"
+        class="dl-horizontal">
+
+        <dt>MeSH Heading      </dt>
+
+        <dd>Zoonoses</dd>
+
+        
+                    <dt>Tree Number(s)</dt>
+                    
+                        <dd><a id="treeNumber_0" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >C01.973</a></dd>
+                    
+                        <dd><a id="treeNumber_1" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >C22.969</a></dd>
+                    
+
+        <dt>Unique ID</dt><dd>D015047</dd>
+
+        <dt>RDF Unique Identifier</dt>
+        <dd><a href="https://id.nlm.nih.gov/mesh/D015047.html">
+            http://id.nlm.nih.gov/mesh/D015047
+        </a></dd>
+
+        <span id="annotation">
+            <dt>Annotation</dt><dd>not a routine coordinate for every zoonotic disease; index only when discussed; coordinate with specific infection term and with animal disease term if pertinent</dd>
+        </span>
+                <span id="scopeNote">
+                    <dt>Scope Note</dt><dd>Diseases of non-human animals that may be transmitted to <a href="/record/ui?ui=D006801" class="textLink_HUMANS">HUMANS</a> or may be transmitted from humans to non-human animals.</dd>
+                </span>
+            
+                <dt>Entry Term(s)</dt>
+                <dd>
+                    Zoonotic Diseases
+                    
+                </dd><dd>
+                    Zoonotic Infections
+                    
+                </dd><dd>
+                    Zoonotic Infectious Diseases
+                    
+                </dd><dd>
+                    Zoonotic Spillover
+                    
+                </dd>
+                <dt>See Also</dt>
+                
+                    <dd><a id="seeAlso_CommunicableDiseases,Emerging"
+                           href="/record/ui?ui=D021821"
+                        >Communicable Diseases, Emerging</a></dd>
+                
+                    <dd><a id="seeAlso_DiseaseReservoirs"
+                           href="/record/ui?ui=D004197"
+                        >Disease Reservoirs</a></dd>
+                
+        
+
+
+        
+                <dt>Date Introduced</dt>
+                <dd>1966/01/01</dd>
+            
+                <dt>Last Updated</dt>
+                <dd>2021/05/10</dd>
+            
+
+    </dl>
+
+</div>
+
+<div id="qualifiersTabContent" class="tab-pane">
+
+    <dl class="dl-horizontal">
+
+        
+<br>
+
+        
+                <span id="allowableQualifiers"><dt>Allowable Qualifiers</dt><dd>
+                <ul class="list-unstyled">
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000097">
+                            blood
+                            (BL)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000134">
+                            cerebrospinal fluid
+                            (CF)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000145">
+                            classification
+                            (CL)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000150">
+                            complications
+                            (CO)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000151">
+                            congenital
+                            (CN)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000175">
+                            diagnosis
+                            (DI)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000000981">
+                            diagnostic imaging
+                            (DG)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000178">
+                            diet therapy
+                            (DH)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000188">
+                            drug therapy
+                            (DT)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000191">
+                            economics
+                            (EC)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000196">
+                            embryology
+                            (EM)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000201">
+                            enzymology
+                            (EN)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000453">
+                            epidemiology
+                            (EP)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000208">
+                            ethnology
+                            (EH)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000209">
+                            etiology
+                            (ET)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000235">
+                            genetics
+                            (GE)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000266">
+                            history
+                            (HI)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000276">
+                            immunology
+                            (IM)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000378">
+                            metabolism
+                            (ME)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000382">
+                            microbiology
+                            (MI)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000401">
+                            mortality
+                            (MO)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000451">
+                            nursing
+                            (NU)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000469">
+                            parasitology
+                            (PS)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000473">
+                            pathology
+                            (PA)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000503">
+                            physiopathology
+                            (PP)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000517">
+                            prevention &amp; control
+                            (PC)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000523">
+                            psychology
+                            (PX)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000532">
+                            radiotherapy
+                            (RT)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000534">
+                            rehabilitation
+                            (RH)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000601">
+                            surgery
+                            (SU)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000628">
+                            therapy
+                            (TH)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000635">
+                            transmission
+                            (TM)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000652">
+                            urine
+                            (UR)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000821">
+                            virology
+                            (VI)
+                        </a></li>
+                    
+                </ul></dd></span>
+            
+
+    </dl>
+
+</div><div id="treesTabContent" class="tab-pane">
+
+    <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_C01"
+           
+               href="/record/ui?ui=D007239"
+           
+        ><span>Infections [C01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_C01_069"
+           
+               href="/record/ui?ui=D000785"
+           
+        ><span>Aneurysm, Infected [C01.069]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_100"
+           
+               href="/record/ui?ui=D001170"
+           
+        ><span>Arthritis, Infectious [C01.100]</span>
+        </a>
+        
+            <i id="plus_Arthritis_Infectious" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Arthritis_Infectious" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_125"
+           
+               href="/record/ui?ui=D058345"
+           
+        ><span>Asymptomatic Infections [C01.125]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_150"
+           
+               href="/record/ui?ui=D001423"
+           
+        ><span>Bacterial Infections and Mycoses [C01.150]</span>
+        </a>
+        
+            <i id="plus_Bacterial_Infections_and_Mycoses" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Bacterial_Infections_and_Mycoses" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_160"
+           
+               href="/record/ui?ui=D001850"
+           
+        ><span>Bone Diseases, Infectious [C01.160]</span>
+        </a>
+        
+            <i id="plus_Bone_Diseases_Infectious" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Bone_Diseases_Infectious" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_175"
+           
+               href="/record/ui?ui=D000093742"
+           
+        ><span>Breakthrough Infections [C01.175]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_190"
+           
+               href="/record/ui?ui=D053821"
+           
+        ><span>Cardiovascular Infections [C01.190]</span>
+        </a>
+        
+            <i id="plus_Cardiovascular_Infections" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Cardiovascular_Infections" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_195"
+           
+               href="/record/ui?ui=D055499"
+           
+        ><span>Catheter-Related Infections [C01.195]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_207"
+           
+               href="/record/ui?ui=D002494"
+           
+        ><span>Central Nervous System Infections [C01.207]</span>
+        </a>
+        
+            <i id="plus_Central_Nervous_System_Infections" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Central_Nervous_System_Infections" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_218"
+           
+               href="/record/ui?ui=D060085"
+           
+        ><span>Coinfection [C01.218]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_221"
+           
+               href="/record/ui?ui=D003141"
+           
+        ><span>Communicable Diseases [C01.221]</span>
+        </a>
+        
+            <i id="plus_Communicable_Diseases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Communicable_Diseases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_234"
+           
+               href="/record/ui?ui=D017714"
+           
+        ><span>Community-Acquired Infections [C01.234]</span>
+        </a>
+        
+            <i id="plus_Community-Acquired_Infections" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Community-Acquired_Infections" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_248"
+           
+               href="/record/ui?ui=D003428"
+           
+        ><span>Cross Infection [C01.248]</span>
+        </a>
+        
+            <i id="plus_Cross_Infection" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Cross_Infection" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_375"
+           
+               href="/record/ui?ui=D015817"
+           
+        ><span>Eye Infections [C01.375]</span>
+        </a>
+        
+            <i id="plus_Eye_Infections" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Eye_Infections" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_392"
+           
+               href="/record/ui?ui=D005490"
+           
+        ><span>Focal Infection [C01.392]</span>
+        </a>
+        
+            <i id="plus_Focal_Infection" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Focal_Infection" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_408"
+           
+               href="/record/ui?ui=D005891"
+           
+        ><span>Gingivitis [C01.408]</span>
+        </a>
+        
+            <i id="plus_Gingivitis" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Gingivitis" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_436"
+           
+               href="/record/ui?ui=D006520"
+           
+        ><span>Hepatitis, Animal [C01.436]</span>
+        </a>
+        
+            <i id="plus_Hepatitis_Animal" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Hepatitis_Animal" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_463"
+           
+               href="/record/ui?ui=D059413"
+           
+        ><span>Intraabdominal Infections [C01.463]</span>
+        </a>
+        
+            <i id="plus_Intraabdominal_Infections" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Intraabdominal_Infections" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_503"
+           
+               href="/record/ui?ui=D007757"
+           
+        ><span>Laboratory Infection [C01.503]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_550"
+           
+               href="/record/ui?ui=D000085343"
+           
+        ><span>Latent Infection [C01.550]</span>
+        </a>
+        
+            <i id="plus_Latent_Infection" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Latent_Infection" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_597"
+           
+               href="/record/ui?ui=D009894"
+           
+        ><span>Opportunistic Infections [C01.597]</span>
+        </a>
+        
+            <i id="plus_Opportunistic_Infections" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Opportunistic_Infections" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_610"
+           
+               href="/record/ui?ui=D010272"
+           
+        ><span>Parasitic Diseases [C01.610]</span>
+        </a>
+        
+            <i id="plus_Parasitic_Diseases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Parasitic_Diseases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_635"
+           
+               href="/record/ui?ui=D034161"
+           
+        ><span>Pelvic Infection [C01.635]</span>
+        </a>
+        
+            <i id="plus_Pelvic_Infection" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Pelvic_Infection" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_645"
+           
+               href="/record/ui?ui=D000088562"
+           
+        ><span>Persistent Infection [C01.645]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_655"
+           
+               href="/record/ui?ui=D031261"
+           
+        ><span>Poult Enteritis Mortality Syndrome [C01.655]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_674"
+           
+               href="/record/ui?ui=D011251"
+           
+        ><span>Pregnancy Complications, Infectious [C01.674]</span>
+        </a>
+        
+            <i id="plus_Pregnancy_Complications_Infectious" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Pregnancy_Complications_Infectious" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_685"
+           
+               href="/record/ui?ui=D016459"
+           
+        ><span>Prosthesis-Related Infections [C01.685]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_730"
+           
+               href="/record/ui?ui=D060737"
+           
+        ><span>Reproductive Tract Infections [C01.730]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_748"
+           
+               href="/record/ui?ui=D012141"
+           
+        ><span>Respiratory Tract Infections [C01.748]</span>
+        </a>
+        
+            <i id="plus_Respiratory_Tract_Infections" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Respiratory_Tract_Infections" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_757"
+           
+               href="/record/ui?ui=D018805"
+           
+        ><span>Sepsis [C01.757]</span>
+        </a>
+        
+            <i id="plus_Sepsis" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Sepsis" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_778"
+           
+               href="/record/ui?ui=D012749"
+           
+        ><span>Sexually Transmitted Diseases [C01.778]</span>
+        </a>
+        
+            <i id="plus_Sexually_Transmitted_Diseases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Sexually_Transmitted_Diseases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_800"
+           
+               href="/record/ui?ui=D012874"
+           
+        ><span>Skin Diseases, Infectious [C01.800]</span>
+        </a>
+        
+            <i id="plus_Skin_Diseases_Infectious" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Skin_Diseases_Infectious" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_820"
+           
+               href="/record/ui?ui=D018461"
+           
+        ><span>Soft Tissue Infections [C01.820]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_830"
+           
+               href="/record/ui?ui=D013492"
+           
+        ><span>Suppuration [C01.830]</span>
+        </a>
+        
+            <i id="plus_Suppuration" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Suppuration" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_861"
+           
+               href="/record/ui?ui=D014115"
+           
+        ><span>Toxemia [C01.861]</span>
+        </a>
+        
+            <i id="plus_Toxemia" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Toxemia" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_915"
+           
+               href="/record/ui?ui=D014552"
+           
+        ><span>Urinary Tract Infections [C01.915]</span>
+        </a>
+        
+            <i id="plus_Urinary_Tract_Infections" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Urinary_Tract_Infections" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_918"
+           
+               href="/record/ui?ui=D000079263"
+           
+        ><span>Vaccine-Preventable Diseases [C01.918]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_920"
+           
+               href="/record/ui?ui=D000079426"
+           
+        ><span>Vector Borne Diseases [C01.920]</span>
+        </a>
+        
+            <i id="plus_Vector_Borne_Diseases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Vector_Borne_Diseases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_925"
+           
+               href="/record/ui?ui=D014777"
+           
+        ><span>Virus Diseases [C01.925]</span>
+        </a>
+        
+            <i id="plus_Virus_Diseases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Virus_Diseases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_936"
+           
+               href="/record/ui?ui=D000069578"
+           
+        ><span>Waterborne Diseases [C01.936]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_947"
+           
+               href="/record/ui?ui=D014946"
+           
+        ><span>Wound Infection [C01.947]</span>
+        </a>
+        
+            <i id="plus_Wound_Infection" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Wound_Infection" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_973"
+           
+               href="/record/ui?ui=D015047"
+           
+        ><strong>Zoonoses [C01.973]</strong>
+        </a>
+        
+            <i id="plus_Zoonoses" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Zoonoses" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_C01_973_250"
+           
+               href="/record/ui?ui=D000086966"
+           
+        ><span>Bacterial Zoonoses [C01.973.250]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_C01_973_500"
+           
+               href="/record/ui?ui=D000086965"
+           
+        ><span>Viral Zoonoses [C01.973.500]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_C22"
+           
+               href="/record/ui?ui=D000820"
+           
+        ><span>Animal Diseases [C22]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_C22_021"
+           
+               href="/record/ui?ui=D000034"
+           
+        ><span>Abortion, Veterinary [C22.021]</span>
+        </a>
+        
+            <i id="plus_Abortion_Veterinary" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Abortion_Veterinary" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_039"
+           
+               href="/record/ui?ui=D000187"
+           
+        ><span>Actinobacillosis [C22.039]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_062"
+           
+               href="/record/ui?ui=D000453"
+           
+        ><span>Aleutian Mink Disease [C22.062]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_073"
+           
+               href="/record/ui?ui=D000694"
+           
+        ><span>Anal Gland Neoplasms [C22.073]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_085"
+           
+               href="/record/ui?ui=D000712"
+           
+        ><span>Anaplasmosis [C22.085]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_131"
+           
+               href="/record/ui?ui=D001715"
+           
+        ><span>Bird Diseases [C22.131]</span>
+        </a>
+        
+            <i id="plus_Bird_Diseases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Bird_Diseases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_152"
+           
+               href="/record/ui?ui=D001890"
+           
+        ><span>Borna Disease [C22.152]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_180"
+           
+               href="/record/ui?ui=D002371"
+           
+        ><span>Cat Diseases [C22.180]</span>
+        </a>
+        
+            <i id="plus_Cat_Diseases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Cat_Diseases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_196"
+           
+               href="/record/ui?ui=D002418"
+           
+        ><span>Cattle Diseases [C22.196]</span>
+        </a>
+        
+            <i id="plus_Cattle_Diseases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Cattle_Diseases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_214"
+           
+               href="/record/ui?ui=D058066"
+           
+        ><span>Digital Dermatitis [C22.214]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_232"
+           
+               href="/record/ui?ui=D004195"
+           
+        ><span>Disease Models, Animal [C22.232]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_268"
+           
+               href="/record/ui?ui=D004283"
+           
+        ><span>Dog Diseases [C22.268]</span>
+        </a>
+        
+            <i id="plus_Dog_Diseases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Dog_Diseases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_313"
+           
+               href="/record/ui?ui=D004767"
+           
+        ><span>Enterotoxemia [C22.313]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_331"
+           
+               href="/record/ui?ui=D004889"
+           
+        ><span>Erysipelothrix Infections [C22.331]</span>
+        </a>
+        
+            <i id="plus_Erysipelothrix_Infections" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Erysipelothrix_Infections" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_362"
+           
+               href="/record/ui?ui=D005393"
+           
+        ><span>Fish Diseases [C22.362]</span>
+        </a>
+        
+            <i id="plus_Fish_Diseases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Fish_Diseases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_380"
+           
+               href="/record/ui?ui=D005536"
+           
+        ><span>Foot-and-Mouth Disease [C22.380]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_394"
+           
+               href="/record/ui?ui=D005535"
+           
+        ><span>Foot Rot [C22.394]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_405"
+           
+               href="/record/ui?ui=D015511"
+           
+        ><span>Goat Diseases [C22.405]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_434"
+           
+               href="/record/ui?ui=D006357"
+           
+        ><span>Heartwater Disease [C22.434]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_467"
+           
+               href="/record/ui?ui=D006520"
+           
+        ><span>Hepatitis, Animal [C22.467]</span>
+        </a>
+        
+            <i id="plus_Hepatitis_Animal" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Hepatitis_Animal" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_488"
+           
+               href="/record/ui?ui=D006734"
+           
+        ><span>Horse Diseases [C22.488]</span>
+        </a>
+        
+            <i id="plus_Horse_Diseases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Horse_Diseases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_500"
+           
+               href="/record/ui?ui=D007639"
+           
+        ><span>Keratoconjunctivitis, Infectious [C22.500]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_510"
+           
+               href="/record/ui?ui=D007794"
+           
+        ><span>Lameness, Animal [C22.510]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_520"
+           
+               href="/record/ui?ui=D015674"
+           
+        ><span>Mammary Neoplasms, Animal [C22.520]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_557"
+           
+               href="/record/ui?ui=D053489"
+           
+        ><span>Mink Viral Enteritis [C22.557]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_595"
+           
+               href="/record/ui?ui=D009137"
+           
+        ><span>Muscular Dystrophy, Animal [C22.595]</span>
+        </a>
+        
+            <i id="plus_Muscular_Dystrophy_Animal" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Muscular_Dystrophy_Animal" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_627"
+           
+               href="/record/ui?ui=D009234"
+           
+        ><span>Myxomatosis, Infectious [C22.627]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_674"
+           
+               href="/record/ui?ui=D010273"
+           
+        ><span>Parasitic Diseases, Animal [C22.674]</span>
+        </a>
+        
+            <i id="plus_Parasitic_Diseases_Animal" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Parasitic_Diseases_Animal" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_688"
+           
+               href="/record/ui?ui=D010283"
+           
+        ><span>Paratuberculosis [C22.688]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_695"
+           
+               href="/record/ui?ui=D010319"
+           
+        ><span>Parturient Paresis [C22.695]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_706"
+           
+               href="/record/ui?ui=D029021"
+           
+        ><span>Peste-des-Petits-Ruminants [C22.706]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_717"
+           
+               href="/record/ui?ui=D011002"
+           
+        ><span>Pleuropneumonia, Contagious [C22.717]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_735"
+           
+               href="/record/ui?ui=D018419"
+           
+        ><span>Primate Diseases [C22.735]</span>
+        </a>
+        
+            <i id="plus_Primate_Diseases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Primate_Diseases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_742"
+           
+               href="/record/ui?ui=D011557"
+           
+        ><span>Pseudorabies [C22.742]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_761"
+           
+               href="/record/ui?ui=D058968"
+           
+        ><span>Pythiosis [C22.761]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_780"
+           
+               href="/record/ui?ui=D012301"
+           
+        ><span>Rinderpest [C22.780]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_795"
+           
+               href="/record/ui?ui=D012376"
+           
+        ><span>Rodent Diseases [C22.795]</span>
+        </a>
+        
+            <i id="plus_Rodent_Diseases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Rodent_Diseases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_812"
+           
+               href="/record/ui?ui=D012481"
+           
+        ><span>Salmonella Infections, Animal [C22.812]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_836"
+           
+               href="/record/ui?ui=D012757"
+           
+        ><span>Sheep Diseases [C22.836]</span>
+        </a>
+        
+            <i id="plus_Sheep_Diseases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Sheep_Diseases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_880"
+           
+               href="/record/ui?ui=D013231"
+           
+        ><span>Steatitis [C22.880]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_905"
+           
+               href="/record/ui?ui=D013553"
+           
+        ><span>Swine Diseases [C22.905]</span>
+        </a>
+        
+            <i id="plus_Swine_Diseases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Swine_Diseases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_950"
+           
+               href="/record/ui?ui=D014685"
+           
+        ><span>Venereal Tumors, Veterinary [C22.950]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_952"
+           
+               href="/record/ui?ui=D054243"
+           
+        ><span>Vesicular Stomatitis [C22.952]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_955"
+           
+               href="/record/ui?ui=D034081"
+           
+        ><span>Wasting Disease, Chronic [C22.955]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_969"
+           
+               href="/record/ui?ui=D015047"
+           
+        ><strong>Zoonoses [C22.969]</strong>
+        </a>
+        
+            <i id="plus_Zoonoses" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Zoonoses" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_C22_969_250"
+           
+               href="/record/ui?ui=D000086966"
+           
+        ><span>Bacterial Zoonoses [C22.969.250]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_C22_969_500"
+           
+               href="/record/ui?ui=D000086965"
+           
+        ><span>Viral Zoonoses [C22.969.500]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+
+</div>
+
+<div id="conceptsTabContent" class="tab-pane">
+
+    <button id="ExpandAll" class="btn btn-default btn-sm pull-right"
+            onclick="toggleConcepts()">
+        <span id="expandConcepts"                        >  Expand All</span>
+        <span id="collapseConcepts" style="display: none">Collapse All</span>
+    </button>
+
+    
+
+        <div>
+        <span id="Nightwatch_cp_0_0"
+              onclick="toggleCollapse('cp_0_0', 'Nightwatch_cp_0_0')">
+        <a class="fakeLink"><b>
+            Zoonoses
+            <i>Preferred</i>
+        </b></a></span>
+
+        <div id="cp_0_0" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0023156</dd>
+
+            
+                <dt>Scope Note</dt><dd>Diseases of non-human animals that may be transmitted to <a href="/record/ui?ui=D006801" class="textLink_HUMANS">HUMANS</a> or may be transmitted from humans to non-human animals.</dd>
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_0_0"
+                      onclick="toggleCollapse('termName_0_0',
+                                              'Nightwatch_termName_0_0')">
+                    <a class="fakeLink"><b>Zoonoses</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_0_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T043894<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>01/01/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1966)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_1"
+                      onclick="toggleCollapse('termName_0_1',
+                                              'Nightwatch_termName_0_1')">
+                    <a class="fakeLink"><b>Zoonotic Diseases</b></a></span>
+
+                
+
+                <div id="termName_0_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T844859<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>05/31/2013<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2014)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_2"
+                      onclick="toggleCollapse('termName_0_2',
+                                              'Nightwatch_termName_0_2')">
+                    <a class="fakeLink"><b>Zoonotic Infections</b></a></span>
+
+                
+
+                <div id="termName_0_2" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T844861<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>05/31/2013<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2014)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_3"
+                      onclick="toggleCollapse('termName_0_3',
+                                              'Nightwatch_termName_0_3')">
+                    <a class="fakeLink"><b>Zoonotic Infectious Diseases</b></a></span>
+
+                
+
+                <div id="termName_0_3" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T844860<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>05/31/2013<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2014)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_1_1"
+              onclick="toggleCollapse('cp_1_1', 'Nightwatch_cp_1_1')">
+        <a class="fakeLink"><b>
+            Zoonotic Spillover
+            <i>Narrower</i>
+        </b></a></span>
+
+        <div id="cp_1_1" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M000745281</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_1_0"
+                      onclick="toggleCollapse('termName_1_0',
+                                              'Nightwatch_termName_1_0')">
+                    <a class="fakeLink"><b>Zoonotic Spillover</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_1_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T001082617<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>06/16/2020<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2021)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+</div></div>
+
+<small class="pull-right">
+    page delivered in 0.177s
+</small>
+
+</div>
+
+<footer class="footer">
+    <div class="container-fluid"><div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/socialmedia/index.html">
+                    Connect with NLM
+                </a></p>
+                <ul class="list-inline">
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://twitter.com/NLM_NIH">
+                        <img src="https://www.nlm.nih.gov/images/Twitter_W.svg"
+                             alt="Twitter">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.facebook.com/nationallibraryofmedicine"
+                    ><img src="https://www.nlm.nih.gov/images/Facebook_W.svg"
+                          alt="Facebook">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.youtube.com/user/NLMNIH">
+                        <img src="https://www.nlm.nih.gov/images/YouTube_W.svg"
+                             alt="You Tube">
+                    </a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p>National Library of Medicine<br>
+                    <a href="https://www.google.com/maps/place/8600+Rockville+Pike,+Bethesda,+MD+20894/@38.9959508,-77.101021,17z/data=!3m1!4b1!4m5!3m4!1s0x89b7c95e25765ddb:0x19156f88b27635b8!8m2!3d38.9959508!4d-77.0988323">
+                        8600 Rockville Pike<br>
+                        Bethesda, MD 20894
+                    </a>
+                </p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/web_policies.html">
+                    Web Policies
+                </a><br>
+                <a href="https://www.nih.gov/institutes-nih/nih-office-director/office-communications-public-liaison/freedom-information-act-office">
+                    FOIA
+                </a><br>
+                <a href="https://www.hhs.gov/vulnerability-disclosure-policy/index.html">
+                    HHS Vulnerability Disclosure
+                </a></p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href=
+                      "https://support.nlm.nih.gov?from=https://www.nlm.nih.gov/">
+                    NLM Support Center
+                </a><br>
+                <a href="https://www.nlm.nih.gov/accessibility.html">
+                    Accessibility
+                </a><br>
+                <a href="https://www.nlm.nih.gov/careers/careers.html">
+                    Careers
+                </a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+              <p class="text-center"> <a href="https://www.nlm.nih.gov/">NLM</a> | <a href="https://www.nih.gov/">NIH</a> | <a href="https://www.hhs.gov/">HHS</a> | <a href="https://www.usa.gov/">USA.gov</a></p>
+            </div>
+        </div>
+    </div></div>
+<!--BEGIN QUALTRICS WEBSITE FEEDBACK SNIPPET-->
+<script type='text/javascript'>
+(function(){var g=function(e,h,f,g){
+this.get=function(a){for(var a=a+"=",c=document.cookie.split(";"),b=0,e=c.length;b<e;b++){for(var d=c[b];" "==d.charAt(0);)d=d.substring(1,d.length);if(0==d.indexOf(a))return d.substring(a.length,d.length)}return null};
+this.set=function(a,c){var b="",b=new Date;b.setTime(b.getTime()+6048E5);b="; expires="+b.toGMTString();document.cookie=a+"="+c+b+"; path=/; "};
+this.check=function(){var a=this.get(f);if(a)a=a.split(":");else if(100!=e)"v"==h&&(e=Math.random()>=e/100?0:100),a=[h,e,0],this.set(f,a.join(":"));else return!0;var c=a[1];if(100==c)return!0;switch(a[0]){case "v":return!1;case "r":return c=a[2]%Math.floor(100/c),a[2]++,this.set(f,a.join(":")),!c}return!0};
+this.go=function(){if(this.check()){var a=document.createElement("script");a.type="text/javascript";a.src=g;document.body&&document.body.appendChild(a)}};
+this.start=function(){var t=this;"complete"!==document.readyState?window.addEventListener?window.addEventListener("load",function(){t.go()},!1):window.attachEvent&&window.attachEvent("onload",function(){t.go()}):t.go()};};
+try{(new g(100,"r","QSI_S_ZN_cwOHfLkxRr4n4W2","https://zncwohflkxrr4n4w2-nlmenterprise.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_cwOHfLkxRr4n4W2")).start()}catch(i){}})();
+</script><div id='ZN_cwOHfLkxRr4n4W2'><!--DO NOT REMOVE-CONTENTS PLACED HERE--></div>
+<!--END WEBSITE FEEDBACK SNIPPET-->
+</footer>
+
+</body></html>
+
