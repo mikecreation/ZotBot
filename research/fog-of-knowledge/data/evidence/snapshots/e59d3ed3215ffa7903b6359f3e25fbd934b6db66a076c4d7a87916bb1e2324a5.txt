@@ -1,0 +1,251 @@
+generalized quantifier
+generalized quantifier
+Generalized quantifiers
+are an abstract way of defining
+quantifiers
+.
+The underlying principle is that
+formulas
+quantified by a generalized quantifier are true if the set of
+elements
+satisfying those formulas belong in some
+relation
+associated with the quantifier.
+Every generalized quantifier has an arity, which is the number of formulas it takes as
+arguments
+, and a type, which for an
+n
+-ary quantifier is a tuple of length
+n
+. The tuple
+represents
+the number of quantified
+variables
+for each argument.
+The most common quantifiers are those of type
+⟨
+1
+⟩
+, including
+∀
+and
+∃
+. If
+Q
+is a quantifier of type
+⟨
+1
+⟩
+,
+M
+is the
+universe
+of a model, and
+Q
+M
+is the relation associated with
+Q
+in that model, then
+Q
+⁢
+x
+⁢
+ϕ
+⁢
+(
+x
+)
+↔
+{
+x
+∈
+M
+∣
+ϕ
+⁢
+(
+x
+)
+}
+∈
+Q
+M
+.
+So
+∀
+M
+=
+{
+M
+}
+, since the quantified formula is only true when all elements
+satisfy
+it. On the other hand
+∃
+M
+=
+P
+⁢
+(
+M
+)
+-
+{
+∅
+}
+.
+In general, the
+monadic
+quantifiers are those of type
+⟨
+1
+,
+…
+,
+1
+⟩
+and if
+Q
+is an
+n
+-ary monadic quantifier then
+Q
+M
+⊆
+P
+⁢
+(
+M
+)
+n
+. Härtig’s quantifier, for
+instance
+, is
+⟨
+1
+,
+1
+⟩
+, and
+I
+M
+=
+{
+⟨
+X
+,
+Y
+⟩
+∣
+X
+,
+Y
+⊆
+M
+∧
+|
+X
+|
+=
+|
+Y
+|
+}
+.
+A quantifier
+Q
+is
+polyadic
+if it is of type
+⟨
+n
+1
+,
+…
+,
+n
+n
+⟩
+where each
+n
+i
+∈
+ℕ
+. Then:
+Q
+M
+⊆
+∏
+i
+P
+⁢
+(
+M
+n
+i
+)
+These can get quite elaborate;
+W
+⁢
+x
+⁢
+y
+⁢
+ϕ
+⁢
+(
+x
+,
+y
+)
+is a
+⟨
+2
+⟩
+quantifier where
+X
+∈
+W
+M
+↔
+X
+is a
+well-ordering
+. That is, it is true if the set of pairs making
+ϕ
+true is a well-ordering.
+Title
+generalized quantifier
+Canonical
+name
+GeneralizedQuantifier
+Date of creation
+2013-03-22 12:59:57
+Last modified on
+2013-03-22 12:59:57
+Owner
+Henry (455)
+Last modified by
+Henry (455)
+Numerical id
+5
+Author
+Henry (455)
+Entry type
+Definition
+Classification
+msc 03C80
+Classification
+msc 03B15
+Classification
+msc 03B10
+Related topic
+quantifier
+Related topic
+Quantifier
+Defines
+monadic
+Defines
+polyadic
+Generated  on Thu Feb  8 19:56:41 2018 by
+LaTeXML

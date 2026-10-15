@@ -1,0 +1,641 @@
+zeroth order logic
+zeroth order logic
+\PMlinkescapephrase
+calculus
+\PMlinkescapephrase
+Calculus
+\PMlinkescapephrase
+column
+\PMlinkescapephrase
+Column
+\PMlinkescapephrase
+columns
+\PMlinkescapephrase
+Columns
+\PMlinkescapephrase
+compact
+\PMlinkescapephrase
+Compact
+\PMlinkescapephrase
+degree
+\PMlinkescapephrase
+Degree
+\PMlinkescapephrase
+formal logic
+\PMlinkescapephrase
+Formal logic
+\PMlinkescapephrase
+level
+\PMlinkescapephrase
+Level
+\PMlinkescapephrase
+order
+\PMlinkescapephrase
+Order
+\PMlinkescapephrase
+reference
+\PMlinkescapephrase
+Reference
+\PMlinkescapephrase
+translation
+\PMlinkescapephrase
+Translation
+Note.
+This entry overlaps to some degree with other entries on
+boolean functions
+(
+http://planetmath.org/BooleanValuedFunction
+) and
+propositional logic
+(
+http://planetmath.org/PropositionalCalculus
+), but serves as a compact reference and a translation manual for several different styles of notation.
+Zeroth order logic
+is a term in popular use among practitioners for the common principles underlying the
+algebra of sets
+,
+boolean algebra
+, boolean functions,
+logical connectives
+, monadic predicate calculus,
+propositional calculus
+, and sentential logic. The term serves to mark a level of abstraction in which the inessential
+differences
+among these subjects can be subsumed under the appropriate
+isomorphisms
+.
+Contents:
+1
+Propositional forms
+1
+Propositional forms
+Table 1 lists
+equivalent
+expressions for the four
+functions
+of concrete type
+X
+→
+𝔹
+and abstract type
+𝔹
+→
+𝔹
+in a number of different
+languages
+for zeroth order logic.
+Table 1. Propositional Forms on One
+Variable
+ℒ
+1
+ℒ
+2
+ℒ
+3
+ℒ
+4
+ℒ
+5
+ℒ
+6
+x
+=
+1 0
+f
+0
+f
+00
+0 0
+(
+)
+false
+0
+f
+1
+f
+01
+0 1
+(
+x
+)
+not
+x
+¬
+⁢
+x
+f
+2
+f
+10
+1 0
+x
+x
+x
+f
+3
+f
+11
+1 1
+(
+(
+)
+)
+true
+1
+Table 2 lists equivalent expressions for the sixteen functions of concrete type
+X
+×
+Y
+→
+𝔹
+and abstract type
+𝔹
+×
+𝔹
+→
+𝔹
+in the same set of languages.
+Table 2. Propositional Forms on Two Variables
+ℒ
+1
+ℒ
+2
+ℒ
+3
+ℒ
+4
+ℒ
+5
+ℒ
+6
+x
+=
+1 1 0 0
+y
+=
+1 0 1 0
+f
+0
+f
+0000
+0 0 0 0
+(
+)
+false
+0
+f
+1
+f
+0001
+0 0 0 1
+(
+x
+)
+⁢
+(
+y
+)
+neither
+x
+nor
+y
+¬
+⁢
+x
+∧
+¬
+⁢
+y
+f
+2
+f
+0010
+0 0 1 0
+(
+x
+)
+⁢
+y
+y
+and not
+x
+¬
+⁢
+x
+∧
+y
+f
+3
+f
+0011
+0 0 1 1
+(
+x
+)
+not
+x
+¬
+⁢
+x
+f
+4
+f
+0100
+0 1 0 0
+x
+⁢
+(
+y
+)
+x
+and not
+y
+x
+∧
+¬
+⁢
+y
+f
+5
+f
+0101
+0 1 0 1
+(
+y
+)
+not
+y
+¬
+⁢
+y
+f
+6
+f
+0110
+0 1 1 0
+(
+x
+,
+y
+)
+x
+not equal to
+y
+x
+≠
+y
+f
+7
+f
+0111
+0 1 1 1
+(
+x
+⁢
+y
+)
+not both
+x
+and
+y
+¬
+⁢
+x
+∨
+¬
+⁢
+y
+f
+8
+f
+1000
+1 0 0 0
+x
+⁢
+y
+x
+and
+y
+x
+∧
+y
+f
+9
+f
+1001
+1 0 0 1
+(
+(
+x
+,
+y
+)
+)
+x
+equal to
+y
+x
+=
+y
+f
+10
+f
+1010
+1 0 1 0
+y
+y
+y
+f
+11
+f
+1011
+1 0 1 1
+(
+x
+⁢
+(
+y
+)
+)
+not
+x
+without
+y
+x
+⇒
+y
+f
+12
+f
+1100
+1 1 0 0
+x
+x
+x
+f
+13
+f
+1101
+1 1 0 1
+(
+(
+x
+)
+⁢
+y
+)
+not
+y
+without
+x
+x
+⇐
+y
+f
+14
+f
+1110
+1 1 1 0
+(
+(
+x
+)
+⁢
+(
+y
+)
+)
+x
+or
+y
+x
+∨
+y
+f
+15
+f
+1111
+1 1 1 1
+(
+(
+)
+)
+true
+1
+The columns of Tables 1 and 2 are conveniently described in the following order:
+•
+Language
+ℒ
+3
+.
+In Table 1,
+ℒ
+3
+describes each boolean function
+f
+:
+𝔹
+→
+𝔹
+by means of the
+sequence
+of two
+boolean
+values
+(
+f
+⁢
+(
+1
+)
+,
+f
+⁢
+(
+0
+)
+)
+.
+In Table 2,
+ℒ
+3
+describes each boolean function
+f
+:
+𝔹
+2
+→
+𝔹
+by means of the sequence of four boolean values
+(
+f
+⁢
+(
+1
+,
+1
+)
+,
+f
+⁢
+(
+1
+,
+0
+)
+,
+f
+⁢
+(
+0
+,
+1
+)
+,
+f
+⁢
+(
+0
+,
+0
+)
+)
+.
+Sequences of these forms, perhaps in another order and perhaps with the logical values F and T instead of the boolean values 0 and 1, would normally be displayed vertically in a
+truth table
+under the column head for
+f
+.
+•
+Language
+ℒ
+2
+lists the functions in the form
+f
+i
+, where the index
+i
+is a bit string formed from the sequence of boolean values in
+ℒ
+3
+.
+•
+Language
+ℒ
+1
+notates the functions
+f
+i
+with an index
+i
+that is the decimal equivalent of the binary numeral index in
+ℒ
+2
+.
+Notice that the sense of the binary and decimal codings is highly dependent on
+context
+. One needs to know the number of variables in the function and the sequence of points over which it is evaluated in order to decode the indices properly.
+•
+Language
+ℒ
+4
+expresses the boolean functions in terms of two families of logical
+operations
+:
+Logical conjunctions written as continued
+products
+. For example:
+x
+⁢
+y
+=
+x
+∧
+y
+x
+⁢
+y
+⁢
+z
+=
+x
+∧
+y
+∧
+z
+Minimal negation operators
+written as parenthesized lists. For example:
+(
+)
+=
+0
+(
+x
+)
+=
+¬
+⁢
+x
+(
+x
+,
+y
+)
+=
+x
+≠
+y
+•
+Language
+ℒ
+5
+lists ordinary language expressions for the propositional forms. Many other paraphrases are possible, but these afford a sample of the simplest equivalents.
+•
+Language
+ℒ
+6
+expresses the propositional forms in one of the several notations that are commonly used in formal logic.
+Title
+zeroth order logic
+Canonical name
+ZerothOrderLogic
+Date of creation
+2013-03-22 17:55:47
+Last modified on
+2013-03-22 17:55:47
+Owner
+Jon Awbrey (15246)
+Last modified by
+Jon Awbrey (15246)
+Numerical id
+19
+Author
+Jon Awbrey (15246)
+Entry type
+Definition
+Classification
+msc 03G05
+Classification
+msc 03B05
+Related topic
+PropositionalCalculus
+Related topic
+LogicalConnective
+Related topic
+LogicalGraph
+Related topic
+LogicalGraphFormalDevelopment
+Related topic
+TruthFunction
+Related topic
+TruthTable
+Related topic
+DifferentialLogic
+Related topic
+DifferentialPropositionalCalculus
+Related topic
+DifferentialPropositionalCalculusAppendices
+Related topic
+DifferentialPropositionalCalculusAppendix2
+Generated  on Thu Feb  8 20:25:56 2018 by
+LaTeXML

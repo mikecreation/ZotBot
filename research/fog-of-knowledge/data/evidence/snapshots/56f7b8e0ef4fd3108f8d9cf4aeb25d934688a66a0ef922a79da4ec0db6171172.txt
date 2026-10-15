@@ -1,0 +1,120 @@
+sequent
+sequent
+A
+sequent
+represents a formal step in a proof. Typically it consists of two lists of
+formulas
+, one representing the
+premises
+and one the
+conclusions
+. A typical sequent might be:
+ϕ
+,
+ψ
+⇒
+α
+,
+β
+where
+ϕ
+and
+ψ
+are the premises and
+α
+and
+β
+are the conclusions.
+This claims that, from premises
+ϕ
+and
+ψ
+either
+α
+or
+β
+must be true. Note that
+⇒
+is not a symbol in the
+language
+, rather it is a symbol in the
+metalanguage
+used to discuss proofs. Also, notice the asymmetry: everything on the left must be true to conclude only one thing on the right. This does create a different kind of
+symmetry
+, since adding formulas to either side results in a weaker sequent, while removing them from either side gives a stronger one.
+Some systems allow only one formula on the right.
+Most
+proof systems
+provide ways to deduce one sequent from another. These rules are written with a list of sequents above and below a line. This rule indicates that if everything above the line is true, so is everything under the line. A typical rule is:
+Γ
+⇒
+Σ
+Γ
+,
+α
+⇒
+Σ
+α
+,
+Γ
+⇒
+Σ
+This indicates that if we can deduce
+Σ
+from
+Γ
+, we can also deduce it from
+Γ
+together with
+α
+.
+Note that the capital
+Greek letters
+are usually used to denote a (possibly empty) list of formulas.
+[
+Γ
+,
+Σ
+]
+is used to denote the
+contraction
+of
+Γ
+and
+Σ
+, that is, the list of those formulas appearing in either
+Γ
+or
+Σ
+but with no repeats.
+Title
+sequent
+Canonical
+name
+Sequent
+Date of creation
+2013-03-22 13:05:11
+Last modified on
+2013-03-22 13:05:11
+Owner
+Henry (455)
+Last modified by
+Henry (455)
+Numerical id
+10
+Author
+Henry (455)
+Entry type
+Definition
+Classification
+msc 03F03
+Related topic
+GentzenSystem
+Defines
+contraction
+Defines
+premise
+Defines
+conclusion
+Generated  on Thu Feb  8 20:24:00 2018 by
+LaTeXML

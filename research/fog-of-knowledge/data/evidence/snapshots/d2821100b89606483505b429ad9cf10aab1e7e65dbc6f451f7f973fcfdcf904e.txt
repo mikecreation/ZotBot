@@ -1,0 +1,645 @@
+modal logic
+modal logic
+Introduction
+Modal logic
+is the logic of “
+necessity
+” and “possibility”. It is an
+extension
+of the
+classical logic
+, with two additional unary
+logical connectives
+□
+and
+◇
+. The
+well-formed formulas
+of modal logic is then the smallest set satisfying the following:
+1.
+the
+propositional variables
+are well-formed formulas,
+2.
+if
+A
+,
+B
+are (well-formed)
+formulas
+, then so are
+A
+∨
+B
+,
+A
+∧
+B
+,
+¬
+⁢
+A
+,
+A
+→
+B
+,
+3.
+if
+A
+is a formula, so are
+□
+⁢
+A
+and
+◇
+⁢
+A
+,
+4.
+and if the logic is first-order, then for any formula
+A
+, so are
+∃
+x
+⁢
+A
+and
+∀
+x
+⁢
+A
+.
+Let
+L
+be the set of all well-formed formulas described above, and
+L
+0
+the set of all formulas formed with condition 3 removed. Then
+L
+0
+⊆
+L
+is just the set of all formulas of the classical logic (the underlying classical logic), and is part of the reason why we call modal logic an extension of the classical logic. The other reasons have to do with
+semantics
+and
+deductions
+, to be discussed below.
+□
+⁢
+A
+is usually interpreted as “it is necessarily true that
+A
+”, and
+◇
+⁢
+A
+as “it is possibly true that
+A
+”.
+In order to study the logical truth and valid deductions in modal logic, we need to know how to interpret
+□
+and
+◇
+. So just what are precisely the meanings of “necessity” and “possibility”? Because of the lack of exact mathematical
+interpretations
+of these vague terms, and
+□
+and
+◇
+more generally, there are a great many kinds of modal logics, than the other well-known
+logical systems
+, such as classical logic and
+intuitionistic logic
+.
+In fact, one can take
+□
+and
+◇
+to be qualifiers attachable to any
+propositions
+(or
+sentences
+). So
+□
+could mean “in South Africa” and
+◇
+“in the U.S.”. Then, if
+A
+is the sentence “July is a summer month”, then
+□
+⁢
+A
+and
+◇
+⁢
+A
+are read “July is a summer month in South Africa” and “July is a summer month in the U.S.” respectively. Some of the common interpretations of
+□
+⁢
+A
+are:
+•
+(
+alethic
+logic)
+A
+is necessarily true
+•
+(
+provability logic
+)
+A
+is provable in PA
+•
+(deontic logic) it ought to be that
+A
+•
+(epistemic logic) it is known that
+A
+•
+(doxastic logic) it is believed that
+A
+•
+(temporal logic)
+A
+will always be true
+Additionally, for most of the modal logics,
+◇
+is ‘defined” in terms of
+□
+:
+◇
+⁢
+A
+:=
+¬
+⁢
+□
+⁢
+¬
+⁢
+A
+.
+(1)
+In the next two subsections, we restrict our attention to only propositional modal logic.
+Semantics
+As mentioned previously, a modal logic is an extension of the classical logic. As such,
+tautologies
+and
+tautological consequences
+of valid formulas should be valid in any semantical model of modal logic. More precisely, call a formula in a modal logic
+L
+prime
+or
+quasi-atomic
+if it is
+•
+either a propositional variable, or
+•
+of the form
+□
+⁢
+A
+, where
+A
+is in
+L
+.
+It is easy to see that any formula in
+L
+can be built up from quasi-atoms using just
+→
+(or other
+connectives
+, depending on the choice of
+axiom system for classical propositional logic
+). In this sense,
+L
+can be thought of as a classical logic where the propositional variables range over quasi-atoms. Now, let
+M
+be any semantic model of the
+L
+, we write
+M
+⊧
+A
+to mean
+A
+is true in the model
+M
+. Then,
+•
+if
+A
+is an
+instance
+of a tautology (viewing
+L
+as the classical
+propositional logic
+here), then
+M
+⊧
+A
+,
+•
+if
+A
+1
+,
+…
+,
+A
+n
+tautologically implies
+A
+, and if
+M
+⊧
+A
+i
+for each
+i
+, then
+M
+⊧
+A
+.
+We call a formula in a modal logic
+L
+a
+tautology
+if it is an instance of a tautology of
+L
+viewed as the classical propositional logic over its quasi-atoms. Therefore,
+□
+⁢
+A
+→
+□
+⁢
+A
+is a tautology, since it is an instance of the tautology
+X
+→
+X
+. Also, if
+□
+⁢
+A
+and
+□
+⁢
+A
+→
+□
+⁢
+B
+are both valid, so is
+□
+⁢
+B
+, since
+□
+⁢
+B
+may be deduced by
+modus ponens
+.
+For the majority of the modal logics (known as
+normal modal logics
+), the principal semantic model is the
+Kripke semantics
+, or possible-world semantics. It is a
+generalization
+of the truth-value semantics for the classical propositional logic. A Kripke model
+M
+consists of a triple
+(
+W
+,
+R
+,
+T
+)
+where
+W
+is a non-empty set of
+elements
+called possible worlds,
+R
+is a
+binary relation
+on
+W
+(called accessibility relation), and
+T
+is a
+function
+from the set of atomic propositions (propositional variables) to
+P
+⁢
+(
+W
+)
+, the
+powerset
+of
+W
+. Semantic truth condition of a proposition
+A
+is written
+M
+⊧
+α
+A
+to mean “
+A
+is true in possible world
+α
+in model
+M
+”, or
+⊧
+α
+A
+if
+M
+is clear from the
+context
+.
+The
+relation
+⊧
+is defined recursively as follows:
+1.
+if
+A
+is atomic, then
+⊧
+α
+A
+iff
+α
+∈
+T
+⁢
+(
+A
+)
+2.
+⊧
+α
+⟂
+for no
+α
+∈
+W
+3.
+⊧
+α
+A
+→
+B
+iff if
+⊧
+α
+A
+then
+⊧
+α
+B
+4.
+⊧
+α
+□
+⁢
+A
+iff for all
+β
+where
+α
+⁢
+R
+⁢
+β
+,
+⊧
+β
+A
+The truth conditions of
+¬
+⁢
+A
+,
+A
+∧
+B
+,
+A
+∨
+B
+, and
+⋄
+A
+can be derived. For example,
+⊧
+α
+◇
+⁢
+A
+iff there is some
+β
+where
+α
+⁢
+R
+⁢
+β
+, such that
+⊧
+β
+A
+.
+If
+A
+is true in every possible world in
+M
+, we say that
+A
+is true in
+M
+, and write
+M
+⊧
+A
+. When
+A
+is true in every model, then we say that
+A
+is valid, and write
+⊧
+A
+. The formula schema K, for example, is a set of valid formulas. Also, if
+A
+is valid, it is easy to see that so is
+□
+⁢
+A
+valid.
+In
+addition
+to Kripke semantics, there are also a number of semantic tools, some are lattices with
+operators
+, some are systems of open neighborhoods in
+topological spaces
+, while others are just
+variations
+or generalizations of the Kripke models, such as including more than one binary relation on the possible worlds, or having a subset of the possible worlds called “impossible worlds”.
+Axiom Systems
+As explained in the previous subsection, tautologies and tautological consequences of valid formulas are valid, in any semantic interpretation of a modal logic. Similarly, in any axiom system for a modal logic:
+•
+tautologies are to be considered axioms (or
+deducible
+from axioms), and
+•
+modus ponens as an
+inference rule
+.
+By including additional schemas of formulas as axioms, and imposing additional inference rules, one arrives at axiom systems for the different kinds of modal logics. Some of the common
+axioms schemas
+are listed above: K, 4, 5, D, T, B, and W. Some common inference rules (and their abbreviations) are
+•
+RK:
+(
+A
+1
+∧
+⋯
+∧
+A
+n
+)
+→
+A
+(
+□
+⁢
+A
+1
+∧
+⋯
+∧
+□
+⁢
+A
+n
+)
+→
+□
+⁢
+A
+,
+n
+≥
+0
+•
+RR:
+(
+A
+∧
+B
+)
+→
+C
+(
+□
+⁢
+A
+∧
+□
+⁢
+B
+)
+→
+□
+⁢
+C
+•
+RM:
+A
+→
+B
+□
+⁢
+A
+→
+□
+⁢
+B
+•
+RN (necessitation rule):
+A
+□
+⁢
+A
+For example, a widely studied class of modal logics is the class of normal modal logics. A modal logic is normal if its axiom system consists of the axiom schema K and the rule RN.
+Remarks
+.
+•
+Like other logical systems, issues of soundness and completeness of a model with respect to an axiom system, as well as various decidability questions are also studied in modal logic. In addition, questions regarding on the equivalence of axiom systems are also very interesting.
+•
+Extending modal logic, one has the notion of
+multi-modal logic
+, where the
+language
+of the logical system contains several, sometimes infinitely many, modal connectives. From the discussion above, a modal logic where connectives
+□
+and
+◇
+are not inter-definable (and therefore must be non-normal) is really an example of a bimodal logic.
+References
+1
+B. F. Chellas,
+Modal Logic, An
+Introduction
+, Cambridge University Press (1980)
+2
+R. Goldblatt,
+Logic of Time and
+Computation
+, 2nd Edition, CSLI (1992)
+3
+G. Priest,
+An Introduction to Non-Classical Logic
+, Cambridge University Press (2001)
+Title
+modal logic
+Canonical
+name
+ModalLogic
+Date of creation
+2013-03-22 19:13:54
+Last modified on
+2013-03-22 19:13:54
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+34
+Author
+CWoo (3771)
+Entry type
+Topic
+Classification
+msc 03B45
+Related topic
+KripkeSemanticsForModalPropositionalLogic
+Defines
+quasi-atomic
+Defines
+quasi-atom
+Generated  on Thu Feb  8 19:50:15 2018 by
+LaTeXML

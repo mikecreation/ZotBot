@@ -1,0 +1,2200 @@
+interpretation of intuitionistic logic by means of functionals
+interpretation of intuitionistic logic by means of functionals
+Abstract
+The entry reports on the
+analysis
+of the
+concept
+of
+constructivity
+and in particular Gödel’s own
+stricto sensu
+constructivity. A structural description of a
+stricto sensu
+constructive system is provided and the concept of a
+computable
+functional
+of finite type is used to formulate a new
+interpretation
+of the intuitionistic logical operators. This material is propaedeutic to an understanding of the so called
+Dialectica interpretation
+. A new proof of the
+consistency
+of classical
+number theory
+is available. In spite of the provided continuity between the
+sections
+one can read most of them in isolation.
+Interpretation of intuitionistic logic by means of functionals
+Contents:
+1
+Background
+2
+Mathematical philosophy in intuitionistic systems
+3
+Proof that Heyting’s system is not
+stricto sensu
+constructive
+4
+Analysis of the concept
+stricto sensu
+constructivity
+5
+Structural description of the
+stricto sensu
+constructive system G
+6
+Three models for G
+7
+Definition schemata and axioms for G
+8
+The functional interpretation of the propositional calculus
+9
+Existence and generality
+10
+Axioms and
+modus ponens
+11
+The consistency of classical number theory
+12
+Complementary material
+1
+Background
+Strict Constructivism (or Gödel’s
+stricto sensu
+constructivism) was the first stage of the interpretation of intuitionistic logic by means of functionals, the maturity of which was reached in 1958 with the
+Dialectica
+essay "ÃÆber eine bisher noch nicht benÃÆÃÂ¼zte Erweiterung des finiten Standpunktes". This first stage took the form of a lecture at Yale on
+intuitionistic logic
+, delivered on April 15, 1941.
+It is also one of several occasions in which Gödel labels the intuitionistic position as an extended nominal change of
+classical logic
+. But the Yale lecture shows with remarkable simplicity above all how much can be achieved by using the method of conceptual analysis.
+It is
+obvious
+that the
+interest
+and the value of the insight gained in this analysis will not be recognized if one has
+previously
+adopted the intuitionistic position. But to ask that Gödel’s insight into the basic concepts of intuitionistic logic be evaluated by a partisan intuitionist is perhaps as futile as to ask LÃÆÃÂ©nin to evaluate the Sermon on the Mountain.
+2
+Mathematical philosophy in intuitionistic systems
+Whereas in intuitionistic mathematical philosophy two main patterns of
+deduction
+are rejected, the
+impredicative definition
+and the use of the
+tertium non datur
+, in semi-intuitionism only the use of impredicative definition is rejected.
+It would seem, at first sight, that of both deduction patterns, the rejection of the
+tertium non datur
+would have a more
+radical
+impact, since it affects the underlying logic.
+But this impression can be corrected if one gives up the standard intuitionistic
+definition
+of
+disjunction
+. To achieve it one reformulates:
+X
+∨
+Y
+as
+¬
+⁡
+(
+¬
+⁢
+X
+∧
+¬
+⁢
+Y
+)
+.
+Accordingly the
+tertium non datur
+:
+X
+∨
+¬
+⁢
+X
+becomes
+¬
+⁡
+(
+¬
+⁢
+X
+∧
+¬
+⁢
+¬
+⁢
+X
+)
+.
+This
+formula
+is an intuitionistically valid version of the law of contradiction.
+The same process of reformulation can be applied to non
+constructive proofs
+of existential
+propositions
+, if one is ready to abandon the intuitionistic interpretation of the
+existential quantifier
+in favour of:
+¬
+⁡
+(
+∀
+x
+)
+⁢
+¬
+⁢
+F
+⁢
+(
+x
+)
+.
+By this reformulation a proof in classical logic becomes an intuitionistic correct proof, if one excludes the use of impredicative definitions.
+3
+Proof that Heyting’s system is not
+stricto sensu
+constructive
+In order to examine what is usually meant by saying that intuitionistic logic is constructive, we have to carry out a
+rigorous
+analysis of the concepts used in intuitionistic mathematical philosophy. When we do it we become first aware of the incongruence between, on one side, not allowing
+negation
+to be prefixed to
+universal
+statements and, on the other, allowing the use of the concept of "
+contradiction
+" without
+restrictions
+, although this concept logically entails the concept of negation. In particular, the analysis of the
+axioms
+postulated as evident about contradiction shows that they allow
+operations
+everywhere
+equivalent
+to those of classical negation.
+If we now turn to the analysis of the primitive concepts of intuitionistic logic we are told that they are to be formulated in terms of
+expressions
+like "
+constructive
+proof (or rule)" or "intuitionistically correct proof". The paradigm cases in the literature are negation and
+implication
+.
+The negation of
+X
+is understood as the possibility of proving a contradiction starting with
+X
+as a premiss. The implication of
+Y
+by
+X
+is understood as the possibility of proving
+Y
+from a proof of
+X
+. But one should notice that in both examples, however, the concept of proof does not
+occur in
+its usual meaning, i.e., it does not denote a
+sequence
+of formulas in an explicit
+formal system
+. In both examples a proof is a mental act, an
+immediate object
+of intuition.
+One is therefore justified in raising the question as to what extent is the intuitionistic concept of "
+constructive
+proof" itself constructive.
+Using as measure the concept of
+stricto sensu constructivity
+(yet to be defined) Gödel proves that the concept of "
+constructive
+proof", used in the above mentioned formulations of intuitionistic mathematical philosophy, is itself not constructive.
+4
+Analysis of the concept
+stricto sensu
+constructivity
+1.
+Categorical
+clauses:
+To carry out this analysis we want first to specify a number of categorical clauses, i.e., clauses that an
+axiom system
+𝔊
+has
+to
+satisfy
+in order to be considered
+stricto sensu
+constructive.
+The clauses are:
+SS1:
+For all
+arguments
+, the decidability of all primitive
+relations
+and the computability of all
+functions
+of
+G
+.
+SS2:
+The exclusion of the concept of
+Existence
+from the class of all primitive concepts of
+G
+.
+SS3:
+The functions of the
+propositional calculus
+can not have arguments of the form
+(
+∀
+𝔵
+)
+⁢
+𝔉
+⁢
+(
+𝔵
+)
+.
+2.
+Theory of meaning:
+The theory of meaning associated with a
+stricto sensu
+constructive system
+𝔊
+is characterized by the following propositions:
+–
+i)
+The meaning of an expression of the form
+(
+∃
+𝔵
+)
+⁢
+𝔉
+⁢
+(
+𝔵
+)
+is to be analyzed in terms of what Hilbert and Bernays call a
+partial assertion
+or an abbreviation of an effective construction.
+–
+ii)
+The only possible meaning of
+¬
+⁡
+(
+∀
+𝔵
+)
+⁢
+𝔉
+⁢
+(
+𝔵
+)
+is that of an assertion intending to imply the existence (in the sense of
+i)
+) of a counter-example.
+–
+iii)
+The restriction
+SS3
+results from the fact that the functions of the propositional calculus are defined by means of truth-tables, a method that can not be applied to universal statements.
+–
+iv)
+The
+introduction
+of new symbols by a definition is allowed if it is a contextual definition, i.e., the
+definiendum
+-term can be eliminated in every context.
+Under these conditions the system of intuitionistic logic in Heyting 1930 is not
+stricto sensu
+constructive, since existence is a primitive concept of the system and the functions of the propositional calculus are applied without restrictions.
+5
+Structural description of the
+stricto sensu
+constructive system G
+Structural description of the stricto sensu constructive system
+𝔊
+.
+The structural description of
+𝔊
+is the following:
+1.
+The formulas of the system are in
+Prenex Normal Form
+, in particular in
+Skolem Normal Form
+,
+(
+∃
+𝔵
+)
+⁢
+(
+∀
+𝔶
+)
+⁢
+𝔉
+⁢
+(
+𝔵
+,
+𝔶
+)
+so that the
+atomic formulas
+after the prefix are quantifier-free.
+2.
+The
+atomic formulas
+are built out:
+–
+i)
+Relations, like
+=
+,
+<
+, etc.
+–
+ii)
+Functions, like
++
+,
+×
+, etc.
+–
+iii)
+Constants, like
+1
+,
+2
+,etc
+–
+iv)
+Variables
+like
+𝔵
+,
+𝔶
+, etc.
+3.
+The
+terms
+of
+𝔊
+are the constants, the variables and the result of one or more applications of functions to constants resp. variables.
+4.
+Every atomic formula is
+decidable
+.
+5.
+The functions of the propositional calculus, in the sense of the truth-table method, are a subset of the
+computable functions
+and their arguments and values are the truth-values 0, 1 (resp. false, true).
+If one or several of these computable functions are applied using a fixed order to arbitrary objects
+𝔵
+,
+𝔶
+,
+𝔷
+,
+…
+, the result is always 1, regardless of the
+identity
+of the objects
+𝔵
+,
+𝔶
+,
+𝔷
+,
+…
+6.
+Axioms
+and
+rules of inference
+:
+–
+i)
+All axioms from the two-valued propositional calculus applied to atomic formulas;
+–
+ii)
+Other axioms which depend on the identity of the primitive objects;
+–
+iii)
+Existential generalization
+:
+If
+𝔉
+⁢
+(
+𝔱
+)
+is a well formed formula of the system in which
+𝔉
+has a
+constant term
+𝔱
+, then we are allowed to infer
+(
+∃
+𝔵
+)
+⁢
+𝔉
+⁢
+(
+𝔵
+)
+.
+[N.B.:
+6.iii)
+is not a definition, in which the
+definiendum
+is the existential proposition. It rather explains how a proposition with an occurrence of
+(
+∃
+𝔵
+)
+⁢
+𝔉
+⁢
+(
+𝔵
+)
+acts in a proof, i.e., from which formulas it can be inferred. It satisfies the following eliminability clause:
+if a proposition
+P
+in which the existential statement does not occur becomes provable as
+P
+∪
+(
+∃
+𝔵
+)
+⁢
+𝔉
+⁢
+(
+𝔵
+)
+then it also provable as P.]
+6
+Three models for G
+If we leave the structural
+characterization
+of
+𝔊
+and proceed to specify primitive objects, relations and primitive functions, we obtain a series of
+stricto sensu
+constructive models for
+𝔊
+.
+1.
+The first that suggests itself is
+recursive number theory
+:
+–
+i)
+Primitive objects
+: are the elements of
+ℕ
+;
+–
+ii)
+Relations
+and
+functions
+: are defined by
+recursion
+or by
+complete
+induction
+.
+2.
+Since at this level one can not prove the consistency of classical number theory,
+Gentzen
+proposed the following
+extension
+:
+We substitute the usual (increasing)
+well-ordering
+of the integers by another well ordering
+R
+*
+, in which one allows the recursive definition of a function
+f
+⁢
+(
+n
+)
+over
+ℕ
+in terms of
+f
+⁢
+(
+π
+⁢
+(
+n
+)
+)
+, in which
+π
+⁢
+(
+n
+)
+denotes the
+predecessor
+of
+n
+in the well ordering. By definition of
+R
+*
+every subset has a
+R
+*
+-first-element and therefore
+f
+⁢
+(
+n
+)
+is computable in a finite number of steps.
+In terms of
+stricto sensu
+constructivity this approach is not very attractive since in order to show that
+R
+*
+is a well ordering we may eventually have to fall back on set theoretical arguments.
+3.
+Computable functionals of finite type
+.
+The next approach is due to Gödel and it mainly consists in an
+extension of the underlying
+ontology
+, in the sense that other than the integers and functions of integers one introduces functions of functions of integers. Such functions, in the literature called functionals, are functions whose arguments and values are functions, i.efunctions
+F
+:
+ℕ
+ℕ
+→
+ℕ
+ℕ
+.
+Thus if
+f
+and
+h
+are functions and
+n
+∈
+ℕ
+, a functional
+F
+is a function:
+F
+⁢
+(
+f
+)
+=
+h
+defined as being the function
+h
+whose value for an argument
+x
+∈
+ℕ
+is computed by reiterating the
+computation
+of the function
+f
+. Therefore:
+h
+⁢
+(
+𝔵
+)
+=
+f
+n
+,
+…
+,
+f
+2
+∘
+f
+⁢
+(
+𝔵
+)
+so that
+F
+⁢
+(
+f
+)
+⁢
+(
+𝔵
+)
+=
+f
+n
+,
+…
+,
+f
+2
+∘
+f
+⁢
+(
+𝔵
+)
+.
+If
+n
+=
+2
+for example one then says that the functional
+F
+squares
+f
+and that
+F
+is a function of the second type.
+The functionals of 3. have to satisfy
+SS1
+and the types that they give rise to have to be in turn finite. Both features are captured in the expression
+computable functional of finite type
+, the name by which Gödel’s proposal became to be known.
+7
+Definition schemata and axioms for G
+Along with the introduction of functionals two rules from recursive number theory can be adapted:
+1.
+Explicit definition:
+A functional
+F
+can be defined by the clause:
+F
+⁢
+(
+𝔵
+1
+)
+,
+…
+,
+(
+𝔵
+n
+)
+meaning that
+F
+acts on
+𝔵
+1
+, the resulting
+function
+acts on
+𝔵
+2
+, and in the end we have a term
+𝔗
+, built out of the variables and the previously defined functions.
+2.
+Recursive definition:
+A function:
+F
+:
+ℤ
+→
+ℕ
+ℕ
+whose arguments are integers and whose values can be functions of any type can be defined by the equations:
+𝔉
+⁢
+(
+0
+)
+=
+𝔗
+1
+𝔉
+⁢
+(
+𝔵
++
+1
+)
+=
+𝔗
+2
+⁢
+(
+𝔵
+,
+𝔉
+⁢
+(
+𝔵
+)
+)
+.
+[N.B.:
+As it was said above the ontology or the domain of objects has been expanded with the introduction of the computable functionals, like
+𝔉
+above. This entails that we have a
+new primitive operation not mentioned in section 5
+, namely the application of a functional to an object of the appropriate type. Since it belongs to the meaning of the concept of computable functional that the computation can be always carried out, it follows that a term, which results from the application of a functional to an object of the appropriate type, is itself also computable.]
+With both schemata and functions of any type the axioms for
+𝔊
+are the following:
+•
+The axioms of the propositional calculus (provided
+SS1
+is satisfied).
+•
+Complete Induction.
+•
+Substituion I (Leibniz Law): rules the
+substitution
+salva veritate
+of equal terms.
+•
+Substituion II (
+dictum de omni
+): rules of
+insertion
+of objects in
+(
+∀
+𝔵
+)
+⁢
+𝔄
+⁢
+(
+𝔵
+)
+.
+•
+Existential generalization, as described above.
+Under these circumstances a proposition of
+𝔊
+is an assertion in prenex normal form according to which there are objects
+𝔣
+i
+(of specified types) such that for all objects
+𝔤
+i
+(of specified types)
+F
+⁢
+(
+𝔣
+i
+,
+𝔤
+i
+)
+is true, in other words:
+(
+∃
+𝔣
+i
+)
+⁢
+(
+∀
+𝔤
+i
+)
+⁢
+𝔉
+⁢
+(
+𝔣
+i
+,
+𝔤
+i
+)
+.
+8
+The functional interpretation of the propositional calculus
+We return now to the point raised at the end of section 3 about the interpretation of the intuitionistic logic, and begin with the propositional calculus.
+Assuming
+SS1
+the interpretation procedure aims at showing the following:
+•
+i)
+That the
+meaning
+of the operations of the propositional calculus can be captured in
+𝔊
+in such a way that the arguments and the values are propositions of
+𝔊
+;
+•
+ii)
+That the axioms and the rules of intuitionistic logic are provable in
+𝔊
+as
+theorems
+.
+We consider propositions with double quantification in Skolem Normal Form.
+1.
+Negation:
+We reduce the problem of the negation of
+𝔄
+, expressed by
+¬
+⁢
+𝔄
+, to the problem of the interpretation of implication, since we can define
+¬
+⁢
+𝔄
+by:
+¬
+𝔄
+=
+[
+𝔄
+→
+(
+0
+=
+1
+)
+]
+.
+2.
+Implication:
+Let
+𝔄
+=
+(
+∃
+𝔵
+)
+⁢
+(
+∀
+𝔶
+)
+⁢
+ℜ
+⁢
+(
+𝔵
+,
+𝔶
+)
+and
+𝔅
+=
+(
+∃
+𝔪
+)
+⁢
+(
+∀
+𝔫
+)
+⁢
+𝔖
+⁢
+(
+𝔪
+,
+𝔫
+)
+If both formulas are well formed formulas of
+𝔊
+then our problem consists in finding an expression of
+𝔊
+which captures the meaning of the implication:
+(
+Φ
+)
+(
+∃
+𝔵
+)
+⁢
+(
+∀
+𝔶
+)
+⁢
+ℜ
+⁢
+(
+𝔵
+,
+𝔶
+)
+→
+(
+∃
+𝔪
+)
+⁢
+(
+∀
+𝔫
+)
+⁢
+𝔖
+⁢
+(
+𝔪
+,
+𝔫
+)
+.
+By sections 7 and 5 we have to find an expression of the pattern:
+(
+∃
+𝔣
+i
+)
+⁢
+(
+∀
+𝔤
+i
+)
+⁢
+𝔉
+⁢
+(
+𝔣
+i
+,
+𝔤
+i
+)
+which is intensionally equivalent to the implication
+(
+Φ
+)
+.
+The analysis of the meaning of
+(
+Φ
+)
+shows that in the assertion of
+(
+Φ
+)
+the intended meaning is to formulate a condition according to which:
+If there is an example
+x
+which satisfies a relation
+R
+,
+then there is also an example
+m
+which satisfies a relation
+S
+.
+Now by section 4.i) the meaning of this condition is that we have a function
+f
+which taking
+x
+as argument allows the calculation of
+m
+, so that the intensional content of our implication is better expressed by a formula like:
+(
+Φ
+⁢
+Φ
+)
+(
+∃
+f
+)
+(
+∀
+x
+)
+[
+(
+∀
+y
+)
+R
+(
+x
+,
+y
+)
+→
+(
+∀
+n
+)
+S
+(
+f
+(
+x
+)
+,
+n
+)
+]
+.
+But by section 5.ii) the formula in square brackets is not a well formed formula of
+𝔊
+. However if we analyze the meaning of this new implication:
+(
+Υ
+)
+(
+∀
+y
+)
+R
+(
+x
+,
+y
+)
+→
+(
+∀
+n
+)
+S
+[
+f
+(
+x
+)
+,
+n
+)
+]
+we realize that a refutation of the implicatum by means of a counter-example allows the computation of a counter-example to refute the implicans.
+And so if
+g
+is the formula by means of which we compute the counter-example for
+S
+, then the meaning of the implication
+(
+Υ
+)
+can be expressed by:
+(
+∃
+g
+)
+(
+∀
+n
+)
+[
+¬
+S
+(
+f
+(
+x
+)
+,
+n
+)
+→
+¬
+R
+(
+x
+,
+g
+(
+n
+)
+)
+]
+.
+Since the formula inside the square brackets is quantifier-free, the implication is now a truth-function. This allows full use of contrapostion and double negation and we get the well formed formula of
+𝔊
+:
+(
+Υ
+⁢
+Υ
+)
+(
+∃
+𝔤
+)
+(
+∀
+𝔫
+)
+[
+ℜ
+(
+𝔵
+,
+𝔤
+(
+𝔫
+)
+)
+→
+𝔖
+(
+𝔣
+(
+𝔵
+)
+,
+𝔫
+)
+]
+If we join
+(
+Φ
+⁢
+Φ
+)
+with
+(
+Υ
+⁢
+Υ
+)
+we get the new formula:
+(
+∃
+𝔣
+)
+(
+∀
+𝔵
+)
+(
+∃
+𝔤
+)
+(
+∀
+𝔫
+)
+[
+ℜ
+(
+𝔵
+,
+𝔤
+(
+𝔫
+)
+)
+→
+𝔖
+(
+𝔣
+(
+𝔵
+)
+,
+𝔫
+)
+]
+.
+Since
+n
+depends on
+x
+,
+g
+is
+representable
+as
+g
+⁢
+(
+x
+,
+n
+)
+and the formula in
+𝔊
+is finally:
+(
+∃
+𝔣
+)
+(
+∃
+𝔤
+)
+(
+∀
+𝔵
+)
+(
+∀
+𝔫
+)
+[
+ℜ
+(
+𝔵
+,
+𝔤
+(
+𝔵
+,
+𝔫
+)
+)
+→
+𝔖
+(
+𝔣
+(
+𝔵
+)
+,
+𝔫
+)
+]
+.
+N.B.: It important to notice that the type of the functional variables is higher relative to the type of the initial expressions, since the arguments and the values in
+𝔣
+⁢
+(
+𝔵
+)
+and in
+𝔤
+⁢
+(
+𝔵
+,
+𝔫
+)
+have the type of the variables in
+ℜ
+⁢
+(
+𝔵
+,
+𝔫
+)
+and
+𝔖
+⁢
+(
+𝔪
+,
+𝔫
+)
+. Therefore
+𝔣
+and
+𝔤
+have a higher type.
+3.
+Conjunction
+:
+The interpretation of conjunction consists in bringing together the expressions
+ℜ
+and
+𝔖
+with the
+quantifiers
+in Skolem normal form. One then has:
+(
+∃
+𝔵
+)
+⁢
+(
+∃
+𝔪
+)
+⁢
+(
+∀
+𝔶
+)
+⁢
+[
+ℜ
+⁢
+(
+𝔵
+,
+𝔶
+)
+∧
+𝔖
+⁢
+(
+𝔪
+,
+𝔫
+)
+]
+.
+4.
+Disjunction:
+In 1941 Gödel thought that the same could be done for disjunction but in 1958 he restricted this possibility to the case in which the atomic formulas are quantifier-free. Otherwise if
+𝔱
+is a term type 0 one has:
+(
+∃
+𝔵
+)
+(
+∃
+𝔪
+)
+(
+∃
+𝔱
+)
+(
+∀
+𝔶
+)
+(
+∀
+𝔫
+)
+[
+𝔱
+=
+0
+∧
+ℜ
+(
+𝔵
+,
+𝔶
+)
+]
+∨
+[
+𝔱
+=
+1
+∧
+𝔖
+(
+𝔪
+,
+𝔫
+)
+]
+.
+9
+Existence and generality
+To interpret the quantifiers we can begin by considering an expression:
+(
+∃
+𝔵
+)
+⁢
+(
+∀
+𝔶
+)
+⁢
+ℜ
+⁢
+(
+𝔨
+,
+𝔵
+,
+𝔶
+)
+with a free accurrence of a constant
+𝔨
+.
+•
+i)
+To prefix the existential quantifier to
+ℜ
+results again in an expression of
+𝔊
+,
+(
+∃
+𝔴
+)
+⁢
+(
+∃
+𝔵
+)
+⁢
+(
+∀
+𝔶
+)
+⁢
+ℜ
+⁢
+(
+𝔴
+,
+𝔵
+,
+𝔶
+)
+.
+•
+ii)
+We can not apply the same treatment directly to the
+universal quantifier
+.
+Assuming again that we have an expression:
+(
+∃
+𝔵
+)
+⁢
+(
+∀
+𝔶
+)
+⁢
+ℜ
+⁢
+(
+𝔨
+,
+𝔵
+,
+𝔶
+)
+,
+prefixing the universal quantifier would produce the formula:
+(
+∗
+)
+(
+∀
+𝔴
+)
+⁢
+(
+∃
+𝔵
+)
+⁢
+(
+∀
+𝔶
+)
+⁢
+ℜ
+⁢
+(
+𝔴
+,
+𝔵
+,
+𝔶
+)
+which is not in Skolem normal form.
+However, as we have seen above, the meaning of a formula:
+(
+∀
+x
+)
+⁢
+(
+∃
+y
+)
+⁢
+F
+⁢
+(
+x
+,
+y
+)
+is intuitionistically better expressed by an assertion of the form:
+(
+∃
+f
+)
+⁢
+(
+∀
+x
+)
+⁢
+F
+⁢
+(
+x
+,
+f
+⁢
+(
+x
+)
+)
+.
+Thus our formula
+(
+∗
+)
+has the reformulation:
+(
+∃
+𝔣
+)
+⁢
+(
+∀
+𝔴
+)
+⁢
+(
+∀
+𝔶
+)
+⁢
+ℜ
+⁢
+(
+𝔴
+,
+𝔣
+⁢
+(
+𝔴
+)
+,
+𝔶
+)
+,
+which is a formula of
+𝔊
+and is in Skolem normal form.
+10
+Axioms and
+modus ponens
+Two examples show how to formulate in
+𝔊
+a well known axiom and of the Rule of
+modus ponens
+.
+1.
+Reflexivity
+of implication
+Our
+hypothesis
+are:
+–
+i)
+That
+𝔄
+is a well formed formula of
+𝔊
+and
+–
+ii)
+That an implication
+𝔄
+→
+𝔅
+is defined as in section 8 by:
+(
+∃
+𝔣
+)
+(
+∃
+𝔤
+)
+(
+∀
+𝔵
+)
+(
+∀
+𝔫
+)
+[
+ℜ
+(
+𝔵
+,
+𝔤
+(
+𝔵
+,
+𝔫
+)
+)
+→
+𝔖
+(
+𝔣
+(
+𝔵
+)
+,
+𝔫
+)
+]
+.
+To prove
+𝔄
+→
+𝔄
+as a theorem of
+𝔊
+we notice that
+𝔄
+=
+𝔅
+implies
+ℜ
+=
+𝔖
+.
+Since the functions
+𝔣
+and
+𝔤
+are computable by section 7.1 their values are accordingly:
+𝔣
+⁢
+(
+𝔵
+)
+=
+𝔵
+⁢
+and
+⁢
+𝔤
+⁢
+(
+𝔵
+,
+𝔫
+)
+=
+𝔫
+so that the
+antecedent
+equals the consequent.
+2.
+Modus ponens
+The hypothesis are:
+–
+i)
+𝔊
+⊢
+(
+∃
+𝔤
+)
+(
+∀
+𝔵
+)
+(
+∀
+𝔫
+)
+ℜ
+(
+𝔵
+,
+𝔤
+(
+𝔵
+,
+𝔫
+)
+–
+ii)
+𝔊
+⊢
+(
+∃
+𝔣
+)
+(
+∃
+𝔤
+)
+(
+∀
+𝔵
+)
+(
+∀
+𝔶
+)
+[
+ℜ
+(
+𝔵
+,
+𝔤
+(
+𝔵
+,
+𝔫
+)
+→
+𝔖
+(
+𝔣
+(
+𝔵
+)
+,
+𝔫
+)
+]
+and we want to infer:
+(
+∃
+𝔪
+)
+⁢
+(
+∀
+𝔫
+)
+⁢
+𝔖
+⁢
+(
+𝔪
+,
+𝔫
+)
+.
+*
+1.
+By the discussion of quantification and the introduction of functional symbols we can define an object
+𝔨
+such that:
+(
+⋄
+)
+(
+∀
+𝔶
+)
+⁢
+ℜ
+⁢
+(
+𝔨
+,
+𝔶
+)
+and define functions such that:
+(
+⋄
+⋄
+)
+(
+∀
+𝔵
+)
+(
+∀
+𝔫
+)
+[
+ℜ
+(
+𝔵
+,
+𝔣
+2
+(
+𝔵
+,
+𝔫
+)
+)
+→
+𝔖
+(
+𝔣
+1
+(
+𝔵
+)
+,
+𝔫
+)
+]
+.
+*
+2.
+By
+dictum de omni
+over
+(
+⋄
+⋄
+)
+we have:
+(
+∀
+𝔫
+)
+[
+ℜ
+(
+𝔨
+,
+𝔣
+2
+(
+𝔨
+,
+𝔫
+)
+)
+→
+𝔖
+(
+𝔣
+1
+(
+𝔨
+)
+,
+𝔫
+)
+]
+.
+*
+3.
+Now we insert in
+(
+⋄
+)
+𝔣
+2
+⁢
+(
+𝔨
+,
+𝔫
+)
+for
+𝔶
+and get:
+(
+∀
+𝔫
+)
+⁢
+[
+ℜ
+⁢
+(
+𝔨
+,
+𝔣
+2
+⁢
+(
+𝔨
+,
+𝔫
+)
+)
+]
+.
+*
+4.
+Steps 2, 3 and two-valued
+modus ponens
+gives:
+(
+∀
+𝔫
+)
+⁢
+𝔖
+⁢
+(
+𝔣
+1
+⁢
+(
+𝔨
+)
+,
+𝔫
+)
+.
+*
+5.
+Existential Generalization on 4. leads to
+(
+∃
+𝔪
+)
+⁢
+(
+∀
+𝔫
+)
+⁢
+𝔖
+⁢
+(
+𝔪
+,
+𝔫
+)
+.
+11
+The consistency of classical number theory
+If
+E
+is a complex expression composed by formulas of
+𝔊
+by means of the already defined logical operations, then the
+meaning
+of
+E
+is to be identified with a formula
+𝔈
+of
+𝔊
+so that if
+E
+is intuitionistically provable then
+𝔈
+has a proof in
+𝔊
+.
+We can then say that the intuitionistic proof of E is stricto sensu constructive.
+In particular if one has an intuitionistic proof of an existential statement
+(
+∃
+x
+)
+⁢
+F
+⁢
+(
+x
+)
+then the corresponding formula of
+𝔊
+,
+(
+∃
+𝔵
+)
+⁢
+𝔉
+⁢
+(
+𝔵
+)
+is a theorem of
+𝔊
+. As it was discussed above, the interpretation of existence in
+𝔊
+allows that from a proof of
+(
+∃
+𝔵
+)
+⁢
+𝔉
+⁢
+(
+𝔵
+)
+we can find an explicit term
+𝔨
+such that
+𝔉
+⁢
+(
+𝔨
+)
+. This means that
+via functional interpretation
+the intuitionistic proof gives the term.
+As we have seen, apart from the use of impredicative definitions, classical logic is included in intuitionistic logic and since there is no use of impredicative definitions in classical number theory, the consistency of this theory can be
+reduced
+to that of
+𝔊
+. By the argument in section 2, if disjunction and existential quantification are eliminated, every classically correct proof is also intuitionistically correct.
+Under these circumstances a contradiction obtained by means of a classical argument would then imply a contradiction in the intuitionistic system and in turn the inconsistency of
+𝔊
+.
+Finally if we have a classical proof of
+(
+∃
+x
+)
+⁢
+F
+⁢
+(
+x
+)
+in which
+F
+is quantifier-free, then we have an intuitionistic proof of
+¬
+⁢
+¬
+⁡
+(
+∃
+x
+)
+⁢
+F
+⁢
+(
+x
+)
+. But by section 4 an intuitionistic
+existence proof
+gives in
+𝔊
+a corresponding construction and we will then have in
+𝔊
+a variant of Markov’s rule.
+12
+Complementary material
+See "the
+inclusion of classical into intuitionistic logic
+" (
+http://planetmath.org/InclusionOfClassicalIntoIntuitionisticLogic
+). See also parent entry "intuitionistic logic" (
+http://planetmath.org/IntuitionisticLogic
+).
+References
+1
+Brouwer, L.,
+Collected works: vol. 1
+, North Holland, Amsterdam, 1975.
+2
+Brouwer, L., "Mathematik, Wissenschaft und Sprache",
+Monatshefte fÃÆÃÂ¼r Mathematik und Physik
+, Leipzig, 1929.
+3
+Brouwer, L., "Consciousness, philosophy and mathematics", ed. W. Beth,
+Library of the tenth international congress of philosophy
+, Amsterdam, 1948.
+4
+Dummett, M.,
+Elements of intuitionism
+, Clarendon Press, Oxford, 1977.
+5
+Gödel, K.,
+Collected works
+, ed. S. Feferman, Oxford, 1987-2003.
+6
+Heyting, A.
+Intuitionism: An introduction
+, 3. ed., North-Holland, Amsterdam, 1971.
+7
+Hilbert, D., and, Ackermann,
+GrundzÃÆÃÂ¼ge der theoretischen Logik
+, Berlin, 1949.
+8
+Kleene, S.,
+Introduction to
+metamathematics
+, North-Holland, Amsterdam, 1964.
+9
+Rasiowa, H., and, Sikorski, R.,
+The mathematics of metamathematics
+, Warsaw, 1963.
+10
+Tarski, A., "Der AussagenkalkÃÆÃÂ¼l und die Topologie",
+Fundamenta Mathematicae
+, 31, 1938.
+Title
+interpretation of intuitionistic logic by means of functionals
+Canonical
+name
+InterpretationOfIntuitionisticLogicByMeansOfFunctionals
+Date of creation
+2013-03-22 18:32:35
+Last modified on
+2013-03-22 18:32:35
+Owner
+gribskoff (21395)
+Last modified by
+gribskoff (21395)
+Numerical id
+7
+Author
+gribskoff (21395)
+Entry type
+Topic
+Classification
+msc 03-01
+Classification
+msc 03A05
+Classification
+msc 03B20
+Synonym
+Brouwer’s logic
+Synonym
+intuitionistic foundations
+Related topic
+IntuitionisticLogic
+Related topic
+AnOutlineOfHilbertsProgramme
+Related topic
+FOUNDATIONSOFMATHEMATICSOVERVIEW
+Related topic
+Logicism
+Defines
+intuitionistic proof
+Defines
+functionals
+Generated  on Thu Feb  8 19:20:47 2018 by
+LaTeXML

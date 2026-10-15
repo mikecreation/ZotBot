@@ -1,0 +1,780 @@
+closure of a subset under relations
+closure of a subset under relations
+Let
+A
+be a set and
+R
+be an
+n
+-ary relation on
+A
+,
+n
+≥
+1
+. A subset
+B
+of
+A
+is said to be
+closed under
+R
+, or
+R
+-closed
+, if, whenever
+b
+1
+,
+…
+,
+b
+n
+-
+1
+∈
+B
+, and
+(
+b
+1
+,
+…
+,
+b
+n
+-
+1
+,
+b
+n
+)
+∈
+R
+, then
+b
+n
+∈
+B
+.
+Note that if
+R
+is unary, then
+B
+is
+R
+-closed iff
+R
+⊆
+B
+.
+More generally, let
+A
+be a set and
+ℛ
+a set of (finitary) relations on
+A
+. A subset
+B
+is said to be
+R
+-closed
+if
+B
+is
+R
+-closed for each
+R
+∈
+ℛ
+.
+Given
+B
+⊆
+A
+with a set of
+relations
+ℛ
+on
+A
+, we say that
+C
+⊆
+A
+is an
+R
+-
+closure
+of
+B
+if
+1.
+B
+⊆
+C
+,
+2.
+C
+is
+ℛ
+-closed, and
+3.
+if
+D
+⊆
+A
+satisfies
+both 1 and 2, then
+C
+⊆
+D
+.
+By condition 3,
+C
+, if exists, must be unique. Let us call it the
+ℛ
+-closure of
+B
+, and denote it by
+Cl
+ℛ
+⁡
+(
+B
+)
+. If
+ℛ
+=
+{
+R
+}
+, then we call it the
+R
+-closure of
+B
+, and denote it by
+Cl
+R
+⁡
+(
+B
+)
+correspondingly.
+Here are some examples.
+1.
+Let
+A
+=
+ℤ
+,
+B
+=
+{
+5
+}
+, and
+R
+be the relation that
+m
+⁢
+R
+⁢
+n
+whenever
+m
+divides
+n
+. Clearly
+B
+is not closed under
+R
+(for example,
+(
+5
+,
+10
+)
+∈
+R
+but
+10
+∉
+B
+). Then
+Cl
+R
+⁡
+(
+B
+)
+=
+5
+⁢
+ℤ
+. If
+R
+is instead the relation
+≤
+, then
+Cl
+≤
+⁡
+(
+B
+)
+=
+{
+n
+∈
+A
+∣
+n
+≥
+5
+}
+.
+2.
+This is an example where
+R
+is in fact a
+function
+(
+operation
+). Suppose
+A
+=
+ℤ
+and
+R
+is the
+binary operation
+subtraction
+-
+. Suppose
+B
+=
+{
+3
+,
+5
+}
+. Then
+Cl
+-
+⁡
+(
+B
+)
+=
+A
+. To see this, set
+C
+=
+Cl
+-
+⁡
+(
+B
+)
+. Note that
+2
+=
+5
+-
+3
+∈
+C
+so
+1
+=
+3
+-
+2
+as well as
+-
+1
+=
+2
+-
+3
+∈
+C
+. This means that if
+n
+∈
+C
+, both
+n
+-
+1
+and
+n
++
+1
+∈
+C
+. By
+induction
+,
+C
+=
+ℤ
+. In general, if
+B
+=
+{
+p
+,
+q
+}
+, where
+p
+,
+q
+are
+coprime
+, then
+Cl
+-
+⁡
+(
+B
+)
+=
+ℤ
+. This is essentially the result of the
+Chinese Remainder Theorem
+.
+3.
+If
+R
+is unary, then the
+R
+-closure of
+B
+⊆
+A
+is just
+B
+∪
+R
+. When every
+R
+∈
+ℛ
+is unary, then the
+ℛ
+-closure of
+B
+in
+A
+is
+(
+⋃
+ℛ
+)
+∪
+B
+.
+Proposition 1
+.
+Cl
+ℛ
+⁡
+(
+B
+)
+exists for every
+B
+⊆
+A
+.
+Proof.
+Let
+S
+ℛ
+⁢
+(
+B
+)
+be the set of subsets of
+A
+satisfying the defining conditions 1 and 2 of
+ℛ
+-closures above, partially ordered by
+⊆
+. If
+𝒞
+⊆
+S
+ℛ
+⁢
+(
+B
+)
+, then
+⋂
+𝒞
+∈
+S
+ℛ
+⁢
+(
+B
+)
+. To see this, we break the statement down into cases:
+•
+In the case when
+𝒞
+=
+∅
+, we have
+⋂
+𝒞
+=
+A
+∈
+S
+ℛ
+⁢
+(
+B
+)
+.
+•
+When
+C
+:=
+⋂
+𝒞
+≠
+∅
+, pick any
+n
+-ary relation
+R
+∈
+ℛ
+.
+(a)
+If
+n
+=
+1
+, then, since aach
+D
+∈
+𝒞
+is
+R
+-closed,
+R
+⊆
+D
+. Therefore,
+R
+⊆
+⋂
+𝒞
+=
+⋂
+{
+D
+∣
+D
+∈
+𝒞
+}
+=
+C
+. So
+C
+is
+R
+-closed.
+(b)
+If
+n
+>
+1
+, pick
+elements
+c
+1
+,
+…
+,
+c
+n
+-
+1
+∈
+C
+such that
+(
+c
+1
+,
+…
+,
+c
+n
+)
+∈
+R
+. As each
+c
+i
+∈
+D
+for
+i
+=
+1
+,
+…
+,
+n
+-
+1
+, and
+D
+is
+R
+-closed,
+c
+n
+∈
+D
+. Since
+c
+n
+∈
+D
+for every
+D
+∈
+𝒞
+,
+c
+n
+∈
+C
+as well. This shows that
+C
+is
+R
+-closed.
+In both cases,
+B
+⊆
+C
+since
+B
+⊆
+D
+for every
+D
+∈
+𝒞
+. Therefore,
+C
+∈
+S
+ℛ
+⁢
+(
+B
+)
+.
+Hence,
+S
+ℛ
+⁢
+(
+B
+)
+is a
+complete lattice
+by virtue of this fact (
+http://planetmath.org/CriteriaForAPosetToBeACompleteLattice
+), which means that
+S
+ℛ
+⁢
+(
+B
+)
+has a
+minimal element
+, which is none other than the
+ℛ
+-closure
+Cl
+ℛ
+⁡
+(
+B
+)
+of
+B
+.
+∎
+Remark
+. It is not hard to see
+Cl
+ℛ
+has the following properties:
+1.
+B
+⊆
+Cl
+ℛ
+⁡
+(
+B
+)
+,
+2.
+Cl
+ℛ
+⁡
+(
+Cl
+ℛ
+⁡
+(
+B
+)
+)
+=
+Cl
+ℛ
+⁡
+(
+B
+)
+, and
+3.
+if
+B
+⊆
+C
+, then
+Cl
+ℛ
+⁡
+(
+B
+)
+⊆
+Cl
+ℛ
+⁡
+(
+C
+)
+.
+Next, assume that
+𝒮
+is another set of finitary relations on
+A
+. Then
+1.
+if
+ℛ
+⊆
+𝒮
+, then
+Cl
+𝒮
+⁡
+(
+B
+)
+⊆
+Cl
+ℛ
+⁡
+(
+B
+)
+,
+2.
+Cl
+𝒮
+⁡
+(
+Cl
+ℛ
+⁡
+(
+B
+)
+)
+⊆
+Cl
+ℛ
+∩
+𝒮
+⁡
+(
+B
+)
+, and
+3.
+Cl
+𝒮
+⁡
+(
+Cl
+ℛ
+⁡
+(
+B
+)
+)
+=
+Cl
+ℛ
+∩
+𝒮
+⁡
+(
+B
+)
+if
+ℛ
+⊆
+𝒮
+or
+𝒮
+⊆
+ℛ
+.
+Title
+closure of a subset under relations
+Canonical name
+ClosureOfASubsetUnderRelations
+Date of creation
+2013-03-22 16:21:26
+Last modified on
+2013-03-22 16:21:26
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+36
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 08A02
+Defines
+closed under
+Defines
+closure property
+Generated  on Fri Feb  9 13:59:32 2018 by
+LaTeXML

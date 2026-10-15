@@ -1,0 +1,308 @@
+<!DOCTYPE html><html>
+<head>
+<title>linear algebra</title>
+<!--Generated on Fri Feb  9 18:15:06 2018 by LaTeXML (version 0.8.2) http://dlmf.nist.gov/LaTeXML/.-->
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="LaTeXML.css" type="text/css">
+<link rel="stylesheet" href="ltx-article.css" type="text/css">
+<link rel="stylesheet" href="https://cdn.rawgit.com/holtzermann17/3f71ceeb3b055e1ddc3b6c11fb1f074c/raw/2bb23e3b173ff96840797fc0c3bcb8c54085df8e/LaTeXML.css" type="text/css">
+<link rel="stylesheet" href="https://cdn.rawgit.com/holtzermann17/4bda0365b30858ac2fb83623185fe3ec/raw/cedd84ed3e3ad597c5d293f443ecfe4803741c6b/ltx-article.css" type="text/css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" type="text/javascript"></script>
+</head>
+<body>
+<div class="ltx_page_main">
+<div class="ltx_page_content">
+<article class="ltx_document ltx_authors_1line">
+<h1 class="ltx_title ltx_title_document">linear algebra</h1>
+
+<div id="p1" class="ltx_para">
+<br class="ltx_break">
+<p class="ltx_p"><a class="nnexus_concept" href="http://planetmath.org/linearalgebra">Linear algebra</a> is the branch of mathematics devoted to the theory of
+linear <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">structure</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Structure.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/structure"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>. The axiomatic treatment of linear structure is
+based on the notions of a <span class="ltx_text ltx_font_italic"><a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">linear space</a><sup style="display: none;"><a class="nnexus_concept" href="http://planetmath.org/linearspace"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/vectorspace"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup></span> (more commonly known as a
+<span class="ltx_text ltx_font_italic"><a class="nnexus_concept" href="http://mathworld.wolfram.com/VectorSpace.html">vector space</a></span>), and a <span class="ltx_text ltx_font_italic"><a class="nnexus_concept" href="http://planetmath.org/lineartransformation">linear mapping</a></span>. Broadly speaking,
+there are two fundamental questions considered by linear algebra:</p>
+<ul id="I1" class="ltx_itemize">
+<li id="I1.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_itemize">•</span> 
+<div id="I1.i1.p1" class="ltx_para">
+<p class="ltx_p">the <a class="nnexus_concept" href="http://planetmath.org/equation">solution</a> of a <a class="nnexus_concept" href="http://planetmath.org/linearequation">linear equation</a>, and</p>
+</div>
+</li>
+<li id="I1.i2" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_itemize">•</span> 
+<div id="I1.i2.p1" class="ltx_para">
+<p class="ltx_p"><a class="nnexus_concept" href="http://planetmath.org/diagonalization">diagonalization</a>, a.k.a. the <a class="nnexus_concept" href="http://planetmath.org/eigenvalueproblem">eigenvalue problem</a>.</p>
+</div>
+</li>
+</ul>
+<p class="ltx_p">From the geometric point of view, “linear” is synonymous with
+“<a class="nnexus_concept" href="http://planetmath.org/convexangle">straight</a>”, and consequently linear algebra can be regarded as the
+branch of mathematics dealing with lines and planes, as well as with
+<a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">transformations</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Transformation.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/transformation"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> of space that preserve “straightness”, e.g.
+<a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">rotations</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Rotation.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/euclideantransformation"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> and <a class="nnexus_concept" href="http://mathworld.wolfram.com/Reflection.html">reflections</a>. The two fundamental questions, in geometric
+terms, deal with</p>
+<ul id="I2" class="ltx_itemize">
+<li id="I2.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_itemize">•</span> 
+<div id="I2.i1.p1" class="ltx_para">
+<p class="ltx_p">the <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">intersection</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Intersection.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/intersection"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> of <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">hyperplanes</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Hyperplane.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/linearmanifold"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/constructingnearlinearspacesfromexistingones"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>, and</p>
+</div>
+</li>
+<li id="I2.i2" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_itemize">•</span> 
+<div id="I2.i2.p1" class="ltx_para">
+<p class="ltx_p">the principal axes of an <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">ellipsoid</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Ellipsoid.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/quadraticsurfaces"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/ellipsoid"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>.</p>
+</div>
+</li>
+</ul>
+</div>
+<div id="p2" class="ltx_para">
+<p class="ltx_p">Linearity is a very basic notion, and consequently linear algebra has
+applications in numerous areas of mathematics, science, and
+engineering. Diverse disciplines, such as differential equations,
+<a class="nnexus_concept" href="http://planetmath.org/differentialgeometry">differential geometry</a>, the theory of relativity, quantum mechanics,
+electrical <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">circuits</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Circuit.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/closedwalktrektrailpath"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>, computer graphics, and information theory benefit
+from the notions and techniques of linear algebra.</p>
+</div>
+<div id="p3" class="ltx_para">
+<p class="ltx_p"><a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">Euclidean geometry</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/EuclideanGeometry.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/geometry"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> is related to a specialized branch of linear
+algebra that deals with linear measurement. Here the relevant notions
+are length and angle. A typical question is the determination of
+lines <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">perpendicular</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Perpendicular.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/mutualpositionsofvectors"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/perpendicularityineuclideanplane"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/dihedralangle"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> to a given plane. A somewhat less specialized
+branch deals with affine structure, where the key notion is that of
+area and volume. Here <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">determinants</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Determinant.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/determinant"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> play an essential role.</p>
+</div>
+<div id="p4" class="ltx_para">
+<p class="ltx_p">Yet another branch of linear algebra is concerned with computation,
+algorithms, and numerical approximation. Important examples of such
+techniques include: <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">Gaussian elimination</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/GaussianElimination.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/rowreduction"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>, the method of least squares,
+<a class="nnexus_concept" href="http://planetmath.org/ludecomposition">LU factorization</a>, <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">QR decomposition</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/QRDecomposition.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/qrdecomposition"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>, <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">Gram-Schmidt orthogonalization</a><sup style="display: none;"><a class="nnexus_concept" href="http://planetmath.org/gramschmidtorthogonalization"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/proofofgramschmidtorthogonalizationprocedure"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>,
+<a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">singular value decomposition</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/SingularValueDecomposition.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/singularvaluedecomposition"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>, and a number of iterative algorithms for
+the calculation of eigenvalues and eigenvectors.</p>
+</div>
+<div id="p5" class="ltx_para">
+<p class="ltx_p">The following subject outline surveys
+key topics in linear algebra.</p>
+</div>
+<div id="p6" class="ltx_para">
+<ol id="I3" class="ltx_enumerate">
+<li id="I3.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_enumerate">1.</span> 
+<div id="I3.i1.p1" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold">Linear structure.</span></p>
+<ol id="I3.I1" class="ltx_enumerate">
+<li id="I3.I1.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_enumerate">(a)</span> 
+<div id="I3.I1.i1.p1" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold"><a class="nnexus_concept" href="http://planetmath.org/introduction">Introduction</a>:</span> <a class="nnexus_concept" href="http://planetmath.org/finitedimensionallinearproblem">systems of linear equations</a>, Gaussian
+elimination, matrices, <a class="nnexus_concept" href="http://planetmath.org/matrixoperations">matrix operations</a>.</p>
+</div>
+</li>
+<li id="I3.I1.i2" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_enumerate">(b)</span> 
+<div id="I3.I1.i2.p1" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold"><a class="nnexus_concept" href="http://planetmath.org/axiomoffoundation">Foundations</a>:</span> fields and vector spaces, <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">subspace</a><sup style="display: none;"><a class="nnexus_concept" href="http://planetmath.org/subspacetopology"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/vectorsubspace"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>, <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">linear
+independence</a><sup style="display: none;"><a class="nnexus_concept" href="http://planetmath.org/sixexponentialstheorem"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/linearlyindependent"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>, basis, <a class="nnexus_concept" href="http://planetmath.org/matrixrepresentationofalineartransformation">ordered basis</a>, <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">dimension</a><sup style="display: none;"><a class="nnexus_concept" href="http://planetmath.org/dimensionvectorspace"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/dimension"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>, <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">direct sum</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/DirectSum.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/directproductsofgroups"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/complementarysubspace"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> decomposition.</p>
+</div>
+</li>
+<li id="I3.I1.i3" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_enumerate">(c)</span> 
+<div id="I3.I1.i3.p1" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold">Linear mappings:</span> linearity axioms, kernels and images,
+injectivity, surjectivity, <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">bijections</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Bijection.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/bijection"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>, <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">compositions</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Composition.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/countingcompositionsofaninteger"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/function"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>, <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">inverses</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Inverse.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/regularsemigroup"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/inversestatement"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/inversefunction"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/matrixinverse"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/multivaluedfunction"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/hypergroup"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/group"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>,
+<a class="nnexus_concept" href="http://planetmath.org/matrixrepresentation">matrix representations</a>, <a class="nnexus_concept" href="http://planetmath.org/changeofbasis">change of bases</a>, <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">conjugation</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Conjugation.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/innerautomorphism"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>, <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">similarity</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Similarity.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/similarityingeometry"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>.</p>
+</div>
+</li>
+</ol>
+</div>
+</li>
+<li id="I3.i2" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_enumerate">2.</span> 
+<div id="I3.i2.p1" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold">Affine structure.</span></p>
+<ol id="I3.I2" class="ltx_enumerate">
+<li id="I3.I2.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_enumerate">(a)</span> 
+<div id="I3.I2.i1.p1" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold">Determinants:</span> characterizing properties, <a class="nnexus_concept" href="http://planetmath.org/cofactorexpansion">cofactor
+expansion</a>, <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">permutations</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Permutation.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/permutation"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>, Cramer’s rule, <a class="nnexus_concept" href="http://planetmath.org/adjugate">classical adjoint</a>.</p>
+</div>
+</li>
+<li id="I3.I2.i2" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_enumerate">(b)</span> 
+<div id="I3.I2.i2.p1" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold">Geometric aspects:</span> <a class="nnexus_concept" href="http://planetmath.org/modallogics5">Euclidean</a> volume, <a class="nnexus_concept" href="http://planetmath.org/incidencematrixwithrespecttoanorientation">orientation</a>,
+equiaffine transformations, determinants as geometric <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">invariants</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Invariant.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/invariant"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>
+of linear transformations.
+</p>
+</div>
+</li>
+</ol>
+</div>
+</li>
+<li id="I3.i3" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_enumerate">3.</span> 
+<div id="I3.i3.p1" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold">Diagonalization and Decomposition.</span></p>
+<ol id="I3.I3" class="ltx_enumerate">
+<li id="I3.I3.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_enumerate">(a)</span> 
+<div id="I3.I3.i1.p1" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold">Basic notions:</span> <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">eigenvector</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Eigenvector.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/eigenvector"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/characteristicvaluesandvectorsofamatrix"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/eigenvalue1"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>, <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">eigenvalue</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Eigenvalue.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/eigenvalue"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/spectralvaluesclassification"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/characteristicvaluesandvectorsofamatrix"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/eigenvalue1"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>, <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">eigenspace</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Eigenspace.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/eigenspace"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>,
+<a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">characteristic polynomial</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/CharacteristicPolynomial.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/characteristicpolynomialofalgebraicnumber"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/characteristicpolynomial"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>.</p>
+</div>
+</li>
+<li id="I3.I3.i2" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_enumerate">(b)</span> 
+<div id="I3.I3.i2.p1" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold">Obstructions:</span> <a class="nnexus_concept" href="http://planetmath.org/imaginaries">imaginary</a> eigenvalues, <a class="nnexus_concept" href="http://planetmath.org/nilpotenttransformation">nilpotent
+transformations</a>, <a class="nnexus_concept" href="http://mathworld.wolfram.com/Classification.html">classification</a> of 2-dimensional real
+transformations.</p>
+</div>
+</li>
+<li id="I3.I3.i3" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_enumerate">(c)</span> 
+<div id="I3.I3.i3.p1" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold">Structure theory:</span> <a class="nnexus_concept" href="http://planetmath.org/invariantsubspace">invariant subspaces</a>, <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">Cayley-Hamilton
+theorem</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Cayley-HamiltonTheorem.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/cayleyhamiltontheorem"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>, <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">Jordan canonical form</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/JordanCanonicalForm.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/jordancanonicalformtheorem"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>, <a class="nnexus_concept" href="http://mathworld.wolfram.com/RationalCanonicalForm.html">rational canonical form</a>.</p>
+</div>
+</li>
+</ol>
+</div>
+</li>
+<li id="I3.i4" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_enumerate">4.</span> 
+<div id="I3.i4.p1" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold"><a class="nnexus_concept" href="http://planetmath.org/multilinear">Multi-linearity</a>.</span></p>
+<ol id="I3.I4" class="ltx_enumerate">
+<li id="I3.I4.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_enumerate">(a)</span> 
+<div id="I3.I4.i1.p1" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold">Foundations:</span> vector space dual, bilinearity, <a class="nnexus_concept" href="http://planetmath.org/bilinearform">bilinear</a>
+<a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">transpose</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Transpose.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/transpose"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>, Gram-Schmidt orthogonalization.</p>
+</div>
+</li>
+<li id="I3.I4.i2" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_enumerate">(b)</span> 
+<div id="I3.I4.i2.p1" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold">Bilinearity:</span> <a class="nnexus_concept" href="http://planetmath.org/sesquilinearformsovergeneralfields">bilinear forms</a>, <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">symmetric bilinear forms</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/SymmetricBilinearForm.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/symmetricbilinearform"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>,
+<a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">quadratic forms</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/QuadraticForm.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/quadraticform"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>, <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">signature</a><sup style="display: none;"><a class="nnexus_concept" href="http://planetmath.org/algebraicsystem"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/signature"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/signatureofapermutation"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/sylvesterslaw"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> and Sylvester’s <a class="nnexus_concept" href="http://mathworld.wolfram.com/Theorem.html">theorem</a>, <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">orthogonal
+transformations</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/OrthogonalTransformation.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/orthogonalgroup"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>, <a class="nnexus_concept" href="http://planetmath.org/skewsymmetricbilinearform">skew-symmetric bilinear forms</a>, symplectic
+transformations.</p>
+</div>
+</li>
+<li id="I3.I4.i3" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_enumerate">(c)</span> 
+<div id="I3.I4.i3.p1" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold"><a class="nnexus_concept" href="http://planetmath.org/tensoralgebra">Tensor algebra</a>:</span> <a class="nnexus_concept" href="http://planetmath.org/tensorproductvectorspaces">tensor product</a>, <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">contraction</a><sup style="display: none;"><a class="nnexus_concept" href="http://planetmath.org/contraction"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/sequent"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>, invariants
+of linear transformations, <a class="nnexus_concept" href="http://mathworld.wolfram.com/SymmetryOperation.html">symmetry operations</a>.</p>
+</div>
+</li>
+</ol>
+</div>
+</li>
+<li id="I3.i5" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_enumerate">5.</span> 
+<div id="I3.i5.p1" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold">Euclidean and <a class="nnexus_concept" href="http://planetmath.org/hermitianmatrix">Hermitian</a> structure.</span></p>
+<ol id="I3.I5" class="ltx_enumerate">
+<li id="I3.I5.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_enumerate">(a)</span> 
+<div id="I3.I5.i1.p1" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold">Foundations:</span> <a class="nnexus_concept" href="http://planetmath.org/innerproduct">inner product</a> axioms, the <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">adjoint</a><sup style="display: none;"><a class="nnexus_concept" href="http://planetmath.org/dualhomomorphism"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/adjointendomorphism"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">operation</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Operation.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/operation"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>,
+<a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">symmetric</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Symmetric.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/symmetry"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/polyadicalgebrawithequality"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/symmetricrelation"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/symmetricmatrix"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> transformations, <a class="nnexus_concept" href="http://planetmath.org/antisymmetricmapping">skew-symmetric</a> transformations,
+<a class="nnexus_concept" href="http://planetmath.org/selfdual">self-adjoint</a> transformations, normal transformations.</p>
+</div>
+</li>
+<li id="I3.I5.i2" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_enumerate">(b)</span> 
+<div id="I3.I5.i2.p1" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold"><a class="nnexus_concept" href="http://planetmath.org/spectraltheorem">Spectral theorem</a>:</span> diagonalization of self-adjoint
+transformations, <a class="nnexus_concept" href="http://planetmath.org/diagonalizationofquadraticform">diagonalization of quadratic forms</a>.</p>
+</div>
+</li>
+</ol>
+</div>
+</li>
+<li id="I3.i6" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_enumerate">6.</span> 
+<div id="I3.i6.p1" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold">Computational and numerical methods.</span></p>
+<ol id="I3.I6" class="ltx_enumerate">
+<li id="I3.I6.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_enumerate">(a)</span> 
+<div id="I3.I6.i1.p1" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold">Linear problems:</span> LU-factorization, QR decomposition, least
+squares, <a class="nnexus_concept" href="http://planetmath.org/householdertransformation">Householder transformations</a>.</p>
+</div>
+</li>
+<li id="I3.I6.i2" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_enumerate">(b)</span> 
+<div id="I3.I6.i2.p1" class="ltx_para">
+<p class="ltx_p"><span class="ltx_text ltx_font_bold">Eigenvalue problems:</span> singular value decomposition, Gauss and
+Jacobi-Siedel iterative algorithms.</p>
+</div>
+</li>
+</ol>
+</div>
+</li>
+</ol>
+<table class="ltx_tabular ltx_align_right ltx_guessed_headers ltx_align_middle">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l ltx_border_t">Title</th>
+<td class="ltx_td ltx_align_left ltx_border_r ltx_border_t">linear algebra</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l">Canonical name</th>
+<td class="ltx_td ltx_align_left ltx_border_r">LinearAlgebra</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l">Date of creation</th>
+<td class="ltx_td ltx_align_left ltx_border_r">2013-03-22 12:26:16</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l">Last modified on</th>
+<td class="ltx_td ltx_align_left ltx_border_r">2013-03-22 12:26:16</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l">Owner</th>
+<td class="ltx_td ltx_align_left ltx_border_r">rmilson (146)</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l">Last modified by</th>
+<td class="ltx_td ltx_align_left ltx_border_r">rmilson (146)</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l">Numerical id</th>
+<td class="ltx_td ltx_align_left ltx_border_r">10</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l">Author</th>
+<td class="ltx_td ltx_align_left ltx_border_r">rmilson (146)</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l">Entry type</th>
+<td class="ltx_td ltx_align_left ltx_border_r">Topic</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l">Classification</th>
+<td class="ltx_td ltx_align_left ltx_border_r">msc 15-00</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_b ltx_border_l">Classification</th>
+<td class="ltx_td ltx_align_left ltx_border_b ltx_border_r">msc 15-01</td>
+</tr>
+</tbody>
+</table>
+</div>
+</article>
+</div>
+<footer class="ltx_page_footer">
+<div class="ltx_page_logo">Generated  on Fri Feb  9 18:15:06 2018 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
+</div></footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,546 @@
+Kripke semantics
+Kripke semantics
+A
+Kripke frame
+(or simply a frame)
+ℱ
+is a pair
+(
+W
+,
+R
+)
+where
+W
+is a non-empty set whose
+elements
+are called
+worlds
+or
+possible worlds
+,
+R
+is a
+binary relation
+on
+W
+called the
+accessibility relation
+. When
+v
+⁢
+R
+⁢
+w
+, we say that
+w
+is
+accessible
+from
+v
+. A Kripke frame is said to have
+property
+P
+if
+R
+has the property
+P
+. For example, a
+symmetric
+frame is a frame whose accessibility relation is symmetric.
+A
+Kripke model
+(or simply a model)
+M
+for a propositional
+logical system
+(classical, intuitionistic, or modal)
+Λ
+is a pair
+(
+ℱ
+,
+V
+)
+, where
+ℱ
+:=
+(
+W
+,
+R
+)
+is a Kripke frame, and
+V
+is a
+function
+that takes each
+atomic formula
+of
+Λ
+to a subset of
+W
+. If
+w
+∈
+V
+⁢
+(
+p
+)
+, we say that
+p
+is
+true
+at world
+w
+. We say that
+M
+is a
+Λ
+-model
+based on
+the frame
+ℱ
+if
+M
+=
+(
+ℱ
+,
+V
+)
+is a model for the logic
+Λ
+.
+Remark
+. Associated with each world
+w
+, we may also define a Boolean-valued
+valuation
+V
+w
+on the set of all wff’s of
+Λ
+, so that
+V
+w
+⁢
+(
+p
+)
+=
+1
+iff
+w
+∈
+V
+⁢
+(
+p
+)
+. In this sense, the Kripke semantics can be thought of as a
+generalization
+of the truth-value semantics for classical propositional logic. The truth-value semantics is just a Kripke model based on a frame with one world.
+Conversely
+, given a
+collection
+of valuations
+{
+V
+w
+∣
+w
+∈
+W
+}
+, we have model
+(
+ℱ
+,
+V
+)
+where
+w
+∈
+V
+⁢
+(
+p
+)
+iff
+V
+w
+⁢
+(
+p
+)
+=
+1
+.
+Since the
+well-formed formulas
+(wff’s) of
+Λ
+are uniquely readable,
+V
+may be inductively extended so it is defined on all wff’s. The following are some examples:
+•
+in classical
+propositional logic
+PL
+c
+,
+V
+(
+A
+→
+B
+)
+:=
+V
+(
+A
+)
+c
+∪
+V
+(
+B
+)
+, where
+S
+c
+:=
+W
+-
+S
+,
+•
+in the modal propositional logic
+K
+,
+V
+⁢
+(
+□
+⁢
+A
+)
+:=
+V
+⁢
+(
+A
+)
+□
+, where
+S
+□
+:=
+{
+u
+∣
+↑
+u
+⊆
+S
+}
+, and
+↑
+u
+:=
+{
+w
+∣
+u
+⁢
+R
+⁢
+w
+}
+, and
+•
+in intuitionistic propositional logic PL
+i
+,
+V
+(
+A
+→
+B
+)
+:=
+(
+V
+(
+A
+)
+-
+V
+(
+B
+)
+)
+#
+, where
+S
+#
+:=
+(
+↓
+S
+)
+c
+, and
+↓
+S
+:=
+{
+u
+∣
+u
+⁢
+R
+⁢
+w
+,
+w
+∈
+S
+}
+.
+Truth at a world can now be defined for wff’s: a wff
+A
+is
+true
+at world
+w
+if
+w
+∈
+V
+⁢
+(
+A
+)
+, and we write
+M
+⊧
+w
+A
+or
+⊧
+w
+A
+if no confusion arises. If
+w
+∉
+V
+⁢
+(
+A
+)
+, we write
+M
+⊧̸
+w
+A
+. The three examples above can be now interpreted as:
+•
+⊧
+w
+A
+→
+B
+means
+⊧
+w
+A
+implies
+⊧
+w
+B
+in PL
+c
+,
+•
+⊧
+w
+□
+⁢
+A
+means for all worlds
+v
+with
+w
+⁢
+R
+⁢
+v
+, we have
+⊧
+v
+A
+in
+K
+, and
+•
+⊧
+w
+A
+→
+B
+means for all worlds
+v
+with
+w
+⁢
+R
+⁢
+v
+,
+⊧
+v
+A
+implies
+⊧
+v
+B
+in PL
+i
+.
+A wff
+A
+is said to be
+valid
+•
+in a model
+M
+if
+A
+in true at all possible worlds
+w
+in
+M
+,
+•
+in a frame if
+A
+is valid in all models
+M
+based on
+ℱ
+,
+•
+in a collection
+𝒞
+of frames if
+A
+is valid in all frames in
+𝒞
+.
+We denote
+M
+⊧
+A
+,
+ℱ
+⊧
+A
+,
+or
+𝒞
+⊧
+A
+if
+A
+is valid in
+M
+,
+ℱ
+, or
+𝒞
+respectively.
+A logic
+Λ
+, equipped with a
+deductive system
+, is
+sound
+in
+𝒞
+if
+⊢
+A
+implies
+𝒞
+⊧
+A
+.
+Here,
+⊢
+A
+means that wff
+A
+is a
+theorem
+deducible
+from the deductive system of
+Λ
+. Conversely, if
+𝒞
+⊧
+A
+implies
+⊢
+A
+,
+we say that
+Λ
+is
+complete
+in
+𝒞
+.
+Title
+Kripke semantics
+Canonical
+name
+KripkeSemantics
+Date of creation
+2013-03-22 19:31:15
+Last modified on
+2013-03-22 19:31:15
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+25
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 03B48
+Classification
+msc 03B20
+Classification
+msc 03B45
+Defines
+Kripke frame
+Defines
+possible world
+Defines
+accessibility relation
+Defines
+accessible
+Defines
+valid
+Defines
+sound
+Defines
+complete
+Generated  on Thu Feb  8 19:52:22 2018 by
+LaTeXML

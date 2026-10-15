@@ -1,0 +1,485 @@
+primitive recursive function
+primitive recursive function
+To define what a
+primitive recursive function
+is, the following notations are used:
+ℱ
+=
+⋃
+{
+F
+k
+∣
+k
+∈
+ℕ
+}
+, where for each
+k
+∈
+ℕ
+⁢
+,
+⁢
+F
+k
+=
+{
+f
+∣
+f
+:
+ℕ
+k
+→
+ℕ
+}
+.
+Definition
+. The set of
+primitive recursive functions
+is the smallest subset
+𝒫
+⁢
+ℛ
+of
+ℱ
+where:
+1.
+(zero function)
+z
+∈
+𝒫
+⁢
+ℛ
+∩
+F
+1
+, given by
+z
+⁢
+(
+n
+)
+:=
+0
+;
+2.
+(successor function)
+s
+∈
+𝒫
+⁢
+ℛ
+∩
+F
+1
+, given by
+s
+⁢
+(
+n
+)
+:=
+n
++
+1
+;
+3.
+(projection functions)
+p
+m
+k
+∈
+𝒫
+⁢
+ℛ
+∩
+F
+k
+, where
+m
+≤
+k
+, given by
+p
+m
+k
+⁢
+(
+n
+1
+,
+…
+,
+n
+k
+)
+:=
+n
+m
+;
+4.
+𝒫
+⁢
+ℛ
+is
+closed under
+composition
+: If
+{
+g
+1
+,
+…
+,
+g
+m
+}
+⊆
+𝒫
+⁢
+ℛ
+∩
+F
+k
+and
+h
+∈
+𝒫
+⁢
+ℛ
+∩
+F
+m
+, then
+f
+∈
+𝒫
+⁢
+ℛ
+∩
+F
+k
+, where
+f
+⁢
+(
+n
+1
+,
+…
+,
+n
+k
+)
+=
+h
+⁢
+(
+g
+1
+⁢
+(
+n
+1
+,
+…
+,
+n
+k
+)
+,
+…
+,
+g
+m
+⁢
+(
+n
+1
+,
+…
+,
+n
+k
+)
+)
+;
+5.
+𝒫
+⁢
+ℛ
+is closed under
+primitive recursion
+: If
+g
+∈
+𝒫
+⁢
+ℛ
+∩
+F
+k
+and
+h
+∈
+𝒫
+⁢
+ℛ
+∩
+F
+k
++
+2
+, then
+f
+∈
+𝒫
+⁢
+ℛ
+∩
+F
+k
++
+1
+, where
+f
+⁢
+(
+n
+1
+,
+…
+,
+n
+k
+,
+0
+)
+=
+g
+⁢
+(
+n
+1
+,
+…
+,
+n
+k
+)
+f
+⁢
+(
+n
+1
+,
+…
+,
+n
+k
+,
+s
+⁢
+(
+n
+)
+)
+=
+h
+⁢
+(
+n
+1
+,
+…
+,
+n
+k
+,
+n
+,
+f
+⁢
+(
+n
+1
+,
+…
+,
+n
+k
+,
+n
+)
+)
+.
+Many of the
+arithmetic functions
+that we encounter in basic math are primitive recursive, including
+addition
+,
+multiplication
+, and
+exponentiation
+. More examples can be found in this entry (
+http://planetmath.org/ExamplesOfPrimitiveRecursiveFunctions
+).
+Primitive recursive functions are
+computable
+by
+Turing machines
+. In fact, it can be shown that
+𝒫
+⁢
+ℛ
+is precisely the set of functions computable by
+programs
+using FOR NEXT loops. However, not all
+Turing-computable
+functions are primitive recursive: the
+Ackermann function
+is one such example.
+Since
+ℱ
+is
+countable
+, so is
+𝒫
+⁢
+ℛ
+. Moreover,
+𝒫
+⁢
+ℛ
+is
+recursively enumerable
+(can be listed by a Turing machine).
+Remarks
+.
+[1]
+Every primitive recursive function is total, since it is built from
+z
+,
+s
+, and
+p
+m
+k
+, each of which is total, and that
+functional
+composition, and primitive recursion
+preserve
+totalness. By including
+∅
+in
+𝒫
+⁢
+ℛ
+above, and close it by functional composition and primitive recursion, one gets the set of
+partial primitive recursive functions
+.
+[2]
+Primitive
+recursiveness can be defined on subsets of
+ℕ
+k
+: a subset
+S
+⊆
+ℕ
+k
+is
+primitive recursive
+if its
+characteristic function
+φ
+S
+, which is defined as
+φ
+S
+⁢
+(
+x
+)
+:=
+{
+1
+if
+⁢
+x
+∈
+S
+,
+0
+otherwise.
+is primitive recursive.
+[3]
+Likewise, primitive recursiveness can be defined for
+predicates
+over tuples of
+natural numbers
+. A predicate
+Φ
+⁢
+(
+𝒙
+)
+, where
+𝒙
+∈
+ℕ
+k
+, is said to be
+primitive recursive
+if the set
+S
+⁢
+(
+Φ
+)
+:=
+{
+𝒙
+∣
+Φ
+⁢
+(
+𝒙
+)
+}
+is primitive recursive.
+Title
+primitive recursive function
+Canonical
+name
+PrimitiveRecursiveFunction
+Date of creation
+2013-03-22 12:33:19
+Last modified on
+2013-03-22 12:33:19
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+19
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 03D20
+Synonym
+primitive recursive
+Related topic
+RecursiveFunction
+Defines
+primitive recursive set
+Defines
+primitive recursive predicate
+Defines
+partial primitive recursive function
+Generated  on Thu Feb  8 20:04:16 2018 by
+LaTeXML

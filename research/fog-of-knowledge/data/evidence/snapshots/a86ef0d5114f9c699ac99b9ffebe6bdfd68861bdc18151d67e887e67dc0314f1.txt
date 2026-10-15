@@ -1,0 +1,140 @@
+fixed-point arithmetic
+fixed-point arithmetic
+For computation or display in
+fixed-point arithmetic
+, each
+real number
+x
+has a
+variable
+number
+k
+>
+0
+of
+integer
+digits
+d
+k
+-
+1
+,
+…
+,
+d
+0
+(in order left to right from the most to the least significant digit) in base
+b
+but always
+l
+fractional digits to the right of the point. Thus,
+x
+=
+∑
+i
+=
+-
+l
+k
+-
+1
+d
+i
+⁢
+b
+i
+.
+For example, for the usual mundane applications of money,
+b
+=
+10
+and
+l
+=
+2
+.
+Fixed-point arithmetic can adequately represent any
+rational number
+n
+m
+provided that
+m
+≤
+b
+l
+and
+m
+has no
+prime factors
+b
+doesn’t (counting repeated prime factors).
+Addition
+and
+subtraction
+in fixed-point arithmetic present no special problems for such numbers. When it comes to
+multiplication
+and
+division
+, we run into cases where the result cannot be adequately represented though the operands can.
+In those cases it may be practical to perform the computations in floating point and display the results in fixed-point. In fact, this is what many business
+calculators
+do (such as cash registers); they compute in binary floating point and display in decimal fixed-point. Another option is to continue the calculations in fixed-point by settling for crude approximations. Depending on the application and the user, the loss of precision may be acceptable. There are two ways to handle the loss of precision: if
+d
+-
+l
+-
+1
+>
+b
+2
+, we could then assign
+d
+-
+l
+=
+d
+-
+l
++
+1
+(propagating the change as needed to the more significant digits); or we could simply ignore everything to the right of
+d
+-
+l
+.
+Older versions of FractInt for 80386 IBM-compatibles used fixed-point arithmetic. Most
+computers
+(and even game consoles) today have floating point units, reducing the need for fixed-point. Even so, newer implementations of the C programming language are expected to provide fixed-point data types and appropriately
+overload
+built-in
+functions
+to handle those data types (see ISO/IEC TR 18037:2004).
+Title
+fixed-point arithmetic
+Canonical
+name
+FixedpointArithmetic
+Date of creation
+2013-03-22 16:32:31
+Last modified on
+2013-03-22 16:32:31
+Owner
+PrimeFan (13766)
+Last modified by
+PrimeFan (13766)
+Numerical id
+5
+Author
+PrimeFan (13766)
+Entry type
+Definition
+Classification
+msc 11A63
+Synonym
+fixed point arithmetic
+Synonym
+fixed point
+Synonym
+fixed-point
+Generated  on Fri Feb  9 15:22:54 2018 by
+LaTeXML

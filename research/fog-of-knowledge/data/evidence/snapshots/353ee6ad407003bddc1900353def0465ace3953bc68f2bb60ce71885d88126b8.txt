@@ -1,0 +1,426 @@
+forcing
+forcing
+Forcing
+is the method used by Paul Cohen to prove the independence of
+the
+continuum hypothesis
+(CH). In fact, the method was used by Cohen to
+prove that CH could be violated.
+Adding a set to a model of
+set theory
+via forcing is
+similar
+to adjoining a new
+element
+to a field. Suppose we have a field
+k
+, and we want to add to this field an
+element
+α
+such
+α
+2
+=
+-
+1
+. We see
+that we cannot simply drop a new
+α
+in
+k
+, since then we are
+not guaranteed that we still have a field. Neither can we simply
+assume that
+k
+already has such an element. The standard way of
+doing this is to start by adjoining a
+generic
+indeterminate
+X
+, and
+impose a constraint on
+X
+, saying that
+X
+2
++
+1
+=
+0
+. What we do is take
+the
+quotient
+k
+⁢
+[
+X
+]
+/
+(
+X
+2
++
+1
+)
+, and make a field out of it by taking the
+quotient field. We then obtain
+k
+⁢
+(
+α
+)
+, where
+α
+is the
+equivalence class
+of
+X
+in the quotient.
+The general case of this is the
+theorem
+of algebra saying that every
+polynomial
+p
+over a field
+k
+has a root in some
+extension field
+.
+We can rephrase this and say that “it is
+consistent
+with standard
+field theory that
+-
+1
+have a
+square root
+”.
+When the theory we consider is ZFC, we run in exactly the same
+problem : we can’t just add a “new” set and pretend it has the
+required properties, because then we may violate something else, like
+foundation
+. Let
+𝔐
+be a
+transitive
+model of set theory, which we
+call the
+ground model
+. We want to “add a new set”
+S
+to
+𝔐
+in
+such a way that the
+extension
+𝔐
+′
+has
+𝔐
+as a
+subclass
+, and the
+properties of
+𝔐
+are preserved, and
+S
+∈
+𝔐
+′
+.
+The first step is to “approximate” the new set using
+elements of
+𝔐
+. This is the analogue of finding the
+irreducible polynomial
+in
+the
+algebraic
+example. The set
+P
+of such “approximations” can be
+ordered by how much information the approximations give : let
+p
+,
+q
+∈
+P
+, then
+p
+≤
+q
+if and only if
+p
+“is
+stronger
+than”
+q
+. We
+call this set a set of
+forcing conditions
+. Furthermore, it is required that the set
+P
+itself and the order relation be elements of
+𝔐
+.
+Since
+P
+is a
+partial order
+, some of its subsets have interesting
+properties. Consider
+P
+as a
+topological space
+with the
+order
+topology
+. A subset
+D
+⊆
+P
+is
+dense
+in
+P
+if and only
+if for every
+p
+∈
+P
+, there is
+d
+∈
+D
+such that
+d
+≤
+p
+. A
+filter in
+P
+is said to be
+𝔐
+-generic
+if and only if it
+intersects
+every one of the
+dense subsets
+of
+P
+which are in
+𝔐
+. An
+𝔐
+-generic
+filter in
+P
+is also referred to as a
+generic set of conditions
+in the literature. In general, even though
+P
+is a set in
+𝔐
+, generic filters are not elements of
+𝔐
+.
+If
+P
+is a set of forcing conditions, and
+G
+is a generic set of
+conditions in
+P
+, all in the ground model
+𝔐
+, then we define
+𝔐
+⁢
+[
+G
+]
+to be the least model of ZFC that contains
+G
+. The
+big theorem is this :
+Theorem.
+𝔐
+⁢
+[
+G
+]
+is a model of ZFC, and has the same
+ordinals
+as
+𝔐
+, and
+𝔐
+⊆
+𝔐
+⁢
+[
+G
+]
+.
+The way to prove that we can violate CH using a generic extension is
+to add many new “subsets of
+ω
+” in the following way : let
+𝔐
+be a transitive model of ZFC, and let
+(
+P
+,
+≤
+)
+be the set (in
+𝔐
+) of all
+functions
+f
+whose domain is a finite subset of
+ℵ
+2
+×
+ℵ
+0
+, and whose range is the set
+{
+0
+,
+1
+}
+. The
+ordering
+here is
+p
+≤
+q
+if and only if
+p
+⊃
+q
+. Let
+G
+be a generic set of conditions in
+P
+. Then
+⋃
+G
+is a
+total function
+whose domain is
+ℵ
+2
+×
+ℵ
+0
+, and range is
+{
+0
+,
+1
+}
+. We can see this
+f
+as coding
+ℵ
+2
+new functions
+f
+α
+:
+ℵ
+0
+→
+{
+0
+,
+1
+}
+,
+α
+<
+ℵ
+2
+,
+which are subsets of omega. These
+functions are all distinct.
+(
+P
+,
+≤
+)
+http://planetmath.org/node/3242
+doesn’t collapse
+cardinals
+since it
+satisfies
+the
+countable chain condition
+. Thus
+ℵ
+2
+𝔐
+⁢
+[
+G
+]
+=
+ℵ
+2
+𝔐
+and CH is false in
+𝔐
+⁢
+[
+G
+]
+.
+All this relies on a proper definition of the satisfaction relation in
+𝔐
+⁢
+[
+G
+]
+, and the
+forcing relation
+. Details can be found in Thomas Jech’s book
+Set Theory
+.
+Title
+forcing
+Canonical name
+Forcing
+Date of creation
+2013-03-22 12:44:17
+Last modified on
+2013-03-22 12:44:17
+Owner
+ratboy (4018)
+Last modified by
+ratboy (4018)
+Numerical id
+12
+Author
+ratboy (4018)
+Entry type
+Definition
+Classification
+msc 03E50
+Classification
+msc 03E35
+Classification
+msc 03E40
+Related topic
+ForcingRelation
+Related topic
+CompositionOfForcingNotions
+Related topic
+EquivalenceOfForcingNotions
+Related topic
+FieldAdjunction
+Defines
+forcing
+Generated  on Thu Feb  8 20:20:02 2018 by
+LaTeXML

@@ -1,0 +1,997 @@
+direct product of partial algebras
+direct product of partial algebras
+Let
+𝑨
+and
+𝑩
+be two
+partial algebraic systems
+of type
+τ
+. The
+direct product
+of
+𝑨
+and
+𝑩
+, written
+𝑨
+×
+𝑩
+, is a
+partial algebra
+of type
+τ
+, defined as follows:
+•
+the underlying set of
+𝑨
+×
+𝑩
+is
+A
+×
+B
+,
+•
+for each
+n
+-ary
+function symbol
+f
+∈
+τ
+, the
+operation
+f
+𝑨
+×
+𝑩
+is given by:
+for
+(
+a
+1
+,
+b
+1
+)
+,
+…
+,
+(
+a
+n
+,
+b
+n
+)
+∈
+A
+×
+B
+,
+f
+𝑨
+×
+𝑩
+⁢
+(
+(
+a
+1
+,
+b
+1
+)
+⁢
+…
+,
+(
+a
+n
+,
+b
+n
+)
+)
+is defined iff both
+f
+𝑨
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+and
+f
+𝑩
+⁢
+(
+b
+1
+,
+…
+,
+b
+n
+)
+are, and when this is the case,
+f
+𝑨
+×
+𝑩
+⁢
+(
+(
+a
+1
+,
+b
+1
+)
+,
+…
+,
+(
+a
+n
+,
+b
+n
+)
+)
+:=
+(
+f
+𝑨
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+,
+f
+𝑩
+⁢
+(
+b
+1
+,
+…
+,
+b
+n
+)
+)
+.
+It is easy to see that the type of
+𝑨
+×
+𝑩
+is indeed
+τ
+: pick
+a
+1
+,
+…
+,
+a
+n
+∈
+A
+and
+b
+1
+,
+…
+,
+b
+n
+∈
+B
+such that
+f
+𝑨
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+and
+f
+𝑩
+(
+b
+1
+,
+…
+,
+b
+n
+)
+)
+are defined, then
+f
+𝑨
+×
+𝑩
+⁢
+(
+(
+a
+1
+,
+b
+1
+)
+,
+…
+,
+(
+a
+n
+,
+b
+n
+)
+)
+is defined, so that
+f
+𝑨
+×
+𝑩
+is non-empty, where all operations are defined componentwise, and the two
+constants
+are
+(
+0
+,
+0
+)
+and
+(
+1
+,
+1
+)
+.
+For example, suppose
+k
+1
+and
+k
+2
+are fields. They are both partial algebras of type
+⟨
+2
+,
+2
+,
+1
+,
+1
+,
+0
+,
+0
+⟩
+, where the two
+2
+’s are the arity of
+addition
+and multiplication, the two
+1
+’s are the arity of
+additive
+and
+multiplicative inverses
+, and the two
+0
+’s are the constants
+0
+and
+1
+. Then
+k
+1
+×
+k
+2
+, while no longer a field, is still an
+algebra
+of the same type.
+Let
+𝑨
+,
+𝑩
+be partial algebras of type
+τ
+. Can we embed
+𝑨
+into
+𝑨
+×
+𝑩
+so that
+𝑨
+is some type of a
+subalgebra
+of
+𝑨
+×
+𝑩
+?
+For example, if we fix an
+element
+b
+∈
+B
+, then the
+injection
+i
+b
+:
+𝑨
+→
+𝑨
+×
+𝑩
+, given by
+i
+b
+⁢
+(
+a
+)
+=
+(
+a
+,
+b
+)
+is in general not a
+homomorphism
+only unless
+b
+is an
+idempotent
+with respect to every operation
+f
+𝑩
+on
+B
+(that is,
+f
+𝑩
+(
+b
+,
+…
+,
+b
+)
+=
+b
+)
+. In addition,
+b
+would have to be
+the
+constant for every constant symbol in
+τ
+. Following from the example above, if we pick any
+r
+∈
+k
+2
+, then
+r
+would have to be
+0
+, since,
+(
+s
+1
++
+s
+2
+,
+2
+⁢
+r
+)
+=
+i
+r
+⁢
+(
+s
+1
+)
++
+i
+r
+⁢
+(
+s
+2
+)
+=
+i
+r
+⁢
+(
+s
+1
++
+s
+2
+)
+=
+(
+s
+1
++
+s
+2
+,
+r
+)
+, so that
+2
+⁢
+r
+=
+r
+, or
+r
+=
+0
+. But, on the other hand,
+i
+r
+⁢
+(
+s
+-
+1
+)
+=
+(
+s
+,
+r
+)
+-
+1
+=
+(
+s
+-
+1
+,
+r
+-
+1
+)
+,
+forcing
+r
+to be
+invertible
+, a
+contradiction
+!
+Now, suppose we have a homomorphism
+σ
+:
+𝑨
+→
+𝑩
+, then we may embed
+𝑨
+into
+𝑨
+×
+𝑩
+, so that
+𝑨
+is a subalgebra of
+𝑨
+×
+𝑩
+. The embedding is given by
+ϕ
+⁢
+(
+a
+)
+=
+(
+a
+,
+σ
+⁢
+(
+a
+)
+)
+.
+Proof.
+Suppose
+f
+𝑨
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+is defined. Since
+σ
+is a homomorphism,
+f
+𝑩
+⁢
+(
+σ
+⁢
+(
+a
+1
+)
+,
+…
+,
+σ
+⁢
+(
+a
+n
+)
+)
+is defined, which means
+f
+𝑨
+×
+𝑩
+⁢
+(
+(
+a
+1
+,
+σ
+⁢
+(
+a
+1
+)
+)
+,
+…
+,
+(
+a
+n
+,
+σ
+⁢
+(
+a
+n
+)
+)
+)
+=
+f
+𝑨
+×
+𝑩
+⁢
+(
+ϕ
+⁢
+(
+a
+1
+)
+,
+…
+,
+ϕ
+⁢
+(
+a
+n
+)
+)
+is defined. Furthermore, we have that
+f
+𝑨
+×
+𝑩
+⁢
+(
+(
+a
+1
+,
+σ
+⁢
+(
+a
+1
+)
+)
+,
+…
+,
+(
+a
+n
+,
+σ
+⁢
+(
+a
+n
+)
+)
+)
+=
+(
+f
+𝑨
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+,
+f
+𝑩
+⁢
+(
+σ
+⁢
+(
+a
+1
+)
+,
+…
+,
+σ
+⁢
+(
+a
+n
+)
+)
+)
+=
+(
+f
+𝑨
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+,
+σ
+⁢
+(
+f
+𝑨
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+)
+)
+=
+ϕ
+⁢
+(
+f
+𝑨
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+)
+,
+showing that
+ϕ
+is a homomorphism. In addition, if
+f
+𝑨
+×
+𝑩
+⁢
+(
+ϕ
+⁢
+(
+a
+1
+)
+,
+…
+,
+ϕ
+⁢
+(
+a
+n
+)
+)
+is defined, then it is clear that
+f
+𝑨
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+is defined, so that
+ϕ
+is a strong homomorphism. So
+ϕ
+⁢
+(
+𝑨
+)
+is a subalgebra of
+𝑨
+×
+𝑩
+. Clearly,
+ϕ
+is one-to-one, and therefore an embedding, so that
+𝑨
+is
+isomorphic
+to
+ϕ
+⁢
+(
+𝑨
+)
+, and we may view
+𝑨
+as a subalgebra of
+𝑨
+×
+𝑩
+.
+∎
+Remark
+. Moving to the general case, let
+{
+𝑨
+𝒊
+∣
+i
+∈
+I
+}
+be a set of partial algebras of type
+τ
+,
+indexed by
+set
+I
+. The
+direct product
+of these algebras is a partial algebra
+𝑨
+of type
+τ
+, defined as follows:
+•
+the underlying set of
+𝑨
+is
+A
+:=
+∏
+{
+A
+i
+∣
+i
+∈
+I
+}
+,
+•
+for each
+n
+-ary function symbol
+f
+∈
+τ
+, the operation
+f
+𝑨
+is given by: for
+a
+∈
+A
+,
+f
+𝑨
+⁢
+(
+a
+)
+is defined iff
+f
+𝑨
+𝒊
+⁢
+(
+a
+⁢
+(
+i
+)
+)
+is defined for each
+i
+∈
+I
+, and when this is the case,
+f
+𝑨
+⁢
+(
+a
+)
+⁢
+(
+i
+)
+:=
+f
+𝑨
+𝒊
+⁢
+(
+a
+⁢
+(
+i
+)
+)
+.
+Again, it is easy to verify that
+𝑨
+is indeed a
+τ
+-algebra: for each symbol
+f
+∈
+τ
+, the
+domain of definition
+dom
+⁡
+(
+f
+𝑨
+𝒊
+)
+is non-empty for each
+i
+∈
+I
+, and therefore the domain of definition
+dom
+⁡
+(
+f
+𝑨
+)
+, being
+∏
+{
+dom
+⁡
+(
+f
+𝑨
+𝒊
+)
+∣
+i
+∈
+I
+}
+, is non-empty as well, by the
+axiom of choice
+.
+References
+1
+G. Grätzer:
+Universal Algebra
+, 2nd Edition, Springer, New York (1978).
+Title
+direct product of partial algebras
+Canonical name
+DirectProductOfPartialAlgebras
+Date of creation
+2013-03-22 18:43:40
+Last modified on
+2013-03-22 18:43:40
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+7
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 08A55
+Classification
+msc 08A62
+Classification
+msc 03E99
+Defines
+direct product
+Generated  on Fri Feb  9 14:02:58 2018 by
+LaTeXML

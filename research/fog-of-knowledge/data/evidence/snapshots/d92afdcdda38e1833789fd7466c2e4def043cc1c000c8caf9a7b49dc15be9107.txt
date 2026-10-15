@@ -1,0 +1,399 @@
+quantum logic
+quantum logic
+Introduction
+In classical physics, results regarding experiments performed on physical
+propositions
+obey classical
+propositional logic
+. When a ball is tossed, one can, at any given time
+t
+,
+measure
+its position
+x
+⁢
+(
+t
+)
+and velocity
+v
+⁢
+(
+t
+)
+with great precision almost “simultaneously”. If we know where the ball is, then we know, at that location
+x
+⁢
+(
+t
+)
+, whether it is moving at
+v
+⁢
+(
+t
+)
+or not.
+Let’s
+translate
+the above
+sentence
+into a logical statement. Suppose
+p
+is the statement that “the ball is at
+x
+⁢
+(
+t
+)
+”, and
+q
+is the statement that “the ball is traveling at velocity
+v
+⁢
+(
+t
+)
+”. Then last sentence in the previous paragraph becomes
+if
+p
+is true, then either
+p
+∧
+q
+is true or
+p
+∧
+q
+′
+is true.
+Put it more succinctly, we have the
+tautology
+p
+→
+(
+p
+∧
+q
+)
+∨
+(
+p
+∧
+q
+′
+)
+.
+Converted to the
+language
+of
+Boolean algebra
+(via Lindenbaum’s construction (
+http://planetmath.org/LindenbaumAlgebra
+)), it says
+p
+≤
+(
+p
+∧
+q
+)
+∨
+(
+p
+∧
+q
+′
+)
+which is clearly true, since the right hand side is equal to
+p
+(the
+distributive property
+of a Boolean algebra).
+However, when we downsize the scale of the system (the ball) to something at the subatomic level, say, an electron, we enter the realm of non-classical physics (quantum mechanics), the story is much different. Because of the uncertainty principle, the nature of being able to measure everything simultaneously is gone here. Even if we know the location
+x
+⁢
+(
+t
+)
+, we will not be able to know its velocity
+v
+⁢
+(
+t
+)
+. In other words, the above inequality no longer holds. A new logic is needed for reasoning in non-classical physics, in particular,
+quantum theory
+.
+In the 1930’s, Birkhoff and von Neumann introduced a new kind of logic in dealing with quantum mechanics in their paper ”The logic of quantum mechanics”. In that paper, physical constructs were converted into mathematical ones. For example, a physical observable is nothing more than a
+Hermitian operator
+acting on an
+infinite dimensional
+Hilbert space
+over the
+complex numbers
+. And it turns out that many of the
+concepts
+quantum mechanics can be explained in terms of doing math on
+operators
+in a Hilbert space. Furthermore, the logic of quantum mechanics corresponds to that of the set of closed subspaces of an infinite dimensional Hilbert space. This set is a
+lattice
+and it is not a Boolean algebra, because its lack of distributivity, and therefore does not correspond to classical propositional logic. They tried to axiomatize this lattice as a
+complete
+complemented
+modular lattice
+(with atoms). It was soon realized (by Piron) that this lattice is not even
+modular
+.
+Definition
+Today, there are several inequivalent
+definitions
+of
+quantum logic
+, but all of which are in one form or another a
+generalization
+of a Boolean algebra (the algebraic form of classical logic). Initially, a quantum logic is none other than the
+lattice of projection
+operators over an
+infinite-dimensional
+separable Hilbert space. Since its
+introduction
+, the definition has been generalized, stripping away unnecessary details (atomicity for example) while keeping the essentials.
+One of the more general definitions says that a
+quantum logic
+is an
+ordered pair
+(
+L
+,
+F
+)
+, where
+L
+is an
+orthomodular poset
+L
+, and
+F
+is a set of
+functions
+on
+L
+, called
+states
+, taking values in the unit inverval
+[
+0
+,
+1
+]
+, satisfying the following conditions:
+1.
+f
+⁢
+(
+0
+)
+=
+0
+for each
+f
+∈
+F
+,
+2.
+f
+⁢
+(
+1
+)
+=
+1
+for each
+f
+∈
+F
+,
+3.
+if
+a
+≤
+b
+⟂
+, then
+f
+⁢
+(
+a
+∨
+b
+)
+=
+f
+⁢
+(
+a
+)
++
+f
+⁢
+(
+b
+)
+for each
+f
+∈
+F
+4.
+if
+f
+⁢
+(
+a
+)
+≤
+f
+⁢
+(
+b
+)
+for each
+f
+∈
+F
+, then
+a
+≤
+b
+. We say that
+F
+is
+full
+.
+One can think of
+L
+as a physical system (an electron, for example), and elements of
+L
+are
+propositions
+concerning the system.
+F
+can be regarded as a set of probability measures on the propositions. Conditions 1 and 2 say that
+1
+and
+0
+are propositions of
+L
+that are always true or always false, regardless of its states. Condition 3 is
+equivalent
+to the well-known law of finite additivity of a probability measure.
+Remark
+. One can define the notion of
+compatibility
+of a pair of
+elements
+(propositions) in a quantum logic:
+a
+,
+b
+∈
+L
+are
+compatible
+if they
+orthogonally commute
+, that is, there exist pairwise
+orthogonal
+elements
+c
+,
+d
+,
+e
+∈
+L
+such that
+a
+=
+c
+∨
+e
+and
+b
+=
+d
+∨
+e
+. It turns out that compatible propositions exactly
+parallel
+those physical propositions which can be experimentally tested “simultaneously”. A quantum logic
+L
+in which every two propositions are compatible is said to be a
+classical logic
+. It is not hard to show that a classical logic is a Boolean algebra.
+References
+1
+L. Beran,
+Orthomodular Lattices, Algebraic Approach
+, Mathematics and Its Applications (East European Series), D. Reidel Publishing Company, Dordrecht, Holland (1985).
+2
+G. Birkhoff,
+Lattice Theory
+, 3rd Edition, AMS Volume XXV, (1967).
+3
+G. Birkhoff, J. von Neumann,
+The logic of quantum mechanics
+, Ann. of Math. 37, pp. 823-843, (1936).
+4
+D. W. Cohen,
+An Introduction to Hilbert Space and Quantum Logic
+, Springer, (1989).
+5
+P. Mittelstaedt,
+Quantum Logic
+, D. Reidel Publishing Company, (1978).
+Title
+quantum logic
+Canonical
+name
+QuantumLogic
+Date of creation
+2013-03-22 16:49:09
+Last modified on
+2013-03-22 16:49:09
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+10
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 03G12
+Synonym
+compatible propositions
+Related topic
+LatticeOfProjections
+Related topic
+QuantumLogicsTopoi
+Related topic
+TopicEntryOnFoundationsOfMathematics
+Related topic
+ETAS
+Related topic
+QuantumTopos
+Related topic
+QuantumGroupsAndVonNeumannAlgebras
+Defines
+state
+Defines
+full set of states
+Defines
+compatible
+Defines
+classical logic
+Generated  on Thu Feb  8 20:27:04 2018 by
+LaTeXML

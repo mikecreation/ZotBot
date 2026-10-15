@@ -1,0 +1,403 @@
+simplified automaton
+simplified automaton
+Word acceptance is the primary
+function
+of an
+automaton
+. When a word is fed into an automaton at an initial state, it is accepted exactly when a final state is reached upon reading the last symbol of the word. So when a state does not contribute in anyway to word acceptance, it may be tossed out without changing the accepting power of the automaton.
+Definition
+. Let
+A
+=
+(
+S
+,
+Σ
+,
+δ
+,
+I
+,
+F
+)
+be an automaton. A state
+s
+∈
+S
+is said to be
+reachable
+from a state
+t
+∈
+S
+, if for some word
+u
+over
+Σ
+,
+t
+∈
+δ
+⁢
+(
+s
+,
+u
+)
+. A state is said to be
+accessible
+if it is reachable from a start state. A state is
+live
+or
+coaccessible
+if a final state can be reached from it. If a state is both accessible and live, then it is called
+useful
+.
+Clearly, every start state is accessible, and every final state is live. The following is the
+state diagram
+of an automaton that illustrates the
+concepts
+defined above.
+States
+σ
+,
+p
+,
+r
+,
+s
+are accessible, while states
+σ
+,
+p
+,
+q
+are live. So the useful states are
+σ
+and
+p
+.
+The automaton
+A
+is said to be
+accessible
+if every state in
+S
+is accessible, and is
+live
+if every state is live.
+A
+is called
+simplified
+or
+trim
+if it is both accessible and live (every state is useful).
+Proposition 1
+.
+An automaton is
+equivalent
+(
+http://planetmath.org/EquivalentAutomata
+) to a simplified automaton iff it accepts at least one word.
+Proof.
+Suppose an automaton
+A
+is equivalent to a simplified automaton
+A
+′
+. Then the set of start states of
+A
+′
+is non-empty, say containing a state
+q
+. So
+q
+is live, which means there is a word
+u
+such that
+δ
+⁢
+(
+p
+,
+u
+)
+contains a final state, or that
+u
+∈
+L
+⁢
+(
+A
+′
+)
+=
+L
+⁢
+(
+A
+)
+.
+Conversely
+, suppose an automaton
+A
+=
+(
+S
+,
+Σ
+,
+δ
+,
+I
+,
+F
+)
+accepts a word
+u
+. This means that there is a start state
+q
+and a final state
+r
+such that
+r
+∈
+δ
+⁢
+(
+q
+,
+u
+)
+, so that both
+q
+and
+r
+are useful. Now, let
+S
+′
+be the subset (of
+S
+) all useful states in
+A
+, and let
+I
+′
+=
+I
+∩
+S
+′
+,
+F
+′
+=
+F
+∩
+S
+′
+. Then neither
+I
+′
+nor
+F
+′
+is empty. Finally, let
+δ
+′
+be the
+restriction
+of
+δ
+on the set
+S
+′
+×
+Σ
+, such that
+δ
+′
+⁢
+(
+s
+,
+a
+)
+:=
+δ
+⁢
+(
+s
+,
+a
+)
+∩
+S
+′
+.
+Then the five-tuple
+A
+′
+:=
+(
+S
+′
+,
+Σ
+,
+δ
+′
+,
+I
+′
+,
+F
+′
+)
+is an automaton. Obviously,
+L
+⁢
+(
+A
+′
+)
+⊆
+L
+⁢
+(
+A
+)
+. On the other hand, the word
+u
+above is accepted by
+A
+′
+. Since
+u
+is arbitrary, we see that
+L
+⁢
+(
+A
+′
+)
+=
+L
+⁢
+(
+A
+)
+as a result.
+∎
+Remark
+. If we allow the start state set of an automaton to be empty, then every automaton can be simplified, whether or not it accepts any words.
+In the example above, the automaton is equivalent to the following simplified automaton:
+However, the construction in the proof shows that, given a deterministic automaton
+A
+, the simplified automaton
+A
+′
+may not be determinstic. In the example above,
+A
+′
+is not
+deterministic
+because
+δ
+⁢
+(
+σ
+,
+b
+)
+=
+∅
+. With respect to deterministic automata, the best we can do is the following:
+Proposition 2
+.
+A deterministic automaton is equivalent (
+http://planetmath.org/EquivalentAutomata
+) to a deterministic accessible automaton.
+The proof of this is very similar to the one given above, except
+S
+′
+,
+I
+′
+, and
+F
+′
+now consist of all accessible states, and
+δ
+′
+is just a restriction on the domain of
+δ
+, since if a state
+s
+is accessible, so is any state in
+δ
+⁢
+(
+s
+,
+a
+)
+for any
+a
+∈
+Σ
+.
+Again, referring the example above,
+A
+is deterministic, and it is equivalent to the following deterministic accessible automaton:
+The
+language
+accepted by the automaton is represented by the
+regular expression
+a
+⁢
+(
+a
+⁢
+b
+)
+*
+.
+Title
+simplified automaton
+Canonical name
+SimplifiedAutomaton
+Date of creation
+2013-03-22 19:01:51
+Last modified on
+2013-03-22 19:01:51
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+8
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 03D05
+Classification
+msc 68Q45
+Synonym
+trim automaton
+Synonym
+coaccessible
+Related topic
+ReducedAutomaton
+Defines
+reachable
+Defines
+accessible
+Defines
+live
+Defines
+useful
+Generated  on Thu Feb  8 19:59:49 2018 by
+LaTeXML

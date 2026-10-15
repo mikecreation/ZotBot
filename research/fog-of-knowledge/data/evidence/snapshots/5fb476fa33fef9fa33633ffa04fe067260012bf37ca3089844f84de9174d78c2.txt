@@ -1,0 +1,656 @@
+tensor product (vector spaces)
+tensor product (vector spaces)
+Definition
+.
+The classical conception of the
+tensor product
+operation
+involved finite dimensional
+vector spaces
+A
+,
+B
+, say over
+a field
+𝕂
+. To describe the tensor product
+A
+⊗
+B
+one
+was obliged to chose bases
+𝐚
+i
+∈
+A
+,
+i
+∈
+I
+,
+𝐛
+j
+∈
+B
+,
+j
+∈
+J
+of
+A
+and
+B
+indexed
+by
+finite sets
+I
+and
+J
+, respectively, and
+represent
+elements of
+𝐚
+∈
+A
+and
+𝐛
+∈
+B
+by their
+coordinates
+relative to these bases,
+i.e. as
+mappings
+a
+:
+I
+→
+𝕂
+and
+b
+:
+J
+→
+𝕂
+such that
+𝐚
+=
+∑
+i
+∈
+I
+a
+i
+⁢
+𝐚
+i
+,
+𝐛
+=
+∑
+j
+∈
+J
+b
+j
+⁢
+𝐛
+j
+.
+One then represented
+A
+⊗
+B
+relative to this particular choice
+of bases as the vector space of mappings
+c
+:
+I
+×
+J
+→
+𝕂
+. These mappings were called “
+second-order
+contravariant
+tensors
+” and their values were customarily denoted by
+superscripts
+,
+a.k.a. contravariant indices:
+c
+i
+⁢
+j
+∈
+𝕂
+,
+i
+∈
+I
+,
+j
+∈
+J
+.
+The
+canonical
+bilinear
+multiplication
+(also known as
+outer multiplication
+)
+⊗
+:
+A
+×
+B
+→
+A
+⊗
+B
+was defined by
+representing
+𝐚
+⊗
+𝐛
+, relative to the chosen bases, as the
+tensor
+c
+i
+⁢
+j
+=
+a
+i
+⁢
+b
+j
+,
+i
+∈
+I
+,
+j
+∈
+J
+.
+In this system, the
+products
+𝐚
+i
+⊗
+𝐛
+j
+,
+i
+∈
+I
+,
+j
+∈
+J
+were represented by
+basic
+tensors
+, specified in terms of the
+Kronecker deltas
+as the mappings
+(
+i
+′
+,
+j
+′
+)
+↦
+δ
+i
+i
+′
+⁢
+δ
+j
+j
+′
+,
+i
+′
+∈
+I
+,
+j
+′
+∈
+J
+.
+These gave a basis of
+A
+⊗
+B
+.
+The construction is independent of the choice of bases in the
+following sense. Let
+𝐚
+i
+′
+∈
+A
+,
+i
+∈
+I
+′
+,
+𝐛
+j
+′
+∈
+B
+,
+j
+∈
+J
+′
+be different bases of
+A
+and
+B
+with indexing sets
+I
+′
+and
+J
+′
+respectively. Let
+r
+:
+I
+×
+I
+′
+→
+𝕂
+,
+s
+:
+J
+×
+J
+′
+→
+𝕂
+,
+be the corresponding
+change of basis matrices
+determined by
+𝐚
+i
+′
+′
+=
+∑
+i
+∈
+I
+(
+r
+i
+′
+i
+)
+⁢
+𝐚
+i
+,
+i
+′
+∈
+I
+′
+𝐛
+j
+′
+′
+=
+∑
+j
+∈
+I
+(
+s
+j
+′
+j
+)
+⁢
+𝐛
+j
+,
+j
+′
+∈
+J
+′
+.
+One then stipulated that tensors
+c
+:
+I
+×
+J
+→
+𝕂
+and
+c
+′
+:
+I
+′
+×
+J
+′
+→
+𝕂
+represent the same element of
+A
+⊗
+B
+if
+c
+i
+⁢
+j
+=
+∑
+i
+′
+∈
+I
+′
+j
+′
+∈
+J
+′
+(
+r
+i
+′
+i
+)
+⁢
+(
+s
+j
+′
+j
+)
+⁢
+(
+c
+′
+)
+i
+′
+⁢
+j
+′
+(1)
+for all
+i
+∈
+I
+,
+j
+∈
+J
+. This
+relation
+corresponds to the fact that
+the products
+𝐚
+i
+′
+⊗
+𝐛
+j
+′
+,
+i
+∈
+I
+′
+,
+j
+∈
+J
+′
+constitute an alternate basis of
+A
+⊗
+B
+, and that the change of
+basis relations are
+𝐚
+i
+′
+′
+⊗
+𝐛
+j
+′
+′
+=
+∑
+i
+∈
+I
+j
+∈
+J
+(
+r
+i
+′
+i
+)
+⁢
+(
+s
+j
+′
+j
+)
+⁢
+𝐚
+i
+⊗
+𝐛
+j
+,
+i
+′
+∈
+I
+′
+,
+j
+′
+∈
+J
+′
+.
+(2)
+Notes.
+Historically, the tensor product was called the
+outer
+product, and has its origins in the absolute differential
+calculus (the theory of
+manifolds
+). The old-time
+tensor calculus
+is
+difficult to understand because it is afflicted with a particularly
+lethal notation that makes coherent
+comprehension
+all but impossible.
+Instead of talking about an
+element
+𝐚
+of a vector space, one was
+obliged to contemplate a symbol
+𝐚
+i
+, which signified a list of
+real numbers indexed by
+1
+,
+2
+,
+…
+,
+n
+, and which was understood to
+represent
+𝐚
+relative to some specified, but unnamed basis.
+What makes this notation truly lethal is the fact a symbol
+𝐚
+j
+was
+taken to signify an alternate list of real numbers, also indexed by
+1
+,
+…
+,
+n
+, and also representing
+𝐚
+, albeit relative to a
+different, but equally unspecified basis. Note that the choice of
+dummy variables make all the
+difference
+.
+Any sane system of
+notation would regard the
+expression
+𝐚
+i
+,
+i
+=
+1
+,
+…
+,
+n
+as representing a list of
+n
+symbols
+𝐚
+1
+,
+𝐚
+2
+,
+…
+,
+𝐚
+n
+.
+However, in the
+classical system
+, one was
+strictly
+forbidden from
+using
+𝐚
+1
+,
+𝐚
+2
+,
+…
+,
+𝐚
+n
+because where, after all, is the all important
+dummy variable to indicate choice of basis?
+Thankfully, it is possible to shed some light onto this confusion (I
+have read that this is credited to Roger Penrose) by interpreting the
+symbol
+𝐚
+i
+as a mapping from some finite
+index set
+I
+to
+ℝ
+, whereas
+𝐚
+j
+is interpreted as a mapping from another
+finite index set
+J
+(of equal
+cardinality
+) to
+ℝ
+.
+My own surmise is that the source of this notational difficulty stems
+from the reluctance of the ancients to deal with geometric objects
+directly. The prevalent superstition of the age held that in order to
+have meaning, a geometric entity had to be
+measured
+relative to
+some basis. Of course, it was understood that geometrically no one
+basis could be preferred to any other, and this leads directly to the
+definition of geometric entities as lists of measurements modulo the
+equivalence engendered by changing the basis.
+It is also worth remarking on the contravariant nature of the
+relationship between the actual elements of
+A
+⊗
+B
+and the
+corresponding representation by tensors relative to a basis — compare
+equations (1) and (2).
+This relationship is the source of the
+terminology “contravariant tensor” and “
+contravariant index
+”, and
+I surmise that it
+is this very medieval pit of darkness and confusion that spawned the
+present-day notion of “
+contravariant functor
+”.
+References.
+1.
+Levi-Civita, “The Absolute Differential Calculus.”
+Title
+tensor product (vector spaces)
+Canonical name
+TensorProductvectorSpaces
+Date of creation
+2013-03-22 12:21:40
+Last modified on
+2013-03-22 12:21:40
+Owner
+rmilson (146)
+Last modified by
+rmilson (146)
+Numerical id
+10
+Author
+rmilson (146)
+Entry type
+Definition
+Classification
+msc 15A69
+Synonym
+tensor product
+Related topic
+OuterMultiplication
+Generated  on Fri Feb  9 18:31:41 2018 by
+LaTeXML

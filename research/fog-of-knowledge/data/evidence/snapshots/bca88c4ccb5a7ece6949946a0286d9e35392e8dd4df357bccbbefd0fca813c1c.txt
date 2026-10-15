@@ -1,0 +1,101 @@
+reverse Polish notation
+reverse Polish notation
+Whereas
+operators
+are traditionally placed between operands, with parentheses used to override
+operator precedence
+, it is possible to place operators to the right of operands, thus eliminating ambiguity and the need for parentheses, and even the need for rules of operator precedence. This is known as
+reverse Polish notation
+(after the Polish mathematician Jan Łukasiewicz who came up with
+Polish notation
+, abbreviated
+RPN
+), or
+postfix notation
+. Invented by Australian philosopher Charles Hamblin, reverse Polish notation requires that the number of operands of a given operator be defined in advance.
+For example,
+3
+×
+16
+-
+1
+probably means 47, but if the possibility exists that the author meant but neglected to put in parentheses, the
+expression
+could actually mean
+3
+×
+(
+16
+-
+1
+)
+=
+45
+. In reverse Polish notation, we could define the basic
+arithmetic
+operators to all be binary, and write
+3
+16
+×
+1
+-
+with the confidence that it will evaluate to 47 and not 45.
+Reverse Polish notation is particularly advantageous for stack-based programming languages like Forth and Adobe PostScript. Most Hewlett-Packard
+calculators
+use reverse Polish notation (though a few, such as the HP-38G, use the sort of
+infix notation
+conventional to most calculators). Some beginning programming language courses give as an exercise to the student the implementation of an RPN calculator. Instead of having to remember multiple addresses for different
+variables
+and
+constants
+, most RPN implementations use a stack and a stack pointer to keep track of data.
+The
+factorial
+notation (e.g.,
+n
+!
+) is a fairly common use of postfix notation in mostly infix
+contexts
+. (Most unary operators in C++ are prefix).
+To convert from standard infix notation to reverse Polish notation, the Dutch
+computer
+programmer Edsger Dijkstra came up with the
+shunting yard algorithm
+.
+Title
+reverse Polish notation
+Canonical
+name
+ReversePolishNotation
+Date of creation
+2013-03-22 16:10:04
+Last modified on
+2013-03-22 16:10:04
+Owner
+Mravinci (12996)
+Last modified by
+Mravinci (12996)
+Numerical id
+6
+Author
+Mravinci (12996)
+Entry type
+Definition
+Classification
+msc 68N17
+Classification
+msc 03B70
+Synonym
+postfix notation
+Synonym
+RPN
+Synonym
+Zciweisakul notation
+Synonym
+reverse-Polish
+Synonym
+reverse-Polish notation
+Related topic
+PolishNotation
+Generated  on Sat Feb 10 12:37:38 2018 by
+LaTeXML
