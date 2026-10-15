@@ -1,0 +1,1257 @@
+<!doctype html><html lang="en"><head>
+
+<title>MeSH Browser</title>
+
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+
+<link rel="stylesheet" href="/public/css/font-awesome.css">
+<link rel="stylesheet" href="/public/css/bootstrap.css">
+<link rel="stylesheet" href="/public/css/mongoMesh.css">
+<link rel="icon" type="image/jpeg" href="/public/img/meshLogo.jpg">
+
+<base href="/">
+<script src="https://www.nlm.nih.gov/coop_all_uswds.js?v=1792068800622"></script>
+
+<script>
+
+    if (document.domain != "localhost")
+        document.domain = "nlm.nih.gov";
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        try {
+
+            if (coopmsg
+                && !/(^|; *)shutdown-banner=/.test(document.cookie))
+
+                document.querySelector(
+                    "body > div"
+                ).insertAdjacentHTML(
+                    "afterbegin",
+                    "<div id='shutdown-banner'><p>" + coopmsg
+                    + "</p><button type='button' role='button'"
+                    + " aria-label='Close' onclick='"
+                    + 'document.getElementById("shutdown-banner")'
+                    + '.remove(); document.cookie ='
+                    + ' "shutdown-banner=hidden; path=/";'
+                    + "'>Close</button></div>"
+                );
+
+        } catch (error) {
+            /* The "coopmsg" variable is only defined during a
+             * shutdown. */
+            if (!(error instanceof ReferenceError))
+                throw error;
+        }
+
+    });
+
+    var dcmsLinks = false,
+        dcmsParam = dcmsLinks
+                    ? function (sep) { return sep + "dcmsLinks=true"; }
+                    : function (   ) { return ""                    ; };
+
+</script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){
+        var _fullPath = window.location.href;
+        var urlParams = _fullPath.slice(_fullPath.indexOf('?') + 1).split('&');
+        var IsOpen = "false";
+        if (urlParams != undefined && urlParams != null && urlParams != "") {
+            IsOpen = urlParams[0].split("=")[1];
+        }
+
+        if (IsOpen == "false" || IsOpen == undefined || IsOpen != "true") {
+            w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        }
+    })(window,document,'script','dataLayer','GTM-5QZ7KJZ');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe sandbox src="https://www.googletagmanager.com/ns.html?id=GTM-5QZ7KJZ"
+                  height="0" width="0" style="display:none;visibility:hidden" title="googletagmanager"></iframe></noscript> 
+<!-- End Google Tag Manager (noscript) -->
+
+<script src="/public/js/elemUtil.js"></script>
+
+<script src="/public/js/record.js"  ></script>
+<script src="/public/js/treeDom.js" ></script>
+</head><body>
+
+<div>
+
+    <header class="NLMheader">
+        <a href="https://www.nlm.nih.gov/">
+          <img height="80" alt="NLM Logo"
+               src="https://www.nlm.nih.gov/images/NLM_White.png">
+        </a>
+        <!--<img class="starLogo"src="/public/img/NLM_Star.png" alt="NLM Star">-->
+    </header>
+<nav class="navbar navbar-default">
+
+  <div class="container-fluid">
+
+        <div class="navbar-header">
+
+          <button class="navbar-toggle collapsed" type="button"
+                  aria-expanded="false"
+                  onclick="toggleCollapse('bs-example-navbar-collapse-1')">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://www.nlm.nih.gov/mesh/">
+                <img id="meshNavbarLogo" src="/public/img/meshLogo.jpg" alt="MeSH Logo">
+            </a>
+        </div>
+
+        <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse"
+             aria-expanded="false">
+            <ul class="nav navbar-nav">
+                
+                <li><a href="/" id="mainSearchButton">Search</a></li>
+                <li><a href="/treeView">Tree View</a></li>
+                <li><a href="/MeSHonDemand">MeSH on Demand</a> </li> <!--Delete the Span Tags after  a few months, once MeSH on Demand is no longer new-->
+                <li><a href="https://meshb-prev.nlm.nih.gov/" target="_blank">MeSH 2027</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/mbinfo.html" target="_blank">About</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/meshsugg.html" target="_blank">Suggestions</a> </li>
+                <li><a href="https://support.nlm.nih.gov/support/create-case/" target="_blank">Contact Us</a></li>
+            </ul>
+
+        </div>
+
+  </div>
+
+</nav>
+
+</div>
+
+<div class="container">
+
+
+
+
+<h1>Bayes Theorem <small>MeSH Descriptor            Data 2026</small></h1>
+
+<ul class="nav nav-tabs">
+    <li id="details" class="active"
+        onclick="switchTab([ 'details', 'detailsTabContent' ])">
+        <a class="fakeLink">Details</a></li>
+    
+        <li id="qualifiers"
+            onclick="switchTab([ 'qualifiers', 'qualifiersTabContent' ])">
+            <a class="fakeLink">Qualifiers</a></li>
+        <li id="trees" onclick="switchTab([ 'trees', 'treesTabContent' ])">
+            <a class="fakeLink">MeSH Tree Structures</a></li>
+    
+    <li id="concepts" onclick="switchTab([ 'concepts', 'conceptsTabContent' ])">
+        <a class="fakeLink">Concepts</a></li>
+</ul>
+
+
+
+<div class="tab-content"><br>
+<div id="detailsTabContent" class="tab-pane active">
+
+    <dl id="descriptorDetails_BayesTheorem"
+        class="dl-horizontal">
+
+        <dt>MeSH Heading      </dt>
+
+        <dd>Bayes Theorem</dd>
+
+        
+                    <dt>Tree Number(s)</dt>
+                    
+                        <dd><a id="treeNumber_0" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >E05.318.740.600.200</a></dd>
+                    
+                        <dd><a id="treeNumber_1" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >N05.715.360.750.625.150</a></dd>
+                    
+                        <dd><a id="treeNumber_2" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >N06.850.520.830.600.200</a></dd>
+                    
+
+        <dt>Unique ID</dt><dd>D001499</dd>
+
+        <dt>RDF Unique Identifier</dt>
+        <dd><a href="https://id.nlm.nih.gov/mesh/D001499.html">
+            http://id.nlm.nih.gov/mesh/D001499
+        </a></dd>
+
+        <span id="annotation">
+            <dt>Annotation</dt><dd>IM general only</dd>
+        </span>
+                <span id="scopeNote">
+                    <dt>Scope Note</dt><dd>A theorem in probability theory named for Thomas Bayes (1702-1761). In epidemiology, it is used to obtain the probability of disease in a group of people with some characteristic on the basis of the overall rate of that disease and of the likelihood of that characteristic in healthy and diseased individuals. The most familiar application is in clinical decision analysis where it is used for estimating the probability of a particular diagnosis given the appearance of some symptoms or test result.</dd>
+                </span>
+            
+                <dt>Entry Term(s)</dt>
+                <dd>
+                    Analysis, Bayesian
+                    
+                </dd><dd>
+                    Bayesian Analysis
+                    
+                </dd><dd>
+                    Bayesian Approach
+                    
+                </dd><dd>
+                    Bayesian Estimation
+                    
+                </dd><dd>
+                    Bayesian Forecast
+                    
+                </dd><dd>
+                    Bayesian Method
+                    
+                </dd><dd>
+                    Bayesian Prediction
+                    
+                </dd>
+                <dt>Previous Indexing</dt>
+                
+                    <dd>Probability (1966-1974)</dd>
+                
+            <dt>Public MeSH Note</dt><dd>91; was see under PROBABILITY 1975-90</dd>
+        
+            <dt>Online Note</dt><dd>search PROBABILITY 1968-74</dd>
+        
+            <dt>History Note</dt><dd>91(75); was see under PROBABILITY 1975-90</dd>
+        
+        
+
+
+        
+                <dt>Date Introduced</dt>
+                <dd>1991/01/01</dd>
+            
+                <dt>Last Updated</dt>
+                <dd>2021/03/26</dd>
+            
+
+    </dl>
+
+</div>
+
+<div id="qualifiersTabContent" class="tab-pane">
+
+    <dl class="dl-horizontal">
+
+        
+<br>
+
+        
+            <dt>No Qualifiers</dt><dd></dd>
+        
+
+    </dl>
+
+</div><div id="treesTabContent" class="tab-pane">
+
+    <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_E05"
+           
+               href="/record/ui?ui=D008919"
+           
+        ><span>Investigative Techniques [E05]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_E05_318"
+           
+               href="/record/ui?ui=D004812"
+           
+        ><span>Epidemiologic Methods [E05.318]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_E05_318_740"
+           
+               href="/record/ui?ui=D013223"
+           
+        ><span>Statistics as Topic [E05.318.740]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_E05_318_740_600"
+           
+               href="/record/ui?ui=D011336"
+           
+        ><span>Probability [E05.318.740.600]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_E05_318_740_600_200"
+           
+               href="/record/ui?ui=D001499"
+           
+        ><strong>Bayes Theorem [E05.318.740.600.200]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_318_740_600_400"
+           
+               href="/record/ui?ui=D016013"
+           
+        ><span>Likelihood Functions [E05.318.740.600.400]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_318_740_600_500"
+           
+               href="/record/ui?ui=D008390"
+           
+        ><span>Markov Chains [E05.318.740.600.500]</span>
+        </a>
+        
+            <i id="plus_Markov_Chains" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Markov_Chains" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_318_740_600_600"
+           
+               href="/record/ui?ui=D016017"
+           
+        ><span>Odds Ratio [E05.318.740.600.600]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_318_740_600_650"
+           
+               href="/record/ui?ui=D056510"
+           
+        ><span>Position-Specific Scoring Matrices [E05.318.740.600.650]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_318_740_600_675"
+           
+               href="/record/ui?ui=D057216"
+           
+        ><span>Propensity Score [E05.318.740.600.675]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_318_740_600_700"
+           
+               href="/record/ui?ui=D016016"
+           
+        ><span>Proportional Hazards Models [E05.318.740.600.700]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_318_740_600_800"
+           
+               href="/record/ui?ui=D012306"
+           
+        ><span>Risk [E05.318.740.600.800]</span>
+        </a>
+        
+            <i id="plus_Risk" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Risk" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_318_740_600_900"
+           
+               href="/record/ui?ui=D035501"
+           
+        ><span>Uncertainty [E05.318.740.600.900]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_N05"
+           
+               href="/record/ui?ui=D017530"
+           
+        ><span>Health Care Quality, Access, and Evaluation [N05]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_N05_715"
+           
+               href="/record/ui?ui=D011787"
+           
+        ><span>Quality of Health Care [N05.715]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_N05_715_360"
+           
+               href="/record/ui?ui=D017531"
+           
+        ><span>Health Care Evaluation Mechanisms [N05.715.360]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_N05_715_360_750"
+           
+               href="/record/ui?ui=D013223"
+           
+        ><span>Statistics as Topic [N05.715.360.750]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_N05_715_360_750_625"
+           
+               href="/record/ui?ui=D011336"
+           
+        ><span>Probability [N05.715.360.750.625]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_N05_715_360_750_625_150"
+           
+               href="/record/ui?ui=D001499"
+           
+        ><strong>Bayes Theorem [N05.715.360.750.625.150]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N05_715_360_750_625_450"
+           
+               href="/record/ui?ui=D016013"
+           
+        ><span>Likelihood Functions [N05.715.360.750.625.450]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N05_715_360_750_625_500"
+           
+               href="/record/ui?ui=D008390"
+           
+        ><span>Markov Chains [N05.715.360.750.625.500]</span>
+        </a>
+        
+            <i id="plus_Markov_Chains" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Markov_Chains" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N05_715_360_750_625_590"
+           
+               href="/record/ui?ui=D016017"
+           
+        ><span>Odds Ratio [N05.715.360.750.625.590]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N05_715_360_750_625_620"
+           
+               href="/record/ui?ui=D057216"
+           
+        ><span>Propensity Score [N05.715.360.750.625.620]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N05_715_360_750_625_650"
+           
+               href="/record/ui?ui=D016016"
+           
+        ><span>Proportional Hazards Models [N05.715.360.750.625.650]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N05_715_360_750_625_700"
+           
+               href="/record/ui?ui=D012306"
+           
+        ><span>Risk [N05.715.360.750.625.700]</span>
+        </a>
+        
+            <i id="plus_Risk" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Risk" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_N05_715_360_750_625_850"
+           
+               href="/record/ui?ui=D035501"
+           
+        ><span>Uncertainty [N05.715.360.750.625.850]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_N06"
+           
+               href="/record/ui?ui=D004778"
+           
+        ><span>Environment and Public Health [N06]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_N06_850"
+           
+               href="/record/ui?ui=D011634"
+           
+        ><span>Public Health [N06.850]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_N06_850_520"
+           
+               href="/record/ui?ui=D004812"
+           
+        ><span>Epidemiologic Methods [N06.850.520]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_N06_850_520_830"
+           
+               href="/record/ui?ui=D013223"
+           
+        ><span>Statistics as Topic [N06.850.520.830]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_N06_850_520_830_600"
+           
+               href="/record/ui?ui=D011336"
+           
+        ><span>Probability [N06.850.520.830.600]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_N06_850_520_830_600_200"
+           
+               href="/record/ui?ui=D001499"
+           
+        ><strong>Bayes Theorem [N06.850.520.830.600.200]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_2_node_N06_850_520_830_600_400"
+           
+               href="/record/ui?ui=D016013"
+           
+        ><span>Likelihood Functions [N06.850.520.830.600.400]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_N06_850_520_830_600_500"
+           
+               href="/record/ui?ui=D008390"
+           
+        ><span>Markov Chains [N06.850.520.830.600.500]</span>
+        </a>
+        
+            <i id="plus_Markov_Chains" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Markov_Chains" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_N06_850_520_830_600_600"
+           
+               href="/record/ui?ui=D016017"
+           
+        ><span>Odds Ratio [N06.850.520.830.600.600]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_N06_850_520_830_600_650"
+           
+               href="/record/ui?ui=D057216"
+           
+        ><span>Propensity Score [N06.850.520.830.600.650]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_N06_850_520_830_600_700"
+           
+               href="/record/ui?ui=D016016"
+           
+        ><span>Proportional Hazards Models [N06.850.520.830.600.700]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_N06_850_520_830_600_800"
+           
+               href="/record/ui?ui=D012306"
+           
+        ><span>Risk [N06.850.520.830.600.800]</span>
+        </a>
+        
+            <i id="plus_Risk" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Risk" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_N06_850_520_830_600_900"
+           
+               href="/record/ui?ui=D035501"
+           
+        ><span>Uncertainty [N06.850.520.830.600.900]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+
+</div>
+
+<div id="conceptsTabContent" class="tab-pane">
+
+    <button id="ExpandAll" class="btn btn-default btn-sm pull-right"
+            onclick="toggleConcepts()">
+        <span id="expandConcepts"                        >  Expand All</span>
+        <span id="collapseConcepts" style="display: none">Collapse All</span>
+    </button>
+
+    
+
+        <div>
+        <span id="Nightwatch_cp_0_0"
+              onclick="toggleCollapse('cp_0_0', 'Nightwatch_cp_0_0')">
+        <a class="fakeLink"><b>
+            Bayes Theorem
+            <i>Preferred</i>
+        </b></a></span>
+
+        <div id="cp_0_0" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0002234</dd>
+
+            
+                <dt>Scope Note</dt><dd>A theorem in probability theory named for Thomas Bayes (1702-1761). In epidemiology, it is used to obtain the probability of disease in a group of people with some characteristic on the basis of the overall rate of that disease and of the likelihood of that characteristic in healthy and diseased individuals. The most familiar application is in clinical decision analysis where it is used for estimating the probability of a particular diagnosis given the appearance of some symptoms or test result.</dd>
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_0_0"
+                      onclick="toggleCollapse('termName_0_0',
+                                              'Nightwatch_termName_0_0')">
+                    <a class="fakeLink"><b>Bayes Theorem</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_0_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T004352<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>01/01/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    EPO<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1975)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_1_1"
+              onclick="toggleCollapse('cp_1_1', 'Nightwatch_cp_1_1')">
+        <a class="fakeLink"><b>
+            Bayesian Analysis
+            <i>Related</i>
+        </b></a></span>
+
+        <div id="cp_1_1" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0002235</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_1_0"
+                      onclick="toggleCollapse('termName_1_0',
+                                              'Nightwatch_termName_1_0')">
+                    <a class="fakeLink"><b>Bayesian Analysis</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_1_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T004354<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>06/20/1986<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    EPO<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        UNK (19XX)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_1_1"
+                      onclick="toggleCollapse('termName_1_1',
+                                              'Nightwatch_termName_1_1')">
+                    <a class="fakeLink"><b>Bayesian Approach</b></a></span>
+
+                
+
+                <div id="termName_1_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T000870906<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/18/2014<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2016)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_1_2"
+                      onclick="toggleCollapse('termName_1_2',
+                                              'Nightwatch_termName_1_2')">
+                    <a class="fakeLink"><b>Analysis, Bayesian</b></a></span>
+
+                
+
+                <div id="termName_1_2" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T004353<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>06/20/1986<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    EPO<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        UNK (19XX)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_2_2"
+              onclick="toggleCollapse('cp_2_2', 'Nightwatch_cp_2_2')">
+        <a class="fakeLink"><b>
+            Bayesian Forecast
+            <i>Related</i>
+        </b></a></span>
+
+        <div id="cp_2_2" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0002236</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_2_0"
+                      onclick="toggleCollapse('termName_2_0',
+                                              'Nightwatch_termName_2_0')">
+                    <a class="fakeLink"><b>Bayesian Forecast</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_2_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T004355<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>06/20/1986<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    EPO<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        UNK (19XX)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_3_3"
+              onclick="toggleCollapse('cp_3_3', 'Nightwatch_cp_3_3')">
+        <a class="fakeLink"><b>
+            Bayesian Method
+            <i>Related</i>
+        </b></a></span>
+
+        <div id="cp_3_3" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0002237</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_3_0"
+                      onclick="toggleCollapse('termName_3_0',
+                                              'Nightwatch_termName_3_0')">
+                    <a class="fakeLink"><b>Bayesian Method</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_3_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T004356<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>06/20/1986<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    EPO<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        UNK (19XX)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_4_4"
+              onclick="toggleCollapse('cp_4_4', 'Nightwatch_cp_4_4')">
+        <a class="fakeLink"><b>
+            Bayesian Prediction
+            <i>Related</i>
+        </b></a></span>
+
+        <div id="cp_4_4" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0002238</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_4_0"
+                      onclick="toggleCollapse('termName_4_0',
+                                              'Nightwatch_termName_4_0')">
+                    <a class="fakeLink"><b>Bayesian Prediction</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_4_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T004357<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>06/20/1986<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    EPO<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        UNK (19XX)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_4_1"
+                      onclick="toggleCollapse('termName_4_1',
+                                              'Nightwatch_termName_4_1')">
+                    <a class="fakeLink"><b>Bayesian Estimation</b></a></span>
+
+                
+
+                <div id="termName_4_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T001095544<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>01/25/2021<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    EPO<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2022)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+</div></div>
+
+<small class="pull-right">
+    page delivered in 0.121s
+</small>
+
+</div>
+
+<footer class="footer">
+    <div class="container-fluid"><div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/socialmedia/index.html">
+                    Connect with NLM
+                </a></p>
+                <ul class="list-inline">
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://twitter.com/NLM_NIH">
+                        <img src="https://www.nlm.nih.gov/images/Twitter_W.svg"
+                             alt="Twitter">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.facebook.com/nationallibraryofmedicine"
+                    ><img src="https://www.nlm.nih.gov/images/Facebook_W.svg"
+                          alt="Facebook">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.youtube.com/user/NLMNIH">
+                        <img src="https://www.nlm.nih.gov/images/YouTube_W.svg"
+                             alt="You Tube">
+                    </a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p>National Library of Medicine<br>
+                    <a href="https://www.google.com/maps/place/8600+Rockville+Pike,+Bethesda,+MD+20894/@38.9959508,-77.101021,17z/data=!3m1!4b1!4m5!3m4!1s0x89b7c95e25765ddb:0x19156f88b27635b8!8m2!3d38.9959508!4d-77.0988323">
+                        8600 Rockville Pike<br>
+                        Bethesda, MD 20894
+                    </a>
+                </p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/web_policies.html">
+                    Web Policies
+                </a><br>
+                <a href="https://www.nih.gov/institutes-nih/nih-office-director/office-communications-public-liaison/freedom-information-act-office">
+                    FOIA
+                </a><br>
+                <a href="https://www.hhs.gov/vulnerability-disclosure-policy/index.html">
+                    HHS Vulnerability Disclosure
+                </a></p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href=
+                      "https://support.nlm.nih.gov?from=https://www.nlm.nih.gov/">
+                    NLM Support Center
+                </a><br>
+                <a href="https://www.nlm.nih.gov/accessibility.html">
+                    Accessibility
+                </a><br>
+                <a href="https://www.nlm.nih.gov/careers/careers.html">
+                    Careers
+                </a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+              <p class="text-center"> <a href="https://www.nlm.nih.gov/">NLM</a> | <a href="https://www.nih.gov/">NIH</a> | <a href="https://www.hhs.gov/">HHS</a> | <a href="https://www.usa.gov/">USA.gov</a></p>
+            </div>
+        </div>
+    </div></div>
+<!--BEGIN QUALTRICS WEBSITE FEEDBACK SNIPPET-->
+<script type='text/javascript'>
+(function(){var g=function(e,h,f,g){
+this.get=function(a){for(var a=a+"=",c=document.cookie.split(";"),b=0,e=c.length;b<e;b++){for(var d=c[b];" "==d.charAt(0);)d=d.substring(1,d.length);if(0==d.indexOf(a))return d.substring(a.length,d.length)}return null};
+this.set=function(a,c){var b="",b=new Date;b.setTime(b.getTime()+6048E5);b="; expires="+b.toGMTString();document.cookie=a+"="+c+b+"; path=/; "};
+this.check=function(){var a=this.get(f);if(a)a=a.split(":");else if(100!=e)"v"==h&&(e=Math.random()>=e/100?0:100),a=[h,e,0],this.set(f,a.join(":"));else return!0;var c=a[1];if(100==c)return!0;switch(a[0]){case "v":return!1;case "r":return c=a[2]%Math.floor(100/c),a[2]++,this.set(f,a.join(":")),!c}return!0};
+this.go=function(){if(this.check()){var a=document.createElement("script");a.type="text/javascript";a.src=g;document.body&&document.body.appendChild(a)}};
+this.start=function(){var t=this;"complete"!==document.readyState?window.addEventListener?window.addEventListener("load",function(){t.go()},!1):window.attachEvent&&window.attachEvent("onload",function(){t.go()}):t.go()};};
+try{(new g(100,"r","QSI_S_ZN_cwOHfLkxRr4n4W2","https://zncwohflkxrr4n4w2-nlmenterprise.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_cwOHfLkxRr4n4W2")).start()}catch(i){}})();
+</script><div id='ZN_cwOHfLkxRr4n4W2'><!--DO NOT REMOVE-CONTENTS PLACED HERE--></div>
+<!--END WEBSITE FEEDBACK SNIPPET-->
+</footer>
+
+</body></html>
+

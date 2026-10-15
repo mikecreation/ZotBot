@@ -1,0 +1,1378 @@
+<!doctype html><html lang="en"><head>
+
+<title>MeSH Browser</title>
+
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+
+<link rel="stylesheet" href="/public/css/font-awesome.css">
+<link rel="stylesheet" href="/public/css/bootstrap.css">
+<link rel="stylesheet" href="/public/css/mongoMesh.css">
+<link rel="icon" type="image/jpeg" href="/public/img/meshLogo.jpg">
+
+<base href="/">
+<script src="https://www.nlm.nih.gov/coop_all_uswds.js?v=1792068683653"></script>
+
+<script>
+
+    if (document.domain != "localhost")
+        document.domain = "nlm.nih.gov";
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        try {
+
+            if (coopmsg
+                && !/(^|; *)shutdown-banner=/.test(document.cookie))
+
+                document.querySelector(
+                    "body > div"
+                ).insertAdjacentHTML(
+                    "afterbegin",
+                    "<div id='shutdown-banner'><p>" + coopmsg
+                    + "</p><button type='button' role='button'"
+                    + " aria-label='Close' onclick='"
+                    + 'document.getElementById("shutdown-banner")'
+                    + '.remove(); document.cookie ='
+                    + ' "shutdown-banner=hidden; path=/";'
+                    + "'>Close</button></div>"
+                );
+
+        } catch (error) {
+            /* The "coopmsg" variable is only defined during a
+             * shutdown. */
+            if (!(error instanceof ReferenceError))
+                throw error;
+        }
+
+    });
+
+    var dcmsLinks = false,
+        dcmsParam = dcmsLinks
+                    ? function (sep) { return sep + "dcmsLinks=true"; }
+                    : function (   ) { return ""                    ; };
+
+</script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){
+        var _fullPath = window.location.href;
+        var urlParams = _fullPath.slice(_fullPath.indexOf('?') + 1).split('&');
+        var IsOpen = "false";
+        if (urlParams != undefined && urlParams != null && urlParams != "") {
+            IsOpen = urlParams[0].split("=")[1];
+        }
+
+        if (IsOpen == "false" || IsOpen == undefined || IsOpen != "true") {
+            w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        }
+    })(window,document,'script','dataLayer','GTM-5QZ7KJZ');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe sandbox src="https://www.googletagmanager.com/ns.html?id=GTM-5QZ7KJZ"
+                  height="0" width="0" style="display:none;visibility:hidden" title="googletagmanager"></iframe></noscript> 
+<!-- End Google Tag Manager (noscript) -->
+
+<script src="/public/js/elemUtil.js"></script>
+
+<script src="/public/js/record.js"  ></script>
+<script src="/public/js/treeDom.js" ></script>
+</head><body>
+
+<div>
+
+    <header class="NLMheader">
+        <a href="https://www.nlm.nih.gov/">
+          <img height="80" alt="NLM Logo"
+               src="https://www.nlm.nih.gov/images/NLM_White.png">
+        </a>
+        <!--<img class="starLogo"src="/public/img/NLM_Star.png" alt="NLM Star">-->
+    </header>
+<nav class="navbar navbar-default">
+
+  <div class="container-fluid">
+
+        <div class="navbar-header">
+
+          <button class="navbar-toggle collapsed" type="button"
+                  aria-expanded="false"
+                  onclick="toggleCollapse('bs-example-navbar-collapse-1')">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://www.nlm.nih.gov/mesh/">
+                <img id="meshNavbarLogo" src="/public/img/meshLogo.jpg" alt="MeSH Logo">
+            </a>
+        </div>
+
+        <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse"
+             aria-expanded="false">
+            <ul class="nav navbar-nav">
+                
+                <li><a href="/" id="mainSearchButton">Search</a></li>
+                <li><a href="/treeView">Tree View</a></li>
+                <li><a href="/MeSHonDemand">MeSH on Demand</a> </li> <!--Delete the Span Tags after  a few months, once MeSH on Demand is no longer new-->
+                <li><a href="https://meshb-prev.nlm.nih.gov/" target="_blank">MeSH 2027</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/mbinfo.html" target="_blank">About</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/meshsugg.html" target="_blank">Suggestions</a> </li>
+                <li><a href="https://support.nlm.nih.gov/support/create-case/" target="_blank">Contact Us</a></li>
+            </ul>
+
+        </div>
+
+  </div>
+
+</nav>
+
+</div>
+
+<div class="container">
+
+
+
+
+<h1>Microscopy, Video <small>MeSH Descriptor            Data 2026</small></h1>
+
+<ul class="nav nav-tabs">
+    <li id="details" class="active"
+        onclick="switchTab([ 'details', 'detailsTabContent' ])">
+        <a class="fakeLink">Details</a></li>
+    
+        <li id="qualifiers"
+            onclick="switchTab([ 'qualifiers', 'qualifiersTabContent' ])">
+            <a class="fakeLink">Qualifiers</a></li>
+        <li id="trees" onclick="switchTab([ 'trees', 'treesTabContent' ])">
+            <a class="fakeLink">MeSH Tree Structures</a></li>
+    
+    <li id="concepts" onclick="switchTab([ 'concepts', 'conceptsTabContent' ])">
+        <a class="fakeLink">Concepts</a></li>
+</ul>
+
+
+
+<div class="tab-content"><br>
+<div id="detailsTabContent" class="tab-pane active">
+
+    <dl id="descriptorDetails_Microscopy,Video"
+        class="dl-horizontal">
+
+        <dt>MeSH Heading      </dt>
+
+        <dd>Microscopy, Video</dd>
+
+        
+                    <dt>Tree Number(s)</dt>
+                    
+                        <dd><a id="treeNumber_0" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >E01.370.350.515.690</a></dd>
+                    
+                        <dd><a id="treeNumber_1" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >E05.595.690</a></dd>
+                    
+                        <dd><a id="treeNumber_2" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >J01.897.280.500.898.475</a></dd>
+                    
+                        <dd><a id="treeNumber_3" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >L01.462.500.820.090.898.475</a></dd>
+                    
+                        <dd><a id="treeNumber_4" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >L01.462.500.847.823.475</a></dd>
+                    
+
+        <dt>Unique ID</dt><dd>D018715</dd>
+
+        <dt>RDF Unique Identifier</dt>
+        <dd><a href="https://id.nlm.nih.gov/mesh/D018715.html">
+            http://id.nlm.nih.gov/mesh/D018715
+        </a></dd>
+
+        <span id="annotation">
+            <dt>Annotation</dt><dd>NIM</dd>
+        </span>
+                <span id="scopeNote">
+                    <dt>Scope Note</dt><dd>Microscopy in which television cameras are used to brighten magnified images that are otherwise too dark to be seen with the naked eye. It is used frequently in <a href="/record/ui?ui=D019113" class="textLink_TELEPATHOLOGY">TELEPATHOLOGY</a>.</dd>
+                </span>
+            
+                <dt>Entry Term(s)</dt>
+                <dd>
+                    Video Microscopy
+                    
+                </dd><dd>
+                    Videomicrography
+                    
+                </dd><dd>
+                    Videomicroscopy
+                    
+                </dd>
+                <dt>Previous Indexing</dt>
+                
+                    <dd>Microscopy (1974-1994)</dd>
+                
+            <dt>Public MeSH Note</dt><dd>95</dd>
+        
+            <dt>History Note</dt><dd>95</dd>
+        
+        
+
+
+        
+                <dt>Date Introduced</dt>
+                <dd>1995/01/01</dd>
+            
+                <dt>Last Updated</dt>
+                <dd>2022/07/12</dd>
+            
+
+    </dl>
+
+</div>
+
+<div id="qualifiersTabContent" class="tab-pane">
+
+    <dl class="dl-horizontal">
+
+        
+<br>
+
+        
+                <span id="allowableQualifiers"><dt>Allowable Qualifiers</dt><dd>
+                <ul class="list-unstyled">
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000145">
+                            classification
+                            (CL)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000191">
+                            economics
+                            (EC)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000941">
+                            ethics
+                            (ES)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000266">
+                            history
+                            (HI)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000295">
+                            instrumentation
+                            (IS)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000379">
+                            methods
+                            (MT)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000592">
+                            standards
+                            (ST)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000706">
+                            statistics &amp; numerical data
+                            (SN)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000639">
+                            trends
+                            (TD)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000662">
+                            veterinary
+                            (VE)
+                        </a></li>
+                    
+                </ul></dd></span>
+            
+
+    </dl>
+
+</div><div id="treesTabContent" class="tab-pane">
+
+    <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_E01"
+           
+               href="/record/ui?ui=D003933"
+           
+        ><span>Diagnosis [E01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_E01_370"
+           
+               href="/record/ui?ui=D019937"
+           
+        ><span>Diagnostic Techniques and Procedures [E01.370]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_E01_370_350"
+           
+               href="/record/ui?ui=D003952"
+           
+        ><span>Diagnostic Imaging [E01.370.350]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_E01_370_350_515"
+           
+               href="/record/ui?ui=D008853"
+           
+        ><span>Microscopy [E01.370.350.515]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_E01_370_350_515_277"
+           
+               href="/record/ui?ui=D000069416"
+           
+        ><span>Intravital Microscopy [E01.370.350.515.277]</span>
+        </a>
+        
+            <i id="plus_Intravital_Microscopy" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Intravital_Microscopy" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E01_370_350_515_370"
+           
+               href="/record/ui?ui=D033401"
+           
+        ><span>Microscopy, Acoustic [E01.370.350.515.370]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E01_370_350_515_395"
+           
+               href="/record/ui?ui=D018613"
+           
+        ><span>Microscopy, Confocal [E01.370.350.515.395]</span>
+        </a>
+        
+            <i id="plus_Microscopy_Confocal" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Microscopy_Confocal" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E01_370_350_515_402"
+           
+               href="/record/ui?ui=D008854"
+           
+        ><span>Microscopy, Electron [E01.370.350.515.402]</span>
+        </a>
+        
+            <i id="plus_Microscopy_Electron" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Microscopy_Electron" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E01_370_350_515_458"
+           
+               href="/record/ui?ui=D008856"
+           
+        ><span>Microscopy, Fluorescence [E01.370.350.515.458]</span>
+        </a>
+        
+            <i id="plus_Microscopy_Fluorescence" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Microscopy_Fluorescence" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E01_370_350_515_513"
+           
+               href="/record/ui?ui=D008857"
+           
+        ><span>Microscopy, Interference [E01.370.350.515.513]</span>
+        </a>
+        
+            <i id="plus_Microscopy_Interference" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Microscopy_Interference" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E01_370_350_515_624"
+           
+               href="/record/ui?ui=D008859"
+           
+        ><span>Microscopy, Polarization [E01.370.350.515.624]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E01_370_350_515_666"
+           
+               href="/record/ui?ui=D020527"
+           
+        ><span>Microscopy, Scanning Probe [E01.370.350.515.666]</span>
+        </a>
+        
+            <i id="plus_Microscopy_Scanning_Probe" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Microscopy_Scanning_Probe" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E01_370_350_515_680"
+           
+               href="/record/ui?ui=D008860"
+           
+        ><span>Microscopy, Ultraviolet [E01.370.350.515.680]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E01_370_350_515_690"
+           
+               href="/record/ui?ui=D018715"
+           
+        ><strong>Microscopy, Video [E01.370.350.515.690]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E01_370_350_515_717"
+           
+               href="/record/ui?ui=D000073758"
+           
+        ><span>Nonlinear Optical Microscopy [E01.370.350.515.717]</span>
+        </a>
+        
+            <i id="plus_Nonlinear_Optical_Microscopy" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Nonlinear_Optical_Microscopy" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E01_370_350_515_744"
+           
+               href="/record/ui?ui=D062345"
+           
+        ><span>Nuclear Microscopy [E01.370.350.515.744]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E01_370_350_515_799"
+           
+               href="/record/ui?ui=D010784"
+           
+        ><span>Photomicrography [E01.370.350.515.799]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_E05"
+           
+               href="/record/ui?ui=D008919"
+           
+        ><span>Investigative Techniques [E05]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_E05_595"
+           
+               href="/record/ui?ui=D008853"
+           
+        ><span>Microscopy [E05.595]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_E05_595_185"
+           
+               href="/record/ui?ui=D000069416"
+           
+        ><span>Intravital Microscopy [E05.595.185]</span>
+        </a>
+        
+            <i id="plus_Intravital_Microscopy" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Intravital_Microscopy" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_595_370"
+           
+               href="/record/ui?ui=D033401"
+           
+        ><span>Microscopy, Acoustic [E05.595.370]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_595_395"
+           
+               href="/record/ui?ui=D018613"
+           
+        ><span>Microscopy, Confocal [E05.595.395]</span>
+        </a>
+        
+            <i id="plus_Microscopy_Confocal" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Microscopy_Confocal" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_595_402"
+           
+               href="/record/ui?ui=D008854"
+           
+        ><span>Microscopy, Electron [E05.595.402]</span>
+        </a>
+        
+            <i id="plus_Microscopy_Electron" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Microscopy_Electron" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_595_458"
+           
+               href="/record/ui?ui=D008856"
+           
+        ><span>Microscopy, Fluorescence [E05.595.458]</span>
+        </a>
+        
+            <i id="plus_Microscopy_Fluorescence" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Microscopy_Fluorescence" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_595_513"
+           
+               href="/record/ui?ui=D008857"
+           
+        ><span>Microscopy, Interference [E05.595.513]</span>
+        </a>
+        
+            <i id="plus_Microscopy_Interference" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Microscopy_Interference" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_595_624"
+           
+               href="/record/ui?ui=D008859"
+           
+        ><span>Microscopy, Polarization [E05.595.624]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_595_666"
+           
+               href="/record/ui?ui=D020527"
+           
+        ><span>Microscopy, Scanning Probe [E05.595.666]</span>
+        </a>
+        
+            <i id="plus_Microscopy_Scanning_Probe" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Microscopy_Scanning_Probe" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_595_680"
+           
+               href="/record/ui?ui=D008860"
+           
+        ><span>Microscopy, Ultraviolet [E05.595.680]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_595_690"
+           
+               href="/record/ui?ui=D018715"
+           
+        ><strong>Microscopy, Video [E05.595.690]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_595_717"
+           
+               href="/record/ui?ui=D000073758"
+           
+        ><span>Nonlinear Optical Microscopy [E05.595.717]</span>
+        </a>
+        
+            <i id="plus_Nonlinear_Optical_Microscopy" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Nonlinear_Optical_Microscopy" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_595_744"
+           
+               href="/record/ui?ui=D062345"
+           
+        ><span>Nuclear Microscopy [E05.595.744]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_595_799"
+           
+               href="/record/ui?ui=D010784"
+           
+        ><span>Photomicrography [E05.595.799]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_595_899"
+           
+               href="/record/ui?ui=D000072760"
+           
+        ><span>Single Molecule Imaging [E05.595.899]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_J01"
+           
+               href="/record/ui?ui=D013676"
+           
+        ><span>Technology, Industry, and Agriculture [J01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_J01_897"
+           
+               href="/record/ui?ui=D013672"
+           
+        ><span>Technology [J01.897]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_J01_897_280"
+           
+               href="/record/ui?ui=D018961"
+           
+        ><span>Educational Technology [J01.897.280]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_J01_897_280_500"
+           
+               href="/record/ui?ui=D001296"
+           
+        ><span>Audiovisual Aids [J01.897.280.500]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_J01_897_280_500_898"
+           
+               href="/record/ui?ui=D013690"
+           
+        ><span>Television [J01.897.280.500.898]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_J01_897_280_500_898_475"
+           
+               href="/record/ui?ui=D018715"
+           
+        ><strong>Microscopy, Video [J01.897.280.500.898.475]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_2_node_J01_897_280_500_898_800"
+           
+               href="/record/ui?ui=D014742"
+           
+        ><span>Videodisc Recording [J01.897.280.500.898.800]</span>
+        </a>
+        
+            <i id="plus_Videodisc_Recording" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Videodisc_Recording" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_J01_897_280_500_898_840"
+           
+               href="/record/ui?ui=D014743"
+           
+        ><span>Videotape Recording [J01.897.280.500.898.840]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_L01"
+           
+               href="/record/ui?ui=D007254"
+           
+        ><span>Information Science [L01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_L01_462"
+           
+               href="/record/ui?ui=D000093983"
+           
+        ><span>Information Sources [L01.462]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_L01_462_500"
+           
+               href="/record/ui?ui=D003146"
+           
+        ><span>Communications Media [L01.462.500]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_L01_462_500_820"
+           
+               href="/record/ui?ui=D013664"
+           
+        ><span>Teaching Materials [L01.462.500.820]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_L01_462_500_820_090"
+           
+               href="/record/ui?ui=D001296"
+           
+        ><span>Audiovisual Aids [L01.462.500.820.090]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_L01_462_500_820_090_898"
+           
+               href="/record/ui?ui=D013690"
+           
+        ><span>Television [L01.462.500.820.090.898]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_L01_462_500_820_090_898_475"
+           
+               href="/record/ui?ui=D018715"
+           
+        ><strong>Microscopy, Video [L01.462.500.820.090.898.475]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_3_node_L01_462_500_820_090_898_800"
+           
+               href="/record/ui?ui=D014742"
+           
+        ><span>Videodisc Recording [L01.462.500.820.090.898.800]</span>
+        </a>
+        
+            <i id="plus_Videodisc_Recording" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Videodisc_Recording" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_3_node_L01_462_500_820_090_898_840"
+           
+               href="/record/ui?ui=D014743"
+           
+        ><span>Videotape Recording [L01.462.500.820.090.898.840]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_4_node_L01"
+           
+               href="/record/ui?ui=D007254"
+           
+        ><span>Information Science [L01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_4_node_L01_462"
+           
+               href="/record/ui?ui=D000093983"
+           
+        ><span>Information Sources [L01.462]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_4_node_L01_462_500"
+           
+               href="/record/ui?ui=D003146"
+           
+        ><span>Communications Media [L01.462.500]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_4_node_L01_462_500_847"
+           
+               href="/record/ui?ui=D013685"
+           
+        ><span>Telecommunications [L01.462.500.847]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_4_node_L01_462_500_847_823"
+           
+               href="/record/ui?ui=D013690"
+           
+        ><span>Television [L01.462.500.847.823]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_4_node_L01_462_500_847_823_475"
+           
+               href="/record/ui?ui=D018715"
+           
+        ><strong>Microscopy, Video [L01.462.500.847.823.475]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+
+</div>
+
+<div id="conceptsTabContent" class="tab-pane">
+
+    <button id="ExpandAll" class="btn btn-default btn-sm pull-right"
+            onclick="toggleConcepts()">
+        <span id="expandConcepts"                        >  Expand All</span>
+        <span id="collapseConcepts" style="display: none">Collapse All</span>
+    </button>
+
+    
+
+        <div>
+        <span id="Nightwatch_cp_0_0"
+              onclick="toggleCollapse('cp_0_0', 'Nightwatch_cp_0_0')">
+        <a class="fakeLink"><b>
+            Microscopy, Video
+            <i>Preferred</i>
+        </b></a></span>
+
+        <div id="cp_0_0" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0028041</dd>
+
+            
+                <dt>Scope Note</dt><dd>Microscopy in which television cameras are used to brighten magnified images that are otherwise too dark to be seen with the naked eye. It is used frequently in <a href="/record/ui?ui=D019113" class="textLink_TELEPATHOLOGY">TELEPATHOLOGY</a>.</dd>
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_0_0"
+                      onclick="toggleCollapse('termName_0_0',
+                                              'Nightwatch_termName_0_0')">
+                    <a class="fakeLink"><b>Microscopy, Video</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_0_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T055724<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>01/01/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1995)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_1"
+                      onclick="toggleCollapse('termName_0_1',
+                                              'Nightwatch_termName_0_1')">
+                    <a class="fakeLink"><b>Video Microscopy</b></a></span>
+
+                
+
+                <div id="termName_0_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T055723<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>02/01/1994<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1995)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_2"
+                      onclick="toggleCollapse('termName_0_2',
+                                              'Nightwatch_termName_0_2')">
+                    <a class="fakeLink"><b>Videomicroscopy</b></a></span>
+
+                
+
+                <div id="termName_0_2" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T055725<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>02/01/1994<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1995)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_3"
+                      onclick="toggleCollapse('termName_0_3',
+                                              'Nightwatch_termName_0_3')">
+                    <a class="fakeLink"><b>Videomicrography</b></a></span>
+
+                
+
+                <div id="termName_0_3" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T055726<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>05/21/1998<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1999)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+</div></div>
+
+<small class="pull-right">
+    page delivered in 0.13s
+</small>
+
+</div>
+
+<footer class="footer">
+    <div class="container-fluid"><div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/socialmedia/index.html">
+                    Connect with NLM
+                </a></p>
+                <ul class="list-inline">
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://twitter.com/NLM_NIH">
+                        <img src="https://www.nlm.nih.gov/images/Twitter_W.svg"
+                             alt="Twitter">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.facebook.com/nationallibraryofmedicine"
+                    ><img src="https://www.nlm.nih.gov/images/Facebook_W.svg"
+                          alt="Facebook">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.youtube.com/user/NLMNIH">
+                        <img src="https://www.nlm.nih.gov/images/YouTube_W.svg"
+                             alt="You Tube">
+                    </a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p>National Library of Medicine<br>
+                    <a href="https://www.google.com/maps/place/8600+Rockville+Pike,+Bethesda,+MD+20894/@38.9959508,-77.101021,17z/data=!3m1!4b1!4m5!3m4!1s0x89b7c95e25765ddb:0x19156f88b27635b8!8m2!3d38.9959508!4d-77.0988323">
+                        8600 Rockville Pike<br>
+                        Bethesda, MD 20894
+                    </a>
+                </p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/web_policies.html">
+                    Web Policies
+                </a><br>
+                <a href="https://www.nih.gov/institutes-nih/nih-office-director/office-communications-public-liaison/freedom-information-act-office">
+                    FOIA
+                </a><br>
+                <a href="https://www.hhs.gov/vulnerability-disclosure-policy/index.html">
+                    HHS Vulnerability Disclosure
+                </a></p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href=
+                      "https://support.nlm.nih.gov?from=https://www.nlm.nih.gov/">
+                    NLM Support Center
+                </a><br>
+                <a href="https://www.nlm.nih.gov/accessibility.html">
+                    Accessibility
+                </a><br>
+                <a href="https://www.nlm.nih.gov/careers/careers.html">
+                    Careers
+                </a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+              <p class="text-center"> <a href="https://www.nlm.nih.gov/">NLM</a> | <a href="https://www.nih.gov/">NIH</a> | <a href="https://www.hhs.gov/">HHS</a> | <a href="https://www.usa.gov/">USA.gov</a></p>
+            </div>
+        </div>
+    </div></div>
+<!--BEGIN QUALTRICS WEBSITE FEEDBACK SNIPPET-->
+<script type='text/javascript'>
+(function(){var g=function(e,h,f,g){
+this.get=function(a){for(var a=a+"=",c=document.cookie.split(";"),b=0,e=c.length;b<e;b++){for(var d=c[b];" "==d.charAt(0);)d=d.substring(1,d.length);if(0==d.indexOf(a))return d.substring(a.length,d.length)}return null};
+this.set=function(a,c){var b="",b=new Date;b.setTime(b.getTime()+6048E5);b="; expires="+b.toGMTString();document.cookie=a+"="+c+b+"; path=/; "};
+this.check=function(){var a=this.get(f);if(a)a=a.split(":");else if(100!=e)"v"==h&&(e=Math.random()>=e/100?0:100),a=[h,e,0],this.set(f,a.join(":"));else return!0;var c=a[1];if(100==c)return!0;switch(a[0]){case "v":return!1;case "r":return c=a[2]%Math.floor(100/c),a[2]++,this.set(f,a.join(":")),!c}return!0};
+this.go=function(){if(this.check()){var a=document.createElement("script");a.type="text/javascript";a.src=g;document.body&&document.body.appendChild(a)}};
+this.start=function(){var t=this;"complete"!==document.readyState?window.addEventListener?window.addEventListener("load",function(){t.go()},!1):window.attachEvent&&window.attachEvent("onload",function(){t.go()}):t.go()};};
+try{(new g(100,"r","QSI_S_ZN_cwOHfLkxRr4n4W2","https://zncwohflkxrr4n4w2-nlmenterprise.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_cwOHfLkxRr4n4W2")).start()}catch(i){}})();
+</script><div id='ZN_cwOHfLkxRr4n4W2'><!--DO NOT REMOVE-CONTENTS PLACED HERE--></div>
+<!--END WEBSITE FEEDBACK SNIPPET-->
+</footer>
+
+</body></html>
+

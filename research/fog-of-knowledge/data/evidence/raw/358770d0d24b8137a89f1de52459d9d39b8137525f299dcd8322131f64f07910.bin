@@ -1,0 +1,1351 @@
+<!doctype html><html lang="en"><head>
+
+<title>MeSH Browser</title>
+
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+
+<link rel="stylesheet" href="/public/css/font-awesome.css">
+<link rel="stylesheet" href="/public/css/bootstrap.css">
+<link rel="stylesheet" href="/public/css/mongoMesh.css">
+<link rel="icon" type="image/jpeg" href="/public/img/meshLogo.jpg">
+
+<base href="/">
+<script src="https://www.nlm.nih.gov/coop_all_uswds.js?v=1792068677124"></script>
+
+<script>
+
+    if (document.domain != "localhost")
+        document.domain = "nlm.nih.gov";
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        try {
+
+            if (coopmsg
+                && !/(^|; *)shutdown-banner=/.test(document.cookie))
+
+                document.querySelector(
+                    "body > div"
+                ).insertAdjacentHTML(
+                    "afterbegin",
+                    "<div id='shutdown-banner'><p>" + coopmsg
+                    + "</p><button type='button' role='button'"
+                    + " aria-label='Close' onclick='"
+                    + 'document.getElementById("shutdown-banner")'
+                    + '.remove(); document.cookie ='
+                    + ' "shutdown-banner=hidden; path=/";'
+                    + "'>Close</button></div>"
+                );
+
+        } catch (error) {
+            /* The "coopmsg" variable is only defined during a
+             * shutdown. */
+            if (!(error instanceof ReferenceError))
+                throw error;
+        }
+
+    });
+
+    var dcmsLinks = false,
+        dcmsParam = dcmsLinks
+                    ? function (sep) { return sep + "dcmsLinks=true"; }
+                    : function (   ) { return ""                    ; };
+
+</script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){
+        var _fullPath = window.location.href;
+        var urlParams = _fullPath.slice(_fullPath.indexOf('?') + 1).split('&');
+        var IsOpen = "false";
+        if (urlParams != undefined && urlParams != null && urlParams != "") {
+            IsOpen = urlParams[0].split("=")[1];
+        }
+
+        if (IsOpen == "false" || IsOpen == undefined || IsOpen != "true") {
+            w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        }
+    })(window,document,'script','dataLayer','GTM-5QZ7KJZ');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe sandbox src="https://www.googletagmanager.com/ns.html?id=GTM-5QZ7KJZ"
+                  height="0" width="0" style="display:none;visibility:hidden" title="googletagmanager"></iframe></noscript> 
+<!-- End Google Tag Manager (noscript) -->
+
+<script src="/public/js/elemUtil.js"></script>
+
+<script src="/public/js/record.js"  ></script>
+<script src="/public/js/treeDom.js" ></script>
+</head><body>
+
+<div>
+
+    <header class="NLMheader">
+        <a href="https://www.nlm.nih.gov/">
+          <img height="80" alt="NLM Logo"
+               src="https://www.nlm.nih.gov/images/NLM_White.png">
+        </a>
+        <!--<img class="starLogo"src="/public/img/NLM_Star.png" alt="NLM Star">-->
+    </header>
+<nav class="navbar navbar-default">
+
+  <div class="container-fluid">
+
+        <div class="navbar-header">
+
+          <button class="navbar-toggle collapsed" type="button"
+                  aria-expanded="false"
+                  onclick="toggleCollapse('bs-example-navbar-collapse-1')">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://www.nlm.nih.gov/mesh/">
+                <img id="meshNavbarLogo" src="/public/img/meshLogo.jpg" alt="MeSH Logo">
+            </a>
+        </div>
+
+        <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse"
+             aria-expanded="false">
+            <ul class="nav navbar-nav">
+                
+                <li><a href="/" id="mainSearchButton">Search</a></li>
+                <li><a href="/treeView">Tree View</a></li>
+                <li><a href="/MeSHonDemand">MeSH on Demand</a> </li> <!--Delete the Span Tags after  a few months, once MeSH on Demand is no longer new-->
+                <li><a href="https://meshb-prev.nlm.nih.gov/" target="_blank">MeSH 2027</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/mbinfo.html" target="_blank">About</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/meshsugg.html" target="_blank">Suggestions</a> </li>
+                <li><a href="https://support.nlm.nih.gov/support/create-case/" target="_blank">Contact Us</a></li>
+            </ul>
+
+        </div>
+
+  </div>
+
+</nav>
+
+</div>
+
+<div class="container">
+
+
+
+
+<h1>Molecular Imprinting <small>MeSH Descriptor            Data 2026</small></h1>
+
+<ul class="nav nav-tabs">
+    <li id="details" class="active"
+        onclick="switchTab([ 'details', 'detailsTabContent' ])">
+        <a class="fakeLink">Details</a></li>
+    
+        <li id="qualifiers"
+            onclick="switchTab([ 'qualifiers', 'qualifiersTabContent' ])">
+            <a class="fakeLink">Qualifiers</a></li>
+        <li id="trees" onclick="switchTab([ 'trees', 'treesTabContent' ])">
+            <a class="fakeLink">MeSH Tree Structures</a></li>
+    
+    <li id="concepts" onclick="switchTab([ 'concepts', 'conceptsTabContent' ])">
+        <a class="fakeLink">Concepts</a></li>
+</ul>
+
+
+
+<div class="tab-content"><br>
+<div id="detailsTabContent" class="tab-pane active">
+
+    <dl id="descriptorDetails_MolecularImprinting"
+        class="dl-horizontal">
+
+        <dt>MeSH Heading      </dt>
+
+        <dd>Molecular Imprinting</dd>
+
+        
+                    <dt>Tree Number(s)</dt>
+                    
+                        <dd><a id="treeNumber_0" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >E05.196.655</a></dd>
+                    
+                        <dd><a id="treeNumber_1" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >E05.197.453</a></dd>
+                    
+                        <dd><a id="treeNumber_2" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >J01.897.836.249.437</a></dd>
+                    
+
+        <dt>Unique ID</dt><dd>D054802</dd>
+
+        <dt>RDF Unique Identifier</dt>
+        <dd><a href="https://id.nlm.nih.gov/mesh/D054802.html">
+            http://id.nlm.nih.gov/mesh/D054802
+        </a></dd>
+
+        <span id="annotation">
+            <dt>Annotation</dt><dd>note category, a technique</dd>
+        </span>
+                <span id="scopeNote">
+                    <dt>Scope Note</dt><dd>A methodology for chemically synthesizing polymer molds of specific molecules or recognition sites of specific molecules. Applications for <a href="/record/ui?ui=D000082582" class="textLink_MOLECULARLYIMPRINTEDPOLYMERS">MOLECULARLY IMPRINTED POLYMERS</a> (MIPs) include separations, assays and biosensors, and catalysis.</dd>
+                </span>
+            
+                <dt>Entry Term(s)</dt>
+                <dd>
+                    Imprinting, Molecular
+                    
+                </dd><dd>
+                    Molecular Imprinting Technique
+                    
+                </dd>
+            <dt>NLM Classification #</dt>
+            <dd>QT 37.5.P7</dd>
+        
+                <dt>See Also</dt>
+                
+                    <dd><a id="seeAlso_Nanostructures"
+                           href="/record/ui?ui=D049329"
+                        >Nanostructures</a></dd>
+                
+            <dt>Public MeSH Note</dt><dd>2008</dd>
+        
+            <dt>History Note</dt><dd>2008</dd>
+        
+        
+
+
+        
+                <dt>Date Introduced</dt>
+                <dd>2008/01/01</dd>
+            
+                <dt>Last Updated</dt>
+                <dd>2020/02/21</dd>
+            
+
+    </dl>
+
+</div>
+
+<div id="qualifiersTabContent" class="tab-pane">
+
+    <dl class="dl-horizontal">
+
+        
+<br>
+
+        
+                <span id="allowableQualifiers"><dt>Allowable Qualifiers</dt><dd>
+                <ul class="list-unstyled">
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000145">
+                            classification
+                            (CL)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000191">
+                            economics
+                            (EC)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000941">
+                            ethics
+                            (ES)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000266">
+                            history
+                            (HI)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000295">
+                            instrumentation
+                            (IS)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000379">
+                            methods
+                            (MT)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000592">
+                            standards
+                            (ST)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000706">
+                            statistics &amp; numerical data
+                            (SN)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000639">
+                            trends
+                            (TD)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000662">
+                            veterinary
+                            (VE)
+                        </a></li>
+                    
+                </ul></dd></span>
+            
+
+    </dl>
+
+</div><div id="treesTabContent" class="tab-pane">
+
+    <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_E05"
+           
+               href="/record/ui?ui=D008919"
+           
+        ><span>Investigative Techniques [E05]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_E05_196"
+           
+               href="/record/ui?ui=D002623"
+           
+        ><span>Chemistry Techniques, Analytical [E05.196]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_E05_196_039"
+           
+               href="/record/ui?ui=D000201"
+           
+        ><span>Activation Analysis [E05.196.039]</span>
+        </a>
+        
+            <i id="plus_Activation_Analysis" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Activation_Analysis" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_059"
+           
+               href="/record/ui?ui=D053000"
+           
+        ><span>Analytic Sample Preparation Methods [E05.196.059]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_080"
+           
+               href="/record/ui?ui=D001667"
+           
+        ><span>Binding, Competitive [E05.196.080]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_085"
+           
+               href="/record/ui?ui=D001738"
+           
+        ><span>Biuret Reaction [E05.196.085]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_131"
+           
+               href="/record/ui?ui=D002151"
+           
+        ><span>Calorimetry [E05.196.131]</span>
+        </a>
+        
+            <i id="plus_Calorimetry" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Calorimetry" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_150"
+           
+               href="/record/ui?ui=D011232"
+           
+        ><span>Chemical Precipitation [E05.196.150]</span>
+        </a>
+        
+            <i id="plus_Chemical_Precipitation" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Chemical_Precipitation" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_155"
+           
+               href="/record/ui?ui=D005591"
+           
+        ><span>Chemical Fractionation [E05.196.155]</span>
+        </a>
+        
+            <i id="plus_Chemical_Fractionation" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Chemical_Fractionation" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_168"
+           
+               href="/record/ui?ui=D000090022"
+           
+        ><span>Chemometrics [E05.196.168]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_181"
+           
+               href="/record/ui?ui=D002845"
+           
+        ><span>Chromatography [E05.196.181]</span>
+        </a>
+        
+            <i id="plus_Chromatography" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Chromatography" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_278"
+           
+               href="/record/ui?ui=D003377"
+           
+        ><span>Countercurrent Distribution [E05.196.278]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_300"
+           
+               href="/record/ui?ui=D003460"
+           
+        ><span>Crystallization [E05.196.300]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_309"
+           
+               href="/record/ui?ui=D003461"
+           
+        ><span>Crystallography [E05.196.309]</span>
+        </a>
+        
+            <i id="plus_Crystallography" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Crystallography" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_335"
+           
+               href="/record/ui?ui=D003890"
+           
+        ><span>Desiccation [E05.196.335]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_344"
+           
+               href="/record/ui?ui=D041961"
+           
+        ><span>Deuterium Exchange Measurement [E05.196.344]</span>
+        </a>
+        
+            <i id="plus_Deuterium_Exchange_Measurement" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Deuterium_Exchange_Measurement" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_353"
+           
+               href="/record/ui?ui=D003956"
+           
+        ><span>Dialysis [E05.196.353]</span>
+        </a>
+        
+            <i id="plus_Dialysis" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Dialysis" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_370"
+           
+               href="/record/ui?ui=D004055"
+           
+        ><span>Differential Thermal Analysis [E05.196.370]</span>
+        </a>
+        
+            <i id="plus_Differential_Thermal_Analysis" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Differential_Thermal_Analysis" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_385"
+           
+               href="/record/ui?ui=D053841"
+           
+        ><span>Electroosmosis [E05.196.385]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_401"
+           
+               href="/record/ui?ui=D004586"
+           
+        ><span>Electrophoresis [E05.196.401]</span>
+        </a>
+        
+            <i id="plus_Electrophoresis" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Electrophoresis" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_427"
+           
+               href="/record/ui?ui=D057075"
+           
+        ><span>Enzyme Assays [E05.196.427]</span>
+        </a>
+        
+            <i id="plus_Enzyme_Assays" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Enzyme_Assays" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_454"
+           
+               href="/record/ui?ui=D005374"
+           
+        ><span>Filtration [E05.196.454]</span>
+        </a>
+        
+            <i id="plus_Filtration" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Filtration" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_460"
+           
+               href="/record/ui?ui=D017022"
+           
+        ><span>Flow Injection Analysis [E05.196.460]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_500"
+           
+               href="/record/ui?ui=D015309"
+           
+        ><span>Glucose Clamp Technique [E05.196.500]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_566"
+           
+               href="/record/ui?ui=D013058"
+           
+        ><span>Mass Spectrometry [E05.196.566]</span>
+        </a>
+        
+            <i id="plus_Mass_Spectrometry" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Mass_Spectrometry" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_620"
+           
+               href="/record/ui?ui=D008832"
+           
+        ><span>Microchemistry [E05.196.620]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_655"
+           
+               href="/record/ui?ui=D054802"
+           
+        ><strong>Molecular Imprinting [E05.196.655]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_680"
+           
+               href="/record/ui?ui=D009710"
+           
+        ><span>Nucleotide Mapping [E05.196.680]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_690"
+           
+               href="/record/ui?ui=D061286"
+           
+        ><span>Osmometry [E05.196.690]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_700"
+           
+               href="/record/ui?ui=D010449"
+           
+        ><span>Peptide Mapping [E05.196.700]</span>
+        </a>
+        
+            <i id="plus_Peptide_Mapping" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Peptide_Mapping" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_712"
+           
+               href="/record/ui?ui=D010783"
+           
+        ><span>Photometry [E05.196.712]</span>
+        </a>
+        
+            <i id="plus_Photometry" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Photometry" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_749"
+           
+               href="/record/ui?ui=D011048"
+           
+        ><span>Polarography [E05.196.749]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_778"
+           
+               href="/record/ui?ui=D058525"
+           
+        ><span>Quartz Crystal Microbalance Techniques [E05.196.778]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_808"
+           
+               href="/record/ui?ui=D012031"
+           
+        ><span>Refractometry [E05.196.808]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_822"
+           
+               href="/record/ui?ui=D012542"
+           
+        ><span>Scattering, Radiation [E05.196.822]</span>
+        </a>
+        
+            <i id="plus_Scattering_Radiation" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Scattering_Radiation" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_867"
+           
+               href="/record/ui?ui=D013057"
+           
+        ><span>Spectrum Analysis [E05.196.867]</span>
+        </a>
+        
+            <i id="plus_Spectrum_Analysis" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Spectrum_Analysis" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_885"
+           
+               href="/record/ui?ui=D019097"
+           
+        ><span>Spin Trapping [E05.196.885]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_890"
+           
+               href="/record/ui?ui=D020349"
+           
+        ><span>Surface Plasmon Resonance [E05.196.890]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_904"
+           
+               href="/record/ui?ui=D013818"
+           
+        ><span>Thermogravimetry [E05.196.904]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_922"
+           
+               href="/record/ui?ui=D017186"
+           
+        ><span>Titrimetry [E05.196.922]</span>
+        </a>
+        
+            <i id="plus_Titrimetry" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Titrimetry" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_196_941"
+           
+               href="/record/ui?ui=D014461"
+           
+        ><span>Ultracentrifugation [E05.196.941]</span>
+        </a>
+        
+            <i id="plus_Ultracentrifugation" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Ultracentrifugation" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_E05"
+           
+               href="/record/ui?ui=D008919"
+           
+        ><span>Investigative Techniques [E05]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_E05_197"
+           
+               href="/record/ui?ui=D060326"
+           
+        ><span>Chemistry Techniques, Synthetic [E05.197]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_E05_197_124"
+           
+               href="/record/ui?ui=D057930"
+           
+        ><span>Click Chemistry [E05.197.124]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_197_312"
+           
+               href="/record/ui?ui=D020650"
+           
+        ><span>Combinatorial Chemistry Techniques [E05.197.312]</span>
+        </a>
+        
+            <i id="plus_Combinatorial_Chemistry_Techniques" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Combinatorial_Chemistry_Techniques" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_197_406"
+           
+               href="/record/ui?ui=D061565"
+           
+        ><span>Cycloaddition Reaction [E05.197.406]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_197_430"
+           
+               href="/record/ui?ui=D000099078"
+           
+        ><span>Continuous Flow Chemistry [E05.197.430]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_197_453"
+           
+               href="/record/ui?ui=D054802"
+           
+        ><strong>Molecular Imprinting [E05.197.453]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_197_500"
+           
+               href="/record/ui?ui=D060327"
+           
+        ><span>Solid-Phase Synthesis Techniques [E05.197.500]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_J01"
+           
+               href="/record/ui?ui=D013676"
+           
+        ><span>Technology, Industry, and Agriculture [J01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_J01_897"
+           
+               href="/record/ui?ui=D013672"
+           
+        ><span>Technology [J01.897]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_J01_897_836"
+           
+               href="/record/ui?ui=D013678"
+           
+        ><span>Technology, Pharmaceutical [J01.897.836]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_J01_897_836_249"
+           
+               href="/record/ui?ui=D060326"
+           
+        ><span>Chemistry Techniques, Synthetic [J01.897.836.249]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_J01_897_836_249_124"
+           
+               href="/record/ui?ui=D057930"
+           
+        ><span>Click Chemistry [J01.897.836.249.124]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_J01_897_836_249_249"
+           
+               href="/record/ui?ui=D020650"
+           
+        ><span>Combinatorial Chemistry Techniques [J01.897.836.249.249]</span>
+        </a>
+        
+            <i id="plus_Combinatorial_Chemistry_Techniques" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Combinatorial_Chemistry_Techniques" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_J01_897_836_249_374"
+           
+               href="/record/ui?ui=D061565"
+           
+        ><span>Cycloaddition Reaction [J01.897.836.249.374]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_J01_897_836_249_437"
+           
+               href="/record/ui?ui=D054802"
+           
+        ><strong>Molecular Imprinting [J01.897.836.249.437]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_2_node_J01_897_836_249_500"
+           
+               href="/record/ui?ui=D060327"
+           
+        ><span>Solid-Phase Synthesis Techniques [J01.897.836.249.500]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+
+</div>
+
+<div id="conceptsTabContent" class="tab-pane">
+
+    <button id="ExpandAll" class="btn btn-default btn-sm pull-right"
+            onclick="toggleConcepts()">
+        <span id="expandConcepts"                        >  Expand All</span>
+        <span id="collapseConcepts" style="display: none">Collapse All</span>
+    </button>
+
+    
+
+        <div>
+        <span id="Nightwatch_cp_0_0"
+              onclick="toggleCollapse('cp_0_0', 'Nightwatch_cp_0_0')">
+        <a class="fakeLink"><b>
+            Molecular Imprinting
+            <i>Preferred</i>
+        </b></a></span>
+
+        <div id="cp_0_0" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0507758</dd>
+
+            
+                <dt>Scope Note</dt><dd>A methodology for chemically synthesizing polymer molds of specific molecules or recognition sites of specific molecules. Applications for <a href="/record/ui?ui=D000082582" class="textLink_MOLECULARLYIMPRINTEDPOLYMERS">MOLECULARLY IMPRINTED POLYMERS</a> (MIPs) include separations, assays and biosensors, and catalysis.</dd>
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_0_0"
+                      onclick="toggleCollapse('termName_0_0',
+                                              'Nightwatch_termName_0_0')">
+                    <a class="fakeLink"><b>Molecular Imprinting</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_0_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T693766<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>03/16/2007<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2008)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_1"
+                      onclick="toggleCollapse('termName_0_1',
+                                              'Nightwatch_termName_0_1')">
+                    <a class="fakeLink"><b>Molecular Imprinting Technique</b></a></span>
+
+                
+
+                <div id="termName_0_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T000997979<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/19/2019<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2021)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_2"
+                      onclick="toggleCollapse('termName_0_2',
+                                              'Nightwatch_termName_0_2')">
+                    <a class="fakeLink"><b>Imprinting, Molecular</b></a></span>
+
+                
+
+                <div id="termName_0_2" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T693844<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>03/16/2007<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2008)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+</div></div>
+
+<small class="pull-right">
+    page delivered in 0.157s
+</small>
+
+</div>
+
+<footer class="footer">
+    <div class="container-fluid"><div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/socialmedia/index.html">
+                    Connect with NLM
+                </a></p>
+                <ul class="list-inline">
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://twitter.com/NLM_NIH">
+                        <img src="https://www.nlm.nih.gov/images/Twitter_W.svg"
+                             alt="Twitter">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.facebook.com/nationallibraryofmedicine"
+                    ><img src="https://www.nlm.nih.gov/images/Facebook_W.svg"
+                          alt="Facebook">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.youtube.com/user/NLMNIH">
+                        <img src="https://www.nlm.nih.gov/images/YouTube_W.svg"
+                             alt="You Tube">
+                    </a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p>National Library of Medicine<br>
+                    <a href="https://www.google.com/maps/place/8600+Rockville+Pike,+Bethesda,+MD+20894/@38.9959508,-77.101021,17z/data=!3m1!4b1!4m5!3m4!1s0x89b7c95e25765ddb:0x19156f88b27635b8!8m2!3d38.9959508!4d-77.0988323">
+                        8600 Rockville Pike<br>
+                        Bethesda, MD 20894
+                    </a>
+                </p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/web_policies.html">
+                    Web Policies
+                </a><br>
+                <a href="https://www.nih.gov/institutes-nih/nih-office-director/office-communications-public-liaison/freedom-information-act-office">
+                    FOIA
+                </a><br>
+                <a href="https://www.hhs.gov/vulnerability-disclosure-policy/index.html">
+                    HHS Vulnerability Disclosure
+                </a></p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href=
+                      "https://support.nlm.nih.gov?from=https://www.nlm.nih.gov/">
+                    NLM Support Center
+                </a><br>
+                <a href="https://www.nlm.nih.gov/accessibility.html">
+                    Accessibility
+                </a><br>
+                <a href="https://www.nlm.nih.gov/careers/careers.html">
+                    Careers
+                </a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+              <p class="text-center"> <a href="https://www.nlm.nih.gov/">NLM</a> | <a href="https://www.nih.gov/">NIH</a> | <a href="https://www.hhs.gov/">HHS</a> | <a href="https://www.usa.gov/">USA.gov</a></p>
+            </div>
+        </div>
+    </div></div>
+<!--BEGIN QUALTRICS WEBSITE FEEDBACK SNIPPET-->
+<script type='text/javascript'>
+(function(){var g=function(e,h,f,g){
+this.get=function(a){for(var a=a+"=",c=document.cookie.split(";"),b=0,e=c.length;b<e;b++){for(var d=c[b];" "==d.charAt(0);)d=d.substring(1,d.length);if(0==d.indexOf(a))return d.substring(a.length,d.length)}return null};
+this.set=function(a,c){var b="",b=new Date;b.setTime(b.getTime()+6048E5);b="; expires="+b.toGMTString();document.cookie=a+"="+c+b+"; path=/; "};
+this.check=function(){var a=this.get(f);if(a)a=a.split(":");else if(100!=e)"v"==h&&(e=Math.random()>=e/100?0:100),a=[h,e,0],this.set(f,a.join(":"));else return!0;var c=a[1];if(100==c)return!0;switch(a[0]){case "v":return!1;case "r":return c=a[2]%Math.floor(100/c),a[2]++,this.set(f,a.join(":")),!c}return!0};
+this.go=function(){if(this.check()){var a=document.createElement("script");a.type="text/javascript";a.src=g;document.body&&document.body.appendChild(a)}};
+this.start=function(){var t=this;"complete"!==document.readyState?window.addEventListener?window.addEventListener("load",function(){t.go()},!1):window.attachEvent&&window.attachEvent("onload",function(){t.go()}):t.go()};};
+try{(new g(100,"r","QSI_S_ZN_cwOHfLkxRr4n4W2","https://zncwohflkxrr4n4w2-nlmenterprise.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_cwOHfLkxRr4n4W2")).start()}catch(i){}})();
+</script><div id='ZN_cwOHfLkxRr4n4W2'><!--DO NOT REMOVE-CONTENTS PLACED HERE--></div>
+<!--END WEBSITE FEEDBACK SNIPPET-->
+</footer>
+
+</body></html>
+
