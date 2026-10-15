@@ -1,0 +1,445 @@
+satisfaction relation
+satisfaction relation
+Alfred Tarski was the first mathematician to give a formal definition of what
+it means for a
+formula
+to be “true” in a
+structure
+. To do this, we
+need to provide a meaning to terms, and truth-values to the formulas.
+In doing this,
+free variables
+cause a problem : what value are they
+going to have ? One possible answer is to supply temporary values for the free variables, and define our notions in terms of these temporary values.
+Let
+𝒜
+be a structure with
+signature
+τ
+.
+Suppose
+ℐ
+is an
+interpretation
+, and
+σ
+is a
+function
+that
+assigns elements of
+A
+to variables, we define the function
+Val
+ℐ
+,
+σ
+inductively on the construction of terms :
+Val
+ℐ
+,
+σ
+⁡
+(
+c
+)
+=
+ℐ
+⁢
+(
+c
+)
+c
+⁢
+a constant symbol
+Val
+ℐ
+,
+σ
+⁡
+(
+x
+)
+=
+σ
+⁢
+(
+x
+)
+x
+⁢
+a variable
+Val
+ℐ
+,
+σ
+⁡
+(
+f
+⁢
+(
+t
+1
+,
+…
+,
+t
+n
+)
+)
+=
+ℐ
+⁢
+(
+f
+)
+⁢
+(
+Val
+ℐ
+,
+σ
+⁡
+(
+t
+1
+)
+,
+…
+,
+Val
+ℐ
+,
+σ
+⁡
+(
+t
+n
+)
+)
+f
+⁢
+an
+⁢
+n
+⁢
+-ary function symbol
+Now we are set to define
+satisfaction
+. Again we have to take care of free variables by assigning temporary values to them via a function
+σ
+.
+We define the
+relation
+𝒜
+,
+σ
+⊧
+φ
+by
+induction
+on the construction of formulas :
+𝒜
+,
+σ
+⊧
+t
+1
+=
+t
+2
+⁢
+if and only if
+⁢
+Val
+ℐ
+,
+σ
+⁡
+(
+t
+1
+)
+=
+Val
+ℐ
+,
+σ
+⁡
+(
+t
+2
+)
+𝒜
+,
+σ
+⊧
+R
+⁢
+(
+t
+1
+,
+…
+,
+t
+n
+)
+⁢
+if and only if
+⁢
+(
+Val
+ℐ
+,
+σ
+⁡
+(
+t
+1
+)
+,
+…
+,
+Val
+ℐ
+,
+σ
+⁡
+(
+t
+1
+)
+)
+∈
+ℐ
+⁢
+(
+R
+)
+𝒜
+,
+σ
+⊧
+¬
+⁢
+φ
+⁢
+if and only if
+⁢
+𝒜
+,
+σ
+⊧̸
+φ
+𝒜
+,
+σ
+⊧
+φ
+∨
+ψ
+⁢
+if and only if either
+⁢
+𝒜
+,
+σ
+⊧
+ψ
+⁢
+or
+⁢
+𝔄
+,
+σ
+⊧
+ψ
+𝒜
+,
+σ
+⊧
+∃
+x
+.
+φ
+⁢
+(
+x
+)
+⁢
+if and only if for some
+⁢
+a
+∈
+A
+,
+𝒜
+,
+σ
+⁢
+[
+x
+/
+a
+]
+⊧
+φ
+Here
+σ
+⁢
+[
+x
+/
+a
+]
+⁢
+(
+y
+)
+⁢
+{
+a
+if
+⁢
+x
+=
+y
+σ
+⁢
+(
+y
+)
+else.
+In case for some
+φ
+of
+L
+, we have
+𝒜
+,
+σ
+⊧
+φ
+, we say that
+𝒜
+models
+, or
+is a model of
+, or
+satisfies
+φ
+. If
+φ
+has the free variables
+x
+1
+,
+…
+,
+x
+n
+, and
+a
+1
+,
+…
+,
+a
+n
+∈
+A
+, we also write
+𝒜
+⊧
+φ
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+or
+𝒜
+⊧
+φ
+⁢
+(
+a
+1
+/
+x
+1
+,
+…
+,
+a
+n
+/
+x
+n
+)
+instead of
+𝒜
+,
+σ
+⁢
+[
+x
+1
+/
+a
+1
+]
+⁢
+⋯
+⁢
+[
+x
+n
+/
+a
+n
+]
+⊧
+φ
+. In case
+φ
+is a
+sentence
+(formula with no free variables), we write
+𝒜
+⊧
+φ
+.
+Title
+satisfaction relation
+Canonical name
+SatisfactionRelation
+Date of creation
+2013-03-22 12:43:56
+Last modified on
+2013-03-22 12:43:56
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+14
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 03C07
+Related topic
+Model
+Defines
+satisfaction
+Defines
+satisfy
+Generated  on Thu Feb  8 19:55:31 2018 by
+LaTeXML

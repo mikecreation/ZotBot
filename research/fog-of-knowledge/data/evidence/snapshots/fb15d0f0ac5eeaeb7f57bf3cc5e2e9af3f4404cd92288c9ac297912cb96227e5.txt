@@ -1,0 +1,643 @@
+first order language
+first order language
+Let
+Σ
+be a
+signature
+. The
+first order language
+FO
+⁡
+(
+Σ
+)
+on
+Σ
+contains the following:
+1.
+the set
+S
+⁢
+(
+Σ
+)
+of
+symbols
+of
+FO
+⁡
+(
+Σ
+)
+, which is the
+disjoint union
+of the following sets:
+(a)
+Σ
+(the
+non-logical symbols
+),
+(b)
+a
+countably infinite
+set
+V
+of variables,
+(c)
+the set of
+logical symbols
+{
+∧
+,
+∨
+,
+¬
+,
+⇒
+,
+⇔
+,
+∀
+,
+∃
+}
+,
+(d)
+the singleton consisting of the
+equality
+symbol
+{
+=
+}
+, and
+(e)
+the set of parentheses (left and right)
+{
+(
+,
+)
+}
+;
+2.
+the set
+T
+⁢
+(
+Σ
+)
+of
+terms
+of
+FO
+⁡
+(
+Σ
+)
+, which is built inductively from
+S
+⁢
+(
+Σ
+)
+, as follows:
+(a)
+Any variable
+v
+∈
+V
+is a term;
+(b)
+Any constant symbol in
+Σ
+is a term;
+(c)
+If
+f
+is an
+n
+-ary function symbol in
+Σ
+, and
+t
+1
+,
+…
+,
+t
+n
+are
+terms, then
+f
+⁢
+(
+t
+1
+,
+…
+,
+t
+n
+)
+is a term.
+3.
+the set
+F
+⁢
+(
+Σ
+)
+of
+formulas
+of
+FO
+⁡
+(
+Σ
+)
+, which is built inductively from
+T
+⁢
+(
+Σ
+)
+, as follows:
+(a)
+If
+t
+1
+and
+t
+2
+are terms, then
+(
+t
+1
+=
+t
+2
+)
+is a formula;
+(b)
+If
+R
+is an
+n
+-ary relation symbol and
+t
+1
+,
+…
+,
+t
+n
+are
+terms, then
+(
+R
+⁢
+(
+t
+1
+,
+…
+,
+t
+n
+)
+)
+is a formula;
+(c)
+If
+φ
+is a formula, then so is
+(
+¬
+⁢
+φ
+)
+;
+(d)
+If
+φ
+and
+ψ
+are formulas, then so is
+(
+φ
+∨
+ψ
+)
+;
+(e)
+If
+φ
+is a formula, and
+x
+is a variable, then
+(
+∃
+x
+⁢
+(
+φ
+)
+)
+is a formula.
+In other words,
+T
+⁢
+(
+Σ
+)
+and
+F
+⁢
+(
+Σ
+)
+are the smallest sets, among all sets satisfying the conditions given for terms and formulas, respectively.
+Formulas in 3(a) and 3(b), which do not contain any logical connectives, are called the
+atomic formulas
+.
+For example, in the first order language of
+partially ordered rings
+, expressions such as
+0
+,
+x
+2
+,
+and
+y
++
+z
+⁢
+x
+are terms, while
+(
+x
+=
+x
+y
+)
+,
+(
+x
++
+y
+≤
+y
+z
+)
+,
+and
+(
+∃
+x
+(
+(
+x
+≤
+0
+)
+∨
+(
+0
+≤
+x
+)
+)
+)
+are formulas, and the first two of which are atomic.
+Remarks
+.
+1.
+Generally, one omits parentheses in formulas, when there is no ambiguity. For example, a formula
+(
+φ
+)
+can be simply written
+φ
+. As such, the parentheses are also called the
+auxiliary symbols
+.
+2.
+The other logical symbols are obtained in the following way :
+φ
+∧
+ψ
+:=
+def
+⁢
+¬
+⁡
+(
+¬
+⁢
+φ
+∨
+¬
+⁢
+ψ
+)
+⁢
+φ
+⇒
+ψ
+:=
+def
+⁢
+¬
+⁢
+φ
+∨
+ψ
+φ
+⇔
+ψ
+:=
+def
+(
+φ
+⇒
+ψ
+)
+∧
+(
+ψ
+⇒
+φ
+)
+⁢
+∀
+x
+⁢
+(
+φ
+)
+:=
+def
+⁢
+¬
+⁡
+(
+∃
+x
+⁢
+(
+¬
+⁢
+φ
+)
+)
+where
+φ
+and
+ψ
+are formulas. All logical symbols are used when building formulas.
+3.
+In the literature, it is a common practice to write
+Σ
+ω
+⁢
+ω
+for
+FO
+⁡
+(
+Σ
+)
+. The first
+subscript
+means that every formula in
+FO
+⁡
+(
+Σ
+)
+contains a finite number of
+∨
+’s (less than
+ω
+), while the second subscript signifies that every formula has a finite number of
+∃
+’s. In general,
+Σ
+α
+⁢
+β
+denotes a
+language
+built from
+Σ
+such that, in any given formula, the number of
+occurrences
+of
+∨
+is less than
+α
+and the number of occurrences of
+∃
+is less than
+β
+. When the number of occurrences of
+∨
+(or
+∃
+) in a formula is not limited, we use the symbol
+∞
+in place of
+α
+(or
+β
+). Clearly, if
+α
+and
+β
+are not
+ω
+, we get a language that is not first-order.
+First Order Languages as Formal Languages
+If the signature
+Σ
+and the set
+V
+of variables are
+countable
+, then
+S
+⁢
+(
+Σ
+)
+,
+T
+⁢
+(
+Σ
+)
+, and
+F
+⁢
+(
+Σ
+)
+can be viewed as
+formal languages
+over a certain (finite)
+alphabet
+Γ
+. The set
+Γ
+should include all of the logical connectives, the equality symbol, and the parentheses, as well as the following symbols
+R
+,
+F
+,
+V
+,
+I
+,
+#
+,
+where they are used to form words for
+relation
+, formula, and variable symbols. More precisely,
+•
+V
+⁢
+I
+n
+⁢
+#
+stands for the variable
+v
+n
+,
+•
+R
+⁢
+I
+n
+⁢
+#
+⁢
+I
+m
+⁢
+#
+stands for the
+m
+-th relation symbol of arity
+n
+, and
+•
+F
+⁢
+I
+n
+⁢
+#
+⁢
+I
+m
+⁢
+#
+stands for the
+m
+-th function symbol of arity
+n
+,
+where
+m
+,
+n
+≥
+0
+are integers. The symbol
+#
+is used as a delimiter or separator. Note that the constant symbols are then words of the form
+F
+⁢
+#
+⁢
+I
+m
+⁢
+#
+. It can shown that
+S
+⁢
+(
+Σ
+)
+,
+T
+⁢
+(
+Σ
+)
+and
+F
+⁢
+(
+Σ
+)
+are
+context-free
+over
+Γ
+, and in fact
+unambiguous
+.
+References
+1
+W. Hodges,
+A Shorter
+Model Theory
+, Cambridge University Press, (1997).
+2
+D. Marker,
+Model Theory, An
+Introduction
+, Springer, (2002).
+Title
+first order language
+Canonical name
+FirstOrderLanguage
+Date of creation
+2013-03-22 12:42:46
+Last modified on
+2013-03-22 12:42:46
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+28
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 03C07
+Classification
+msc 03B10
+Synonym
+auxiliary symbol
+Synonym
+first-order language
+Related topic
+Type2
+Related topic
+Language
+Related topic
+AtomicFormula
+Defines
+first order language
+Defines
+term
+Defines
+formula
+Generated  on Thu Feb  8 19:54:58 2018 by
+LaTeXML

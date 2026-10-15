@@ -1,0 +1,927 @@
+multivalued function
+multivalued function
+Let us recall that a
+function
+f
+from a set
+A
+to a set
+B
+is an assignment that takes each element of
+A
+to a
+unique
+element of
+B
+. One way to generalize this notion is to remove the
+uniqueness
+aspect of this assignment, and what results is a
+multivalued function
+. Although a multivalued function is in general not a function, one may formalize this notion mathematically as a function:
+Definition
+. A
+multivalued function
+f
+from a set
+A
+to a set
+B
+is a function
+f
+:
+A
+→
+P
+⁢
+(
+B
+)
+, the
+power set
+of
+B
+, such that
+f
+⁢
+(
+a
+)
+is non-empty for every
+a
+∈
+A
+. Let us denote
+f
+:
+A
+⇒
+B
+the multivalued function
+f
+from
+A
+to
+B
+.
+A multivalued function is said to be
+single-valued
+if
+f
+⁢
+(
+a
+)
+is a singleton for every
+a
+∈
+A
+.
+From this definition, we see that every function
+f
+:
+A
+→
+B
+is naturally associated with a multivalued function
+f
+*
+:
+A
+⇒
+B
+, given by
+f
+*
+⁢
+(
+a
+)
+=
+{
+f
+⁢
+(
+a
+)
+}
+.
+Thus a function is just a single-valued multivalued function, and vice versa.
+As another example, suppose
+f
+:
+A
+→
+B
+is a surjective function. Then
+f
+-
+1
+:
+B
+⇒
+A
+defined by
+f
+-
+1
+⁢
+(
+b
+)
+=
+{
+a
+∈
+A
+∣
+f
+⁢
+(
+a
+)
+=
+b
+}
+is a multivalued function.
+Another way of looking at a multivalued function is to interpret it as a special type of a
+relation
+, called a
+total relation
+. A relation
+R
+from
+A
+to
+B
+is said to be
+total
+if for every
+a
+∈
+A
+, there exists a
+b
+∈
+B
+such that
+a
+⁢
+R
+⁢
+b
+.
+Given a total relation
+R
+from
+A
+to
+B
+, the function
+f
+R
+:
+A
+⇒
+B
+given by
+f
+R
+⁢
+(
+a
+)
+=
+{
+b
+∈
+B
+∣
+a
+⁢
+R
+⁢
+b
+}
+is multivalued.
+Conversely
+, given
+f
+:
+A
+⇒
+B
+, the relation
+R
+f
+from
+A
+to
+B
+defined by
+a
+⁢
+R
+f
+⁢
+b
+iff
+b
+∈
+f
+⁢
+(
+a
+)
+is total.
+Basic notions such as
+functional
+composition
+, injectivity and surjectivity on functions can be easily translated to multivalued functions:
+Definition
+. A multivalued function
+f
+:
+A
+⇒
+B
+is
+injective
+if
+f
+⁢
+(
+a
+)
+=
+f
+⁢
+(
+b
+)
+implies
+a
+=
+b
+,
+absolutely injective
+if
+a
+≠
+b
+implies
+f
+⁢
+(
+a
+)
+∩
+f
+⁢
+(
+b
+)
+=
+∅
+, and
+surjective
+if every
+b
+∈
+B
+belongs to some
+f
+⁢
+(
+a
+)
+for some
+a
+∈
+A
+. If
+f
+is both injective and surjective, it is said to be
+bijective
+.
+Given
+f
+:
+A
+⇒
+B
+and
+g
+:
+B
+⇒
+C
+, then we define the
+composition
+of
+f
+and
+g
+, written
+g
+∘
+f
+:
+A
+⇒
+C
+, by setting
+(
+g
+∘
+f
+)
+⁢
+(
+a
+)
+:=
+{
+c
+∈
+C
+∣
+c
+∈
+g
+⁢
+(
+b
+)
+⁢
+for some
+⁢
+b
+∈
+f
+⁢
+(
+a
+)
+}
+.
+It is easy to see that
+R
+g
+∘
+f
+=
+R
+g
+∘
+R
+f
+, where the
+∘
+on the right hand side denotes
+relational composition
+.
+For a subset
+S
+⊆
+A
+, if we define
+f
+⁢
+(
+S
+)
+=
+{
+b
+∈
+B
+∣
+b
+∈
+f
+⁢
+(
+s
+)
+⁢
+for some
+⁢
+s
+∈
+S
+}
+, then
+f
+:
+A
+⇒
+B
+is surjective iff
+f
+⁢
+(
+A
+)
+=
+B
+, and functional composition has a simplified and familiar form:
+(
+g
+∘
+f
+)
+⁢
+(
+a
+)
+=
+g
+⁢
+(
+f
+⁢
+(
+a
+)
+)
+.
+A bijective multivalued function
+i
+:
+A
+⇒
+A
+is said to be an
+identity
+(on
+A
+) if
+a
+∈
+i
+⁢
+(
+a
+)
+for all
+a
+∈
+A
+(equivalently,
+R
+f
+is a
+reflexive relation
+). Certainly, the function
+i
+⁢
+d
+A
+on
+A
+, taking
+a
+into itself (or equivalently,
+{
+a
+}
+), is an identity. However, given
+A
+, there may be more than one identity on it:
+f
+:
+ℤ
+→
+ℤ
+given by
+f
+⁢
+(
+n
+)
+=
+{
+n
+,
+n
++
+1
+}
+is an identity that is not
+i
+⁢
+d
+ℤ
+. An absolute identity on
+A
+is necessarily
+i
+⁢
+d
+A
+.
+Suppose
+i
+:
+A
+⇒
+A
+, we have the following
+equivalent
+characterizations
+of an identity:
+1.
+i
+is an identity on
+A
+2.
+f
+⁢
+(
+x
+)
+⊆
+(
+f
+∘
+i
+)
+⁢
+(
+x
+)
+for every
+f
+:
+A
+⇒
+B
+and every
+x
+∈
+A
+3.
+g
+⁢
+(
+y
+)
+⊆
+(
+i
+∘
+g
+)
+⁢
+(
+y
+)
+for all
+g
+:
+C
+⇒
+A
+and
+y
+∈
+C
+To see this, first assume
+i
+is an identity on
+A
+. Then
+x
+∈
+i
+⁢
+(
+x
+)
+, so that
+f
+⁢
+(
+x
+)
+⊆
+f
+⁢
+(
+i
+⁢
+(
+x
+)
+)
+. Conversely,
+i
+⁢
+d
+A
+⁢
+(
+x
+)
+⊆
+(
+i
+⁢
+d
+A
+∘
+i
+)
+⁢
+(
+x
+)
+implies that
+{
+x
+}
+⊆
+i
+⁢
+d
+A
+⁢
+(
+i
+⁢
+(
+x
+)
+)
+=
+{
+y
+∣
+y
+∈
+i
+⁢
+(
+x
+)
+}
+, so that
+x
+∈
+i
+⁢
+(
+x
+)
+. This proved the equivalence of (1) and (2). The equivalence of (1) and (3) are established similarly.
+A multivalued function
+g
+:
+B
+⇒
+A
+is said to be an
+inverse
+of
+f
+:
+A
+⇒
+B
+if
+f
+∘
+g
+is an identity on
+B
+and
+g
+∘
+f
+is an identity on
+A
+. If
+f
+possesses an inverse, it must be surjective. Given that
+f
+:
+A
+⇒
+B
+is surjective, the multivalued function
+f
+-
+1
+:
+B
+⇒
+A
+defined by
+f
+-
+1
+⁢
+(
+b
+)
+=
+{
+a
+∈
+A
+∣
+b
+∈
+f
+⁢
+(
+a
+)
+}
+is an inverse of
+f
+. Like identities, inverses are not unique.
+Remark
+. More generally, one defines a
+multivalued partial function
+(or
+partial multivalued function
+)
+f
+from
+A
+to
+B
+, as a multivalued function from a subset of
+A
+to
+B
+. The same notation
+f
+:
+A
+⇒
+B
+is used to mean that
+f
+is a multivalued partial function from
+A
+to
+B
+. A multivalued partial function
+f
+:
+A
+⇒
+B
+can be equivalently characterized, either as a function
+f
+′
+:
+A
+→
+P
+⁢
+(
+B
+)
+, where
+f
+′
+⁢
+(
+a
+)
+is undefined iff
+f
+′
+⁢
+(
+a
+)
+=
+∅
+, or simply as a relation
+R
+f
+from
+A
+to
+B
+, where
+a
+⁢
+R
+f
+⁢
+b
+iff
+f
+⁢
+(
+a
+)
+is defined and
+b
+∈
+f
+⁢
+(
+a
+)
+. Every
+partial function
+f
+:
+A
+→
+B
+has an associated multivalued partial function
+f
+*
+:
+A
+⇒
+B
+, so that
+f
+*
+⁢
+(
+a
+)
+is defined and is equal to
+{
+b
+}
+iff
+f
+⁢
+(
+a
+)
+is and
+f
+⁢
+(
+a
+)
+=
+b
+.
+Title
+multivalued function
+Canonical name
+MultivaluedFunction
+Date of creation
+2013-03-22 18:36:26
+Last modified on
+2013-03-22 18:36:26
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+15
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 03E20
+Synonym
+multi-valued
+Synonym
+multiple-valued
+Synonym
+multiple valued
+Synonym
+single-valued
+Synonym
+single valued
+Synonym
+partial multivalued function
+Related topic
+Multifunction
+Defines
+multivalued
+Defines
+singlevalued
+Defines
+total relation
+Defines
+multivalued partial function
+Defines
+injective
+Defines
+surjective
+Defines
+bijective
+Defines
+identity
+Defines
+inverse
+Defines
+absolutely injective
+Generated  on Thu Feb  8 20:13:44 2018 by
+LaTeXML

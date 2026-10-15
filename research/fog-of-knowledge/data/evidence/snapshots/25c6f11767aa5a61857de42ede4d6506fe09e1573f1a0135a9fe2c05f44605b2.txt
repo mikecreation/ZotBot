@@ -1,0 +1,338 @@
+Boolean ideal
+Boolean ideal
+Let
+A
+be a
+Boolean algebra
+and
+B
+a subset of
+A
+. The following are
+equivalent
+:
+1.
+If
+A
+is interpreted as a
+Boolean ring
+,
+B
+is a ring ideal.
+2.
+If
+A
+is interpreted as a Boolean lattice,
+B
+is a
+lattice ideal
+.
+Before proving this equivalence, we want to mention that a Boolean ring is equivalent to a Boolean lattice, and a more commonly used terminology is a Boolean algebra, which is also valid, as it is an algebra over the
+ring of integers
+. The standard way of characterizing the ring
+structure
+from the
+lattice
+structure is by defining
+a
++
+b
+:=
+(
+a
+′
+∧
+b
+)
+∨
+(
+a
+∧
+b
+′
+)
+(called the
+symmetric difference
+) and
+a
+⋅
+b
+=
+a
+∧
+b
+. From this, we can “solve” for
+∨
+in terms of
++
+and
+⋅
+:
+a
+∨
+b
+=
+a
++
+b
++
+a
+⋅
+b
+.
+Proof.
+First, suppose
+B
+is an ideal of the “ring”
+A
+. If
+a
+,
+b
+∈
+B
+, then
+a
+∨
+b
+=
+a
++
+b
++
+a
+⋅
+b
+∈
+B
+. Suppose now that
+a
+∈
+B
+and
+c
+∈
+A
+with
+c
+≤
+a
+. Then
+c
+=
+c
+∧
+a
+=
+c
+⋅
+a
+∈
+B
+as well. So
+B
+is a lattice ideal of
+A
+.
+Next, suppose
+B
+is an ideal of the “lattice”
+A
+. If
+a
+,
+b
+∈
+B
+, then both
+a
+′
+∧
+b
+and
+a
+∧
+b
+′
+are in
+B
+since the first one is less than or equal to
+b
+and the second less than or equal to
+a
+, so their join is in
+B
+as well, this means that
+a
+-
+b
+=
+a
++
+b
+=
+(
+a
+′
+∧
+b
+)
+∨
+(
+a
+∧
+b
+′
+)
+∈
+B
+. Furthermore, if
+a
+∈
+B
+and
+c
+∈
+A
+, then
+c
+⋅
+a
+=
+c
+∧
+a
+≤
+a
+∈
+B
+as well. As a result,
+B
+is a ring ideal of
+A
+.
+∎
+A subset of a Boolean algebra satisfying the two equivalent conditions above is called a
+Boolean ideal
+, or an
+ideal
+for short. A
+prime Boolean ideal
+is a prime lattice ideal, and a
+maximal Boolean ideal
+is a maximal lattice ideal. Again, these notions and their ring theoretic counterparts match exactly. In fact, one can say more about these ideals in the case of a Boolean algebra:
+prime ideals
+are precisely the
+maximal ideals
+. If
+A
+is a Boolean ring, and
+M
+is a maximal ideal of
+A
+, then
+A
+/
+M
+is
+isomorphic
+to
+{
+0
+,
+1
+}
+.
+Remark
+. The dual notion of a Boolean ideal is a
+Boolean filter
+, or a filter for short. A Boolean filter is just a
+lattice filter
+of the Boolean algebra when considered as a lattice. To see the connection between a Boolean ideal and a Boolean lattice, let us define, for any subset
+S
+of a Boolean algebra
+A
+, the set
+S
+′
+:=
+{
+a
+′
+∣
+a
+∈
+S
+}
+. It is easy to see that
+S
+′′
+=
+S
+. Now, if
+I
+is an ideal, then
+I
+′
+is a filter.
+Conversely
+, if
+F
+is a filter,
+F
+′
+is a ideal. In fact, given any Boolean algebra, there is a
+Galois connection
+I
+↦
+I
+′
+,
+F
+↦
+F
+′
+between the set of Boolean ideals and the set of Boolean filters in
+A
+. In
+addition
+,
+I
+is prime iff
+I
+′
+is. As a result, a filter is prime iff it is an
+ultrafilter
+(maximal filter).
+Title
+Boolean ideal
+Canonical name
+BooleanIdeal
+Date of creation
+2013-03-22 17:01:59
+Last modified on
+2013-03-22 17:01:59
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+10
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 03G05
+Classification
+msc 03G10
+Related topic
+BooleanRing
+Defines
+Boolean filter
+Defines
+prime Boolean ideal
+Defines
+maximal Boolean ideal
+Generated  on Thu Feb  8 20:25:46 2018 by
+LaTeXML

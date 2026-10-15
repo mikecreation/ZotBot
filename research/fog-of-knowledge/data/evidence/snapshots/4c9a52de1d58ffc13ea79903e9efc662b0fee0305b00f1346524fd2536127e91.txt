@@ -1,0 +1,677 @@
+Markov algorithm
+Markov algorithm
+Definition
+A
+Markov algorithm
+is a variant of a
+rewriting system
+, invented by mathematician Andrey Andreevich Markov Jr. in 1960. Like a rewriting system, a Markov algorithm consists of an
+alphabet
+and a set of
+productions
+. Furthermore, rewriting is done by applying productions one at a time, if any. However, unlike a rewriting system, applications of productions are regulated, in the following sense:
+•
+P
+is ordered so that, among all applicable productions in a single rewriting step, the first applicable one
+x
+→
+y
+must be used;
+•
+among all
+occurrences
+where rewriting can take place with respect to
+x
+→
+y
+, the leftmost occurrence must be applied.
+Formally, a
+Markov algorithm
+is a quadruple
+ℳ
+=
+(
+Σ
+,
+P
+,
+F
+,
+T
+)
+, where
+1.
+Σ
+is an alphabet;
+2.
+P
+is a non-empty finite ordered set (ordered by, say,
+≤
+) of pairs of words over
+Σ
+, whose
+elements
+are called
+productions
+, and are usually written
+x
+→
+y
+rather than
+(
+x
+,
+y
+)
+;
+3.
+F
+is a subset of
+P
+, whose elements are called the
+final productions
+; and
+4.
+T
+is a subset of
+Σ
+, called the terminal alphabet.
+Rewriting Process
+Next, we describe the rewriting process for
+ℳ
+. A production
+x
+→
+y
+is
+applicable
+to a pair
+(
+u
+,
+v
+)
+of words over
+Σ
+, if there are two words
+p
+,
+q
+such that
+u
+=
+p
+⁢
+x
+⁢
+q
+and
+v
+=
+p
+⁢
+y
+⁢
+q
+.
+A
+binary relation
+⇒
+on
+Σ
+*
+called the
+rewriting step
+relation
+, is defined as follows:
+u
+⇒
+v
+iff there is a production
+x
+→
+y
+such that
+1.
+u
+=
+p
+⁢
+x
+⁢
+q
+and
+v
+=
+p
+⁢
+y
+⁢
+q
+for some words
+p
+,
+q
+over
+Σ
+,
+2.
+if
+(
+r
+,
+s
+)
+<
+(
+x
+,
+y
+)
+, then
+r
+→
+s
+is not applicable to
+(
+u
+,
+v
+)
+,
+3.
+if
+u
+=
+p
+′
+⁢
+x
+⁢
+q
+′
+and
+v
+=
+p
+′
+⁢
+y
+⁢
+q
+′
+, then
+p
+⁢
+x
+is a prefix of
+p
+′
+⁢
+x
+.
+The first condition ensures that there is a production (
+x
+→
+y
+in this case) applicable to
+(
+u
+,
+v
+)
+, the second condition says that
+x
+→
+y
+is the first available production that can be applied, and the last condition says that the occurrence of
+x
+in
+u
+is the leftmost.
+By the definition above, every rewriting step
+u
+⇒
+v
+determines a unique production
+x
+→
+y
+, called the
+associated production
+of
+u
+⇒
+v
+.
+A word
+u
+over
+Σ
+is said to be
+terminal
+if there are no words
+v
+such that
+u
+⇒
+v
+.
+A rewriting step is called
+final
+if its associated production is final (in
+F
+).
+Computation
+Take the
+reflexive transitive closure
+⇒
+*
+of
+⇒
+. If
+u
+⇒
+*
+v
+, we say that
+v
+can be
+computed
+from
+u
+, or that
+v
+is a
+computation
+from
+u
+.
+Given any word
+u
+over
+Σ
+, we may iteratively apply rewriting steps to
+u
+using the methods described above. Three scenarios may emerge:
+•
+The process terminates:
+u
+⇒
+*
+v
+, where
+v
+is a terminal word;
+•
+The process reaches a final rewriting step:
+u
+⇒
+*
+v
+, where the last rewriting step
+u
+n
+-
+1
+⇒
+u
+n
+=
+v
+is final; or
+•
+The process never reaches any final rewriting step, and goes on indefinitely.
+If the third
+scenario
+occurs, we say that
+ℳ
+loops
+on
+u
+. Otherwise,
+ℳ
+halts
+on
+u
+. In any case, we get a unique
+sequence
+u
+=
+u
+0
+⇒
+u
+1
+⇒
+⋯
+⇒
+u
+n
+⇒
+⋯
+of rewriting steps
+u
+i
+→
+u
+i
++
+1
+. In the first scenario, the sequence is finite, and in the third scenario, the sequence is
+infinite
+. In the second scenario, the sequence may be finite or infinite, depending if the rewriting is to be continued after a final rewriting step is reached (if
+v
+is not a terminal word, then rewriting can continue). Let us make the rule:
+when a final rewriting is reached, no further rewriting is to be done.
+Thus, the sequence is finite iff
+ℳ
+halts on
+u
+. When
+ℳ
+halts on
+u
+, the
+finite sequence
+u
+=
+u
+0
+⇒
+u
+1
+⇒
+⋯
+⇒
+u
+n
+=
+v
+produces a unique word
+v
+. The word
+v
+is said to be
+the word computed by
+ℳ
+from
+u
+. Notice that
+v
+is either a terminal word, or is computed from a final production
+u
+n
+-
+1
+→
+v
+. In either case, no earlier productions
+u
+i
+→
+u
+i
++
+1
+are final.
+Thus, one can think of a computation by a Markov algorithm as a
+partial function
+m
+ℳ
+:
+Σ
+*
+→
+Σ
+*
+,
+where
+m
+ℳ
+⁢
+(
+u
+)
+is defined iff
+ℳ
+halts on
+u
+, and the value
+m
+ℳ
+⁢
+(
+u
+)
+is set to
+the unique word
+v
+computed by
+ℳ
+from
+u
+.
+Language Acceptor
+ℳ
+can be thought of as a
+language
+acceptor
+, which is the purpose of the terminal alphabet
+T
+: the set
+L
+⁢
+(
+ℳ
+)
+:=
+{
+u
+∈
+T
+*
+∣
+m
+ℳ
+⁢
+(
+u
+)
+=
+λ
+}
+is called the
+language accepted by
+ℳ
+. The partial function
+m
+ℳ
+is defined in the previous
+section
+.
+Remark
+. It turns out that a Markov algorithm is just another form of
+Turing Machine
+. One can show that a language is
+recursively enumerable
+iff it can be accepted by a Markov algorithm.
+Equivalence to a Turing machine can be restated in terms of
+functional
+computability. Before formalizing this notion, we need to first encode tuples of
+natural numbers
+by words. Suppose
+(
+n
+1
+,
+…
+,
+n
+m
+)
+is an
+m
+-tuple of natural numbers. Set
+E
+⁢
+(
+n
+1
+,
+…
+,
+n
+m
+)
+:=
+a
+⁢
+b
+n
+1
+⁢
+a
+⁢
+b
+n
+2
+⁢
+a
+⁢
+⋯
+⁢
+a
+⁢
+b
+n
+m
+⁢
+a
+,
+a word over the alphabet
+{
+a
+,
+b
+}
+. If non-negative integers are allowed instead, we may use the word
+E
+⁢
+(
+n
+1
++
+1
+,
+…
+,
+n
+m
++
+1
+)
+instead.
+We say an
+m
+-ary number-theoretic partial function
+f
+:
+ℕ
+m
+→
+ℕ
+is
+Markov-computable
+if there is a Markov algorithm
+ℳ
+such that
+f
+⁢
+(
+n
+1
+,
+…
+,
+n
+m
+)
+is defined iff
+m
+ℳ
+⁢
+(
+E
+⁢
+(
+n
+1
+,
+…
+,
+n
+m
+)
+)
+is defined, and is equal to
+E
+⁢
+(
+f
+⁢
+(
+n
+1
+,
+…
+,
+n
+m
+)
+)
+.
+It can be shown that a partial function is
+Turing-computable
+iff it is Markov-computable.
+References
+1
+A. Salomaa
+Computation and Automata, Encyclopedia of Mathematics and Its Applications, Vol. 25
+. Cambridge (1985).
+2
+N. Cutland,
+Computability: An
+Introduction
+to
+Recursive Function
+Theory
+. Cambridge University Press, (1980).
+3
+J. D. Monk,
+Mathematical Logic
+, Springer, New York (1976).
+Title
+Markov algorithm
+Canonical name
+MarkovAlgorithm
+Date of creation
+2013-03-22 18:57:50
+Last modified on
+2013-03-22 18:57:50
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+13
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 03D10
+Defines
+Markov-computable
+Generated  on Thu Feb  8 20:01:08 2018 by
+LaTeXML

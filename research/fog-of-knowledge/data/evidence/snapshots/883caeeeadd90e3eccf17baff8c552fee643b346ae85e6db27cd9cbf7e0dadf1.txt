@@ -1,0 +1,774 @@
+truth-value semantics for classical propositional logic
+truth-value semantics for classical propositional logic
+In classical
+propositional logic
+, an
+interpretation
+of a
+well-formed formula
+(wff)
+p
+is an assignment of truth (=1) or falsity (=0) to
+p
+. Any interpreted wff is called a
+proposition
+.
+An
+interpretation
+of all wffs over the
+variable
+set
+V
+is then a
+Boolean function
+on
+V
+¯
+. However, one needs to be careful, for we do not want both
+p
+and
+¬
+⁢
+p
+be interpreted as true simultaneously (at least not in classical propositional logic)! The proper way to find an interpretation on the wffs is to start from the atoms.
+Call any Boolean-valued function
+ν
+on
+V
+a
+valuation
+on
+V
+. We want to extend
+ν
+to a Boolean-valued function
+ν
+¯
+on
+V
+¯
+of all wffs. The way this is done is
+similar
+to the construction of wffs; we build a
+sequence
+of
+functions
+, starting from
+ν
+on
+V
+0
+, next
+ν
+1
+on
+V
+1
+, and so on… Finally, we take the union of all these “approximations” to arrive at
+ν
+¯
+. So how do we go from
+ν
+to
+ν
+1
+? We need to interpret
+¬
+⁢
+p
+and
+p
+∨
+q
+from the valuations of atoms
+p
+and
+q
+. In other words, we must also interpret
+logical connectives
+too.
+Before doing this, we define a
+truth function
+for each of the logical connectives:
+•
+for
+¬
+, define
+f
+:
+{
+0
+,
+1
+}
+→
+{
+0
+,
+1
+}
+given by
+f
+⁢
+(
+x
+)
+=
+1
+-
+x
+.
+•
+for
+∨
+, define
+g
+:
+{
+0
+,
+1
+}
+2
+→
+{
+0
+,
+1
+}
+given by
+g
+⁢
+(
+x
+,
+y
+)
+=
+max
+⁡
+(
+x
+,
+y
+)
+.
+As we are trying to
+interpret
+¬
+(not) and
+∨
+(or), the choices for
+f
+and
+g
+are clear. The values
+0
+,
+1
+are interpreted as the usual integers (so they can be subtracted and ordered, etc…). Hence
+f
+and
+g
+make sense.
+Next, recall that
+V
+i
+are sets of wffs built up from wffs in
+V
+i
+-
+1
+(see
+construction of well-formed formulas
+for more detail). We define a function
+ν
+i
+:
+V
+i
+→
+{
+0
+,
+1
+}
+for each
+i
+, as follows:
+•
+ν
+0
+:=
+ν
+•
+suppose
+ν
+i
+has been defined, we define
+ν
+i
++
+1
+:
+V
+i
++
+1
+→
+{
+0
+,
+1
+}
+given by
+ν
+i
++
+1
+⁢
+(
+p
+)
+:=
+{
+ν
+i
+⁢
+(
+p
+)
+if
+⁢
+p
+∈
+V
+i
+,
+f
+⁢
+(
+ν
+i
+⁢
+(
+q
+)
+)
+if
+⁢
+p
+=
+¬
+⁢
+q
+⁢
+for some
+⁢
+q
+∈
+V
+i
+,
+g
+⁢
+(
+ν
+i
+⁢
+(
+q
+)
+,
+ν
+i
+⁢
+(
+r
+)
+)
+if
+⁢
+p
+=
+q
+∨
+r
+⁢
+for some
+⁢
+q
+,
+r
+∈
+V
+i
+.
+Finally, take
+ν
+¯
+to be the union of all the approximations:
+ν
+¯
+:=
+⋃
+i
+=
+0
+∞
+ν
+i
+.
+Then, by
+unique readability
+of wffs,
+ν
+¯
+is an interpretation on
+V
+¯
+.
+Remark
+. If
+⟂
+is included in the
+language
+of the logic (as the symbol for falsity), we also require that
+ν
+i
+⁢
+(
+⟂
+)
+=
+ν
+¯
+⁢
+(
+⟂
+)
+=
+0
+.
+Remark
+V
+¯
+can be viewed as an
+inductive set
+over
+V
+with respect to the
+¬
+and
+∨
+, viewed as
+operations
+on
+V
+¯
+. Furthermore,
+V
+¯
+is
+freely generated
+by
+V
+, since each
+V
+i
++
+1
+can be partitioned into sets
+V
+i
+,
+{
+(
+p
+∨
+q
+)
+∣
+p
+,
+q
+∈
+V
+i
+}
+, and
+{
+(
+¬
+⁢
+p
+)
+∣
+p
+∈
+V
+i
+}
+, and each
+partition
+is non-empty. As a result, any valuation
+ν
+on
+V
+uniquely extends to a valuation
+ν
+¯
+on
+V
+¯
+.
+Definitions
+. Let
+p
+,
+q
+be wffs in
+V
+¯
+.
+•
+p
+is
+true
+or
+satisfiable
+for some valuation
+ν
+if
+ν
+¯
+⁢
+(
+p
+)
+=
+1
+(otherwise, it is
+false
+for
+ν
+).
+•
+p
+is true for every valuation
+ν
+, then
+p
+is said to be
+valid
+(or
+tautologous
+). If
+p
+is false for every
+ν
+, it is
+invalid
+. If
+p
+is valid, we write
+⊧
+p
+.
+•
+p
+implies
+q
+for a valuation
+ν
+if
+ν
+¯
+⁢
+(
+p
+)
+=
+1
+implies
+ν
+¯
+⁢
+(
+q
+)
+=
+1
+.
+p
+semantically implies
+if
+p
+implies
+q
+for every valuation
+ν
+, and is denoted by
+p
+⊧
+q
+.
+•
+p
+is
+equivalent
+to
+q
+for
+ν
+if
+ν
+¯
+⁢
+(
+p
+)
+=
+ν
+¯
+⁢
+(
+q
+)
+. They are
+semantically equivalent
+if they are equivalent for every
+ν
+, and written
+p
+≡
+q
+.
+Semantical equivalence is an
+equivalence relation
+on
+V
+¯
+.
+The above can be easily generalized to sets of wffs. Let
+T
+be a set of propositions.
+•
+T
+is true or satisfiable for
+ν
+if
+ν
+¯
+⁢
+(
+T
+)
+=
+{
+1
+}
+(otherwise, it is false for
+ν
+).
+•
+T
+is valid if it is true for every
+ν
+; it is
+invalid
+if it is false for every
+ν
+. If
+T
+is valid, we write
+⊧
+T
+.
+•
+T
+implies
+p
+for
+ν
+if
+ν
+¯
+⁢
+(
+T
+)
+=
+{
+1
+}
+implies
+ν
+¯
+⁢
+(
+p
+)
+=
+1
+.
+T
+semantically implies
+p
+if
+T
+implies
+p
+for every
+ν
+, and is denoted by
+T
+⊧
+p
+.
+•
+T
+1
+implies
+T
+2
+for
+ν
+if, for every
+p
+∈
+T
+2
+,
+T
+1
+implies
+p
+for
+ν
+.
+T
+1
+semantically implies
+T
+2
+if
+T
+1
+implies
+T
+2
+for every
+ν
+, and is denoted by
+T
+1
+⊧
+T
+2
+.
+•
+T
+1
+is equivalent to
+T
+2
+for
+ν
+if for some valuation
+ν
+,
+T
+1
+implies
+T
+2
+for
+ν
+and
+T
+2
+implies
+T
+1
+for
+ν
+.
+T
+1
+and
+T
+2
+are semantically equivalent if
+T
+1
+⊧
+T
+2
+and
+T
+2
+⊧
+T
+1
+, written
+T
+1
+≡
+T
+2
+.
+Clearly,
+⊧
+p
+iff
+∅
+⊧
+p
+, and
+T
+⊧
+p
+iff
+T
+⊧
+{
+p
+}
+.
+Title
+truth-value semantics for classical propositional logic
+Canonical name
+TruthvalueSemanticsForClassicalPropositionalLogic
+Date of creation
+2013-03-22 18:51:20
+Last modified on
+2013-03-22 18:51:20
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+20
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 03B05
+Synonym
+entail
+Defines
+truth-value semantics
+Defines
+valuation
+Defines
+interpretation
+Defines
+valid
+Defines
+invalid
+Defines
+satisfiable
+Generated  on Thu Feb  8 19:25:07 2018 by
+LaTeXML

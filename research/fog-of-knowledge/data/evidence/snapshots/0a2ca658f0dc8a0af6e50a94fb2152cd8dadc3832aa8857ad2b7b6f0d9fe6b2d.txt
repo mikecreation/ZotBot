@@ -1,0 +1,368 @@
+open set
+open set
+In a
+metric space
+M
+a set
+O
+is called an
+open subset
+of
+M
+or just
+open
+, if for every
+x
+∈
+O
+there is an open ball
+S
+around
+x
+such that
+S
+⊂
+O
+. If
+d
+⁢
+(
+x
+,
+y
+)
+is the
+distance
+from
+x
+to
+y
+then the open ball
+B
+r
+with radius
+r
+>
+0
+around
+x
+is given as:
+B
+r
+=
+{
+y
+∈
+M
+|
+d
+⁢
+(
+x
+,
+y
+)
+<
+r
+}
+.
+Using the idea of an open ball one can define a
+neighborhood
+of a point
+x
+. A set containing
+x
+is called a neighborhood of
+x
+if there is an open ball around
+x
+which is a subset of the neighborhood.
+These neighborhoods have some properties, which can be used to define a
+topological space
+using the
+Hausdorff axioms
+for neighborhoods, by which again an open set within a topological space can be defined. In this way we drop the metric and get the more general topological space. We can define a topological space
+X
+with a set of neighborhoods of
+x
+called
+U
+x
+for every
+x
+∈
+X
+, which
+satisfy
+1.
+x
+∈
+U
+for every
+U
+∈
+U
+x
+2.
+If
+U
+∈
+U
+x
+and
+V
+⊂
+X
+and
+U
+⊂
+V
+then
+V
+∈
+U
+x
+(every set containing a neighborhood of
+x
+is a neighborhood of
+x
+itself).
+3.
+If
+U
+,
+V
+∈
+U
+x
+then
+U
+∩
+V
+∈
+U
+x
+.
+4.
+For every
+U
+∈
+U
+x
+there is a
+V
+∈
+U
+x
+, such that
+V
+⊂
+U
+and
+V
+∈
+U
+p
+for every
+p
+∈
+V
+.
+The last point leads us back to open sets, indeed a set
+O
+is called open if it is a neighborhood of every of its points. Using the properties of these open sets we arrive at the usual definition of a topological space using open sets, which is
+equivalent
+to the above definition. In this definition we look at a set
+X
+and a set of subsets of
+X
+, which we call open sets, called
+𝒪
+, having the following properties:
+1.
+∅
+∈
+𝒪
+and
+X
+∈
+𝒪
+.
+2.
+Any union of open sets is open.
+3.
+intersections
+of open sets are open.
+Note that a topological space is more general than a metric space, i.e. on every metric space a
+topology
+can be defined using the open sets from the metric, yet we cannot always define a metric on a topological space such that all open sets remain open.
+Examples:
+•
+On the real axis the
+interval
+I
+=
+(
+0
+,
+1
+)
+is open because for every
+a
+∈
+I
+the open ball with radius
+min
+⁡
+(
+a
+,
+1
+-
+a
+)
+is always a subset of
+I
+. (Using the
+standard metric
+d
+⁢
+(
+x
+,
+y
+)
+=
+|
+x
+-
+y
+|
+.)
+•
+The open ball
+B
+r
+around
+x
+is open. Indeed, for every
+y
+∈
+B
+r
+the open ball with radius
+r
+-
+d
+⁢
+(
+x
+,
+y
+)
+around y is a subset of
+B
+r
+, because for every
+z
+within this ball we have:
+d
+⁢
+(
+x
+,
+z
+)
+≤
+d
+⁢
+(
+x
+,
+y
+)
++
+d
+⁢
+(
+y
+,
+z
+)
+<
+d
+⁢
+(
+x
+,
+y
+)
++
+r
+-
+d
+⁢
+(
+x
+,
+y
+)
+=
+r
+.
+So
+d
+⁢
+(
+x
+,
+z
+)
+<
+r
+and thus
+z
+is in
+B
+r
+. This holds for every
+z
+in the ball around
+y
+and therefore it is a subset of
+B
+r
+•
+A non-metric topology would be the finite
+complement
+topology on
+infinite sets
+, in which a set is called open, if its complement is finite.
+Title
+open set
+Canonical name
+OpenSet
+Date of creation
+2013-03-22 12:39:25
+Last modified on
+2013-03-22 12:39:25
+Owner
+mathwizard (128)
+Last modified by
+mathwizard (128)
+Numerical id
+21
+Author
+mathwizard (128)
+Entry type
+Definition
+Classification
+msc 54A05
+Synonym
+open
+Synonym
+open subset
+Defines
+Hausdorff axioms
+Generated  on Sat Feb 10 11:13:10 2018 by
+LaTeXML

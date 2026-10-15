@@ -1,0 +1,520 @@
+Gentzen system
+Gentzen system
+Introduction
+A
+Gentzen system
+, attributed to the German logician Gerhard Gentzen, is a variant form of a
+deductive system
+. Like a deductive system, a Gentzen system has axioms and
+inference rules
+. But, unlike a deductive system, the basic building blocks in a Gentzen system are expressions called
+sequents
+, not
+formulas
+.
+More precisely, given a
+language
+L
+of
+well-formed formulas
+, a deductive system consists of a set of formulas called axioms, and a set of inference rules, which are pairs of sets of formulas. In a Gentzen system, the formulas are replaced by sequents, which are defined as expressions of the form
+Δ
+⇒
+Γ
+,
+where
+Δ
+and
+Γ
+are
+finite sequences
+of formulas in
+L
+. The empty
+sequence
+is allowed, and is usually denoted by
+∅
+,
+λ
+, or blank space. In the sequent above,
+Δ
+is called the
+antecedent
+, and
+Γ
+the
+succedent
+. A
+formula
+in a sequent is a formula that occurs either in the antecedent or the succedent of the sequent, and a
+subformula
+in a sequent is a subformula of some formula in the sequent.
+Notation: for any sequence
+Δ
+of formulas, we write
+Δ
+:=
+Δ
+1
+,
+A
+,
+Δ
+2
+to mean that
+A
+is a formula in
+Δ
+.
+Δ
+1
+and
+Δ
+2
+are
+subsequences
+of
+Δ
+, one before
+A
+, and the other after
+A
+, both of which may be empty.
+Axioms
+As discussed above, axioms of a Gentzen system are sequents. Typically, they are of the following form:
+Δ
+1
+,
+A
+,
+Δ
+2
+⇒
+A
+In the case of classical propositional or predicate logic where
+⟂
+is the nullary
+logical connective
+denoting
+falsity
+,
+⟂
+⇒
+is also an axiom. In
+addition
+, when converting a
+Hilbert system
+into a Gentzen system, axioms take the form
+⇒
+B
+,
+where
+B
+is an axiom in the Hilbert system.
+Rules of Inference
+Rules of inferences
+have the form
+X
+1
+X
+2
+⋯
+X
+n
+Y
+where
+X
+1
+,
+…
+,
+X
+n
+and
+Y
+are sequents of the rule. The
+X
+’s are called the
+premises
+, and
+Y
+the
+conclusion
+. The inference rules of a Gentzen system can be grouped into two main kinds:
+•
+structural rule
+: a rule is structural if either,
+(a)
+given any premise, every formula in it is also a formula in the conclusion, or
+(b)
+every formula in the conclusion is also a formula in some premise.
+In the former case, if there is a formula
+B
+in the conclusion not in any of the premises, then
+B
+is said to be
+introduced
+by the rule. In the later case, if there is a formula
+A
+in one of the premises not in the conclusion, then
+A
+is said to be
+eliminated
+. Some examples of this kind of rules are:
+–
+weakening rules
+Δ
+1
+,
+Δ
+2
+⇒
+Γ
+Δ
+1
+,
+A
+,
+Δ
+2
+⇒
+Γ
+or
+Δ
+⇒
+Γ
+1
+,
+Γ
+2
+Δ
+⇒
+Γ
+1
+,
+B
+,
+Γ
+2
+–
+contraction rules
+Δ
+1
+,
+A
+,
+A
+,
+Δ
+2
+⇒
+Γ
+Δ
+1
+,
+A
+,
+Δ
+2
+⇒
+Γ
+or
+Δ
+⇒
+Γ
+1
+,
+B
+,
+B
+,
+Γ
+2
+Δ
+⇒
+Γ
+1
+,
+B
+,
+Γ
+2
+–
+exchange rules
+Δ
+1
+,
+A
+,
+B
+,
+Δ
+2
+⇒
+Γ
+Δ
+1
+,
+B
+,
+A
+,
+Δ
+2
+⇒
+Γ
+or
+Δ
+⇒
+Γ
+1
+,
+A
+,
+B
+,
+Γ
+2
+Δ
+⇒
+Γ
+1
+,
+B
+,
+A
+,
+Γ
+2
+–
+cut rule
+Δ
+1
+⇒
+Γ
+1
+,
+A
+,
+Γ
+2
+Δ
+2
+,
+A
+,
+Δ
+3
+⇒
+Γ
+3
+Δ
+1
+,
+Δ
+2
+,
+Δ
+3
+⇒
+Γ
+1
+,
+Γ
+2
+,
+Γ
+3
+where
+A
+is called a
+cut formula
+.
+•
+logical rule
+: if it is not a structural rule. In other words, for every premise
+X
+i
+, there is at least one formula, say
+A
+i
+, in it not in the conclusion
+Y
+, and a formula
+B
+in
+Y
+not in any of
+X
+i
+’s. Typically,
+Y
+is obtained from the
+X
+i
+’s via a logical connective. An example of a logical rule is the following:
+A
+,
+Δ
+⇒
+Γ
+,
+B
+Δ
+⇒
+Γ
+,
+A
+→
+B
+Deductions
+Deductions
+in a Gentzen system
+G
+are finite trees, whose nodes are labeled by sequents. In any deduction, the label of any of its leaves is an axiom. In addition, given any node with label
+Y
+, its immediate
+predecessors
+are nodes with labels
+X
+1
+,
+…
+,
+X
+n
+, such that
+X
+1
+X
+2
+⋯
+X
+n
+Y
+is a rule of inference in
+G
+. A sequent
+X
+is said to be
+deducible
+if there is a deduction whose root has label
+X
+. A formula
+A
+is called a
+theorem
+if the sequent
+⇒
+A
+is deducible.
+Remarks
+.
+•
+Initially, Gentzen invented the sequent system to analyze the other deductive system he introduced:
+natural deduction
+. In fact, sequents can be thought of as abbreviated forms of natural deductions, where the
+left hand side
+stands for assumptions (leaves), and right hand side the conclusion (root), and the body of the deduction tree is ignored. Furthermore, if we interpret sequents as formulas themselves, a Gentzen system is really just a deductive system for natural deductions.
+•
+In some
+logical systems
+, where the exchange rules are automatically assumed, the antecedent and succedent that make up s sequent can be thought of as
+multisets
+instead of finite sequences, of formulas, since multisets are just finite sequences
+modulo order
+. Furthermore, if the weakening and contraction rules are automatically assumed, then the multisets can be
+reduced
+to sets (where
+multiplicities
+of
+elements
+are forgotten). In classical
+propositional logic
+, for example, the sequent
+Δ
+⇒
+Γ
+can be thought of as the formula
+⋀
+Δ
+→
+⋁
+Γ
+, where
+⋀
+Δ
+is the
+conjunction
+of formulas in
+Δ
+, and
+⋁
+Γ
+is the
+disjunction
+of formulas in
+Γ
+.
+•
+A given logical system may have several distinct but deductively equivalent Gentzen systems. For example, any Gentzen system for classical propositional logic with structural rules can be converted into one without any structural rules.
+References
+1
+A. S. Troelstra, H. Schwichtenberg,
+Basic
+Proof Theory
+, 2nd Edition, Cambridge University Press (2000)
+Title
+Gentzen system
+Canonical name
+GentzenSystem
+Date of creation
+2013-03-22 19:13:20
+Last modified on
+2013-03-22 19:13:20
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+17
+Author
+CWoo (3771)
+Entry type
+Topic
+Classification
+msc 03F07
+Classification
+msc 03F03
+Classification
+msc 03B99
+Classification
+msc 03F05
+Synonym
+sequent system
+Related topic
+Sequent
+Related topic
+HilbertSystem
+Related topic
+NaturalDeduction
+Defines
+antecedent
+Defines
+succedent
+Defines
+structural rule
+Defines
+logical rule
+Defines
+weakening rule
+Defines
+contraction rule
+Defines
+cut rule
+Defines
+exchange rule
+Defines
+cut formula
+Generated  on Thu Feb  8 20:24:23 2018 by
+LaTeXML

@@ -1,0 +1,646 @@
+free and bound variables
+free and bound variables
+In the entry
+first-order language
+(
+http://planetmath.org/TermsAndFormulas
+), I have mentioned the use of
+variables
+without mentioning what variables really are. A variable is a symbol that is supposed to range over the
+universe of discourse
+. Unlike a
+constant
+, it has no fixed value.
+There are two ways in which a variable can
+occur in
+a
+formula
+:
+free
+or
+bound
+. Informally, a variable is said to occur
+free
+in a formula
+φ
+if and only if it is not within the “scope” of a
+quantifier
+. For
+instance
+,
+x
+occurs free
+in
+φ
+if and only if it occurs in it as a symbol, and no
+subformula
+of
+φ
+is of the form
+∃
+x
+.
+ψ
+. Here the
+x
+after the
+∃
+is to be taken literally : it is
+x
+and no other symbol.
+Variables in Terms
+To formally define free (resp. bound) variables in a formula, we start by defining variables occurring in terms, which can be easily done inductively: let
+t
+be a term (in a first-order language), then
+Var
+⁡
+(
+t
+)
+is
+•
+if
+t
+is a variable
+v
+, then
+Var
+⁡
+(
+t
+)
+is
+{
+v
+}
+•
+if
+t
+is
+f
+⁢
+(
+t
+1
+,
+…
+,
+t
+n
+)
+, where
+f
+is a
+function symbol
+of arity
+n
+, and each
+t
+i
+is a term, then
+Var
+⁡
+(
+t
+)
+is the union of all the
+Var
+⁡
+(
+t
+i
+)
+.
+Free Variables
+Now, let
+φ
+be a formula. Then the set
+FV
+⁡
+(
+φ
+)
+of
+free variables
+of
+φ
+is now defined inductively as follows:
+•
+if
+φ
+is
+t
+1
+=
+t
+2
+, then
+FV
+⁡
+(
+φ
+)
+is
+Var
+⁡
+(
+t
+1
+)
+∪
+Var
+⁡
+(
+t
+2
+)
+,
+•
+if
+φ
+is
+R
+⁢
+(
+t
+1
+,
+…
+,
+t
+n
+)
+, then
+FV
+⁡
+(
+φ
+)
+is
+Var
+⁡
+(
+t
+1
+)
+∪
+⋯
+∪
+Var
+⁡
+(
+t
+n
+)
+•
+if
+φ
+is
+¬
+⁢
+ψ
+, then
+FV
+⁡
+(
+φ
+)
+is
+FV
+⁡
+(
+ψ
+)
+•
+if
+φ
+is
+ψ
+∨
+σ
+, then
+FV
+⁡
+(
+φ
+)
+is
+FV
+⁡
+(
+ψ
+)
+∪
+FV
+⁡
+(
+σ
+)
+, and
+•
+if
+φ
+is
+∃
+x
+⁢
+ψ
+, then
+FV
+⁡
+(
+φ
+)
+is
+FV
+⁡
+(
+ψ
+)
+-
+{
+x
+}
+.
+If
+FV
+⁡
+(
+φ
+)
+≠
+∅
+, it is customary to write
+φ
+as
+φ
+⁢
+(
+x
+1
+,
+…
+,
+x
+n
+)
+,
+in order to stress the fact that there are some free variables left in
+φ
+, and that those free variables are among
+x
+1
+,
+…
+,
+x
+n
+. When
+x
+1
+,
+…
+,
+x
+n
+appear free in
+φ
+, then they are considered as
+place-holders
+, and it is understood that we will have to supply “values” for them, when we want to determine the truth of
+φ
+. If
+FV
+⁡
+(
+φ
+)
+=
+∅
+, then
+φ
+is called a
+sentence
+. Another name for a sentence is a
+closed formula
+. A formula that is not closed is said to be
+open
+.
+Bound Variables
+Bound variables
+in formulas are inductively defined as well: let
+φ
+be a formula. Then the set
+BV
+⁡
+(
+φ
+)
+of
+bound variables
+of
+φ
+•
+if
+φ
+is an
+atomic formula
+, then
+BV
+⁡
+(
+φ
+)
+is
+∅
+, the
+empty set
+,
+•
+if
+φ
+is
+¬
+⁢
+ψ
+, then
+BV
+⁡
+(
+φ
+)
+is
+BV
+⁡
+(
+ψ
+)
+•
+if
+φ
+is
+ψ
+∨
+σ
+, then
+BV
+⁡
+(
+φ
+)
+is
+BV
+⁡
+(
+ψ
+)
+∪
+BV
+⁡
+(
+σ
+)
+, and
+•
+if
+φ
+is
+∃
+x
+⁢
+ψ
+, then
+BV
+⁡
+(
+φ
+)
+is
+BV
+⁡
+(
+ψ
+)
+∪
+{
+x
+}
+.
+Thus, a variable
+x
+is bound in
+φ
+if and only if
+∃
+x
+⁢
+ψ
+is a subformula of
+φ
+for some formula
+ψ
+.
+The set of all variables occurring in a formula
+φ
+is denoted
+Var
+⁡
+(
+φ
+)
+, and is
+FV
+⁡
+(
+φ
+)
+∪
+BV
+⁡
+(
+φ
+)
+.
+Note that it is possible for a variable to be both free and bound. In other words,
+FV
+⁡
+(
+φ
+)
+and
+BV
+⁡
+(
+φ
+)
+are not necessarily
+disjoint
+. For example, consider the following formula
+φ
+of the lenguage
+{
++
+,
+⋅
+,
+0
+,
+1
+}
+of ring theory :
+x
++
+1
+=
+0
+∧
+∃
+x
+(
+x
++
+y
+=
+1
+)
+Then
+FV
+⁡
+(
+φ
+)
+=
+{
+x
+,
+y
+}
+and
+BV
+⁡
+(
+φ
+)
+=
+{
+x
+}
+: the variable
+x
+occurs both free and bound. However, the following lemma tells us that we can always avoid this situation :
+Lemma 1.
+It is possible to rename the bound variables without affecting the truth of a formula. In other words, if
+φ
+=
+∃
+x
+⁢
+(
+ψ
+)
+, or
+∀
+x
+⁢
+(
+ψ
+)
+, and
+z
+is a variable not occurring in
+ψ
+, then
+⊢
+φ
+⇔
+∃
+z
+(
+ψ
+[
+z
+/
+x
+]
+)
+, where
+ψ
+⁢
+[
+z
+/
+x
+]
+is the formula obtained from
+ψ
+by replacing every free occurrence of
+x
+by
+z
+.
+As a result of the lemma above, we see that every formula is
+logically equivalent
+to a formula
+φ
+such that
+FV
+⁡
+(
+φ
+)
+∩
+BV
+⁡
+(
+φ
+)
+=
+∅
+.
+Title
+free and bound variables
+Canonical
+name
+FreeAndBoundVariables
+Date of creation
+2013-03-22 12:42:57
+Last modified on
+2013-03-22 12:42:57
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+24
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 03C07
+Classification
+msc 03B10
+Synonym
+occur free
+Synonym
+occur bound
+Synonym
+closed
+Synonym
+open
+Related topic
+Substitutability
+Defines
+free variable
+Defines
+bound variable
+Defines
+free occurrence
+Defines
+bound occurrence
+Defines
+occurs free
+Defines
+occurs bound
+Generated  on Thu Feb  8 19:55:06 2018 by
+LaTeXML

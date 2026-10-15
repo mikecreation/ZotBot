@@ -1,0 +1,745 @@
+maximally consistent
+maximally consistent
+A set
+Δ
+of
+well-formed formulas
+(wff) is
+maximally consistent
+if
+Δ
+is
+consistent
+and any consistent
+superset
+of it is itself:
+Δ
+⊆
+Γ
+with
+Γ
+consistent implies
+Γ
+=
+Δ
+.
+Below are some basic
+properties
+of a maximally consistent set
+Δ
+:
+1.
+Δ
+is
+deductively closed
+(
+Δ
+is a theory):
+Δ
+⊢
+A
+iff
+A
+∈
+Δ
+.
+2.
+Δ
+is
+complete
+:
+Δ
+⊢
+A
+or
+Δ
+⊢
+¬
+⁢
+A
+for any wff
+A
+.
+3.
+for any wff
+A
+, either
+A
+∈
+Δ
+or
+¬
+⁢
+A
+∈
+Δ
+.
+4.
+If
+A
+∉
+Δ
+, then
+Δ
+∪
+{
+A
+}
+is not consistent.
+5.
+Δ
+is a logic:
+Δ
+contains all
+theorems
+and is
+closed under
+modus ponens
+.
+6.
+⟂
+∉
+Δ
+.
+7.
+A
+→
+B
+∈
+Δ
+iff
+A
+∈
+Δ
+implies
+B
+∈
+Δ
+.
+8.
+A
+∧
+B
+∈
+Δ
+iff
+A
+∈
+Δ
+and
+B
+∈
+Δ
+.
+9.
+A
+∨
+B
+∈
+Δ
+iff
+A
+∈
+Δ
+or
+B
+∈
+Δ
+.
+Proof.
+1.
+If
+A
+∈
+Δ
+, then clearly
+Δ
+⊢
+A
+.
+Conversely
+, suppose
+Δ
+⊢
+A
+. Let
+ℰ
+be a
+deduction
+of
+A
+from
+Δ
+, and
+Γ
+:=
+Δ
+∪
+{
+A
+}
+. Suppose
+Γ
+⊢
+B
+. Let
+ℰ
+1
+be a deduction of
+B
+from
+Γ
+, then
+ℰ
+,
+ℰ
+1
+is a deduction of
+B
+from
+Δ
+, so
+Δ
+⊢
+B
+. Since
+Δ
+⊬
+⟂
+,
+Γ
+⊬
+⟂
+, so
+Γ
+is consistent. Since
+Δ
+is maximal,
+Γ
+=
+Δ
+, or
+A
+∈
+Δ
+.
+2.
+Suppose
+Δ
+⊬
+A
+, then
+A
+∉
+Δ
+by 1. Then
+Δ
+∪
+{
+A
+}
+is not consistent (since
+Δ
+is maximal), which means
+Δ
+,
+A
+⊢
+⟂
+, or
+Δ
+⊢
+A
+→
+⟂
+, or
+Δ
+⊢
+¬
+⁢
+A
+.
+3.
+If
+A
+∉
+Δ
+, then
+Δ
+⊬
+A
+by 1, so
+Δ
+⊢
+¬
+⁢
+A
+by 2, and therefore
+¬
+⁢
+A
+∈
+Δ
+by 1 again.
+4.
+If
+A
+∉
+Δ
+, then
+¬
+⁢
+A
+∈
+Δ
+by 3., so that
+¬
+⁢
+A
+,
+A
+,
+⟂
+is a deduction of
+⟂
+from
+Δ
+∪
+{
+A
+}
+, showing that
+Δ
+∪
+{
+A
+}
+is not consistent.
+5.
+If
+A
+is a theorem, then
+Δ
+⊢
+A
+, so that
+A
+∈
+Δ
+by 1. If
+A
+∈
+Δ
+and
+A
+→
+B
+∈
+Δ
+, then
+A
+,
+A
+→
+B
+,
+B
+is a deduction of
+B
+from
+Δ
+, so
+B
+∈
+Δ
+by 1.
+6.
+This is true for any consistent set.
+7.
+Suppose
+A
+→
+B
+∈
+Δ
+. If
+A
+∈
+Δ
+, then
+B
+∈
+Δ
+since
+Δ
+is closed under modus ponens. Conversely, suppose
+A
+∈
+Δ
+implies
+B
+∈
+Δ
+. This means that
+Δ
+,
+A
+⊢
+B
+. Then
+Δ
+⊢
+A
+→
+B
+by the
+deduction theorem
+, and therefore
+A
+→
+B
+∈
+Δ
+by 1.
+8.
+Suppose
+A
+∧
+B
+∈
+Δ
+, then by modus ponens on theorems
+A
+∧
+B
+→
+A
+and
+A
+∧
+B
+→
+B
+, we get
+A
+,
+B
+∈
+Δ
+, since
+Δ
+is a logic by 5. Conversely, suppose
+A
+,
+B
+∈
+Δ
+, then by modus ponens twice on theorem
+A
+→
+(
+B
+→
+A
+∧
+B
+)
+, we get
+A
+∧
+B
+∈
+Δ
+by 5.
+9.
+Suppose
+A
+∨
+B
+∈
+Δ
+. Then
+¬
+⁡
+(
+¬
+⁢
+A
+∧
+¬
+⁢
+B
+)
+∈
+Δ
+by the
+definition
+of
+∨
+, so
+¬
+⁢
+A
+∧
+¬
+⁢
+B
+∉
+Δ
+by 3., which means
+¬
+⁢
+A
+∉
+Δ
+or
+¬
+⁢
+B
+∉
+Δ
+by the
+contrapositive
+of 8, or
+A
+∈
+Δ
+or
+B
+∈
+Δ
+by 3. Conversely, suppose
+A
+∈
+Δ
+or
+B
+∈
+Δ
+. Then by modus ponens on theorems
+A
+→
+A
+∨
+B
+or
+B
+→
+A
+∨
+B
+respectively, we get
+A
+∨
+B
+∈
+Δ
+by 5.
+∎
+The
+converses
+of 2 and 3 above are true too, and they provide alternative definitions of maximal
+consistency
+.
+1.
+any complete consistent theory is maximally consistent.
+2.
+any consistent set satisfying the condition in 3 above is maximally consistent.
+Proof.
+Suppose
+Δ
+is complete consistent. Let
+Γ
+be a consistent superset of
+Δ
+.
+Γ
+is also complete. If
+A
+∈
+Γ
+-
+Δ
+, then
+Γ
+⊢
+A
+, so
+Γ
+⊬
+¬
+⁢
+A
+since
+Γ
+is consistent. But then
+Δ
+⊬
+¬
+⁢
+A
+since
+Γ
+is a superset of
+Δ
+, which means
+Δ
+⊢
+A
+since
+Δ
+is complete. But then
+A
+∈
+Δ
+since
+Δ
+is deductively closed, which is a
+contradiction
+. Hence
+Δ
+is maximal.
+Next, suppose
+Δ
+is consistent satisfying the condition: either
+A
+∈
+Δ
+or
+¬
+⁢
+A
+∈
+Δ
+for any wff
+A
+. Suppose
+Γ
+is a consistent superset of
+Δ
+. If
+A
+∈
+Γ
+-
+Δ
+, then
+¬
+⁢
+A
+∈
+Δ
+by assumption, which means
+¬
+⁢
+A
+∈
+Γ
+since
+Γ
+is a superset of
+Δ
+. But then both
+A
+and
+¬
+⁢
+A
+are
+deducible
+from
+Γ
+, contradicting the assumption that
+Γ
+is consistent. Therefore,
+Γ
+is not a
+proper superset
+of
+Δ
+, or
+Γ
+=
+Δ
+.
+∎
+Remarks
+.
+•
+In the converse of 2, we require that
+Δ
+be a theory, for there are complete consistent sets that are not deductively closed. One such an example is the set
+V
+of all
+propositional variables
+: it can be shown that for every wff
+A
+, exactly one of
+V
+⊢
+A
+or
+V
+⊢
+¬
+⁢
+A
+holds.
+•
+So far, none of the above actually tell us that a maximally consistent set exists. However, by Zorn’s lemma, it is not hard to see that such a set does exist. For more detail, see here (
+http://planetmath.org/LindenbaumsLemma
+).
+•
+There is also a
+semantic
+characterization
+of a maximally consistent set: a set is maximally consistent iff there is a unique
+valuation
+v
+such that
+v
+⁢
+(
+A
+)
+=
+1
+for every wff
+A
+in the set (see here (
+http://planetmath.org/CompactnessTheoremForClassicalPropositionalLogic
+)).
+Title
+maximally consistent
+Canonical
+name
+MaximallyConsistent
+Date of creation
+2013-03-22 19:35:13
+Last modified on
+2013-03-22 19:35:13
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+10
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 03B05
+Classification
+msc 03B10
+Classification
+msc 03B99
+Classification
+msc 03B45
+Related topic
+FirstOrderTheories
+Defines
+complete
+\@unrecurse
+Generated  on Thu Feb  8 19:23:43 2018 by
+LaTeXML

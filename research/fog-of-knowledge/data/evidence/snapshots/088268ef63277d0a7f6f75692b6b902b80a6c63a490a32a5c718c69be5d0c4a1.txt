@@ -1,0 +1,604 @@
+bounded minimization
+bounded minimization
+One useful way of generating more
+primitive recursive functions
+from existing ones is through what is known as
+bounded summation
+and
+bounded product
+. Given a primitive recursive function
+f
+:
+ℕ
+m
++
+1
+→
+ℕ
+, define two
+functions
+f
+s
+,
+f
+p
+:
+ℕ
+m
++
+1
+→
+ℕ
+as follows: for
+𝒙
+∈
+ℕ
+m
+and
+y
+∈
+ℕ
+:
+f
+s
+⁢
+(
+𝒙
+,
+y
+)
+:=
+∑
+i
+=
+0
+y
+f
+⁢
+(
+𝒙
+,
+i
+)
+f
+p
+⁢
+(
+𝒙
+,
+y
+)
+:=
+∏
+i
+=
+0
+y
+f
+⁢
+(
+𝒙
+,
+i
+)
+These are easily seen to be primitive recursive, because they are defined by
+primitive recursion
+. For example,
+f
+s
+⁢
+(
+𝒙
+,
+0
+)
+=
+f
+⁢
+(
+𝒙
+,
+0
+)
+,
+and
+f
+s
+⁢
+(
+𝒙
+,
+n
++
+1
+)
+=
+g
+⁢
+(
+𝒙
+,
+n
+,
+f
+s
+⁢
+(
+𝒙
+,
+n
+)
+)
+,
+where
+g
+⁢
+(
+𝒙
+,
+n
+,
+y
+)
+=
+add
+⁡
+(
+f
+⁢
+(
+𝒙
+,
+n
+)
+,
+y
+)
+, which is primitive recursive by
+functional
+composition
+.
+Definition
+. We call
+f
+s
+and
+f
+p
+functions obtained from
+f
+by
+bounded sum
+and
+bounded product
+respectively.
+Using bounded summation and bounded product, another useful class of primitive recursive functions can be generated:
+Definition
+. Let
+f
+:
+ℕ
+m
++
+1
+→
+ℕ
+be a function. For each
+y
+∈
+ℕ
+, set
+A
+f
+⁢
+(
+𝒙
+,
+y
+)
+:=
+{
+z
+∈
+ℕ
+∣
+z
+≤
+y
+⁢
+and
+⁢
+f
+⁢
+(
+𝒙
+,
+z
+)
+=
+0
+}
+.
+Define
+f
+b
+⁢
+m
+⁢
+i
+⁢
+n
+⁢
+(
+𝒙
+,
+y
+)
+:=
+{
+min
+⁡
+A
+f
+⁢
+(
+𝒙
+,
+y
+)
+if
+⁢
+A
+f
+⁢
+(
+𝒙
+,
+y
+)
+≠
+∅
+,
+s
+⁢
+(
+y
+)
+otherwise.
+f
+b
+⁢
+m
+⁢
+i
+⁢
+n
+is called the function obtained from
+f
+by
+bounded minimization
+, and is usually denoted
+μ
+z
+≤
+y
+(
+f
+(
+𝒙
+,
+z
+)
+=
+0
+)
+.
+Proposition 1
+.
+If
+f
+:
+N
+m
++
+1
+→
+N
+is primitive recursive, so is
+f
+b
+⁢
+m
+⁢
+i
+⁢
+n
+.
+Proof.
+Define
+g
+:=
+sgn
+∘
+f
+. Then
+g
+⁢
+(
+𝒙
+,
+y
+)
+:=
+{
+0
+if
+⁢
+f
+⁢
+(
+𝒙
+,
+y
+)
+=
+0
+,
+1
+otherwise.
+As
+f
+is primitive recursive, so is
+g
+, since the sign function
+sgn
+is primitive recursive (see this entry (
+http://planetmath.org/ExamplesOfPrimitiveRecursiveFunctions
+)).
+Next, the function
+g
+p
+obtained from
+g
+by bounded product has the following
+properties
+:
+•
+if
+g
+p
+⁢
+(
+𝒙
+,
+y
+)
+=
+1
+, then
+g
+p
+⁢
+(
+𝒙
+,
+z
+)
+=
+1
+for all
+z
+<
+y
+,
+•
+if
+g
+p
+⁢
+(
+𝒙
+,
+y
+)
+=
+0
+, then
+g
+p
+⁢
+(
+𝒙
+,
+z
+)
+=
+0
+for all
+z
+≥
+y
+.
+Finally, the function
+(
+g
+p
+)
+s
+obtained from
+g
+p
+by bounded sum has the property that, when applied to
+(
+𝒙
+,
+y
+)
+, counts the number of
+z
+≤
+y
+such that
+g
+p
+⁢
+(
+𝒙
+,
+z
+)
+=
+1
+. Based on the property of
+g
+p
+, this count is then exactly the least
+z
+≤
+y
+such that
+g
+p
+⁢
+(
+𝒙
+,
+z
+)
+=
+1
+. This means that
+(
+g
+p
+)
+s
+=
+f
+b
+⁢
+m
+⁢
+i
+⁢
+n
+for all
+(
+𝒙
+,
+y
+)
+∈
+ℕ
+m
++
+1
+. Since
+g
+p
+is primitive recursive, so is
+(
+g
+p
+)
+s
+, or that
+f
+b
+⁢
+m
+⁢
+i
+⁢
+n
+is primitive recursive.
+∎
+In fact, if
+f
+is a (total)
+recursive function
+, so is
+f
+b
+⁢
+m
+⁢
+i
+⁢
+n
+, because all of the derived functions in the proof above
+preserve
+primitive recursiveness as well as totalness.
+Remarks
+.
+•
+In the definition of bounded minimization, if we take the
+y
+out, then we arrive at the notion of
+unbounded minimization
+, or just
+minimization
+. The
+proposition
+above shows that the set
+𝒫
+⁢
+ℛ
+of primitive recursive functions is
+closed under
+bounded minimization. However,
+𝒫
+⁢
+ℛ
+is not closed under minimization. The
+closure
+of
+𝒫
+⁢
+ℛ
+under minimization is the set
+ℛ
+of recursive functions (total or not).
+•
+It is not hard to show that
+ℰ
+⁢
+ℛ
+, the set of all
+elementary recursive functions
+, is closed under bounded minimization.
+Title
+bounded minimization
+Canonical
+name
+BoundedMinimization
+Date of creation
+2013-03-22 19:05:18
+Last modified on
+2013-03-22 19:05:18
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+11
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 03D20
+Synonym
+bounded sum
+Related topic
+UnboundedMinimization
+Related topic
+RecursiveFunction
+Related topic
+BoundedMaximization
+Defines
+bounded summation
+Defines
+bounded product
+Generated  on Thu Feb  8 20:02:20 2018 by
+LaTeXML

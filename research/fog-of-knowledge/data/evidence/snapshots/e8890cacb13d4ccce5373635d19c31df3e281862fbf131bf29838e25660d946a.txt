@@ -1,0 +1,670 @@
+pairing function
+pairing function
+A
+pairing function
+is a
+function
+P
+:
+ℤ
++
+2
+→
+ℤ
++
+which establishes a
+one-to-one correspondence
+between
+ℤ
++
+2
+and
+ℤ
++
+. Such functions are useful in the theory of
+recursive functions
+because they allow one to express recursive functions of
+m
+variables
+in terms of recursive functions of
+n
+variables with
+m
+≠
+n
+.
+Two examples of pairing functions are the following;
+P
+1
+⁢
+(
+x
+,
+y
+)
+=
+(
+x
++
+y
+)
+⁢
+(
+x
++
+y
++
+1
+)
+/
+2
++
+y
+P
+2
+⁢
+(
+x
+,
+y
+)
+=
+2
+x
+⁢
+(
+2
+⁢
+y
++
+1
+)
+-
+1
+It is not hard to see that these functions are
+recursive
+(actually,
+primitive recursive
+). For
+instance
+, one could use the
+recursion
+relations
+and initial conditions
+P
+1
+⁢
+(
+x
++
+1
+,
+y
+)
+=
+P
+1
+⁢
+(
+x
+,
+y
+)
++
+x
++
+y
++
+1
+P
+1
+⁢
+(
+0
+,
+y
+)
+=
+T
+⁢
+(
+y
+)
++
+y
+T
+⁢
+(
+y
++
+1
+)
+=
+T
+⁢
+(
+y
+)
++
+y
++
+1
+T
+⁢
+(
+0
+)
+=
+0
+where
+T
+⁢
+(
+n
+)
+is the
+n
+-th
+triangular number
+to show that
+P
+1
+is recursive. Likewise, one could use the recursions
+P
+2
+⁢
+(
+x
++
+1
+,
+y
+)
+=
+P
+2
+⁢
+(
+x
+,
+y
+)
++
+P
+2
+⁢
+(
+x
+,
+y
+)
+P
+2
+⁢
+(
+0
+,
+y
+)
+=
+y
++
+y
+to show that
+P
+2
+is recursive.
+An easy way to see that
+P
+1
+effects a one-to-one correspondence between
+ℤ
++
+2
+and
+ℤ
++
+is as follows: Define the “
+successor
+” of a pair
+(
+x
+,
+y
+)
+∈
+ℤ
++
+2
+to be the pair
+(
+x
+-
+1
+,
+y
++
+1
+)
+when
+x
+≠
+0
+; otherwise, when
+x
+=
+0
+, the successor is
+(
+y
++
+1
+,
+0
+)
+. It is easy to see that every pair has a successor and that every pair except
+(
+0
+,
+0
+)
+is the successor of exactly one other pair. With this
+definition
+of successor, the set of pairs of
+positive integers
+satisfies
+the
+Peano axioms
+and, hence, is
+isomorphic
+to the
+integers
+. From the definition of
+P
+1
+it follows that, if
+(
+x
+′
+,
+y
+′
+)
+is the successor of
+(
+x
+,
+y
+)
+, then
+P
+1
+⁢
+(
+x
+′
+,
+y
+′
+)
+=
+P
+⁢
+(
+x
+,
+y
+)
++
+1
+and that
+P
+1
+⁢
+(
+0
+,
+0
+)
+=
+0
+. This means that
+P
+1
+is the
+isomorphism
+described two
+sentences
+ago.
+That
+P
+2
+effects a one-to-one correspondence between positive integers and pairs of positive integers follows readily from uniqueness of factorization of integers. On the one hand, for any number
+z
+, one can find numbers
+x
+and
+y
+such that
+z
+=
+P
+2
+⁢
+(
+x
+,
+y
+)
+by
+factoring
+z
++
+1
+and letting
+x
+be the power of
+2
+which appears in the factorization. On the other hand, this is the only solution of
+z
+=
+P
+2
+⁢
+(
+x
+,
+y
+)
+because
+prime factorization
+is unique.
+Since a pairing function
+P
+sets up a 1-1 correspondence between
+ℤ
++
+and
+ℤ
++
+n
+, there exist uniquely defined unpairing functions
+R
+and
+L
+such that
+P
+⁢
+(
+L
+⁢
+(
+x
+)
+,
+R
+⁢
+(
+x
+)
+)
+=
+x
+It is not hard to show that, if
+P
+is recursive,
+R
+and
+L
+will also be recursive.
+Once one has a pairing function
+P
+(
+2
+)
+, one can use it to set up 1-1 correspondences between
+ℤ
++
+and
+ℤ
++
+n
+for any
+n
+. For instance, one could define
+P
+(
+3
+)
+⁢
+(
+x
+,
+y
+,
+z
+)
+=
+P
+(
+2
+)
+⁢
+(
+x
+,
+P
+(
+2
+)
+⁢
+(
+y
+,
+z
+)
+)
+P
+(
+4
+)
+⁢
+(
+x
+,
+y
+,
+z
+,
+w
+)
+=
+P
+(
+2
+)
+⁢
+(
+x
+,
+P
+(
+3
+)
+⁢
+(
+y
+,
+z
+,
+w
+)
+)
+=
+P
+(
+2
+)
+⁢
+(
+x
+,
+P
+(
+2
+)
+⁢
+(
+y
+,
+P
+(
+2
+)
+⁢
+(
+z
+,
+w
+)
+)
+)
+In general,
+P
+(
+n
++
+1
+)
+⁢
+(
+x
+1
+,
+…
+,
+x
+n
++
+1
+)
+=
+P
+(
+2
+)
+⁢
+(
+x
+1
+,
+P
+(
+n
+)
+⁢
+(
+x
+2
+,
+…
+,
+x
+n
+)
+)
+(This manner of
+encoding
+a list one pair at a time will be familiar to anyone who has programmed a
+computer
+in LISP. In fact, LISP was designed to be serve as a mathematical definition of computability
+equivalent
+to
+Turing machines
+or recursive functions. A fun exercise is to write a compiler which translates LISP
+programs
+into recursive functions using the representation of lists by single integers defined above.)
+An important
+consequence
+of the fact noted above is that there is a 1-1 correspondence between recursive functions of
+n
+variables and recursive functions of a single variable. If we have a function
+F
+:
+ℤ
++
+n
+→
+ℤ
++
+, we can
+associate
+to it the function
+G
+:
+ℤ
++
+→
+ℤ
++
+by the
+formula
+F
+⁢
+(
+x
+1
+,
+…
+,
+x
+n
+)
+=
+G
+⁢
+(
+P
+(
+n
+)
+⁢
+(
+x
+1
+,
+…
+,
+x
+n
+)
+)
+Doing this can often save work by allowing one to draw
+conclusions
+about recursive functions of
+several variables from the special case of functions of one variable.
+Title
+pairing function
+Canonical
+name
+PairingFunction
+Date of creation
+2013-03-22 14:34:46
+Last modified on
+2013-03-22 14:34:46
+Owner
+rspuzio (6075)
+Last modified by
+rspuzio (6075)
+Numerical id
+18
+Author
+rspuzio (6075)
+Entry type
+Definition
+Classification
+msc 03D20
+Related topic
+ExampleOfBijection
+Generated  on Thu Feb  8 20:04:13 2018 by
+LaTeXML

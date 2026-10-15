@@ -1,0 +1,380 @@
+Jacobian matrix
+Jacobian matrix
+The
+Jacobian matrix
+[
+𝐉
+⁢
+f
+⁢
+(
+𝐚
+)
+]
+of a function
+f
+:
+ℝ
+n
+→
+ℝ
+m
+at the point
+𝐚
+with respect to some choice of bases for
+ℝ
+n
+and
+ℝ
+m
+is the matrix of the
+linear map
+from
+ℝ
+n
+into
+ℝ
+m
+that generalizes the definition of the
+derivative
+of a function on
+ℝ
+. It can be defined as the matrix of the linear map
+D
+, such that
+lim
+𝐡
+→
+𝟎
+⁡
+∥
+f
+⁢
+(
+𝐚
++
+𝐡
+)
+-
+f
+⁢
+(
+𝐚
+)
+-
+D
+⁢
+(
+𝐡
+)
+∥
+∥
+𝐡
+∥
+=
+0
+The linear map that satisfies the above limit is called the derivative of
+f
+at
+𝐚
+. It is easy to show that the Jacobian matrix of a given
+differentiable function
+at
+𝐚
+with respect to chosen bases is just the matrix of
+http://planetmath.org/node/841
+partial derivatives
+of the
+component
+functions of
+f
+at
+𝐚
+:
+[
+𝐉
+⁢
+f
+⁢
+(
+𝐱
+)
+]
+=
+[
+D
+1
+⁢
+f
+1
+⁢
+(
+𝐱
+)
+…
+D
+n
+⁢
+f
+1
+⁢
+(
+𝐱
+)
+⋮
+⋱
+⋮
+D
+1
+⁢
+f
+m
+⁢
+(
+𝐱
+)
+…
+D
+n
+⁢
+f
+m
+⁢
+(
+𝐱
+)
+]
+A more concise way of writing it is
+[
+𝐉
+⁢
+f
+⁢
+(
+𝐱
+)
+]
+=
+[
+D
+1
+⁢
+f
+→
+,
+⋯
+,
+D
+n
+⁢
+f
+→
+]
+=
+[
+∇
+⁡
+f
+1
+⋮
+∇
+⁡
+f
+m
+]
+where
+D
+n
+⁢
+𝐟
+→
+is the partial derivative with respect to the
+n
+’th variable and
+∇
+⁡
+f
+m
+is the
+gradient
+of the
+m
+’th component of
+𝐟
+.
+Note that the Jacobian matrix represents the matrix of the derivative
+D
+of
+f
+at
+𝐱
+iff
+f
+is
+differentiable
+at
+𝐱
+. Also, if
+f
+is differentiable at
+𝐱
+, then the
+directional derivative
+in the
+direction
+v
+→
+is
+D
+⁢
+(
+v
+→
+)
+=
+[
+𝐉
+⁢
+f
+⁢
+(
+𝐱
+)
+]
+⁢
+v
+→
+.
+Given
+local coordinates
+for some
+real submanifold
+M
+of
+ℝ
+n
+, it is easy to show that the effect of a
+change of coordinates
+on
+volume forms
+is a local
+scaling
+of the volume form by the
+determinant
+of the Jacobian matrix of the derivative of the backwards change of coordinates, which is called the
+inverse
+Jacobian
+. The determinant of the inverse Jacobian is thus commonly seen in integration over a change of coordinates.
+∫
+Ω
+x
+f
+⁢
+(
+x
+)
+⁢
+𝑑
+Ω
+x
+=
+∫
+Ω
+ξ
+f
+⁢
+(
+ξ
+)
+⁢
+|
+J
+-
+1
+|
+⁢
+𝑑
+Ω
+ξ
+where
+x
+∈
+Ω
+x
+⊂
+M
+,
+ξ
+∈
+Ω
+ξ
+⊂
+M
+, and
+𝐉
+=
+∇
+⁡
+ξ
+⁢
+(
+x
+)
+is the derivative of the function
+ξ
+⁢
+(
+x
+)
+which maps points in
+Ω
+x
+to points in
+Ω
+ξ
+.
+Title
+Jacobian matrix
+Canonical name
+JacobianMatrix
+Date of creation
+2013-03-22 11:58:33
+Last modified on
+2013-03-22 11:58:33
+Owner
+PhysBrain (974)
+Last modified by
+PhysBrain (974)
+Numerical id
+18
+Author
+PhysBrain (974)
+Entry type
+Definition
+Classification
+msc 26B10
+Synonym
+derivative of a multivariable function
+Synonym
+derivative of a
+vector-valued function
+Synonym
+Jacobi matrix
+Related topic
+PartialDerivative
+Related topic
+Derivative2
+Related topic
+DerivativeNotation
+Related topic
+Gradient
+Related topic
+ChainRuleSeveralVariables
+Related topic
+DirectionalDerivative
+Related topic
+JordanBanachAndJordanLieAlgebras
+Defines
+Jacobian
+Generated  on Fri Feb  9 19:56:47 2018 by
+LaTeXML

@@ -1,0 +1,394 @@
+imaginaries
+imaginaries
+Given an
+algebraic structure
+S
+to investigate, mathematicians consider
+substructures
+,
+restrictions
+of the
+structure
+,
+quotient structures
+and the like. A natural question for a mathematician to ask if he is to understand
+S
+is “What structures naturally live in
+S
+?” We can formalise this question in the following manner: Given some logic appropriate to the structure
+S
+, we say another structure
+T
+is
+definable
+in
+S
+iff there is some definable subset
+T
+′
+of
+S
+n
+, a
+bijection
+σ
+:
+T
+′
+→
+T
+and a definable function (respectively
+relation
+) on
+T
+′
+for each
+function
+(resp. relation) on
+T
+so that
+σ
+is an
+isomorphism
+(of the relevant type for
+T
+).
+For an example take some
+infinite group
+(
+G
+,
+.
+)
+. Consider the centre of
+G
+,
+Z
+:=
+{
+x
+∈
+G
+:
+∀
+y
+∈
+G
+(
+x
+y
+=
+y
+x
+)
+}
+. Then
+Z
+is a
+first order
+definable subset of
+G
+, which forms a
+group with
+the restriction of the
+multiplication
+, so
+(
+Z
+,
+.
+)
+is a first order
+definable structure
+in
+(
+G
+,
+.
+)
+.
+As another example consider the structure
+(
+𝐑
+,
++
+,
+.
+,
+0
+,
+1
+)
+as a field. Then the structure
+(
+𝐑
+,
+<
+)
+is first order definable in the structure
+(
+𝐑
+,
++
+,
+.
+,
+0
+,
+1
+)
+as for all
+x
+,
+y
+∈
+𝐑
+2
+we have
+x
+≤
+y
+iff
+∃
+z
+(
+z
+2
+=
+y
+-
+x
+)
+. Thus we know that
+(
+𝐑
+,
++
+,
+.
+,
+0
+,
+1
+)
+is unstable as it has a definable order on an
+infinite subset
+.
+Returning to the first example,
+Z
+is normal in
+G
+, so the set of (left) cosets of
+Z
+form a
+factor group
+. The domain of the factor group is the
+quotient
+of
+G
+under the
+equivalence relation
+x
+≡
+y
+iff
+∃
+z
+∈
+Z
+(
+x
+z
+=
+y
+)
+. Therefore the factor group
+G
+/
+Z
+will not (in general) be a definable structure, but would seem to be a “natural” structure. We therefore weaken our formalisation of “natural” from definable to interpretable. Here we require that a structure is isomorphic to some definable structure on
+equivalence classes
+of definable equivalence relations. The equivalence classes of a
+∅
+-definable equivalence relation are called
+imaginaries
+.
+In
+[
+2
+]
+Poizat defined the property of
+Elimination of Imaginaries
+. This is
+equivalent
+to the following definition:
+Definition 0.1
+A structure
+A
+with at least two distinct
+∅
+-definable
+elements
+admits
+elimination of imaginaries
+iff for every
+n
+∈
+N
+and
+∅
+-definable equivalence relation
+∼
+on
+A
+n
+there is a
+∅
+-definable function
+f
+:
+A
+n
+→
+A
+p
+(for some
+p
+) such that for all
+x
+and
+y
+from
+A
+n
+we have
+x
+∼
+y
+⁢
+iff
+⁢
+f
+⁢
+(
+x
+)
+=
+f
+⁢
+(
+y
+)
+.
+Given this property, we think of the function
+f
+as coding the equivalence classes of
+∼
+, and we call
+f
+⁢
+(
+x
+)
+a code for
+x
+/
+∼
+. If a structure has elimination of imaginaries then every interpretable structure is definable.
+In
+[
+3
+]
+Shelah defined, for any structure
+𝔄
+a multi-sorted structure
+𝔄
+e
+⁢
+q
+. This is done by adding a sort for every
+∅
+-definable equivalence relation, so that the equivalence classes are elements (and code themselves). This is a
+closure operator
+i.e.
+𝔄
+e
+⁢
+q
+has elimination of imaginaries. See
+[
+1
+]
+chapter 4 for a good
+presentation
+of imaginaries and
+𝔄
+e
+⁢
+q
+.
+The idea of passing to
+𝔄
+e
+⁢
+q
+is very useful for many purposes. Unfortunately
+𝔄
+e
+⁢
+q
+has an unwieldy
+language
+and theory. Also this approach does not answer the question above. We would like to show that our structure has elimination of imaginaries with just a small selection of sorts added, and perhaps in a simple language. This would allow us to describe the definable structures more easily, and as we have elimination of imaginaries this would also describe the interpretable structures.
+References
+1
+Wilfrid Hodges,
+A shorter
+model theory
+Cambridge University Press, 1997.
+2
+Bruno Poizat,
+Une théorie de Galois imaginaire
+, Journal of Symbolic Logic,
+48
+(1983), pp. 1151-1170.
+3
+Saharon Shelah,
+Classification Theory and the Number of Non-isomorphic Models
+, North Hollans, Amsterdam, 1978.
+Title
+imaginaries
+Canonical name
+Imaginaries
+Date of creation
+2013-03-22 13:25:50
+Last modified on
+2013-03-22 13:25:50
+Owner
+mathcam (2727)
+Last modified by
+mathcam (2727)
+Numerical id
+7
+Author
+mathcam (2727)
+Entry type
+Definition
+Classification
+msc 03C95
+Classification
+msc 03C68
+Related topic
+CyclicCode
+Defines
+imaginaries
+Defines
+elimination of imaginaries
+Defines
+definable structure
+Defines
+interpretable structure
+Defines
+code
+Generated  on Thu Feb  8 19:56:47 2018 by
+LaTeXML

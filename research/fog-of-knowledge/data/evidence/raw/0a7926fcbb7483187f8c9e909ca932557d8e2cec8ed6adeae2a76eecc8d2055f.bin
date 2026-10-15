@@ -1,0 +1,227 @@
+<!DOCTYPE html><html>
+<head>
+<title>homology</title>
+<!--Generated on Sat Feb 10 11:41:30 2018 by LaTeXML (version 0.8.2) http://dlmf.nist.gov/LaTeXML/.-->
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="LaTeXML.css" type="text/css">
+<link rel="stylesheet" href="ltx-article.css" type="text/css">
+<link rel="stylesheet" href="https://cdn.rawgit.com/holtzermann17/3f71ceeb3b055e1ddc3b6c11fb1f074c/raw/2bb23e3b173ff96840797fc0c3bcb8c54085df8e/LaTeXML.css" type="text/css">
+<link rel="stylesheet" href="https://cdn.rawgit.com/holtzermann17/4bda0365b30858ac2fb83623185fe3ec/raw/cedd84ed3e3ad597c5d293f443ecfe4803741c6b/ltx-article.css" type="text/css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" type="text/javascript"></script>
+</head>
+<body>
+<div class="ltx_page_main">
+<div class="ltx_page_content">
+<article class="ltx_document ltx_authors_1line">
+<h1 class="ltx_title ltx_title_document">homology</h1>
+
+<div id="p1" class="ltx_para">
+<br class="ltx_break">
+<p class="ltx_p"><a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">Homology</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Homology.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/homology"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/homologyofachaincomplex"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/collineation"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> is the general name for a number of <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">functors</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Functor.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/functor"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> from <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">topological spaces</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/TopologicalSpace.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/topologicalspace"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> to <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">abelian groups</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/AbelianGroup.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/abeliangroup"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> (or more generally modules over a fixed ring). It turns out that in most reasonable cases a large number of these (<a class="nnexus_concept" href="http://mathworld.wolfram.com/SingularHomology.html">singular homology</a>, <a class="nnexus_concept" href="http://planetmath.org/cellularhomology">cellular homology</a>, Morse homology, <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">simplicial homology</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/SimplicialHomology.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/simplicialcomplex"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>) all coincide. There are other generalized homology , but I won’t consider those. There are also related <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">cohomology</a><sup style="display: none;"><a class="nnexus_concept" href="http://planetmath.org/liealgebracohomology"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/groupcohomology"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> theories which serve the same purpose with slightly different machinery.</p>
+</div>
+<div id="p2" class="ltx_para">
+<p class="ltx_p">In an intuitive sense, homology measures “holes” in topological spaces. The idea is that we want to measure the <a class="nnexus_concept" href="http://mathworld.wolfram.com/Topology.html">topology</a> of a space by looking
+at sets which have no <a class="nnexus_concept" href="http://planetmath.org/boundaryfrontier">boundary</a>, but are not the boundary of something else. These are things
+that have wrapped around “holes” in our topological space, allowing us to detect those “holes.”
+Here I don’t mean boundary in the formal topological sense, but in an intuitive sense. Thus a loop
+has no boundary as I mean here, even though it does in the general topological definition. You
+will see the formal definition below.</p>
+</div>
+<div id="p3" class="ltx_para">
+<p class="ltx_p">Perhaps the simplest form of homology to visualize, and to work with in practice, is simplicial homology. It is based on computing the <a class="nnexus_concept" href="http://mathworld.wolfram.com/HomologyGroup.html">homology groups</a> of a <a class="nnexus_concept" href="http://mathworld.wolfram.com/SimplicialComplex.html">simplicial complex</a> (generally a finite one). However, it is generally nontrivial to show that a space of interest is <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">homeomorphic</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Homeomorphic.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/homeomorphism"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> to a simplicial complex, and it can also be difficult to apply more advanced methods such as <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">spectral sequences</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/SpectralSequence.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/spectralsequence"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> when working with simplicial homology. Singular homology is <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">similar</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Similar.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/similarityingeometry"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/equivalentmachines"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>: it is in some sense a <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">continuous</a><sup style="display: none;"><a class="nnexus_concept" href="http://planetmath.org/classesofordinalsandenumeratingfunctions"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/continuous"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> version of simplicial homology, and it does not suffer from these problems.</p>
+</div>
+<div id="p4" class="ltx_para">
+<p class="ltx_p">Singular homology is defined as follows: We define the standard <math id="p4.m1" class="ltx_Math" alttext="n" display="inline"><mi>n</mi></math>-<a class="nnexus_concept" href="http://mathworld.wolfram.com/Simplex.html">simplex</a> to be the subset</p>
+<table id="S0.Ex1" class="ltx_equation ltx_eqn_table">
+
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math id="S0.Ex1.m1" class="ltx_Math" alttext="\Delta_{n}=\{(x_{1},\ldots,x_{n})\in\mathbb{R}^{n}|x_{i}\geq 0,\sum_{i=1}^{n}x%
+_{i}\leq 1\}" display="block"><mrow><msub><mi mathvariant="normal">Δ</mi><mi>n</mi></msub><mo>=</mo><mrow><mo stretchy="false">{</mo><mrow><mrow><mo stretchy="false">(</mo><msub><mi>x</mi><mn>1</mn></msub><mo>,</mo><mi mathvariant="normal">…</mi><mo>,</mo><msub><mi>x</mi><mi>n</mi></msub><mo stretchy="false">)</mo></mrow><mo>∈</mo><msup><mi>ℝ</mi><mi>n</mi></msup></mrow><mo stretchy="false">|</mo><mrow><mrow><msub><mi>x</mi><mi>i</mi></msub><mo>≥</mo><mn>0</mn></mrow><mo>,</mo><mrow><mrow><munderover><mo largeop="true" movablelimits="false" symmetric="true">∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mi>x</mi><mi>i</mi></msub></mrow><mo>≤</mo><mn>1</mn></mrow></mrow><mo stretchy="false">}</mo></mrow></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+</tr>
+</table>
+<p class="ltx_p">of <math id="p4.m2" class="ltx_Math" alttext="\mathbb{R}^{n}" display="inline"><msup><mi>ℝ</mi><mi>n</mi></msup></math>. The <math id="p4.m3" class="ltx_Math" alttext="0" display="inline"><mn>0</mn></math>-simplex is a point, the <math id="p4.m4" class="ltx_Math" alttext="1" display="inline"><mn>1</mn></math>-simplex a <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">line segment</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/LineSegment.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/linesegment"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>, the 2-simplex, a <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">triangle</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Triangle.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/triangle"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>,
+and the 3-simplex, a <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">tetrahedron</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Tetrahedron.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/tetrahedron"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/regularpolyhedron"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>.
+</p>
+</div>
+<div id="p5" class="ltx_para">
+<p class="ltx_p">A <em class="ltx_emph ltx_font_italic"><a class="nnexus_concept" href="http://planetmath.org/cofinality">singular</a> <math id="p5.m1" class="ltx_Math" alttext="n" display="inline"><mi>n</mi></math>-simplex</em> in a topological space <math id="p5.m2" class="ltx_Math" alttext="X" display="inline"><mi>X</mi></math> is a continuous map <math id="p5.m3" class="ltx_Math" alttext="f:\Delta_{n}\to X" display="inline"><mrow><mi>f</mi><mo>:</mo><mrow><msub><mi mathvariant="normal">Δ</mi><mi>n</mi></msub><mo>→</mo><mi>X</mi></mrow></mrow></math>.
+A <em class="ltx_emph ltx_font_italic">singular <math id="p5.m4" class="ltx_Math" alttext="n" display="inline"><mi>n</mi></math>-chain</em> is a formal linear combination (with integer coefficients) of a
+finite number of singular <math id="p5.m5" class="ltx_Math" alttext="n" display="inline"><mi>n</mi></math>-simplices. The <math id="p5.m6" class="ltx_Math" alttext="n" display="inline"><mi>n</mi></math>-chains in <math id="p5.m7" class="ltx_Math" alttext="X" display="inline"><mi>X</mi></math> form a group under formal <a class="nnexus_concept" href="http://planetmath.org/cardinalarithmetic">addition</a>,
+denoted <math id="p5.m8" class="ltx_Math" alttext="C_{n}(X,\mathbb{Z})" display="inline"><mrow><msub><mi>C</mi><mi>n</mi></msub><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>X</mi><mo>,</mo><mi>ℤ</mi><mo stretchy="false">)</mo></mrow></mrow></math>.</p>
+</div>
+<div id="p6" class="ltx_para">
+<p class="ltx_p">Next, we define a <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">boundary operator</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/BoundaryOperator.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/chaincomplex"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> <math id="p6.m1" class="ltx_Math" alttext="\partial_{n}:C_{n}(X,\mathbb{Z})\to C_{n-1}(X,\mathbb{Z})" display="inline"><mrow><msub><mo>∂</mo><mi>n</mi></msub><mo>:</mo><mrow><mrow><msub><mi>C</mi><mi>n</mi></msub><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>X</mi><mo>,</mo><mi>ℤ</mi><mo stretchy="false">)</mo></mrow></mrow><mo>→</mo><mrow><msub><mi>C</mi><mrow><mi>n</mi><mo>-</mo><mn>1</mn></mrow></msub><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>X</mi><mo>,</mo><mi>ℤ</mi><mo stretchy="false">)</mo></mrow></mrow></mrow></mrow></math>. Intuitively, this is just taking
+all the faces of the simplex, and considering their images as simplices of one lower <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">dimension</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Dimension.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/dimension"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>
+with the appropriate sign to keep <a class="nnexus_concept" href="http://planetmath.org/orientation">orientations</a> correct. Formally, we let <math id="p6.m2" class="ltx_Math" alttext="v_{0},v_{1},\ldots,v_{n}" display="inline"><mrow><msub><mi>v</mi><mn>0</mn></msub><mo>,</mo><msub><mi>v</mi><mn>1</mn></msub><mo>,</mo><mi mathvariant="normal">…</mi><mo>,</mo><msub><mi>v</mi><mi>n</mi></msub></mrow></math>
+be the vertices of <math id="p6.m3" class="ltx_Math" alttext="\Delta_{n}" display="inline"><msub><mi mathvariant="normal">Δ</mi><mi>n</mi></msub></math>, pick an order on the vertices of the <math id="p6.m4" class="ltx_Math" alttext="n-1" display="inline"><mrow><mi>n</mi><mo>-</mo><mn>1</mn></mrow></math> simplex, and let
+<math id="p6.m5" class="ltx_Math" alttext="[v_{0},\ldots,\hat{v}_{i},\ldots,v_{n}]" display="inline"><mrow><mo stretchy="false">[</mo><msub><mi>v</mi><mn>0</mn></msub><mo>,</mo><mi mathvariant="normal">…</mi><mo>,</mo><msub><mover accent="true"><mi>v</mi><mo stretchy="false">^</mo></mover><mi>i</mi></msub><mo>,</mo><mi mathvariant="normal">…</mi><mo>,</mo><msub><mi>v</mi><mi>n</mi></msub><mo stretchy="false">]</mo></mrow></math> be the face spanned by all vertices other than <math id="p6.m6" class="ltx_Math" alttext="v_{i}" display="inline"><msub><mi>v</mi><mi>i</mi></msub></math>, identified
+with the <math id="p6.m7" class="ltx_Math" alttext="n-1" display="inline"><mrow><mi>n</mi><mo>-</mo><mn>1</mn></mrow></math>-simplex by <a class="nnexus_concept" href="http://planetmath.org/mapping">mapping</a> the vertices <math id="p6.m8" class="ltx_Math" alttext="v_{0},\ldots,v_{n}" display="inline"><mrow><msub><mi>v</mi><mn>0</mn></msub><mo>,</mo><mi mathvariant="normal">…</mi><mo>,</mo><msub><mi>v</mi><mi>n</mi></msub></mrow></math> except for <math id="p6.m9" class="ltx_Math" alttext="v_{i}" display="inline"><msub><mi>v</mi><mi>i</mi></msub></math>, in that order,
+to the vertices of the <math id="p6.m10" class="ltx_Math" alttext="(n-1)" display="inline"><mrow><mo stretchy="false">(</mo><mrow><mi>n</mi><mo>-</mo><mn>1</mn></mrow><mo stretchy="false">)</mo></mrow></math>-simplex in the order you have chosen.
+Then if <math id="p6.m11" class="ltx_Math" alttext="\varphi:\Delta_{n}\to X" display="inline"><mrow><mi>φ</mi><mo>:</mo><mrow><msub><mi mathvariant="normal">Δ</mi><mi>n</mi></msub><mo>→</mo><mi>X</mi></mrow></mrow></math> is an <math id="p6.m12" class="ltx_Math" alttext="n" display="inline"><mi>n</mi></math>-simplex, <math id="p6.m13" class="ltx_Math" alttext="\varphi([v_{0},\ldots,\hat{v}_{i},\ldots,v_{n}])" display="inline"><mrow><mi>φ</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mrow><mo stretchy="false">[</mo><msub><mi>v</mi><mn>0</mn></msub><mo>,</mo><mi mathvariant="normal">…</mi><mo>,</mo><msub><mover accent="true"><mi>v</mi><mo stretchy="false">^</mo></mover><mi>i</mi></msub><mo>,</mo><mi mathvariant="normal">…</mi><mo>,</mo><msub><mi>v</mi><mi>n</mi></msub><mo stretchy="false">]</mo></mrow><mo stretchy="false">)</mo></mrow></mrow></math> is the map
+<math id="p6.m14" class="ltx_Math" alttext="\varphi" display="inline"><mi>φ</mi></math>, restricted to the face <math id="p6.m15" class="ltx_Math" alttext="[v_{0},\ldots,\hat{v}_{i},\ldots,v_{n}]" display="inline"><mrow><mo stretchy="false">[</mo><msub><mi>v</mi><mn>0</mn></msub><mo>,</mo><mi mathvariant="normal">…</mi><mo>,</mo><msub><mover accent="true"><mi>v</mi><mo stretchy="false">^</mo></mover><mi>i</mi></msub><mo>,</mo><mi mathvariant="normal">…</mi><mo>,</mo><msub><mi>v</mi><mi>n</mi></msub><mo stretchy="false">]</mo></mrow></math>, made into a singular
+<math id="p6.m16" class="ltx_Math" alttext="(n-1)" display="inline"><mrow><mo stretchy="false">(</mo><mrow><mi>n</mi><mo>-</mo><mn>1</mn></mrow><mo stretchy="false">)</mo></mrow></math>-simplex by the identification with the standard <math id="p6.m17" class="ltx_Math" alttext="(n-1)" display="inline"><mrow><mo stretchy="false">(</mo><mrow><mi>n</mi><mo>-</mo><mn>1</mn></mrow><mo stretchy="false">)</mo></mrow></math>-simplex I defined above.
+Then</p>
+<table id="S0.Ex2" class="ltx_equation ltx_eqn_table">
+
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math id="S0.Ex2.m1" class="ltx_Math" alttext="\partial_{n}(\varphi)=\sum_{i=0}^{n}(-1)^{i}\varphi([v_{0},\ldots,\hat{v}_{i},%
+\ldots,v_{n}])." display="block"><mrow><mrow><mrow><msub><mo>∂</mo><mi>n</mi></msub><mo>⁡</mo><mrow><mo stretchy="false">(</mo><mi>φ</mi><mo stretchy="false">)</mo></mrow></mrow><mo>=</mo><mrow><munderover><mo largeop="true" movablelimits="false" symmetric="true">∑</mo><mrow><mi>i</mi><mo>=</mo><mn>0</mn></mrow><mi>n</mi></munderover><mrow><msup><mrow><mo stretchy="false">(</mo><mrow><mo>-</mo><mn>1</mn></mrow><mo stretchy="false">)</mo></mrow><mi>i</mi></msup><mo>⁢</mo><mi>φ</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mrow><mo stretchy="false">[</mo><msub><mi>v</mi><mn>0</mn></msub><mo>,</mo><mi mathvariant="normal">…</mi><mo>,</mo><msub><mover accent="true"><mi>v</mi><mo stretchy="false">^</mo></mover><mi>i</mi></msub><mo>,</mo><mi mathvariant="normal">…</mi><mo>,</mo><msub><mi>v</mi><mi>n</mi></msub><mo stretchy="false">]</mo></mrow><mo stretchy="false">)</mo></mrow></mrow></mrow></mrow><mo>.</mo></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+</tr>
+</table>
+</div>
+<div id="p7" class="ltx_para">
+<p class="ltx_p">It is a simple exercise in reindexing to check that <math id="p7.m1" class="ltx_Math" alttext="\partial_{n}\circ\partial_{n+1}=0" display="inline"><mrow><mrow><msub><mo>∂</mo><mi>n</mi></msub><mo>∘</mo><msub><mo>∂</mo><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msub></mrow><mo>=</mo><mn>0</mn></mrow></math>.</p>
+</div>
+<div id="p8" class="ltx_para">
+<p class="ltx_p">For example, if <math id="p8.m1" class="ltx_Math" alttext="\varphi" display="inline"><mi>φ</mi></math> is a singular <math id="p8.m2" class="ltx_Math" alttext="1" display="inline"><mn>1</mn></math>-simplex (that is a path), then <math id="p8.m3" class="ltx_Math" alttext="\partial(\varphi)=\varphi(1)-\varphi(0)" display="inline"><mrow><mrow><mo>∂</mo><mo>⁡</mo><mrow><mo stretchy="false">(</mo><mi>φ</mi><mo stretchy="false">)</mo></mrow></mrow><mo>=</mo><mrow><mrow><mi>φ</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></mrow><mo>-</mo><mrow><mi>φ</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mn>0</mn><mo stretchy="false">)</mo></mrow></mrow></mrow></mrow></math>.
+That is, it is the <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">difference</a><sup style="display: none;"><a class="nnexus_concept" href="http://planetmath.org/difference"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/setdifference"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> of the <a class="nnexus_concept" href="http://planetmath.org/endpoint">endpoints</a> (thought of as 0-simplices).
+</p>
+</div>
+<div id="p9" class="ltx_para">
+<p class="ltx_p">Now, we are finally in a position to define homology groups. Let <math id="p9.m1" class="ltx_Math" alttext="H_{n}(X,\mathbb{Z})" display="inline"><mrow><msub><mi>H</mi><mi>n</mi></msub><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>X</mi><mo>,</mo><mi>ℤ</mi><mo stretchy="false">)</mo></mrow></mrow></math>, the <math id="p9.m2" class="ltx_Math" alttext="n" display="inline"><mi>n</mi></math> homology
+group of <math id="p9.m3" class="ltx_Math" alttext="X" display="inline"><mi>X</mi></math> be the <a class="nnexus_concept" href="http://planetmath.org/quotientgroup">quotient</a></p>
+<table id="S0.Ex3" class="ltx_equation ltx_eqn_table">
+
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math id="S0.Ex3.m1" class="ltx_Math" alttext="H_{n}(X,\mathbb{Z})=\frac{\mathrm{ker}\,\partial_{n}}{\mathrm{im}\partial_{n+1%
+}}." display="block"><mrow><mrow><mrow><msub><mi>H</mi><mi>n</mi></msub><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>X</mi><mo>,</mo><mi>ℤ</mi><mo stretchy="false">)</mo></mrow></mrow><mo>=</mo><mfrac><mrow><mpadded width="+1.7pt"><mi>ker</mi></mpadded><mo>⁢</mo><msub><mo>∂</mo><mi>n</mi></msub></mrow><mrow><mi>im</mi><mo>⁢</mo><msub><mo>∂</mo><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msub></mrow></mfrac></mrow><mo>.</mo></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+</tr>
+</table>
+</div>
+<div id="p10" class="ltx_para">
+<p class="ltx_p">The association <math id="p10.m1" class="ltx_Math" alttext="X\mapsto H_{n}(X,\mathbb{Z})" display="inline"><mrow><mi>X</mi><mo>↦</mo><mrow><msub><mi>H</mi><mi>n</mi></msub><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>X</mi><mo>,</mo><mi>ℤ</mi><mo stretchy="false">)</mo></mrow></mrow></mrow></math> is a functor from topological spaces to abelian groups, and the maps <math id="p10.m2" class="ltx_Math" alttext="f_{*}:H_{n}(X,\mathbb{Z})\to H_{n}(Y,\mathbb{Z})" display="inline"><mrow><msub><mi>f</mi><mo>*</mo></msub><mo>:</mo><mrow><mrow><msub><mi>H</mi><mi>n</mi></msub><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>X</mi><mo>,</mo><mi>ℤ</mi><mo stretchy="false">)</mo></mrow></mrow><mo>→</mo><mrow><msub><mi>H</mi><mi>n</mi></msub><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>Y</mi><mo>,</mo><mi>ℤ</mi><mo stretchy="false">)</mo></mrow></mrow></mrow></mrow></math> induced by a map <math id="p10.m3" class="ltx_Math" alttext="f:X\to Y" display="inline"><mrow><mi>f</mi><mo>:</mo><mrow><mi>X</mi><mo>→</mo><mi>Y</mi></mrow></mrow></math>
+are simply those induced by <a class="nnexus_concept" href="http://planetmath.org/function">composition</a> of an singular <math id="p10.m4" class="ltx_Math" alttext="n" display="inline"><mi>n</mi></math>-simplex with the map <math id="p10.m5" class="ltx_Math" alttext="f" display="inline"><mi>f</mi></math>.</p>
+</div>
+<div id="p11" class="ltx_para">
+<p class="ltx_p">From this definition, it is not at all clear that homology is at all <a class="nnexus_concept" href="http://planetmath.org/computablenumber">computable</a>. But, in fact, homology is often much more easily computed than <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">homotopy groups</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/HomotopyGroup.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/homotopygroups"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> or most other <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">topological invariants</a><sup style="display: none;"><a class="nnexus_concept" href="http://planetmath.org/topologicalinvariant"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/generalizedvankampensieferttheoremfordoublegroupoids"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>. Important tools in the calculation of homology are <a class="nnexus_concept" href="http://mathworld.wolfram.com/LongExactSequence.html">long exact sequences</a>, the <a class="nnexus_concept" href="http://planetmath.org/mayervietorissequence">Mayer-Vietoris sequence</a>, cellular homology, spectral sequences, and <a class="nnexus_concept" href="http://planetmath.org/homotopyinvariance">homotopy invariance</a>.</p>
+</div>
+<div id="p12" class="ltx_para">
+<p class="ltx_p">Some examples of homology groups:</p>
+</div>
+<div id="p13" class="ltx_para">
+<table id="S0.Ex4" class="ltx_equation ltx_eqn_table">
+
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math id="S0.Ex4.m1" class="ltx_Math" alttext="H_{m}(\mathbb{R}^{n},\mathbb{Z})=\begin{cases}\mathbb{Z}&amp;m=0\\
+0&amp;m&gt;0.\end{cases}" display="block"><mrow><mrow><msub><mi>H</mi><mi>m</mi></msub><mo>⁢</mo><mrow><mo stretchy="false">(</mo><msup><mi>ℝ</mi><mi>n</mi></msup><mo>,</mo><mi>ℤ</mi><mo stretchy="false">)</mo></mrow></mrow><mo>=</mo><mrow><mo>{</mo><mtable columnspacing="5pt" displaystyle="true" rowspacing="0pt"><mtr><mtd columnalign="left"><mi>ℤ</mi></mtd><mtd columnalign="left"><mrow><mi>m</mi><mo>=</mo><mn>0</mn></mrow></mtd></mtr><mtr><mtd columnalign="left"><mn>0</mn></mtd><mtd columnalign="left"><mrow><mrow><mi>m</mi><mo>&gt;</mo><mn>0</mn></mrow><mo>.</mo></mrow></mtd></mtr></mtable></mrow></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+</tr>
+</table>
+<p class="ltx_p">This <a class="nnexus_concept" href="http://planetmath.org/euclideantransformation">reflects</a> the fact that <math id="p13.m1" class="ltx_Math" alttext="\mathbb{R}^{n}" display="inline"><msup><mi>ℝ</mi><mi>n</mi></msup></math> has “no holes”</p>
+</div>
+<div id="p14" class="ltx_para">
+<p class="ltx_p">Consider the space <math id="p14.m1" class="ltx_Math" alttext="\mathbb{R}P^{n}" display="inline"><mrow><mi>ℝ</mi><mo>⁢</mo><msup><mi>P</mi><mi>n</mi></msup></mrow></math>, real projective space, which is <math id="p14.m2" class="ltx_Math" alttext="\mathbb{R}^{n+1}\setminus\{0\}" display="inline"><mrow><msup><mi>ℝ</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msup><mo>∖</mo><mrow><mo stretchy="false">{</mo><mn>0</mn><mo stretchy="false">}</mo></mrow></mrow></math> modulo the <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">relation</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Relation.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/relationonobjects"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/presentationofagroup"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/relation"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> that <math id="p14.m3" class="ltx_Math" alttext="(x_{0},\ldots,x_{n})\equiv\lambda(x_{0},\ldots,x_{n})" display="inline"><mrow><mrow><mo stretchy="false">(</mo><msub><mi>x</mi><mn>0</mn></msub><mo>,</mo><mi mathvariant="normal">…</mi><mo>,</mo><msub><mi>x</mi><mi>n</mi></msub><mo stretchy="false">)</mo></mrow><mo>≡</mo><mrow><mi>λ</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><msub><mi>x</mi><mn>0</mn></msub><mo>,</mo><mi mathvariant="normal">…</mi><mo>,</mo><msub><mi>x</mi><mi>n</mi></msub><mo stretchy="false">)</mo></mrow></mrow></mrow></math> for every nonzero <math id="p14.m4" class="ltx_Math" alttext="\lambda" display="inline"><mi>λ</mi></math>. For <math id="p14.m5" class="ltx_Math" alttext="n" display="inline"><mi>n</mi></math> even,</p>
+<table id="S0.Ex5" class="ltx_equation ltx_eqn_table">
+
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math id="S0.Ex5.m1" class="ltx_Math" alttext="H_{m}(\mathbb{R}P^{n},\mathbb{Z})=\begin{cases}\mathbb{Z}&amp;m=0\\
+\mathbb{Z}_{2}&amp;m\equiv 1\pmod{2}\text{ or }n&gt;m&gt;0\\
+0&amp;m\equiv 0\pmod{2},\,n&gt;m&gt;0\text{ or }m\geq n,\end{cases}" display="block"><mrow><mrow><msub><mi>H</mi><mi>m</mi></msub><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mrow><mi>ℝ</mi><mo>⁢</mo><msup><mi>P</mi><mi>n</mi></msup></mrow><mo>,</mo><mi>ℤ</mi><mo stretchy="false">)</mo></mrow></mrow><mo>=</mo><mrow><mo>{</mo><mtable columnspacing="5pt" displaystyle="true" rowspacing="0pt"><mtr><mtd columnalign="left"><mi>ℤ</mi></mtd><mtd columnalign="left"><mrow><mi>m</mi><mo>=</mo><mn>0</mn></mrow></mtd></mtr><mtr><mtd columnalign="left"><msub><mi>ℤ</mi><mn>2</mn></msub></mtd><mtd columnalign="left"><mrow><mi>m</mi><mo>≡</mo><mn>1</mn><mrow><mo lspace="8.1pt" stretchy="false">(</mo><mrow><mo>mod</mo><mn>2</mn></mrow><mo stretchy="false">)</mo></mrow><mtext> or </mtext><mi>n</mi><mo>&gt;</mo><mi>m</mi><mo>&gt;</mo><mn>0</mn></mrow></mtd></mtr><mtr><mtd columnalign="left"><mn>0</mn></mtd><mtd columnalign="left"><mrow><mrow><mrow><mi>m</mi><mo>≡</mo><mrow><mn>0</mn><mspace width="veryverythickmathspace"></mspace><mrow><mo lspace="8.1pt" stretchy="false">(</mo><mrow><mo>mod</mo><mn>2</mn></mrow><mo stretchy="false">)</mo></mrow></mrow></mrow><mo rspace="4.2pt">,</mo><mrow><mi>n</mi><mo>&gt;</mo><mi>m</mi><mo>&gt;</mo><mrow><mn>0</mn><mo>⁢</mo><mtext> or </mtext><mo>⁢</mo><mi>m</mi></mrow><mo>≥</mo><mi>n</mi></mrow></mrow><mo>,</mo></mrow></mtd></mtr></mtable></mrow></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+</tr>
+</table>
+<p class="ltx_p">and for <math id="p14.m6" class="ltx_Math" alttext="n" display="inline"><mi>n</mi></math> odd,</p>
+<table id="S0.Ex6" class="ltx_equation ltx_eqn_table">
+
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math id="S0.Ex6.m1" class="ltx_Math" alttext="H_{m}(\mathbb{R}P^{n},\mathbb{Z})=\begin{cases}\mathbb{Z}&amp;m=0\text{ or }n\\
+\mathbb{Z}_{2}&amp;m\equiv 1\pmod{2}\text{ or }n&gt;m&gt;0\\
+0&amp;m\equiv 0\pmod{2},\,n&gt;m&gt;0\text{ or }m&gt;n.\end{cases}" display="block"><mrow><mrow><msub><mi>H</mi><mi>m</mi></msub><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mrow><mi>ℝ</mi><mo>⁢</mo><msup><mi>P</mi><mi>n</mi></msup></mrow><mo>,</mo><mi>ℤ</mi><mo stretchy="false">)</mo></mrow></mrow><mo>=</mo><mrow><mo>{</mo><mtable columnspacing="5pt" displaystyle="true" rowspacing="0pt"><mtr><mtd columnalign="left"><mi>ℤ</mi></mtd><mtd columnalign="left"><mrow><mi>m</mi><mo>=</mo><mrow><mn>0</mn><mo>⁢</mo><mtext> or </mtext><mo>⁢</mo><mi>n</mi></mrow></mrow></mtd></mtr><mtr><mtd columnalign="left"><msub><mi>ℤ</mi><mn>2</mn></msub></mtd><mtd columnalign="left"><mrow><mi>m</mi><mo>≡</mo><mn>1</mn><mrow><mo lspace="8.1pt" stretchy="false">(</mo><mrow><mo>mod</mo><mn>2</mn></mrow><mo stretchy="false">)</mo></mrow><mtext> or </mtext><mi>n</mi><mo>&gt;</mo><mi>m</mi><mo>&gt;</mo><mn>0</mn></mrow></mtd></mtr><mtr><mtd columnalign="left"><mn>0</mn></mtd><mtd columnalign="left"><mrow><mrow><mrow><mi>m</mi><mo>≡</mo><mrow><mn>0</mn><mspace width="veryverythickmathspace"></mspace><mrow><mo lspace="8.1pt" stretchy="false">(</mo><mrow><mo>mod</mo><mn>2</mn></mrow><mo stretchy="false">)</mo></mrow></mrow></mrow><mo rspace="4.2pt">,</mo><mrow><mi>n</mi><mo>&gt;</mo><mi>m</mi><mo>&gt;</mo><mrow><mn>0</mn><mo>⁢</mo><mtext> or </mtext><mo>⁢</mo><mi>m</mi></mrow><mo>&gt;</mo><mi>n</mi></mrow></mrow><mo>.</mo></mrow></mtd></mtr></mtable></mrow></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+</tr>
+</table>
+<table class="ltx_tabular ltx_align_right ltx_align_middle">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l ltx_border_t">Title</td>
+<td class="ltx_td ltx_align_left ltx_border_r ltx_border_t">homology</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Canonical name</td>
+<td class="ltx_td ltx_align_left ltx_border_r">Homology</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Date of creation</td>
+<td class="ltx_td ltx_align_left ltx_border_r">2013-03-22 13:14:41</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Last modified on</td>
+<td class="ltx_td ltx_align_left ltx_border_r">2013-03-22 13:14:41</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Owner</td>
+<td class="ltx_td ltx_align_left ltx_border_r">mathcam (2727)</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Last modified by</td>
+<td class="ltx_td ltx_align_left ltx_border_r">mathcam (2727)</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Numerical id</td>
+<td class="ltx_td ltx_align_left ltx_border_r">17</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Author</td>
+<td class="ltx_td ltx_align_left ltx_border_r">mathcam (2727)</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Entry type</td>
+<td class="ltx_td ltx_align_left ltx_border_r">Definition</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Classification</td>
+<td class="ltx_td ltx_align_left ltx_border_r">msc 55N10</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Synonym</td>
+<td class="ltx_td ltx_align_left ltx_border_r">singular homology</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Related topic</td>
+<td class="ltx_td ltx_align_left ltx_border_r">SimplicialComplex</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Related topic</td>
+<td class="ltx_td ltx_align_left ltx_border_r">GeometryOfTheSphere</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Related topic</td>
+<td class="ltx_td ltx_align_left ltx_border_r">BettiNumber</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Related topic</td>
+<td class="ltx_td ltx_align_left ltx_border_r">HomologyChainComplex</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Related topic</td>
+<td class="ltx_td ltx_align_left ltx_border_r">CohomologyGroupTheorem</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Defines</td>
+<td class="ltx_td ltx_align_left ltx_border_r">singular n-chain</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_b ltx_border_l">Defines</td>
+<td class="ltx_td ltx_align_left ltx_border_b ltx_border_r">singular n-simplex</td>
+</tr>
+</tbody>
+</table>
+</div>
+</article>
+</div>
+<footer class="ltx_page_footer">
+<div class="ltx_page_logo">Generated  on Sat Feb 10 11:41:30 2018 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
+</div></footer>
+</div>
+</body>
+</html>

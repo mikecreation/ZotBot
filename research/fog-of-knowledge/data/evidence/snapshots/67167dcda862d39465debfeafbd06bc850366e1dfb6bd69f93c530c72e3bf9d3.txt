@@ -1,0 +1,408 @@
+probability distribution function
+probability distribution function
+1
+Definition
+Let
+(
+Ω
+,
+𝔅
+,
+μ
+)
+be a
+measure space
+. A
+probability distribution function
+on
+Ω
+is a
+function
+f
+:
+Ω
+⟶
+ℝ
+such that:
+1.
+f
+is
+μ
+-measurable
+2.
+f
+is nonnegative
+μ
+-almost everywhere.
+3.
+f
+satisfies
+the
+equation
+∫
+Ω
+f
+⁢
+(
+x
+)
+⁢
+𝑑
+μ
+=
+1
+The main feature of a probability distribution function is that it induces a
+probability measure
+P
+on the measure space
+(
+Ω
+,
+𝔅
+)
+, given by
+P
+⁢
+(
+A
+)
+:=
+∫
+A
+f
+⁢
+(
+x
+)
+⁢
+𝑑
+μ
+=
+∫
+Ω
+1
+A
+⁢
+f
+⁢
+(
+x
+)
+⁢
+𝑑
+μ
+,
+for all
+A
+∈
+𝔅
+. The
+measure
+P
+is called the
+associated probability measure
+of
+f
+. Note that
+P
+and
+μ
+are different measures,  though they both share the same underlying
+measurable space
+(
+Ω
+,
+𝔅
+)
+.
+2
+Examples
+2.1
+Discrete case
+Let
+I
+be a
+countable set
+, and impose the
+counting measure
+on
+I
+(
+μ
+⁢
+(
+A
+)
+:=
+|
+A
+|
+, the
+cardinality
+of
+A
+, for any subset
+A
+⊂
+I
+). A probability distribution function on
+I
+is then a nonnegative function
+f
+:
+I
+⟶
+ℝ
+satisfying the equation
+∑
+i
+∈
+I
+f
+⁢
+(
+i
+)
+=
+1
+.
+One example is the
+Poisson distribution
+P
+r
+on
+ℕ
+(for any real number
+r
+), which is given by
+P
+r
+⁢
+(
+i
+)
+:=
+e
+-
+r
+⁢
+r
+i
+i
+!
+for any
+i
+∈
+ℕ
+.
+Given any
+probability space
+(
+Ω
+,
+𝔅
+,
+μ
+)
+and any
+random variable
+X
+:
+Ω
+⟶
+I
+, we can form a
+distribution function
+on
+I
+by taking
+f
+(
+i
+)
+:=
+μ
+(
+{
+X
+=
+i
+}
+)
+. The resulting function is called the
+distribution
+of
+X
+on
+I
+.
+2.2
+Continuous case
+Suppose
+(
+Ω
+,
+𝔅
+,
+μ
+)
+equals
+(
+ℝ
+,
+𝔅
+λ
+,
+λ
+)
+, the real numbers equipped with
+Lebesgue measure
+. Then a probability distribution function
+f
+:
+ℝ
+⟶
+ℝ
+is simply a measurable, nonnegative almost everywhere function such that
+∫
+-
+∞
+∞
+f
+⁢
+(
+x
+)
+⁢
+𝑑
+x
+=
+1
+.
+The associated measure has Radon–Nikodym
+derivative
+(
+http://planetmath.org/RadonNikodymTheorem
+) with respect to
+λ
+equal to
+f
+:
+d
+⁢
+P
+d
+⁢
+λ
+=
+f
+.
+One defines the
+cumulative distribution function
+F
+of
+f
+by the
+formula
+F
+(
+x
+)
+:=
+P
+(
+{
+X
+≤
+x
+}
+)
+=
+∫
+-
+∞
+x
+f
+(
+t
+)
+d
+t
+,
+for all
+x
+∈
+ℝ
+. A well known example of a probability distribution function on
+ℝ
+is the
+Gaussian distribution
+, or
+normal distribution
+f
+⁢
+(
+x
+)
+:=
+1
+σ
+⁢
+2
+⁢
+π
+⁢
+e
+-
+(
+x
+-
+m
+)
+2
+/
+2
+⁢
+σ
+2
+.
+Title
+probability distribution function
+Canonical name
+ProbabilityDistributionFunction
+Date of creation
+2013-03-22 12:37:25
+Last modified on
+2013-03-22 12:37:25
+Owner
+Mathprof (13753)
+Last modified by
+Mathprof (13753)
+Numerical id
+11
+Author
+Mathprof (13753)
+Entry type
+Definition
+Classification
+msc 60E99
+Synonym
+probability density function
+Synonym
+distribution
+Related topic
+Measure
+Related topic
+Stochastic
+Related topic
+DiscreteDensityFunction
+Related topic
+DistributionFunction
+Related topic
+DensityFunction
+Related topic
+AreaUnderGaussianCurve
+Defines
+cumulative distribution function
+Generated  on Sat Feb 10 11:56:44 2018 by
+LaTeXML
