@@ -1,0 +1,984 @@
+<!doctype html><html lang="en"><head>
+
+<title>MeSH Browser</title>
+
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+
+<link rel="stylesheet" href="/public/css/font-awesome.css">
+<link rel="stylesheet" href="/public/css/bootstrap.css">
+<link rel="stylesheet" href="/public/css/mongoMesh.css">
+<link rel="icon" type="image/jpeg" href="/public/img/meshLogo.jpg">
+
+<base href="/">
+<script src="https://www.nlm.nih.gov/coop_all_uswds.js?v=1792068751031"></script>
+
+<script>
+
+    if (document.domain != "localhost")
+        document.domain = "nlm.nih.gov";
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        try {
+
+            if (coopmsg
+                && !/(^|; *)shutdown-banner=/.test(document.cookie))
+
+                document.querySelector(
+                    "body > div"
+                ).insertAdjacentHTML(
+                    "afterbegin",
+                    "<div id='shutdown-banner'><p>" + coopmsg
+                    + "</p><button type='button' role='button'"
+                    + " aria-label='Close' onclick='"
+                    + 'document.getElementById("shutdown-banner")'
+                    + '.remove(); document.cookie ='
+                    + ' "shutdown-banner=hidden; path=/";'
+                    + "'>Close</button></div>"
+                );
+
+        } catch (error) {
+            /* The "coopmsg" variable is only defined during a
+             * shutdown. */
+            if (!(error instanceof ReferenceError))
+                throw error;
+        }
+
+    });
+
+    var dcmsLinks = false,
+        dcmsParam = dcmsLinks
+                    ? function (sep) { return sep + "dcmsLinks=true"; }
+                    : function (   ) { return ""                    ; };
+
+</script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){
+        var _fullPath = window.location.href;
+        var urlParams = _fullPath.slice(_fullPath.indexOf('?') + 1).split('&');
+        var IsOpen = "false";
+        if (urlParams != undefined && urlParams != null && urlParams != "") {
+            IsOpen = urlParams[0].split("=")[1];
+        }
+
+        if (IsOpen == "false" || IsOpen == undefined || IsOpen != "true") {
+            w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        }
+    })(window,document,'script','dataLayer','GTM-5QZ7KJZ');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe sandbox src="https://www.googletagmanager.com/ns.html?id=GTM-5QZ7KJZ"
+                  height="0" width="0" style="display:none;visibility:hidden" title="googletagmanager"></iframe></noscript> 
+<!-- End Google Tag Manager (noscript) -->
+
+<script src="/public/js/elemUtil.js"></script>
+
+<script src="/public/js/record.js"  ></script>
+<script src="/public/js/treeDom.js" ></script>
+</head><body>
+
+<div>
+
+    <header class="NLMheader">
+        <a href="https://www.nlm.nih.gov/">
+          <img height="80" alt="NLM Logo"
+               src="https://www.nlm.nih.gov/images/NLM_White.png">
+        </a>
+        <!--<img class="starLogo"src="/public/img/NLM_Star.png" alt="NLM Star">-->
+    </header>
+<nav class="navbar navbar-default">
+
+  <div class="container-fluid">
+
+        <div class="navbar-header">
+
+          <button class="navbar-toggle collapsed" type="button"
+                  aria-expanded="false"
+                  onclick="toggleCollapse('bs-example-navbar-collapse-1')">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://www.nlm.nih.gov/mesh/">
+                <img id="meshNavbarLogo" src="/public/img/meshLogo.jpg" alt="MeSH Logo">
+            </a>
+        </div>
+
+        <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse"
+             aria-expanded="false">
+            <ul class="nav navbar-nav">
+                
+                <li><a href="/" id="mainSearchButton">Search</a></li>
+                <li><a href="/treeView">Tree View</a></li>
+                <li><a href="/MeSHonDemand">MeSH on Demand</a> </li> <!--Delete the Span Tags after  a few months, once MeSH on Demand is no longer new-->
+                <li><a href="https://meshb-prev.nlm.nih.gov/" target="_blank">MeSH 2027</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/mbinfo.html" target="_blank">About</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/meshsugg.html" target="_blank">Suggestions</a> </li>
+                <li><a href="https://support.nlm.nih.gov/support/create-case/" target="_blank">Contact Us</a></li>
+            </ul>
+
+        </div>
+
+  </div>
+
+</nav>
+
+</div>
+
+<div class="container">
+
+
+
+
+<h1>Genetic Research <small>MeSH Descriptor            Data 2026</small></h1>
+
+<ul class="nav nav-tabs">
+    <li id="details" class="active"
+        onclick="switchTab([ 'details', 'detailsTabContent' ])">
+        <a class="fakeLink">Details</a></li>
+    
+        <li id="qualifiers"
+            onclick="switchTab([ 'qualifiers', 'qualifiersTabContent' ])">
+            <a class="fakeLink">Qualifiers</a></li>
+        <li id="trees" onclick="switchTab([ 'trees', 'treesTabContent' ])">
+            <a class="fakeLink">MeSH Tree Structures</a></li>
+    
+    <li id="concepts" onclick="switchTab([ 'concepts', 'conceptsTabContent' ])">
+        <a class="fakeLink">Concepts</a></li>
+</ul>
+
+
+
+<div class="tab-content"><br>
+<div id="detailsTabContent" class="tab-pane active">
+
+    <dl id="descriptorDetails_GeneticResearch"
+        class="dl-horizontal">
+
+        <dt>MeSH Heading      </dt>
+
+        <dd>Genetic Research</dd>
+
+        
+                    <dt>Tree Number(s)</dt>
+                    
+                        <dd><a id="treeNumber_0" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >H01.158.273.343.249</a></dd>
+                    
+                        <dd><a id="treeNumber_1" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >H01.770.644.145.350</a></dd>
+                    
+
+        <dt>Unique ID</dt><dd>D036281</dd>
+
+        <dt>RDF Unique Identifier</dt>
+        <dd><a href="https://id.nlm.nih.gov/mesh/D036281.html">
+            http://id.nlm.nih.gov/mesh/D036281
+        </a></dd>
+
+        <span id="annotation">
+            <dt>Annotation</dt><dd>genetic research as a field or the progress or status of genetic research; do not add routinely for specific research studies in genetics</dd>
+        </span>
+                <span id="scopeNote">
+                    <dt>Scope Note</dt><dd>Research into the cause, transmission, amelioration, elimination, or enhancement of inherited disorders and traits.</dd>
+                </span>
+            
+            <dt>Entry Version</dt><dd>GENET RESEARCH</dd>
+        
+                <dt>Entry Term(s)</dt>
+                <dd>
+                    Research, Genetic
+                    
+                </dd>
+            <dt>Public MeSH Note</dt><dd>2003</dd>
+        
+            <dt>History Note</dt><dd>2003</dd>
+        
+        
+
+
+        
+                <dt>Date Introduced</dt>
+                <dd>2003/01/01</dd>
+            
+                <dt>Last Updated</dt>
+                <dd>2008/07/08</dd>
+            
+
+    </dl>
+
+</div>
+
+<div id="qualifiersTabContent" class="tab-pane">
+
+    <dl class="dl-horizontal">
+
+        
+<br>
+
+        
+                <span id="allowableQualifiers"><dt>Allowable Qualifiers</dt><dd>
+                <ul class="list-unstyled">
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000191">
+                            economics
+                            (EC)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000941">
+                            ethics
+                            (ES)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000266">
+                            history
+                            (HI)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000331">
+                            legislation &amp; jurisprudence
+                            (LJ)
+                        </a></li>
+                    
+                </ul></dd></span>
+            
+
+    </dl>
+
+</div><div id="treesTabContent" class="tab-pane">
+
+    <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_H01"
+           
+               href="/record/ui?ui=D010811"
+           
+        ><span>Natural Science Disciplines [H01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_H01_158"
+           
+               href="/record/ui?ui=D001690"
+           
+        ><span>Biological Science Disciplines [H01.158]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_H01_158_273"
+           
+               href="/record/ui?ui=D001695"
+           
+        ><span>Biology [H01.158.273]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_H01_158_273_343"
+           
+               href="/record/ui?ui=D005823"
+           
+        ><span>Genetics [H01.158.273.343]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_H01_158_273_343_180"
+           
+               href="/record/ui?ui=D003582"
+           
+        ><span>Cytogenetics [H01.158.273.343.180]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H01_158_273_343_249"
+           
+               href="/record/ui?ui=D036281"
+           
+        ><strong>Genetic Research [H01.158.273.343.249]</strong>
+        </a>
+        
+            <i id="plus_Genetic_Research" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Genetic_Research" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_H01_158_273_343_249_099"
+           
+               href="/record/ui?ui=D063990"
+           
+        ><span>Gene Ontology [H01.158.273.343.249.099]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H01_158_273_343_249_199"
+           
+               href="/record/ui?ui=D060148"
+           
+        ><span>HapMap Project [H01.158.273.343.249.199]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H01_158_273_343_249_400"
+           
+               href="/record/ui?ui=D016045"
+           
+        ><span>Human Genome Project [H01.158.273.343.249.400]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H01_158_273_343_290"
+           
+               href="/record/ui?ui=D005824"
+           
+        ><span>Genetics, Behavioral [H01.158.273.343.290]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H01_158_273_343_330"
+           
+               href="/record/ui?ui=D005827"
+           
+        ><span>Genetics, Microbial [H01.158.273.343.330]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H01_158_273_343_335"
+           
+               href="/record/ui?ui=D005828"
+           
+        ><span>Genetics, Population [H01.158.273.343.335]</span>
+        </a>
+        
+            <i id="plus_Genetics_Population" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Genetics_Population" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H01_158_273_343_350"
+           
+               href="/record/ui?ui=D023281"
+           
+        ><span>Genomics [H01.158.273.343.350]</span>
+        </a>
+        
+            <i id="plus_Genomics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Genomics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H01_158_273_343_385"
+           
+               href="/record/ui?ui=D000074705"
+           
+        ><span>Human Genetics [H01.158.273.343.385]</span>
+        </a>
+        
+            <i id="plus_Human_Genetics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Human_Genetics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H01_158_273_343_420"
+           
+               href="/record/ui?ui=D007125"
+           
+        ><span>Immunogenetics [H01.158.273.343.420]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H01_158_273_343_595"
+           
+               href="/record/ui?ui=D008967"
+           
+        ><span>Molecular Biology [H01.158.273.343.595]</span>
+        </a>
+        
+            <i id="plus_Molecular_Biology" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Molecular_Biology" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H01_158_273_343_750"
+           
+               href="/record/ui?ui=D010597"
+           
+        ><span>Pharmacogenetics [H01.158.273.343.750]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H01_158_273_343_775"
+           
+               href="/record/ui?ui=D000080444"
+           
+        ><span>Phenomics [H01.158.273.343.775]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H01_158_273_343_800"
+           
+               href="/record/ui?ui=D011831"
+           
+        ><span>Radiation Genetics [H01.158.273.343.800]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H01_158_273_343_900"
+           
+               href="/record/ui?ui=D043922"
+           
+        ><span>Toxicogenetics [H01.158.273.343.900]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_H01"
+           
+               href="/record/ui?ui=D010811"
+           
+        ><span>Natural Science Disciplines [H01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_H01_770"
+           
+               href="/record/ui?ui=D012586"
+           
+        ><span>Science [H01.770]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_H01_770_644"
+           
+               href="/record/ui?ui=D012106"
+           
+        ><span>Research [H01.770.644]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_H01_770_644_145"
+           
+               href="/record/ui?ui=D035843"
+           
+        ><span>Biomedical Research [H01.770.644.145]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_H01_770_644_145_124"
+           
+               href="/record/ui?ui=D018865"
+           
+        ><span>Dental Research [H01.770.644.145.124]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_H01_770_644_145_250"
+           
+               href="/record/ui?ui=D033041"
+           
+        ><span>Embryo Research [H01.770.644.145.250]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_H01_770_644_145_300"
+           
+               href="/record/ui?ui=D033042"
+           
+        ><span>Fetal Research [H01.770.644.145.300]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_H01_770_644_145_350"
+           
+               href="/record/ui?ui=D036281"
+           
+        ><strong>Genetic Research [H01.770.644.145.350]</strong>
+        </a>
+        
+            <i id="plus_Genetic_Research" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Genetic_Research" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_H01_770_644_145_350_124"
+           
+               href="/record/ui?ui=D063990"
+           
+        ><span>Gene Ontology [H01.770.644.145.350.124]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_H01_770_644_145_350_249"
+           
+               href="/record/ui?ui=D060148"
+           
+        ><span>HapMap Project [H01.770.644.145.350.249]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_H01_770_644_145_350_500"
+           
+               href="/record/ui?ui=D016045"
+           
+        ><span>Human Genome Project [H01.770.644.145.350.500]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_1_node_H01_770_644_145_360"
+           
+               href="/record/ui?ui=D006302"
+           
+        ><span>Health Services Research [H01.770.644.145.360]</span>
+        </a>
+        
+            <i id="plus_Health_Services_Research" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Health_Services_Research" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_H01_770_644_145_365"
+           
+               href="/record/ui?ui=D006805"
+           
+        ><span>Human Experimentation [H01.770.644.145.365]</span>
+        </a>
+        
+            <i id="plus_Human_Experimentation" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Human_Experimentation" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_H01_770_644_145_390"
+           
+               href="/record/ui?ui=D015399"
+           
+        ><span>Nursing Research [H01.770.644.145.390]</span>
+        </a>
+        
+            <i id="plus_Nursing_Research" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Nursing_Research" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_H01_770_644_145_431"
+           
+               href="/record/ui?ui=D017063"
+           
+        ><span>Outcome Assessment, Health Care [H01.770.644.145.431]</span>
+        </a>
+        
+            <i id="plus_Outcome_Assessment_Health_Care" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Outcome_Assessment_Health_Care" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_H01_770_644_145_442"
+           
+               href="/record/ui?ui=D000071220"
+           
+        ><span>Pharmaceutical Research [H01.770.644.145.442]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_H01_770_644_145_452"
+           
+               href="/record/ui?ui=D000070838"
+           
+        ><span>Pharmacy Research [H01.770.644.145.452]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_H01_770_644_145_472"
+           
+               href="/record/ui?ui=D000066768"
+           
+        ><span>Rehabilitation Research [H01.770.644.145.472]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_H01_770_644_145_512"
+           
+               href="/record/ui?ui=D057905"
+           
+        ><span>Stem Cell Research [H01.770.644.145.512]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_H01_770_644_145_675"
+           
+               href="/record/ui?ui=D057170"
+           
+        ><span>Translational Research, Biomedical [H01.770.644.145.675]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+
+</div>
+
+<div id="conceptsTabContent" class="tab-pane">
+
+    <button id="ExpandAll" class="btn btn-default btn-sm pull-right"
+            onclick="toggleConcepts()">
+        <span id="expandConcepts"                        >  Expand All</span>
+        <span id="collapseConcepts" style="display: none">Collapse All</span>
+    </button>
+
+    
+
+        <div>
+        <span id="Nightwatch_cp_0_0"
+              onclick="toggleCollapse('cp_0_0', 'Nightwatch_cp_0_0')">
+        <a class="fakeLink"><b>
+            Genetic Research
+            <i>Preferred</i>
+        </b></a></span>
+
+        <div id="cp_0_0" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0009139</dd>
+
+            
+                <dt>Scope Note</dt><dd>Research into the cause, transmission, amelioration, elimination, or enhancement of inherited disorders and traits.</dd>
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_0_0"
+                      onclick="toggleCollapse('termName_0_0',
+                                              'Nightwatch_termName_0_0')">
+                    <a class="fakeLink"><b>Genetic Research</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_0_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T017610<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>10/20/1994<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        BIOETHICS (1995)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_1"
+                      onclick="toggleCollapse('termName_0_1',
+                                              'Nightwatch_termName_0_1')">
+                    <a class="fakeLink"><b>Research, Genetic</b></a></span>
+
+                
+
+                <div id="termName_0_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T017611<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>03/21/1996<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1997)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+</div></div>
+
+<small class="pull-right">
+    page delivered in 0.124s
+</small>
+
+</div>
+
+<footer class="footer">
+    <div class="container-fluid"><div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/socialmedia/index.html">
+                    Connect with NLM
+                </a></p>
+                <ul class="list-inline">
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://twitter.com/NLM_NIH">
+                        <img src="https://www.nlm.nih.gov/images/Twitter_W.svg"
+                             alt="Twitter">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.facebook.com/nationallibraryofmedicine"
+                    ><img src="https://www.nlm.nih.gov/images/Facebook_W.svg"
+                          alt="Facebook">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.youtube.com/user/NLMNIH">
+                        <img src="https://www.nlm.nih.gov/images/YouTube_W.svg"
+                             alt="You Tube">
+                    </a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p>National Library of Medicine<br>
+                    <a href="https://www.google.com/maps/place/8600+Rockville+Pike,+Bethesda,+MD+20894/@38.9959508,-77.101021,17z/data=!3m1!4b1!4m5!3m4!1s0x89b7c95e25765ddb:0x19156f88b27635b8!8m2!3d38.9959508!4d-77.0988323">
+                        8600 Rockville Pike<br>
+                        Bethesda, MD 20894
+                    </a>
+                </p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/web_policies.html">
+                    Web Policies
+                </a><br>
+                <a href="https://www.nih.gov/institutes-nih/nih-office-director/office-communications-public-liaison/freedom-information-act-office">
+                    FOIA
+                </a><br>
+                <a href="https://www.hhs.gov/vulnerability-disclosure-policy/index.html">
+                    HHS Vulnerability Disclosure
+                </a></p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href=
+                      "https://support.nlm.nih.gov?from=https://www.nlm.nih.gov/">
+                    NLM Support Center
+                </a><br>
+                <a href="https://www.nlm.nih.gov/accessibility.html">
+                    Accessibility
+                </a><br>
+                <a href="https://www.nlm.nih.gov/careers/careers.html">
+                    Careers
+                </a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+              <p class="text-center"> <a href="https://www.nlm.nih.gov/">NLM</a> | <a href="https://www.nih.gov/">NIH</a> | <a href="https://www.hhs.gov/">HHS</a> | <a href="https://www.usa.gov/">USA.gov</a></p>
+            </div>
+        </div>
+    </div></div>
+<!--BEGIN QUALTRICS WEBSITE FEEDBACK SNIPPET-->
+<script type='text/javascript'>
+(function(){var g=function(e,h,f,g){
+this.get=function(a){for(var a=a+"=",c=document.cookie.split(";"),b=0,e=c.length;b<e;b++){for(var d=c[b];" "==d.charAt(0);)d=d.substring(1,d.length);if(0==d.indexOf(a))return d.substring(a.length,d.length)}return null};
+this.set=function(a,c){var b="",b=new Date;b.setTime(b.getTime()+6048E5);b="; expires="+b.toGMTString();document.cookie=a+"="+c+b+"; path=/; "};
+this.check=function(){var a=this.get(f);if(a)a=a.split(":");else if(100!=e)"v"==h&&(e=Math.random()>=e/100?0:100),a=[h,e,0],this.set(f,a.join(":"));else return!0;var c=a[1];if(100==c)return!0;switch(a[0]){case "v":return!1;case "r":return c=a[2]%Math.floor(100/c),a[2]++,this.set(f,a.join(":")),!c}return!0};
+this.go=function(){if(this.check()){var a=document.createElement("script");a.type="text/javascript";a.src=g;document.body&&document.body.appendChild(a)}};
+this.start=function(){var t=this;"complete"!==document.readyState?window.addEventListener?window.addEventListener("load",function(){t.go()},!1):window.attachEvent&&window.attachEvent("onload",function(){t.go()}):t.go()};};
+try{(new g(100,"r","QSI_S_ZN_cwOHfLkxRr4n4W2","https://zncwohflkxrr4n4w2-nlmenterprise.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_cwOHfLkxRr4n4W2")).start()}catch(i){}})();
+</script><div id='ZN_cwOHfLkxRr4n4W2'><!--DO NOT REMOVE-CONTENTS PLACED HERE--></div>
+<!--END WEBSITE FEEDBACK SNIPPET-->
+</footer>
+
+</body></html>
+

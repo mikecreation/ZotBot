@@ -1,0 +1,1580 @@
+<!doctype html><html lang="en"><head>
+
+<title>MeSH Browser</title>
+
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+
+<link rel="stylesheet" href="/public/css/font-awesome.css">
+<link rel="stylesheet" href="/public/css/bootstrap.css">
+<link rel="stylesheet" href="/public/css/mongoMesh.css">
+<link rel="icon" type="image/jpeg" href="/public/img/meshLogo.jpg">
+
+<base href="/">
+<script src="https://www.nlm.nih.gov/coop_all_uswds.js?v=1792068623661"></script>
+
+<script>
+
+    if (document.domain != "localhost")
+        document.domain = "nlm.nih.gov";
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        try {
+
+            if (coopmsg
+                && !/(^|; *)shutdown-banner=/.test(document.cookie))
+
+                document.querySelector(
+                    "body > div"
+                ).insertAdjacentHTML(
+                    "afterbegin",
+                    "<div id='shutdown-banner'><p>" + coopmsg
+                    + "</p><button type='button' role='button'"
+                    + " aria-label='Close' onclick='"
+                    + 'document.getElementById("shutdown-banner")'
+                    + '.remove(); document.cookie ='
+                    + ' "shutdown-banner=hidden; path=/";'
+                    + "'>Close</button></div>"
+                );
+
+        } catch (error) {
+            /* The "coopmsg" variable is only defined during a
+             * shutdown. */
+            if (!(error instanceof ReferenceError))
+                throw error;
+        }
+
+    });
+
+    var dcmsLinks = false,
+        dcmsParam = dcmsLinks
+                    ? function (sep) { return sep + "dcmsLinks=true"; }
+                    : function (   ) { return ""                    ; };
+
+</script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){
+        var _fullPath = window.location.href;
+        var urlParams = _fullPath.slice(_fullPath.indexOf('?') + 1).split('&');
+        var IsOpen = "false";
+        if (urlParams != undefined && urlParams != null && urlParams != "") {
+            IsOpen = urlParams[0].split("=")[1];
+        }
+
+        if (IsOpen == "false" || IsOpen == undefined || IsOpen != "true") {
+            w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        }
+    })(window,document,'script','dataLayer','GTM-5QZ7KJZ');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe sandbox src="https://www.googletagmanager.com/ns.html?id=GTM-5QZ7KJZ"
+                  height="0" width="0" style="display:none;visibility:hidden" title="googletagmanager"></iframe></noscript> 
+<!-- End Google Tag Manager (noscript) -->
+
+<script src="/public/js/elemUtil.js"></script>
+
+<script src="/public/js/record.js"  ></script>
+<script src="/public/js/treeDom.js" ></script>
+</head><body>
+
+<div>
+
+    <header class="NLMheader">
+        <a href="https://www.nlm.nih.gov/">
+          <img height="80" alt="NLM Logo"
+               src="https://www.nlm.nih.gov/images/NLM_White.png">
+        </a>
+        <!--<img class="starLogo"src="/public/img/NLM_Star.png" alt="NLM Star">-->
+    </header>
+<nav class="navbar navbar-default">
+
+  <div class="container-fluid">
+
+        <div class="navbar-header">
+
+          <button class="navbar-toggle collapsed" type="button"
+                  aria-expanded="false"
+                  onclick="toggleCollapse('bs-example-navbar-collapse-1')">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://www.nlm.nih.gov/mesh/">
+                <img id="meshNavbarLogo" src="/public/img/meshLogo.jpg" alt="MeSH Logo">
+            </a>
+        </div>
+
+        <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse"
+             aria-expanded="false">
+            <ul class="nav navbar-nav">
+                
+                <li><a href="/" id="mainSearchButton">Search</a></li>
+                <li><a href="/treeView">Tree View</a></li>
+                <li><a href="/MeSHonDemand">MeSH on Demand</a> </li> <!--Delete the Span Tags after  a few months, once MeSH on Demand is no longer new-->
+                <li><a href="https://meshb-prev.nlm.nih.gov/" target="_blank">MeSH 2027</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/mbinfo.html" target="_blank">About</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/meshsugg.html" target="_blank">Suggestions</a> </li>
+                <li><a href="https://support.nlm.nih.gov/support/create-case/" target="_blank">Contact Us</a></li>
+            </ul>
+
+        </div>
+
+  </div>
+
+</nav>
+
+</div>
+
+<div class="container">
+
+
+
+
+<h1>Technology, Dental <small>MeSH Descriptor            Data 2026</small></h1>
+
+<ul class="nav nav-tabs">
+    <li id="details" class="active"
+        onclick="switchTab([ 'details', 'detailsTabContent' ])">
+        <a class="fakeLink">Details</a></li>
+    
+        <li id="qualifiers"
+            onclick="switchTab([ 'qualifiers', 'qualifiersTabContent' ])">
+            <a class="fakeLink">Qualifiers</a></li>
+        <li id="trees" onclick="switchTab([ 'trees', 'treesTabContent' ])">
+            <a class="fakeLink">MeSH Tree Structures</a></li>
+    
+    <li id="concepts" onclick="switchTab([ 'concepts', 'conceptsTabContent' ])">
+        <a class="fakeLink">Concepts</a></li>
+</ul>
+
+
+
+<div class="tab-content"><br>
+<div id="detailsTabContent" class="tab-pane active">
+
+    <dl id="descriptorDetails_Technology,Dental"
+        class="dl-horizontal">
+
+        <dt>MeSH Heading      </dt>
+
+        <dd>Technology, Dental</dd>
+
+        
+                    <dt>Tree Number(s)</dt>
+                    
+                        <dd><a id="treeNumber_0" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >E06.912</a></dd>
+                    
+                        <dd><a id="treeNumber_1" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >H02.010.800</a></dd>
+                    
+                        <dd><a id="treeNumber_2" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >J01.897.724</a></dd>
+                    
+
+        <dt>Unique ID</dt><dd>D013674</dd>
+
+        <dt>RDF Unique Identifier</dt>
+        <dd><a href="https://id.nlm.nih.gov/mesh/D013674.html">
+            http://id.nlm.nih.gov/mesh/D013674
+        </a></dd>
+
+        
+                <span id="scopeNote">
+                    <dt>Scope Note</dt><dd>The field of dentistry involved in procedures for designing and constructing dental appliances. It includes also the application of any technology to the field of dentistry.</dd>
+                </span>
+            
+            <dt>Entry Version</dt><dd>TECHNOL DENT</dd>
+        
+                <dt>Entry Term(s)</dt>
+                <dd>
+                    Dental Technology
+                    
+                </dd>
+            <dt>NLM Classification #</dt>
+            <dd>WU 150</dd>
+        
+        
+
+
+        
+                <dt>Date Introduced</dt>
+                <dd>1966/01/01</dd>
+            
+                <dt>Last Updated</dt>
+                <dd>2008/07/08</dd>
+            
+
+    </dl>
+
+</div>
+
+<div id="qualifiersTabContent" class="tab-pane">
+
+    <dl class="dl-horizontal">
+
+        
+<br>
+
+        
+                <span id="allowableQualifiers"><dt>Allowable Qualifiers</dt><dd>
+                <ul class="list-unstyled">
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000145">
+                            classification
+                            (CL)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000191">
+                            economics
+                            (EC)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000193">
+                            education
+                            (ED)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000941">
+                            ethics
+                            (ES)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000266">
+                            history
+                            (HI)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000295">
+                            instrumentation
+                            (IS)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000331">
+                            legislation &amp; jurisprudence
+                            (LJ)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000379">
+                            methods
+                            (MT)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000458">
+                            organization &amp; administration
+                            (OG)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000592">
+                            standards
+                            (ST)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000706">
+                            statistics &amp; numerical data
+                            (SN)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000639">
+                            trends
+                            (TD)
+                        </a></li>
+                    
+                </ul></dd></span>
+            
+
+    </dl>
+
+</div><div id="treesTabContent" class="tab-pane">
+
+    <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_E06"
+           
+               href="/record/ui?ui=D003813"
+           
+        ><span>Dentistry [E06]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_E06_020"
+           
+               href="/record/ui?ui=D020906"
+           
+        ><span>Air Abrasion, Dental [E06.020]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_045"
+           
+               href="/record/ui?ui=D000766"
+           
+        ><span>Anesthesia, Dental [E06.045]</span>
+        </a>
+        
+            <i id="plus_Anesthesia_Dental" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Anesthesia_Dental" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_070"
+           
+               href="/record/ui?ui=D057087"
+           
+        ><span>Dental Atraumatic Restorative Treatment [E06.070]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_095"
+           
+               href="/record/ui?ui=D001840"
+           
+        ><span>Dental Bonding [E06.095]</span>
+        </a>
+        
+            <i id="plus_Dental_Bonding" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Dental_Bonding" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_170"
+           
+               href="/record/ui?ui=D003729"
+           
+        ><span>Dental Care [E06.170]</span>
+        </a>
+        
+            <i id="plus_Dental_Care" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Dental_Care" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_178"
+           
+               href="/record/ui?ui=D017005"
+           
+        ><span>Dental Debonding [E06.178]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_186"
+           
+               href="/record/ui?ui=D003748"
+           
+        ><span>Dental Equipment [E06.186]</span>
+        </a>
+        
+            <i id="plus_Dental_Equipment" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Dental_Equipment" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_208"
+           
+               href="/record/ui?ui=D003753"
+           
+        ><span>Dental Health Surveys [E06.208]</span>
+        </a>
+        
+            <i id="plus_Dental_Health_Surveys" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Dental_Health_Surveys" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_216"
+           
+               href="/record/ui?ui=D003755"
+           
+        ><span>Dental High-Speed Technique [E06.216]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_276"
+           
+               href="/record/ui?ui=D003766"
+           
+        ><span>Dental Occlusion [E06.276]</span>
+        </a>
+        
+            <i id="plus_Dental_Occlusion" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Dental_Occlusion" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_292"
+           
+               href="/record/ui?ui=D003772"
+           
+        ><span>Dental Pins [E06.292]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_298"
+           
+               href="/record/ui?ui=D003775"
+           
+        ><span>Dental Polishing [E06.298]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_308"
+           
+               href="/record/ui?ui=D003799"
+           
+        ><span>Dental Stress Analysis [E06.308]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_342"
+           
+               href="/record/ui?ui=D003945"
+           
+        ><span>Diagnosis, Oral [E06.342]</span>
+        </a>
+        
+            <i id="plus_Diagnosis_Oral" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Diagnosis_Oral" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_377"
+           
+               href="/record/ui?ui=D004570"
+           
+        ><span>Electrogalvanism, Intraoral [E06.377]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_397"
+           
+               href="/record/ui?ui=D004708"
+           
+        ><span>Endodontics [E06.397]</span>
+        </a>
+        
+            <i id="plus_Endodontics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Endodontics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_420"
+           
+               href="/record/ui?ui=D004955"
+           
+        ><span>Esthetics, Dental [E06.420]</span>
+        </a>
+        
+            <i id="plus_Esthetics_Dental" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Esthetics_Dental" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_470"
+           
+               href="/record/ui?ui=D019552"
+           
+        ><span>Infection Control, Dental [E06.470]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_520"
+           
+               href="/record/ui?ui=D007574"
+           
+        ><span>Jaw Relation Record [E06.520]</span>
+        </a>
+        
+            <i id="plus_Jaw_Relation_Record" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Jaw_Relation_Record" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_570"
+           
+               href="/record/ui?ui=D003765"
+           
+        ><span>Models, Dental [E06.570]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_584"
+           
+               href="/record/ui?ui=D009065"
+           
+        ><span>Mouth Rehabilitation [E06.584]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_603"
+           
+               href="/record/ui?ui=D020247"
+           
+        ><span>Myofunctional Therapy [E06.603]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_623"
+           
+               href="/record/ui?ui=D009811"
+           
+        ><span>Odontometry [E06.623]</span>
+        </a>
+        
+            <i id="plus_Odontometry" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Odontometry" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_640"
+           
+               href="/record/ui?ui=D019242"
+           
+        ><span>Oral Medicine [E06.640]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_645"
+           
+               href="/record/ui?ui=D019647"
+           
+        ><span>Oral Surgical Procedures [E06.645]</span>
+        </a>
+        
+            <i id="plus_Oral_Surgical_Procedures" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Oral_Surgical_Procedures" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_658"
+           
+               href="/record/ui?ui=D009970"
+           
+        ><span>Orthodontics [E06.658]</span>
+        </a>
+        
+            <i id="plus_Orthodontics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Orthodontics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_685"
+           
+               href="/record/ui?ui=D010339"
+           
+        ><span>Pathology, Oral [E06.685]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_721"
+           
+               href="/record/ui?ui=D010517"
+           
+        ><span>Periodontics [E06.721]</span>
+        </a>
+        
+            <i id="plus_Periodontics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Periodontics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_761"
+           
+               href="/record/ui?ui=D011313"
+           
+        ><span>Preventive Dentistry [E06.761]</span>
+        </a>
+        
+            <i id="plus_Preventive_Dentistry" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Preventive_Dentistry" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_780"
+           
+               href="/record/ui?ui=D011476"
+           
+        ><span>Prosthodontics [E06.780]</span>
+        </a>
+        
+            <i id="plus_Prosthodontics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Prosthodontics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_892"
+           
+               href="/record/ui?ui=D013515"
+           
+        ><span>Surgery, Oral [E06.892]</span>
+        </a>
+        
+            <i id="plus_Surgery_Oral" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Surgery_Oral" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_912"
+           
+               href="/record/ui?ui=D013674"
+           
+        ><strong>Technology, Dental [E06.912]</strong>
+        </a>
+        
+            <i id="plus_Technology_Dental" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Technology_Dental" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_E06_912_115"
+           
+               href="/record/ui?ui=D003735"
+           
+        ><span>Dental Casting Technique [E06.912.115]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_912_130"
+           
+               href="/record/ui?ui=D003761"
+           
+        ><span>Dental Impression Technique [E06.912.130]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_912_145"
+           
+               href="/record/ui?ui=D017267"
+           
+        ><span>Dental Prosthesis Design [E06.912.145]</span>
+        </a>
+        
+            <i id="plus_Dental_Prosthesis_Design" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Dental_Prosthesis_Design" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_912_160"
+           
+               href="/record/ui?ui=D017269"
+           
+        ><span>Dental Prosthesis Repair [E06.912.160]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_912_190"
+           
+               href="/record/ui?ui=D012994"
+           
+        ><span>Dental Soldering [E06.912.190]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_912_250"
+           
+               href="/record/ui?ui=D003779"
+           
+        ><span>Denture Design [E06.912.250]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_912_275"
+           
+               href="/record/ui?ui=D003821"
+           
+        ><span>Denture Identification Marking [E06.912.275]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_912_280"
+           
+               href="/record/ui?ui=D003823"
+           
+        ><span>Denture Rebasing [E06.912.280]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_912_285"
+           
+               href="/record/ui?ui=D003780"
+           
+        ><span>Denture Repair [E06.912.285]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_912_480"
+           
+               href="/record/ui?ui=D060745"
+           
+        ><span>Gingival Retraction Techniques [E06.912.480]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_912_675"
+           
+               href="/record/ui?ui=D016382"
+           
+        ><span>Orthodontic Appliance Design [E06.912.675]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_931"
+           
+               href="/record/ui?ui=D019246"
+           
+        ><span>Tooth Preparation [E06.931]</span>
+        </a>
+        
+            <i id="plus_Tooth_Preparation" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Tooth_Preparation" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E06_950"
+           
+               href="/record/ui?ui=D014089"
+           
+        ><span>Tooth Remineralization [E06.950]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_H02"
+           
+               href="/record/ui?ui=D006281"
+           
+        ><span>Health Occupations [H02]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_H02_010"
+           
+               href="/record/ui?ui=D016390"
+           
+        ><span>Allied Health Occupations [H02.010]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_H02_010_150"
+           
+               href="/record/ui?ui=D001298"
+           
+        ><span>Audiology [H02.010.150]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_H02_010_450"
+           
+               href="/record/ui?ui=D013677"
+           
+        ><span>Medical Laboratory Science [H02.010.450]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_H02_010_500"
+           
+               href="/record/ui?ui=D009788"
+           
+        ><span>Occupational Therapy [H02.010.500]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_H02_010_563"
+           
+               href="/record/ui?ui=D000094782"
+           
+        ><span>Paramedicine [H02.010.563]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_H02_010_625"
+           
+               href="/record/ui?ui=D026761"
+           
+        ><span>Physical Therapy Specialty [H02.010.625]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_H02_010_750"
+           
+               href="/record/ui?ui=D013066"
+           
+        ><span>Speech-Language Pathology [H02.010.750]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_H02_010_800"
+           
+               href="/record/ui?ui=D013674"
+           
+        ><strong>Technology, Dental [H02.010.800]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_1_node_H02_010_850"
+           
+               href="/record/ui?ui=D013679"
+           
+        ><span>Technology, Radiologic [H02.010.850]</span>
+        </a>
+        
+            <i id="plus_Technology_Radiologic" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Technology_Radiologic" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_J01"
+           
+               href="/record/ui?ui=D013676"
+           
+        ><span>Technology, Industry, and Agriculture [J01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_J01_897"
+           
+               href="/record/ui?ui=D013672"
+           
+        ><span>Technology [J01.897]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_J01_897_052"
+           
+               href="/record/ui?ui=D000067568"
+           
+        ><span>Culturally Appropriate Technology [J01.897.052]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_J01_897_104"
+           
+               href="/record/ui?ui=D001331"
+           
+        ><span>Automation [J01.897.104]</span>
+        </a>
+        
+            <i id="plus_Automation" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Automation" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_J01_897_120"
+           
+               href="/record/ui?ui=D001709"
+           
+        ><span>Biotechnology [J01.897.120]</span>
+        </a>
+        
+            <i id="plus_Biotechnology" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Biotechnology" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_J01_897_160"
+           
+               href="/record/ui?ui=D000082222"
+           
+        ><span>Digital Technology [J01.897.160]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_J01_897_200"
+           
+               href="/record/ui?ui=D000079203"
+           
+        ><span>Disruptive Technology [J01.897.200]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_J01_897_280"
+           
+               href="/record/ui?ui=D018961"
+           
+        ><span>Educational Technology [J01.897.280]</span>
+        </a>
+        
+            <i id="plus_Educational_Technology" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Educational_Technology" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_J01_897_360"
+           
+               href="/record/ui?ui=D055772"
+           
+        ><span>Green Chemistry Technology [J01.897.360]</span>
+        </a>
+        
+            <i id="plus_Green_Chemistry_Technology" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Green_Chemistry_Technology" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_J01_897_380"
+           
+               href="/record/ui?ui=D000089862"
+           
+        ><span>Haptic Technology [J01.897.380]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_J01_897_400"
+           
+               href="/record/ui?ui=D062069"
+           
+        ><span>Inventions [J01.897.400]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_J01_897_441"
+           
+               href="/record/ui?ui=D008328"
+           
+        ><span>Man-Machine Systems [J01.897.441]</span>
+        </a>
+        
+            <i id="plus_Man-Machine_Systems" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Man-Machine_Systems" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_J01_897_461"
+           
+               href="/record/ui?ui=D000074266"
+           
+        ><span>Materials Science [J01.897.461]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_J01_897_480"
+           
+               href="/record/ui?ui=D013677"
+           
+        ><span>Medical Laboratory Science [J01.897.480]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_J01_897_520"
+           
+               href="/record/ui?ui=D008904"
+           
+        ><span>Miniaturization [J01.897.520]</span>
+        </a>
+        
+            <i id="plus_Miniaturization" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Miniaturization" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_J01_897_564"
+           
+               href="/record/ui?ui=D066330"
+           
+        ><span>Printing, Three-Dimensional [J01.897.564]</span>
+        </a>
+        
+            <i id="plus_Printing_Three-Dimensional" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Printing_Three-Dimensional" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_J01_897_608"
+           
+               href="/record/ui?ui=D011786"
+           
+        ><span>Quality Control [J01.897.608]</span>
+        </a>
+        
+            <i id="plus_Quality_Control" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Quality_Control" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_J01_897_724"
+           
+               href="/record/ui?ui=D013674"
+           
+        ><strong>Technology, Dental [J01.897.724]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_2_node_J01_897_836"
+           
+               href="/record/ui?ui=D013678"
+           
+        ><span>Technology, Pharmaceutical [J01.897.836]</span>
+        </a>
+        
+            <i id="plus_Technology_Pharmaceutical" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Technology_Pharmaceutical" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_J01_897_891"
+           
+               href="/record/ui?ui=D013679"
+           
+        ><span>Technology, Radiologic [J01.897.891]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_J01_897_900"
+           
+               href="/record/ui?ui=D018581"
+           
+        ><span>Technology Transfer [J01.897.900]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+
+</div>
+
+<div id="conceptsTabContent" class="tab-pane">
+
+    <button id="ExpandAll" class="btn btn-default btn-sm pull-right"
+            onclick="toggleConcepts()">
+        <span id="expandConcepts"                        >  Expand All</span>
+        <span id="collapseConcepts" style="display: none">Collapse All</span>
+    </button>
+
+    
+
+        <div>
+        <span id="Nightwatch_cp_0_0"
+              onclick="toggleCollapse('cp_0_0', 'Nightwatch_cp_0_0')">
+        <a class="fakeLink"><b>
+            Technology, Dental
+            <i>Preferred</i>
+        </b></a></span>
+
+        <div id="cp_0_0" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0021112</dd>
+
+            
+                <dt>Scope Note</dt><dd>The field of dentistry involved in procedures for designing and constructing dental appliances. It includes also the application of any technology to the field of dentistry.</dd>
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_0_0"
+                      onclick="toggleCollapse('termName_0_0',
+                                              'Nightwatch_termName_0_0')">
+                    <a class="fakeLink"><b>Technology, Dental</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_0_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T040197<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>01/01/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1966)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_1"
+                      onclick="toggleCollapse('termName_0_1',
+                                              'Nightwatch_termName_0_1')">
+                    <a class="fakeLink"><b>Dental Technology</b></a></span>
+
+                
+
+                <div id="termName_0_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T040196<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>01/11/1990<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1991)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+</div></div>
+
+<small class="pull-right">
+    page delivered in 0.124s
+</small>
+
+</div>
+
+<footer class="footer">
+    <div class="container-fluid"><div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/socialmedia/index.html">
+                    Connect with NLM
+                </a></p>
+                <ul class="list-inline">
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://twitter.com/NLM_NIH">
+                        <img src="https://www.nlm.nih.gov/images/Twitter_W.svg"
+                             alt="Twitter">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.facebook.com/nationallibraryofmedicine"
+                    ><img src="https://www.nlm.nih.gov/images/Facebook_W.svg"
+                          alt="Facebook">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.youtube.com/user/NLMNIH">
+                        <img src="https://www.nlm.nih.gov/images/YouTube_W.svg"
+                             alt="You Tube">
+                    </a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p>National Library of Medicine<br>
+                    <a href="https://www.google.com/maps/place/8600+Rockville+Pike,+Bethesda,+MD+20894/@38.9959508,-77.101021,17z/data=!3m1!4b1!4m5!3m4!1s0x89b7c95e25765ddb:0x19156f88b27635b8!8m2!3d38.9959508!4d-77.0988323">
+                        8600 Rockville Pike<br>
+                        Bethesda, MD 20894
+                    </a>
+                </p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/web_policies.html">
+                    Web Policies
+                </a><br>
+                <a href="https://www.nih.gov/institutes-nih/nih-office-director/office-communications-public-liaison/freedom-information-act-office">
+                    FOIA
+                </a><br>
+                <a href="https://www.hhs.gov/vulnerability-disclosure-policy/index.html">
+                    HHS Vulnerability Disclosure
+                </a></p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href=
+                      "https://support.nlm.nih.gov?from=https://www.nlm.nih.gov/">
+                    NLM Support Center
+                </a><br>
+                <a href="https://www.nlm.nih.gov/accessibility.html">
+                    Accessibility
+                </a><br>
+                <a href="https://www.nlm.nih.gov/careers/careers.html">
+                    Careers
+                </a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+              <p class="text-center"> <a href="https://www.nlm.nih.gov/">NLM</a> | <a href="https://www.nih.gov/">NIH</a> | <a href="https://www.hhs.gov/">HHS</a> | <a href="https://www.usa.gov/">USA.gov</a></p>
+            </div>
+        </div>
+    </div></div>
+<!--BEGIN QUALTRICS WEBSITE FEEDBACK SNIPPET-->
+<script type='text/javascript'>
+(function(){var g=function(e,h,f,g){
+this.get=function(a){for(var a=a+"=",c=document.cookie.split(";"),b=0,e=c.length;b<e;b++){for(var d=c[b];" "==d.charAt(0);)d=d.substring(1,d.length);if(0==d.indexOf(a))return d.substring(a.length,d.length)}return null};
+this.set=function(a,c){var b="",b=new Date;b.setTime(b.getTime()+6048E5);b="; expires="+b.toGMTString();document.cookie=a+"="+c+b+"; path=/; "};
+this.check=function(){var a=this.get(f);if(a)a=a.split(":");else if(100!=e)"v"==h&&(e=Math.random()>=e/100?0:100),a=[h,e,0],this.set(f,a.join(":"));else return!0;var c=a[1];if(100==c)return!0;switch(a[0]){case "v":return!1;case "r":return c=a[2]%Math.floor(100/c),a[2]++,this.set(f,a.join(":")),!c}return!0};
+this.go=function(){if(this.check()){var a=document.createElement("script");a.type="text/javascript";a.src=g;document.body&&document.body.appendChild(a)}};
+this.start=function(){var t=this;"complete"!==document.readyState?window.addEventListener?window.addEventListener("load",function(){t.go()},!1):window.attachEvent&&window.attachEvent("onload",function(){t.go()}):t.go()};};
+try{(new g(100,"r","QSI_S_ZN_cwOHfLkxRr4n4W2","https://zncwohflkxrr4n4w2-nlmenterprise.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_cwOHfLkxRr4n4W2")).start()}catch(i){}})();
+</script><div id='ZN_cwOHfLkxRr4n4W2'><!--DO NOT REMOVE-CONTENTS PLACED HERE--></div>
+<!--END WEBSITE FEEDBACK SNIPPET-->
+</footer>
+
+</body></html>
+

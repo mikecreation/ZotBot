@@ -1,0 +1,1353 @@
+<!doctype html><html lang="en"><head>
+
+<title>MeSH Browser</title>
+
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+
+<link rel="stylesheet" href="/public/css/font-awesome.css">
+<link rel="stylesheet" href="/public/css/bootstrap.css">
+<link rel="stylesheet" href="/public/css/mongoMesh.css">
+<link rel="icon" type="image/jpeg" href="/public/img/meshLogo.jpg">
+
+<base href="/">
+<script src="https://www.nlm.nih.gov/coop_all_uswds.js?v=1792068635942"></script>
+
+<script>
+
+    if (document.domain != "localhost")
+        document.domain = "nlm.nih.gov";
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        try {
+
+            if (coopmsg
+                && !/(^|; *)shutdown-banner=/.test(document.cookie))
+
+                document.querySelector(
+                    "body > div"
+                ).insertAdjacentHTML(
+                    "afterbegin",
+                    "<div id='shutdown-banner'><p>" + coopmsg
+                    + "</p><button type='button' role='button'"
+                    + " aria-label='Close' onclick='"
+                    + 'document.getElementById("shutdown-banner")'
+                    + '.remove(); document.cookie ='
+                    + ' "shutdown-banner=hidden; path=/";'
+                    + "'>Close</button></div>"
+                );
+
+        } catch (error) {
+            /* The "coopmsg" variable is only defined during a
+             * shutdown. */
+            if (!(error instanceof ReferenceError))
+                throw error;
+        }
+
+    });
+
+    var dcmsLinks = false,
+        dcmsParam = dcmsLinks
+                    ? function (sep) { return sep + "dcmsLinks=true"; }
+                    : function (   ) { return ""                    ; };
+
+</script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){
+        var _fullPath = window.location.href;
+        var urlParams = _fullPath.slice(_fullPath.indexOf('?') + 1).split('&');
+        var IsOpen = "false";
+        if (urlParams != undefined && urlParams != null && urlParams != "") {
+            IsOpen = urlParams[0].split("=")[1];
+        }
+
+        if (IsOpen == "false" || IsOpen == undefined || IsOpen != "true") {
+            w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        }
+    })(window,document,'script','dataLayer','GTM-5QZ7KJZ');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe sandbox src="https://www.googletagmanager.com/ns.html?id=GTM-5QZ7KJZ"
+                  height="0" width="0" style="display:none;visibility:hidden" title="googletagmanager"></iframe></noscript> 
+<!-- End Google Tag Manager (noscript) -->
+
+<script src="/public/js/elemUtil.js"></script>
+
+<script src="/public/js/record.js"  ></script>
+<script src="/public/js/treeDom.js" ></script>
+</head><body>
+
+<div>
+
+    <header class="NLMheader">
+        <a href="https://www.nlm.nih.gov/">
+          <img height="80" alt="NLM Logo"
+               src="https://www.nlm.nih.gov/images/NLM_White.png">
+        </a>
+        <!--<img class="starLogo"src="/public/img/NLM_Star.png" alt="NLM Star">-->
+    </header>
+<nav class="navbar navbar-default">
+
+  <div class="container-fluid">
+
+        <div class="navbar-header">
+
+          <button class="navbar-toggle collapsed" type="button"
+                  aria-expanded="false"
+                  onclick="toggleCollapse('bs-example-navbar-collapse-1')">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://www.nlm.nih.gov/mesh/">
+                <img id="meshNavbarLogo" src="/public/img/meshLogo.jpg" alt="MeSH Logo">
+            </a>
+        </div>
+
+        <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse"
+             aria-expanded="false">
+            <ul class="nav navbar-nav">
+                
+                <li><a href="/" id="mainSearchButton">Search</a></li>
+                <li><a href="/treeView">Tree View</a></li>
+                <li><a href="/MeSHonDemand">MeSH on Demand</a> </li> <!--Delete the Span Tags after  a few months, once MeSH on Demand is no longer new-->
+                <li><a href="https://meshb-prev.nlm.nih.gov/" target="_blank">MeSH 2027</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/mbinfo.html" target="_blank">About</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/meshsugg.html" target="_blank">Suggestions</a> </li>
+                <li><a href="https://support.nlm.nih.gov/support/create-case/" target="_blank">Contact Us</a></li>
+            </ul>
+
+        </div>
+
+  </div>
+
+</nav>
+
+</div>
+
+<div class="container">
+
+
+
+
+<h1>Robotics <small>MeSH Descriptor            Data 2026</small></h1>
+
+<ul class="nav nav-tabs">
+    <li id="details" class="active"
+        onclick="switchTab([ 'details', 'detailsTabContent' ])">
+        <a class="fakeLink">Details</a></li>
+    
+        <li id="qualifiers"
+            onclick="switchTab([ 'qualifiers', 'qualifiersTabContent' ])">
+            <a class="fakeLink">Qualifiers</a></li>
+        <li id="trees" onclick="switchTab([ 'trees', 'treesTabContent' ])">
+            <a class="fakeLink">MeSH Tree Structures</a></li>
+    
+    <li id="concepts" onclick="switchTab([ 'concepts', 'conceptsTabContent' ])">
+        <a class="fakeLink">Concepts</a></li>
+</ul>
+
+
+
+<div class="tab-content"><br>
+<div id="detailsTabContent" class="tab-pane active">
+
+    <dl id="descriptorDetails_Robotics"
+        class="dl-horizontal">
+
+        <dt>MeSH Heading      </dt>
+
+        <dd>Robotics</dd>
+
+        
+                    <dt>Tree Number(s)</dt>
+                    
+                        <dd><a id="treeNumber_0" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >H01.671.293.643</a></dd>
+                    
+                        <dd><a id="treeNumber_1" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >J01.897.104.834</a></dd>
+                    
+                        <dd><a id="treeNumber_2" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >L01.224.050.375.630</a></dd>
+                    
+
+        <dt>Unique ID</dt><dd>D012371</dd>
+
+        <dt>RDF Unique Identifier</dt>
+        <dd><a href="https://id.nlm.nih.gov/mesh/D012371.html">
+            http://id.nlm.nih.gov/mesh/D012371
+        </a></dd>
+
+        
+                <span id="scopeNote">
+                    <dt>Scope Note</dt><dd>The application of electronic, computerized control systems to mechanical devices designed to perform human functions. Formerly restricted to industry, but nowadays applied to artificial organs controlled by bionic (bioelectronic) devices, like automated insulin pumps and other prostheses.</dd>
+                </span>
+            
+                <dt>Entry Term(s)</dt>
+                <dd>
+                    Companion Robots
+                    
+                </dd><dd>
+                    Humanoid Robots
+                    
+                </dd><dd>
+                    Remote Operations (Robotics)
+                    
+                </dd><dd>
+                    Social Robots
+                    
+                </dd><dd>
+                    Socially Assistive Robots
+                    
+                </dd><dd>
+                    Soft Robotics
+                    
+                </dd><dd>
+                    Telerobotics
+                    
+                </dd>
+                <dt>Previous Indexing</dt>
+                
+                    <dd>Automation (1966-1986)</dd>
+                
+                    <dd>Bionics (1966-1986)</dd>
+                
+                <dt>See Also</dt>
+                
+                    <dd><a id="seeAlso_ExoskeletonDevice"
+                           href="/record/ui?ui=D000067190"
+                        >Exoskeleton Device</a></dd>
+                
+                    <dd><a id="seeAlso_RoboticSurgicalProcedures"
+                           href="/record/ui?ui=D065287"
+                        >Robotic Surgical Procedures</a></dd>
+                
+            <dt>Public MeSH Note</dt><dd>87; was see AUTOMATION 1963-86</dd>
+        
+            <dt>Online Note</dt><dd>search AUTOMATION 1966-86</dd>
+        
+            <dt>History Note</dt><dd>87; was see AUTOMATION 1963-86</dd>
+        
+        
+
+
+        
+                <dt>Date Introduced</dt>
+                <dd>1987/01/01</dd>
+            
+                <dt>Last Updated</dt>
+                <dd>2023/02/26</dd>
+            
+
+    </dl>
+
+</div>
+
+<div id="qualifiersTabContent" class="tab-pane">
+
+    <dl class="dl-horizontal">
+
+        
+<br>
+
+        
+                <span id="allowableQualifiers"><dt>Allowable Qualifiers</dt><dd>
+                <ul class="list-unstyled">
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000145">
+                            classification
+                            (CL)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000191">
+                            economics
+                            (EC)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000193">
+                            education
+                            (ED)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000941">
+                            ethics
+                            (ES)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000266">
+                            history
+                            (HI)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000295">
+                            instrumentation
+                            (IS)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000331">
+                            legislation &amp; jurisprudence
+                            (LJ)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000379">
+                            methods
+                            (MT)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000458">
+                            organization &amp; administration
+                            (OG)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000592">
+                            standards
+                            (ST)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000706">
+                            statistics &amp; numerical data
+                            (SN)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000639">
+                            trends
+                            (TD)
+                        </a></li>
+                    
+                </ul></dd></span>
+            
+
+    </dl>
+
+</div><div id="treesTabContent" class="tab-pane">
+
+    <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_H01"
+           
+               href="/record/ui?ui=D010811"
+           
+        ><span>Natural Science Disciplines [H01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_H01_671"
+           
+               href="/record/ui?ui=D010825"
+           
+        ><span>Physics [H01.671]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_H01_671_293"
+           
+               href="/record/ui?ui=D004581"
+           
+        ><span>Electronics [H01.671.293]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_H01_671_293_159"
+           
+               href="/record/ui?ui=D001701"
+           
+        ><span>Bionics [H01.671.293.159]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H01_671_293_239"
+           
+               href="/record/ui?ui=D000082222"
+           
+        ><span>Digital Technology [H01.671.293.239]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H01_671_293_319"
+           
+               href="/record/ui?ui=D004582"
+           
+        ><span>Electronics, Medical [H01.671.293.319]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_H01_671_293_643"
+           
+               href="/record/ui?ui=D012371"
+           
+        ><strong>Robotics [H01.671.293.643]</strong>
+        </a>
+        
+            <i id="plus_Robotics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Robotics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_H01_671_293_643_375"
+           
+               href="/record/ui?ui=D000098402"
+           
+        ><span>Autonomous Robots [H01.671.293.643.375]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_J01"
+           
+               href="/record/ui?ui=D013676"
+           
+        ><span>Technology, Industry, and Agriculture [J01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_J01_897"
+           
+               href="/record/ui?ui=D013672"
+           
+        ><span>Technology [J01.897]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_J01_897_104"
+           
+               href="/record/ui?ui=D001331"
+           
+        ><span>Automation [J01.897.104]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_J01_897_104_416"
+           
+               href="/record/ui?ui=D057205"
+           
+        ><span>Automation, Laboratory [J01.897.104.416]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_J01_897_104_625"
+           
+               href="/record/ui?ui=D000098451"
+           
+        ><span>Multiple-Instance Learning Algorithms [J01.897.104.625]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_J01_897_104_834"
+           
+               href="/record/ui?ui=D012371"
+           
+        ><strong>Robotics [J01.897.104.834]</strong>
+        </a>
+        
+            <i id="plus_Robotics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Robotics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_J01_897_104_834_188"
+           
+               href="/record/ui?ui=D000098402"
+           
+        ><span>Autonomous Robots [J01.897.104.834.188]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_J01_897_104_834_500"
+           
+               href="/record/ui?ui=D065287"
+           
+        ><span>Robotic Surgical Procedures [J01.897.104.834.500]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_L01"
+           
+               href="/record/ui?ui=D007254"
+           
+        ><span>Information Science [L01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_L01_224"
+           
+               href="/record/ui?ui=D003205"
+           
+        ><span>Computing Methodologies [L01.224]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_L01_224_050"
+           
+               href="/record/ui?ui=D000465"
+           
+        ><span>Algorithms [L01.224.050]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_L01_224_050_375"
+           
+               href="/record/ui?ui=D001185"
+           
+        ><span>Artificial Intelligence [L01.224.050.375]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_L01_224_050_375_095"
+           
+               href="/record/ui?ui=D000067508"
+           
+        ><span>Computer Heuristics [L01.224.050.375.095]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_L01_224_050_375_190"
+           
+               href="/record/ui?ui=D005103"
+           
+        ><span>Expert Systems [L01.224.050.375.190]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_L01_224_050_375_250"
+           
+               href="/record/ui?ui=D017143"
+           
+        ><span>Fuzzy Logic [L01.224.050.375.250]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_L01_224_050_375_308"
+           
+               href="/record/ui?ui=D000098842"
+           
+        ><span>Generative Artificial Intelligence [L01.224.050.375.308]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_L01_224_050_375_365"
+           
+               href="/record/ui?ui=D000098403"
+           
+        ><span>Intelligent Systems [L01.224.050.375.365]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_L01_224_050_375_480"
+           
+               href="/record/ui?ui=D051188"
+           
+        ><span>Knowledge Bases [L01.224.050.375.480]</span>
+        </a>
+        
+            <i id="plus_Knowledge_Bases" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Knowledge_Bases" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_L01_224_050_375_530"
+           
+               href="/record/ui?ui=D000069550"
+           
+        ><span>Machine Learning [L01.224.050.375.530]</span>
+        </a>
+        
+            <i id="plus_Machine_Learning" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Machine_Learning" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_L01_224_050_375_580"
+           
+               href="/record/ui?ui=D009323"
+           
+        ><span>Natural Language Processing [L01.224.050.375.580]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_L01_224_050_375_605"
+           
+               href="/record/ui?ui=D016571"
+           
+        ><span>Neural Networks, Computer [L01.224.050.375.605]</span>
+        </a>
+        
+            <i id="plus_Neural_Networks_Computer" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Neural_Networks_Computer" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_L01_224_050_375_612"
+           
+               href="/record/ui?ui=D000098413"
+           
+        ><span>Particle Swarm Optimization [L01.224.050.375.612]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_L01_224_050_375_615"
+           
+               href="/record/ui?ui=D000098414"
+           
+        ><span>Pattern Analysis, Machine [L01.224.050.375.615]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_L01_224_050_375_618"
+           
+               href="/record/ui?ui=D000098411"
+           
+        ><span>Prediction Methods, Machine [L01.224.050.375.618]</span>
+        </a>
+        
+            <i id="plus_Prediction_Methods_Machine" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Prediction_Methods_Machine" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_L01_224_050_375_630"
+           
+               href="/record/ui?ui=D012371"
+           
+        ><strong>Robotics [L01.224.050.375.630]</strong>
+        </a>
+        
+            <i id="plus_Robotics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Robotics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_L01_224_050_375_630_375"
+           
+               href="/record/ui?ui=D000098402"
+           
+        ><span>Autonomous Robots [L01.224.050.375.630.375]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_2_node_L01_224_050_375_815"
+           
+               href="/record/ui?ui=D000090042"
+           
+        ><span>Sentiment Analysis [L01.224.050.375.815]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+
+</div>
+
+<div id="conceptsTabContent" class="tab-pane">
+
+    <button id="ExpandAll" class="btn btn-default btn-sm pull-right"
+            onclick="toggleConcepts()">
+        <span id="expandConcepts"                        >  Expand All</span>
+        <span id="collapseConcepts" style="display: none">Collapse All</span>
+    </button>
+
+    
+
+        <div>
+        <span id="Nightwatch_cp_0_0"
+              onclick="toggleCollapse('cp_0_0', 'Nightwatch_cp_0_0')">
+        <a class="fakeLink"><b>
+            Robotics
+            <i>Preferred</i>
+        </b></a></span>
+
+        <div id="cp_0_0" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0019230</dd>
+
+            
+                <dt>Scope Note</dt><dd>The application of electronic, computerized control systems to mechanical devices designed to perform human functions. Formerly restricted to industry, but nowadays applied to artificial organs controlled by bionic (bioelectronic) devices, like automated insulin pumps and other prostheses.</dd>
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_0_0"
+                      onclick="toggleCollapse('termName_0_0',
+                                              'Nightwatch_termName_0_0')">
+                    <a class="fakeLink"><b>Robotics</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_0_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T036815<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>01/01/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1987)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_1_1"
+              onclick="toggleCollapse('cp_1_1', 'Nightwatch_cp_1_1')">
+        <a class="fakeLink"><b>
+            Remote Operations (Robotics)
+            <i>Related</i>
+        </b></a></span>
+
+        <div id="cp_1_1" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0019231</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_1_0"
+                      onclick="toggleCollapse('termName_1_0',
+                                              'Nightwatch_termName_1_0')">
+                    <a class="fakeLink"><b>Remote Operations (Robotics)</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_1_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T036816<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>03/05/1996<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1997)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_2_2"
+              onclick="toggleCollapse('cp_2_2', 'Nightwatch_cp_2_2')">
+        <a class="fakeLink"><b>
+            Telerobotics
+            <i>Narrower</i>
+        </b></a></span>
+
+        <div id="cp_2_2" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0019232</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_2_0"
+                      onclick="toggleCollapse('termName_2_0',
+                                              'Nightwatch_termName_2_0')">
+                    <a class="fakeLink"><b>Telerobotics</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_2_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T036817<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>03/05/1996<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1997)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_3_3"
+              onclick="toggleCollapse('cp_3_3', 'Nightwatch_cp_3_3')">
+        <a class="fakeLink"><b>
+            Soft Robotics
+            <i>Narrower</i>
+        </b></a></span>
+
+        <div id="cp_3_3" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M000606427</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_3_0"
+                      onclick="toggleCollapse('termName_3_0',
+                                              'Nightwatch_termName_3_0')">
+                    <a class="fakeLink"><b>Soft Robotics</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_3_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T000881255<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>06/03/2015<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2016)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_4_4"
+              onclick="toggleCollapse('cp_4_4', 'Nightwatch_cp_4_4')">
+        <a class="fakeLink"><b>
+            Socially Assistive Robots
+            <i>Related</i>
+        </b></a></span>
+
+        <div id="cp_4_4" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M000751365</dd>
+
+            
+                <dt>Scope Note</dt><dd>Assistive devices for persons with limited mobility and other reduced ability.</dd>
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_4_0"
+                      onclick="toggleCollapse('termName_4_0',
+                                              'Nightwatch_termName_4_0')">
+                    <a class="fakeLink"><b>Socially Assistive Robots</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_4_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T001110465<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>08/22/2021<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2023)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_4_1"
+                      onclick="toggleCollapse('termName_4_1',
+                                              'Nightwatch_termName_4_1')">
+                    <a class="fakeLink"><b>Social Robots</b></a></span>
+
+                
+
+                <div id="termName_4_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T001110471<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>08/23/2021<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2023)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_5_5"
+              onclick="toggleCollapse('cp_5_5', 'Nightwatch_cp_5_5')">
+        <a class="fakeLink"><b>
+            Humanoid Robots
+            <i>Narrower</i>
+        </b></a></span>
+
+        <div id="cp_5_5" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M000759064</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_5_0"
+                      onclick="toggleCollapse('termName_5_0',
+                                              'Nightwatch_termName_5_0')">
+                    <a class="fakeLink"><b>Humanoid Robots</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_5_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T001125630<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>10/18/2022<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2024)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_6_6"
+              onclick="toggleCollapse('cp_6_6', 'Nightwatch_cp_6_6')">
+        <a class="fakeLink"><b>
+            Companion Robots
+            <i>Related</i>
+        </b></a></span>
+
+        <div id="cp_6_6" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M000759065</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_6_0"
+                      onclick="toggleCollapse('termName_6_0',
+                                              'Nightwatch_termName_6_0')">
+                    <a class="fakeLink"><b>Companion Robots</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_6_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T001111572<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>09/13/2021<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2023)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+</div></div>
+
+<small class="pull-right">
+    page delivered in 0.12s
+</small>
+
+</div>
+
+<footer class="footer">
+    <div class="container-fluid"><div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/socialmedia/index.html">
+                    Connect with NLM
+                </a></p>
+                <ul class="list-inline">
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://twitter.com/NLM_NIH">
+                        <img src="https://www.nlm.nih.gov/images/Twitter_W.svg"
+                             alt="Twitter">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.facebook.com/nationallibraryofmedicine"
+                    ><img src="https://www.nlm.nih.gov/images/Facebook_W.svg"
+                          alt="Facebook">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.youtube.com/user/NLMNIH">
+                        <img src="https://www.nlm.nih.gov/images/YouTube_W.svg"
+                             alt="You Tube">
+                    </a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p>National Library of Medicine<br>
+                    <a href="https://www.google.com/maps/place/8600+Rockville+Pike,+Bethesda,+MD+20894/@38.9959508,-77.101021,17z/data=!3m1!4b1!4m5!3m4!1s0x89b7c95e25765ddb:0x19156f88b27635b8!8m2!3d38.9959508!4d-77.0988323">
+                        8600 Rockville Pike<br>
+                        Bethesda, MD 20894
+                    </a>
+                </p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/web_policies.html">
+                    Web Policies
+                </a><br>
+                <a href="https://www.nih.gov/institutes-nih/nih-office-director/office-communications-public-liaison/freedom-information-act-office">
+                    FOIA
+                </a><br>
+                <a href="https://www.hhs.gov/vulnerability-disclosure-policy/index.html">
+                    HHS Vulnerability Disclosure
+                </a></p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href=
+                      "https://support.nlm.nih.gov?from=https://www.nlm.nih.gov/">
+                    NLM Support Center
+                </a><br>
+                <a href="https://www.nlm.nih.gov/accessibility.html">
+                    Accessibility
+                </a><br>
+                <a href="https://www.nlm.nih.gov/careers/careers.html">
+                    Careers
+                </a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+              <p class="text-center"> <a href="https://www.nlm.nih.gov/">NLM</a> | <a href="https://www.nih.gov/">NIH</a> | <a href="https://www.hhs.gov/">HHS</a> | <a href="https://www.usa.gov/">USA.gov</a></p>
+            </div>
+        </div>
+    </div></div>
+<!--BEGIN QUALTRICS WEBSITE FEEDBACK SNIPPET-->
+<script type='text/javascript'>
+(function(){var g=function(e,h,f,g){
+this.get=function(a){for(var a=a+"=",c=document.cookie.split(";"),b=0,e=c.length;b<e;b++){for(var d=c[b];" "==d.charAt(0);)d=d.substring(1,d.length);if(0==d.indexOf(a))return d.substring(a.length,d.length)}return null};
+this.set=function(a,c){var b="",b=new Date;b.setTime(b.getTime()+6048E5);b="; expires="+b.toGMTString();document.cookie=a+"="+c+b+"; path=/; "};
+this.check=function(){var a=this.get(f);if(a)a=a.split(":");else if(100!=e)"v"==h&&(e=Math.random()>=e/100?0:100),a=[h,e,0],this.set(f,a.join(":"));else return!0;var c=a[1];if(100==c)return!0;switch(a[0]){case "v":return!1;case "r":return c=a[2]%Math.floor(100/c),a[2]++,this.set(f,a.join(":")),!c}return!0};
+this.go=function(){if(this.check()){var a=document.createElement("script");a.type="text/javascript";a.src=g;document.body&&document.body.appendChild(a)}};
+this.start=function(){var t=this;"complete"!==document.readyState?window.addEventListener?window.addEventListener("load",function(){t.go()},!1):window.attachEvent&&window.attachEvent("onload",function(){t.go()}):t.go()};};
+try{(new g(100,"r","QSI_S_ZN_cwOHfLkxRr4n4W2","https://zncwohflkxrr4n4w2-nlmenterprise.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_cwOHfLkxRr4n4W2")).start()}catch(i){}})();
+</script><div id='ZN_cwOHfLkxRr4n4W2'><!--DO NOT REMOVE-CONTENTS PLACED HERE--></div>
+<!--END WEBSITE FEEDBACK SNIPPET-->
+</footer>
+
+</body></html>
+
