@@ -1,0 +1,101 @@
+Church integer
+Church integer
+A
+Church integer
+is a representation of integers as
+functions
+, invented by Alonzo Church. An integer
+N
+is represented as a
+higher-order function
+, which applies a given function to a given
+expression
+N
+times.
+For example, in the programming language
+Haskell
+, a function that returns a particular Church integer might be
+church
+⁡
+0
+=
+f
+⁢
+x
+→
+x
+church
+⁡
+n
+=
+c
+where
+:
+c
+⁢
+f
+⁢
+x
+=
+c
+′
+⁢
+f
+⁢
+(
+f
+⁢
+x
+)
+⁢
+where
+:
+c
+′
+=
+church
+⁡
+(
+n
+-
+1
+)
+The
+transformation
+from a Church integer to an integer might be
+unchurch n = n (+1) 0
+Thus we can generate the integers–the
+(+1)
+function would be applied to an initial value of
+0
+n
+times, yielding the ordinary integer
+n
+.
+Title
+Church integer
+Canonical
+name
+ChurchInteger
+Date of creation
+2013-03-22 12:32:31
+Last modified on
+2013-03-22 12:32:31
+Owner
+mathcam (2727)
+Last modified by
+mathcam (2727)
+Numerical id
+8
+Author
+mathcam (2727)
+Entry type
+Definition
+Classification
+msc 03B40
+Classification
+msc 68N18
+Related topic
+LambdaCalculus
+Generated  on Thu Feb  8 19:48:15 2018 by
+LaTeXML

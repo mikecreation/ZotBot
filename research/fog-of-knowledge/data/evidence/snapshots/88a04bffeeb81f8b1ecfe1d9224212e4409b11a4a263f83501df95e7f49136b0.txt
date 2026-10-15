@@ -1,0 +1,373 @@
+axiom system for propositional logic
+axiom system for propositional logic
+The
+language
+of (classical)
+propositional logic
+PL
+c
+consists of a set of propositional letters or
+variables
+, the symbol
+⟂
+(for falsity), together with two symbols for
+logical connectives
+¬
+and
+→
+. The
+well-formed formulas
+(wff’s) of PL
+c
+are inductively defined as follows:
+•
+each propositional letter is a wff
+•
+⟂
+is a wff
+•
+if
+A
+and
+B
+are wff’s, then
+A
+→
+B
+is a wff
+We also use parentheses
+(
+and
+)
+to remove ambiguities. The other familiar logical connectives may be defined in terms of
+→
+:
+¬
+⁢
+A
+is
+A
+→
+⟂
+,
+A
+∨
+B
+is the abbreviation for
+¬
+⁢
+A
+→
+B
+,
+A
+∧
+B
+is the abbreviation for
+¬
+⁡
+(
+A
+→
+¬
+⁢
+B
+)
+, and
+A
+↔
+B
+is the abbreviation for
+(
+A
+→
+B
+)
+∧
+(
+B
+→
+A
+)
+.
+The
+axiom system
+for PL
+c
+consists of sets of wffs called
+axiom schemas
+together with a
+rule of inference
+. The axiom schemas are:
+1.
+A
+→
+(
+B
+→
+A
+)
+,
+2.
+(
+A
+→
+(
+B
+→
+C
+)
+)
+→
+(
+(
+A
+→
+B
+)
+→
+(
+A
+→
+C
+)
+)
+,
+3.
+(
+¬
+A
+→
+¬
+B
+)
+→
+(
+B
+→
+A
+)
+,
+and the rule of inference is
+modus ponens
+(MP): from
+A
+→
+B
+and
+A
+, we may infer
+B
+.
+A
+deduction
+is a
+finite sequence
+of wff’s
+A
+1
+,
+…
+,
+A
+n
+such that each
+A
+i
+is either an
+instance
+of one of the axiom schemas above, or as a result of applying rule MP to earlier wff’s in the sequence. In other words, there are
+j
+,
+k
+<
+i
+such that
+A
+k
+is the wff
+A
+j
+→
+A
+i
+. The last wff
+A
+n
+in the deduction is called a
+theorem
+of PL
+c
+. When
+A
+is a theorem of PL
+c
+, we write
+⊢
+c
+A
+or simply
+⊢
+A
+.
+For example,
+⊢
+A
+→
+A
+, whose deduction is
+1.
+(
+A
+→
+(
+(
+B
+→
+A
+)
+→
+A
+)
+)
+→
+(
+(
+A
+→
+(
+B
+→
+A
+)
+)
+→
+(
+A
+→
+A
+)
+)
+by Axiom II,
+2.
+A
+→
+(
+(
+B
+→
+A
+)
+→
+A
+)
+by Axiom I,
+3.
+(
+A
+→
+(
+B
+→
+A
+)
+)
+→
+(
+A
+→
+A
+)
+by modus ponens on
+2
+to
+1
+,
+4.
+A
+→
+(
+B
+→
+A
+)
+by Axiom I,
+5.
+A
+→
+A
+by modus ponens on
+4
+to
+3
+.
+More generally, given a set
+Σ
+of wff’s, we write
+Σ
+⊢
+A
+if there is a finite sequence of wff’s such that each wff is either an axiom, a member of
+Σ
+, or as a result of applying MP to earlier wff’s in the sequence. An important (meta-)theorem called the
+deduction theorem
+, states: if
+Σ
+,
+A
+⊢
+B
+, then
+Σ
+⊢
+A
+→
+B
+. The deduction theorem holds for PL
+c
+(proof here (
+http://planetmath.org/deductiontheoremholdsforclassicalpropositionallogic
+))
+Remark
+. The axiom system above was first introduced by Polish logician Jan Łukasiewicz. Two axiom systems are said to be
+deductively equivalent
+if every theorem in one system is also a theorem in the other system. There are many axiom systems for PL
+c
+that are deductively equivalent to Łukasiewicz’s system. One such system consists of the first two axiom schemas above, but the third axiom schema is
+¬
+⁢
+¬
+⁢
+A
+→
+A
+, with MP its sole inference rule.
+Title
+axiom system for propositional logic
+Canonical
+name
+AxiomSystemForPropositionalLogic
+Date of creation
+2013-03-22 19:31:50
+Last modified on
+2013-03-22 19:31:50
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+13
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 03B05
+Synonym
+axiom system for classical propositional logic
+Related topic
+DeductionTheoremHoldsForClassicalPropositionalLogic
+Related topic
+SubstitutionTheoremForPropositionalLogic
+Generated  on Thu Feb  8 19:21:48 2018 by
+LaTeXML

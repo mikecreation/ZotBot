@@ -1,0 +1,271 @@
+game-theoretical quantifier
+game-theoretical quantifier
+A
+Henkin
+or
+branching
+quantifier
+is a multi-variable quantifier in which the selection of variables depends only on some, but not all, of the other quantified variables. For
+instance
+the simplest Henkin quantifier can be written:
+∀
+x
+⁢
+∃
+y
+∀
+a
+⁢
+∃
+b
+⁢
+ϕ
+⁢
+(
+x
+,
+y
+,
+a
+,
+b
+)
+This quantifier,
+inexpressible
+in ordinary
+first order logic
+, can best be understood by its
+skolemization
+. The
+formula
+above is
+equivalent
+to
+∀
+x
+⁢
+∀
+a
+⁢
+ϕ
+⁢
+(
+x
+,
+f
+⁢
+(
+y
+)
+,
+a
+,
+g
+⁢
+(
+a
+)
+)
+. Critically, the selection of
+y
+depends only on
+x
+while the selection of
+b
+depends only on
+a
+. For instance, given a value for
+a
+, a value of
+b
+must be chosen which is
+compatible
+with every possible value of
+x
+, while given any
+x
+, the value of
+y
+chosen must be compatible with every value of
+a
+.
+Logics with this quantifier are stronger than first order logic, lying between first and
+second order logic
+in strength. For instance the Henkin quantifier can be used to define the
+Rescher quantifier
+, and by
+extension
+Härtig’s quantifer:
+∀
+x
+⁢
+∃
+y
+∀
+a
+⁢
+∃
+b
+[
+(
+x
+=
+a
+↔
+y
+=
+b
+)
+∧
+ϕ
+(
+x
+)
+→
+ψ
+(
+y
+)
+]
+↔
+R
+x
+y
+ϕ
+(
+x
+)
+ψ
+(
+y
+)
+To see that this is true, observe that this essentially requires that the
+Skolem functions
+f
+⁢
+(
+x
+)
+=
+y
+and
+g
+⁢
+(
+a
+)
+=
+b
+the same, and moreover that they are
+injective
+. Then for each
+x
+satisfying
+ϕ
+⁢
+(
+x
+)
+, there is a different
+f
+⁢
+(
+x
+)
+satisfying
+ψ
+(
+(
+f
+(
+x
+)
+)
+.
+This
+concept
+can be generalized to the
+game-theoretical quantifiers
+. This concept comes from interpreting a formula as a game between a “Prover” and “Refuter.” A
+theorem
+is provable whenever the Prover has a winning
+strategy
+; at each
+∧
+the Refuter chooses which side they will play (so the Prover must be prepared to win on either) while each
+∨
+is a choice for the Prover. At a
+¬
+, the players switch roles. Then
+∀
+represents a choice for the Refuter and
+∃
+for the Prover.
+Classical first order logic, then, adds the requirement that the games have
+perfect information
+. The game-theoretical quantifers remove this requirement, so for instance the Henkin quantifier, which would be written
+∀
+x
+⁢
+∃
+y
+⁢
+∀
+a
+⁢
+∃
+/
+∀
+x
+b
+⁢
+ϕ
+⁢
+(
+x
+,
+y
+,
+a
+,
+b
+)
+states that when the Prover makes a choice for
+b
+, it is made without knowledge of what was chosen at
+x
+.
+Title
+game-theoretical quantifier
+Canonical name
+GametheoreticalQuantifier
+Date of creation
+2013-03-22 12:59:19
+Last modified on
+2013-03-22 12:59:19
+Owner
+Henry (455)
+Last modified by
+Henry (455)
+Numerical id
+7
+Author
+Henry (455)
+Entry type
+Definition
+Classification
+msc 03B15
+Related topic
+Quantifier
+Defines
+Henkin quantifier
+Defines
+Henkin
+Defines
+branching quantifier
+Defines
+branching
+Defines
+game-theoretic quantifier
+Generated  on Thu Feb  8 19:45:17 2018 by
+LaTeXML

@@ -1,0 +1,2176 @@
+the inclusion of classical into intuitionistic logic
+the inclusion of classical into intuitionistic logic
+Abstract
+The entry is a report of
+Gödel’s 1933
+first proof of the
+consistency
+of classical
+arithmetic
+by means of an
+interpretation
+of the basic
+concepts
+of
+intuitionistic logic
+. The seminal
+theorem
+is Glivenko’s Theorem and full proofs of the theorems derived from Gödel’s
+translation
+function
+are provided. An attempt is made to clear some minor problems with Gödel’s original text. In spite of the provided continuity between the
+sections
+one can read most of them in isolation.
+The
+inclusion of classical into intuitionistic logic
+Contents:
+1
+Background
+2
+The analogy from the generalized Glivenko theorem
+3
+Configuration of Herbrand’s system
+4
+Gödel’s translation mapping: the system H’
+5
+The main lemmas and Gödel’s translation theorem
+6
+Complementary material
+1
+Background
+Brouwer visited Vienna on March 10, 1928 when he delivered his lecture "Mathematik, Wissenschaft und Sprache". Members of the Vienna Circle were attending, among them Hans Hahn, from the Mathematical Institute.
+One of the members of the Vienna Circle attending Brouwer’s lecture was Karl Menger. Menger did his Ph.D. with Hans Hahn and his Habilitation with Brouwer in Amsterdam. He remained a member of the Circle until he left Austria for the United States.
+In 1932 Menger conducted a Colloquium in the Mathematical Institute in which on June 26 Kurt GÃÂ¶del presented his first proof of the Consistency of classical
+number theory
+relative to intuitionistic number theory.
+We give an overview of the main theorem and suggest two minor corrections.
+2
+The analogy from the generalized Glivenko theorem
+1.
+Notation
+A.
+Classical
+propositional calculus
+(
+K
+):
+the symbols
+"
+∼
+", "
+→
+", "
+⋅
+"
+denote the truth-functions
+negation
+,
+implication
+and
+conjunction
+, respectively.
+B.
+Intuitionistic propositional calculus (
+I
+):
+the symbols
+"
+¬
+", "
+∧
+"
+denote the intuitionistic
+connectives
+negation and conjunction, respectively.
+2.
+Glivenko’s theorem
+Let
+F
+be a well formed
+formula
+of
+K
+which consists only of conjunctions and negations.  If
+F
+is valid in
+K
+then it is demonstrable in
+I
+.
+This means that
+F
+must have the form:
+(
+⋆
+⋆
+)
+¬
+⁢
+F
+1
+∧
+¬
+⁢
+F
+2
+∧
+…
+⁢
+¬
+⁢
+F
+n
+.
+If the formula
+(
+⋆
+⋆
+)
+is valid in
+K
+then each
+¬
+⁢
+F
+i
+is also valid. Glivenko proves that
+¬
+⁢
+F
+i
+is provable in
+I
+, as we can see in Heyting (1930), pg. 43.
+In that case the whole formula
+(
+⋆
+⋆
+)
+is also provable in
+I
+.
+3.
+The generalized Glivenko’s theorem
+The set of valid formulas of
+K
+is a subset of all valid formulas of
+I
+.
+To see this one
+translates
+a classically valid formula into a formula of
+I
+. The translations rules are the following:
+A.
+Negation: the classical function
+∼
+p
+has the translation
+¬
+⁢
+p
+;
+B.
+Disjunction
+: the classical function
+p
+∨
+q
+has the translation:
+¬
+⁡
+(
+¬
+⁢
+p
+∧
+¬
+⁢
+q
+)
+;
+C.
+Implication: the classical function
+p
+→
+q
+has the translation:
+¬
+⁡
+(
+p
+∧
+¬
+⁢
+q
+)
+;
+D.
+Conjunction: the classical function
+p
+⋅
+q
+has the translation:
+p
+∧
+q
+.
+3
+Configuration of Herbrand’s system
+Gödel’s theme is to prove that for arithmetic and number theory one can also obtain a result analogous to the result obtained by Glivenko for the propositional calculus.
+To achieve this we have to find translation rules such that the set of classically provable formulas becomes a subset of all intuitionistically valid formulas.
+The supporting system used is Herbrand’s (1931) with the following
+configuration
+:
+1.
+Primitive
+symbols:
+A.
+The functions of the classical propositional calculus
+B.
+Numerical
+variables
+: small Roman
+x
+,
+y
+,
+…
+C.
+Universal quantifiers
+:
+(
+∀
+x
+)
+,
+(
+∀
+y
+)
+,
+…
+D.
+Equality
+: "="
+E.
+Numerals
+: 0, 1,
+…
+F.
+A
+countable set
+of
+functional
+symbols
+f
+i
+,
+introduced according to Herbrand’s axioms
+.
+To each symbol one associates an integer
+n
+i
+, which denotes the number of
+arguments
+of
+f
+i
+.
+2.
+Formulas:
+A.
+Numerical
+expression
+As a preliminary
+definition
+we have the
+recursive definition of numerical expression
+:
+–
+i)
+0 and every numerical variable are numerical expressions;
+–
+ii)
+If
+Z
+is a numerical expression
+Z
++
+1
+is a numerical expression;
+–
+iii)
+If
+Z
+1
+,
+…
+,
+Z
+n
+are numerical expressions then:
+f
+⁢
+(
+Z
+1
+,
+…
+,
+Z
+n
+)
+is a numerical expression.
+B.
+Atomic formula
+An atomic formula is an equality, the terms of which are numerical expressions. Thus:
+Z
+i
+=
+Z
+j
+is an atomic formula.
+C.
+Z
+-formula
+–
+i)
+An atomic formula is a
+Z
+-formula;
+–
+ii)
+Numerical expressions that result from atomic formulas by means of the functions of the propositional calculus or by the use of
+quantifiers
+are
+Z
+-formulas.
+3.
+Axioms:
+A.
+Herbrand’s axioms
+in particular from
+A
+to
+D
+.
+B.
+Logical Axioms
+Three axioms are introduced with the following
+content
+:
+–
+Axiom E
+: [
+Rule of
+insertion
+]
+Every numerical expression that results from the insertion of a
+Z
+-formula in a
+tautology
+of the propositional calculus is an axiom.
+–
+Axiom F
+: [
+Dictum de omni
+]
+If
+F
+⁢
+(
+x
+)
+is a
+Z
+-formula and
+Z
+is a numerical expression such that the variables of
+Z
+are not bound in
+F
+, then all formulas of the
+pattern
+:
+(
+∀
+x
+)
+⁢
+F
+⁢
+(
+x
+)
+→
+F
+⁢
+(
+Z
+)
+are axioms.
+–
+Axiom G
+: [Leibniz]
+If
+F
+⁢
+(
+x
+)
+is a
+Z
+-formula then all formulas of the pattern:
+x
+=
+y
+→
+F
+⁢
+(
+x
+)
+→
+F
+⁢
+(
+y
+)
+are axioms.
+4.
+Rules of inference
+:
+A.
+Modus ponens
+From
+A
+→
+B
+and
+A
+we are allowed to infer
+B
+.
+B.
+∀
+-
+Introduction
+in the implicatum
+If
+x
+does not
+occur free
+in
+A
+then from
+A
+→
+B
+we are allowed to infer
+A
+→
+(
+∀
+x
+)
+⁢
+B
+.
+4
+Gödel’s translation mapping: the system H’
+Heyting’s system used is to be found in "Die formalen Regeln der intuitionistischen Mathematik" (1930) with a few notation variants.
+In this system small roman letters
+x
+,
+y
+,
+…
+are not numerical variables; they rather denote objects.
+1.
+The translation
+mapping
+"
+′
+":
+If
+x
+,
+y
+,
+z
+are object variables from Heyting’s system, they will be translated into numerical variables by means of Gödel’s translation mapping "
+′
+" as
+x
+′
+,
+y
+′
+,
+z
+′
+being now variables for
+natural numbers
+.
+The notation is defined by the rules:
+A.
+(
+𝒳
+∧
+𝒴
+)
+′
+↔
+𝒳
+′
+∧
+𝒴
+′
+B.
+(
+𝒳
+∨
+𝒴
+)
+′
+↔
+¬
+⁡
+(
+¬
+⁢
+𝒳
+′
+∧
+¬
+⁢
+𝒴
+′
+)
+C.
+(
+𝒳
+→
+𝒴
+)
+′
+↔
+¬
+(
+𝒳
+′
+∧
+¬
+𝒴
+′
+)
+D.
+If
+A
+⁢
+(
+x
+′
+,
+y
+′
+,
+…
+)
+is a formula in which these variables occur free then:
+[
+A
+(
+x
+′
+,
+y
+′
+,
+…
+)
+]
+↔
+[
+(
+x
+,
+y
+,
+…
+∈
+ℕ
+)
+→
+A
+(
+x
+,
+y
+,
+…
+)
+]
+E.
+If
+(
+∀
+x
+′
+)
+⁢
+F
+⁢
+(
+x
+′
+)
+is a formula then:
+(
+∀
+x
+′
+)
+F
+(
+x
+′
+)
+↔
+[
+(
+∀
+x
+)
+(
+x
+∈
+ℕ
+)
+→
+F
+(
+x
+)
+]
+2.
+Translation
+preserves
+validity
+:
+The relevant formulas belong to
+§
+⁢
+5
+[of
+H
+⁢
+2
+, on the basic definitions and inference rules] and
+§
+⁢
+6
+[of
+H
+⁢
+2
+, on quantification). If in these formulas in the place of the variables we insert their translations the formulas remain valid, that is, translation preserves validity.
+Gödel says that in order to achieve a validity-preserving translation of Heyting’s formula 5.4 we have to substitute "
+p
+⁢
+≡
+¯
+⁢
+p
+" by "
+p
+′
+⁢
+≡
+¯
+⁢
+ℕ
+".
+Now formula 5.4 says that the set of valid formulas is
+closed under
+substitution
+provided that:
+–
+i)
+For a
+propositional variable
+any expression can be inserted and
+–
+ii)
+For an object variable a symbolic expression
+p
+can be inserted, if
+p
+⁢
+≡
+¯
+⁢
+p
+is a valid formula.
+We think that a more intuitive translation would be to follow the pattern of the rules i) and ii) above and propose instead:
+(
+p
+′
+≡
+¯
+p
+′
+)
+↔
+[
+p
+∈
+ℕ
+→
+p
+≡
+¯
+p
+]
+.
+3.
+Definition of arithmetical functions:
+A.
+The definition of a function by
+recursion
+is intuitionistically acceptable and it is Heyting’s method in 10.03 and 10.4.
+B.
+Herbrand’s axioms Group
+C
+allow the introduction of functions
+f
+i
+⁢
+(
+x
+1
+,
+…
+,
+x
+n
+)
+such that the
+computation
+of
+f
+⁢
+(
+x
+1
+,
+…
+,
+x
+n
+)
+is always possible for any
+n
+-tuple of numbers.
+Ex.: if a function
+g
+⁢
+(
+y
+)
+has already been introduced then we can define a new function
+f
+⁢
+(
+x
+)
+by recursion on
+x
+with the following recursion
+equations
+:
+f
+⁢
+(
+0
+)
+=
+k
+f
+⁢
+(
+x
++
+1
+)
+=
+g
+⁢
+(
+f
+⁢
+(
+x
+)
+)
+.
+The axioms of Group
+C
+and the axioms of Group
+D
+, which allow the introduction of universal quantifiers, are adjoined to
+H
+. The resulting system will be called
+H
+′
+.
+4.
+The
+Z
+⁢
+Ã
+⁢
+¢
+⁢
+â
+⁢
+
+⁢
+¬
+⁢
+â
+⁢
+
+⁢
+¢
+-formulas:
+The
+Z
+⁢
+Ã
+⁢
+¢
+⁢
+â
+⁢
+
+⁢
+¬
+⁢
+â
+⁢
+
+⁢
+¢
+-formulas are obtained from the
+Z
+-formulas
+by translation
+. The rules are the following:
+–
+R1
+The
+variables
+x
+,
+y
+,
+…
+have the translation
+x
+′
+,
+y
+′
+,
+…
+–
+R2
+A
+functional symbol
+f
+i
+is translated by the same symbol in
+H
+′
+.
+–
+R3
+"=" has the identical translation "=".
+–
+R4
+Numerals
+: "0" has the translation "1", since in Heyting’s system the natural number
+sequence
+starts with "1".
+–
+R5
+Successor
+: has the translation seq’.
+–
+R6
+Propositional functions
+: have the translation already specified.
+–
+R7
+Universal quantification
+: as in
+(
+∀
+x
+)
+⁢
+A
+has the translation
+(
+∀
+x
+′
+)
+⁢
+A
+′
+if
+A
+′
+is the translation of
+A
+.
+By closer scrutiny Rules
+3.B
+and
+R4
+turn out to be
+inconsistent
+.
+By
+3.B
+the definition of functions by recursion is introduced and by
+R4
+"0" has the translation "1".
+So if we consider the usual recursive definitions of
+x
++
+y
+,
+x
+-
+y
+or
+x
+y
+, the first recursion equation after translation is:
+x
+′
++
+1
+=
+x
+′
+x
+′
+-
+1
+=
+x
+′
+x
+′
+⁣
+1
+=
+1
+If both rules were to be allowed we could prove the inconsistency of
+H
+′
+.
+The informal argument is the following:
+The recursive definition of
++
+, for example, gives for the first equation:
+x
++
+0
+=
+x
+.
+The translation of this formula in
+H
+′
+is therefore:
+x
+′
++
+1
+=
+x
+′
+.
+But by definition of successor,
+x
+′
++
+1
+is the successor of
+x
+′
+. This entails that
+x
+′
+is its own successor. But by axiom 10.26 no number can be its own successor, hence the
+contradiction
+.
+Here is the
+derivation
+:
+1.
+x
++
+0
+=
+x
+First rec. eq.
+2.
+x
+′
++
+1
+=
+x
+′
+1, R1, R3, R4
+3.
+x
+′
++
+1
+=
+seq’
+⁢
+x
+′
+H
+⁢
+2
+, 10.03
+4.
+x
+′
+=
+seq’
+⁢
+x
+′
+2, 3,
+H
+⁢
+2
+, 10.221
+5.
+¬
+⁡
+(
+x
+′
+=
+seq’
+⁢
+x
+′
+)
+H
+⁢
+2
+, 10.26
+6.
+x
+′
+=
+seq’
+⁢
+x
+′
+∧
+¬
+⁡
+(
+x
+′
+=
+seq’
+⁢
+x
+′
+)
+4, 5,
+H
+⁢
+1
+, 1.2
+Since we can not let go of
+3.B
+, the moral of the story is that we have to stuff
+H
+′
+with a "0" and use the identical translation, as it was done with "=".
+5
+The main lemmas and Gödel’s translation theorem
+In the following proofs we use the axioms and the theorems of Heyting 1930 divided by
+H
+⁢
+1
+(Logic) and
+H
+⁢
+2
+(
+Predicate calculus
+, Number Theory).
+Actually we will be using the prime translation of those formulas together with the prime translation of the rules of inference.
+Lemma 1
+:
+If
+X
+′
+is a
+Z
+′
+-formula, then:
+¬
+⁢
+¬
+⁢
+X
+′
+→
+X
+′
+.
+Proof
+:[
+Complete
+induction
+on the degree of
+complexity
+of the formula.]
+By definition a
+Z
+′
+-formula is either:
+•
+i)
+an atomic formula, in which case the number of connectives is 0; or
+•
+ii)
+is a formula composed out of atomic formulas by means of conjunction and negation; or
+•
+iii)
+is a quantified formula.
+•
+1. Induction basis
+Since
+Z
+′
+is a translation of a numerical formula
+Z
+, obviously
+Z
+′
+∈
+ℕ
+. Therefore we can use
+tertium non datur
+(theorem 4.45 of
+H
+⁢
+2
+) as the starting formula.
+The derivation is:
+1.
+X
+′
+∨
+¬
+⁢
+X
+′
+2.
+X
+′
+∨
+¬
+⁢
+X
+′
+→
+¬
+⁢
+¬
+⁢
+X
+′
+→
+X
+′
+Theor. 4.45 (
+H
+⁢
+1
+)
+3.
+¬
+⁢
+¬
+⁢
+X
+′
+→
+X
+′
+1, 2, MP
+•
+2. Inductive step
+The
+inductive hypothesis
+is that we already have proofs for X’ and Y’ in H’.
+(a)
+First Case
+:
+Conjunction
+1.
+¬
+⁢
+¬
+⁡
+(
+X
+′
+∧
+Y
+′
+)
+→
+¬
+⁢
+¬
+⁢
+X
+′
+∧
+¬
+⁢
+¬
+⁢
+Y
+′
+4.61 (
+H
+⁢
+1
+)
+2.
+¬
+⁢
+¬
+⁢
+X
+′
+∧
+¬
+⁢
+¬
+⁢
+Y
+′
+→
+X
+′
+∧
+Y
+′
+1, IB, IH
+3.
+¬
+⁢
+¬
+⁡
+(
+X
+′
+∧
+Y
+′
+)
+→
+X
+′
+∧
+Y
+′
+1, 2, 2.29 (
+H
+⁢
+1
+)
+(b)
+Second Case
+:
+Negation
+1.
+¬
+⁢
+¬
+⁢
+X
+′
+→
+X
+′
+IH
+2.
+¬
+⁢
+¬
+⁢
+¬
+⁢
+X
+′
+→
+¬
+⁢
+X
+′
+4.32 (
+H
+⁢
+1
+)
+(c)
+Third Case
+:
+∀
+1.
+¬
+⁢
+¬
+⁢
+X
+′
+→
+X
+′
+IH
+2.
+(
+∀
+x
+′
+)
+⁢
+¬
+⁢
+¬
+⁢
+X
+′
+→
+X
+′
+1, 5.8 (
+H
+⁢
+2
+)
+3.
+(
+∀
+x
+′
+)
+⁢
+¬
+⁢
+¬
+⁢
+X
+′
+→
+(
+∀
+x
+′
+)
+⁢
+X
+′
+6.4 (
+H
+⁢
+2
+)
+4.
+¬
+⁢
+¬
+⁡
+(
+∀
+x
+′
+)
+⁢
+X
+′
+→
+(
+∀
+x
+′
+)
+⁢
+¬
+⁢
+¬
+⁢
+X
+′
+6.78 (
+H
+⁢
+2
+)
+5.
+¬
+⁢
+¬
+⁡
+(
+∀
+x
+′
+)
+⁢
+X
+′
+→
+(
+∀
+x
+′
+)
+⁢
+X
+′
+3, 4, 2.29 (
+H
+⁢
+1
+)
+Lemma 2
+:
+If
+X
+⁢
+Ã
+⁢
+¢
+⁢
+â
+⁢
+
+⁢
+¬
+⁢
+â
+⁢
+
+⁢
+¢
+and
+Y
+⁢
+Ã
+⁢
+¢
+⁢
+â
+⁢
+
+⁢
+¬
+⁢
+â
+⁢
+
+⁢
+¢
+are
+Z
+⁢
+Ã
+⁢
+¢
+⁢
+â
+⁢
+
+⁢
+¬
+⁢
+â
+⁢
+
+⁢
+¢
+-formulas then in
+H
+⁢
+Ã
+⁢
+¢
+⁢
+â
+⁢
+
+⁢
+¬
+⁢
+â
+⁢
+
+⁢
+¢
+:
+X
+′
+→
+Y
+′
+↔
+¬
+⁡
+(
+X
+⁢
+Ã
+⁢
+¢
+⁢
+â
+⁢
+
+⁢
+¬
+⁢
+â
+⁢
+
+⁢
+¢
+∧
+¬
+⁢
+Y
+⁢
+Ã
+⁢
+¢
+⁢
+â
+⁢
+
+⁢
+¬
+⁢
+â
+⁢
+
+⁢
+¢
+)
+.
+Proof
+:
+1.
+X
+′
+→
+Y
+′
+→
+¬
+⁡
+(
+X
+′
+∧
+¬
+⁢
+Y
+′
+)
+4.9 (
+H
+⁢
+1
+)
+2.
+¬
+⁡
+(
+X
+′
+∧
+¬
+⁢
+Y
+′
+)
+→
+X
+′
+→
+¬
+⁢
+¬
+⁢
+Y
+′
+4.52 (
+H
+⁢
+1
+)
+3.
+¬
+⁡
+(
+X
+′
+∧
+¬
+⁢
+Y
+′
+)
+→
+X
+′
+→
+Y
+′
+2, Lemma 1
+Proposition
+1
+: [Gödel’s
+Hauptsatz
+: The translation theorem ]
+If
+X
+is a provable formula in Herbrand’s system then:
+its Gödel-translation is provable in
+H
+′
+.
+Proof
+:
+1.
+The axioms:
+–
+i)
+Group A
+Each of the
+Group A
+axioms from Herbrand’s system is
+equivalent
+to the following propositions of
+H
+⁢
+2
+:
+10.2
+(
+p
+∈
+ℕ
+→
+p
+=
+p
+)
+10.22
+(
+p
+∈
+ℕ
+∧
+p
+=
+q
+→
+q
+=
+p
+)
+10.221
+(
+p
+∈
+ℕ
+∧
+p
+=
+q
+∧
+q
+=
+r
+→
+p
+=
+r
+)
+10.25
+(
+p
+∈
+ℕ
+∧
+q
+∈
+N
+→
+(
+p
+=
+q
+)
+∨
+¬
+(
+p
+=
+q
+)
+)
+10.26
+(
+p
+∈
+ℕ
+→
+¬
+⁡
+(
+seq’
+⁢
+p
+=
+p
+)
+)
+–
+ii)
+Group B
+Herbrand’s
+Group B
+axioms have the following translation:
+ϕ
+⁢
+(
+1
+)
+∧
+(
+∀
+x
+′
+)
+⁢
+ϕ
+⁢
+(
+x
+′
+)
+→
+ϕ
+⁢
+(
+seq’
+⁢
+x
+′
+)
+→
+(
+∀
+x
+′
+)
+⁢
+ϕ
+⁢
+(
+x
+′
+)
+Lemma 2 allows the substitution of both
+occurrences
+of "
+β
+→
+β
+" by
+¬
+⁡
+(
+α
+∧
+¬
+⁢
+β
+)
+.
+After the substitution one then gets the formula:
+¬
+⁢
+ϕ
+⁢
+(
+1
+)
+∧
+¬
+⁡
+[
+(
+∀
+x
+′
+)
+⁢
+ϕ
+⁢
+(
+x
+′
+)
+∧
+¬
+⁡
+(
+seq’
+⁢
+x
+′
+)
+]
+∧
+¬
+⁡
+(
+∀
+x
+′
+)
+⁢
+ϕ
+⁢
+(
+x
+′
+)
+.
+The formula is the translation of a
+Group B
+axiom and is identical with the formula 1014 from
+H
+⁢
+2
+.
+–
+iii)
+Group C
+and
+Group D
+Their adjunction was already realized.
+–
+iv)
+Group E
+Follows directly from the Lemmas.
+–
+v)
+Group F
+Use Lemma 2 and from
+H
+⁢
+2
+6.3 and 5.4.
+–
+vi)
+Group G
+Follows directly from
+H
+⁢
+2
+6.26 and 10.01.
+2.
+Rules of inference:
+–
+i)
+Modus ponens
+We have to prove that if
+X
+′
+and
+(
+X
+→
+Y
+)
+′
+are provable in
+H
+′
+then
+Y
+′
+is also provable in
+H
+′
+.
+Now by Lemma 2:
+(
+X
+→
+Y
+)
+′
+↔
+¬
+(
+X
+∧
+¬
+Y
+)
+′
+.
+This means that
+(
+X
+→
+Y
+)
+′
+is equivalent to:
+¬
+⁡
+(
+X
+′
+∧
+¬
+⁢
+Y
+′
+)
+.
+The intuitionistic interpretation of this formula is that we can derive a contradiction from the fact that we have a proof of
+X
+′
+and not a proof of
+Y
+′
+.
+Since by
+hypothesis
+X
+′
+has a proof in
+H
+′
+,
+Y
+′
+is also provable by 1.3 of
+H
+⁢
+1
+.
+–
+ii)
+∀
+-
+Introduction in Implicatum
+The Gödel-translation is:
+(
+X
+′
+→
+Y
+′
+)
+→
+[
+X
+′
+→
+(
+∀
+x
+′
+)
+Y
+′
+]
+.
+But this is equivalent to:
+[
+¬
+(
+X
+′
+∧
+¬
+Y
+′
+)
+]
+→
+[
+X
+′
+→
+(
+∀
+x
+′
+)
+Y
+′
+]
+and the last formula follows by 5.5 (
+H
+⁢
+2
+) and Lemma 2.
+Discussion:
+Gödel’s
+Hauptsatz
+shows that the set of all theorems of Herbrand’s system is a subset of the set of theorems of
+H
+′
+.
+Thus, if we assume that intuitionistic arithmetic is consistent, the
+Hauptsatz
+delivers a proof of the consistency of classical number theory, since an inconsistency in
+Z
+would entail the inconsistency of
+H
+′
+.
+Gödel points out that this proof is not finitistic in Hilbert’s sense, due to the several occurrences of the abstract concepts of
+H
+′
+like "construction" and "proof".
+This in turn entails the question, which Gödel addressed in 1941 in his Yale lecture, to determine to what extent is then intuitionistic logic itself constructive. In the PM entry "the interpretation of intuitionistic logic by means of functionals" it will be reported on Gödel’s
+negative
+answer to this question.
+6
+Complementary material
+See "the interpretation of intuitionistic logic by means of functionals" (
+http://planetmath.org/InterpretationOfIntuitionisticLogicByMeansOfFunctionals
+). See also parent entry "intuitionistic logic" (
+http://planetmath.org/IntuitionisticLogic
+).
+References
+1
+Brouwer, L.,
+Collected works: vol. 1
+, North Holland, Amsterdam, 1975.
+2
+Brouwer, L., "Mathematik, Wissenschaft und Sprache",
+Monatshefte fÃÂ¼r Mathematik und Physik
+, Leipzig, 1929.
+3
+Brouwer, L., "Consciousness, philosophy and mathematics", ed. W. Beth,
+Library of the tenth international congress of philosophy
+, Amsterdam, 1948.
+4
+Dummett, M.,
+Elements of intuitionism
+, Clarendon Press, Oxford, 1977.
+5
+Gödel, K.,
+Collected works
+, ed. S. Feferman, Oxford, 1987-2003.
+6
+Heyting, A.
+Intuitionism: An introduction
+, 3. ed., North-Holland, Amsterdam, 1971.
+7
+Hilbert, D., and, Ackermann,
+GrundzÃÂ¼ge der theoretischen Logik
+, Berlin, 1949.
+8
+Kleene, S.,
+Introduction to
+metamathematics
+, North-Holland, Amsterdam, 1964.
+9
+Rasiowa, H., and, Sikorski, R.,
+The mathematics of metamathematics
+, Warsaw, 1963.
+10
+Tarski, A., "Der AussagenkalkÃÂ¼l und die Topologie",
+Fundamenta Mathematicae
+, 31, 1938.
+Title
+the inclusion of classical into intuitionistic logic
+Canonical
+name
+TheInclusionOfClassicalIntoIntuitionisticLogic
+Date of creation
+2013-03-22 18:32:28
+Last modified on
+2013-03-22 18:32:28
+Owner
+gribskoff (21395)
+Last modified by
+gribskoff (21395)
+Numerical id
+10
+Author
+gribskoff (21395)
+Entry type
+Topic
+Classification
+msc 03B20
+Classification
+msc 03A05
+Classification
+msc 03-01
+Synonym
+Brouwer’s logic
+Synonym
+intuitionistic foundations
+Synonym
+consistency proof
+Related topic
+IntuitionisticLogic
+Related topic
+AnOutlineOfHilbertsProgramme
+Related topic
+FOUNDATIONSOFMATHEMATICSOVERVIEW
+Related topic
+Logicism
+Defines
+intuitionistic proof
+Defines
+Gödel’s translation mapping
+Generated  on Thu Feb  8 19:47:08 2018 by
+LaTeXML

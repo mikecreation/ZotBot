@@ -1,0 +1,807 @@
+polynomials in algebraic systems
+polynomials in algebraic systems
+Polynomials in an Algebraic System
+Let
+(
+A
+,
+O
+)
+be an
+algebraic system
+. Given any non-negative integer
+n
+, let
+S
+be a set of
+functions
+from
+A
+n
+to
+A
+, satisfying the following criteria:
+1.
+the
+projection
+π
+i
+:
+A
+n
+→
+A
+is an element of
+S
+for each
+i
+between
+1
+and
+n
+.
+2.
+for every
+0
+-ary operator symbol
+c
+∈
+O
+, the corresponding
+element
+c
+A
+∈
+A
+is an element of
+S
+.
+3.
+for any
+m
+-ary
+operator
+ω
+A
+on
+A
+, and any
+p
+1
+,
+…
+,
+p
+m
+∈
+S
+, the function
+ω
+A
+⁢
+(
+p
+1
+,
+…
+,
+p
+m
+)
+:
+A
+n
+→
+A
+, given by
+ω
+A
+⁢
+(
+p
+1
+,
+…
+,
+p
+m
+)
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+:=
+ω
+A
+⁢
+(
+p
+1
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+,
+…
+,
+p
+m
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+)
+is an element of
+S
+.
+Take the
+intersection
+of all such sets and call it
+𝐏
+n
+⁢
+(
+A
+)
+. Then
+𝐏
+n
+⁢
+(
+A
+)
+is the smallest set satisfying the above two conditions. We call an element of
+𝐏
+n
+⁢
+(
+A
+)
+an
+n
+-ary
+polynomial
+of the
+algebra
+A
+. A
+polynomial
+of
+A
+is some
+n
+-ary polynomial of
+A
+. Two polynomials
+p
+,
+q
+are said to be
+equivalent
+if they have the same arity
+n
+, and for any
+𝐚
+∈
+A
+n
+,
+p
+⁢
+(
+𝐚
+)
+=
+q
+⁢
+(
+𝐚
+)
+.
+Examples
+.
+•
+Let
+G
+be a group. Then
+f
+⁢
+(
+x
+)
+=
+x
+is a unary polynomial. In general, a unary polynomial of
+G
+has the form
+x
+n
+,
+n
+≥
+1
+. For a binary polynomial, first note that
+f
+⁢
+(
+x
+,
+y
+)
+=
+x
+and
+g
+⁢
+(
+x
+,
+y
+)
+=
+y
+are both binary. For this, a binary polynomial of
+G
+looks like
+x
+n
+1
+⁢
+y
+m
+1
+⁢
+⋯
+⁢
+x
+n
+k
+⁢
+y
+m
+k
+,
+where
+n
+1
+,
+m
+k
+≥
+0
+and the rest are positive integers. If
+G
+is
+abelian
+, a binary polynomial has the simplified form
+x
+n
+⁢
+y
+m
+, and more generally, an
+n
+-ary polynomial of an abelian group has the form
+x
+1
+n
+1
+⁢
+⋯
+⁢
+x
+k
+n
+k
+.
+•
+Let
+R
+be a ring.
+f
+⁢
+(
+x
+)
+=
+x
+is a unary polynomial, so are
+g
+⁢
+(
+x
+)
+=
+n
+⁢
+x
+and
+h
+⁢
+(
+x
+)
+=
+x
+m
+where
+n
+,
+m
+are non-negative integers. In general, a unary polynomial of
+R
+looks like
+n
+m
+⁢
+x
+m
++
+n
+m
+-
+1
+⁢
+x
+m
+-
+1
++
+⋯
++
+n
+1
+⁢
+x
++
+n
+0
+,
+where
+n
+i
+are non-negative integers with
+n
+m
+>
+0
+, and
+m
+is any positive integer. This is the form of a polynomial that is familiar to most people.
+•
+Continuing from the example above, note that, however,
+a
+m
+⁢
+x
+m
++
+a
+m
+-
+1
+⁢
+x
+m
+-
+1
++
+⋯
++
+a
+1
+⁢
+x
++
+a
+0
+where
+a
+i
+∈
+R
+is in general
+not
+a polynomial under this definition. This is an example of an
+algebraic function
+in an algebraic system.
+Remarks
+.
+•
+𝐏
+0
+⁢
+(
+A
+)
+is non-empty iff
+O
+contains
+constant symbols
+(nullary function symbols).
+•
+By virtue of the definition,
+𝐏
+n
+⁢
+(
+A
+)
+is an algebraic system for each non-negative integer
+n
+.
+Polynomial Symbols
+If we have two algebras
+A
+,
+B
+of the same type, then, by the definition above, a polynomial of
+A
+may be considered as a polynomial of
+B
+, and vice versa. Putting this formally, we introduce
+polynomial symbols
+for a class
+K
+of algebras of the same type
+O
+. Let
+X
+=
+{
+x
+1
+,
+x
+2
+,
+…
+}
+be a
+countably infinite
+set of
+variables
+, or symbols. For any non-negative integer
+n
+, consider a set
+S
+consisting of the following elements:
+1.
+x
+1
+,
+…
+,
+x
+n
+,
+2.
+every nullary operator symbol,
+3.
+if
+ω
+∈
+O
+is
+m
+-ary and
+p
+1
+,
+…
+,
+p
+m
+∈
+S
+, then
+ω
+⁢
+(
+p
+1
+,
+…
+,
+p
+m
+)
+∈
+S
+.
+Take the intersection of all such sets and we end up with a set satisfying the two conditions again, call it
+𝐏
+n
+⁢
+(
+O
+)
+. Any element of
+𝐏
+n
+⁢
+(
+O
+)
+is called an
+n
+-ary polynomial symbol
+of
+K
+. A
+polynomial symbol
+of
+K
+is just some
+n
+-ary polynomial symbol. In
+model theory
+, a polynomial symbol is nothing more than a term (
+http://planetmath.org/Term
+) over
+X
+in the
+O
+-
+language
+.
+Now, suppose
+A
+∈
+K
+. For a given non-negative integer
+n
+, consider the function
+f
+A
+:
+𝐏
+n
+⁢
+(
+O
+)
+→
+𝐏
+n
+⁢
+(
+A
+)
+, defined recursively by
+1.
+f
+A
+⁢
+(
+x
+i
+)
+:=
+π
+i
+,
+2.
+f
+A
+⁢
+(
+c
+)
+:=
+c
+A
+,
+3.
+f
+A
+⁢
+(
+ω
+⁢
+(
+p
+1
+,
+…
+,
+p
+n
+)
+)
+:=
+ω
+A
+⁢
+(
+f
+A
+⁢
+(
+p
+1
+)
+,
+…
+,
+f
+A
+⁢
+(
+p
+n
+)
+)
+.
+Then by the constructions of
+𝐏
+n
+⁢
+(
+O
+)
+and
+𝐏
+n
+⁢
+(
+A
+)
+,
+f
+A
+is a
+surjection
+. Any polynomial
+p
+of
+A
+is said to be
+induced
+by a polynomial symbol
+q
+of
+K
+if
+f
+A
+⁢
+(
+q
+)
+=
+p
+. We usually write
+p
+=
+q
+A
+to denote that the polynomial
+p
+(of
+A
+) is induced by the polynomial symbol
+q
+(of
+K
+). It is not hard to see that, between two algebras of the same type, there is a
+one-to-one correspondence
+between their respective polynomials the same arities. However, equivalence of polynomials in one algebra does not translate to equivalence in another.
+Example
+.
+x
+∨
+(
+y
+∧
+z
+)
+and
+(
+x
+∨
+y
+)
+∧
+(
+x
+∨
+z
+)
+are both polynomials symbols in the class of lattices. In the
+subclass
+of
+distributive
+lattices, the induced polynomials are equivalent. However, in the subclass of modular lattices, the equivalence no longer holds.
+Remark
+. Like
+𝐏
+n
+⁢
+(
+A
+)
+,
+𝐏
+n
+⁢
+(
+O
+)
+is also an algebraic system, called the
+n
+-ary
+polynomial algebra
+, or
+absolutely free algebra
+, of
+O
+. Furthermore, the function
+f
+A
+above is an algebra homomorphism.
+References
+1
+G. Grätzer:
+Universal Algebra
+, 2nd Edition, Springer, New York (1978).
+2
+S. Burris, H.P. Sankappanavar:
+A Course in Universal Algebra
+, Springer, New York (1981).
+Title
+polynomials in algebraic systems
+Canonical name
+PolynomialsInAlgebraicSystems
+Date of creation
+2013-03-22 16:47:31
+Last modified on
+2013-03-22 16:47:31
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+16
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 08A40
+Synonym
+absolutely free algebra
+Related topic
+TermAlgebra
+Related topic
+AlgebraicFunction
+Defines
+polynomial
+Defines
+equivalent polynomials
+Defines
+polynomial symbol
+Defines
+induced polynomial
+Defines
+polynomial algebra
+Generated  on Fri Feb  9 14:02:30 2018 by
+LaTeXML

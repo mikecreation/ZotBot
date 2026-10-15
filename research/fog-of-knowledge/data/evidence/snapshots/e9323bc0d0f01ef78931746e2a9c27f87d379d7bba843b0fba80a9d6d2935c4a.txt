@@ -1,0 +1,309 @@
+tree (set theoretic)
+tree (set theoretic)
+In a set , a
+tree
+is defined to be a set
+T
+and a
+relation
+<
+T
+⊆
+T
+×
+T
+such that:
+•
+<
+T
+is a
+partial ordering
+of
+T
+•
+For any
+t
+∈
+T
+,
+{
+s
+∈
+T
+∣
+s
+<
+T
+t
+}
+is
+well-ordered
+The nodes (elements of the tree) immediately greater than a node are termed its
+children
+, the node immediately less is its
+parent
+(if it exists), any node less is an
+ancestor
+and any node greater is a
+descendant
+. A node with no ancestors is a
+root
+.
+The partial ordering
+represents
+from the root, and the well-ordering requirement prohibits any loops or splits below a node (that is, each node has at most one parent, and therefore at most one grand-parent, and so on).
+Conversely
+, if
+a
+<
+T
+d
+then there is exactly one
+b
+≤
+T
+d
+such that
+a
+<
+T
+b
+and there is nothing between
+a
+and
+b
+. Note that there is no requirement that a node have a parent–there could be an infinitely long branch
+a
+1
+<
+T
+a
+2
+<
+T
+a
+2
+<
+T
+⋯
+with each
+a
+i
+<
+T
+b
+.
+Since there is generally no requirement that the tree be
+connected
+, the null ordering makes any set into a tree, although the tree is a
+trivial
+one, since each element of the set forms a single node with no children.
+Since the set of ancestors of any node is well-ordered, we can  it with an
+ordinal
+. We call this the
+height
+, and write:
+ht
+⁡
+(
+t
+)
+=
+o
+.
+t
+.
+⁡
+(
+{
+s
+∈
+T
+∣
+s
+<
+T
+t
+}
+)
+. This all accords with  usage: a root has height
+0
+, something immediately above the root has height
+1
+, and so on. We can then assign a height to the tree itself, which we define to be the least number greater than the height of any element of the tree. For finite trees this is just one greater than the height of its tallest
+element
+, but
+infinite
+trees may not have a tallest element, so we define
+ht
+⁡
+(
+T
+)
+=
+sup
+⁡
+{
+ht
+⁡
+(
+t
+)
++
+1
+∣
+t
+∈
+T
+}
+.
+For every
+α
+<
+T
+ht
+⁡
+(
+T
+)
+we define the
+α
+-th
+level
+to be the set
+T
+α
+=
+{
+t
+∈
+T
+∣
+ht
+⁡
+(
+t
+)
+=
+α
+}
+. So of course
+T
+0
+is all roots of the tree. If
+α
+<
+T
+ht
+⁡
+(
+T
+)
+then
+T
+⁢
+(
+α
+)
+is the subtree of elements with height less than
+α
+:
+t
+∈
+T
+⁢
+(
+α
+)
+↔
+x
+∈
+T
+∧
+ht
+⁡
+(
+t
+)
+<
+α
+.
+We call a tree a
+κ
+-tree for any
+cardinal
+κ
+if
+|
+T
+|
+=
+κ
+and
+ht
+⁡
+(
+T
+)
+=
+κ
+. If
+κ
+is finite, the only way to do this is to have a single branch of length
+κ
+.
+Title
+tree (set theoretic)
+Canonical
+name
+TreesetTheoretic
+Date of creation
+2013-03-22 12:52:19
+Last modified on
+2013-03-22 12:52:19
+Owner
+Henry (455)
+Last modified by
+Henry (455)
+Numerical id
+14
+Author
+Henry (455)
+Entry type
+Definition
+Classification
+msc 03E05
+Synonym
+tree
+Related topic
+Antichain
+Related topic
+Aronszajn
+Related topic
+SuslinTree
+Defines
+level
+Defines
+root
+Defines
+height
+Defines
+tree
+Defines
+child
+Defines
+children
+Defines
+parent
+Defines
+ancestor
+Defines
+descendant
+Defines
+α
+-th level
+Defines
+κ
+-tree
+Generated  on Thu Feb  8 20:07:34 2018 by
+LaTeXML

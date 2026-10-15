@@ -1,0 +1,502 @@
+deduction theorem holds for classical propositional logic
+deduction theorem holds for classical propositional logic
+In this entry, we prove that the
+deduction theorem holds for classical propositional logic
+. For the logic, we use the
+axiom system
+found in this entry (
+http://planetmath.org/AxiomSystemForPropositionalLogic
+). To prove the
+theorem
+, we use the theorem schema
+A
+→
+A
+(whose
+deduction
+can be found here (
+http://planetmath.org/AxiomSystemForPropositionalLogic
+)).
+Proof.
+Suppose
+A
+1
+,
+…
+,
+A
+n
+is a deduction of
+B
+from
+Δ
+∪
+{
+A
+}
+. We want to find a deduction of
+A
+→
+B
+from
+Δ
+. There are two main cases to consider:
+•
+If
+B
+is an axiom or in
+Δ
+∪
+{
+A
+}
+, then
+B
+,
+B
+→
+(
+A
+→
+B
+)
+,
+A
+→
+B
+is a deduction of
+A
+→
+B
+from
+Δ
+, where
+A
+→
+B
+is obtained by
+modus ponens
+applied to
+B
+and the axiom
+B
+→
+(
+A
+→
+B
+)
+. So
+Δ
+⊢
+A
+→
+B
+.
+•
+If
+B
+is obtained from
+A
+i
+and
+A
+j
+by modus ponens. Then
+A
+j
+, say, is
+A
+i
+→
+B
+. We use
+induction
+on the length
+n
+of the deduction of
+B
+. Note that
+n
+≥
+3
+. If
+n
+=
+3
+, then the first two
+formulas
+are
+C
+and
+C
+→
+B
+.
+–
+If
+C
+is
+A
+, then
+C
+→
+B
+is either an axiom or in
+Δ
+. So
+A
+→
+B
+, which is just
+C
+→
+B
+, is a deduction of
+A
+→
+B
+from
+Δ
+.
+–
+If
+C
+→
+B
+is
+A
+, then
+C
+is either an axiom or in
+Δ
+, and
+ℰ
+0
+,
+(
+A
+→
+A
+)
+→
+(
+(
+A
+→
+C
+)
+→
+(
+A
+→
+B
+)
+)
+,
+C
+→
+(
+A
+→
+C
+)
+,
+C
+,
+A
+→
+C
+,
+A
+→
+B
+is a deduction of
+A
+→
+B
+from
+Δ
+, where
+ℰ
+0
+is a deduction of
+A
+→
+A
+, followed by two axiom
+instances
+, followed by
+C
+, followed by results of two applications of modus ponens.
+–
+If both
+C
+and
+C
+→
+B
+are either axioms are in
+Δ
+, then
+C
+,
+C
+→
+B
+,
+B
+,
+B
+→
+(
+A
+→
+B
+)
+,
+A
+→
+B
+is a deduction of
+A
+→
+B
+from
+Δ
+.
+Next, assume the deduction
+ℰ
+of
+B
+has length
+n
+>
+3
+.
+A
+subsequence
+of
+ℰ
+is a deduction of
+A
+i
+→
+B
+from
+Δ
+∪
+{
+A
+}
+. This deduction has length less than
+n
+, so by induction,
+Δ
+⊢
+A
+→
+(
+A
+i
+→
+B
+)
+,
+and therefore by
+(
+A
+→
+(
+A
+i
+→
+B
+)
+)
+→
+(
+(
+A
+→
+A
+i
+)
+→
+(
+A
+→
+B
+)
+)
+, an axiom instance, and modus ponens,
+Δ
+⊢
+(
+A
+→
+A
+i
+)
+→
+(
+A
+→
+B
+)
+.
+Likewise, a subsequence of
+ℰ
+is a deduction of
+A
+i
+, so by induction,
+Δ
+⊢
+A
+→
+A
+i
+. Therefore, an application of modus ponens gives us
+Δ
+⊢
+A
+→
+B
+.
+In both cases,
+Δ
+⊢
+A
+→
+B
+and we are done.
+∎
+We record two corollaries:
+Corollary 1
+.
+(
+Proof by Contradiction
+). If
+Δ
+,
+A
+⊢
+⟂
+, then
+Δ
+⊢
+¬
+⁢
+A
+.
+Proof.
+From
+Δ
+,
+A
+⊢
+⟂
+, we have
+Δ
+⊢
+A
+→
+⟂
+by the
+deduction theorem
+. Since
+¬
+⁢
+A
+↔
+⟂
+, the result follows. ∎
+Corollary 2
+.
+(Proof by Contrapositive). If
+Δ
+,
+A
+⊢
+¬
+⁢
+B
+, then
+Δ
+,
+B
+⊢
+¬
+⁢
+A
+.
+Proof.
+If
+Δ
+,
+A
+⊢
+¬
+⁢
+B
+, then
+Δ
+,
+A
+,
+B
+⊢
+⟂
+by the deduction thereom, and therefore
+Δ
+,
+B
+⊢
+¬
+⁢
+A
+by the deduction theorem again. ∎
+Remark
+The deduction theorem for the classical
+propositional logic
+can be used to prove the deduction theorem for the classical first and
+second order
+predicate logic.
+References
+1
+J. W. Robbin,
+Mathematical Logic, A First Course
+, Dover Publication (2006)
+Title
+deduction theorem holds for classical propositional logic
+Canonical name
+DeductionTheoremHoldsForClassicalPropositionalLogic
+Date of creation
+2013-03-22 19:13:42
+Last modified on
+2013-03-22 19:13:42
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+23
+Author
+CWoo (3771)
+Entry type
+Theorem
+Classification
+msc 03F03
+Classification
+msc 03B99
+Classification
+msc 03B22
+Related topic
+AxiomSystemForPropositionalLogic
+Defines
+proof by contradiction
+Defines
+proof by contrapositive
+Generated  on Thu Feb  8 20:23:03 2018 by
+LaTeXML

@@ -1,0 +1,453 @@
+distribution function
+distribution function
+[this entry is currently being revised, so hold off on corrections until
+this line is removed]
+Let
+F
+:
+ℝ
+→
+ℝ
+. Then
+F
+is a
+distribution function
+if
+1.
+F
+is nondecreasing,
+2.
+F
+is
+continuous
+from the right,
+3.
+lim
+x
+→
+-
+∞
+⁡
+F
+⁢
+(
+x
+)
+=
+0
+, and
+lim
+x
+→
+∞
+⁡
+F
+⁢
+(
+x
+)
+=
+1
+.
+As an example, suppose that
+Ω
+=
+ℝ
+and that
+ℬ
+is the
+σ
+-
+algebra
+of Borel subsets of
+ℝ
+.
+Let
+P
+be a
+probability measure
+on
+(
+Ω
+,
+ℬ
+)
+.
+Define
+F
+by
+F
+⁢
+(
+x
+)
+=
+P
+⁢
+(
+(
+-
+∞
+,
+x
+]
+)
+.
+This particular
+F
+is called the
+distribution function
+of
+P
+. It is
+easy to verify that 1,2, and 3 hold for this
+F
+.
+In fact, every distribution function is the distribution function of some
+probability measure on the Borel subsets of
+ℝ
+. To see this,
+suppose that
+F
+is a distribution function. We can define
+P
+on a single half-open
+interval by
+P
+⁢
+(
+(
+a
+,
+b
+]
+)
+=
+F
+⁢
+(
+b
+)
+-
+F
+⁢
+(
+a
+)
+and extend
+P
+to unions of disjoint intervals by
+P
+⁢
+(
+∪
+i
+=
+1
+∞
+(
+a
+i
+,
+b
+i
+]
+)
+=
+∑
+i
+=
+1
+∞
+P
+⁢
+(
+(
+a
+i
+,
+b
+i
+]
+)
+.
+and then further extend
+P
+to all the Borel subsets of
+ℝ
+.
+It is clear that the distribution function of
+P
+is
+F
+.
+0.1
+Random Variables
+Suppose that
+(
+Ω
+,
+ℬ
+,
+P
+)
+is a
+probability space
+and
+X
+:
+Ω
+→
+ℝ
+is a
+random variable
+. Then there is an
+induced
+probability measure
+P
+X
+on
+ℝ
+defined as
+follows:
+P
+X
+⁢
+(
+E
+)
+=
+P
+⁢
+(
+X
+-
+1
+⁢
+(
+E
+)
+)
+for every Borel subset
+E
+of
+ℝ
+.
+P
+X
+is called the
+distribution
+of
+X
+. The
+distribution function
+of
+X
+is
+F
+X
+(
+x
+)
+=
+P
+(
+ω
+|
+X
+(
+ω
+)
+≤
+x
+)
+.
+The distribution function of
+X
+is also known as the law of
+X
+.
+Claim:
+F
+X
+= the distribution function of
+P
+X
+.
+F
+X
+⁢
+(
+x
+)
+=
+P
+(
+ω
+|
+X
+(
+ω
+)
+≤
+x
+)
+=
+P
+(
+X
+-
+1
+(
+(
+-
+∞
+,
+x
+]
+)
+=
+P
+X
+⁢
+(
+(
+-
+∞
+,
+x
+]
+)
+=
+F
+⁢
+(
+x
+)
+.
+0.2
+Density Functions
+Suppose that
+f
+:
+ℝ
+→
+ℝ
+is a nonnegative function
+such that
+∫
+-
+∞
+∞
+f
+⁢
+(
+t
+)
+⁢
+𝑑
+t
+=
+1
+.
+Then one can define
+F
+:
+ℝ
+→
+ℝ
+by
+F
+⁢
+(
+x
+)
+=
+∫
+-
+∞
+x
+f
+⁢
+(
+t
+)
+⁢
+𝑑
+t
+.
+Then it is clear that
+F
+satisfies the conditions 1,2,and 3 so
+F
+is a distribution function. The function
+f
+is called a
+density function
+for the distribution
+F
+.
+If
+X
+is a discrete random variable with density function
+f
+and distribution
+function
+F
+then
+F
+⁢
+(
+x
+)
+=
+∑
+x
+j
+≤
+x
+f
+⁢
+(
+x
+j
+)
+.
+Title
+distribution function
+Canonical name
+DistributionFunction
+Date of creation
+2013-03-22 13:02:51
+Last modified on
+2013-03-22 13:02:51
+Owner
+Mathprof (13753)
+Last modified by
+Mathprof (13753)
+Numerical id
+16
+Author
+Mathprof (13753)
+Entry type
+Definition
+Classification
+msc 60E05
+Synonym
+cumulative distribution function
+Synonym
+distribution
+Related topic
+DensityFunction
+Related topic
+CumulativeDistributionFunction
+Related topic
+RandomVariable
+Related topic
+Distribution
+Related topic
+GeometricDistribution2
+Defines
+law of a random variable
+Generated  on Sat Feb 10 11:54:54 2018 by
+LaTeXML

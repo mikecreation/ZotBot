@@ -1,0 +1,238 @@
+<!DOCTYPE html><html>
+<head>
+<title>related rates</title>
+<!--Generated on Fri Feb  9 22:26:16 2018 by LaTeXML (version 0.8.2) http://dlmf.nist.gov/LaTeXML/.-->
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="LaTeXML.css" type="text/css">
+<link rel="stylesheet" href="ltx-article.css" type="text/css">
+<link rel="stylesheet" href="https://cdn.rawgit.com/holtzermann17/3f71ceeb3b055e1ddc3b6c11fb1f074c/raw/2bb23e3b173ff96840797fc0c3bcb8c54085df8e/LaTeXML.css" type="text/css">
+<link rel="stylesheet" href="https://cdn.rawgit.com/holtzermann17/4bda0365b30858ac2fb83623185fe3ec/raw/cedd84ed3e3ad597c5d293f443ecfe4803741c6b/ltx-article.css" type="text/css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" type="text/javascript"></script>
+</head>
+<body>
+<div class="ltx_page_main">
+<div class="ltx_page_content">
+<article class="ltx_document ltx_authors_1line">
+<h1 class="ltx_title ltx_title_document">related rates</h1>
+
+<div id="p1" class="ltx_para">
+<br class="ltx_break">
+<p class="ltx_p">The notion of a <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">derivative</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Derivative.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/fixedpointsofnormalfunctions"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> has numerous <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">interpretations</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Interpretation.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/structure"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/truthvaluesemanticsforclassicalpropositionallogic"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> and
+applications. A well-known geometric interpretation is that of a
+slope, or more generally that of a linear approximation to a <a class="nnexus_concept" href="http://planetmath.org/mapping">mapping</a>
+between <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">linear spaces</a><sup style="display: none;"><a class="nnexus_concept" href="http://planetmath.org/linearspace"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/vectorspace"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> (see <span class="ltx_text ltx_font_typewriter">http://<a class="nnexus_concept" href="http://planetmath.org/planetmath">planetmath</a>.org/node/2975</span>here). Another useful
+interpretation comes from physics and is based on the idea of <a class="nnexus_concept" href="http://planetmath.org/relatedrates">related
+rates</a>. This second point of view is quite general, and sheds light on
+the <a class="nnexus_concept" href="http://planetmath.org/definition">definition</a> of the derivative of a <a class="nnexus_concept" href="http://planetmath.org/manifold">manifold</a> mapping (the latter is
+described in the <a class="nnexus_concept" href="http://planetmath.org/tangentmap">pushforward</a> entry).</p>
+</div>
+<div id="p2" class="ltx_para">
+<p class="ltx_p">Consider two physical quantities <math id="p2.m1" class="ltx_Math" alttext="x" display="inline"><mi>x</mi></math> and <math id="p2.m2" class="ltx_Math" alttext="y" display="inline"><mi>y</mi></math> that are somehow coupled.
+For example:</p>
+<ul id="I1" class="ltx_itemize">
+<li id="I1.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_itemize">•</span> 
+<div id="I1.i1.p1" class="ltx_para">
+<p class="ltx_p">the quantities <math id="I1.i1.p1.m1" class="ltx_Math" alttext="x" display="inline"><mi>x</mi></math> and <math id="I1.i1.p1.m2" class="ltx_Math" alttext="y" display="inline"><mi>y</mi></math> could be the <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">coordinates</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Coordinates.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/coordinatevector"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/frame"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> of a point as it
+moves along the <a class="nnexus_concept" href="http://planetmath.org/circle">unit circle</a>;</p>
+</div>
+</li>
+<li id="I1.i2" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_itemize">•</span> 
+<div id="I1.i2.p1" class="ltx_para">
+<p class="ltx_p">the quantity <math id="I1.i2.p1.m1" class="ltx_Math" alttext="x" display="inline"><mi>x</mi></math> could be the radius of a sphere
+and <math id="I1.i2.p1.m2" class="ltx_Math" alttext="y" display="inline"><mi>y</mi></math> the sphere’s <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">surface area</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/SurfaceArea.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/area"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>;</p>
+</div>
+</li>
+<li id="I1.i3" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_itemize">•</span> 
+<div id="I1.i3.p1" class="ltx_para">
+<p class="ltx_p">the quantity <math id="I1.i3.p1.m1" class="ltx_Math" alttext="x" display="inline"><mi>x</mi></math> could be the horizontal position of a point on
+a given curve and <math id="I1.i3.p1.m2" class="ltx_Math" alttext="y" display="inline"><mi>y</mi></math> the <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">distance</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Distance.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/distanceinagraph"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> traversed by that point as it
+moves from some fixed starting position;</p>
+</div>
+</li>
+<li id="I1.i4" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_itemize">•</span> 
+<div id="I1.i4.p1" class="ltx_para">
+<p class="ltx_p">the quantity <math id="I1.i4.p1.m1" class="ltx_Math" alttext="x" display="inline"><mi>x</mi></math> could be depth of water in a conical tank and
+<math id="I1.i4.p1.m2" class="ltx_Math" alttext="y" display="inline"><mi>y</mi></math> the rate at which the water flows out the bottom.</p>
+</div>
+</li>
+</ul>
+<p class="ltx_p">Regardless of the application, the situation is such that a change in
+the value of one quantity is accompanied by a change in the value of
+the other quantity. So let’s imagine that we take control of one of
+the quantities, say <math id="p2.m3" class="ltx_Math" alttext="x" display="inline"><mi>x</mi></math>, and change it in any way we like. As we do
+so, quantity <math id="p2.m4" class="ltx_Math" alttext="y" display="inline"><mi>y</mi></math> follows suit and changes along with <math id="p2.m5" class="ltx_Math" alttext="x" display="inline"><mi>x</mi></math>. Now the
+analytical <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">relation</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Relation.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/relation"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> between the values of <math id="p2.m6" class="ltx_Math" alttext="x" display="inline"><mi>x</mi></math> and <math id="p2.m7" class="ltx_Math" alttext="y" display="inline"><mi>y</mi></math> could be quite
+complicated and non-linear, but the relation between the instantaneous
+rates of change of <math id="p2.m8" class="ltx_Math" alttext="x" display="inline"><mi>x</mi></math> and <math id="p2.m9" class="ltx_Math" alttext="y" display="inline"><mi>y</mi></math> <span class="ltx_text ltx_font_italic">is linear</span>.</p>
+</div>
+<div id="p3" class="ltx_para">
+<p class="ltx_p">It does not matter how we vary the two quantities, the ratio of the
+rates of change depends only on the values of <math id="p3.m1" class="ltx_Math" alttext="x" display="inline"><mi>x</mi></math> and <math id="p3.m2" class="ltx_Math" alttext="y" display="inline"><mi>y</mi></math>. This ratio
+is, of course, the derivative of the <a class="nnexus_concept" href="http://planetmath.org/function">function</a> that maps the values of
+<math id="p3.m3" class="ltx_Math" alttext="x" display="inline"><mi>x</mi></math> to the values of <math id="p3.m4" class="ltx_Math" alttext="y" display="inline"><mi>y</mi></math>. Letting <math id="p3.m5" class="ltx_Math" alttext="\dot{x},\dot{y}" display="inline"><mrow><mover accent="true"><mi>x</mi><mo>˙</mo></mover><mo>,</mo><mover accent="true"><mi>y</mi><mo>˙</mo></mover></mrow></math> denote the rates
+of change of the two quantities, we describe this conception of the
+derivative as</p>
+<table id="S0.Ex1" class="ltx_equation ltx_eqn_table">
+
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math id="S0.Ex1.m1" class="ltx_Math" alttext="\frac{dy}{dx}=\frac{\dot{y}}{\dot{x}}," display="block"><mrow><mrow><mfrac><mrow><mi>d</mi><mo>⁢</mo><mi>y</mi></mrow><mrow><mi>d</mi><mo>⁢</mo><mi>x</mi></mrow></mfrac><mo>=</mo><mfrac><mover accent="true"><mi>y</mi><mo>˙</mo></mover><mover accent="true"><mi>x</mi><mo>˙</mo></mover></mfrac></mrow><mo>,</mo></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+</tr>
+</table>
+<p class="ltx_p">or equivalently as</p>
+<table id="S0.E1" class="ltx_equation ltx_eqn_table">
+
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math id="S0.E1.m1" class="ltx_Math" alttext="\dot{y}=\frac{dy}{dx}\,\dot{x}." display="block"><mrow><mrow><mover accent="true"><mi>y</mi><mo>˙</mo></mover><mo>=</mo><mrow><mpadded width="+1.7pt"><mfrac><mrow><mi>d</mi><mo>⁢</mo><mi>y</mi></mrow><mrow><mi>d</mi><mo>⁢</mo><mi>x</mi></mrow></mfrac></mpadded><mo>⁢</mo><mover accent="true"><mi>x</mi><mo>˙</mo></mover></mrow></mrow><mo>.</mo></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+<td rowspan="1" class="ltx_eqn_cell ltx_eqn_eqno ltx_align_middle ltx_align_right"><span class="ltx_tag ltx_tag_equation ltx_align_right">(1)</span></td>
+</tr>
+</table>
+</div>
+<div id="p4" class="ltx_para">
+<p class="ltx_p">Next, let us generalize the discussion and suppose that the two
+quantities <math id="p4.m1" class="ltx_Math" alttext="\mathbf{x}" display="inline"><mi>𝐱</mi></math> and <math id="p4.m2" class="ltx_Math" alttext="\mathbf{y}" display="inline"><mi>𝐲</mi></math> represent physical states with multiple
+degrees of freedom. For example, <math id="p4.m3" class="ltx_Math" alttext="\mathbf{x}" display="inline"><mi>𝐱</mi></math> could be a point on the
+earth’s surface, and <math id="p4.m4" class="ltx_Math" alttext="\mathbf{y}" display="inline"><mi>𝐲</mi></math> the position of a point 1 kilometer to the
+north of <math id="p4.m5" class="ltx_Math" alttext="\mathbf{x}" display="inline"><mi>𝐱</mi></math>. Again, the dependence of <math id="p4.m6" class="ltx_Math" alttext="\mathbf{y}" display="inline"><mi>𝐲</mi></math> and <math id="p4.m7" class="ltx_Math" alttext="\mathbf{x}" display="inline"><mi>𝐱</mi></math> is, in
+general, non-linear, but the rate of change of <math id="p4.m8" class="ltx_Math" alttext="\mathbf{y}" display="inline"><mi>𝐲</mi></math> does have a
+<a class="nnexus_concept" href="http://planetmath.org/linearlyindependent">linear dependence</a> on the rate of change of <math id="p4.m9" class="ltx_Math" alttext="\mathbf{x}" display="inline"><mi>𝐱</mi></math>. We would like to
+say that the derivative is precisely this linear relation, but we must
+first contend with the following complication. The rates of change are
+no longer scalars, but rather <a class="nnexus_concept" href="http://mathworld.wolfram.com/VelocityVector.html">velocity vectors</a>, and therefore the
+derivative must be regarded as a <a class="nnexus_concept" href="http://planetmath.org/lineartransformation">linear transformation</a> that changes
+one vector into another.</p>
+</div>
+<div id="p5" class="ltx_para">
+<p class="ltx_p">In order to formalize this generalized notion of the derivative we
+must consider <math id="p5.m1" class="ltx_Math" alttext="\mathbf{x}" display="inline"><mi>𝐱</mi></math> and <math id="p5.m2" class="ltx_Math" alttext="\mathbf{y}" display="inline"><mi>𝐲</mi></math> to be points on manifolds <math id="p5.m3" class="ltx_Math" alttext="X" display="inline"><mi>X</mi></math> and <math id="p5.m4" class="ltx_Math" alttext="Y" display="inline"><mi>Y</mi></math>,
+and the relation between them a manifold mapping <math id="p5.m5" class="ltx_Math" alttext="\phi:X\rightarrow Y" display="inline"><mrow><mi>ϕ</mi><mo>:</mo><mrow><mi>X</mi><mo>→</mo><mi>Y</mi></mrow></mrow></math>. A varying <math id="p5.m6" class="ltx_Math" alttext="\mathbf{x}" display="inline"><mi>𝐱</mi></math> is formally described by a <a class="nnexus_concept" href="http://planetmath.org/curve">parameterized curve</a></p>
+<table id="S0.Ex2" class="ltx_equation ltx_eqn_table">
+
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math id="S0.Ex2.m1" class="ltx_Math" alttext="\gamma:I\rightarrow X,\quad I\subset\mathbb{R}." display="block"><mrow><mrow><mi>γ</mi><mo>:</mo><mrow><mrow><mi>I</mi><mo>→</mo><mi>X</mi></mrow><mo rspace="12.5pt">,</mo><mrow><mi>I</mi><mo>⊂</mo><mi>ℝ</mi></mrow></mrow></mrow><mo>.</mo></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+</tr>
+</table>
+<p class="ltx_p">The corresponding
+<a class="nnexus_concept" href="http://mathworld.wolfram.com/Velocity.html">velocities</a> take their value in the <a class="nnexus_concept" href="http://planetmath.org/tangentspace">tangent spaces</a> of <math id="p5.m7" class="ltx_Math" alttext="X" display="inline"><mi>X</mi></math>:</p>
+<table id="S0.Ex3" class="ltx_equation ltx_eqn_table">
+
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math id="S0.Ex3.m1" class="ltx_Math" alttext="\gamma^{\prime}(t)\in\mathrm{T}_{\gamma(t)}X." display="block"><mrow><mrow><mrow><msup><mi>γ</mi><mo>′</mo></msup><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>t</mi><mo stretchy="false">)</mo></mrow></mrow><mo>∈</mo><mrow><msub><mi mathvariant="normal">T</mi><mrow><mi>γ</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>t</mi><mo stretchy="false">)</mo></mrow></mrow></msub><mo>⁢</mo><mi>X</mi></mrow></mrow><mo>.</mo></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+</tr>
+</table>
+<p class="ltx_p">The “coupling” of the two quantities is described by the <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">composition</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Composition.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/countingcompositionsofaninteger"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup></p>
+<table id="S0.Ex4" class="ltx_equation ltx_eqn_table">
+
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math id="S0.Ex4.m1" class="ltx_Math" alttext="\phi\circ\gamma:I\rightarrow Y." display="block"><mrow><mrow><mrow><mi>ϕ</mi><mo>∘</mo><mi>γ</mi></mrow><mo>:</mo><mrow><mi>I</mi><mo>→</mo><mi>Y</mi></mrow></mrow><mo>.</mo></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+</tr>
+</table>
+<p class="ltx_p">The derivative of <math id="p5.m8" class="ltx_Math" alttext="\phi" display="inline"><mi>ϕ</mi></math> at any given <math id="p5.m9" class="ltx_Math" alttext="\mathbf{x}\in X" display="inline"><mrow><mi>𝐱</mi><mo>∈</mo><mi>X</mi></mrow></math> is a linear mapping</p>
+<table id="S0.Ex5" class="ltx_equation ltx_eqn_table">
+
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math id="S0.Ex5.m1" class="ltx_Math" alttext="\phi_{*}(\mathbf{x}):\mathrm{T}_{\mathbf{x}}X\rightarrow\mathrm{T}_{\phi(%
+\mathbf{x})}Y," display="block"><mrow><mrow><mrow><msub><mi>ϕ</mi><mo>*</mo></msub><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>𝐱</mi><mo stretchy="false">)</mo></mrow></mrow><mo>:</mo><mrow><mrow><msub><mi mathvariant="normal">T</mi><mi>𝐱</mi></msub><mo>⁢</mo><mi>X</mi></mrow><mo>→</mo><mrow><msub><mi mathvariant="normal">T</mi><mrow><mi>ϕ</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>𝐱</mi><mo stretchy="false">)</mo></mrow></mrow></msub><mo>⁢</mo><mi>Y</mi></mrow></mrow></mrow><mo>,</mo></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+</tr>
+</table>
+<p class="ltx_p">called the
+pushforward of <math id="p5.m10" class="ltx_Math" alttext="\phi" display="inline"><mi>ϕ</mi></math> at <math id="p5.m11" class="ltx_Math" alttext="\mathbf{x}" display="inline"><mi>𝐱</mi></math>, with the <a class="nnexus_concept" href="http://planetmath.org/property">property</a> that for every
+trajectory <math id="p5.m12" class="ltx_Math" alttext="\gamma" display="inline"><mi>γ</mi></math> <a class="nnexus_concept" href="http://planetmath.org/incidencegeometry">passing through</a> <math id="p5.m13" class="ltx_Math" alttext="\mathbf{x}" display="inline"><mi>𝐱</mi></math> at time <math id="p5.m14" class="ltx_Math" alttext="t" display="inline"><mi>t</mi></math>, we have</p>
+<table id="S0.Ex6" class="ltx_equation ltx_eqn_table">
+
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math id="S0.Ex6.m1" class="ltx_Math" alttext="(\phi\circ\gamma)^{\prime}(t)=\phi_{*}(\mathbf{x})\gamma^{\prime}(t)." display="block"><mrow><mrow><mrow><msup><mrow><mo stretchy="false">(</mo><mrow><mi>ϕ</mi><mo>∘</mo><mi>γ</mi></mrow><mo stretchy="false">)</mo></mrow><mo>′</mo></msup><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>t</mi><mo stretchy="false">)</mo></mrow></mrow><mo>=</mo><mrow><msub><mi>ϕ</mi><mo>*</mo></msub><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>𝐱</mi><mo stretchy="false">)</mo></mrow><mo>⁢</mo><msup><mi>γ</mi><mo>′</mo></msup><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>t</mi><mo stretchy="false">)</mo></mrow></mrow></mrow><mo>.</mo></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+</tr>
+</table>
+<p class="ltx_p">The above is the multi-dimensional and coordinate-free <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">generalization</a><sup style="display: none;"><a class="nnexus_concept" href="http://planetmath.org/hilbertsystem"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/axiomsystemforfirstorderlogic"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>
+of the related rates relation (<a href="#S0.E1" title="(1) ‣ related rates" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>).</p>
+</div>
+<div id="p6" class="ltx_para">
+<p class="ltx_p">All of the above has a perfectly <a class="nnexus_concept" href="http://mathworld.wolfram.com/Rigorous.html">rigorous</a> presentation in terms of
+manifold theory. The approach of the present entry is more informal;
+our ambition was merely to motivate the notion of a derivative by
+describing it as a linear transformation between velocity vectors.
+</p>
+<table class="ltx_tabular ltx_align_right ltx_guessed_headers ltx_align_middle">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l ltx_border_t">Title</th>
+<td class="ltx_td ltx_align_left ltx_border_r ltx_border_t">related rates</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l"><a class="nnexus_concept" href="http://planetmath.org/canonical">Canonical</a> name</th>
+<td class="ltx_td ltx_align_left ltx_border_r">RelatedRates</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l">Date of creation</th>
+<td class="ltx_td ltx_align_left ltx_border_r">2013-03-22 12:44:59</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l">Last modified on</th>
+<td class="ltx_td ltx_align_left ltx_border_r">2013-03-22 12:44:59</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l">Owner</th>
+<td class="ltx_td ltx_align_left ltx_border_r">rmilson (146)</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l">Last modified by</th>
+<td class="ltx_td ltx_align_left ltx_border_r">rmilson (146)</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l">Numerical id</th>
+<td class="ltx_td ltx_align_left ltx_border_r">6</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l">Author</th>
+<td class="ltx_td ltx_align_left ltx_border_r">rmilson (146)</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l">Entry type</th>
+<td class="ltx_td ltx_align_left ltx_border_r">Definition</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Classification.html">Classification</a></th>
+<td class="ltx_td ltx_align_left ltx_border_r">msc 53A45</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l">Classification</th>
+<td class="ltx_td ltx_align_left ltx_border_r">msc 53A17</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l">Classification</th>
+<td class="ltx_td ltx_align_left ltx_border_r">msc 26A24</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_b ltx_border_l">Related topic</th>
+<td class="ltx_td ltx_align_left ltx_border_b ltx_border_r">Derivative2</td>
+</tr>
+</tbody>
+</table>
+</div>
+</article>
+</div>
+<footer class="ltx_page_footer">
+<div class="ltx_page_logo">Generated  on Fri Feb  9 22:26:16 2018 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
+</div></footer>
+</div>
+</body>
+</html>

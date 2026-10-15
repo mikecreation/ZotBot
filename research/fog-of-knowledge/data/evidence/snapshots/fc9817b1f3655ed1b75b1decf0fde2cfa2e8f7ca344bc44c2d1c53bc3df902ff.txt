@@ -1,0 +1,660 @@
+hypergroup
+hypergroup
+Hypergroups
+are
+generalizations
+of groups. Recall that a group is set with a
+binary operation
+on it satisfying a number of conditions. If this binary operation is taken to be
+multivalued
+, then we arrive at a hypergroup. In order to make this precise, we need some preliminary
+concepts
+:
+Definition
+. A
+hypergroupoid
+, or
+multigroupoid
+, is a non-empty set
+G
+, together with a multivalued function
+⋅
+:
+G
+×
+G
+⇒
+G
+called the
+multiplication
+on
+G
+.
+We write
+a
+⋅
+b
+, or simply
+a
+⁢
+b
+, instead of
+⋅
+(
+a
+,
+b
+)
+. Furthermore, if
+a
+⁢
+b
+=
+{
+c
+}
+, then we use the abbreviation
+a
+⁢
+b
+=
+c
+.
+A hypergroupoid is said to be
+commutative
+if
+a
+⁢
+b
+=
+b
+⁢
+a
+for all
+a
+,
+b
+∈
+G
+. Defining
+associativity
+of
+⋅
+on
+G
+, however, is trickier:
+Given a hypergroupoid
+G
+, the multiplication
+⋅
+induces a binary operation (also written
+⋅
+) on
+P
+⁢
+(
+G
+)
+, the
+powerset
+of
+P
+, given by
+A
+⋅
+B
+:=
+⋃
+{
+a
+⋅
+b
+∣
+a
+∈
+A
+⁢
+and
+⁢
+b
+∈
+B
+}
+.
+As a result, we have an induced
+groupoid
+P
+⁢
+(
+G
+)
+. Instead of writing
+{
+a
+}
+⁢
+B
+,
+A
+⁢
+{
+b
+}
+, and
+{
+a
+}
+⁢
+{
+b
+}
+, we write
+a
+⁢
+B
+,
+A
+⁢
+b
+, and
+a
+⁢
+b
+instead. From now on, when we write
+(
+a
+⁢
+b
+)
+⁢
+c
+, we mean
+“first, take the
+product
+of
+a
+and
+b
+via the multivalued binary operation
+⋅
+on
+G
+, then take the product of the set
+a
+⁢
+b
+with the
+element
+c
+, under the induced binary operation on
+P
+⁢
+(
+G
+)
+”. Given a hypergroupoid
+G
+, there are two types of associativity we may define:
+Type 1.
+(
+a
+⁢
+b
+)
+⁢
+c
+⊆
+a
+⁢
+(
+b
+⁢
+c
+)
+, and
+Type 2.
+a
+⁢
+(
+b
+⁢
+c
+)
+⊆
+(
+a
+⁢
+b
+)
+⁢
+c
+.
+G
+is said to be
+associative
+if it
+satisfies
+both types of associativity laws. An associative hypergroupoid is called a
+hypersemigroup
+. We are now ready to formally define a hypergroup.
+Definition
+. A
+hypergroup
+is a hypersemigroup
+G
+such that
+a
+⁢
+G
+=
+G
+⁢
+a
+=
+G
+for all
+a
+∈
+G
+.
+For example, let
+G
+be a group and
+H
+a
+subgroup
+of
+G
+. Let
+M
+be the
+collection
+of all
+left cosets
+of
+H
+in
+G
+. For
+a
+⁢
+H
+,
+b
+⁢
+H
+∈
+M
+, set
+a
+⁢
+H
+⋅
+b
+⁢
+H
+:=
+{
+c
+⁢
+H
+∣
+c
+=
+a
+⁢
+h
+⁢
+b
+⁢
+,
+⁢
+h
+∈
+H
+}
+.
+Then
+M
+is a hypergroup with multiplication
+⋅
+.
+If the multiplication in a hypergroup
+G
+is single-valued, then
+G
+is a
+2
+-group (
+http://planetmath.org/PolyadicSemigroup
+), and therefore a group (see proof here (
+http://planetmath.org/PolyadicSemigroup
+)).
+Remark
+. A hypergroup is also known as a
+multigroup
+, although some call a multigroup as a hypergroup with a designated
+identity element
+e
+, as well as a designated
+inverse
+for every element with respect
+e
+. Actually
+identities
+and inverses may be defined more generally for hypergroupoids:
+Let
+G
+be a hypergroupoid. Identity elements are defined via the following three sets:
+1.
+(set of
+left identities
+):
+I
+L
+⁢
+(
+G
+)
+:=
+{
+e
+∈
+G
+∣
+a
+∈
+e
+⁢
+a
+⁢
+for all
+⁢
+a
+∈
+G
+}
+,
+2.
+(set of
+right identities
+):
+I
+R
+⁢
+(
+G
+)
+:=
+{
+e
+∈
+G
+∣
+a
+∈
+a
+⁢
+e
+⁢
+for all
+⁢
+a
+∈
+G
+}
+, and
+3.
+(set of
+identities
+):
+I
+⁢
+(
+G
+)
+=
+I
+L
+⁢
+(
+G
+)
+∩
+I
+R
+⁢
+(
+G
+)
+.
+e
+∈
+L
+⁢
+(
+G
+)
+is called an
+absolute identity
+if
+e
+⁢
+a
+=
+a
+⁢
+e
+=
+a
+for all
+a
+∈
+G
+. If
+e
+,
+f
+∈
+G
+are both absolute identities, then
+e
+=
+e
+⁢
+f
+=
+f
+, so
+G
+can have at most one absolute identity.
+Suppose
+e
+∈
+I
+L
+⁢
+(
+G
+)
+∪
+I
+R
+⁢
+(
+G
+)
+and
+a
+∈
+G
+. An element
+b
+∈
+G
+is said to be a
+left inverse
+of
+a
+with respect to
+e
+if
+e
+∈
+b
+⁢
+a
+.
+Right inverses
+of
+a
+are defined similarly. If
+b
+is both a left and a right inverse of
+a
+with respect to
+e
+, then
+b
+is called an
+inverse
+of
+a
+with respect to
+e
+.
+Thus, one may say that a multigroup is a hypergroup
+G
+with an identity
+e
+∈
+G
+, and a
+function
+:
+-
+1
+G
+→
+G
+such that
+a
+-
+1
+:=
+-
+1
+(
+a
+)
+is an inverse of
+a
+with respect to
+e
+.
+In the example above,
+M
+is a multigroup in the sense given in the remark above. The designated identity is
+H
+(in fact, this is the only identity in
+M
+), and for every
+a
+⁢
+H
+∈
+M
+, its designated inverse is provided by
+a
+-
+1
+⁢
+H
+(of course, this may not be its only inverse, as any
+b
+⁢
+H
+such that
+a
+⁢
+h
+⁢
+b
+=
+e
+for some
+h
+∈
+H
+will do).
+References
+1
+R. H. Bruck,
+A Survey on Binary Systems
+, Springer-Verlag, New York, 1966.
+2
+M. Dresher, O. Ore,
+Theory of Multigroups
+, Amer. J. Math. vol. 60, pp. 705-733, 1938.
+3
+J.E. Eaton, O. Ore,
+Remarks on Multigroups
+, Amer. J. Math. vol. 62, pp. 67-71, 1940.
+4
+L. W. Griffiths,
+On Hypergroups, Multigroups, and Product Systems
+, Amer. J. Math. vol. 60, pp. 345-354, 1938.
+5
+A. P. Dičman,
+On Multigroups whose Elements are Subsets of a Group
+, Moskov. Gos. Ped. Inst. Uč. Zap. vol. 71, pp. 71-79, 1953
+Title
+hypergroup
+Canonical name
+Hypergroup
+Date of creation
+2013-03-22 18:38:22
+Last modified on
+2013-03-22 18:38:22
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+9
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 20N20
+Synonym
+multigroupoid
+Synonym
+multisemigroup
+Synonym
+multigroup
+Related topic
+group
+Defines
+hypergroupoid
+Defines
+hypersemigroup
+Defines
+left identity
+Defines
+right identity
+Defines
+identity
+Defines
+absolute identity
+Defines
+left inverse
+Defines
+right inverse
+Defines
+inverse
+Defines
+absolute identity
+Generated  on Fri Feb  9 19:38:14 2018 by
+LaTeXML

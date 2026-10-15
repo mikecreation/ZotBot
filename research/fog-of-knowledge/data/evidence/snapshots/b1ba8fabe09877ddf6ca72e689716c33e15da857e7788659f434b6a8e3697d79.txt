@@ -1,0 +1,107 @@
+Polish notation
+Polish notation
+Whereas
+operators
+are traditionally placed between operands, with parentheses used to override
+operator precedence
+, it is possible to place each operator to the left of its operands, thus eliminating ambiguity and the need for parentheses, and even the need for rules of operator precedence.
+This is known as
+Polish notation
+(after the Polish mathematician Jan Łukasiewicz who came up with it), or
+prefix notation
+. Polish notation is a system of notating mathematical
+operations
+(whether
+arithmetic
+, logical, etc.) where the operators precede their operands and the ambiguities of operator precedence and the need for parentheses are altogether eliminated.
+For example,
+2
++
+3
+×
+15
+probably means 47, but if the possibility exists that the author meant but neglected to put in parentheses, the
+expression
+could actually mean
+(
+2
++
+3
+)
+×
+15
+=
+75
+. In Polish notation, we could define the basic arithmetic operators to all be binary, and write
++
+×
+2
+3
+15
+with the confidence that it will evaluate to 21 rather than 47.
+Lisp is one
+computer
+programming language that uses Polish notation. In Łukasiewicz’s vision, parentheses are not necessary at all, certainly not for resolving operator precedence. Lisp, however, uses parentheses to specify arity by enclosing operands affected by a single operator in a “list,” and “the only hierarchy rule [in Lisp is] … that innermost lists are evaluated before the lists that enclose them.” (Chirlian, 1986) Thus, in the Lisp expression
+(
+-
+21
+⁢
+(
++
+3
+5 8
+)
+)
+, the
+addition
+operator is ternary and the
+subtraction
+operator is binary.
+Certain LaTeX packages, such as pstricks, also use Polish notation when used for plotting
+plane curves
+.
+For stack-based programming languages like Adobe PostScript,
+reverse Polish notation
+(or postfix notation) – in which the operators are written after the operands – is often the norm. Note that it is quite common for authors to confuse Polish and reverse Polish, e.g., page 3 of Chirlian (1986) speaks of “
+reverse Polish
+or
+prefix
+notation.”
+References
+1
+P. Chirlian,
+Lisp
+, Cleveland: Weber Systems pp. 3, 29 - 34 (1986)
+Title
+Polish notation
+Canonical
+name
+PolishNotation
+Date of creation
+2013-03-22 16:09:42
+Last modified on
+2013-03-22 16:09:42
+Owner
+PrimeFan (13766)
+Last modified by
+PrimeFan (13766)
+Numerical id
+19
+Author
+PrimeFan (13766)
+Entry type
+Definition
+Classification
+msc 68N17
+Classification
+msc 03B70
+Synonym
+prefix notation
+Synonym
+Łukasiewicz notation
+Synonym
+Lukasiewicz notation
+Related topic
+ReversePolishNotation
+Generated  on Sat Feb 10 12:37:36 2018 by
+LaTeXML

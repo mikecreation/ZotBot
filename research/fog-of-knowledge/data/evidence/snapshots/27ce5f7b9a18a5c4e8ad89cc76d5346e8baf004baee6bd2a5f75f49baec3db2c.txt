@@ -1,0 +1,494 @@
+Boolean algebra homomorphism
+Boolean algebra homomorphism
+Let
+A
+and
+B
+be
+Boolean algebras
+. A
+function
+f
+:
+A
+→
+B
+is called a
+Boolean algebra homomorphism
+, or
+homomorphism
+for short, if
+f
+is a
+{
+0
+,
+1
+}
+-
+lattice homomorphism
+(
+http://planetmath.org/LatticeHomomorphism
+) such that
+f
+respects
+′
+:
+f
+⁢
+(
+a
+′
+)
+=
+f
+⁢
+(
+a
+)
+′
+.
+Typically, to show that a function between two Boolean algebras is a Boolean algebra homomorphism, it is not necessary to check every defining condition. In fact, we have the following:
+1.
+if
+f
+respects
+′
+, then
+f
+respects
+∨
+iff it respects
+∧
+;
+2.
+if
+f
+is a lattice homomorphism, then
+f
+respects
+0
+and
+1
+iff it respects
+′
+.
+The first assertion can be shown by de Morgan’s laws. For example, to see the LHS implies RHS,
+f
+(
+a
+∧
+b
+)
+=
+f
+(
+(
+a
+′
+∨
+b
+′
+)
+′
+)
+=
+f
+(
+a
+′
+∨
+b
+′
+)
+′
+=
+(
+(
+f
+(
+a
+′
+)
+∨
+f
+(
+b
+′
+)
+)
+′
+=
+f
+(
+a
+′
+)
+′
+∧
+f
+(
+b
+′
+)
+′
+=
+f
+(
+a
+)
+′′
+∧
+f
+(
+b
+)
+′′
+=
+f
+(
+a
+)
+∧
+f
+(
+b
+)
+. The second assertion can also be easily proved. For example, to see that the LHS implies RHS, we have that
+f
+⁢
+(
+a
+′
+)
+∨
+f
+⁢
+(
+a
+)
+=
+f
+⁢
+(
+a
+′
+∨
+a
+)
+=
+f
+⁢
+(
+1
+)
+=
+1
+and
+f
+⁢
+(
+a
+′
+)
+∧
+f
+⁢
+(
+a
+)
+=
+f
+⁢
+(
+a
+′
+∧
+a
+)
+=
+f
+⁢
+(
+0
+)
+=
+0
+. Together, this implies that
+f
+⁢
+(
+a
+′
+)
+is the
+complement
+of
+f
+⁢
+(
+a
+)
+, which is
+f
+⁢
+(
+a
+)
+′
+.
+If a function
+satisfies
+one, and hence all, of the above conditions also satisfies the property that
+f
+⁢
+(
+0
+)
+=
+0
+, for
+f
+⁢
+(
+0
+)
+=
+f
+⁢
+(
+a
+∧
+a
+′
+)
+=
+f
+⁢
+(
+a
+)
+∧
+f
+⁢
+(
+a
+′
+)
+=
+f
+⁢
+(
+a
+)
+∧
+f
+⁢
+(
+a
+)
+′
+=
+0
+. Dually,
+f
+⁢
+(
+1
+)
+=
+1
+.
+As a Boolean algebra is an
+algebraic system
+, the definition of a Boolean algebra homormphism is just a special case of an algebra homomorphism between two algebraic systems. Therefore, one may similarly define a Boolean algebra
+monomorphism
+,
+epimorphism
+, endormophism, automorphism, and
+isomorphism
+.
+Let
+f
+:
+A
+→
+B
+be a Boolean algebra homomorphism. Then the
+kernel
+of
+f
+is the set
+{
+a
+∈
+A
+∣
+f
+⁢
+(
+a
+)
+=
+0
+}
+, and is written
+ker
+⁡
+(
+f
+)
+. Observe that
+ker
+⁡
+(
+f
+)
+is a
+Boolean ideal
+of
+A
+.
+Let
+κ
+be a
+cardinal
+. A Boolean algebra homomorphism
+f
+:
+A
+→
+B
+is said to be
+κ
+-
+complete
+if for any subset
+C
+⊆
+A
+such that
+1.
+|
+C
+|
+≤
+κ
+, and
+2.
+⋁
+C
+exists,
+then
+⋁
+f
+⁢
+(
+C
+)
+exists and is equal to
+f
+⁢
+(
+⋁
+C
+)
+. Here,
+f
+⁢
+(
+C
+)
+is the set
+{
+f
+⁢
+(
+c
+)
+∣
+c
+∈
+C
+}
+. Note that again, by de Morgan’s laws, if
+⋀
+C
+exists, then
+⋀
+f
+⁢
+(
+C
+)
+exists and is equal to
+f
+⁢
+(
+⋀
+C
+)
+. If we place no
+restrictions
+on the
+cardinality
+of
+C
+(i.e., drop condition 1), then
+f
+:
+A
+→
+B
+is said to be a
+complete Boolean algebra homomorphism
+. In the
+categories
+of
+κ
+-
+complete Boolean algebras
+and complete Boolean algebras, the
+morphisms
+are
+κ
+-complete homomorphisms and complete homomorphisms respectively.
+Title
+Boolean algebra homomorphism
+Canonical name
+BooleanAlgebraHomomorphism
+Date of creation
+2013-03-22 18:02:05
+Last modified on
+2013-03-22 18:02:05
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+5
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 06E05
+Classification
+msc 03G05
+Classification
+msc 06B20
+Classification
+msc 03G10
+Synonym
+Boolean homomorphism
+Defines
+kernel
+Defines
+complete Boolean algebra homomorphism
+Defines
+κ
+-complete
+Boolean
+algbra homomorphism
+Generated  on Fri Feb  9 10:02:28 2018 by
+LaTeXML

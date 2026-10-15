@@ -1,0 +1,686 @@
+orthomodular lattice
+orthomodular lattice
+Orthogonality Relations
+Let
+L
+be an
+orthocomplemented lattice
+and
+a
+,
+b
+∈
+L
+.
+a
+is said to be
+orthogonal
+to
+b
+if
+a
+≤
+b
+⟂
+, denoted by
+a
+⟂
+b
+. If
+a
+≤
+b
+⟂
+, then
+b
+=
+b
+⟂
+⟂
+≤
+a
+⟂
+, so
+⟂
+is a
+symmetric relation
+on
+L
+. It is easy to see that, for any
+a
+,
+b
+∈
+L
+,
+a
+⟂
+b
+implies
+a
+∧
+b
+=
+0
+, and
+a
+⟂
+a
+⟂
+.
+For any
+a
+∈
+L
+, define
+M
+⁢
+(
+a
+)
+:=
+{
+c
+∈
+L
+∣
+c
+⟂
+a
+⁢
+and
+⁢
+1
+=
+c
+∨
+a
+}
+. An element of
+M
+⁢
+(
+a
+)
+is called an
+orthogonal complement
+of
+a
+. We have
+a
+⟂
+∈
+M
+⁢
+(
+a
+)
+, and any orthogonal complement of
+a
+is a
+complement
+of
+a
+.
+If we replace the
+1
+in
+M
+⁢
+(
+a
+)
+by an arbitrary
+element
+b
+≥
+a
+, then we have the set
+M
+⁢
+(
+a
+,
+b
+)
+:=
+{
+c
+∈
+L
+∣
+c
+⟂
+a
+⁢
+and
+⁢
+b
+=
+c
+∨
+a
+}
+.
+An element of
+M
+⁢
+(
+a
+,
+b
+)
+is called an
+orthogonal complement
+of
+a
+relative to
+b
+. Clearly,
+M
+⁢
+(
+a
+)
+=
+M
+⁢
+(
+a
+,
+1
+)
+. Also, for
+a
+,
+c
+≤
+b
+,
+c
+∈
+M
+⁢
+(
+a
+,
+b
+)
+iff
+a
+∈
+M
+⁢
+(
+c
+,
+b
+)
+. As a result, we can define a
+symmetric
+binary operator
+⊕
+on
+[
+0
+,
+b
+]
+, given by
+b
+=
+a
+⊕
+c
+iff
+c
+∈
+M
+⁢
+(
+a
+,
+b
+)
+. Note that
+b
+=
+b
+⊕
+0
+.
+Before the main definition, we define one more
+operation
+:
+b
+-
+a
+:=
+b
+∧
+a
+⟂
+. Some properties: (1)
+a
+-
+a
+=
+0
+,
+a
+-
+0
+=
+a
+,
+0
+-
+a
+=
+0
+,
+a
+-
+1
+=
+0
+, and
+1
+-
+a
+=
+a
+⟂
+; (2)
+b
+-
+a
+=
+a
+⟂
+-
+b
+⟂
+; and (3) if
+a
+≤
+b
+, then
+a
+⟂
+(
+b
+-
+a
+)
+and
+a
+⊕
+(
+b
+-
+a
+)
+≤
+b
+.
+Definition
+A
+lattice
+L
+is called an
+orthomodular lattice
+if
+1.
+L
+is orthocomplemented, and
+2.
+(
+orthomodular law
+) if
+x
+≤
+y
+, then
+y
+=
+x
+⊕
+(
+y
+-
+x
+)
+.
+The orthomodular law can be restated as follows: if
+x
+≤
+y
+, then
+y
+=
+x
+∨
+(
+y
+∧
+x
+⟂
+)
+. Equivalently,
+x
+≤
+y
+implies
+y
+=
+(
+y
+∧
+x
+)
+∨
+(
+y
+∧
+x
+⟂
+)
+. Note that the equation is automatically true in an arbitrary
+distributive lattice
+, even without the
+assumption
+that
+x
+≤
+y
+.
+For example, the lattice
+ℂ
+⁢
+(
+H
+)
+of closed subspaces of a hilbert space
+H
+is orthomodular.
+ℂ
+⁢
+(
+H
+)
+is
+modular
+iff
+H
+is finite dimensional. In
+addition
+, if we give the set
+ℙ
+⁢
+(
+H
+)
+of (
+bounded
+) projection operators on
+H
+an
+ordering
+structure
+by defining
+P
+≤
+Q
+iff
+P
+⁢
+(
+H
+)
+≤
+Q
+⁢
+(
+H
+)
+, then
+ℙ
+⁢
+(
+H
+)
+is lattice
+isomorphic
+to
+ℂ
+⁢
+(
+H
+)
+, and hence orthomodular.
+A simple example of an orthocomplemented lattice that is not orthomodular is the
+benzene
+:
+\xymatrix
+⁢
+&
+⁢
+1
+⁢
+\ar
+⁢
+@
+-
+[
+l
+⁢
+d
+]
+⁢
+\ar
+⁢
+@
+-
+[
+r
+⁢
+d
+]
+⁢
+&
+⁢
+b
+⁢
+\ar
+⁢
+@
+-
+[
+d
+]
+⁢
+&
+⁢
+&
+⁢
+a
+⟂
+⁢
+\ar
+⁢
+@
+-
+[
+d
+]
+⁢
+a
+⁢
+\ar
+⁢
+@
+-
+[
+r
+⁢
+d
+]
+⁢
+&
+⁢
+&
+⁢
+b
+⟂
+⁢
+\ar
+⁢
+@
+-
+[
+l
+⁢
+d
+]
+⁢
+&
+⁢
+0
+⁢
+&
+Note that
+a
+≤
+b
+, but
+a
+∨
+(
+b
+∧
+a
+⟂
+)
+=
+a
+∨
+0
+=
+a
+≠
+b
+.
+An nice example of an orthomodular lattice that is not modular can be found in the reference below.
+Remarks
+.
+•
+Orthomodular lattices were first studied by John von Neumann and Garett Birkhoff, when they were trying to develop the logic of quantum mechanics (
+http://planetmath.org/QuantumLogic
+) by studying the structure of the lattice
+ℙ
+⁢
+(
+H
+)
+of projection operators on a Hilbert space
+H
+. However, the term was coined by Irving Kaplansky, when it was realized that
+ℙ
+⁢
+(
+H
+)
+, while orthocomplemented, is not modular. Rather, it
+satisfies
+a variant of the modular law as indicated above.
+•
+More generally, an
+orthomodular poset
+P
+is an orthocomplemented poset such that
+(a)
+given any pair of orthogonal elements
+x
+,
+y
+∈
+P
+(
+x
+≤
+y
+⟂
+), their
+greatest lower bound
+exists (
+x
+∨
+y
+exists). Simply put,
+x
+⟂
+y
+implies
+x
+∨
+y
+∈
+P
+.
+(b)
+for any
+x
+,
+y
+∈
+P
+such that
+x
+≤
+y
+, the orthomodular law holds (the right hand side of the orthomodular law exists via the first condition).
+From this definition, we see that an orthomodular lattice is just an orthomodular poset that is also a lattice.
+References
+1
+L. Beran,
+Orthomodular Lattices, Algebraic Approach
+, Mathematics and Its Applications (East European Series), D. Reidel Publishing Company, Dordrecht, Holland (1985).
+Title
+orthomodular lattice
+Canonical name
+OrthomodularLattice
+Date of creation
+2013-03-22 16:33:06
+Last modified on
+2013-03-22 16:33:06
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+10
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 06C15
+Classification
+msc 81P10
+Classification
+msc 03G12
+Related topic
+OrthocomplementedLattice
+Related topic
+LatticeOfProjections
+Defines
+orthomodular poset
+Defines
+orthogonal
+Defines
+orthogonal complement
+Defines
+relative orthogonal complement
+Generated  on Fri Feb  9 09:59:51 2018 by
+LaTeXML

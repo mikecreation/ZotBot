@@ -1,0 +1,676 @@
+homology
+homology
+Homology
+is the general name for a number of
+functors
+from
+topological spaces
+to
+abelian groups
+(or more generally modules over a fixed ring). It turns out that in most reasonable cases a large number of these (
+singular homology
+,
+cellular homology
+, Morse homology,
+simplicial homology
+) all coincide. There are other generalized homology , but I won’t consider those. There are also related
+cohomology
+theories which serve the same purpose with slightly different machinery.
+In an intuitive sense, homology measures “holes” in topological spaces. The idea is that we want to measure the
+topology
+of a space by looking
+at sets which have no
+boundary
+, but are not the boundary of something else. These are things
+that have wrapped around “holes” in our topological space, allowing us to detect those “holes.”
+Here I don’t mean boundary in the formal topological sense, but in an intuitive sense. Thus a loop
+has no boundary as I mean here, even though it does in the general topological definition. You
+will see the formal definition below.
+Perhaps the simplest form of homology to visualize, and to work with in practice, is simplicial homology. It is based on computing the
+homology groups
+of a
+simplicial complex
+(generally a finite one). However, it is generally nontrivial to show that a space of interest is
+homeomorphic
+to a simplicial complex, and it can also be difficult to apply more advanced methods such as
+spectral sequences
+when working with simplicial homology. Singular homology is
+similar
+: it is in some sense a
+continuous
+version of simplicial homology, and it does not suffer from these problems.
+Singular homology is defined as follows: We define the standard
+n
+-
+simplex
+to be the subset
+Δ
+n
+=
+{
+(
+x
+1
+,
+…
+,
+x
+n
+)
+∈
+ℝ
+n
+|
+x
+i
+≥
+0
+,
+∑
+i
+=
+1
+n
+x
+i
+≤
+1
+}
+of
+ℝ
+n
+. The
+0
+-simplex is a point, the
+1
+-simplex a
+line segment
+, the 2-simplex, a
+triangle
+,
+and the 3-simplex, a
+tetrahedron
+.
+A
+singular
+n
+-simplex
+in a topological space
+X
+is a continuous map
+f
+:
+Δ
+n
+→
+X
+.
+A
+singular
+n
+-chain
+is a formal linear combination (with integer coefficients) of a
+finite number of singular
+n
+-simplices. The
+n
+-chains in
+X
+form a group under formal
+addition
+,
+denoted
+C
+n
+⁢
+(
+X
+,
+ℤ
+)
+.
+Next, we define a
+boundary operator
+∂
+n
+:
+C
+n
+⁢
+(
+X
+,
+ℤ
+)
+→
+C
+n
+-
+1
+⁢
+(
+X
+,
+ℤ
+)
+. Intuitively, this is just taking
+all the faces of the simplex, and considering their images as simplices of one lower
+dimension
+with the appropriate sign to keep
+orientations
+correct. Formally, we let
+v
+0
+,
+v
+1
+,
+…
+,
+v
+n
+be the vertices of
+Δ
+n
+, pick an order on the vertices of the
+n
+-
+1
+simplex, and let
+[
+v
+0
+,
+…
+,
+v
+^
+i
+,
+…
+,
+v
+n
+]
+be the face spanned by all vertices other than
+v
+i
+, identified
+with the
+n
+-
+1
+-simplex by
+mapping
+the vertices
+v
+0
+,
+…
+,
+v
+n
+except for
+v
+i
+, in that order,
+to the vertices of the
+(
+n
+-
+1
+)
+-simplex in the order you have chosen.
+Then if
+φ
+:
+Δ
+n
+→
+X
+is an
+n
+-simplex,
+φ
+⁢
+(
+[
+v
+0
+,
+…
+,
+v
+^
+i
+,
+…
+,
+v
+n
+]
+)
+is the map
+φ
+, restricted to the face
+[
+v
+0
+,
+…
+,
+v
+^
+i
+,
+…
+,
+v
+n
+]
+, made into a singular
+(
+n
+-
+1
+)
+-simplex by the identification with the standard
+(
+n
+-
+1
+)
+-simplex I defined above.
+Then
+∂
+n
+⁡
+(
+φ
+)
+=
+∑
+i
+=
+0
+n
+(
+-
+1
+)
+i
+⁢
+φ
+⁢
+(
+[
+v
+0
+,
+…
+,
+v
+^
+i
+,
+…
+,
+v
+n
+]
+)
+.
+It is a simple exercise in reindexing to check that
+∂
+n
+∘
+∂
+n
++
+1
+=
+0
+.
+For example, if
+φ
+is a singular
+1
+-simplex (that is a path), then
+∂
+⁡
+(
+φ
+)
+=
+φ
+⁢
+(
+1
+)
+-
+φ
+⁢
+(
+0
+)
+.
+That is, it is the
+difference
+of the
+endpoints
+(thought of as 0-simplices).
+Now, we are finally in a position to define homology groups. Let
+H
+n
+⁢
+(
+X
+,
+ℤ
+)
+, the
+n
+homology
+group of
+X
+be the
+quotient
+H
+n
+⁢
+(
+X
+,
+ℤ
+)
+=
+ker
+⁢
+∂
+n
+im
+⁢
+∂
+n
++
+1
+.
+The association
+X
+↦
+H
+n
+⁢
+(
+X
+,
+ℤ
+)
+is a functor from topological spaces to abelian groups, and the maps
+f
+*
+:
+H
+n
+⁢
+(
+X
+,
+ℤ
+)
+→
+H
+n
+⁢
+(
+Y
+,
+ℤ
+)
+induced by a map
+f
+:
+X
+→
+Y
+are simply those induced by
+composition
+of an singular
+n
+-simplex with the map
+f
+.
+From this definition, it is not at all clear that homology is at all
+computable
+. But, in fact, homology is often much more easily computed than
+homotopy groups
+or most other
+topological invariants
+. Important tools in the calculation of homology are
+long exact sequences
+, the
+Mayer-Vietoris sequence
+, cellular homology, spectral sequences, and
+homotopy invariance
+.
+Some examples of homology groups:
+H
+m
+⁢
+(
+ℝ
+n
+,
+ℤ
+)
+=
+{
+ℤ
+m
+=
+0
+0
+m
+>
+0
+.
+This
+reflects
+the fact that
+ℝ
+n
+has “no holes”
+Consider the space
+ℝ
+⁢
+P
+n
+, real projective space, which is
+ℝ
+n
++
+1
+∖
+{
+0
+}
+modulo the
+relation
+that
+(
+x
+0
+,
+…
+,
+x
+n
+)
+≡
+λ
+⁢
+(
+x
+0
+,
+…
+,
+x
+n
+)
+for every nonzero
+λ
+. For
+n
+even,
+H
+m
+⁢
+(
+ℝ
+⁢
+P
+n
+,
+ℤ
+)
+=
+{
+ℤ
+m
+=
+0
+ℤ
+2
+m
+≡
+1
+(
+mod
+2
+)
+or
+n
+>
+m
+>
+0
+0
+m
+≡
+0
+(
+mod
+2
+)
+,
+n
+>
+m
+>
+0
+⁢
+or
+⁢
+m
+≥
+n
+,
+and for
+n
+odd,
+H
+m
+⁢
+(
+ℝ
+⁢
+P
+n
+,
+ℤ
+)
+=
+{
+ℤ
+m
+=
+0
+⁢
+or
+⁢
+n
+ℤ
+2
+m
+≡
+1
+(
+mod
+2
+)
+or
+n
+>
+m
+>
+0
+0
+m
+≡
+0
+(
+mod
+2
+)
+,
+n
+>
+m
+>
+0
+⁢
+or
+⁢
+m
+>
+n
+.
+Title
+homology
+Canonical name
+Homology
+Date of creation
+2013-03-22 13:14:41
+Last modified on
+2013-03-22 13:14:41
+Owner
+mathcam (2727)
+Last modified by
+mathcam (2727)
+Numerical id
+17
+Author
+mathcam (2727)
+Entry type
+Definition
+Classification
+msc 55N10
+Synonym
+singular homology
+Related topic
+SimplicialComplex
+Related topic
+GeometryOfTheSphere
+Related topic
+BettiNumber
+Related topic
+HomologyChainComplex
+Related topic
+CohomologyGroupTheorem
+Defines
+singular n-chain
+Defines
+singular n-simplex
+Generated  on Sat Feb 10 11:41:30 2018 by
+LaTeXML

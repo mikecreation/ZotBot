@@ -1,0 +1,363 @@
+deduction
+deduction
+Deductions
+are formalizations of proofs. Informally, they can be viewed as arriving at a
+conclusion
+from a set of assumptions, via applications of some prescribed rules in a finite number of steps.
+There are several ways to formally define what a deduction is, given a
+deductive system
+. We will explore some of them here.
+Deduction as a Sequence
+Given a deductive system, a deduction from a set
+Δ
+of (well-formed)
+formulas
+can be thought of as a
+finite sequence
+of wff’s
+A
+1
+,
+A
+2
+,
+⋯
+,
+A
+n
+such that
+A
+i
+is either an axiom, an element of
+Δ
+, or as the result of an application of an
+inference rule
+R
+to earlier wff’s
+A
+i
+1
+,
+…
+,
+A
+i
+k
+, where
+i
+1
+,
+…
+,
+i
+k
+<
+i
+. If
+A
+i
+is an element of
+Δ
+, we call
+A
+i
+an
+assumption
+or a
+hypothesis
+. This way of presenting a deduction is said to be
+linear
+.
+Deductions presented this way are also called
+deduction sequences
+or
+proof sequences
+. Deductions in Hilbert-style
+axiom systems
+are presented this way.
+Deduction as a Tree
+Alternatively, a deduction can be thought of as a labeled
+rooted tree
+. The nodes are labeled by formulas, and for each node with label, say
+Y
+, its immediate
+predecessors
+(
+children
+) are nodes whose labels are, say
+X
+1
+,
+…
+,
+X
+n
+which are
+premises
+of some inference rule
+R
+. Deductions presented this way are also called
+deduction trees
+or
+proof trees
+. In a deduction tree, the labels of the leaves are either the axioms, or assumptions (from some set
+Δ
+), and the label of the root of the tree is the conclusion of the deduction. Below is an example of a deduction tree:
+.25.25
+⁢
+Z
+.75.75
+⁢
+Y
+X
+1
+⁢
+.75.75.85826772
+⁢
+X
+2
+Here,
+X
+1
+and
+X
+2
+are assumptions and
+Y
+the corresponding conclusion of some (binary) rule
+R
+, and
+Y
+is the assumption and
+Z
+is the conclusion of some (unary) rule
+S
+. Inference rules may be specified as labels of the edges.
+Deductions in deduction systems such as
+natural deduction
+or
+sequent calculus
+are presented this way. In those systems, the edges of the trees are replaced by horizontal lines, dividing premises and conclusions, and rules are sometimes specified next to the lines, in the following fashion:
+X
+1
+X
+2
+R
+Y
+S
+Z
+Deducibility Relation
+Given a deductive system
+D
+, if
+B
+is the conclusion of a deduction from a set
+Δ
+, we write
+Δ
+⊢
+D
+B
+.
+If
+Γ
+is another set of wff’s, we also write
+Δ
+,
+Γ
+⊢
+D
+B
+to mean
+Δ
+∪
+Γ
+⊢
+D
+B
+. In
+addition
+, if
+Γ
+=
+{
+A
+1
+,
+…
+,
+A
+n
+}
+, we write
+A
+1
+,
+…
+,
+A
+n
+⊢
+D
+B
+and
+Δ
+,
+A
+1
+,
+…
+,
+A
+n
+⊢
+D
+B
+to mean
+Γ
+⊢
+D
+B
+and
+Δ
+∪
+Γ
+⊢
+D
+B
+respectively. Furthermore, we may also remove the
+subscript
+D
+and write
+Δ
+⊢
+B
+if no confusion arises. When
+Δ
+⊢
+B
+, we also say that
+B
+is
+deducible
+from
+Δ
+. The turnstile symbol
+⊢
+is also called the
+deducibility relation
+.
+If a formula
+A
+is deducible from
+∅
+, we say that
+A
+is a
+theorem
+(of the corresponding deductive system). In symbol, we write
+⊢
+D
+A
+or
+⊢
+A
+.
+A
+property
+of
+⊢
+is the following:
+if
+⊢
+A
+and
+A
+⊢
+B
+, then
+⊢
+B
+.
+In other words, if
+A
+is a theorem, and
+B
+can be deduced from
+A
+, then
+B
+is also a theorem, which conforms with our intuition. More generally, we have
+if
+Δ
+⊢
+A
+and
+Γ
+,
+A
+⊢
+B
+, then
+Δ
+,
+Γ
+⊢
+B
+.
+Remark
+. We refrain from calling a deduction a proof. As we have seen earlier, deductions are mathematical abstractions of proofs. So they are mathematical constructed, viewed either as sequences or trees (of formulas). On the other hand, in the literature, “proof” is usually reserved to be used in the meta-language, as in the “proof” of Fermat’s Last Theorem, etc…
+References
+1
+A. S. Troelstra, H. Schwichtenberg,
+Basic
+Proof Theory
+, 2nd Edition, Cambridge University Press, 2000
+2
+D. Dalen,
+Logic and
+Structure
+, 4th Edition, Springer, 2008
+Title
+deduction
+Canonical
+name
+Deduction
+Date of creation
+2013-03-22 19:12:53
+Last modified on
+2013-03-22 19:12:53
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+12
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 03F03
+Classification
+msc 03B99
+Classification
+msc 03B22
+Synonym
+proof tree
+Synonym
+proof sequence
+Synonym
+hypothesis
+Defines
+deduction tree
+Defines
+deduction sequence
+Defines
+deducible
+Defines
+deducibility relation
+Defines
+assumption
+Generated  on Thu Feb  8 20:22:42 2018 by
+LaTeXML

@@ -1,0 +1,257 @@
+connected poset
+connected poset
+Let
+P
+be a poset. Write
+a
+⟂
+b
+if either
+a
+≤
+b
+or
+b
+≤
+a
+. In other words,
+a
+⟂
+b
+if
+a
+and
+b
+are
+comparable
+. A poset
+P
+is said to be
+connected
+if for every pair
+a
+,
+b
+∈
+P
+, there is a
+finite sequence
+a
+=
+c
+1
+,
+c
+2
+,
+…
+,
+c
+n
+=
+b
+, with each
+c
+i
+∈
+P
+, such that
+c
+i
+⟂
+c
+i
++
+1
+for each
+i
+=
+1
+,
+2
+,
+…
+,
+n
+-
+1
+.
+For example, a poset with the property that any two
+elements
+are either
+bounded from above
+or bounded from below is a connected poset. In particular, every
+semilattice
+is connected. A fence is always connected. If
+P
+has more than one element and contains an element that is both
+maximal
+and
+minimal
+, then it is not connected. A
+connected component
+in a poset
+P
+is a maximal connected subposet. In the last example, the maximal-minimal point is a
+component
+in
+P
+. Any poset can be written as a
+disjoint union
+of its components.
+It is true that a poset is connected if its corresponding
+Hasse diagram
+is a
+connected graph
+. However, the
+converse
+is not true. Before we see an example of this, let us recall how to construct a Hasse diagram from a poset
+P
+. The diagram so constructed is going to be an
+undirected graph
+(since this is all we need in our discussion). Draw an edge between
+a
+,
+b
+∈
+P
+if either
+a
+covers
+b
+or
+b
+covers
+a
+. Let us denote this
+relation
+between
+a
+and
+b
+by
+a
+≍
+b
+. Let
+E
+be the
+collection
+of all these edges. Then
+G
+=
+(
+P
+,
+E
+)
+is a graph where elements of
+P
+serve as vertices and
+E
+as the constructed edges. From this construction, one sees that a finite path exists between
+a
+,
+b
+∈
+V
+⁢
+(
+G
+)
+=
+P
+if there is a finite sequence
+a
+=
+d
+0
+,
+d
+1
+,
+…
+,
+d
+m
+=
+b
+, with each
+d
+i
+∈
+V
+⁢
+(
+G
+)
+, such that
+d
+i
+≍
+d
+i
++
+1
+for
+i
+=
+1
+,
+…
+,
+m
+-
+1
+. In other words,
+a
+and
+b
+can be “joined” by a finite number of edges, such that
+a
+is a vertex on the first edge and
+b
+is the vertex on the last edge.
+As promised, here is an example of a connected poset whose underlying Hasse diagram is not connected. take the real line
+ℝ
+with
+∞
+adjoined to the right (meaning every element
+r
+∈
+ℝ
+is less than or equal to
+∞
+). Then the resulting poset is connected, but its underlying Hasse diagram is not, since no element in
+ℝ
+can be joined to
+∞
+by a finite path.
+Title
+connected poset
+Canonical name
+ConnectedPoset
+Date of creation
+2013-03-22 17:08:31
+Last modified on
+2013-03-22 17:08:31
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+6
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 06A07
+Related topic
+ConnectedGraph
+Defines
+connected
+Defines
+connected component
+Generated  on Fri Feb  9 09:53:24 2018 by
+LaTeXML

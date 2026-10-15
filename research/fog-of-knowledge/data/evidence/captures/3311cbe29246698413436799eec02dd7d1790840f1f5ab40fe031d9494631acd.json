@@ -1,0 +1,15 @@
+{
+  "id": "planetmath.fixedpointarithmetic",
+  "url": "https://planetmath.org/fixedpointarithmetic",
+  "final_url": "https://planetmath.org/fixedpointarithmetic",
+  "title": "PlanetMath entry fixedpointarithmetic",
+  "source_kind": "secondary",
+  "retrieved_at": "2026-10-15T13:16:40.964387+00:00",
+  "text": "fixed-point arithmetic\nfixed-point arithmetic\nFor computation or display in\nfixed-point arithmetic\n, each\nreal number\nx\nhas a\nvariable\nnumber\nk\n>\n0\nof\ninteger\ndigits\nd\nk\n-\n1\n,\n…\n,\nd\n0\n(in order left to right from the most to the least significant digit) in base\nb\nbut always\nl\nfractional digits to the right of the point. Thus,\nx\n=\n∑\ni\n=\n-\nl\nk\n-\n1\nd\ni\n⁢\nb\ni\n.\nFor example, for the usual mundane applications of money,\nb\n=\n10\nand\nl\n=\n2\n.\nFixed-point arithmetic can adequately represent any\nrational number\nn\nm\nprovided that\nm\n≤\nb\nl\nand\nm\nhas no\nprime factors\nb\ndoesn’t (counting repeated prime factors).\nAddition\nand\nsubtraction\nin fixed-point arithmetic present no special problems for such numbers. When it comes to\nmultiplication\nand\ndivision\n, we run into cases where the result cannot be adequately represented though the operands can.\nIn those cases it may be practical to perform the computations in floating point and display the results in fixed-point. In fact, this is what many business\ncalculators\ndo (such as cash registers); they compute in binary floating point and display in decimal fixed-point. Another option is to continue the calculations in fixed-point by settling for crude approximations. Depending on the application and the user, the loss of precision may be acceptable. There are two ways to handle the loss of precision: if\nd\n-\nl\n-\n1\n>\nb\n2\n, we could then assign\nd\n-\nl\n=\nd\n-\nl\n+\n1\n(propagating the change as needed to the more significant digits); or we could simply ignore everything to the right of\nd\n-\nl\n.\nOlder versions of FractInt for 80386 IBM-compatibles used fixed-point arithmetic. Most\ncomputers\n(and even game consoles) today have floating point units, reducing the need for fixed-point. Even so, newer implementations of the C programming language are expected to provide fixed-point data types and appropriately\noverload\nbuilt-in\nfunctions\nto handle those data types (see ISO/IEC TR 18037:2004).\nTitle\nfixed-point arithmetic\nCanonical\nname\nFixedpointArithmetic\nDate of creation\n2013-03-22 16:32:31\nLast modified on\n2013-03-22 16:32:31\nOwner\nPrimeFan (13766)\nLast modified by\nPrimeFan (13766)\nNumerical id\n5\nAuthor\nPrimeFan (13766)\nEntry type\nDefinition\nClassification\nmsc 11A63\nSynonym\nfixed point arithmetic\nSynonym\nfixed point\nSynonym\nfixed-point\nGenerated  on Fri Feb  9 15:22:54 2018 by\nLaTeXML",
+  "sha256": "a86ef0d5114f9c699ac99b9ffebe6bdfd68861bdc18151d67e887e67dc0314f1",
+  "raw_sha256": "e541a5640cae4a75d42ab59d2124ad8dd72c40a3290285940fd001637f6065b9",
+  "content_type": "text/html",
+  "charset": "utf-8",
+  "extraction_method": "http-html-data-lines/1",
+  "capture_id": "3311cbe29246698413436799eec02dd7d1790840f1f5ab40fe031d9494631acd"
+}

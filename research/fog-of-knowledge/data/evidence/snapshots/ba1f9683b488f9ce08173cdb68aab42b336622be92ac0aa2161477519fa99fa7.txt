@@ -1,0 +1,454 @@
+partial derivative
+partial derivative
+The
+partial derivative
+of a multivariable function
+f
+is simply its
+derivative
+with respect to only one variable, keeping all other variables constant (which are not functions of the variable in question). The formal definition is
+D
+i
+⁢
+f
+⁢
+(
+𝐚
+)
+=
+∂
+⁡
+f
+∂
+⁡
+a
+i
+=
+lim
+h
+→
+0
+⁡
+1
+h
+⁢
+(
+f
+⁢
+(
+a
+1
+⋮
+a
+i
++
+h
+⋮
+a
+n
+)
+-
+f
+⁢
+(
+𝐚
+)
+)
+=
+lim
+h
+→
+0
+⁡
+f
+⁢
+(
+𝐚
++
+h
+⁢
+e
+→
+i
+)
+-
+f
+⁢
+(
+𝐚
+)
+h
+where
+e
+→
+i
+is the standard basis vector of the
+i
+th variable. Since this only affects the
+i
+th variable, one can derive the function using common rules and tables, treating all other variables (which are not functions of
+a
+i
+) as constants. For example, if
+f
+⁢
+(
+𝐱
+)
+=
+x
+2
++
+2
+⁢
+x
+⁢
+y
++
+y
+2
++
+y
+3
+⁢
+z
+, then
+(
+1
+)
+∂
+⁡
+f
+∂
+⁡
+x
+=
+2
+⁢
+x
++
+2
+⁢
+y
+(
+2
+)
+∂
+⁡
+f
+∂
+⁡
+y
+=
+2
+⁢
+x
++
+2
+⁢
+y
++
+3
+⁢
+y
+2
+⁢
+z
+(
+3
+)
+∂
+⁡
+f
+∂
+⁡
+z
+=
+y
+3
+Note that in equation
+(
+1
+)
+, we treated
+y
+as a constant, since we were differentiating with respect to
+x
+.
+(
+d
+⁢
+(
+c
+*
+x
+)
+d
+⁢
+x
+=
+c
+)
+The partial derivative of a
+vector-valued function
+f
+→
+⁢
+(
+𝐱
+)
+with respect to variable
+a
+i
+is a vector
+D
+i
+⁢
+𝐟
+→
+=
+∂
+⁡
+f
+→
+∂
+⁡
+a
+i
+.
+Multiple Partials
+:
+Multiple partial derivatives can be treated just like multiple derivatives. There is an additional degree of freedom though, as you can compound derivatives with respect to different variables. For example, using the above function,
+(
+4
+)
+∂
+2
+⁡
+f
+∂
+⁡
+x
+2
+=
+∂
+∂
+⁡
+x
+⁢
+(
+2
+⁢
+x
++
+2
+⁢
+y
+)
+=
+2
+(
+5
+)
+∂
+2
+⁡
+f
+∂
+⁡
+z
+⁢
+∂
+⁡
+y
+=
+∂
+∂
+⁡
+z
+⁢
+(
+2
+⁢
+x
++
+2
+⁢
+y
++
+3
+⁢
+y
+2
+⁢
+z
+)
+=
+3
+⁢
+y
+2
+(
+6
+)
+∂
+2
+⁡
+f
+∂
+⁡
+y
+⁢
+∂
+⁡
+z
+=
+∂
+∂
+⁡
+y
+⁢
+(
+y
+3
+)
+=
+3
+⁢
+y
+2
+D
+12
+is another way of writing
+∂
+∂
+⁡
+x
+1
+⁢
+∂
+⁡
+x
+2
+. If
+f
+⁢
+(
+𝐱
+)
+is
+continuous
+in the
+neighborhood
+of
+𝐱
+,
+and
+D
+i
+⁢
+j
+⁢
+f
+and
+D
+j
+⁢
+i
+⁢
+f
+are continuous in an
+open set
+V
+, it can be shown
+(see Clairaut’s theorem (
+http://planetmath.org/ClairautsTheorem
+)) that
+D
+i
+⁢
+j
+⁢
+f
+⁢
+(
+𝐱
+)
+=
+D
+j
+⁢
+i
+⁢
+f
+⁢
+(
+𝐱
+)
+in
+V
+, where
+i
+,
+j
+are the ith and jth variables. In fact, as long as an equal number of partials are taken with respect to each variable, changing the order of
+differentiation
+will produce the same results in the above condition.
+Another form of notation is
+f
+(
+a
+,
+b
+,
+c
+,
+…
+)
+⁢
+(
+𝐱
+)
+where
+a
+is the partial derivative with respect to the first variable
+a
+times,
+b
+is the partial with respect to the second variable
+b
+times, etc.
+Title
+partial derivative
+Canonical name
+PartialDerivative
+Date of creation
+2013-03-22 11:58:30
+Last modified on
+2013-03-22 11:58:30
+Owner
+Mathprof (13753)
+Last modified by
+Mathprof (13753)
+Numerical id
+26
+Author
+Mathprof (13753)
+Entry type
+Definition
+Classification
+msc 26B12
+Related topic
+Derivative2
+Related topic
+DerivativeNotation
+Related topic
+JacobianMatrix
+Related topic
+DirectionalDerivative
+Related topic
+Gradient
+Related topic
+HessianMatrix
+Generated  on Fri Feb  9 19:58:21 2018 by
+LaTeXML
