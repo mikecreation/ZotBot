@@ -69,8 +69,12 @@ root.FogCircuitPainter={draw:function(c,v,scale,ox,oy){
       const pad=200/scale,box={left:v[0]-pad,top:v[1]-pad,right:v[0]+v[2]+pad,bottom:v[1]+v[3]+pad};
       const edgeIndices=[],itemIndices=[];if(!this.options.connectionKey)query(this.edgeTree,box,edgeIndices);query(this.itemTree,box,itemIndices);const edges=edgeIndices.map(i=>this.edges[i]).filter(e=>!this.scopeKeys||(this.scopeKeys.has(e.from)&&this.scopeKeys.has(e.to))),items=itemIndices.map(i=>this.items[i]).filter(e=>!this.scopeKeys||this.scopeKeys.has(e.key));
       c.lineJoin='miter';c.lineCap='butt';c.lineWidth=.75/scale;
+      // Level of detail for giant atlases: bus traces are unrouted above 2,000 records,
+      // so thousands of overlapping wires would bury nodes at every zoom. Fade wire ink
+      // by on-screen density and let opaque node discs and labels take over as you zoom.
+      const nodeScreen=34*scale,dense=edges.length>300,edgeAlpha=dense?Math.max(.1,Math.min(.78,.78*Math.sqrt(300/edges.length))*(nodeScreen>=10?.6:1)):.78,showLabels=nodeScreen>=3;
       // Batch by field; no shadows, SVG filters, DOM mutations or animation per record.
-      for(const family of this.data.families){c.strokeStyle=family.color;c.globalAlpha=this.options.frontierLens ? .22 : .78;c.beginPath();for(const edge of edges){if(edge.familyId!==family.id)continue;edge.points.forEach((p,i)=>{if(i)c.lineTo(p.x,p.y);else c.moveTo(p.x,p.y)})}c.stroke()}
+      for(const family of this.data.families){c.strokeStyle=family.color;c.globalAlpha=this.options.frontierLens ? Math.min(.22,edgeAlpha) : edgeAlpha;c.beginPath();for(const edge of edges){if(edge.familyId!==family.id)continue;edge.points.forEach((p,i)=>{if(i)c.lineTo(p.x,p.y);else c.moveTo(p.x,p.y)})}c.stroke()}
       let connectionsDrawn=0;
       if(this.options.connectionKey)connectionsDrawn=FogNodeConnections.draw(c,this,scale,box);
       if(this.options.evidenceLens&&!this.options.connectionKey){const indices=[];query(this.evidenceTree,box,indices);c.lineWidth=.65/scale;c.globalAlpha=.6;c.setLineDash([4/scale,3/scale]);
@@ -79,6 +83,7 @@ root.FogCircuitPainter={draw:function(c,v,scale,ox,oy){
       c.lineWidth=1.5/scale;
       for(const family of this.data.families){
         const records=items.filter(e=>e.kind==='node'&&(this.nodes.get(e.id)?.domain||e.familyId)===family.id);
+        if(dense){c.fillStyle='#06101b';c.globalAlpha=1;c.beginPath();for(const e of records){const r=Math.max(e.radius,.7/scale);c.moveTo(e.x+r,e.y);c.arc(e.x,e.y,r,0,Math.PI*2)}c.fill()}
         for(const pending of [false,true]){c.strokeStyle=family.color;c.globalAlpha=this.options.frontierLens ? .16 : .94;c.setLineDash(pending?[2/scale,3/scale]:[]);c.beginPath();for(const e of records){if(this.pending.has(e.id)!==pending)continue;const n=this.nodes.get(e.id);if(n.frontier||['invalidated','historical','dependency-broken'].includes(n._status))continue;const r=Math.max(e.radius,.7/scale);c.moveTo(e.x+r,e.y);c.arc(e.x,e.y,r,0,Math.PI*2)}c.stroke()}
       }
       c.setLineDash([]);
@@ -91,7 +96,7 @@ root.FogCircuitPainter={draw:function(c,v,scale,ox,oy){
       for(const e of items){
         if(e.kind==='family'){const family=this.families.get(e.id);c.strokeStyle=family.color;c.fillStyle='#06101b';c.lineWidth=2/scale;c.beginPath();c.arc(e.x,e.y,e.radius,0,Math.PI*2);c.fill();c.stroke();c.fillStyle='#def6ff';FogCircleLabel.draw(c,family.title||family.short,e.x,e.y,e.radius);continue}
         const node=this.nodes.get(e.id);
-        c.globalAlpha=this.options.frontierLens&&!node.frontier ? .55 : 1;c.fillStyle='#d5e8fa';
+        if(!showLabels)continue;c.globalAlpha=this.options.frontierLens&&!node.frontier ? .55 : 1;c.fillStyle='#d5e8fa';
         FogCircleLabel.draw(c,node.label,e.x,e.y,e.radius);
       }
       if(!this.scopeKeys){c.globalAlpha=1;c.strokeStyle='#65e1f2';c.fillStyle='#071420';c.lineWidth=2/scale;c.beginPath();c.arc(800,500,95,0,Math.PI*2);c.fill();c.stroke();c.fillStyle='#d7f8ff';FogCircleLabel.draw(c,'HUMAN KNOWLEDGE',800,500,95);}
