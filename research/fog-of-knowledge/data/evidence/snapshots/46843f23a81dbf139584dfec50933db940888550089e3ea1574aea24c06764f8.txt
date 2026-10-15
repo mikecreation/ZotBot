@@ -1,0 +1,825 @@
+semiautomaton homomorphism
+semiautomaton homomorphism
+Just like groups and rings, a
+semiautomaton
+can be viewed as an
+algebraic structure
+. As such, one may define algebraic
+constructs
+such as
+subalgebras
+and
+homomorphisms
+. In this entry, we will briefly discuss the later.
+Definition
+A
+homomorphism
+from a semiautomaton
+M
+=
+(
+S
+,
+Σ
+,
+δ
+)
+to a semiautomaton
+N
+=
+(
+T
+,
+Γ
+,
+γ
+)
+is a pair of maps
+h
+:=
+(
+f
+:
+S
+→
+T
+,
+g
+:
+Σ
+→
+Γ
+)
+such that
+f
+⁢
+(
+δ
+⁢
+(
+s
+,
+a
+)
+)
+=
+γ
+⁢
+(
+f
+⁢
+(
+s
+)
+,
+g
+⁢
+(
+a
+)
+)
+The
+image
+of the homomorphism
+h
+is the
+subsemiautomaton
+h
+⁢
+(
+M
+)
+:=
+(
+f
+⁢
+(
+S
+)
+,
+g
+⁢
+(
+Σ
+)
+,
+γ
+′
+)
+of
+N
+, where
+γ
+′
+is the
+restriction
+of
+γ
+to
+f
+⁢
+(
+S
+)
+×
+g
+⁢
+(
+Σ
+)
+, also known as the
+homomorphic image
+of
+M
+under
+h
+.
+In general, a semiautomaton
+N
+is said to be a homomorphic image of a semiautomaton
+M
+, if there is a homomorphism
+h
+such that
+h
+⁢
+(
+M
+)
+=
+N
+.
+When comparing two semiautomata
+M
+,
+N
+, it is customary to identify the two corresponding input
+alphabets
+Σ
+,
+Γ
+, especially when one wants to study the interaction between the states of
+M
+and the states of
+N
+. This can be done by taking
+Δ
+:=
+Σ
+∪
+Γ
+, and extend the corresponding
+transition functions
+so that they are
+identities
+on the extended portions of the input alphabets. Call the extended semiautomata
+M
+′
+,
+N
+′
+.
+If
+h
+:
+M
+→
+N
+is a homomorphism, then
+h
+′
+:
+M
+′
+→
+N
+′
+extends
+h
+in a natural way:
+f
+′
+=
+f
+, and
+g
+′
+:
+Δ
+→
+Δ
+given by
+g
+′
+⁢
+(
+a
+)
+=
+g
+⁢
+(
+a
+)
+if
+a
+∈
+Σ
+, and
+g
+′
+⁢
+(
+a
+)
+=
+a
+if
+a
+∈
+Γ
+-
+Σ
+. Routine verification shows that
+h
+′
+is indeed a homomorphism: if
+a
+∈
+Σ
+,
+f
+′
+⁢
+(
+δ
+′
+⁢
+(
+s
+,
+a
+)
+)
+=
+f
+⁢
+(
+δ
+′
+⁢
+(
+s
+,
+a
+)
+)
+=
+f
+⁢
+(
+δ
+⁢
+(
+s
+,
+a
+)
+)
+=
+γ
+⁢
+(
+f
+⁢
+(
+s
+)
+,
+g
+⁢
+(
+a
+)
+)
+=
+γ
+′
+⁢
+(
+f
+⁢
+(
+s
+)
+,
+g
+⁢
+(
+a
+)
+)
+=
+γ
+′
+⁢
+(
+f
+′
+⁢
+(
+s
+)
+,
+g
+′
+⁢
+(
+a
+)
+)
+,
+and if
+a
+∈
+Γ
+-
+Σ
+, then
+f
+′
+⁢
+(
+δ
+′
+⁢
+(
+s
+,
+a
+)
+)
+=
+f
+⁢
+(
+δ
+′
+⁢
+(
+s
+,
+a
+)
+)
+=
+f
+⁢
+(
+s
+)
+=
+γ
+′
+⁢
+(
+f
+⁢
+(
+s
+)
+,
+a
+)
+=
+γ
+′
+⁢
+(
+f
+′
+⁢
+(
+s
+)
+,
+a
+)
+=
+γ
+′
+⁢
+(
+f
+′
+⁢
+(
+s
+)
+,
+g
+′
+⁢
+(
+a
+)
+)
+.
+A homomorphism
+h
+=
+(
+f
+,
+g
+)
+:
+M
+→
+N
+is an
+isomorphism
+if both
+f
+and
+g
+are
+bijections
+. As discussed above, if we identify the input alphabets of
+M
+and
+N
+, and treat
+g
+as the
+identity map
+on the input alphabet, then
+(
+S
+,
+Σ
+,
+δ
+)
+and
+(
+T
+,
+Σ
+,
+γ
+)
+are isomorphic if there is a bijection
+f
+:
+S
+→
+T
+such that
+f
+⁢
+(
+δ
+⁢
+(
+s
+,
+a
+)
+)
+=
+γ
+⁢
+(
+f
+⁢
+(
+s
+)
+,
+a
+)
+.
+Specializations to Other Machines
+Computing devices derived from semiautomata such as automata and state-output
+machines
+may also be considered as
+algebras
+. We record the definitions of homomorphisms with respect to these objects here.
+We adopt the following notations: given an automaton
+A
+=
+(
+S
+,
+Σ
+,
+δ
+,
+I
+,
+F
+)
+and a state-output machine
+M
+=
+(
+S
+,
+Σ
+,
+Δ
+,
+δ
+,
+λ
+)
+, let
+A
+′
+and
+M
+′
+be the associated semiautomaton
+(
+S
+,
+Σ
+,
+δ
+)
+. So
+A
+and
+M
+may be written
+(
+A
+′
+,
+I
+,
+F
+)
+and
+(
+M
+′
+,
+Δ
+,
+λ
+)
+respectively.
+Definition (automaton)
+. Given automata
+A
+=
+(
+A
+′
+,
+I
+,
+F
+)
+and
+B
+=
+(
+B
+′
+,
+J
+,
+G
+)
+. Then
+h
+=
+(
+f
+,
+g
+)
+:
+A
+→
+B
+is a
+homomorphism
+if
+•
+h
+:
+A
+′
+→
+B
+′
+is a semiautomaton homomorphism, such that
+•
+f
+⁢
+(
+I
+)
+⊆
+J
+, and
+f
+⁢
+(
+F
+)
+⊆
+G
+.
+A homomorphism
+h
+:
+A
+→
+B
+is an isomorphism if
+h
+:
+A
+′
+→
+B
+′
+is an isomorphism such that
+f
+⁢
+(
+I
+)
+=
+J
+and
+f
+⁢
+(
+F
+)
+=
+G
+.
+Definition (state-output machine)
+. Given state-output machines
+M
+=
+(
+M
+′
+,
+Δ
+,
+λ
+)
+and
+N
+=
+(
+N
+′
+,
+Ω
+,
+π
+)
+. Then
+ϕ
+=
+(
+h
+,
+k
+)
+:
+M
+→
+N
+is a homomorphism if
+•
+h
+:
+M
+′
+→
+N
+′
+is a semiautomaton homomorphism, and
+•
+k
+:
+Δ
+→
+Ω
+, such that
+k
+⁢
+(
+λ
+⁢
+(
+s
+,
+a
+)
+)
+=
+π
+⁢
+(
+f
+⁢
+(
+s
+)
+,
+g
+⁢
+(
+a
+)
+)
+,
+for all
+(
+s
+,
+a
+)
+∈
+S
+×
+Σ
+, where
+S
+and
+Σ
+are the state and input alphabets of
+M
+.
+A homomorphism
+ϕ
+:
+A
+→
+B
+is an isomorphism if
+h
+:
+M
+′
+→
+N
+′
+is an isomorphism and
+k
+is a bijection.
+References
+1
+A. Ginzburg,
+Algebraic Theory of Automata
+, Academic Press (1968).
+Title
+semiautomaton homomorphism
+Canonical name
+SemiautomatonHomomorphism
+Date of creation
+2013-03-22 19:01:07
+Last modified on
+2013-03-22 19:01:07
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+7
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 68Q45
+Classification
+msc 20M35
+Classification
+msc 03D05
+Classification
+msc 68Q70
+Defines
+homomorphism
+Defines
+homomorphic image
+Defines
+isomorphism
+Defines
+automaton homomorphism
+Defines
+machine homomorphism
+Generated  on Sat Feb 10 12:47:07 2018 by
+LaTeXML

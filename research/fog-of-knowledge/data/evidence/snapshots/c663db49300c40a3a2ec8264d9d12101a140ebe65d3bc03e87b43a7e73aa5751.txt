@@ -1,0 +1,480 @@
+homomorphism of languages
+homomorphism of languages
+Let
+Σ
+1
+and
+Σ
+2
+be two
+alphabets
+. A
+function
+h
+:
+Σ
+1
+*
+→
+Σ
+2
+*
+is called a
+homomorphism
+if it is a
+semigroup homomorphism
+from
+semigroups
+Σ
+1
+*
+to
+Σ
+2
+*
+. This means that
+•
+h
+preserves the
+empty word
+:
+h
+⁢
+(
+λ
+)
+=
+λ
+, and
+•
+h
+preserves
+concatenation
+:
+h
+⁢
+(
+α
+⁢
+β
+)
+=
+h
+⁢
+(
+α
+)
+⁢
+h
+⁢
+(
+β
+)
+for any words
+α
+,
+β
+∈
+Σ
+1
+*
+.
+Since the alphabet
+Σ
+1
+freely generates
+Σ
+1
+*
+,
+h
+is uniquely determined by its
+restriction
+to
+Σ
+1
+.
+Conversely
+, any function from
+Σ
+1
+extends to a unique homomorphism from
+Σ
+1
+*
+to
+Σ
+2
+*
+. In other words, it is enough to know what
+h
+⁢
+(
+a
+)
+is for each symbol
+a
+in
+Σ
+1
+. Since every word
+w
+over
+Σ
+is just a concatenation of symbols in
+Σ
+,
+h
+⁢
+(
+w
+)
+can be computed using the second condition above. The first condition takes care of the case when
+w
+is the empty word.
+Suppose
+h
+:
+Σ
+1
+*
+→
+Σ
+2
+*
+is a homomorphism,
+L
+1
+⊆
+Σ
+1
+*
+and
+L
+2
+⊆
+Σ
+2
+*
+. Define
+h
+⁢
+(
+L
+1
+)
+:=
+{
+h
+⁢
+(
+w
+)
+∣
+w
+∈
+L
+}
+and
+h
+-
+1
+⁢
+(
+L
+2
+)
+:=
+{
+v
+∣
+h
+⁢
+(
+v
+)
+∈
+L
+2
+}
+.
+If
+L
+1
+,
+L
+2
+belong to a certain family of
+languages
+, one is often interested to know if
+h
+⁢
+(
+L
+1
+)
+or
+h
+-
+1
+⁢
+(
+L
+2
+)
+belongs to that same family. We have the following result:
+1.
+If
+L
+1
+and
+L
+2
+are
+regular
+, so are
+h
+⁢
+(
+L
+1
+)
+and
+h
+-
+1
+⁢
+(
+L
+2
+)
+.
+2.
+If
+L
+1
+and
+L
+2
+are
+context-free
+, so are
+h
+⁢
+(
+L
+1
+)
+and
+h
+-
+1
+⁢
+(
+L
+2
+)
+.
+3.
+If
+L
+1
+and
+L
+2
+are type-0, so are
+h
+⁢
+(
+L
+1
+)
+and
+h
+-
+1
+⁢
+(
+L
+2
+)
+.
+However, the family
+ℱ
+of
+context-sensitive languages
+is not
+closed under
+homomorphisms, nor
+inverse
+homomorphisms. Nevertheless, it can be shown that
+ℱ
+is closed under a restricted class of homomorphisms, namely,
+λ
+-free homomorphisms. A homomorphism is said to be
+λ
+-free
+or
+non-erasing
+if
+h
+⁢
+(
+a
+)
+≠
+λ
+for any
+a
+∈
+Σ
+1
+.
+Remarks
+.
+•
+Every homomorphism induces a
+substitution
+in a
+trivial
+way: if
+h
+:
+Σ
+1
+*
+→
+Σ
+2
+*
+is a homomorphism, then
+h
+s
+:
+Σ
+1
+→
+P
+⁢
+(
+Σ
+2
+*
+)
+defined by
+h
+s
+⁢
+(
+a
+)
+=
+{
+h
+⁢
+(
+a
+)
+}
+is a substitution.
+•
+One can likewise introduce the notion of
+antihomomorphism
+of languages. A map
+g
+:
+Σ
+1
+*
+→
+Σ
+2
+*
+is an antihomomorphism if
+g
+⁢
+(
+α
+⁢
+β
+)
+=
+g
+⁢
+(
+β
+)
+⁢
+g
+⁢
+(
+α
+)
+, for any words
+α
+,
+β
+over
+Σ
+1
+. It is easy to see that
+g
+is an antihomomorphism iff
+g
+∘
+rev
+is a homomorphism, where
+rev
+is the
+reversal
+operator
+.
+Closure
+under antihomomorphisms for a family of languages follows the closure under homomorphisms, provided that the family is closed under reversal.
+References
+1
+S. Ginsburg,
+The Mathematical Theory of Context-Free Languages
+, McGraw-Hill, New York (1966).
+2
+H.R. Lewis, C.H. Papadimitriou
+Elements of the Theory of Computation
+. Prentice-Hall, Englewood Cliffs, New Jersey (1981).
+Title
+homomorphism of languages
+Canonical name
+HomomorphismOfLanguages
+Date of creation
+2013-03-22 18:55:06
+Last modified on
+2013-03-22 18:55:06
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+12
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 68Q45
+Synonym
+ϵ
+-free
+Synonym
+non-erasing
+Related topic
+StringSubstitution
+Related topic
+Substitution
+Defines
+homomorphism
+Defines
+antihomomorphism
+Defines
+λ
+-free
+Generated  on Sat Feb 10 12:45:41 2018 by
+LaTeXML

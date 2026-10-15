@@ -1,0 +1,756 @@
+seminorm
+seminorm
+Let
+V
+be a real, or a
+complex vector space
+, with
+K
+denoting the
+corresponding field of scalars. A
+seminorm
+is a
+function
+p
+:
+V
+→
+ℝ
++
+,
+from
+V
+to the set of non-negative
+real numbers
+, that
+satisfies
+the
+following two properties.
+p
+⁡
+(
+k
+⁢
+𝐮
+)
+=
+|
+k
+|
+⁢
+p
+⁡
+(
+𝐮
+)
+,
+k
+∈
+K
+,
+𝐮
+∈
+V
+Homogeneity
+p
+⁡
+(
+𝐮
++
+𝐯
+)
+≤
+p
+⁡
+(
+𝐮
+)
++
+p
+⁡
+(
+𝐯
+)
+,
+𝐮
+,
+𝐯
+∈
+V
+,
+Sublinearity
+A seminorm differs from a norm in that it is permitted that
+p
+⁡
+(
+𝐮
+)
+=
+0
+for some non-zero
+𝐮
+∈
+V
+.
+It is possible to characterize the seminorms properties
+geometrically. For
+k
+>
+0
+, let
+B
+k
+=
+{
+𝐮
+∈
+V
+:
+p
+⁡
+(
+𝐮
+)
+≤
+k
+}
+denote
+the ball of radius
+k
+. The homogeneity property is
+equivalent
+to the
+assertion that
+B
+k
+=
+k
+⁢
+B
+1
+,
+in the sense that
+𝐮
+∈
+B
+1
+if and only if
+k
+⁢
+𝐮
+∈
+B
+k
+.
+Thus, we see that a seminorm is fully determined by its unit ball.
+Indeed, given
+B
+⊂
+V
+we may define a function
+p
+B
+:
+V
+→
+ℝ
++
+by
+p
+B
+⁡
+(
+𝐮
+)
+=
+inf
+⁡
+{
+λ
+∈
+ℝ
++
+:
+λ
+-
+1
+⁢
+𝐮
+∈
+B
+}
+.
+The geometric nature of the unit ball is described by the following.
+Proposition 1
+The function
+p
+B
+satisfies the homegeneity property if and only if
+for every
+u
+∈
+V
+, there exists a
+k
+∈
+R
++
+∪
+{
+∞
+}
+such that
+λ
+⁢
+𝐮
+∈
+B
+if and only if
+∥
+λ
+∥
+≤
+k
+.
+Proposition 2
+Suppose that
+p
+is
+homogeneous
+. Then, it is sublinear if and
+only if its unit ball,
+B
+1
+, is a convex subset of
+V
+.
+Proof.
+First, let us suppose that the seminorm is both sublinear
+and homogeneous, and prove that
+B
+1
+is necessarily convex. Let
+𝐮
+,
+𝐯
+∈
+B
+1
+, and let
+k
+be a real number between
+0
+and
+1
+.
+We must show that the
+weighted average
+k
+⁢
+𝐮
++
+(
+1
+-
+k
+)
+⁢
+𝐯
+is in
+B
+1
+as
+well. By
+assumption
+,
+p
+⁡
+(
+k
+⁢
+𝐮
++
+(
+1
+-
+k
+)
+⁢
+𝐯
+)
+≤
+k
+⁢
+p
+⁡
+(
+𝐮
+)
++
+(
+1
+-
+k
+)
+⁢
+p
+⁡
+(
+𝐯
+)
+.
+The right side is a
+weighted average of two numbers between
+0
+and
+1
+, and is therefore
+between
+0
+and
+1
+itself. Therefore
+k
+⁢
+𝐮
++
+(
+1
+-
+k
+)
+⁢
+𝐯
+∈
+B
+1
+,
+as desired.
+Conversely
+, suppose that the seminorm function is homogeneous, and
+that the unit ball is convex. Let
+𝐮
+,
+𝐯
+∈
+V
+be given, and let us show that
+p
+⁡
+(
+𝐮
++
+𝐯
+)
+≤
+p
+⁡
+(
+𝐮
+)
++
+p
+⁡
+(
+𝐯
+)
+.
+The essential complication here is that we do not exclude the
+possibility that
+p
+⁡
+(
+𝐮
+)
+=
+0
+, but that
+𝐮
+≠
+0
+.
+First, let us consider the case where
+p
+⁡
+(
+𝐮
+)
+=
+p
+⁡
+(
+𝐯
+)
+=
+0
+.
+By homogeneity, for every
+k
+>
+0
+we have
+k
+⁢
+𝐮
+,
+k
+⁢
+𝐯
+∈
+B
+1
+,
+and hence
+k
+2
+⁢
+𝐮
++
+k
+2
+⁢
+𝐯
+∈
+B
+1
+,
+as well. By homogeneity, again,
+p
+⁡
+(
+𝐮
++
+𝐯
+)
+≤
+2
+k
+.
+Since the above is true for all positive
+k
+, we infer that
+p
+⁡
+(
+𝐮
++
+𝐯
+)
+=
+0
+,
+as desired.
+Next suppose that
+p
+⁡
+(
+𝐮
+)
+=
+0
+, but that
+p
+⁡
+(
+𝐯
+)
+≠
+0
+. We will show
+that in this case, necessarily,
+p
+⁡
+(
+𝐮
++
+𝐯
+)
+=
+p
+⁡
+(
+𝐯
+)
+.
+Owing to the homogeneity assumption, we may without loss of generality
+assume that
+p
+⁡
+(
+𝐯
+)
+=
+1
+.
+For every
+k
+such that
+0
+≤
+k
+<
+1
+we have
+k
+⁢
+𝐮
++
+k
+⁢
+𝐯
+=
+(
+1
+-
+k
+)
+⁢
+k
+⁢
+𝐮
+1
+-
+k
++
+k
+⁢
+𝐯
+.
+The right-side expression is an
+element of
+B
+1
+because
+k
+⁢
+𝐮
+1
+-
+k
+,
+𝐯
+∈
+B
+1
+.
+Hence
+k
+⁢
+p
+⁡
+(
+𝐮
++
+𝐯
+)
+≤
+1
+,
+and since this holds for
+k
+arbitrarily close to
+1
+we conclude that
+p
+⁡
+(
+𝐮
++
+𝐯
+)
+≤
+p
+⁡
+(
+𝐯
+)
+.
+The same
+argument
+also shows that
+p
+⁡
+(
+𝐯
+)
+=
+p
+⁡
+(
+-
+𝐮
++
+(
+𝐮
++
+𝐯
+)
+)
+≤
+p
+⁡
+(
+𝐮
++
+𝐯
+)
+,
+and hence
+p
+⁡
+(
+𝐮
++
+𝐯
+)
+=
+p
+⁡
+(
+𝐯
+)
+,
+as desired.
+Finally, suppose that neither
+p
+⁡
+(
+𝐮
+)
+nor
+p
+⁡
+(
+𝐯
+)
+is zero. Hence,
+𝐮
+p
+⁡
+(
+u
+)
+,
+𝐯
+p
+⁡
+(
+v
+)
+are both in
+B
+1
+, and hence
+p
+⁡
+(
+u
+)
+p
+⁡
+(
+u
+)
++
+p
+⁡
+(
+v
+)
+⁢
+𝐮
+p
+⁡
+(
+u
+)
++
+p
+⁡
+(
+v
+)
+p
+⁡
+(
+u
+)
++
+p
+⁡
+(
+v
+)
+⁢
+𝐯
+p
+⁡
+(
+v
+)
+=
+𝐮
++
+𝐯
+p
+⁡
+(
+u
+)
++
+p
+⁡
+(
+v
+)
+is in
+B
+1
+also. Using homogeneity, we conclude that
+p
+⁡
+(
+u
++
+v
+)
+≤
+p
+⁡
+(
+u
+)
++
+p
+⁡
+(
+v
+)
+,
+as desired.
+Title
+seminorm
+Canonical name
+Seminorm
+Date of creation
+2013-03-22 12:24:57
+Last modified on
+2013-03-22 12:24:57
+Owner
+rmilson (146)
+Last modified by
+rmilson (146)
+Numerical id
+20
+Author
+rmilson (146)
+Entry type
+Definition
+Classification
+msc 46B20
+Synonym
+semi-norm
+Defines
+homogeneous
+Generated  on Fri Feb  9 21:36:40 2018 by
+LaTeXML

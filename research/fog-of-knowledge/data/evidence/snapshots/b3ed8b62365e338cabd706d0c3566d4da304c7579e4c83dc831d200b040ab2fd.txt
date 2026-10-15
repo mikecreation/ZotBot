@@ -1,0 +1,536 @@
+recursive function
+recursive function
+Intuitively, a
+recursive function
+is a
+positive integer
+valued
+function
+of one or more positive integer
+arguments
+which may be computed by a definite
+algorithm
+.
+Recursive functions may be defined more rigorously as the smallest class of
+partial functions
+from
+ℤ
++
+n
+→
+ℤ
++
+satisfying the following six criteria:
+1.
+The
+constant function
+c
+:
+ℤ
++
+→
+ℤ
++
+defined by
+c
+⁢
+(
+x
+)
+=
+1
+for all
+x
+∈
+ℤ
++
+is a recursive function.
+2.
+The
+addition
+function
++
+:
+ℤ
++
+2
+→
+ℤ
++
+and the
+multiplication
+function
+×
+:
+ℤ
++
+2
+→
+ℤ
++
+are recursive function.
+3.
+The projection functions
+I
+m
+n
+:
+ℤ
++
+n
+→
+ℤ
++
+with
+1
+≤
+m
+≤
+n
+defined as
+I
+m
+n
+⁢
+(
+x
+1
+,
+…
+,
+x
+n
+)
+=
+x
+m
+are recursive functions.
+4.
+(
+Closure
+under
+composition
+)
+If
+f
+:
+ℤ
++
+n
+→
+ℤ
++
+is a recursive function and
+g
+i
+:
+ℤ
++
+m
+→
+ℤ
++
+with
+i
+=
+1
+,
+…
+⁢
+n
+are recursive functions, then
+h
+:
+ℤ
++
+n
+→
+ℤ
++
+, defined by
+h
+⁢
+(
+x
+1
+,
+…
+,
+x
+n
+)
+=
+f
+⁢
+(
+g
+1
+⁢
+(
+x
+1
+,
+…
+,
+x
+m
+)
+,
+…
+,
+g
+n
+⁢
+(
+x
+1
+,
+…
+,
+x
+m
+)
+)
+is a recursive function.
+5.
+(Closure under primitive recursion)
+If
+f
+:
+ℤ
++
+n
+→
+ℤ
++
+and
+g
+:
+ℤ
++
+n
++
+2
+→
+ℤ
++
+are recursive function, then
+h
+:
+ℤ
++
+n
++
+1
+→
+ℤ
++
+, defined by the
+recursion
+h
+⁢
+(
+n
++
+1
+,
+x
+1
+,
+…
+,
+x
+k
+)
+=
+g
+⁢
+(
+h
+⁢
+(
+n
+,
+x
+1
+,
+…
+,
+x
+k
+)
+,
+n
+,
+x
+1
+,
+…
+,
+x
+k
+)
+with the initial condition
+h
+⁢
+(
+0
+,
+x
+1
+,
+…
+,
+x
+k
+)
+=
+f
+⁢
+(
+x
+1
+,
+…
+,
+x
+k
+)
+is a recursive function.
+6.
+(Closure under minimization)
+If
+f
+:
+ℤ
++
+n
++
+1
+→
+ℤ
++
+is a recursive function then
+g
+:
+ℤ
++
+n
+→
+ℤ
++
+is a recursive function, where
+–
+g
+⁢
+(
+x
+1
+,
+…
+,
+x
+n
+)
+is defined to be
+y
+, if there exists a
+y
+∈
+ℤ
++
+such that
+i.
+f
+⁢
+(
+0
+,
+x
+1
+,
+…
+,
+x
+n
+)
+,
+f
+⁢
+(
+1
+,
+x
+1
+,
+…
+,
+x
+n
+)
+,
+…
+,
+f
+⁢
+(
+y
+,
+x
+1
+,
+…
+,
+x
+n
+)
+are all defined,
+ii.
+f
+⁢
+(
+z
+,
+x
+1
+,
+…
+,
+x
+n
+)
+≠
+0
+when
+1
+≤
+z
+<
+y
+, and
+iii.
+f
+⁢
+(
+y
+,
+x
+1
+,
+…
+,
+x
+n
+)
+=
+0
+.
+–
+g
+⁢
+(
+x
+1
+,
+…
+,
+x
+n
+)
+is undefined otherwise.
+The
+operation
+whereby
+h
+was constructed from
+f
+and
+g
+in criterion 5 is known as primitive recursion. The operation described in criterion 6 is known as minimization. That is to say, for any given function
+f
+:
+ℤ
++
+n
++
+1
+→
+ℤ
++
+, the partial function
+g
+:
+ℤ
++
+n
+→
+ℤ
++
+constructed as in criterion 6 is known as the minimization of
+f
+and is denoted by
+g
+=
+μ
+⁢
+f
+.
+The smallest set of functions satisfying criteria 1-5, but not criterion 6, is known as the set of
+primitive recursive functions
+. Therefore, the set
+ℛ
+of all recursive function is the closure of the set
+𝒫
+⁢
+ℛ
+of primitive recursive function with respect to minimization. It can be shown that
+ℛ
+is exactly the set of
+Turing-computable
+functions. In terms of programming languages, a function is
+recursive
+iff it can be computed by a
+program
+involving the DO WHILE loops (minimization).
+With some work, it can be shown that the class of recursive functions can be characterized by considerably weaker sets of criteria than those given above. See the entry “
+alternative characterizations of recursive functions
+(
+http://planetmath.org/AlternativeCharacterizationsOfRecursiveFunctions
+)” for several such
+characterizations
+.
+Title
+recursive function
+Canonical
+name
+RecursiveFunction
+Date of creation
+2013-03-22 14:34:35
+Last modified on
+2013-03-22 14:34:35
+Owner
+rspuzio (6075)
+Last modified by
+rspuzio (6075)
+Numerical id
+27
+Author
+rspuzio (6075)
+Entry type
+Definition
+Classification
+msc 03D20
+Synonym
+unbounded minimization
+Related topic
+PrimitiveRecursive
+Related topic
+RecursiveFunctionIsURMComputable
+Related topic
+BoundedMinimization
+Defines
+primitive recursion
+Defines
+minimization
+Generated  on Thu Feb  8 20:04:45 2018 by
+LaTeXML

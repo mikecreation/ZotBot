@@ -1,0 +1,593 @@
+monoidal category
+monoidal category
+A
+monoidal category
+is a
+category
+which has the
+structure
+of a monoid, that is, among the objects there is a
+binary operation
+which is
+associative
+and has an unique neutral or unit element. Specifically, a category
+𝒞
+is
+monoidal
+if
+1.
+there is a
+bifunctor
+⊗
+:
+𝒞
+×
+𝒞
+→
+𝒞
+, where the images of object
+(
+A
+,
+B
+)
+and
+morphism
+(
+f
+,
+g
+)
+are written
+A
+⊗
+B
+and
+f
+⊗
+g
+respectively,
+2.
+there is an
+isomorphism
+a
+A
+⁢
+B
+⁢
+C
+:
+(
+A
+⊗
+B
+)
+⊗
+C
+≅
+A
+⊗
+(
+B
+⊗
+C
+)
+, for arbitrary objects
+A
+,
+B
+,
+C
+in
+𝒞
+, such that
+a
+A
+⁢
+B
+⁢
+C
+is natural in
+A
+,
+B
+and
+C
+. In other words,
+–
+a
+-
+B
+⁢
+C
+:
+(
+-
+⊗
+B
+)
+⊗
+C
+⇒
+-
+⊗
+(
+B
+⊗
+C
+)
+is a
+natural transformation
+for arbitrary objects
+B
+,
+C
+in
+𝒞
+,
+–
+a
+A
+-
+C
+:
+(
+A
+⊗
+-
+)
+⊗
+C
+⇒
+A
+⊗
+(
+-
+⊗
+C
+)
+is a natural transformation for arbitrary objects
+A
+,
+C
+in
+𝒞
+,
+–
+a
+A
+⁢
+B
+-
+:
+(
+A
+⊗
+B
+)
+⊗
+-
+⇒
+A
+⊗
+(
+B
+⊗
+-
+)
+is a natural transformation for arbitrary objects
+A
+,
+B
+in
+𝒞
+,
+3.
+there is an object
+I
+in
+𝒞
+called the
+unit object
+(or simply the
+unit
+),
+4.
+for any object
+A
+in
+𝒞
+, there are isomorphisms:
+l
+A
+:
+I
+⊗
+A
+≅
+A
+and
+r
+A
+:
+A
+⊗
+I
+≅
+A
+,
+such that
+l
+A
+and
+r
+A
+are natural in
+A
+: both
+l
+:
+I
+⊗
+-
+⇒
+-
+and
+r
+:
+-
+⊗
+I
+⇒
+-
+are natural transformations
+satisfying the following
+commutative diagrams
+:
+•
+unit coherence law
+\xymatrix
+⁢
+@
++
+=
+2
+⁢
+c
+⁢
+m
+⁢
+(
+A
+⊗
+I
+)
+⊗
+B
+⁢
+\ar
+⁢
+[
+r
+⁢
+r
+]
+a
+A
+⁢
+I
+⁢
+B
+⁢
+\ar
+⁢
+[
+d
+⁢
+r
+]
+r
+A
+⊗
+1
+B
+⁢
+&
+⁢
+&
+⁢
+A
+⊗
+(
+I
+⊗
+B
+)
+⁢
+\ar
+⁢
+[
+d
+⁢
+l
+]
+1
+A
+⊗
+r
+B
+⁢
+&
+⁢
+A
+⊗
+B
+⁢
+&
+•
+associativity coherence law
+\xymatrix
+⁢
+@
++
+=
+2
+⁢
+c
+⁢
+m
+⁢
+(
+(
+A
+⊗
+B
+)
+⊗
+C
+)
+⊗
+D
+⁢
+\ar
+⁢
+[
+r
+⁢
+r
+]
+a
+A
+⊗
+B
+,
+C
+,
+C
+⁢
+\ar
+⁢
+[
+d
+]
+a
+A
+⁢
+B
+⁢
+C
+⊗
+1
+D
+⁢
+&
+⁢
+&
+⁢
+(
+A
+⊗
+B
+)
+⊗
+(
+C
+⊗
+D
+)
+⁢
+\ar
+⁢
+[
+d
+⁢
+d
+]
+a
+A
+,
+B
+,
+C
+⊗
+D
+⁢
+(
+A
+⊗
+(
+B
+⊗
+C
+)
+)
+⊗
+D
+⁢
+\ar
+⁢
+[
+d
+]
+a
+A
+,
+B
+⊗
+C
+,
+D
+⁢
+&
+⁢
+&
+⁢
+A
+⊗
+(
+(
+B
+⊗
+C
+)
+⊗
+D
+)
+⁢
+\ar
+⁢
+[
+r
+⁢
+r
+]
+1
+A
+⊗
+a
+B
+⁢
+C
+⁢
+D
+⁢
+&
+⁢
+&
+⁢
+A
+⊗
+(
+B
+⊗
+(
+C
+⊗
+D
+)
+)
+The bifunctor
+⊗
+is called the
+tensor product
+on
+𝒞
+, and the
+natural isomorphisms
+a
+,
+l
+,
+r
+are called the
+associativity isomorphism
+, the
+left unit isomorphism
+, and the
+right unit isomorphism
+respectively.
+Some examples of monoidal categories are
+•
+A prototype is the category of isomorphism classes of
+vector spaces
+over a field
+𝕂
+, herein the tensor product is the associative
+operation
+and the field
+𝕂
+itself is the unit element.
+•
+The
+category of sets
+is monoidal. The tensor product here is just the set-theoretic
+cartesian product
+, and any
+singleton
+can be used as the unit object.
+•
+The category of (left) modules over a ring
+R
+is monoidal. The tensor product is the usual tensor product (
+http://planetmath.org/TensorProduct
+) of modules, and
+R
+itself is the unit object.
+•
+The category of
+bimodules
+over a ring
+R
+is monoidal. The tensor product and the unit object are the same as in the previous example.
+Monoidal categories play an important role in the topological quantum field theories (TQFT).
+Title
+monoidal category
+Canonical
+name
+MonoidalCategory
+Date of creation
+2013-03-22 16:30:21
+Last modified on
+2013-03-22 16:30:21
+Owner
+juanman (12619)
+Last modified by
+juanman (12619)
+Numerical id
+14
+Author
+juanman (12619)
+Entry type
+Definition
+Classification
+msc 81-00
+Classification
+msc 18-00
+Classification
+msc 18D10
+Synonym
+monoid
+Related topic
+Category
+Related topic
+Algebroids
+Related topic
+Monoid
+Related topic
+StateOnTheTetrahedron
+Defines
+unit coherence
+Defines
+associativity coherence
+Defines
+tensor product
+Defines
+unit object
+Defines
+associativity isomorphism
+Defines
+left unit isomorphism
+Defines
+right unit isomorphism
+Generated  on Sat Feb 10 13:04:44 2018 by
+LaTeXML

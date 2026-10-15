@@ -1,0 +1,460 @@
+logical axiom
+logical axiom
+In a
+logical system
+, a
+logical axiom
+(sometimes called an axiom for short) is a logically valid (well-formed)
+formula
+used in a
+deductive system
+(particularly an
+axiom system
+) to deduce other logically valid formulas. By a logically valid formula, we mean the formula is true in every
+interpretation
+of the logical system. For example, in the classical
+first-order logic
+with equality, the formula
+x
+=
+x
+may be considered a logical axiom, since it is true in every model. Similarly, the formula
+∀
+x
+⁢
+A
+→
+A
+⁢
+[
+x
+/
+y
+]
+may also be considered a logical axiom, since its interpretation “if for all
+x
+the formula
+A
+is true, then the formula
+A
+is true for an arbitrarily picked
+x
+” is also logically valid.
+A logical axiom is to be contrasted from a
+non-logical axiom
+, which is a formula that is valid depending on its interpretation. For example, in the
+first-order theory
+of
+abelian groups
+(with one binary function symbol
+⋅
+), the formula
+x
+⋅
+y
+=
+y
+⋅
+x
+is a non-logical axiom. But it fails to be an axiom in the first-order theory of groups.
+As discussed above, logical axioms are logically valid formulas set up to deduce other logically valid formulas (called
+theorems
+of the system) via certain rules, called
+rules of inference
+, for the logical system. These rules have the
+property
+that they
+preserve
+logical validity. A logical system in which all theorems are logically valid is said to be sound.
+Conversely
+, if a logical system in which any logically valid formula is a theorem is said to be
+complete
+.
+Example
+. (Classical
+propositional logic
+) Formulas of the following forms can be easily verified to be logicaly valid using the truth-valuation
+semantics
+of the logical system:
+1.
+a
+→
+(
+b
+→
+a
+)
+2.
+(
+a
+→
+(
+b
+→
+c
+)
+)
+→
+(
+(
+a
+→
+b
+)
+→
+(
+a
+→
+c
+)
+)
+3.
+(
+¬
+a
+→
+¬
+b
+)
+→
+(
+b
+→
+a
+)
+where
+→
+is a binary
+logical connective
+and
+¬
+is a unary logical connective, and
+a
+,
+b
+,
+c
+are any (well-formed) formulas. Let us take these formulas as axioms.
+Next, we pick a rule of inference. The popular choice is the rule “
+modus ponens
+”, which states that from formulas
+A
+and
+A
+→
+B
+, one my deduce
+B
+. It is easy to see that this rule preserves logical validity.
+The axioms, together with modus ponens, form a sound deductive system for the classical propositional logic. In
+addition
+, it is also complete.
+Note that in the above set, we are actually looking at three smaller sets, each set containing formulas of a specific form. For example, the first sets of axioms above is:
+{
+a
+→
+(
+b
+→
+a
+)
+∣
+a
+,
+b
+are well-formed formulas of classical propositional language.
+}
+.
+Any such a set of axioms is called an
+axiom scheme
+, or
+axiom schema
+, and a
+collection
+of axiom schemas is called the
+axiom schemata
+.
+Remark
+. Note that the deductive system in the example above is not unique for classical propositional logic. The idea is that one may take an axiom schema (or schemata), and swap it with a
+logically equivalent
+set of schema (or schemata). The resulting schemata, together with the rules, gives a deductive system
+equivalent
+to the original one. The following schemata, together with modus ponens, also produces a sound and complete deductive system:
+1.
+a
+→
+(
+b
+→
+a
+)
+2.
+(
+a
+→
+(
+b
+→
+c
+)
+)
+→
+(
+(
+a
+→
+b
+)
+→
+(
+a
+→
+c
+)
+)
+3.
+a
+→
+(
+a
+∨
+b
+)
+4.
+b
+→
+(
+a
+∨
+b
+)
+5.
+(
+a
+→
+c
+)
+→
+(
+(
+b
+→
+c
+)
+→
+(
+(
+a
+∨
+b
+)
+→
+c
+)
+)
+6.
+(
+a
+∧
+b
+)
+→
+a
+7.
+(
+a
+∧
+b
+)
+→
+b
+8.
+(
+c
+→
+a
+)
+→
+(
+(
+c
+→
+b
+)
+→
+(
+c
+→
+(
+a
+∧
+b
+)
+)
+)
+9.
+(
+a
+→
+¬
+b
+)
+→
+(
+b
+→
+¬
+a
+)
+10.
+¬
+⁡
+(
+a
+→
+a
+)
+→
+b
+11.
+a
+∨
+¬
+⁢
+a
+(law of the excluded middle)
+Note that the
+difference
+between these axioms and the ones in the previous example is the appearance of the logical connectives
+∨
+and
+∧
+. Here,
+∨
+and
+∧
+are treated as
+primitive
+logical symbols, where as in the previous example, formulas of the forms
+a
+∨
+b
+and
+a
+∧
+b
+may be “defined” in terms of
+a
+,
+b
+,
+→
+and
+¬
+.
+It is interesting to note that it is even possible to form a deductive system using just one axiom schema and modus ponens. The following example was discovered by C. Meredith:
+[
+(
+(
+(
+a
+→
+b
+)
+→
+(
+¬
+c
+→
+¬
+d
+)
+)
+→
+c
+)
+→
+e
+]
+→
+(
+(
+e
+→
+a
+)
+→
+(
+d
+→
+a
+)
+)
+.
+References
+1
+D. Monk:
+Mathematical Logic
+, Springer-Verlag, New York (1976).
+2
+H. Enderton:
+A Mathematical
+Introduction
+to Logic
+, Academic Press, San Diego (1972).
+3
+J. R. Shoenfield,
+Mathematical Logic
+, AK Peters (2001).
+4
+H. Rasiowa:
+Post Algebras as a Semantic
+Foundation
+of
+m
+-Valued Logics, Studies in
+Algebraic Logic
+, The
+Mathematical Association of America
+, (1974).
+Title
+logical axiom
+Canonical
+name
+LogicalAxiom
+Date of creation
+2013-03-22 16:57:58
+Last modified on
+2013-03-22 16:57:58
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+15
+Author
+CWoo (3771)
+Entry type
+Topic
+Classification
+msc 03B22
+Classification
+msc 03B05
+Synonym
+axiom scheme
+Related topic
+InferenceRule
+Related topic
+LogicalConnective
+Related topic
+DeductiveSystem
+Defines
+axiom schema
+Defines
+axiom schemata
+Defines
+law of the excluded middle
+Defines
+non-logical axiom
+Generated  on Thu Feb  8 19:47:45 2018 by
+LaTeXML

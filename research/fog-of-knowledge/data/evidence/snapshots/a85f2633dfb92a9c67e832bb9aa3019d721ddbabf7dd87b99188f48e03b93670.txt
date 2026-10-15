@@ -1,0 +1,671 @@
+elementary recursive function
+elementary recursive function
+Informally,
+elementary recursive functions
+are
+functions
+that can be obtained from functions encountered in elementary schools:
+addition
+,
+multiplication
+,
+subtraction
+, and
+division
+, using basic
+operations
+such as substitutions and finite
+summation
+and
+product
+. Before stating the formal
+definition
+, the following notations are used:
+ℱ
+=
+⋃
+{
+F
+k
+∣
+k
+∈
+ℕ
+}
+, where for each
+k
+∈
+ℕ
+⁢
+,
+⁢
+F
+k
+=
+{
+f
+∣
+f
+:
+ℕ
+k
+→
+ℕ
+}
+.
+Definition
+. The set of
+elementary recursive functions
+, or
+elementary functions
+for short, is the smallest subset
+ℰ
+⁢
+ℛ
+of
+ℱ
+where:
+1.
+(addition)
+add
+∈
+ℰ
+⁢
+ℛ
+∩
+F
+2
+, given by
+add
+⁡
+(
+m
+,
+n
+)
+:=
+m
++
+n
+;
+2.
+(multiplication)
+mult
+∈
+ℰ
+⁢
+ℛ
+∩
+F
+2
+, given by
+mult
+⁡
+(
+m
+,
+n
+)
+:=
+m
+⁢
+n
+;
+3.
+(
+difference
+)
+diff
+∈
+ℰ
+⁢
+ℛ
+∩
+F
+2
+, given by
+diff
+⁡
+(
+m
+,
+n
+)
+:=
+|
+m
+-
+n
+|
+;
+4.
+(quotient)
+quo
+∈
+ℰ
+⁢
+ℛ
+∩
+F
+2
+, given by
+quo
+⁡
+(
+m
+,
+n
+)
+:=
+[
+m
+/
+n
+]
+, which is the largest non-negative
+integer
+z
+such that
+n
+⁢
+z
+≤
+m
+(by convention,
+quo
+⁡
+(
+0
+,
+0
+)
+:=
+1
+);
+5.
+(
+projection
+)
+p
+m
+k
+∈
+ℰ
+⁢
+ℛ
+∩
+F
+k
+, where
+m
+≤
+k
+, given by
+p
+m
+k
+⁢
+(
+n
+1
+,
+…
+,
+n
+k
+)
+:=
+n
+m
+;
+6.
+ℰ
+⁢
+ℛ
+is
+closed under
+composition: If
+{
+g
+1
+,
+…
+,
+g
+m
+}
+⊆
+ℰ
+⁢
+ℛ
+∩
+F
+k
+and
+h
+∈
+ℰ
+⁢
+ℛ
+∩
+F
+m
+, then
+f
+∈
+ℰ
+⁢
+ℛ
+∩
+F
+k
+, where
+f
+⁢
+(
+n
+1
+,
+…
+,
+n
+k
+)
+=
+h
+⁢
+(
+g
+1
+⁢
+(
+n
+1
+,
+…
+,
+n
+k
+)
+,
+…
+,
+g
+m
+⁢
+(
+n
+1
+,
+…
+,
+n
+k
+)
+)
+;
+7.
+ℰ
+⁢
+ℛ
+is closed under
+bounded sum
+: if
+f
+∈
+ℰ
+⁢
+ℛ
+∩
+F
+k
+, then
+f
+s
+∈
+ℰ
+⁢
+ℛ
+∩
+F
+k
+, where
+f
+s
+⁢
+(
+𝒙
+,
+y
+)
+:=
+∑
+i
+=
+0
+y
+f
+⁢
+(
+𝒙
+,
+i
+)
+;
+8.
+ℰ
+⁢
+ℛ
+is closed under bounded product: if
+f
+∈
+ℰ
+⁢
+ℛ
+∩
+F
+k
+, then
+f
+p
+∈
+ℰ
+⁢
+ℛ
+∩
+F
+k
+, where
+f
+p
+⁢
+(
+𝒙
+,
+y
+)
+:=
+∏
+i
+=
+0
+y
+f
+⁢
+(
+𝒙
+,
+i
+)
+.
+Examples
+.
+•
+The initial functions in the definition of
+primitive recursive functions
+are elementary:
+(a)
+The
+zero function
+z
+⁢
+(
+x
+)
+is
+diff
+⁡
+(
+x
+,
+x
+)
+.
+(b)
+The
+constant function
+const
+1
+⁡
+(
+x
+)
+:=
+1
+is
+quo
+⁡
+(
+x
+,
+x
+)
+.
+(c)
+The successor function
+s
+⁢
+(
+x
+)
+can be obtained by substituting (by composition) the constant function
+const
+1
+and the projection function
+p
+1
+1
+, into the addition function
+add
+⁡
+(
+p
+1
+1
+⁢
+(
+x
+)
+,
+const
+1
+⁡
+(
+x
+)
+)
+.
+•
+Multiplication
+mult
+in 2 above may be removed from the definition, since
+mult
+⁡
+(
+x
+,
+y
+)
+=
+diff
+⁡
+(
+f
+⁢
+(
+x
+,
+y
+)
+,
+p
+1
+2
+⁢
+(
+x
+,
+y
+)
+)
+,
+where
+⁢
+f
+⁢
+(
+x
+,
+y
+)
+:=
+∑
+i
+=
+0
+y
+p
+1
+2
+⁢
+(
+x
+,
+i
+)
+•
+Many other basic functions, such as the restricted subtraction,
+exponential function
+, the
+i
+-th prime function, are all elementary. One may replace the difference function in 3 above by the restricted subtraction without changing
+ℰ
+⁢
+ℛ
+.
+Remarks
+•
+Consider the set
+𝒫
+⁢
+ℛ
+of primitive recursive functions. The functions in the first five groups above are all in
+𝒫
+⁢
+ℛ
+. In addition,
+𝒫
+⁢
+ℛ
+is closed under the operations in 6, 7, and 8 above, we see that
+ℰ
+⁢
+ℛ
+⊆
+𝒫
+⁢
+ℛ
+, since
+ℰ
+⁢
+ℛ
+, as defined, is the smallest such set.
+•
+Furthermore,
+ℰ
+⁢
+ℛ
+≠
+𝒫
+⁢
+ℛ
+. For example, the super-exponential function, given by
+f
+⁢
+(
+x
+,
+0
+)
+=
+m
+, and
+f
+⁢
+(
+x
+,
+n
++
+1
+)
+=
+exp
+⁡
+(
+m
+,
+f
+⁢
+(
+x
+,
+n
+)
+)
+, where
+m
+>
+1
+, can be shown to be non-elementary.
+•
+In addition, it can be shown that
+ℰ
+⁢
+ℛ
+is the set of primitive recursive functions that can be obtained from the zero function, the successor function, and the projection functions via composition, and no more than three applications of
+primitive recursion
+.
+•
+By taking the
+closure
+of
+ℰ
+⁢
+ℛ
+with respect to unbounded minimization, one obtains
+ℛ
+, the set of all
+recursive functions
+(partial or total). In fact, by replacing bounded sum and bounded product with unbounded minimization, and the difference function with restricted subtraction, one obtains
+ℛ
+.
+Title
+elementary recursive function
+Canonical
+name
+ElementaryRecursiveFunction
+Date of creation
+2013-03-22 19:06:48
+Last modified on
+2013-03-22 19:06:48
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+9
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 03D20
+Synonym
+elementary
+Related topic
+BoundedRecursion
+Defines
+elementary recursive
+Generated  on Thu Feb  8 20:03:06 2018 by
+LaTeXML

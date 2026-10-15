@@ -1,0 +1,425 @@
+similar matrix
+similar matrix
+Definition
+A
+square matrix
+A
+is
+similar
+(or
+conjugate
+) to a square matrix
+B
+if there exists a
+nonsingular
+square matrix
+S
+such that
+A
+=
+S
+-
+1
+⁢
+B
+⁢
+S
+.
+(1)
+Note that, given
+S
+as above, we can define
+R
+=
+S
+-
+1
+and have
+A
+=
+R
+⁢
+B
+⁢
+R
+-
+1
+. Thus, whether the
+inverse
+comes first or last does not matter.
+Transformations
+of the form
+S
+-
+1
+⁢
+B
+⁢
+S
+(or
+S
+⁢
+B
+⁢
+S
+-
+1
+) are called
+similarity transformations
+.
+Discussion
+Similarity
+is useful for turning recalcitrant matrices into pliant ones. The
+canonical
+example is that a
+diagonalizable matrix
+A
+is similar to the
+diagonal matrix
+of its
+eigenvalues
+Λ
+, with the matrix of its
+eigenvectors
+acting as the similarity transformation. That is,
+A
+=
+T
+⁢
+Λ
+⁢
+T
+-
+1
+(2)
+=
+[
+v
+1
+v
+2
+…
+v
+n
+]
+⁢
+[
+λ
+1
+0
+…
+0
+λ
+2
+…
+⋮
+⋮
+λ
+n
+]
+⁢
+[
+v
+1
+v
+2
+…
+v
+n
+]
+-
+1
+.
+(3)
+This follows directly from the equation defining eigenvalues and eigenvectors,
+A
+⁢
+T
+=
+T
+⁢
+Λ
+.
+(4)
+If
+A
+is
+symmetric
+(
+http://planetmath.org/SymmetricMatrix
+) for example, then through this transformation, we have turned
+A
+into the
+product
+of two
+orthogonal matrices
+and a diagonal matrix. This can be very useful. As an application, see the solution for the normalizing constant of a multidimensional Gaussian integral.
+Properties of similar matrices
+1.
+Similarity is
+reflexive
+(
+http://planetmath.org/Reflexive
+): All square matrices
+A
+are similar to themselves via the similarity transformation
+A
+=
+I
+-
+1
+⁢
+A
+⁢
+I
+, where
+I
+is the
+identity matrix
+with the same
+dimensions
+as
+A
+.
+2.
+Similarity is symmetric (
+http://planetmath.org/Symmetric
+): If
+A
+is similar to
+B
+, then
+B
+is similar to
+A
+, as we can define a matrix
+R
+=
+S
+-
+1
+and have
+B
+=
+R
+-
+1
+⁢
+A
+⁢
+R
+(5)
+3.
+Similarity is
+transitive
+(
+http://planetmath.org/Transitive3
+): If
+A
+is similar to
+B
+, which is similar to
+C
+, we have
+A
+=
+S
+-
+1
+⁢
+B
+⁢
+S
+=
+S
+-
+1
+⁢
+(
+R
+-
+1
+⁢
+C
+⁢
+R
+)
+⁢
+S
+=
+(
+S
+-
+1
+⁢
+R
+-
+1
+)
+⁢
+C
+⁢
+(
+R
+⁢
+S
+)
+=
+(
+R
+⁢
+S
+)
+-
+1
+⁢
+C
+⁢
+(
+R
+⁢
+S
+)
+.
+(6)
+4.
+Because of 1, 2 and 3, similarity defines an
+equivalence relation
+() on square matrices, partitioning (
+http://planetmath.org/
+Partition
+) the space of such matrices into a
+disjoint set
+of
+equivalence classes
+.
+5.
+If
+A
+is similar to
+B
+, then their
+determinants
+are equal; i.e. (
+http://planetmath.org/Ie
+),
+det
+⁡
+A
+=
+det
+⁡
+B
+. This is easily verified:
+det
+⁡
+A
+=
+det
+⁡
+(
+S
+-
+1
+⁢
+B
+⁢
+S
+)
+=
+det
+⁡
+(
+S
+-
+1
+)
+⁢
+det
+⁡
+B
+⁢
+det
+⁡
+S
+=
+(
+det
+⁡
+S
+)
+-
+1
+⁢
+det
+⁡
+B
+⁢
+det
+⁡
+S
+=
+det
+⁡
+B
+.
+(7)
+In fact,
+similar matrices
+have the same
+characteristic polynomial
+, which implies this result directly, the determinant being the
+constant term
+of the characteristic polynomial (up to sign).
+6.
+Similar matrices represent the same
+linear transformation
+after a
+change of basis
+.
+7.
+It can be shown that a matrix
+A
+and its
+transpose
+A
+T
+are always similar.
+Title
+similar matrix
+Canonical name
+SimilarMatrix
+Date of creation
+2013-03-22 12:24:37
+Last modified on
+2013-03-22 12:24:37
+Owner
+Wkbj79 (1863)
+Last modified by
+Wkbj79 (1863)
+Numerical id
+19
+Author
+Wkbj79 (1863)
+Entry type
+Definition
+Classification
+msc 15A03
+Synonym
+similarity transformation
+Synonym
+similar matrices
+Synonym
+conjugate matrices
+Related topic
+Eigenvalue
+Related topic
+Eigenvector
+Related topic
+EigenvalueProblem
+Defines
+similar
+Defines
+conjugate
+Generated  on Fri Feb  9 18:20:19 2018 by
+LaTeXML

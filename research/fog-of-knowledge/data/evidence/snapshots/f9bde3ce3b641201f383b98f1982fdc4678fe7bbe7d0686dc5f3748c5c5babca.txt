@@ -1,0 +1,1338 @@
+constructing automata from regular languages
+constructing automata from regular languages
+In this entry, we describe how a certain
+equivalence relation
+on words gives rise to a
+deterministic automaton
+, and show that
+deterministic
+automata to a certain extent can be characterized by these equivalence relations.
+Constructing the automaton
+Let
+Σ
+be an
+alphabet
+and
+R
+a subset of
+Σ
+*
+, the set of all words over
+Σ
+. Consider an equivalence relation
+≡
+on
+Σ
+*
+satisfying the following two conditions:
+•
+≡
+is a right
+congruence
+: if
+u
+≡
+v
+, then
+u
+⁢
+w
+≡
+v
+⁢
+w
+for any word
+w
+over
+Σ
+,
+•
+u
+≡
+v
+implies that
+u
+∈
+R
+iff
+v
+∈
+R
+.
+An example of this is the
+Nerode equivalence
+𝒩
+R
+of
+R
+(in fact, the largest such
+relation
+).
+We can
+construct
+an automaton
+A
+=
+(
+S
+,
+Σ
+,
+δ
+,
+I
+,
+F
+)
+based on
+≡
+. Here’s how:
+•
+S
+=
+Σ
+*
+/
+≡
+, the set of
+equivalence classes
+of
+≡
+; elements of
+S
+are denoted by
+[
+u
+]
+for any
+u
+∈
+Σ
+*
+,
+•
+δ
+:
+S
+×
+Σ
+→
+S
+is given by
+δ
+⁢
+(
+[
+u
+]
+,
+a
+)
+=
+[
+u
+⁢
+a
+]
+,
+•
+I
+is a singleton consisting of
+[
+λ
+]
+, the equivalence class consisting of the
+empty word
+λ
+,
+•
+F
+is the set consisting of
+[
+u
+]
+, where
+u
+∈
+R
+.
+By condition 1,
+δ
+is well-defined, so
+A
+is a deterministic automaton. By the second condition above,
+[
+u
+]
+∈
+F
+iff
+u
+∈
+R
+.
+By
+induction
+, we see that
+δ
+⁢
+(
+[
+u
+]
+,
+v
+)
+=
+[
+u
+⁢
+v
+]
+for any word
+v
+over
+Σ
+. So
+u
+≡
+v
+iff
+δ
+⁢
+(
+[
+u
+]
+,
+λ
+)
+=
+δ
+⁢
+(
+[
+v
+]
+,
+λ
+)
+.
+One
+consequence
+of this is that
+A
+is
+accessible
+(all states are accessible).
+In
+addition
+,
+R
+=
+L
+⁢
+(
+A
+)
+, as
+u
+∈
+L
+⁢
+(
+A
+)
+iff
+δ
+⁢
+(
+[
+λ
+]
+,
+u
+)
+∈
+F
+iff
+[
+u
+]
+∈
+F
+iff
+u
+∈
+R
+.
+Constructing the equivalence relation
+Conversely
+, given a deterministic automaton
+A
+=
+(
+S
+,
+Σ
+,
+δ
+,
+{
+q
+0
+}
+,
+F
+)
+, a
+binary relation
+≡
+on
+Σ
+*
+may be defined:
+u
+≡
+v
+iff
+δ
+⁢
+(
+q
+0
+,
+u
+)
+=
+δ
+⁢
+(
+q
+0
+,
+v
+)
+.
+This binary relation is clearly an equivalence relation, and it
+satisfies
+the two conditions above, with
+R
+=
+L
+⁢
+(
+A
+)
+:
+•
+δ
+⁢
+(
+q
+0
+,
+u
+⁢
+w
+)
+=
+δ
+⁢
+(
+δ
+⁢
+(
+q
+0
+,
+u
+)
+,
+w
+)
+=
+δ
+⁢
+(
+δ
+⁢
+(
+q
+0
+,
+v
+)
+,
+w
+)
+=
+δ
+⁢
+(
+q
+0
+,
+v
+⁢
+w
+)
+,
+•
+if
+δ
+⁢
+(
+q
+0
+,
+u
+)
+=
+δ
+⁢
+(
+q
+0
+,
+v
+)
+, then clearly
+u
+∈
+L
+⁢
+(
+A
+)
+iff
+v
+∈
+L
+⁢
+(
+A
+)
+.
+So
+[
+u
+]
+=
+{
+v
+∈
+S
+∣
+δ
+⁢
+(
+q
+0
+,
+v
+)
+=
+δ
+⁢
+(
+q
+0
+,
+u
+)
+}
+.
+Remark
+. We could have defined the binary relation
+u
+≡
+v
+to mean
+δ
+⁢
+(
+q
+,
+u
+)
+=
+δ
+⁢
+(
+q
+,
+v
+)
+for all
+q
+∈
+S
+. This is also an equivalence relation that satisfies both of the conditions above. However, this is stronger in the sense that
+≡
+is a congruence: if
+u
+≡
+v
+, then
+δ
+⁢
+(
+q
+,
+w
+⁢
+u
+)
+=
+δ
+⁢
+(
+δ
+⁢
+(
+q
+,
+w
+)
+,
+u
+)
+=
+δ
+⁢
+(
+δ
+⁢
+(
+q
+,
+w
+)
+,
+v
+)
+=
+δ
+⁢
+(
+q
+,
+w
+⁢
+v
+)
+so that
+w
+⁢
+u
+≡
+w
+⁢
+v
+. In this entry, only the weaker
+assumption
+that
+≡
+is a right congruence is needed.
+Characterization
+Fix an alphabet
+Σ
+and a set
+R
+⊆
+Σ
+*
+. Let
+X
+the set of equivalence relations satisfying the two conditions above, and
+Y
+the set of accessible deterministic automata over
+Σ
+accepting
+R
+. Define
+f
+:
+X
+→
+Y
+and
+g
+:
+Y
+→
+X
+such that
+f
+⁢
+(
+≡
+)
+and
+g
+⁢
+(
+A
+)
+are the automaton and relation constructed above.
+Proposition 1
+.
+g
+∘
+f
+=
+1
+X
+and
+f
+⁢
+(
+g
+⁢
+(
+A
+)
+)
+is
+isomorphic
+to
+A
+.
+Proof.
+Suppose
+≡
+1
+↦
+f
+A
+↦
+g
+≡
+2
+. Then
+u
+≡
+1
+v
+iff
+δ
+⁢
+(
+[
+u
+]
+,
+λ
+)
+=
+δ
+⁢
+(
+[
+v
+]
+,
+λ
+)
+iff
+δ
+⁢
+(
+[
+λ
+]
+,
+u
+)
+=
+δ
+⁢
+(
+[
+λ
+]
+,
+v
+)
+iff
+u
+≡
+2
+v
+.
+Conversely, suppose
+A
+1
+=
+(
+S
+1
+,
+Σ
+,
+δ
+1
+,
+q
+1
+,
+F
+2
+)
+↦
+g
+≡
+↦
+f
+A
+2
+=
+(
+S
+2
+,
+Σ
+,
+δ
+2
+,
+q
+2
+,
+F
+2
+)
+. Then
+S
+2
+=
+Σ
+*
+/
+≡
+,
+q
+2
+=
+[
+λ
+]
+, and
+F
+2
+consists of all
+[
+u
+]
+such that
+u
+∈
+L
+⁢
+(
+A
+1
+)
+. As a result,
+u
+∈
+L
+⁢
+(
+A
+2
+)
+iff
+δ
+2
+⁢
+(
+[
+λ
+]
+,
+u
+)
+=
+δ
+2
+⁢
+(
+q
+2
+,
+u
+)
+∈
+F
+2
+iff
+[
+u
+]
+=
+δ
+2
+⁢
+(
+[
+u
+]
+,
+λ
+)
+∈
+F
+2
+iff
+u
+∈
+L
+⁢
+(
+A
+1
+)
+. This shows that
+A
+1
+is
+equivalent
+to
+A
+2
+.
+To show
+A
+1
+is isomorphic to
+A
+2
+, define
+ϕ
+:
+S
+2
+→
+S
+1
+by
+ϕ
+⁢
+(
+[
+u
+]
+)
+=
+δ
+1
+⁢
+(
+q
+1
+,
+u
+)
+. Then
+•
+ϕ
+is well-defined by the definition of
+≡
+, and it is
+injective
+for the same reason. Now, let
+s
+∈
+S
+, then since
+A
+1
+is accessible, there is a word
+u
+such that
+δ
+1
+⁢
+(
+q
+1
+,
+u
+)
+=
+s
+, so that
+ϕ
+⁢
+(
+[
+u
+]
+)
+=
+s
+. This shows that
+ϕ
+is a
+bijection
+.
+•
+ϕ
+⁢
+(
+q
+2
+)
+=
+ϕ
+⁢
+(
+[
+λ
+]
+)
+=
+δ
+1
+⁢
+(
+q
+1
+,
+λ
+)
+=
+q
+1
+.
+•
+ϕ
+⁢
+(
+[
+u
+]
+)
+∈
+F
+1
+iff
+δ
+1
+⁢
+(
+q
+1
+,
+u
+)
+∈
+F
+1
+iff
+u
+∈
+L
+⁢
+(
+A
+1
+)
+=
+L
+⁢
+(
+A
+2
+)
+iff
+[
+u
+]
+∈
+F
+2
+. Therefore,
+ϕ
+⁢
+(
+F
+2
+)
+=
+F
+1
+.
+•
+Finally,
+ϕ
+⁢
+(
+δ
+2
+⁢
+(
+[
+u
+]
+,
+a
+)
+)
+=
+ϕ
+⁢
+(
+[
+u
+⁢
+a
+]
+)
+=
+δ
+1
+⁢
+(
+q
+1
+,
+u
+⁢
+a
+)
+=
+δ
+1
+⁢
+(
+δ
+1
+⁢
+(
+q
+1
+,
+u
+)
+,
+a
+)
+=
+δ
+1
+⁢
+(
+ϕ
+⁢
+(
+[
+u
+]
+)
+,
+a
+)
+.
+Thus,
+ϕ
+is a
+homomorphism
+from
+A
+1
+to
+A
+2
+, together with the fact that
+ϕ
+is a bijection,
+A
+1
+is isormorphic to
+A
+2
+.
+∎
+Proposition 2
+.
+If
+≡
+is the Nerode equivalence of
+R
+, then the
+f
+⁢
+(
+≡
+)
+is a
+reduced automaton
+. If
+A
+is reduced, then
+g
+⁢
+(
+A
+)
+is the Nerode equivalence of
+R
+.
+Proof.
+Suppose
+≡
+is the Nerode equivlance. If
+f
+⁢
+(
+≡
+)
+is not reduced, reduce it to a reduced automaton
+A
+. Then
+≡
+⊆
+g
+(
+A
+)
+. Since
+g
+⁢
+(
+A
+)
+satisfies the two conditions above and
+≡
+is the largest such relation,
+≡
+=
+g
+(
+A
+)
+. Therefore
+f
+⁢
+(
+≡
+)
+=
+f
+⁢
+(
+g
+⁢
+(
+A
+)
+)
+is isomorphic to
+A
+. But
+A
+is reduced, so must
+f
+⁢
+(
+≡
+)
+.
+On the other hand, suppose
+A
+is reduced. Then
+g
+⁢
+(
+A
+)
+⊆
+𝒩
+R
+. Conversely, if
+u
+⁢
+𝒩
+R
+⁢
+v
+, then
+u
+⁢
+w
+∈
+R
+iff
+v
+⁢
+w
+∈
+R
+for any word
+w
+, so that
+δ
+⁢
+(
+q
+0
+,
+u
+⁢
+w
+)
+=
+δ
+⁢
+(
+q
+0
+,
+v
+⁢
+w
+)
+, or
+δ
+⁢
+(
+δ
+⁢
+(
+q
+0
+,
+u
+)
+,
+w
+)
+=
+δ
+⁢
+(
+δ
+⁢
+(
+q
+0
+,
+v
+)
+,
+w
+)
+, which implies
+δ
+⁢
+(
+q
+0
+,
+u
+)
+and
+δ
+⁢
+(
+q
+0
+,
+v
+)
+are indistinguishable. But
+A
+is reduced, this means
+δ
+⁢
+(
+q
+0
+,
+u
+)
+=
+δ
+⁢
+(
+q
+0
+,
+v
+)
+. As a result
+u
+⁢
+g
+⁢
+(
+A
+)
+⁢
+v
+, or
+g
+⁢
+(
+A
+)
+=
+𝒩
+R
+.
+∎
+Definition
+. A
+Myhill-Nerode relation
+for
+R
+⊆
+Σ
+*
+is an equivalence relation
+≡
+that satisfies the two conditions above, and that
+Σ
+*
+/
+≡
+is finite.
+Combining from what we just discussed above, we see that a
+language
+R
+is
+regular
+iff its Nerode equivalence is a Myhill-Nerode relation, which is the essence of
+Myhill-Nerode theorem
+.
+Title
+constructing automata from regular languages
+Canonical name
+ConstructingAutomataFromRegularLanguages
+Date of creation
+2013-03-22 19:02:09
+Last modified on
+2013-03-22 19:02:09
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+11
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 03D10
+Classification
+msc 68Q42
+Classification
+msc 68Q05
+Defines
+Myhill-Nerode relation
+Generated  on Thu Feb  8 20:00:24 2018 by
+LaTeXML

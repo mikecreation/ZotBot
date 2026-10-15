@@ -1,0 +1,148 @@
+Turing computable
+Turing computable
+A
+function
+is
+Turing computable
+if the function’s value can be
+computed with a
+Turing machine
+.
+More specifically, let
+D
+be a set of words in a given
+alphabet
+and
+let
+f
+be a function which maps elements of
+D
+to words on the
+same alphabet. We say that
+f
+is
+Turing computable
+if there
+exists a Turing machine such that
+•
+If one starts the Turing machine with a word
+w
+∈
+D
+as the
+initial content of the tape, the
+computation
+will halt.
+•
+When the computation halts, the tape will read
+f
+⁢
+(
+w
+)
+.
+Formally, let
+Σ
+be an alphabet and
+f
+:
+Σ
+*
+→
+Σ
+*
+on words over
+Σ
+. Then
+f
+is said to be Turing-computable if there is a Turing machine
+T
+over
+Σ
+(its input alphabet), as defined in this entry (
+http://planetmath.org/FormalDefinitionOfATuringMachine
+), such that for any
+w
+∈
+Σ
+*
+,
+(
+s
+,
+τ
+w
+,
+1
+)
+→
+*
+(
+h
+,
+τ
+f
+⁢
+(
+w
+)
+,
+m
+)
+for some
+m
+. Here,
+h
+is a halt state (either an accept or a reject state), and
+τ
+w
+for any word
+w
+is defined as the tape description such that the content of the
+i
+-th square is the
+i
+-th letter of
+w
+, and blank everywhere else.
+Because of the fact that all types of Turing machines (
+deterministic
+,
+non-deterministic, single head, multiple head, etc.) all have the same
+computational power, it does not matter which type of Turing machine
+one uses in the definition.
+It is not hard to find examples of Turing computable functions —
+because Turing machines provide an idealized model for the
+operation
+of the digital computer, any function which can be evaluated by a
+computer provides an example.
+Title
+Turing computable
+Canonical name
+TuringComputable
+Date of creation
+2013-03-22 12:33:16
+Last modified on
+2013-03-22 12:33:16
+Owner
+rspuzio (6075)
+Last modified by
+rspuzio (6075)
+Numerical id
+9
+Author
+rspuzio (6075)
+Entry type
+Definition
+Classification
+msc 03D10
+Classification
+msc 68Q05
+Synonym
+Turing-computable
+Related topic
+RecursivelyEnumerable
+Related topic
+FormalDefinitionOfATuringMachine
+Generated  on Thu Feb  8 20:01:42 2018 by
+LaTeXML

@@ -1,0 +1,1343 @@
+quotient group
+quotient group
+Before defining
+quotient groups
+, some preliminary
+definitions
+must be introduced and a few  established.
+Given a group
+G
+and a
+subgroup
+H
+of
+G
+, the
+http://planetmath.org/node/122
+relation
+∼
+L
+on
+G
+defined by
+a
+∼
+L
+b
+if and only
+if
+b
+-
+1
+⁢
+a
+∈
+H
+is called
+left
+congruence
+modulo
+H
+; similarly the relation defined by
+a
+∼
+R
+b
+if
+and only if
+a
+⁢
+b
+-
+1
+∈
+H
+is called
+congruence modulo
+H
+(observe that these two relations coincide if
+G
+is
+abelian
+).
+Proposition
+.
+Left (resp. right) congruence modulo
+H
+is an
+equivalence relation
+on
+G
+.
+Proof.
+We will only give the proof for left congruence modulo
+H
+, as the  for right congruence modulo
+H
+is analogous.
+Given
+a
+∈
+G
+, because
+H
+is a subgroup,
+H
+contains the
+identity
+e
+of
+G
+, so that
+a
+-
+1
+⁢
+a
+=
+e
+∈
+H
+; thus
+a
+∼
+L
+a
+, so
+∼
+L
+is
+http://planetmath.org/node/1644
+reflexive
+. If
+b
+∈
+G
+satisfies
+a
+∼
+L
+b
+, so that
+b
+-
+1
+⁢
+a
+∈
+H
+, then by the  of
+H
+under the formation of
+inverses
+,
+a
+-
+1
+⁢
+b
+=
+(
+b
+-
+1
+⁢
+a
+)
+-
+1
+∈
+H
+, and
+b
+∼
+L
+a
+; thus
+∼
+L
+is
+symmetric
+. Finally, if
+c
+∈
+G
+,
+a
+∼
+L
+b
+, and
+b
+∼
+L
+c
+, then we have
+b
+-
+1
+⁢
+a
+,
+c
+-
+1
+⁢
+b
+∈
+H
+, and the
+closure
+of
+H
+under the
+binary operation
+of
+G
+gives
+c
+-
+1
+⁢
+a
+=
+(
+c
+-
+1
+⁢
+b
+)
+⁢
+(
+b
+-
+1
+⁢
+a
+)
+∈
+H
+, so that
+a
+∼
+L
+c
+, from which it follows that
+∼
+L
+is
+http://planetmath.org/node/1669
+transitive
+, hence an equivalence relation.
+∎
+It follows from the preceding  that
+G
+is partitioned into
+mutually disjoint
+, non-empty
+equivalence
+classes
+by left (resp. right) congruence modulo
+H
+, where
+a
+,
+b
+∈
+G
+are in the same equivalence class if and only if
+a
+∼
+L
+b
+(resp.
+a
+∼
+R
+b
+); focusing on left congruence modulo
+H
+, if we denote by
+a
+¯
+the equivalence class containing
+a
+under
+∼
+L
+, we see that
+a
+¯
+=
+{
+b
+∈
+G
+∣
+b
+∼
+L
+a
+}
+=
+{
+b
+∈
+G
+∣
+a
+-
+1
+⁢
+b
+∈
+H
+}
+=
+{
+b
+∈
+G
+∣
+b
+=
+a
+⁢
+h
+⁢
+for some
+⁢
+h
+∈
+H
+}
+=
+{
+a
+⁢
+h
+∣
+h
+∈
+H
+}
+⁢
+.
+Thus the equivalence class under
+∼
+L
+containing
+a
+is simply the
+left coset
+a
+⁢
+H
+of
+H
+in
+G
+. Similarly the equivalence class under
+∼
+R
+containing
+a
+is the
+right coset
+H
+⁢
+a
+of
+H
+in
+G
+(when the binary operation of
+G
+is written additively, our notation for left and right cosets becomes
+a
++
+H
+=
+{
+a
++
+h
+∣
+h
+∈
+H
+}
+and
+H
++
+a
+=
+{
+h
++
+a
+∣
+h
+∈
+H
+}
+). Observe that the equivalence class under either
+∼
+L
+or
+∼
+R
+containing
+e
+is
+e
+⁢
+H
+=
+H
+. The
+index
+of
+H
+in
+G
+, denoted by
+|
+G
+:
+H
+|
+, is
+the
+cardinality
+of the set
+G
+/
+H
+(read “
+G
+modulo
+H
+” or just “
+G
+mod
+H
+”) of left cosets of
+H
+in
+G
+(in fact, one may demonstrate the
+existence
+of a
+bijection
+between the set of left cosets of
+H
+in
+G
+and the set of right cosets of
+H
+in
+G
+, so that we may well take
+|
+G
+:
+H
+|
+to be the cardinality of the set of right cosets of
+H
+in
+G
+).
+We now attempt to impose a group on
+G
+/
+H
+by taking the  of the left cosets containing the
+elements
+a
+and
+b
+, respectively, to be the left coset containing the element
+a
+⁢
+b
+; however, because this definition requires a choice of left coset representatives, there is no guarantee that it will yield a
+well-defined
+binary operation on
+G
+/
+H
+. For the  of left coset  to be well-defined, we must be sure that if
+a
+′
+⁢
+H
+=
+a
+⁢
+H
+and
+b
+′
+⁢
+H
+=
+b
+⁢
+H
+, i.e., if
+a
+′
+∈
+a
+⁢
+H
+and
+b
+′
+∈
+b
+⁢
+H
+, then
+a
+′
+⁢
+b
+′
+⁢
+H
+=
+a
+⁢
+b
+⁢
+H
+, i.e., that
+a
+′
+⁢
+b
+′
+∈
+a
+⁢
+b
+⁢
+H
+. Precisely what must be required of the subgroup
+H
+to ensure the  of the above condition is the
+content
+of the following :
+Proposition
+.
+The rule
+(
+a
+⁢
+H
+,
+b
+⁢
+H
+)
+↦
+a
+⁢
+b
+⁢
+H
+gives a well-defined binary operation on
+G
+/
+H
+if and only if
+H
+is a
+normal subgroup
+of
+G
+.
+Proof.
+Suppose first that  of left cosets is well-defined by the given rule, i.e, that given
+a
+′
+∈
+a
+⁢
+H
+and
+b
+′
+∈
+b
+⁢
+H
+, we have
+a
+′
+⁢
+b
+′
+⁢
+H
+=
+a
+⁢
+b
+⁢
+H
+, and let
+g
+∈
+G
+and
+h
+∈
+H
+. Putting
+a
+=
+1
+,
+a
+′
+=
+h
+, and
+b
+=
+b
+′
+=
+g
+-
+1
+, our
+hypothesis
+gives
+h
+⁢
+g
+-
+1
+⁢
+H
+=
+e
+⁢
+g
+-
+1
+⁢
+H
+=
+g
+-
+1
+⁢
+H
+; this implies that
+h
+⁢
+g
+-
+1
+∈
+g
+-
+1
+⁢
+H
+, hence that
+h
+⁢
+g
+-
+1
+=
+g
+-
+1
+⁢
+h
+′
+for some
+h
+′
+∈
+H
+.  on the left by
+g
+gives
+g
+⁢
+h
+⁢
+g
+-
+1
+=
+h
+′
+∈
+H
+, and because
+g
+and
+h
+were chosen arbitrarily, we may conclude that
+g
+⁢
+H
+⁢
+g
+-
+1
+⊆
+H
+for all
+g
+∈
+G
+, from which it follows that
+H
+⊴
+G
+.
+Conversely
+, suppose
+H
+is normal in
+G
+and let
+a
+′
+∈
+a
+⁢
+H
+and
+b
+′
+∈
+b
+⁢
+H
+. There exist
+h
+1
+,
+h
+2
+∈
+H
+such that
+a
+′
+=
+a
+⁢
+h
+1
+and
+b
+′
+=
+b
+⁢
+h
+1
+; now, we have
+a
+′
+⁢
+b
+′
+=
+a
+⁢
+h
+1
+⁢
+b
+⁢
+h
+2
+=
+a
+⁢
+(
+b
+⁢
+b
+-
+1
+)
+⁢
+h
+1
+⁢
+b
+⁢
+h
+2
+=
+a
+⁢
+b
+⁢
+(
+b
+-
+1
+⁢
+h
+1
+⁢
+b
+)
+⁢
+h
+2
+⁢
+,
+and because
+b
+-
+1
+⁢
+h
+1
+⁢
+b
+∈
+H
+by
+assumption
+, we see that
+a
+′
+⁢
+b
+′
+=
+a
+⁢
+b
+⁢
+h
+, where
+h
+=
+(
+b
+-
+1
+⁢
+h
+⁢
+b
+)
+⁢
+h
+2
+∈
+H
+by the closure of
+H
+under  in
+G
+. Thus
+a
+′
+⁢
+b
+′
+∈
+a
+⁢
+b
+⁢
+H
+, and because left cosets
+are either
+disjoint
+or equal, we may conclude that
+a
+′
+⁢
+b
+′
+⁢
+H
+=
+a
+⁢
+b
+⁢
+H
+, so that
+multiplication
+of left cosets is indeed a well-defined binary operation on
+G
+/
+H
+.
+∎
+The set
+G
+/
+H
+, where
+H
+is a normal subgroup of
+G
+, is readily seen to form a group under the well-defined
+binary operation of left coset multiplication (the  of each group  follows from that of
+G
+), and is called a
+quotient
+or
+factor group
+(more specifically
+the
+quotient of
+G
+by
+H
+). We conclude with several examples of specific quotient groups.
+Example
+.
+A standard example of a quotient group is
+ℤ
+/
+n
+⁢
+ℤ
+, the quotient of the  of integers by the
+cyclic subgroup
+generated by
+n
+∈
+ℤ
++
+; the order of
+ℤ
+/
+n
+⁢
+ℤ
+is
+n
+, and the
+distinct left cosets of the group are
+n
+⁢
+ℤ
+,
+1
++
+n
+⁢
+ℤ
+,
+…
+,
+(
+n
+-
+1
+)
++
+n
+⁢
+ℤ
+.
+Example
+.
+Although the group
+Q
+8
+is not abelian, each of its subgroups its normal, so any will suffice for the formation
+of quotient groups; the quotient
+Q
+8
+/
+⟨
+-
+1
+⟩
+, where
+⟨
+-
+1
+⟩
+=
+{
+1
+,
+-
+1
+}
+is the cyclic subgroup of
+Q
+8
+generated by
+-
+1
+, is of order
+4
+, with elements
+⟨
+-
+1
+⟩
+,
+i
+⁢
+⟨
+-
+1
+⟩
+=
+{
+i
+,
+-
+i
+}
+,
+k
+⁢
+⟨
+-
+1
+⟩
+=
+{
+k
+,
+-
+k
+}
+, and
+j
+⁢
+⟨
+-
+1
+⟩
+=
+{
+j
+,
+-
+j
+}
+. Since each non-identity element of
+Q
+8
+/
+⟨
+-
+1
+⟩
+is of order
+2
+, it is
+isomorphic
+to the Klein
+4
+-group
+V
+. Because each of
+⟨
+i
+⟩
+,
+⟨
+j
+⟩
+, and
+⟨
+k
+⟩
+has order
+4
+, the quotient of
+Q
+8
+by any of these subgroups is necessarily cyclic of order
+2
+.
+Example
+.
+The center of the
+dihedral group
+D
+6
+of order
+12
+(with
+http://planetmath.org/node/2182
+presentation
+⟨
+r
+,
+s
+∣
+r
+6
+=
+s
+2
+=
+1
+,
+r
+-
+1
+⁢
+s
+=
+s
+⁢
+r
+⟩
+) is
+⟨
+r
+3
+⟩
+=
+{
+1
+,
+r
+3
+}
+; the elements of the quotient
+D
+6
+/
+⟨
+r
+3
+⟩
+are
+⟨
+r
+3
+⟩
+,
+r
+⁢
+⟨
+r
+3
+⟩
+=
+{
+r
+,
+r
+4
+}
+,
+r
+2
+⁢
+⟨
+r
+3
+⟩
+=
+{
+r
+2
+,
+r
+5
+}
+,
+s
+⁢
+⟨
+r
+3
+⟩
+=
+{
+s
+,
+s
+⁢
+r
+3
+}
+,
+s
+⁢
+r
+⁢
+⟨
+r
+3
+⟩
+=
+{
+s
+⁢
+r
+,
+s
+⁢
+r
+4
+}
+, and
+s
+⁢
+r
+2
+⁢
+⟨
+r
+3
+⟩
+=
+{
+s
+⁢
+r
+2
+,
+s
+⁢
+r
+5
+}
+; because
+s
+⁢
+r
+2
+⁢
+⟨
+r
+3
+⟩
+⁢
+r
+⁢
+⟨
+r
+3
+⟩
+=
+s
+⁢
+r
+3
+⁢
+⟨
+r
+3
+⟩
+=
+s
+⁢
+⟨
+r
+3
+⟩
+≠
+s
+⁢
+r
+⁢
+⟨
+r
+3
+⟩
+=
+r
+⁢
+⟨
+r
+3
+⟩
+⁢
+s
+⁢
+r
+2
+⁢
+⟨
+r
+3
+⟩
+⁢
+,
+D
+6
+/
+⟨
+r
+3
+⟩
+is
+non-abelian
+, hence must be isomorphic to
+S
+3
+.
+Title
+quotient group
+Canonical
+name
+QuotientGroup
+Date of creation
+2013-03-22 12:04:06
+Last modified on
+2013-03-22 12:04:06
+Owner
+azdbacks4234 (14155)
+Last modified by
+azdbacks4234 (14155)
+Numerical id
+35
+Author
+azdbacks4234 (14155)
+Entry type
+Definition
+Classification
+msc 20-00
+Synonym
+factor group
+Synonym
+quotient
+Related topic
+Group
+Related topic
+NormalSubgroup
+Related topic
+Subgroup
+Related topic
+EquivalenceRelation
+Related topic
+Coset
+Related topic
+NaturalProjection
+Defines
+left congruence modulo a subgroup
+Defines
+right congruence modulo a subgroup
+Defines
+index
+Generated  on Fri Feb  9 19:16:13 2018 by
+LaTeXML

@@ -1,0 +1,419 @@
+matrix inverse
+matrix inverse
+1
+Matrix Inverse
+The
+inverse
+of an
+n
+×
+n
+matrix
+A
+is denoted by
+A
+-
+1
+. The inverse is defined so that
+A
+⁢
+A
+-
+1
+=
+A
+-
+1
+⁢
+A
+=
+I
+n
+where
+I
+n
+is the
+n
+×
+n
+identity matrix
+.
+It should be stressed that
+only
+square matrices
+have inverses proper– however, a matrix of any size may have “left” and “right” inverses (which will not be discussed here).
+A precondition for the
+existence
+of the
+matrix inverse
+A
+-
+1
+(i.e. the matrix is
+invertible
+) is that
+det
+⁡
+A
+≠
+0
+(the
+determinant
+is nonzero), the reason for which we will see in a second.
+The general form of the inverse of a matrix
+A
+is
+A
+-
+1
+=
+1
+det
+⁡
+(
+A
+)
+⁢
+adj
+⁡
+(
+A
+)
+where
+adj
+⁡
+(
+A
+)
+is the
+adjugate
+of
+A
+(the matrix formed by the
+cofactors
+of
+A
+, i.e. with
+adj
+(
+A
+)
+i
+⁢
+j
+=
+C
+i
+⁢
+j
+(
+A
+)
+).
+1
+1
+Some other sources call the adjugate the
+adjoint
+; however on PM the adjoint is reserved for the
+conjugate transpose
+.
+This can also be thought of as a
+generalization
+of the
+2
+×
+2
+formula
+given in the next
+section
+. However, due to the
+inclusion
+of the determinant in the expression, it is impractical to actually use this to calculate inverses.
+This general form also explains why the determinant must be nonzero for invertibility; as we are dividing through by its value.
+An
+invertible matrix
+is also said to be nonsingular.
+2
+Calculating the Inverse By Hand
+Method 1:
+An easy way to calculate the inverse of a matrix by hand is to form an augmented matrix
+[
+A
+|
+I
+]
+from
+A
+and
+I
+n
+, then use
+Gaussian elimination
+to transform the left half into
+I
+. At the end of this procedure, the right half of the augmented matrix will be
+A
+-
+1
+(that is, you will be left with
+[
+I
+|
+A
+-
+1
+]
+).
+Method 2:
+One can calculate the
+i
+,
+j
+th element of the inverse by using the general formula; i.e.
+A
+j
+⁢
+i
+-
+1
+=
+C
+i
+⁢
+j
+⁢
+(
+A
+)
+/
+det
+⁡
+A
+where
+C
+i
+⁢
+j
+⁢
+(
+A
+)
+is the
+i
+,
+j
+th cofactor expansion of the matrix
+A
+.
+Note that the indices on the left-hand side are swapped relative to the right-hand side.
+2.1
+2-by-2 case:
+For the
+2
+×
+2
+case, the general formula reduces to a memorable shortcut. For the
+2
+×
+2
+matrix
+M
+=
+[
+a
+b
+c
+d
+]
+The inverse
+M
+-
+1
+is always
+M
+-
+1
+=
+(
+1
+det
+⁡
+M
+)
+⁢
+[
+d
+-
+b
+-
+c
+a
+]
+where
+det
+⁡
+M
+is simply
+a
+⁢
+d
+-
+b
+⁢
+c
+.
+2.2
+Remarks
+Some caveats: computing the matrix inverse for
+ill-conditioned matrices
+is error-prone; special care must be taken and there are sometimes special algorithms to calculate the inverse of certain classes of matrices (for example,
+Hilbert matrices
+).
+3
+Avoiding the Inverse and Numerical Calculation
+The need to find the matrix inverse depends on the situation– whether done by hand or by computer, and whether the matrix is simply a part of some equation or expression or not.
+Instead of computing the matrix
+A
+-
+1
+as part of an equation or expression, it is nearly always better to use a
+matrix factorization
+instead. For example, when solving the system
+A
+⁢
+x
+=
+b
+, actually calculating
+A
+-
+1
+to get
+x
+=
+A
+-
+1
+⁢
+b
+is discouraged.
+LU-factorization
+is typically used instead.
+We can even use this fact to speed up our calculation of the inverse by itself. We can cast the problem as finding
+X
+in
+A
+⁢
+X
+=
+B
+For
+n
+×
+n
+matrices
+A
+,
+X
+, and
+B
+(where
+X
+=
+A
+-
+1
+and
+B
+=
+I
+n
+). To solve this, we first find the
+L
+⁢
+U
+decomposition
+of
+A
+, then iterate over the columns, solving
+L
+⁢
+y
+=
+P
+⁢
+b
+k
+and
+U
+⁢
+x
+k
+=
+y
+each time (
+k
+=
+1
+⁢
+…
+⁢
+n
+). The resulting values for
+x
+k
+are then the columns of
+A
+-
+1
+.
+4
+Elements of Invertible Matrices
+Typically the
+matrix elements
+are members of a field when we are speaking of inverses (i.e. the reals, the
+complex numbers
+). However, the matrix inverse may exist in the case of the
+elements
+being members of a
+commutative ring
+, provided that the determinant of the matrix is a unit in the ring.
+References
+1
+Golub and Van Loan, “Matrix Computations,” Johns Hopkins Univ. Press, 1996.
+2
+“Matrix Math,”
+http://easyweb.easynet.co.uk/ mrmeanie/matrix/matrices.htm
+http://easyweb.easynet.co.uk/ mrmeanie/matrix/matrices.htm
+Title
+matrix inverse
+Canonical name
+MatrixInverse
+Date of creation
+2013-03-22 13:04:25
+Last modified on
+2013-03-22 13:04:25
+Owner
+akrowne (2)
+Last modified by
+akrowne (2)
+Numerical id
+18
+Author
+akrowne (2)
+Entry type
+Definition
+Classification
+msc 15A09
+Synonym
+inverse
+Synonym
+matrix inversion
+Defines
+invertible
+Defines
+adjugate
+Defines
+adjugate of a matrix
+Generated  on Fri Feb  9 18:23:22 2018 by
+LaTeXML

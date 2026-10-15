@@ -1,0 +1,171 @@
+<!DOCTYPE html><html>
+<head>
+<title>Jacobian matrix</title>
+<!--Generated on Fri Feb  9 19:56:47 2018 by LaTeXML (version 0.8.2) http://dlmf.nist.gov/LaTeXML/.-->
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="LaTeXML.css" type="text/css">
+<link rel="stylesheet" href="ltx-article.css" type="text/css">
+<link rel="stylesheet" href="https://cdn.rawgit.com/holtzermann17/3f71ceeb3b055e1ddc3b6c11fb1f074c/raw/2bb23e3b173ff96840797fc0c3bcb8c54085df8e/LaTeXML.css" type="text/css">
+<link rel="stylesheet" href="https://cdn.rawgit.com/holtzermann17/4bda0365b30858ac2fb83623185fe3ec/raw/cedd84ed3e3ad597c5d293f443ecfe4803741c6b/ltx-article.css" type="text/css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" type="text/javascript"></script>
+</head>
+<body>
+<div class="ltx_page_main">
+<div class="ltx_page_content">
+<article class="ltx_document ltx_authors_1line">
+<h1 class="ltx_title ltx_title_document">Jacobian matrix</h1>
+
+<div id="p1" class="ltx_para">
+<br class="ltx_break">
+</div>
+<div id="p2" class="ltx_para">
+<p class="ltx_p">The <em class="ltx_emph ltx_font_italic"><a class="nnexus_concept" href="http://planetmath.org/jacobianmatrix">Jacobian matrix</a></em> <math id="p2.m1" class="ltx_Math" alttext="[\mathbf{J}f(\mathbf{a})]" display="inline"><mrow><mo stretchy="false">[</mo><mrow><mi>𝐉</mi><mo>⁢</mo><mi>f</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>𝐚</mi><mo stretchy="false">)</mo></mrow></mrow><mo stretchy="false">]</mo></mrow></math> of a function <math id="p2.m2" class="ltx_Math" alttext="f\colon\mathbb{R}^{n}\rightarrow\mathbb{R}^{m}" display="inline"><mrow><mi>f</mi><mo>:</mo><mrow><msup><mi>ℝ</mi><mi>n</mi></msup><mo>→</mo><msup><mi>ℝ</mi><mi>m</mi></msup></mrow></mrow></math> at the point <math id="p2.m3" class="ltx_Math" alttext="\mathbf{a}" display="inline"><mi>𝐚</mi></math> with respect to some choice of bases for <math id="p2.m4" class="ltx_Math" alttext="\mathbb{R}^{n}" display="inline"><msup><mi>ℝ</mi><mi>n</mi></msup></math> and <math id="p2.m5" class="ltx_Math" alttext="\mathbb{R}^{m}" display="inline"><msup><mi>ℝ</mi><mi>m</mi></msup></math> is the matrix of the <a class="nnexus_concept" href="http://planetmath.org/lineartransformation">linear map</a> from <math id="p2.m6" class="ltx_Math" alttext="\mathbb{R}^{n}" display="inline"><msup><mi>ℝ</mi><mi>n</mi></msup></math> into <math id="p2.m7" class="ltx_Math" alttext="\mathbb{R}^{m}" display="inline"><msup><mi>ℝ</mi><mi>m</mi></msup></math> that generalizes the definition of the <a class="nnexus_concept" href="http://planetmath.org/derivative">derivative</a> of a function on <math id="p2.m8" class="ltx_Math" alttext="\mathbb{R}" display="inline"><mi>ℝ</mi></math>. It can be defined as the matrix of the linear map <math id="p2.m9" class="ltx_Math" alttext="D" display="inline"><mi>D</mi></math>, such that</p>
+<table id="S0.Ex1" class="ltx_equation ltx_eqn_table">
+
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math id="S0.Ex1.m1" class="ltx_Math" alttext="\lim_{\mathbf{h}\rightarrow\mathbf{0}}\frac{\|f(\mathbf{a+h})-f(\mathbf{a})-D(%
+\mathbf{h})\|}{\|\mathbf{h}\|}=0" display="block"><mrow><mrow><munder><mo movablelimits="false">lim</mo><mrow><mi>𝐡</mi><mo>→</mo><mn>𝟎</mn></mrow></munder><mo>⁡</mo><mfrac><mrow><mo>∥</mo><mrow><mrow><mi>f</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mrow><mi>𝐚</mi><mo>+</mo><mi>𝐡</mi></mrow><mo stretchy="false">)</mo></mrow></mrow><mo>-</mo><mrow><mi>f</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>𝐚</mi><mo stretchy="false">)</mo></mrow></mrow><mo>-</mo><mrow><mi>D</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>𝐡</mi><mo stretchy="false">)</mo></mrow></mrow></mrow><mo>∥</mo></mrow><mrow><mo>∥</mo><mi>𝐡</mi><mo>∥</mo></mrow></mfrac></mrow><mo>=</mo><mn>0</mn></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+</tr>
+</table>
+<p class="ltx_p">The linear map that satisfies the above limit is called the derivative of <math id="p2.m10" class="ltx_Math" alttext="f" display="inline"><mi>f</mi></math> at <math id="p2.m11" class="ltx_Math" alttext="\mathbf{a}" display="inline"><mi>𝐚</mi></math>. It is easy to show that the Jacobian matrix of a given <a class="nnexus_concept" href="http://planetmath.org/differentiablefunction">differentiable function</a> at <math id="p2.m12" class="ltx_Math" alttext="\mathbf{a}" display="inline"><mi>𝐚</mi></math> with respect to chosen bases is just the matrix of <span class="ltx_text ltx_font_typewriter">http://planetmath.org/node/841</span><a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">partial derivatives</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/PartialDerivative.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/partialderivative"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> of the <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">component</a><sup style="display: none;"><a class="nnexus_concept" href="http://planetmath.org/coordinatevector"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/frame"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> functions of <math id="p2.m13" class="ltx_Math" alttext="f" display="inline"><mi>f</mi></math> at <math id="p2.m14" class="ltx_Math" alttext="\mathbf{a}" display="inline"><mi>𝐚</mi></math>:</p>
+<table id="S0.Ex2" class="ltx_equation ltx_eqn_table">
+
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math id="S0.Ex2.m1" class="ltx_Math" alttext="[\mathbf{J}f(\mathbf{x})]=\left[\begin{array}[]{ccc}D_{1}f_{1}(\mathbf{x})&amp;%
+\dots&amp;D_{n}f_{1}(\mathbf{x})\\
+\vdots&amp;\ddots&amp;\vdots\\
+D_{1}f_{m}(\mathbf{x})&amp;\dots&amp;D_{n}f_{m}(\mathbf{x})\\
+\end{array}\right]" display="block"><mrow><mrow><mo stretchy="false">[</mo><mrow><mi>𝐉</mi><mo>⁢</mo><mi>f</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>𝐱</mi><mo stretchy="false">)</mo></mrow></mrow><mo stretchy="false">]</mo></mrow><mo>=</mo><mrow><mo>[</mo><mtable columnspacing="5pt" displaystyle="true" rowspacing="0pt"><mtr><mtd columnalign="center"><mrow><msub><mi>D</mi><mn>1</mn></msub><mo>⁢</mo><msub><mi>f</mi><mn>1</mn></msub><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>𝐱</mi><mo stretchy="false">)</mo></mrow></mrow></mtd><mtd columnalign="center"><mi mathvariant="normal">…</mi></mtd><mtd columnalign="center"><mrow><msub><mi>D</mi><mi>n</mi></msub><mo>⁢</mo><msub><mi>f</mi><mn>1</mn></msub><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>𝐱</mi><mo stretchy="false">)</mo></mrow></mrow></mtd></mtr><mtr><mtd columnalign="center"><mi mathvariant="normal">⋮</mi></mtd><mtd columnalign="center"><mi mathvariant="normal">⋱</mi></mtd><mtd columnalign="center"><mi mathvariant="normal">⋮</mi></mtd></mtr><mtr><mtd columnalign="center"><mrow><msub><mi>D</mi><mn>1</mn></msub><mo>⁢</mo><msub><mi>f</mi><mi>m</mi></msub><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>𝐱</mi><mo stretchy="false">)</mo></mrow></mrow></mtd><mtd columnalign="center"><mi mathvariant="normal">…</mi></mtd><mtd columnalign="center"><mrow><msub><mi>D</mi><mi>n</mi></msub><mo>⁢</mo><msub><mi>f</mi><mi>m</mi></msub><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>𝐱</mi><mo stretchy="false">)</mo></mrow></mrow></mtd></mtr></mtable><mo>]</mo></mrow></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+</tr>
+</table>
+<p class="ltx_p">A more concise way of writing it is</p>
+<table id="S0.Ex3" class="ltx_equation ltx_eqn_table">
+
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math id="S0.Ex3.m1" class="ltx_Math" alttext="[\mathbf{J}f(\mathbf{x})]=[\overrightarrow{D_{1}f}\;,\cdots\;,\overrightarrow{%
+D_{n}f}]=\left[\begin{array}[]{c}\nabla f_{1}\\
+\vdots\\
+\nabla f_{m}\end{array}\right]" display="block"><mrow><mrow><mo stretchy="false">[</mo><mrow><mi>𝐉</mi><mo>⁢</mo><mi>f</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>𝐱</mi><mo stretchy="false">)</mo></mrow></mrow><mo stretchy="false">]</mo></mrow><mo>=</mo><mrow><mo stretchy="false">[</mo><mpadded width="+2.8pt"><mover accent="true"><mrow><msub><mi>D</mi><mn>1</mn></msub><mo>⁢</mo><mi>f</mi></mrow><mo>→</mo></mover></mpadded><mo>,</mo><mpadded width="+2.8pt"><mi mathvariant="normal">⋯</mi></mpadded><mo>,</mo><mover accent="true"><mrow><msub><mi>D</mi><mi>n</mi></msub><mo>⁢</mo><mi>f</mi></mrow><mo>→</mo></mover><mo stretchy="false">]</mo></mrow><mo>=</mo><mrow><mo>[</mo><mtable displaystyle="true" rowspacing="0pt"><mtr><mtd columnalign="center"><mrow><mo>∇</mo><mo>⁡</mo><msub><mi>f</mi><mn>1</mn></msub></mrow></mtd></mtr><mtr><mtd columnalign="center"><mi mathvariant="normal">⋮</mi></mtd></mtr><mtr><mtd columnalign="center"><mrow><mo>∇</mo><mo>⁡</mo><msub><mi>f</mi><mi>m</mi></msub></mrow></mtd></mtr></mtable><mo>]</mo></mrow></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+</tr>
+</table>
+<p class="ltx_p">where <math id="p2.m15" class="ltx_Math" alttext="\overrightarrow{D_{n}\mathbf{f}}" display="inline"><mover accent="true"><mrow><msub><mi>D</mi><mi>n</mi></msub><mo>⁢</mo><mi>𝐟</mi></mrow><mo>→</mo></mover></math> is the partial derivative with respect to the <math id="p2.m16" class="ltx_Math" alttext="n" display="inline"><mi>n</mi></math>’th variable and <math id="p2.m17" class="ltx_Math" alttext="\nabla f_{m}" display="inline"><mrow><mo>∇</mo><mo>⁡</mo><msub><mi>f</mi><mi>m</mi></msub></mrow></math> is the <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">gradient</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Gradient.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/gradient"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> of the <math id="p2.m18" class="ltx_Math" alttext="m" display="inline"><mi>m</mi></math>’th component of <math id="p2.m19" class="ltx_Math" alttext="\mathbf{f}" display="inline"><mi>𝐟</mi></math>.</p>
+</div>
+<div id="p3" class="ltx_para">
+<p class="ltx_p">Note that the Jacobian matrix represents the matrix of the derivative <math id="p3.m1" class="ltx_Math" alttext="D" display="inline"><mi>D</mi></math> of <math id="p3.m2" class="ltx_Math" alttext="f" display="inline"><mi>f</mi></math> at <math id="p3.m3" class="ltx_Math" alttext="\mathbf{x}" display="inline"><mi>𝐱</mi></math> iff <math id="p3.m4" class="ltx_Math" alttext="f" display="inline"><mi>f</mi></math> is <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">differentiable</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Differentiable.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/totaldifferential"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> at <math id="p3.m5" class="ltx_Math" alttext="\mathbf{x}" display="inline"><mi>𝐱</mi></math>. Also, if <math id="p3.m6" class="ltx_Math" alttext="f" display="inline"><mi>f</mi></math> is differentiable at <math id="p3.m7" class="ltx_Math" alttext="\mathbf{x}" display="inline"><mi>𝐱</mi></math>, then the <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">directional derivative</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/DirectionalDerivative.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/directionalderivative"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> in the <a class="nnexus_concept" href="http://mathworld.wolfram.com/Direction.html">direction</a> <math id="p3.m8" class="ltx_Math" alttext="\vec{v}" display="inline"><mover accent="true"><mi>v</mi><mo stretchy="false">→</mo></mover></math> is <math id="p3.m9" class="ltx_Math" alttext="D(\vec{v})=[\mathbf{J}f(\mathbf{x})]\vec{v}" display="inline"><mrow><mrow><mi>D</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mover accent="true"><mi>v</mi><mo stretchy="false">→</mo></mover><mo stretchy="false">)</mo></mrow></mrow><mo>=</mo><mrow><mrow><mo stretchy="false">[</mo><mrow><mi>𝐉</mi><mo>⁢</mo><mi>f</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>𝐱</mi><mo stretchy="false">)</mo></mrow></mrow><mo stretchy="false">]</mo></mrow><mo>⁢</mo><mover accent="true"><mi>v</mi><mo stretchy="false">→</mo></mover></mrow></mrow></math>.</p>
+</div>
+<div id="p4" class="ltx_para">
+<p class="ltx_p">Given <a class="nnexus_concept" href="http://planetmath.org/manifold">local coordinates</a> for some <a class="nnexus_concept" href="http://planetmath.org/submanifold">real submanifold</a> <math id="p4.m1" class="ltx_Math" alttext="M" display="inline"><mi>M</mi></math> of <math id="p4.m2" class="ltx_Math" alttext="\mathbb{R}^{n}" display="inline"><msup><mi>ℝ</mi><mi>n</mi></msup></math>, it is easy to show that the effect of a <a class="nnexus_concept" href="http://planetmath.org/changeofbasis">change of coordinates</a> on <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">volume forms</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/VolumeForm.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/volumeelement"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> is a local <a class="nnexus_concept" href="http://planetmath.org/affinetransformation">scaling</a> of the volume form by the <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">determinant</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Determinant.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/determinant"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> of the Jacobian matrix of the derivative of the backwards change of coordinates, which is called the <a class="nnexus_concept" href="http://planetmath.org/matrixinverse">inverse</a> <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">Jacobian</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/Jacobian.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/jacobideterminant"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup>. The determinant of the inverse Jacobian is thus commonly seen in integration over a change of coordinates.</p>
+<table id="S0.Ex4" class="ltx_equation ltx_eqn_table">
+
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math id="S0.Ex4.m1" class="ltx_Math" alttext="\int_{\Omega_{x}}f(x)d\Omega_{x}=\int_{\Omega_{\xi}}f(\xi)|J^{-1}|d\Omega_{\xi}" display="block"><mrow><mrow><msub><mo largeop="true" symmetric="true">∫</mo><msub><mi mathvariant="normal">Ω</mi><mi>x</mi></msub></msub><mrow><mi>f</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></mrow><mo>⁢</mo><mrow><mo>𝑑</mo><msub><mi mathvariant="normal">Ω</mi><mi>x</mi></msub></mrow></mrow></mrow><mo>=</mo><mrow><msub><mo largeop="true" symmetric="true">∫</mo><msub><mi mathvariant="normal">Ω</mi><mi>ξ</mi></msub></msub><mrow><mi>f</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>ξ</mi><mo stretchy="false">)</mo></mrow><mo>⁢</mo><mrow><mo stretchy="false">|</mo><msup><mi>J</mi><mrow><mo>-</mo><mn>1</mn></mrow></msup><mo stretchy="false">|</mo></mrow><mo>⁢</mo><mrow><mo>𝑑</mo><msub><mi mathvariant="normal">Ω</mi><mi>ξ</mi></msub></mrow></mrow></mrow></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+</tr>
+</table>
+<p class="ltx_p">where <math id="p4.m3" class="ltx_Math" alttext="x\in\Omega_{x}\subset M" display="inline"><mrow><mi>x</mi><mo>∈</mo><msub><mi mathvariant="normal">Ω</mi><mi>x</mi></msub><mo>⊂</mo><mi>M</mi></mrow></math>, <math id="p4.m4" class="ltx_Math" alttext="\xi\in\Omega_{\xi}\subset M" display="inline"><mrow><mi>ξ</mi><mo>∈</mo><msub><mi mathvariant="normal">Ω</mi><mi>ξ</mi></msub><mo>⊂</mo><mi>M</mi></mrow></math>, and <math id="p4.m5" class="ltx_Math" alttext="\mathbf{J}=\nabla\xi(x)" display="inline"><mrow><mi>𝐉</mi><mo>=</mo><mrow><mrow><mo>∇</mo><mo>⁡</mo><mi>ξ</mi></mrow><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></mrow></mrow></mrow></math> is the derivative of the function <math id="p4.m6" class="ltx_Math" alttext="\xi(x)" display="inline"><mrow><mi>ξ</mi><mo>⁢</mo><mrow><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></mrow></mrow></math> which maps points in <math id="p4.m7" class="ltx_Math" alttext="\Omega_{x}" display="inline"><msub><mi mathvariant="normal">Ω</mi><mi>x</mi></msub></math> to points in <math id="p4.m8" class="ltx_Math" alttext="\Omega_{\xi}" display="inline"><msub><mi mathvariant="normal">Ω</mi><mi>ξ</mi></msub></math>.
+</p>
+<table class="ltx_tabular ltx_align_right ltx_align_middle">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l ltx_border_t">Title</td>
+<td class="ltx_td ltx_align_left ltx_border_r ltx_border_t">Jacobian matrix</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Canonical name</td>
+<td class="ltx_td ltx_align_left ltx_border_r">JacobianMatrix</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Date of creation</td>
+<td class="ltx_td ltx_align_left ltx_border_r">2013-03-22 11:58:33</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Last modified on</td>
+<td class="ltx_td ltx_align_left ltx_border_r">2013-03-22 11:58:33</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Owner</td>
+<td class="ltx_td ltx_align_left ltx_border_r">PhysBrain (974)</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Last modified by</td>
+<td class="ltx_td ltx_align_left ltx_border_r">PhysBrain (974)</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Numerical id</td>
+<td class="ltx_td ltx_align_left ltx_border_r">18</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Author</td>
+<td class="ltx_td ltx_align_left ltx_border_r">PhysBrain (974)</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Entry type</td>
+<td class="ltx_td ltx_align_left ltx_border_r">Definition</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Classification</td>
+<td class="ltx_td ltx_align_left ltx_border_r">msc 26B10</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Synonym</td>
+<td class="ltx_td ltx_align_left ltx_border_r">derivative of a multivariable function</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Synonym</td>
+<td class="ltx_td ltx_align_left ltx_border_r">derivative of a <a class="nnexus_concept" href="http://planetmath.org/vectorvaluedfunction">vector-valued function</a></td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Synonym</td>
+<td class="ltx_td ltx_align_left ltx_border_r">Jacobi matrix</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Related topic</td>
+<td class="ltx_td ltx_align_left ltx_border_r">PartialDerivative</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Related topic</td>
+<td class="ltx_td ltx_align_left ltx_border_r">Derivative2</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Related topic</td>
+<td class="ltx_td ltx_align_left ltx_border_r">DerivativeNotation</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Related topic</td>
+<td class="ltx_td ltx_align_left ltx_border_r">Gradient</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Related topic</td>
+<td class="ltx_td ltx_align_left ltx_border_r">ChainRuleSeveralVariables</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Related topic</td>
+<td class="ltx_td ltx_align_left ltx_border_r">DirectionalDerivative</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_l">Related topic</td>
+<td class="ltx_td ltx_align_left ltx_border_r">JordanBanachAndJordanLieAlgebras</td>
+</tr>
+<tr class="ltx_tr">
+<td class="ltx_td ltx_align_left ltx_border_b ltx_border_l">Defines</td>
+<td class="ltx_td ltx_align_left ltx_border_b ltx_border_r">Jacobian</td>
+</tr>
+</tbody>
+</table>
+</div>
+</article>
+</div>
+<footer class="ltx_page_footer">
+<div class="ltx_page_logo">Generated  on Fri Feb  9 19:56:47 2018 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
+</div></footer>
+</div>
+</body>
+</html>

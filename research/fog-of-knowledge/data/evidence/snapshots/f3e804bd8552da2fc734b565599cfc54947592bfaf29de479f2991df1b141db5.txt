@@ -1,0 +1,492 @@
+real number
+real number
+1
+Definition
+There are several
+equivalent
+definitions
+of
+real number
+, all in common use. We give one definition in detail and mention the other ones.
+A
+Cauchy sequence
+of
+rational numbers
+is a
+sequence
+{
+x
+i
+}
+,
+i
+=
+0
+,
+1
+,
+2
+,
+…
+of rational numbers with the
+property
+that, for every rational number
+ϵ
+>
+0
+, there exists a
+natural number
+N
+such that, for all natural numbers
+n
+,
+m
+>
+N
+, the
+absolute value
+|
+x
+n
+-
+x
+m
+|
+satisfies
+|
+x
+n
+-
+x
+m
+|
+<
+ϵ
+.
+The set
+ℝ
+of
+real numbers
+is the set of
+equivalence classes
+of Cauchy sequences of rational numbers, under the
+equivalence relation
+{
+x
+i
+}
+∼
+{
+y
+i
+}
+if the
+interleave sequence
+of the two sequences is itself a Cauchy sequence.
+The real numbers form a ring, with
+addition
+and
+multiplication
+defined by
+•
+{
+x
+i
+}
++
+{
+y
+i
+}
+=
+{
+(
+x
+i
++
+y
+i
+)
+}
+•
+{
+x
+i
+}
+⋅
+{
+y
+i
+}
+=
+{
+(
+x
+i
+⋅
+y
+i
+)
+}
+There is an
+ordering relation
+on
+ℝ
+, defined by
+{
+x
+i
+}
+≤
+{
+y
+i
+}
+if either
+{
+x
+i
+}
+∼
+{
+y
+i
+}
+or there exists a natural number
+N
+such that
+x
+n
+<
+y
+n
+for all
+n
+>
+N
+. This definition is
+well-defined
+and does not depend on the choice of Cauchy sequences used to represent the equivalence classes.
+One can prove that the real numbers form an
+ordered field
+and that they satisfy the
+Dedekind completeness property
+(also known as the
+least
+upper bound
+property
+): For every nonempty subset
+S
+⊂
+ℝ
+, if
+S
+has an upper bound then
+S
+has a
+lowest upper bound
+. It is also true that every ordered field with the least upper bound property is
+isomorphic
+to the real numbers.
+Alternative definitions of the set of real numbers include:
+1.
+Equivalence classes of decimal sequences (sequences consisting of natural numbers between 0 and 9, and a single
+decimal point
+), where two decimal sequences are equivalent if they are identical, or if one has an
+infinite
+tail of 9’s, the other has an infinite tail of 0’s, and the leading portion of the first sequence is one lower than the leading portion of the second.
+2.
+Dedekind cuts
+of rational numbers (that is, subsets
+S
+of
+ℚ
+with the property that, if
+a
+∈
+S
+and
+b
+<
+a
+, then
+b
+∈
+S
+).
+3.
+The real numbers can also be defined as the unique (up to
+isomorphism
+) ordered field satisfying the least upper bound property, after one has proved that such a field exists and is unique up to isomorphism.
+2
+Completeness
+The main reason for introducing the reals is that the reals contain all limits.
+More technically, the reals are
+complete
+(in the sense of
+metric spaces
+or
+uniform spaces
+, which is a different sense than the Dedekind completeness of
+the order in the previous
+section
+). This means the following:
+A sequence
+(
+x
+n
+)
+of real numbers is called a Cauchy sequence if for any
+ε
+>
+0
+there exists an
+integer
+N
+(possibly depending on
+ε
+) such that the
+distance
+|
+x
+n
+-
+x
+m
+|
+is less than
+ε
+provided that
+n
+and
+m
+are
+both
+greater
+than
+N
+. In other
+words, a sequence is a Cauchy sequence if its
+elements
+x
+n
+eventually
+come
+and remain arbitrarily close to each other.
+A sequence
+(
+x
+n
+)
+converges
+to the limit
+x
+if for any
+ε
+>
+0
+there exists an integer
+N
+(possibly depending on
+ε
+) such that the
+distance
+|
+x
+n
+-
+x
+|
+is less than
+ε
+provided that
+n
+is greater
+than
+N
+. In other words, a sequence has limit
+x
+if its elements eventually
+come and remain arbitrarily close to
+x
+.
+It is easy to see that every
+convergent sequence
+is a Cauchy sequence. Now the
+important fact about the real numbers is that the
+converse
+is true:
+Every Cauchy sequence of real numbers is
+convergent
+.
+That is, the reals are complete.
+Note that the rationals are not complete. For example, the sequence
+1
+,
+1.4
+,
+1.41
+,
+1.414
+,
+1.4142
+,
+1.41421
+,
+…
+is Cauchy but it does not
+converge to a rational number. (In the real numbers, in contrast, it converges
+to the
+square root
+of
+2
+.)
+The
+existence
+of limits of Cauchy sequences is what makes
+calculus
+work and is
+of great practical use. The standard numerical test to determine if a sequence
+has a limit is to test if it is a Cauchy sequence, as the limit is typically
+not known in advance.
+For example the standard series of the exponential function
+e
+x
+=
+∑
+n
+=
+0
+∞
+x
+n
+n
+!
+converges to a real number because for every
+x
+the sums
+∑
+n
+=
+N
+M
+x
+n
+n
+!
+can be made arbitrarily small by choosing
+N
+sufficiently large. This proves
+that the sequence is Cauchy, so we know that the sequence converges even if we
+don’t know ahead of time what the limit is.
+3
+“The complete ordered field”
+The real numbers are often described as “the complete ordered field,” a phrase
+that can be interpreted in several ways.
+First, an order can be
+lattice
+complete. It’s easy to see that no ordered field
+can be lattice complete, because it can have no largest element (given any
+element
+z
+,
+z
++
+1
+is larger), so this is not the sense that is meant.
+Additionally, an order can be Dedekind-complete, as defined in the Definitions section. The uniqueness result at the end of that section justifies using the
+word “the” in the phrase “complete ordered field” when this is the sense of
+“complete” that is meant. This sense of completeness is most closely related to the construction of the reals from Dedekind cuts, since that construction
+starts from an ordered field (the rationals) and then forms the Dedekind-completion of it in a standard way.
+These two notions of completeness ignore the field
+structure
+. However, an
+ordered group
+(and a field is a group under the
+operations
+of addition and
+subtraction
+) defines a uniform structure, and uniform structures have a notion
+of completeness (
+topology
+); the description in the Completeness section above
+is a special case. (We refer to the notion of completeness in uniform spaces
+rather than the related and better known notion for metric spaces, since the
+definition of metric space relies on already having a
+characterisation
+of the
+real numbers.) It is not true that
+ℝ
+is the only uniformly complete
+ordered
+field, but it is the only uniformly complete Archimedean field, and indeed one
+often hears the phrase “complete Archimedean field” instead of “complete
+ordered field.” Since it can be proved that any uniformly complete Archimedean
+field must also be
+Dedekind complete
+(and vice versa, of course), this
+justifies using “the” in the phrase “the complete Archimedean field.” This
+sense of completeness is most closely related to the construction of the reals
+from Cauchy sequences (the construction carried out in full in this article),
+since it starts with an Archimedean field (the rationals) and forms the uniform
+completion
+of it in a standard way.
+But the original use of the phrase “complete Archimedean field” was by David
+Hilbert, who meant still something else by it. He meant that the real numbers
+form the largest Archimedean field in the sense that every other Archimedean
+field is a
+subfield
+of
+ℝ
+. Thus
+ℝ
+is “complete” in the
+sense that nothing
+further can be added to it without making it no longer an Archimedean field.
+This sense of completeness is most closely related to the construction of the
+reals from
+surreal numbers
+, since that construction starts with a
+proper class
+that contains every ordered field (the surreals) and then selects from it the
+largest
+Archimedean
+subfield.
+This article contains material from the
+http://en.wikipedia.org/wiki/Real_numbers
+Wikipedia article on Real numbers which is incorporated herein under the terms of the
+http://en.wikipedia.org/wiki/Wikipedia:Text_of_the_GNU_Free_Documentation_License
+GNU Free Documentation License.
+Title
+real number
+Canonical
+name
+RealNumber
+Date of creation
+2013-03-22 11:52:22
+Last modified on
+2013-03-22 11:52:22
+Owner
+djao (24)
+Last modified by
+djao (24)
+Numerical id
+23
+Author
+djao (24)
+Entry type
+Definition
+Classification
+msc 54C30
+Classification
+msc 26-00
+Classification
+msc 12D99
+Synonym
+real
+Synonym
+ℝ
+Related topic
+DedekindCuts
+Generated  on Sat Feb 10 11:19:15 2018 by
+LaTeXML

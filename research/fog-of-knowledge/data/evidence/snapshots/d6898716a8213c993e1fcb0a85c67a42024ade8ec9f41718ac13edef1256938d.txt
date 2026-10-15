@@ -1,0 +1,231 @@
+first-order theory
+first-order theory
+In what follows, references to
+sentences
+and sets of sentences are
+all relative to some fixed
+first-order language
+L
+.
+Definition.
+A
+theory
+T
+is a
+deductively
+closed
+set of sentences in
+L
+; that is, a set
+T
+such that for each
+sentence
+φ
+,
+T
+⊢
+φ
+only if
+φ
+∈
+T
+.
+Remark
+. Some authors do not require that a theory be deductively closed. Therefore, a theory is simply a set of sentences. This is not a cause for alarm, since every theory
+T
+under this definition can be “extended” to a deductively closed theory
+T
+⊢
+:=
+{
+φ
+∈
+L
+∣
+T
+⊢
+φ
+}
+. Furthermore,
+T
+⊢
+is unique (it is the smallest deductively closed theory including
+T
+), and any
+structure
+M
+is a model of
+T
+iff it is a model of
+T
+⊢
+.
+Definition.
+A theory
+T
+is
+consistent
+if and only
+if for some sentence
+φ
+,
+T
+⊬
+φ
+.
+Otherwise,
+T
+is
+inconsistent
+. A sentence
+φ
+is
+consistent with
+T
+if and only if the
+theory
+T
+∪
+{
+φ
+}
+is consistent.
+Definition.
+A theory
+T
+is
+complete
+if and only
+if
+T
+is consistent and for each sentence
+φ
+, either
+φ
+∈
+T
+or
+¬
+⁢
+φ
+∈
+T
+.
+Lemma.
+A consistent theory
+T
+is complete if and only if
+T
+is
+maximally consistent. That is,
+T
+is complete if and only if for
+each sentence
+φ
+,
+φ
+∉
+T
+only if
+T
+∪
+{
+φ
+}
+is inconsistent. See this entry (
+http://planetmath.org/MaximallyConsistent
+) for a proof.
+Theorem
+. (Tarski)
+Every consistent theory
+T
+is included
+in a complete theory.
+Proof :
+Use Zorn’s lemma on the set of consistent
+theories that include
+T
+.
+Remark
+. A theory
+T
+is
+axiomatizable
+if and only
+if
+T
+includes a
+decidable
+(
+http://planetmath.org/DecidableSet
+) subset
+Δ
+such that
+Δ
+⊢
+T
+(every sentence of
+T
+is a
+logical consequence
+of
+Δ
+), and
+finitely axiomatizable
+if
+Δ
+can be made finite. Every complete axiomatizable theory
+T
+is decidable;
+that is, there is an algorithm that given a sentence
+φ
+as
+input yields
+0
+if
+φ
+∈
+T
+, and
+1
+otherwise.
+Title
+first-order theory
+Canonical name
+FirstorderTheory
+Date of creation
+2013-03-22 12:43:04
+Last modified on
+2013-03-22 12:43:04
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+19
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 03C07
+Classification
+msc 03B10
+Synonym
+first order theory
+Related topic
+PropertiesOfConsistency
+Related topic
+MaximallyConsistent
+Defines
+theory
+Defines
+complete theory
+Defines
+axiomatizable theory
+Defines
+deductively closed
+Defines
+finitely axiomatizable theory
+Generated  on Thu Feb  8 19:55:03 2018 by
+LaTeXML

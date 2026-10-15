@@ -1,0 +1,988 @@
+bilinear form
+bilinear form
+Definition.
+Let
+U
+,
+V
+,
+W
+be
+vector spaces
+over a field
+K
+. A
+bilinear map
+is a
+function
+B
+:
+U
+×
+V
+→
+W
+such that
+1.
+the map
+x
+↦
+B
+⁢
+(
+x
+,
+y
+)
+from
+U
+to
+W
+is linear for each
+y
+∈
+V
+2.
+the map
+y
+↦
+B
+⁢
+(
+x
+,
+y
+)
+from
+V
+to
+W
+is linear for each
+x
+∈
+U
+.
+That is,
+B
+is
+bilinear
+if it is linear in each parameter,
+taken separately.
+Bilinear forms.
+A
+bilinear form
+is a bilinear map
+B
+:
+V
+×
+V
+→
+K
+. A
+W
+-valued bilinear form is a bilinear map
+B
+:
+V
+×
+V
+→
+W
+. One
+often encounters bilinear forms with additional
+assumptions
+. A
+bilinear form is called
+•
+symmetric
+if
+B
+⁢
+(
+x
+,
+y
+)
+=
+B
+⁢
+(
+y
+,
+x
+)
+,
+x
+,
+y
+∈
+V
+;
+•
+skew-symmetric
+if
+B
+⁢
+(
+x
+,
+y
+)
+=
+-
+B
+⁢
+(
+y
+,
+x
+)
+,
+x
+,
+y
+∈
+V
+;
+•
+alternating
+if
+B
+⁢
+(
+x
+,
+x
+)
+=
+0
+,
+x
+∈
+V
+.
+By expanding
+B
+⁢
+(
+x
++
+y
+,
+x
++
+y
+)
+=
+0
+, we can show alternating implies
+skew-symmetric. Further if
+K
+is not of
+characteristic
+2
+, then
+skew-symmetric implies alternating.
+Left and Right Maps.
+Let
+B
+:
+U
+×
+V
+→
+W
+be a bilinear map. We may identify
+B
+with the
+linear map
+B
+⊗
+:
+U
+⊗
+V
+→
+W
+(see
+tensor product
+). We may
+also identify
+B
+with the linear maps
+B
+L
+:
+U
+→
+L
+⁢
+(
+V
+,
+W
+)
+,
+B
+L
+⁢
+(
+x
+)
+⁢
+(
+y
+)
+=
+B
+⁢
+(
+x
+,
+y
+)
+,
+x
+∈
+U
+,
+y
+∈
+V
+;
+B
+R
+:
+V
+→
+L
+⁢
+(
+U
+,
+W
+)
+,
+B
+R
+⁢
+(
+y
+)
+⁢
+(
+x
+)
+=
+B
+⁢
+(
+x
+,
+y
+)
+,
+x
+∈
+U
+,
+y
+∈
+V
+.
+called the left and right map, respectively.
+Next, suppose that
+B
+:
+V
+×
+V
+→
+K
+is a bilinear form. Then both
+B
+L
+and
+B
+R
+are linear maps from
+V
+to
+V
+*
+, the
+dual vector
+space
+of
+V
+. We can therefore say that
+B
+is symmetric if and only
+if
+B
+L
+=
+B
+R
+and that
+B
+is anti-symmetric if and only if
+B
+L
+=
+-
+B
+R
+. If
+V
+is
+finite-dimensional
+, we can identify
+V
+and
+V
+*
+*
+, and assert that
+B
+L
+=
+(
+B
+R
+)
+*
+; the left and right maps are, in
+fact,
+dual homomorphisms
+.
+Rank.
+Let
+B
+:
+U
+×
+V
+→
+K
+be a bilinear form, and suppose that
+U
+,
+V
+are
+finite dimensional. One can show that
+rank
+⁡
+B
+L
+=
+rank
+⁡
+B
+R
+. We call
+this integer
+rank
+⁡
+B
+, the
+of
+B
+.
+Applying the
+rank-nullity theorem
+to both the left and right maps
+gives the following results:
+dim
+⁡
+U
+=
+dim
+⁡
+ker
+⁡
+B
+L
++
+rank
+⁡
+B
+dim
+⁡
+V
+=
+dim
+⁡
+ker
+⁡
+B
+R
++
+rank
+⁡
+B
+We say that
+B
+is
+non-degenerate
+if both the left and right map are
+non-degenerate. Note that in  for
+B
+to be non-degenerate it is
+necessary that
+dim
+⁡
+U
+=
+dim
+⁡
+V
+. If this holds, then
+B
+is
+non-degenerate if and only if
+rank
+⁡
+B
+is equal to
+dim
+⁡
+U
+,
+dim
+⁡
+V
+.
+Orthogonal complements.
+Let
+B
+:
+V
+×
+V
+→
+K
+be a bilinear form, and let
+S
+⊂
+V
+be a
+subspace
+. The left and right
+orthogonal complements
+of
+S
+are
+subspaces
+S
+⟂
+,
+S
+⟂
+⊂
+V
+defined as follows:
+S
+⟂
+=
+{
+u
+∈
+V
+∣
+B
+⁢
+(
+u
+,
+v
+)
+=
+0
+⁢
+for all
+⁢
+v
+∈
+S
+}
+,
+S
+⟂
+=
+{
+v
+∈
+V
+∣
+B
+⁢
+(
+u
+,
+v
+)
+=
+0
+⁢
+for all
+⁢
+u
+∈
+S
+}
+.
+We may also realize
+S
+⟂
+by considering the linear map
+B
+R
+′
+:
+V
+→
+S
+*
+obtained as the composition of
+B
+R
+:
+V
+→
+V
+*
+and the dual homomorphism
+V
+*
+→
+S
+*
+.
+Indeed,
+S
+⟂
+=
+ker
+⁡
+B
+R
+′
+. An analogous
+statement can be made for
+S
+⟂
+.
+Next, suppose that
+B
+is non-degenerate.
+By the rank-nullity
+theorem we have that
+dim
+⁡
+V
+=
+dim
+⁡
+S
++
+dim
+⁡
+S
+⟂
+=
+dim
+⁡
+S
++
+dim
+⁡
+S
+⟂
+.
+Therefore, if
+B
+is non-degenerate, then
+dim
+⁡
+S
+⟂
+=
+dim
+⁡
+S
+⟂
+.
+Indeed, more can be said if
+B
+is either symmetric or
+skew-symmetric. In this case, we actually have
+S
+⟂
+=
+S
+⟂
+.
+We say that
+S
+⊂
+V
+is a non-degenerate subspace relative to
+B
+if the
+restriction
+of
+B
+to
+S
+×
+S
+is non-degenerate. Thus,
+S
+is a non-degenerate subspace if and only if
+S
+∩
+S
+⟂
+=
+{
+0
+}
+,
+and also
+S
+∩
+S
+⟂
+=
+{
+0
+}
+. Hence, if
+B
+is non-degenerate
+and if
+S
+is a non-degenerate
+subspace, we have
+V
+=
+S
+⊕
+S
+⟂
+=
+S
+⊕
+S
+⟂
+.
+Finally, note that if
+B
+is positive-definite, then
+B
+is necessarily non-degenerate and
+that every subspace is non-degenerate. In this way we arrive at the
+following well-known result: if
+V
+is positive-definite
+inner product
+space
+, then
+V
+=
+S
+⊕
+S
+⟂
+for every subspace
+S
+⊂
+V
+.
+Adjoints.
+Let
+B
+:
+V
+×
+V
+→
+K
+be a non-degenerate bilinear
+form, and let
+T
+∈
+L
+⁢
+(
+V
+,
+V
+)
+be a linear
+endomorphism
+. We define the
+right adjoint
+T
+⋆
+∈
+L
+⁢
+(
+V
+,
+V
+)
+to be the unique linear map such that
+B
+⁢
+(
+T
+⁢
+u
+,
+v
+)
+=
+B
+⁢
+(
+u
+,
+T
+⋆
+⁢
+v
+)
+,
+u
+,
+v
+∈
+V
+.
+Letting
+T
+∗
+:
+V
+∗
+→
+V
+∗
+denote the dual homomorphism,
+we also have
+T
+⋆
+=
+B
+R
+-
+1
+∘
+T
+∗
+∘
+B
+R
+.
+Similarly, we define the left adjoint
+T
+⋆
+∈
+L
+⁢
+(
+V
+,
+V
+)
+by
+T
+⋆
+=
+B
+L
+-
+1
+∘
+T
+∗
+∘
+B
+L
+.
+We then have
+B
+⁢
+(
+u
+,
+T
+⁢
+v
+)
+=
+B
+⁢
+(
+T
+⋆
+⁢
+u
+,
+v
+)
+,
+u
+,
+v
+∈
+V
+.
+If
+B
+is either symmetric or skew-symmetric, then
+T
+⋆
+=
+T
+⋆
+, and we simply use
+T
+⋆
+to refer to the adjoint homomorphism.
+Additional remarks.
+1.
+if
+B
+is a symmetric, non-degenerate bilinear form,
+then the
+adjoint
+operation
+is represented, relative to an
+orthogonal
+basis
+(if one exists), by the matrix transpose.
+2.
+If
+B
+is a symmetric, non-degenerate bilinear form
+then
+T
+∈
+L
+⁢
+(
+V
+,
+V
+)
+is then said to be a
+normal operator
+(with
+respect to
+B
+) if
+T
+commutes with its adjoint
+T
+⋆
+.
+3.
+An
+n
+×
+m
+matrix may be regarded as a bilinear form over
+K
+n
+×
+K
+m
+. Two such matrices,
+B
+and
+C
+, are said to be
+congruent
+if there exists an
+invertible
+P
+such that
+B
+=
+P
+T
+⁢
+C
+⁢
+P
+.
+4.
+The
+identity matrix
+,
+I
+n
+on
+ℝ
+n
+×
+ℝ
+n
+gives the standard
+Euclidean
+inner product
+on
+ℝ
+n
+.
+Title
+bilinear form
+Canonical name
+BilinearForm
+Date of creation
+2013-03-22 12:14:02
+Last modified on
+2013-03-22 12:14:02
+Owner
+rmilson (146)
+Last modified by
+rmilson (146)
+Numerical id
+54
+Author
+rmilson (146)
+Entry type
+Definition
+Classification
+msc 47A07
+Classification
+msc 11E39
+Classification
+msc 15A63
+Synonym
+bilinear
+Related topic
+DualityWithRespectToANonDegenerateBilinearForm
+Related topic
+BilinearMap
+Related topic
+Multilinear
+Related topic
+SkewSymmetricBilinearForm
+Related topic
+SymmetricBilinearForm
+Related topic
+NonDegenerateBilinearForm
+Defines
+rank of bilinear form
+Defines
+left map
+Defines
+right map
+Generated  on Fri Feb  9 21:45:14 2018 by
+LaTeXML

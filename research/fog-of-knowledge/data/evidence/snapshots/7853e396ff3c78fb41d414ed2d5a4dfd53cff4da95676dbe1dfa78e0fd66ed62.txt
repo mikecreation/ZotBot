@@ -1,0 +1,1457 @@
+homomorphism between partial algebras
+homomorphism between partial algebras
+Definition
+Like
+subalgebras of partial algebras
+, there are also three ways to define
+homomorphisms between partial algebras
+.
+Similar
+to the
+definition
+of
+homomorphisms
+between
+algebras
+, a homomorphism
+ϕ
+:
+𝑨
+→
+𝑩
+between two
+partial algebras
+of type
+τ
+is a
+function
+from
+A
+to
+B
+that
+satisfies
+the
+equation
+ϕ
+⁢
+(
+f
+𝑨
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+)
+=
+f
+𝑩
+⁢
+(
+ϕ
+⁢
+(
+a
+1
+)
+,
+…
+,
+ϕ
+⁢
+(
+a
+n
+)
+)
+(1)
+for every
+n
+-ary
+function symbol
+f
+∈
+τ
+. However, because
+f
+𝑨
+and
+f
+𝑩
+are not everywhere defined in their respective domains, care must be taken as to what the equation means.
+1.
+ϕ
+is a
+homomorphism
+if, given that
+f
+𝑨
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+is defined, so is
+f
+𝑩
+⁢
+(
+ϕ
+⁢
+(
+a
+1
+)
+,
+…
+,
+ϕ
+⁢
+(
+a
+n
+)
+)
+, and equation (1) is satisifed.
+2.
+ϕ
+is a
+full homomorphism
+if it is a homomorphism and, given that
+f
+𝑩
+⁢
+(
+b
+1
+,
+…
+,
+b
+n
+)
+is defined and in
+ϕ
+⁢
+(
+A
+)
+, for
+b
+i
+∈
+ϕ
+⁢
+(
+A
+)
+, there exist
+a
+i
+∈
+A
+with
+b
+i
+=
+ϕ
+⁢
+(
+a
+i
+)
+, such that
+f
+𝑨
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+is defined.
+3.
+ϕ
+is a
+strong homomorphism
+if it is a homomorphism and, given that
+f
+𝑩
+⁢
+(
+ϕ
+⁢
+(
+a
+1
+)
+,
+…
+,
+ϕ
+⁢
+(
+a
+n
+)
+)
+is defined, so is
+f
+𝑨
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+.
+We have the following
+implications
+:
+strong homomorphism
+→
+full homomorphism
+→
+homomorphism.
+For example, field homomorphisms are strong homomorphisms.
+Homomorphisms
+preserve
+constants
+: for each constant symbol
+f
+in
+τ
+,
+ϕ
+⁢
+(
+f
+𝑨
+)
+=
+f
+𝑩
+. In fact, when restricted to constants,
+ϕ
+is a
+bijection
+between constants of
+𝑨
+and constants of
+𝑩
+.
+When
+𝑨
+is an algebra (all partial operations are total), a homomorphism from
+𝑨
+is always strong, so that all three notions of homomorphisms coincide.
+An
+isomorphism
+is a
+bijective
+homomorphism
+ϕ
+:
+𝑨
+→
+𝑩
+such that its
+inverse
+ϕ
+-
+1
+:
+𝑩
+→
+𝑨
+is also a homomorphism. An
+embedding
+is an injective homomorphism. Isomorphisms and full embeddings are strong.
+Homomorphic Images
+The various
+types of homomorphisms
+and the various types of
+subalgebras
+are related. Suppose
+𝑨
+and
+𝑩
+are partial algebras of type
+τ
+. Let
+ϕ
+:
+A
+→
+B
+be a function, and
+C
+=
+ϕ
+⁢
+(
+A
+)
+. For each
+n
+-ary function symbol
+f
+∈
+τ
+, define
+n
+-ary partial operation
+f
+𝑪
+on
+C
+as follows:
+for
+b
+1
+,
+…
+,
+b
+n
+∈
+C
+,
+f
+𝑪
+⁢
+(
+b
+1
+,
+…
+,
+b
+n
+)
+is defined iff the set
+D
+:=
+{
+(
+a
+1
+,
+…
+,
+a
+n
+)
+∈
+A
+n
+∣
+ϕ
+⁢
+(
+a
+i
+)
+=
+b
+i
+}
+∩
+dom
+⁡
+(
+f
+𝑨
+)
+is non-empty, where
+dom
+⁡
+(
+f
+𝑨
+)
+is the
+domain of definition
+of
+f
+𝑨
+, and when this is the case,
+f
+𝑪
+⁢
+(
+b
+1
+,
+…
+,
+b
+n
+)
+:=
+ϕ
+⁢
+(
+f
+𝑨
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+)
+, for some
+(
+a
+1
+,
+…
+,
+a
+n
+)
+∈
+D
+.
+If
+ϕ
+preserves constants (if any), and
+f
+C
+is non-empty for each
+f
+∈
+τ
+then
+𝑪
+is a partial algebra of type
+τ
+.
+Fix an arbitrary
+n
+-ary symbol
+f
+∈
+τ
+. The following are the basic
+properties
+of
+𝑪
+:
+Proposition 1
+.
+ϕ
+is a homomorphism iff
+𝐂
+is a weak subalgebra of
+𝐁
+.
+Proof.
+Suppose first that
+ϕ
+is a homomorphism. If
+n
+=
+0
+, then
+f
+𝑨
+∈
+A
+, and
+f
+𝑩
+=
+ϕ
+⁢
+(
+f
+𝑨
+)
+∈
+C
+. If
+n
+>
+0
+, then for some
+a
+1
+,
+…
+,
+a
+n
+∈
+A
+,
+f
+𝑨
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+is defined, and consequently
+f
+𝑩
+⁢
+(
+ϕ
+⁢
+(
+a
+1
+)
+,
+…
+,
+ϕ
+⁢
+(
+a
+n
+)
+)
+is defined, and is equal to
+ϕ
+⁢
+(
+f
+𝑨
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+)
+∈
+C
+. By the definition for
+f
+𝑪
+above,
+f
+𝑪
+⁢
+(
+ϕ
+⁢
+(
+a
+1
+)
+,
+…
+,
+ϕ
+⁢
+(
+a
+n
+)
+)
+:=
+ϕ
+⁢
+(
+f
+𝑨
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+)
+. This shows that
+𝑪
+is a
+τ
+-algebra.
+To furthermore show that
+𝑪
+is a weak subalgebra of
+𝑩
+, assume
+f
+𝑪
+⁢
+(
+b
+1
+,
+…
+,
+b
+n
+)
+is defined. Then there are
+a
+1
+,
+…
+,
+a
+n
+∈
+A
+with
+b
+i
+=
+ϕ
+⁢
+(
+a
+i
+)
+such that
+f
+𝑨
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+is defined. Since
+ϕ
+is a homomorphism,
+f
+𝑩
+⁢
+(
+ϕ
+⁢
+(
+a
+1
+)
+,
+…
+,
+ϕ
+⁢
+(
+a
+n
+)
+)
+, and hence
+f
+𝑩
+⁢
+(
+b
+1
+,
+…
+,
+b
+n
+)
+, is defined. Furthermore,
+f
+C
+⁢
+(
+b
+1
+,
+…
+,
+b
+n
+)
+=
+ϕ
+⁢
+(
+f
+𝑨
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+)
+=
+f
+𝑩
+⁢
+(
+ϕ
+⁢
+(
+a
+1
+)
+,
+…
+,
+ϕ
+⁢
+(
+a
+n
+)
+)
+=
+f
+𝑩
+⁢
+(
+b
+1
+,
+…
+,
+b
+n
+)
+. This shows that
+𝑪
+is weak.
+On the other hand, suppose now that
+𝑪
+is a weak subalgebra of
+𝑩
+. Suppose
+a
+1
+,
+…
+,
+a
+n
+∈
+A
+and
+f
+𝑨
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+is defined. Let
+b
+i
+=
+ϕ
+⁢
+(
+a
+i
+)
+∈
+C
+. Then, by the definition of
+f
+𝑪
+,
+f
+𝑪
+⁢
+(
+b
+1
+,
+…
+,
+b
+n
+)
+is defined and is equal to
+ϕ
+⁢
+(
+f
+𝑨
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+)
+. Since
+𝑪
+is weak,
+f
+𝑩
+⁢
+(
+b
+1
+,
+…
+,
+b
+n
+)
+is defined and is equal to
+f
+𝑪
+⁢
+(
+b
+1
+,
+…
+,
+b
+n
+)
+. As a result,
+ϕ
+⁢
+(
+f
+𝑨
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+)
+=
+f
+𝑪
+⁢
+(
+b
+1
+,
+…
+,
+b
+n
+)
+=
+f
+𝑩
+⁢
+(
+b
+1
+,
+…
+,
+b
+n
+)
+=
+f
+𝑩
+⁢
+(
+ϕ
+⁢
+(
+a
+1
+)
+,
+…
+,
+ϕ
+⁢
+(
+a
+n
+)
+)
+. Hence
+ϕ
+is a homomorphism.
+∎
+Proposition 2
+.
+ϕ
+is a full homomorphism iff
+𝐂
+is a relative subalgebra of
+𝐁
+.
+Proof.
+Suppose first that
+ϕ
+is full. Since
+ϕ
+is a homomorphism,
+𝑪
+is weak. Suppose
+b
+1
+,
+…
+,
+b
+n
+∈
+C
+such that
+f
+𝑨
+⁢
+(
+b
+1
+,
+…
+,
+b
+n
+)
+is defined and is in
+C
+. Since
+ϕ
+is full, there are
+a
+i
+∈
+A
+such that
+b
+i
+=
+ϕ
+⁢
+(
+a
+i
+)
+and
+f
+𝑨
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+is defined, and
+ϕ
+⁢
+(
+f
+𝑨
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+)
+=
+f
+𝑩
+⁢
+(
+ϕ
+⁢
+(
+a
+1
+)
+,
+…
+,
+ϕ
+⁢
+(
+a
+n
+)
+)
+=
+f
+𝑩
+⁢
+(
+b
+1
+,
+…
+,
+b
+n
+)
+, so that
+f
+𝑩
+⁢
+(
+b
+1
+,
+…
+,
+b
+n
+)
+is defined and thus
+𝑪
+is a relative subalgebra of
+𝑩
+.
+Conversely
+, suppose that
+𝑪
+is a relative subalgebra of
+𝑩
+. Then
+𝑪
+is a weak subalgebra of
+𝑩
+and
+ϕ
+is a homomorphism. To show that
+ϕ
+is full, suppose that
+b
+i
+∈
+C
+such that
+f
+𝑩
+⁢
+(
+b
+1
+,
+…
+,
+b
+n
+)
+is defined in
+C
+. Then
+f
+𝑪
+⁢
+(
+b
+1
+,
+…
+,
+b
+n
+)
+is defined in
+C
+and is equal to
+f
+𝑩
+⁢
+(
+b
+1
+,
+…
+,
+b
+n
+)
+. This means that there are
+a
+i
+∈
+A
+such that
+b
+i
+=
+ϕ
+⁢
+(
+a
+i
+)
+, and
+f
+𝑨
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+is defined, showing that
+f
+𝑨
+is full.
+∎
+Proposition 3
+.
+ϕ
+is a strong homomorphism iff
+𝐂
+is a subalgebra of
+𝐁
+.
+Proof.
+Suppose first that
+ϕ
+is strong. Since
+ϕ
+is full,
+𝑪
+is a relative subalgebra of
+𝑩
+. Suppose now that for
+b
+i
+∈
+C
+,
+f
+𝑩
+⁢
+(
+b
+1
+,
+…
+,
+b
+n
+)
+is defined. Since
+b
+i
+=
+ϕ
+⁢
+(
+a
+i
+)
+for some
+a
+i
+∈
+A
+, and since
+ϕ
+is strong,
+f
+𝑨
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+is defined. This means that
+f
+𝑩
+⁢
+(
+b
+1
+,
+…
+,
+b
+n
+)
+=
+f
+𝑩
+⁢
+(
+ϕ
+⁢
+(
+a
+1
+)
+,
+…
+,
+ϕ
+⁢
+(
+a
+n
+)
+)
+=
+ϕ
+⁢
+(
+f
+𝑨
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+)
+, which is in
+C
+. So
+𝑪
+is a subalgebra of
+𝑩
+.
+Going the other direction, suppose now that
+𝑪
+is a subalgebra of
+𝑩
+. Since
+𝑪
+is a relative subalgebra of
+𝑩
+,
+ϕ
+is full. To show that
+ϕ
+is strong, suppose
+f
+𝑩
+⁢
+(
+ϕ
+⁢
+(
+a
+1
+)
+,
+…
+,
+ϕ
+⁢
+(
+a
+n
+)
+)
+is defined. Then
+f
+𝑪
+⁢
+(
+ϕ
+⁢
+(
+a
+1
+)
+,
+…
+,
+ϕ
+⁢
+(
+a
+n
+)
+)
+is defined and is equal to
+f
+𝑩
+⁢
+(
+ϕ
+⁢
+(
+a
+1
+)
+,
+…
+,
+ϕ
+⁢
+(
+a
+n
+)
+)
+. By definition of
+f
+𝑪
+,
+f
+𝑨
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+is therefore defined. So
+ϕ
+is strong.
+∎
+Definition
+. Let
+𝑨
+and
+𝑩
+be partial algebras of type
+τ
+. If
+ϕ
+:
+𝑨
+→
+𝑩
+is a homomorphism, then
+𝑪
+, as defined above, is a partial algebra of type
+τ
+, and is called the
+homomorphic image
+of
+A
+via
+ϕ
+, and is sometimes written
+ϕ
+⁢
+(
+𝑨
+)
+.
+References
+1
+G. Grätzer:
+Universal Algebra
+, 2nd Edition, Springer, New York (1978).
+Title
+homomorphism between partial algebras
+Canonical
+name
+HomomorphismBetweenPartialAlgebras
+Date of creation
+2013-03-22 18:42:57
+Last modified on
+2013-03-22 18:42:57
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+13
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 08A55
+Classification
+msc 03E99
+Classification
+msc 08A62
+Defines
+homomorphism
+Defines
+full homomorphism
+Defines
+strong homomorphism
+Defines
+isomorphism
+Defines
+strong
+Defines
+homomorphic image
+Defines
+embedding
+Generated  on Fri Feb  9 14:03:11 2018 by
+LaTeXML

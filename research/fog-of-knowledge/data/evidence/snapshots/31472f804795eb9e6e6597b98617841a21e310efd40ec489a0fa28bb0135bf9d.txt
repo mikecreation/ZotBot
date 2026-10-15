@@ -1,0 +1,491 @@
+logical language
+logical language
+In its most general form, a
+logical language
+is a set of rules for constructing
+formulas
+for some logic, which can then be assigned truth values based on the rules of that logic.
+A logical language
+ℒ
+consists of:
+•
+A set
+F
+of
+function symbols
+(common examples include
++
+and
+⋅
+)
+•
+A set
+R
+of relation symbols (common examples include
+=
+and
+<
+)
+•
+A set
+C
+of
+logical connectives
+(usually
+¬
+,
+∧
+,
+∨
+,
+→
+and
+↔
+)
+•
+A set
+Q
+of
+quantifiers
+(usuallly
+∀
+and
+∃
+)
+•
+A set
+V
+of
+variables
+Every function symbol, relation symbol, and
+connective
+is associated with an arity (the set of
+n
+-ary function symbols is denoted
+F
+n
+, and similarly for relation symbols and connectives). Each quantifier is a
+generalized quantifier
+associated with a quantifier type
+⟨
+n
+1
+,
+…
+,
+n
+n
+⟩
+.
+The underlying logic has a (possibly empty) set of types
+T
+. There is a
+function
+Type
+:
+F
+∪
+V
+→
+T
+which assignes a type to each function and variable. For each arity
+n
+is a function
+Inputs
+n
+:
+F
+n
+∪
+R
+n
+→
+T
+n
+which gives the types of each of the
+arguments
+to a function symbol or
+relation
+. In
+addition
+, for each quantifier type
+⟨
+n
+1
+,
+…
+,
+n
+n
+⟩
+there is a function
+Inputs
+⟨
+n
+1
+,
+…
+,
+n
+n
+⟩
+defined on
+Q
+⟨
+n
+1
+,
+…
+,
+n
+n
+⟩
+(the set of quantifiers of that type) which gives an
+n
+-tuple of
+n
+i
+-tuples of types of the arguments taken by formulas the quantifier applies to.
+The
+terms
+of
+ℒ
+of type
+t
+∈
+T
+are built as follows:
+1.
+If
+v
+is a variable such that
+Type
+⁡
+(
+v
+)
+=
+t
+then
+v
+is a term of type
+t
+2.
+If
+f
+is an
+n
+-ary function symbol such that
+Type
+⁡
+(
+f
+)
+=
+t
+and
+t
+1
+,
+…
+,
+t
+n
+are terms such that for each
+i
+<
+n
+Type
+⁡
+(
+t
+i
+)
+=
+(
+Inputs
+n
+⁡
+(
+f
+)
+)
+i
+then
+f
+⁢
+t
+1
+,
+…
+,
+t
+n
+is a term of type
+t
+The
+formulas
+of
+ℒ
+are built as follows:
+1.
+If
+r
+is an
+n
+-ary relation symbol and
+t
+1
+,
+…
+,
+t
+n
+are terms such that
+Type
+⁡
+(
+t
+i
+)
+=
+(
+Inputs
+n
+⁡
+(
+r
+)
+)
+i
+then
+r
+⁢
+t
+1
+,
+…
+,
+t
+n
+is a formula
+2.
+If
+c
+is an
+n
+-ary connective and
+f
+1
+,
+…
+,
+f
+n
+are formulas then
+c
+⁢
+f
+1
+,
+…
+,
+f
+n
+is a formula
+3.
+If
+q
+is a quantifier of type
+⟨
+n
+1
+,
+…
+,
+n
+n
+⟩
+,
+v
+1
+,
+1
+,
+…
+,
+v
+1
+,
+n
+1
+,
+v
+2
+,
+1
+,
+…
+,
+v
+n
+,
+1
+,
+…
+,
+v
+n
+,
+n
+n
+are a
+sequence
+of variables such that
+Type
+⁡
+(
+v
+i
+,
+j
+)
+=
+(
+(
+Inputs
+⟨
+n
+1
+,
+…
+,
+n
+n
+⟩
+⁡
+(
+q
+)
+)
+j
+)
+i
+and
+f
+1
+,
+…
+,
+f
+n
+are formulas then
+q
+⁢
+v
+1
+,
+1
+,
+…
+,
+v
+1
+,
+n
+1
+,
+v
+2
+,
+1
+,
+…
+,
+v
+n
+,
+1
+,
+…
+,
+v
+n
+,
+n
+n
+⁢
+f
+1
+,
+…
+,
+f
+n
+is a formula
+Generally the connectives, quantifiers, and variables are specified by the appropriate logic, while the function and relation symbols are specified for particular
+languages
+. Note that
+0
+-ary functions are usually called
+constants
+.
+If there is only one type which is equated directly with truth values then this is essentially a
+propositional logic
+. If the standard quantifiers and connectives are used, there is only one type, and one of the relations is
+=
+(with its usual
+semantics
+), this produces
+first order logic
+. If the standard quantifiers and connectives are used, there are two types, and the relations include
+=
+and
+∈
+with appropriate semantics, this is
+second order logic
+(a slightly different formulation replaces
+∈
+with a
+2
+-ary function which represents function application; this views
+second order
+objects as functions rather than sets).
+Note that often connectives are written with
+infix notation
+with parentheses used to control
+order of operations
+.
+Title
+logical language
+Canonical
+name
+LogicalLanguage
+Date of creation
+2013-03-22 12:59:55
+Last modified on
+2013-03-22 12:59:55
+Owner
+Henry (455)
+Last modified by
+Henry (455)
+Numerical id
+14
+Author
+Henry (455)
+Entry type
+Definition
+Classification
+msc 03B15
+Classification
+msc 03B10
+Related topic
+QuantifierFree
+Defines
+term
+Defines
+formula
+Defines
+constant
+Generated  on Thu Feb  8 19:45:38 2018 by
+LaTeXML

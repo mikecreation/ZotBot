@@ -1,0 +1,1025 @@
+change of basis
+change of basis
+Let
+V
+be a
+vector space
+. Given a basis
+A
+for
+V
+, each vector
+v
+∈
+V
+can be uniquely expressed in terms of the base
+elements
+v
+i
+∈
+A
+as follows:
+v
+=
+∑
+v
+i
+∈
+A
+r
+i
+⁢
+v
+i
+where the sum is taken over a finite number of elements in
+A
+. Suppose now that
+B
+is another basis for
+V
+. By a
+change of basis
+from
+A
+to
+B
+we mean re-expressing
+v
+in terms of base elements
+w
+i
+∈
+B
+.
+Formally, we can think of a change of basis as the
+identity function
+(viewed as a
+linear operator
+) on a vector space
+V
+, such that elements in the domain are expressed in terms of
+A
+and elements in the range are expressed in terms of
+B
+.
+Note that, by the very design of a basis, a change of basis in a vector space is always possible.
+Now, if
+V
+has
+dimension
+n
+<
+∞
+. We can total order bases
+A
+and
+B
+. Then a change of basis (from
+A
+to
+B
+) has the
+matrix representation
+[
+I
+]
+B
+A
+,
+where
+I
+:
+V
+→
+V
+is the identity operator.
+[
+I
+]
+B
+A
+is called a
+change of basis matrix
+. By applying
+[
+I
+]
+B
+A
+to a vector
+v
+expressed in terms of
+A
+, we get
+v
+expressed in terms of
+B
+:
+[
+v
+]
+B
+=
+[
+I
+]
+B
+A
+⁢
+[
+v
+]
+A
+,
+where
+[
+v
+]
+A
+and
+[
+v
+]
+B
+are
+v
+expressed in the two bases
+A
+and
+B
+respectively.
+Since
+I
+is obviously
+invertible
+,
+[
+I
+]
+B
+A
+is invertible also, whose
+inverse
+is
+[
+I
+]
+A
+B
+. Furthermore,
+[
+I
+]
+A
+=
+I
+n
+for any basis
+A
+. Here,
+I
+n
+is the
+identity matrix
+.
+Examples
+.
+1.
+Let
+V
+=
+ℝ
+3
+and the following two sets
+A
+=
+{
+(
+1
+-
+1
+2
+)
+,
+(
+0
+1
+1
+)
+,
+(
+2
+3
+0
+)
+}
+⁢
+and
+⁢
+B
+=
+{
+(
+1
+0
+0
+)
+,
+(
+0
+1
+0
+)
+,
+(
+0
+0
+1
+)
+}
+be the two ordered bases for
+V
+, ordered in the way the elements are arranged in the set. For each
+v
+i
+∈
+A
+,
+I
+⁢
+(
+v
+i
+)
+=
+v
+i
+=
+[
+v
+i
+]
+E
+3
+, we see that
+[
+I
+]
+B
+A
+=
+(
+1
+0
+2
+-
+1
+1
+3
+2
+1
+0
+)
+.
+Notice that the columns of
+[
+I
+]
+B
+A
+are exactly the elements of
+A
+. Indeed, each element of
+A
+is
+already
+written in terms of the
+standard basis
+elements (in
+B
+). For example, let
+v
+be the first basis element in
+A
+. Let us see what
+[
+v
+]
+A
+is, when expressed using base elements in
+B
+, the standard ordered basis:
+[
+v
+]
+B
+=
+[
+I
+]
+B
+A
+⁢
+[
+v
+]
+A
+=
+(
+1
+0
+2
+-
+1
+1
+3
+2
+1
+0
+)
+⁢
+[
+v
+]
+A
+=
+(
+1
+0
+2
+-
+1
+1
+3
+2
+1
+0
+)
+⁢
+(
+1
+0
+0
+)
+=
+(
+1
+-
+1
+2
+)
+,
+exactly as we have expected.
+2.
+Conversely
+, let
+w
+be the first basis element in
+B
+. What is
+w
+when expressed in terms of basis elements of
+A
+? In other words, we need to find
+[
+w
+]
+A
+=
+[
+I
+]
+A
+B
+⁢
+[
+w
+]
+B
+.
+Now,
+[
+w
+]
+B
+is just
+(
+1
+0
+0
+)
+, so
+[
+w
+]
+A
+is nothing more than the first column of
+[
+I
+]
+A
+B
+, which is just the inverse of the matrix
+[
+I
+]
+B
+A
+, so
+[
+I
+]
+A
+B
+=
+(
+[
+I
+]
+B
+A
+)
+-
+1
+=
+(
+1
+0
+2
+-
+1
+1
+3
+2
+1
+0
+)
+-
+1
+=
+(
+1
+/
+3
+-
+2
+/
+9
+2
+/
+9
+-
+2
+/
+3
+4
+/
+9
+5
+/
+9
+1
+/
+3
+1
+/
+9
+-
+1
+/
+9
+)
+.
+Therefore,
+[
+w
+]
+A
+=
+(
+1
+/
+3
+-
+2
+/
+3
+1
+/
+3
+)
+. A quick verification shows that this is indeed the case:
+(
+1
+0
+0
+)
+=
+(
+1
+/
+3
+)
+⁢
+(
+1
+-
+1
+2
+)
++
+(
+-
+2
+/
+3
+)
+⁢
+(
+0
+1
+1
+)
++
+(
+1
+/
+3
+)
+⁢
+(
+2
+3
+0
+)
+.
+3.
+Now let
+C
+be the set
+{
+(
+1
+0
+2
+)
+,
+(
+0
+1
+1
+)
+,
+(
+2
+1
+0
+)
+}
+. It is easy to check that
+C
+forms a basis for
+ℝ
+3
+(
+determinant
+is non-zero). Order
+C
+in the
+obvious
+manner. What is the change of basis matrix
+[
+I
+]
+A
+C
+? One way is to express each element of
+C
+in terms of the elements of
+A
+. Another way is to use the
+formula
+[
+I
+]
+A
+C
+=
+[
+I
+]
+A
+B
+⁢
+[
+I
+]
+B
+C
+. Applying the first example, we see that
+[
+I
+]
+B
+C
+is just the matrix whose columns are elements of
+C
+. As a result:
+[
+I
+]
+A
+C
+=
+[
+I
+]
+A
+B
+⁢
+[
+I
+]
+B
+C
+=
+(
+1
+/
+3
+-
+2
+/
+9
+2
+/
+9
+-
+2
+/
+3
+4
+/
+9
+5
+/
+9
+1
+/
+3
+1
+/
+9
+-
+1
+/
+9
+)
+⁢
+(
+1
+0
+2
+0
+1
+1
+2
+1
+0
+)
+=
+(
+7
+/
+9
+0
+4
+/
+9
+4
+/
+9
+1
+-
+8
+/
+9
+1
+/
+9
+0
+7
+/
+9
+)
+.
+Remarks.
+Let us summarize what we have learned from the examples above, as well as list some additional facts. Let
+V
+be a finite dimensional vector space of dimension
+n
+.
+•
+If
+E
+is the standard basis (ordered), then for any ordered basis
+A
+,
+[
+I
+]
+E
+A
+is the matrix whose columns are exactly the basis elements in
+A
+(assuming these elements have already been expressed in terms of
+E
+) such that the
+i
+-column corresponds to the
+i
+-th element in the ordered set
+A
+.
+•
+This also means that every
+invertible matrix
+A
+corresponds to (in a
+one-to-one
+fashion) a change of basis from the basis
+S
+A
+whose elements are columns of
+A
+to
+E
+, the standard basis:
+A
+=
+[
+I
+]
+E
+S
+A
+.
+•
+Continue to assume that
+E
+is the standard basis. Let
+A
+,
+B
+be any ordered bases for
+V
+. Using the above
+property
+, we can easily compute
+[
+I
+]
+B
+A
+, which is
+[
+I
+]
+B
+E
+⁢
+[
+I
+]
+E
+A
+=
+(
+[
+I
+]
+E
+B
+)
+-
+1
+⁢
+[
+I
+]
+E
+A
+.
+•
+Let
+A
+′
+be a re-ordering of the ordered basis
+A
+, where each
+v
+i
+′
+∈
+A
+′
+is just
+v
+π
+⁢
+(
+i
+)
+for some
+permutation
+in
+S
+n
+. Then
+[
+I
+]
+A
+A
+′
+is the
+permutation matrix
+corresponding to the permutation
+π
+.
+•
+Suppose
+T
+is a linear transformation from
+V
+to
+W
+(both finite dimensional). Under a bases
+A
+⊂
+V
+and
+B
+⊂
+W
+,
+T
+has matrix representation
+[
+T
+]
+B
+A
+. Under changes of basis from
+A
+to
+A
+′
+, and
+B
+to
+B
+′
+, we have
+[
+T
+]
+B
+′
+A
+′
+=
+[
+I
+⁢
+T
+⁢
+I
+]
+B
+′
+A
+′
+=
+[
+I
+]
+B
+′
+B
+⁢
+[
+T
+]
+B
+A
+⁢
+[
+I
+]
+A
+A
+′
+.
+•
+If
+T
+is a linear operator on
+V
+, then setting
+V
+=
+W
+,
+A
+=
+B
+and
+A
+′
+=
+B
+′
+from above, we have that
+[
+T
+]
+A
+′
+=
+P
+-
+1
+⁢
+[
+T
+]
+A
+⁢
+P
+,
+where
+P
+is the change of basis matrix
+[
+I
+]
+A
+A
+′
+. This shows that
+[
+T
+]
+A
+and
+[
+T
+]
+A
+′
+are
+similar matrices
+. In other words, under a change of basis, the linear transformation
+T
+is basically the same.
+References
+1
+Friedberg, Insell, Spence.
+Linear Algebra
+. Prentice-Hall Inc., 1997.
+Title
+change of basis
+Canonical
+name
+ChangeOfBasis
+Date of creation
+2013-03-22 17:30:18
+Last modified on
+2013-03-22 17:30:18
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+20
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 15A04
+Synonym
+change of coordinates
+Synonym
+change of bases
+Synonym
+basis change
+Synonym
+base change
+Synonym
+base change matrix
+Defines
+change of basis matrix
+Generated  on Fri Feb  9 18:20:58 2018 by
+LaTeXML

@@ -1,0 +1,105 @@
+<!DOCTYPE html><html>
+<head>
+<title>fixed-point arithmetic</title>
+<!--Generated on Fri Feb  9 15:22:54 2018 by LaTeXML (version 0.8.2) http://dlmf.nist.gov/LaTeXML/.-->
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="LaTeXML.css" type="text/css">
+<link rel="stylesheet" href="ltx-article.css" type="text/css">
+<link rel="stylesheet" href="https://cdn.rawgit.com/holtzermann17/3f71ceeb3b055e1ddc3b6c11fb1f074c/raw/2bb23e3b173ff96840797fc0c3bcb8c54085df8e/LaTeXML.css" type="text/css">
+<link rel="stylesheet" href="https://cdn.rawgit.com/holtzermann17/4bda0365b30858ac2fb83623185fe3ec/raw/cedd84ed3e3ad597c5d293f443ecfe4803741c6b/ltx-article.css" type="text/css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" type="text/javascript"></script>
+</head>
+<body>
+<div class="ltx_page_main">
+<div class="ltx_page_content">
+<article class="ltx_document ltx_authors_1line">
+<h1 class="ltx_title ltx_title_document">fixed-point arithmetic</h1>
+
+<div id="p1" class="ltx_para">
+<br class="ltx_break">
+<p class="ltx_p">For computation or display in <span class="ltx_text ltx_font_italic"><a class="nnexus_concept" href="http://planetmath.org/fixedpointarithmetic">fixed-point arithmetic</a></span>, each <a class="nnexus_concept" href="http://planetmath.org/realnumber">real number</a> <math id="p1.m1" class="ltx_Math" alttext="x" display="inline"><mi>x</mi></math> has a <a class="nnexus_concept" href="http://planetmath.org/variable">variable</a> number <math id="p1.m2" class="ltx_Math" alttext="k&gt;0" display="inline"><mrow><mi>k</mi><mo>&gt;</mo><mn>0</mn></mrow></math> of <a class="nnexus_concept" href="http://mathworld.wolfram.com/Integer.html">integer</a> digits <math id="p1.m3" class="ltx_Math" alttext="d_{k-1},\ldots,d_{0}" display="inline"><mrow><msub><mi>d</mi><mrow><mi>k</mi><mo>-</mo><mn>1</mn></mrow></msub><mo>,</mo><mi mathvariant="normal">…</mi><mo>,</mo><msub><mi>d</mi><mn>0</mn></msub></mrow></math> (in order left to right from the most to the least significant digit) in base <math id="p1.m4" class="ltx_Math" alttext="b" display="inline"><mi>b</mi></math> but always <math id="p1.m5" class="ltx_Math" alttext="l" display="inline"><mi>l</mi></math> fractional digits to the right of the point. Thus,</p>
+<table id="S0.Ex1" class="ltx_equation ltx_eqn_table">
+
+<tr class="ltx_equation ltx_eqn_row ltx_align_baseline">
+<td class="ltx_eqn_cell ltx_eqn_center_padleft"></td>
+<td class="ltx_eqn_cell ltx_align_center"><math id="S0.Ex1.m1" class="ltx_Math" alttext="x=\sum_{i=-l}^{k-1}d_{i}b^{i}." display="block"><mrow><mrow><mi>x</mi><mo>=</mo><mrow><munderover><mo largeop="true" movablelimits="false" symmetric="true">∑</mo><mrow><mi>i</mi><mo>=</mo><mrow><mo>-</mo><mi>l</mi></mrow></mrow><mrow><mi>k</mi><mo>-</mo><mn>1</mn></mrow></munderover><mrow><msub><mi>d</mi><mi>i</mi></msub><mo>⁢</mo><msup><mi>b</mi><mi>i</mi></msup></mrow></mrow></mrow><mo>.</mo></mrow></math></td>
+<td class="ltx_eqn_cell ltx_eqn_center_padright"></td>
+</tr>
+</table>
+<p class="ltx_p">For example, for the usual mundane applications of money, <math id="p1.m6" class="ltx_Math" alttext="b=10" display="inline"><mrow><mi>b</mi><mo>=</mo><mn>10</mn></mrow></math> and <math id="p1.m7" class="ltx_Math" alttext="l=2" display="inline"><mrow><mi>l</mi><mo>=</mo><mn>2</mn></mrow></math>.</p>
+</div>
+<div id="p2" class="ltx_para">
+<p class="ltx_p">Fixed-point arithmetic can adequately represent any <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">rational number</a><sup style="display: none;"><a class="nnexus_concept" href="http://planetmath.org/egyptianfraction"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/liberabaci"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/rationalnumber"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> <math id="p2.m1" class="ltx_Math" alttext="{n\over m}" display="inline"><mfrac><mi>n</mi><mi>m</mi></mfrac></math> provided that <math id="p2.m2" class="ltx_Math" alttext="m\leq b^{l}" display="inline"><mrow><mi>m</mi><mo>≤</mo><msup><mi>b</mi><mi>l</mi></msup></mrow></math> and <math id="p2.m3" class="ltx_Math" alttext="m" display="inline"><mi>m</mi></math> has no <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">prime factors</a><sup style="display: none;"><a class="nnexus_concept" href="http://mathworld.wolfram.com/PrimeFactor.html"><img src="http://mathworld.wolfram.com/favicon_mathworld.png" alt="Mathworld"></img></a><a class="nnexus_concept" href="http://planetmath.org/fundamentaltheoremofarithmetic"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> <math id="p2.m4" class="ltx_Math" alttext="b" display="inline"><mi>b</mi></math> doesn’t (counting repeated prime factors). <a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">Addition</a><sup style="display: none;"><a class="nnexus_concept" href="http://planetmath.org/addition"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/cardinalarithmetic"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup> and <a class="nnexus_concept" href="http://planetmath.org/subtraction">subtraction</a> in fixed-point arithmetic present no special problems for such numbers. When it comes to <a class="nnexus_concept" href="http://planetmath.org/multiplication">multiplication</a> and <a class="nnexus_concept" href="http://planetmath.org/division">division</a>, we run into cases where the result cannot be adequately represented though the operands can.</p>
+</div>
+<div id="p3" class="ltx_para">
+<p class="ltx_p">In those cases it may be practical to perform the computations in floating point and display the results in fixed-point. In fact, this is what many business <a class="nnexus_concept" href="http://planetmath.org/calculator">calculators</a> do (such as cash registers); they compute in binary floating point and display in decimal fixed-point. Another option is to continue the calculations in fixed-point by settling for crude approximations. Depending on the application and the user, the loss of precision may be acceptable. There are two ways to handle the loss of precision: if <math id="p3.m1" class="ltx_Math" alttext="d_{-l-1}&gt;{b\over 2}" display="inline"><mrow><msub><mi>d</mi><mrow><mrow><mo>-</mo><mi>l</mi></mrow><mo>-</mo><mn>1</mn></mrow></msub><mo>&gt;</mo><mfrac><mi>b</mi><mn>2</mn></mfrac></mrow></math>, we could then assign <math id="p3.m2" class="ltx_Math" alttext="d_{-l}=d_{-l}+1" display="inline"><mrow><msub><mi>d</mi><mrow><mo>-</mo><mi>l</mi></mrow></msub><mo>=</mo><mrow><msub><mi>d</mi><mrow><mo>-</mo><mi>l</mi></mrow></msub><mo>+</mo><mn>1</mn></mrow></mrow></math> (propagating the change as needed to the more significant digits); or we could simply ignore everything to the right of <math id="p3.m3" class="ltx_Math" alttext="d_{-l}" display="inline"><msub><mi>d</mi><mrow><mo>-</mo><mi>l</mi></mrow></msub></math>.</p>
+</div>
+<div id="p4" class="ltx_para">
+<p class="ltx_p">Older versions of FractInt for 80386 IBM-compatibles used fixed-point arithmetic. Most <a class="nnexus_concept" href="http://planetmath.org/supercomputers">computers</a> (and even game consoles) today have floating point units, reducing the need for fixed-point. Even so, newer implementations of the C programming language are expected to provide fixed-point data types and appropriately <a class="nnexus_concept" href="http://planetmath.org/overload">overload</a> built-in <a class="nnexus_concept" href="http://planetmath.org/function">functions</a> to handle those data types (see ISO/IEC TR 18037:2004).
+</p>
+<table class="ltx_tabular ltx_align_right ltx_guessed_headers ltx_align_middle">
+<tbody class="ltx_tbody">
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l ltx_border_t">Title</th>
+<td class="ltx_td ltx_align_left ltx_border_r ltx_border_t">fixed-point arithmetic</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l"><a class="nnexus_concept" href="http://planetmath.org/canonical">Canonical</a> name</th>
+<td class="ltx_td ltx_align_left ltx_border_r">FixedpointArithmetic</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l">Date of creation</th>
+<td class="ltx_td ltx_align_left ltx_border_r">2013-03-22 16:32:31</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l">Last modified on</th>
+<td class="ltx_td ltx_align_left ltx_border_r">2013-03-22 16:32:31</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l">Owner</th>
+<td class="ltx_td ltx_align_left ltx_border_r">PrimeFan (13766)</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l">Last modified by</th>
+<td class="ltx_td ltx_align_left ltx_border_r">PrimeFan (13766)</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l">Numerical id</th>
+<td class="ltx_td ltx_align_left ltx_border_r">5</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l">Author</th>
+<td class="ltx_td ltx_align_left ltx_border_r">PrimeFan (13766)</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l">Entry type</th>
+<td class="ltx_td ltx_align_left ltx_border_r"><a class="nnexus_concept" href="http://planetmath.org/definition">Definition</a></td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l">Classification</th>
+<td class="ltx_td ltx_align_left ltx_border_r">msc 11A63</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l">Synonym</th>
+<td class="ltx_td ltx_align_left ltx_border_r">fixed point arithmetic</td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_l">Synonym</th>
+<td class="ltx_td ltx_align_left ltx_border_r"><a class="nnexus_concepts" href="javascript:void(0)" onclick="this.nextSibling.style.display='inline'">fixed point</a><sup style="display: none;"><a class="nnexus_concept" href="http://planetmath.org/fixedpoint"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a><a class="nnexus_concept" href="http://planetmath.org/closuremap"><img src="http://planetmath.org/sites/default/files/fab-favicon.ico" alt="Planetmath"></img></a></sup></td>
+</tr>
+<tr class="ltx_tr">
+<th class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_b ltx_border_l">Synonym</th>
+<td class="ltx_td ltx_align_left ltx_border_b ltx_border_r">fixed-point</td>
+</tr>
+</tbody>
+</table>
+</div>
+</article>
+</div>
+<footer class="ltx_page_footer">
+<div class="ltx_page_logo">Generated  on Fri Feb  9 15:22:54 2018 by <a href="http://dlmf.nist.gov/LaTeXML/">LaTeXML <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==" alt="[LOGO]"></a>
+</div></footer>
+</div>
+</body>
+</html>

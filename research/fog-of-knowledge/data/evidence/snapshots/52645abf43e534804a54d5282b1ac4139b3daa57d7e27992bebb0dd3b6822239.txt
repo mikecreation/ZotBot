@@ -1,0 +1,1073 @@
+substitutability
+substitutability
+In any
+logical system
+, the way to obtain (well-formed)
+formulas
+from existing ones is by attaching
+logical connectives
+to existing ones. For example, in classical
+propositional logic
+, if
+φ
+and
+ψ
+are formulas, the following
+φ
+∨
+ψ
+,
+¬
+⁢
+φ
+,
+ψ
+∧
+φ
+are formed by attaching logical connectives
+∨
+,
+¬
+, and
+∧
+appropriately to
+φ
+and
+ψ
+.
+Another convenient device is substitution:
+replace all
+occurrences
+of some symbol
+x
+in a formula
+φ
+by an expression
+ψ
+.
+We denote the resulting expression by
+φ
+⁢
+[
+ψ
+/
+x
+]
+.
+For example, in classical propositional logic, if
+φ
+is
+p
+∧
+(
+¬
+⁢
+r
+∨
+p
+)
+, then
+φ
+⁢
+[
+(
+p
+∨
+q
+)
+/
+p
+]
+is
+(
+p
+∨
+q
+)
+∧
+(
+¬
+⁢
+r
+∨
+(
+p
+∨
+q
+)
+)
+On the other hand, the expressions
+•
+φ
+⁢
+[
+¬
+/
+p
+]
+, which is
+¬
+∧
+(
+¬
+⁢
+r
+∨
+¬
+)
+, and
+•
+φ
+[
+q
+/
+∧
+]
+, which is
+p
+⁢
+q
+⁢
+(
+¬
+⁢
+r
+∨
+q
+)
+,
+are not formulas. Thus, one must be careful when performing substitutions on formulas lest the resulting expressions are ill-formed. In other words, conditions must be placed on
+x
+and
+ψ
+in
+φ
+⁢
+[
+ψ
+/
+x
+]
+in order that
+φ
+⁢
+[
+ψ
+/
+x
+]
+is a (well-formed) formula. These conditions are called the
+substitutability
+conditions
+. In this entry, we will concentrate on substitutability conditions on predicate logic. Details on substitions in propositional logic can be found in here (
+http://planetmath.org/SubstitutionsInLogic
+).
+Substitution in First-Order Logic
+Substitution works pretty much the same way for
+first-order logic
+as in propositional logic. However, the substitutability conditions are more subtle. Take a look at the following example:
+∃
+x
+(
+x
+=
+1
+)
+If we replace
+x
+by
+0
+, we end up with
+∃
+0
+(
+0
+=
+1
+)
+,
+which is non-sensical (not a wff). This is because
+x
+occurs in the formula as a
+bound variable
+. (one reason why we distinguish the variables occurring in
+first order
+formulas into two types: free and bound).
+We now formalize the notion of substitution in first-order logic. There are two parts: substitution for terms, and substitution for formulas.
+Definition
+. For any term
+t
+, any symbol
+x
+, and any expression
+s
+, define
+t
+⁢
+[
+s
+/
+x
+]
+inductively, as follows:
+1.
+if
+t
+is an individual variable or a
+constant symbol
+, then
+t
+⁢
+[
+s
+/
+x
+]
+is
+s
+if
+t
+is
+x
+, and
+t
+⁢
+[
+s
+/
+x
+]
+is
+t
+otherwise;
+2.
+if
+t
+is
+f
+⁢
+(
+t
+1
+,
+…
+,
+t
+n
+)
+, where
+f
+is an
+n
+-ary function symbol, and each
+t
+i
+is a term, then
+t
+⁢
+[
+s
+/
+x
+]
+is
+f
+⁢
+(
+t
+1
+⁢
+[
+s
+/
+x
+]
+,
+…
+,
+t
+n
+⁢
+[
+s
+/
+x
+]
+)
+.
+For example, if
+t
+is
+x
++
+y
+, then
+t
+⁢
+[
+(
+x
+-
+y
+)
+/
+x
+]
+is
+(
+x
+-
+y
+)
++
+y
+.
+It is easy to see that
+s
+is a term and
+x
+an individual variable, then
+t
+⁢
+[
+s
+/
+x
+]
+is a term. In
+addition
+, by
+induction
+, one can easily show that if the formula
+s
+1
+=
+s
+2
+is true, so is the formula
+t
+⁢
+[
+s
+1
+/
+x
+]
+=
+t
+⁢
+[
+s
+2
+/
+x
+]
+.
+Next, we define substitution for formulas. In light of the last example at the beginning of this
+section
+, we need to be a little careful.
+Definition
+. Let
+φ
+be a formula,
+x
+a symbol, and
+s
+an expression. The expression
+φ
+⁢
+[
+s
+/
+x
+]
+is again define inductively:
+1.
+if
+φ
+is
+t
+1
+=
+t
+2
+, then
+φ
+⁢
+[
+s
+/
+x
+]
+is
+t
+1
+⁢
+[
+s
+/
+x
+]
+=
+t
+2
+⁢
+[
+s
+/
+x
+]
+;
+2.
+if
+φ
+is
+R
+⁢
+(
+t
+1
+,
+…
+,
+t
+n
+)
+, then
+φ
+⁢
+[
+s
+/
+x
+]
+is
+R
+⁢
+(
+t
+1
+⁢
+[
+s
+/
+x
+]
+,
+…
+,
+t
+n
+⁢
+[
+s
+/
+x
+]
+)
+;
+3.
+if
+φ
+is
+¬
+⁢
+ψ
+, then
+φ
+⁢
+[
+s
+/
+x
+]
+is
+¬
+⁡
+(
+ψ
+⁢
+[
+s
+/
+x
+]
+)
+;
+4.
+if
+φ
+is
+ψ
+∨
+σ
+, then
+φ
+⁢
+[
+s
+/
+x
+]
+is
+ψ
+⁢
+[
+s
+/
+x
+]
+∨
+σ
+⁢
+[
+s
+/
+x
+]
+;
+5.
+if
+φ
+is
+∃
+y
+⁢
+ψ
+, then
+φ
+⁢
+[
+s
+/
+x
+]
+is
+∃
+y
+⁢
+(
+ψ
+⁢
+[
+s
+/
+x
+]
+)
+if
+x
+≠
+y
+, and
+φ
+⁢
+[
+s
+/
+x
+]
+is
+φ
+otherwise.
+Again, substitutions involving logical connectives
+→
+,
+∧
+, and the
+universal quantifier
+∀
+can be derived from the rules given above.
+For example, if
+φ
+is
+∃
+x
+(
+x
+=
+y
+∨
+y
+=
+z
+)
+, then
+φ
+⁢
+[
+t
+/
+y
+]
+is
+∃
+x
+(
+x
+=
+t
+∨
+t
+=
+z
+)
+, whereas
+φ
+⁢
+[
+t
+/
+x
+]
+is just
+φ
+.
+Given that
+φ
+is a formula, it is easy to see that if
+x
+is an individual variable, and
+s
+is a term, then
+φ
+⁢
+[
+s
+/
+x
+]
+is a formula.
+In addition, it is easy to see that
+sentences
+are not affected by substitutions: if
+φ
+is a sentence, then
+φ
+⁢
+[
+s
+/
+x
+]
+is just
+φ
+. In other words, sentences can not be changed into formulas with
+free variables
+.
+Conversely
+, can a formula with free variables be changed into a sentence by substitution? Certainly. For example, if
+φ
+is
+∃
+x
+(
+y
+<
+x
+)
+,
+then
+φ
+⁢
+[
+x
+/
+y
+]
+is
+∃
+x
+(
+x
+<
+x
+)
+.
+Although syntactically correct, this is undesirable in many situations, particularly when we are interested in the
+interpretations
+of these formulas. In the example above, we have changed
+∃
+x
+(
+y
+<
+x
+)
+, which many very well be true in many interpretations, into
+∃
+x
+(
+x
+<
+x
+)
+, something with a fixed meaning (and always false if
+<
+is interpreted as the usual less than
+relation
+).
+The problem with the situation described in the last paragraph arises because a free variable in
+t
+becomes bound in
+φ
+⁢
+[
+t
+/
+x
+]
+. To eliminate this undesirable situation, we define the notion of “free for”:
+Definition
+. Let
+x
+be an individual variable,
+t
+a term, and
+φ
+a formula. We define the relation
+t
+is free for, or substitutable for
+x
+in
+φ
+, inductively, as follows:
+1.
+φ
+is an
+atomic formula
+;
+2.
+φ
+is
+¬
+⁢
+ψ
+, and
+t
+is free for
+x
+in
+ψ
+;
+3.
+φ
+is
+ψ
+∨
+σ
+, and
+t
+is free for
+x
+in
+ψ
+and in
+σ
+;
+4.
+φ
+is
+∃
+y
+⁢
+ψ
+, and either
+–
+x
+∉
+FV
+⁡
+(
+φ
+)
+(
+x
+does not occur free in
+φ
+), or
+–
+y
+does not occur in
+t
+, and
+t
+is free for
+x
+in
+ψ
+.
+In words,
+t
+is free for
+x
+in
+φ
+iff whenever
+z
+is a variable in
+t
+, no
+literal subformula
+of
+φ
+of the form
+∃
+z
+⁢
+ψ
+contains an occurrence of
+x
+which is free in
+φ
+.
+For example,
+f
+⁢
+(
+x
+,
+y
+)
+is free for
+x
+in the following formulas:
+P
+⁢
+(
+x
+,
+y
+)
+,
+P
+⁢
+(
+x
+)
+∨
+¬
+⁢
+Q
+⁢
+(
+z
+)
+,
+¬
+⁢
+∃
+x
+⁢
+¬
+⁢
+R
+⁢
+(
+x
+,
+y
+)
+,
+and
+¬
+⁢
+S
+⁢
+(
+y
+)
+∨
+∃
+y
+⁢
+T
+⁢
+(
+y
+,
+z
+)
+,
+but not in the following formulas:
+∃
+y
+⁢
+P
+⁢
+(
+x
+,
+y
+)
+,
+Q
+⁢
+(
+x
+)
+∨
+∃
+z
+⁢
+∃
+y
+⁢
+R
+⁢
+(
+x
+,
+y
+)
+,
+and
+S
+⁢
+(
+y
+)
+→
+∀
+y
+⁢
+(
+T
+⁢
+(
+y
+,
+y
+)
+∧
+¬
+⁢
+Q
+⁢
+(
+x
+)
+)
+.
+Given any formula
+φ
+, we again write
+φ
+⁢
+(
+x
+)
+to mean that variable
+x
+occurs in
+φ
+. A
+substitution instance
+of
+φ
+⁢
+(
+x
+)
+is just
+φ
+⁢
+[
+t
+/
+x
+]
+, or
+φ
+⁢
+(
+t
+)
+for short. Furthermore, if
+t
+is free for
+x
+in
+φ
+, then
+φ
+⁢
+(
+t
+)
+is called a
+free substitution instance
+of
+φ
+⁢
+(
+x
+)
+.
+It is easy, by induction, to show that if terms
+t
+1
+and
+t
+2
+are free for
+x
+in
+φ
+, and that the formula
+t
+1
+=
+t
+2
+is true, the substitution instances
+φ
+⁢
+(
+t
+1
+)
+and
+φ
+⁢
+(
+t
+2
+)
+are
+logically equivalent
+, as intended.
+Title
+substitutability
+Canonical name
+Substitutability
+Date of creation
+2013-03-22 19:12:15
+Last modified on
+2013-03-22 19:12:15
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+24
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 03B10
+Classification
+msc 03B05
+Synonym
+substitutable for
+Related topic
+Subformula
+Related topic
+FreeAndBoundVariables
+Defines
+free for
+Defines
+free substitution instance
+Generated  on Thu Feb  8 19:28:20 2018 by
+LaTeXML

@@ -1,0 +1,425 @@
+equivalent machines
+equivalent machines
+Let
+M
+1
+=
+(
+S
+1
+,
+Σ
+,
+Δ
+,
+σ
+1
+,
+λ
+1
+)
+and
+M
+2
+=
+(
+S
+2
+,
+Σ
+,
+Δ
+,
+σ
+2
+,
+λ
+2
+)
+be two
+Mealy machines
+.
+Definition
+. A state
+s
+1
+of
+M
+1
+is said to be
+equivalent
+to a state
+s
+2
+of
+M
+2
+iff
+λ
+1
+⁢
+(
+s
+1
+,
+u
+)
+=
+λ
+2
+⁢
+(
+s
+2
+,
+u
+)
+⁢
+for all non-empty input words
+⁢
+u
+⁢
+over
+⁢
+Σ
+.
+We write
+≈
+for the equivalence.
+In the same way,
+≈
+can be defined on two
+Moore machines
+. However, where as
+u
+is restricted to be non-empty in the Mealy case, input words in Moore case are arbitrary, that is:
+s
+1
+≈
+s
+2
+iff
+β
+1
+⁢
+(
+s
+1
+,
+u
+)
+=
+β
+2
+⁢
+(
+s
+2
+,
+u
+)
+⁢
+for all input words
+⁢
+u
+⁢
+over
+⁢
+Σ
+.
+Here,
+β
+i
+is the modifications of the original output
+function
+λ
+i
+.
+Suppose now that
+M
+=
+M
+1
+=
+M
+2
+. Then
+≈
+is an
+equivalence relation
+on the state
+alphabet
+S
+of
+M
+. Given
+M
+, form a new
+machine
+M
+′
+=
+(
+S
+′
+,
+Σ
+,
+Δ
+,
+σ
+′
+,
+λ
+′
+)
+such that
+1.
+S
+′
+:=
+S
+/
+≈
+=
+{
+[
+s
+]
+∣
+s
+∈
+S
+}
+is the set of
+equivalence classes
+of
+≈
+on
+S
+,
+2.
+σ
+′
+⁢
+(
+[
+s
+]
+,
+a
+)
+=
+[
+σ
+⁢
+(
+s
+,
+a
+)
+]
+,
+3.
+λ
+′
+⁢
+(
+[
+s
+]
+,
+a
+)
+=
+λ
+⁢
+(
+s
+,
+a
+)
+.
+It is easy to verify that
+M
+′
+is indeed a
+well-defined
+machine. Furthermore, if
+M
+is Moore, so is
+M
+′
+.
+Call a machine (Mealy or Moore)
+reduced
+if
+s
+1
+≈
+s
+2
+implies
+s
+1
+=
+s
+2
+. Then the machine
+M
+′
+constructed from
+M
+above is a reduced machine.
+Suppose
+M
+1
+and
+M
+2
+are both Mealy machines such that they have the same input and output alphabets.
+Definition
+.
+M
+1
+is said to be
+equivalent
+to
+M
+2
+if every state of
+M
+1
+is equivalent to a state of
+M
+2
+, and vice versa. When
+M
+1
+is equivalent to
+M
+2
+, we write
+M
+1
+≈
+M
+2
+.
+Equivalence between two Moore machines is similarly defined. It is clear that
+≈
+is an equivalence relation on the class of Mealy machines (or Moore machines) over the same input and output alphabets.
+In
+addition
+, it is also possible to define “equivalence” between machines of different types. However, in the literature, the word “similar” is used instead of “equivalent”:
+Definition
+. Let
+M
+1
+be a Mealy machine and
+M
+2
+a Moore machine.
+M
+1
+is said to be
+similar
+to
+M
+2
+if every state
+s
+1
+of
+M
+1
+, there is a state
+s
+2
+of
+M
+2
+such that
+λ
+⁢
+(
+s
+1
+,
+u
+)
+=
+β
+⁢
+(
+s
+2
+,
+u
+)
+⁢
+for all non-empty input words
+⁢
+u
+⁢
+over
+⁢
+Σ
+.
+The definition of a Moore machine similar to a Mealy machine is analogous. Note that in the definition of similarity, input words are restricted to non-empty words only.
+Two machines of different types are similar if one is similar to another, and vice versa. We write
+M
+1
+∼
+M
+2
+if
+M
+1
+and
+M
+2
+are similar.
+The
+concept
+of similarity may be broadened to machines of the same type. In the Mealy case, similarity is the same as equivalence. In the Moore case, the two notions are different. Equivalence is more restrictive in that the
+empty word
+is required in the definition. Two Moore machines may be similar without being equivalent. In fact, we have the following facts:
+Proposition 1
+.
+Two Mealy machines similar to a Moore machine are equivalent. There exist two inequivalent Moore machines similar to a Mealy machine.
+Title
+equivalent machines
+Canonical
+name
+EquivalentMachines
+Date of creation
+2013-03-22 19:02:39
+Last modified on
+2013-03-22 19:02:39
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+7
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 03D05
+Classification
+msc 68Q45
+Related topic
+MealyMachine
+Related topic
+MooreMachine
+Defines
+equivalent
+Defines
+similar
+Defines
+reduced machine
+Generated  on Thu Feb  8 19:58:11 2018 by
+LaTeXML

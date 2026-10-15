@@ -1,0 +1,720 @@
+propositional calculus
+propositional calculus
+\PMlinkescapephrase
+adapted
+\PMlinkescapephrase
+Adapted
+\PMlinkescapephrase
+angle
+\PMlinkescapephrase
+Angle
+\PMlinkescapephrase
+calculus
+\PMlinkescapephrase
+Calculus
+\PMlinkescapephrase
+complete
+\PMlinkescapephrase
+Complete
+\PMlinkescapephrase
+component
+\PMlinkescapephrase
+Component
+\PMlinkescapephrase
+degree
+\PMlinkescapephrase
+Degree
+\PMlinkescapephrase
+formalism
+\PMlinkescapephrase
+Formalism
+\PMlinkescapephrase
+holder
+\PMlinkescapephrase
+Holder
+\PMlinkescapephrase
+holders
+\PMlinkescapephrase
+Holders
+\PMlinkescapephrase
+origin
+\PMlinkescapephrase
+Origin
+\PMlinkescapephrase
+plus
+\PMlinkescapephrase
+Plus
+\PMlinkescapephrase
+point
+\PMlinkescapephrase
+Point
+\PMlinkescapephrase
+points
+\PMlinkescapephrase
+Points
+\PMlinkescapephrase
+right
+\PMlinkescapephrase
+Right
+\PMlinkescapephrase
+utility
+\PMlinkescapephrase
+Utility
+A
+propositional calculus
+is a
+formal system
+whose expressions
+represent
+formal objects
+known as
+propositions
+and whose distinguished
+relations
+among expressions represent existing relations among propositions. Many different propositional calculi represent what is recognizably the same subject matter of propositions and their relations, which more
+generic
+subject matter is conveniently described as
+propositional logic
+. For the purposes of mathematical discussion, and especially in computational applications, it is
+sufficient
+to identify a proposition with a boolean-valued function, that is, a
+mapping
+of the type
+X
+→
+𝔹
+, where
+X
+is some set and
+𝔹
+=
+{
+0
+,
+1
+}
+.
+As a general consideration, a calculus is a formal system that consists of a set of syntactic expressions, a distinguished subset of these expressions, plus a set of transformation rules that define a
+binary relation
+on the space of expressions.
+When the expressions are interpreted for mathematical purposes, the transformation rules are typically intended to preserve some type of semantic equivalence relation among the expressions. In particular, when the expressions are intepreted as a logical system, the semantic equivalence is typically intended to be
+logical equivalence
+. In this setting, the transformation rules can be used to derive logically equivalent expressions from any given expression. These
+derivations
+include as special cases (1) the problem of
+simplifying
+expressions and (2) the problem of deciding whether a given expression is
+equivalent
+to an expression in the distinguished subset, typically interpreted as the subset of logical
+axioms
+.
+The
+formal language
+component of a propositional calculus consists of (1) a set of
+primitive
+symbols, variously referred to as
+atomic formulas
+,
+placeholders
+,
+proposition letters
+, or
+variables
+, and (2) a set of
+operator symbols
+, variously interpreted as
+logical operators
+or
+logical connectives
+. A
+well-formed formula
+(
+wff
+) is any atomic formula or any
+formula
+that can be built up from atomic formulas by means of operator symbols.
+The following outlines a standard propositional calculus. Many different formulations exist which are all more or less equivalent but differ in (1) their
+language
+, that is, the particular
+collection
+of primitive symbols and operator symbols, (2) the set of axioms, or distingushed formulas, and (3) the set of transformation rules that are available.
+Contents:
+1
+Abstraction and application
+2
+Generic description of a propositional calculus
+3
+Example 1. Simple axiom system
+4
+Example 2. Natural deduction system
+5
+Document history
+1
+Abstraction and application
+Although it is possible to
+construct
+an abstract formal calculus that has no immediate practical use and next to nothing in the way of obvious applications, the very name
+calculus
+indicates that this species of formal system owes its origin to the utility of its prototypical members in practical calculation. Generally speaking, any mathematical calculus is designed with the intention of representing a given domain of formal objects, and typically with the aim of facilitating the computations and inferences that need to be carried out in this
+representation
+. Thus some idea of the intended
+denotation
+, the formal objects that the formulas of the calculus are intended to denote, is given in advance of developing the calculus itself.
+Viewed over the course of its historical
+development
+, a formal calculus for any given subject matter normally arises through a process of gradual abstraction, stepwise
+refinement
+, and trial-and-error synthesis from the array of informal notational systems that inform prior use, each of which covers the object domain only in part or from a particular angle.
+2
+Generic description of a propositional calculus
+A
+propositional calculus
+is a formal system
+ℒ
+=
+ℒ
+⁢
+(
+A
+,
+Ω
+,
+Z
+,
+I
+)
+, whose formulas are constructed in the following manner:
+•
+The
+alpha set
+A
+is a
+finite set
+of
+elements
+called
+proposition symbols
+or
+propositional variables
+. Syntactically speaking, these are the most basic elements of the formal language
+ℒ
+, otherwise referred to as
+atomic formulas
+or
+terminal elements
+. In the examples to follow the elements of
+A
+are typically the letters
+p
+,
+q
+,
+r
+, and so on.
+•
+The
+omega set
+Ω
+is a finite set of elements called
+operator symbols
+or
+logical connectives
+. The set
+Ω
+is partitioned into disjoint subsets as follows:
+Ω
+=
+⋃
+j
+=
+0
+m
+Ω
+j
+.
+In this
+partition
+,
+Ω
+j
+is the set of operator symbols of arity
+j
+.
+In the more familiar propositional calculi,
+Ω
+is typically partitioned as follows:
+Ω
+1
+=
+{
+¬
+}
+,
+Ω
+2
+⊆
+{
+∧
+,
+∨
+,
+⇒
+,
+⇔
+}
+.
+A frequently adopted option treats the constant logical values as
+operators
+of arity zero, thus:
+Ω
+0
+=
+{
+0
+,
+1
+}
+.
+Some writers use the tilde
+(
+~
+)
+instead of
+(
+¬
+)
+and some use the ampersand
+(
+&
+)
+instead of
+(
+∧
+)
+. Notation varies even more for the set of logical values, with symbols like
+{
+false
+,
+true
+}
+,
+{
+F
+,
+T
+}
+,
+{
+0
+,
+1
+}
+, and
+{
+⊥
+,
+⊤
+}
+all being seen in various
+contexts
+.
+•
+Depending on the precise formal grammar or the
+grammar
+formalism that is being used, syntactic auxiliaries like the left parenthesis,
+`
+`
+(
+"
+, and the right parentheses,
+`
+`
+)
+"
+, may be necessary to complete the construction of formulas.
+•
+The
+zeta set
+Z
+is a finite set of
+transformation rules
+that are called
+inference rules
+when they acquire logical applications.
+•
+The
+iota set
+I
+is a finite set of
+initial points
+that are called
+axioms
+when they receive logical
+interpretations
+.
+3
+Example 1. Simple axiom system
+Let
+ℒ
+1
+=
+ℒ
+⁢
+(
+A
+,
+Ω
+,
+Z
+,
+I
+)
+, where
+A
+,
+Ω
+,
+Z
+,
+I
+are defined as follows:
+The alpha set
+A
+is a finite set of symbols that is large enough to supply the needs of a given discussion, for example:
+A
+=
+{
+p
+,
+q
+,
+r
+,
+s
+,
+t
+,
+u
+}
+.
+The omega set
+Ω
+is a set of two symbols
+{
+¬
+,
+⇒
+}
+that partitions as follows:
+Ω
+1
+=
+{
+¬
+}
+,
+Ω
+2
+=
+{
+⇒
+}
+.
+Under the usual interpretation of these symbols, this choice amounts to adopting
+negation
+and
+implication
+as the primitive
+operations
+of the propositional calculus
+ℒ
+1
+.
+Of the three
+connectives
+for
+conjunction
+(
+∧
+)
+,
+disjunction
+(
+∨
+)
+, and implication
+(
+⇒
+)
+, one can be taken as primitive and the other two can be defined in terms of it and negation
+(
+¬
+)
+. The equivalence
+(
+⇔
+)
+is defined in terms of conjunction and implication, with
+p
+⇔
+q
+defined as
+(
+p
+⇒
+q
+)
+∧
+(
+q
+⇒
+p
+)
+.
+The zeta set
+Z
+formalizes the inference rule known as
+modus ponens
+(
+http://planetmath.org/ModusPonens
+)
+:
+From
+p
+,
+(
+p
+⇒
+q
+)
+, infer
+q
+.
+The iota set
+I
+abstracts an
+axiom system for propositional logic
+that was discovered by Jan Łukasiewicz:
+p
+⇒
+(
+q
+⇒
+p
+)
+(
+p
+⇒
+(
+q
+⇒
+r
+)
+)
+⇒
+(
+(
+p
+⇒
+q
+)
+⇒
+(
+p
+⇒
+r
+)
+)
+(
+¬
+p
+⇒
+¬
+q
+)
+⇒
+(
+q
+⇒
+p
+)
+We have the following auxiliary definitions:
+p
+∨
+q
+:=
+¬
+⁢
+p
+⇒
+q
+.
+p
+∧
+q
+:=
+¬
+⁡
+(
+p
+⇒
+¬
+⁢
+q
+)
+.
+4
+Example 2. Natural deduction system
+Let
+ℒ
+2
+=
+ℒ
+⁢
+(
+A
+,
+Ω
+,
+Z
+,
+I
+)
+, where
+A
+,
+Ω
+,
+Z
+,
+I
+are defined as follows:
+The alpha set
+A
+is a finite set of symbols that is large enough to supply the needs of a given discussion, for example:
+A
+=
+{
+p
+,
+q
+,
+r
+,
+s
+,
+t
+,
+u
+}
+.
+The omega set
+Ω
+=
+Ω
+1
+∪
+Ω
+2
+partitions as follows:
+Ω
+1
+=
+{
+¬
+}
+,
+Ω
+2
+=
+{
+∧
+,
+∨
+,
+⇒
+,
+⇔
+}
+.
+In the following example of a propositional calculus, the transformation rules are intended to be interpreted as the inference rules of a so-called
+natural deduction
+system
+. The particular system presented here has no initial points, which means that its interpretation for logical applications derives its
+theorems
+from an empty axiom set.
+To be continued
+…
+5
+Document history
+Portions of the above article are adapted from the following sources under the GNU Free Documentation License, under other applicable licenses, or by permission of the copyright holders.
+•
+http://www.mywikibiz.com/Propositional_calculus
+Propositional calculus,
+http://www.mywikibiz.com/
+MyWikiBiz.
+•
+http://www.getwiki.net/-Propositional_Calculus
+Propositional calculus,
+http://www.getwiki.net/
+GetWiki.
+•
+http://www.wikinfo.org/index.php/Propositional_calculus
+Propositional calculus,
+http://www.wikinfo.org/
+Wikinfo.
+•
+http://en.wikipedia.org/w/index.php?title=Propositional_calculus&oldid=74069381
+Propositional calculus,
+http://en.wikipedia.org/
+Wikipedia.
+Title
+propositional calculus
+Canonical name
+PropositionalCalculus
+Date of creation
+2013-03-22 17:54:40
+Last modified on
+2013-03-22 17:54:40
+Owner
+Jon Awbrey (15246)
+Last modified by
+Jon Awbrey (15246)
+Numerical id
+22
+Author
+Jon Awbrey (15246)
+Entry type
+Definition
+Classification
+msc 03F03
+Classification
+msc 03C05
+Classification
+msc 03B22
+Classification
+msc 03B05
+Synonym
+propositional logic
+Synonym
+sentential calculus
+Synonym
+sentential logic
+Related topic
+ZerothOrderLogic
+Related topic
+MinimalNegationOperator
+Related topic
+DifferentialLogic
+Related topic
+DifferentialPropositionalCalculus
+Related topic
+DifferentialPropositionalCalculusExamples
+Related topic
+DifferentialPropositionalCalculusAppendices
+Related topic
+DifferentialPropositionalCalculusAppendix2
+Related topic
+DifferentialPropositionalC
+Generated  on Thu Feb  8 20:23:58 2018 by
+LaTeXML
