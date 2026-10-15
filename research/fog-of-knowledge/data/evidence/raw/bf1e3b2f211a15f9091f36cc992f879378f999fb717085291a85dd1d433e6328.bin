@@ -1,0 +1,1151 @@
+<!doctype html><html lang="en"><head>
+
+<title>MeSH Browser</title>
+
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+
+<link rel="stylesheet" href="/public/css/font-awesome.css">
+<link rel="stylesheet" href="/public/css/bootstrap.css">
+<link rel="stylesheet" href="/public/css/mongoMesh.css">
+<link rel="icon" type="image/jpeg" href="/public/img/meshLogo.jpg">
+
+<base href="/">
+<script src="https://www.nlm.nih.gov/coop_all_uswds.js?v=1792068855503"></script>
+
+<script>
+
+    if (document.domain != "localhost")
+        document.domain = "nlm.nih.gov";
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        try {
+
+            if (coopmsg
+                && !/(^|; *)shutdown-banner=/.test(document.cookie))
+
+                document.querySelector(
+                    "body > div"
+                ).insertAdjacentHTML(
+                    "afterbegin",
+                    "<div id='shutdown-banner'><p>" + coopmsg
+                    + "</p><button type='button' role='button'"
+                    + " aria-label='Close' onclick='"
+                    + 'document.getElementById("shutdown-banner")'
+                    + '.remove(); document.cookie ='
+                    + ' "shutdown-banner=hidden; path=/";'
+                    + "'>Close</button></div>"
+                );
+
+        } catch (error) {
+            /* The "coopmsg" variable is only defined during a
+             * shutdown. */
+            if (!(error instanceof ReferenceError))
+                throw error;
+        }
+
+    });
+
+    var dcmsLinks = false,
+        dcmsParam = dcmsLinks
+                    ? function (sep) { return sep + "dcmsLinks=true"; }
+                    : function (   ) { return ""                    ; };
+
+</script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){
+        var _fullPath = window.location.href;
+        var urlParams = _fullPath.slice(_fullPath.indexOf('?') + 1).split('&');
+        var IsOpen = "false";
+        if (urlParams != undefined && urlParams != null && urlParams != "") {
+            IsOpen = urlParams[0].split("=")[1];
+        }
+
+        if (IsOpen == "false" || IsOpen == undefined || IsOpen != "true") {
+            w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        }
+    })(window,document,'script','dataLayer','GTM-5QZ7KJZ');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe sandbox src="https://www.googletagmanager.com/ns.html?id=GTM-5QZ7KJZ"
+                  height="0" width="0" style="display:none;visibility:hidden" title="googletagmanager"></iframe></noscript> 
+<!-- End Google Tag Manager (noscript) -->
+
+<script src="/public/js/elemUtil.js"></script>
+
+<script src="/public/js/record.js"  ></script>
+<script src="/public/js/treeDom.js" ></script>
+</head><body>
+
+<div>
+
+    <header class="NLMheader">
+        <a href="https://www.nlm.nih.gov/">
+          <img height="80" alt="NLM Logo"
+               src="https://www.nlm.nih.gov/images/NLM_White.png">
+        </a>
+        <!--<img class="starLogo"src="/public/img/NLM_Star.png" alt="NLM Star">-->
+    </header>
+<nav class="navbar navbar-default">
+
+  <div class="container-fluid">
+
+        <div class="navbar-header">
+
+          <button class="navbar-toggle collapsed" type="button"
+                  aria-expanded="false"
+                  onclick="toggleCollapse('bs-example-navbar-collapse-1')">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://www.nlm.nih.gov/mesh/">
+                <img id="meshNavbarLogo" src="/public/img/meshLogo.jpg" alt="MeSH Logo">
+            </a>
+        </div>
+
+        <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse"
+             aria-expanded="false">
+            <ul class="nav navbar-nav">
+                
+                <li><a href="/" id="mainSearchButton">Search</a></li>
+                <li><a href="/treeView">Tree View</a></li>
+                <li><a href="/MeSHonDemand">MeSH on Demand</a> </li> <!--Delete the Span Tags after  a few months, once MeSH on Demand is no longer new-->
+                <li><a href="https://meshb-prev.nlm.nih.gov/" target="_blank">MeSH 2027</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/mbinfo.html" target="_blank">About</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/meshsugg.html" target="_blank">Suggestions</a> </li>
+                <li><a href="https://support.nlm.nih.gov/support/create-case/" target="_blank">Contact Us</a></li>
+            </ul>
+
+        </div>
+
+  </div>
+
+</nav>
+
+</div>
+
+<div class="container">
+
+
+
+
+<h1>Large Language Models <small>MeSH Descriptor            Data 2026</small></h1>
+
+<ul class="nav nav-tabs">
+    <li id="details" class="active"
+        onclick="switchTab([ 'details', 'detailsTabContent' ])">
+        <a class="fakeLink">Details</a></li>
+    
+        <li id="qualifiers"
+            onclick="switchTab([ 'qualifiers', 'qualifiersTabContent' ])">
+            <a class="fakeLink">Qualifiers</a></li>
+        <li id="trees" onclick="switchTab([ 'trees', 'treesTabContent' ])">
+            <a class="fakeLink">MeSH Tree Structures</a></li>
+    
+    <li id="concepts" onclick="switchTab([ 'concepts', 'conceptsTabContent' ])">
+        <a class="fakeLink">Concepts</a></li>
+</ul>
+
+
+
+<div class="tab-content"><br>
+<div id="detailsTabContent" class="tab-pane active">
+
+    <dl id="descriptorDetails_LargeLanguageModels"
+        class="dl-horizontal">
+
+        <dt>MeSH Heading      </dt>
+
+        <dd>Large Language Models</dd>
+
+        
+                    <dt>Tree Number(s)</dt>
+                    
+                        <dd><a id="treeNumber_0" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >G17.035.250.500.250.500</a></dd>
+                    
+                        <dd><a id="treeNumber_1" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >G17.485.500.500</a></dd>
+                    
+                        <dd><a id="treeNumber_2" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >L01.224.050.375.530.250.500</a></dd>
+                    
+                        <dd><a id="treeNumber_3" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >L01.224.050.375.605.500.500</a></dd>
+                    
+                        <dd><a id="treeNumber_4" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >L01.224.494</a></dd>
+                    
+
+        <dt>Unique ID</dt><dd>D000098342</dd>
+
+        <dt>RDF Unique Identifier</dt>
+        <dd><a href="https://id.nlm.nih.gov/mesh/D000098342.html">
+            http://id.nlm.nih.gov/mesh/D000098342
+        </a></dd>
+
+        
+                <span id="scopeNote">
+                    <dt>Scope Note</dt><dd>Computational designs that apply <a href="/record/ui?ui=D000077321" class="textLink_DEEPLEARNING">DEEP LEARNING</a> methods on extremely large data sets as a basis for predicting and constructing natural-sounding text.</dd>
+                </span>
+            
+                <dt>Entry Term(s)</dt>
+                <dd>
+                    Large Language Model
+                    
+                </dd>
+            <dt>Public MeSH Note</dt><dd>2025</dd>
+        
+            <dt>History Note</dt><dd>2025</dd>
+        
+        
+
+
+        
+                <dt>Date Introduced</dt>
+                <dd>2025/01/01</dd>
+            
+                <dt>Last Updated</dt>
+                <dd>2026/01/01</dd>
+            
+
+    </dl>
+
+</div>
+
+<div id="qualifiersTabContent" class="tab-pane">
+
+    <dl class="dl-horizontal">
+
+        
+<br>
+
+        
+                <span id="allowableQualifiers"><dt>Allowable Qualifiers</dt><dd>
+                <ul class="list-unstyled">
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000145">
+                            classification
+                            (CL)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000191">
+                            economics
+                            (EC)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000941">
+                            ethics
+                            (ES)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000266">
+                            history
+                            (HI)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000331">
+                            legislation &amp; jurisprudence
+                            (LJ)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000592">
+                            standards
+                            (ST)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000706">
+                            statistics &amp; numerical data
+                            (SN)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000600">
+                            supply &amp; distribution
+                            (SD)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000639">
+                            trends
+                            (TD)
+                        </a></li>
+                    
+                </ul></dd></span>
+            
+
+    </dl>
+
+</div><div id="treesTabContent" class="tab-pane">
+
+    <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_G17"
+           
+               href="/record/ui?ui=D055641"
+           
+        ><span>Mathematical Concepts [G17]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_G17_035"
+           
+               href="/record/ui?ui=D000465"
+           
+        ><span>Algorithms [G17.035]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_G17_035_250"
+           
+               href="/record/ui?ui=D001185"
+           
+        ><span>Artificial Intelligence [G17.035.250]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_G17_035_250_500"
+           
+               href="/record/ui?ui=D000069550"
+           
+        ><span>Machine Learning [G17.035.250.500]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_G17_035_250_500_250"
+           
+               href="/record/ui?ui=D000077321"
+           
+        ><span>Deep Learning [G17.035.250.500.250]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_G17_035_250_500_250_250"
+           
+               href="/record/ui?ui=D000098446"
+           
+        ><span>Autoencoder [G17.035.250.500.250.250]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G17_035_250_500_250_500"
+           
+               href="/record/ui?ui=D000098342"
+           
+        ><strong>Large Language Models [G17.035.250.500.250.500]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_G17"
+           
+               href="/record/ui?ui=D055641"
+           
+        ><span>Mathematical Concepts [G17]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_G17_485"
+           
+               href="/record/ui?ui=D016571"
+           
+        ><span>Neural Networks, Computer [G17.485]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_G17_485_500"
+           
+               href="/record/ui?ui=D000077321"
+           
+        ><span>Deep Learning [G17.485.500]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_G17_485_500_250"
+           
+               href="/record/ui?ui=D000098446"
+           
+        ><span>Autoencoder [G17.485.500.250]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_G17_485_500_500"
+           
+               href="/record/ui?ui=D000098342"
+           
+        ><strong>Large Language Models [G17.485.500.500]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_L01"
+           
+               href="/record/ui?ui=D007254"
+           
+        ><span>Information Science [L01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_L01_224"
+           
+               href="/record/ui?ui=D003205"
+           
+        ><span>Computing Methodologies [L01.224]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_L01_224_050"
+           
+               href="/record/ui?ui=D000465"
+           
+        ><span>Algorithms [L01.224.050]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_L01_224_050_375"
+           
+               href="/record/ui?ui=D001185"
+           
+        ><span>Artificial Intelligence [L01.224.050.375]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_L01_224_050_375_530"
+           
+               href="/record/ui?ui=D000069550"
+           
+        ><span>Machine Learning [L01.224.050.375.530]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_L01_224_050_375_530_250"
+           
+               href="/record/ui?ui=D000077321"
+           
+        ><span>Deep Learning [L01.224.050.375.530.250]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_L01_224_050_375_530_250_250"
+           
+               href="/record/ui?ui=D000098446"
+           
+        ><span>Autoencoder [L01.224.050.375.530.250.250]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_L01_224_050_375_530_250_500"
+           
+               href="/record/ui?ui=D000098342"
+           
+        ><strong>Large Language Models [L01.224.050.375.530.250.500]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_L01"
+           
+               href="/record/ui?ui=D007254"
+           
+        ><span>Information Science [L01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_L01_224"
+           
+               href="/record/ui?ui=D003205"
+           
+        ><span>Computing Methodologies [L01.224]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_L01_224_050"
+           
+               href="/record/ui?ui=D000465"
+           
+        ><span>Algorithms [L01.224.050]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_L01_224_050_375"
+           
+               href="/record/ui?ui=D001185"
+           
+        ><span>Artificial Intelligence [L01.224.050.375]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_L01_224_050_375_605"
+           
+               href="/record/ui?ui=D016571"
+           
+        ><span>Neural Networks, Computer [L01.224.050.375.605]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_L01_224_050_375_605_500"
+           
+               href="/record/ui?ui=D000077321"
+           
+        ><span>Deep Learning [L01.224.050.375.605.500]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_L01_224_050_375_605_500_250"
+           
+               href="/record/ui?ui=D000098446"
+           
+        ><span>Autoencoder [L01.224.050.375.605.500.250]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_3_node_L01_224_050_375_605_500_500"
+           
+               href="/record/ui?ui=D000098342"
+           
+        ><strong>Large Language Models [L01.224.050.375.605.500.500]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_4_node_L01"
+           
+               href="/record/ui?ui=D007254"
+           
+        ><span>Information Science [L01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_4_node_L01_224"
+           
+               href="/record/ui?ui=D003205"
+           
+        ><span>Computing Methodologies [L01.224]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_4_node_L01_224_050"
+           
+               href="/record/ui?ui=D000465"
+           
+        ><span>Algorithms [L01.224.050]</span>
+        </a>
+        
+            <i id="plus_Algorithms" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Algorithms" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_L01_224_068"
+           
+               href="/record/ui?ui=D003628"
+           
+        ><span>Database Management Systems [L01.224.068]</span>
+        </a>
+        
+            <i id="plus_Database_Management_Systems" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Database_Management_Systems" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_L01_224_085"
+           
+               href="/record/ui?ui=D001330"
+           
+        ><span>Electronic Data Processing [L01.224.085]</span>
+        </a>
+        
+            <i id="plus_Electronic_Data_Processing" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Electronic_Data_Processing" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_L01_224_097"
+           
+               href="/record/ui?ui=D000067917"
+           
+        ><span>Cloud Computing [L01.224.097]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_L01_224_108"
+           
+               href="/record/ui?ui=D003196"
+           
+        ><span>Computer Graphics [L01.224.108]</span>
+        </a>
+        
+            <i id="plus_Computer_Graphics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Computer_Graphics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_L01_224_134"
+           
+               href="/record/ui?ui=D016494"
+           
+        ><span>Computer Security [L01.224.134]</span>
+        </a>
+        
+            <i id="plus_Computer_Security" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Computer_Security" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_L01_224_160"
+           
+               href="/record/ui?ui=D003198"
+           
+        ><span>Computer Simulation [L01.224.160]</span>
+        </a>
+        
+            <i id="plus_Computer_Simulation" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Computer_Simulation" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_L01_224_230"
+           
+               href="/record/ui?ui=D003199"
+           
+        ><span>Computer Systems [L01.224.230]</span>
+        </a>
+        
+            <i id="plus_Computer_Systems" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Computer_Systems" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_L01_224_300"
+           
+               href="/record/ui?ui=D039301"
+           
+        ><span>Computers, Molecular [L01.224.300]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_L01_224_308"
+           
+               href="/record/ui?ui=D007091"
+           
+        ><span>Image Processing, Computer-Assisted [L01.224.308]</span>
+        </a>
+        
+            <i id="plus_Image_Processing_Computer-Assisted" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Image_Processing_Computer-Assisted" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_L01_224_494"
+           
+               href="/record/ui?ui=D000098342"
+           
+        ><strong>Large Language Models [L01.224.494]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_4_node_L01_224_680"
+           
+               href="/record/ui?ui=D008432"
+           
+        ><span>Mathematical Computing [L01.224.680]</span>
+        </a>
+        
+            <i id="plus_Mathematical_Computing" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Mathematical_Computing" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_L01_224_740"
+           
+               href="/record/ui?ui=D000075403"
+           
+        ><span>Semantic Web [L01.224.740]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_L01_224_800"
+           
+               href="/record/ui?ui=D012815"
+           
+        ><span>Signal Processing, Computer-Assisted [L01.224.800]</span>
+        </a>
+        
+            <i id="plus_Signal_Processing_Computer-Assisted" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Signal_Processing_Computer-Assisted" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_L01_224_850"
+           
+               href="/record/ui?ui=D000097786"
+           
+        ><span>Soft Computing [L01.224.850]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_L01_224_900"
+           
+               href="/record/ui?ui=D012984"
+           
+        ><span>Software [L01.224.900]</span>
+        </a>
+        
+            <i id="plus_Software" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Software" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+
+</div>
+
+<div id="conceptsTabContent" class="tab-pane">
+
+    <button id="ExpandAll" class="btn btn-default btn-sm pull-right"
+            onclick="toggleConcepts()">
+        <span id="expandConcepts"                        >  Expand All</span>
+        <span id="collapseConcepts" style="display: none">Collapse All</span>
+    </button>
+
+    
+
+        <div>
+        <span id="Nightwatch_cp_0_0"
+              onclick="toggleCollapse('cp_0_0', 'Nightwatch_cp_0_0')">
+        <a class="fakeLink"><b>
+            Large Language Models
+            <i>Preferred</i>
+        </b></a></span>
+
+        <div id="cp_0_0" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M000766425</dd>
+
+            
+                <dt>Scope Note</dt><dd>Computational designs that apply <a href="/record/ui?ui=D000077321" class="textLink_DEEPLEARNING">DEEP LEARNING</a> methods on extremely large data sets as a basis for predicting and constructing natural-sounding text.</dd>
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_0_0"
+                      onclick="toggleCollapse('termName_0_0',
+                                              'Nightwatch_termName_0_0')">
+                    <a class="fakeLink"><b>Large Language Models</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_0_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T001140365<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>10/10/2023<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2025)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_1"
+                      onclick="toggleCollapse('termName_0_1',
+                                              'Nightwatch_termName_0_1')">
+                    <a class="fakeLink"><b>Large Language Model</b></a></span>
+
+                
+
+                <div id="termName_0_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T001146956<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>02/08/2025<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2025)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+</div></div>
+
+<small class="pull-right">
+    page delivered in 0.131s
+</small>
+
+</div>
+
+<footer class="footer">
+    <div class="container-fluid"><div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/socialmedia/index.html">
+                    Connect with NLM
+                </a></p>
+                <ul class="list-inline">
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://twitter.com/NLM_NIH">
+                        <img src="https://www.nlm.nih.gov/images/Twitter_W.svg"
+                             alt="Twitter">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.facebook.com/nationallibraryofmedicine"
+                    ><img src="https://www.nlm.nih.gov/images/Facebook_W.svg"
+                          alt="Facebook">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.youtube.com/user/NLMNIH">
+                        <img src="https://www.nlm.nih.gov/images/YouTube_W.svg"
+                             alt="You Tube">
+                    </a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p>National Library of Medicine<br>
+                    <a href="https://www.google.com/maps/place/8600+Rockville+Pike,+Bethesda,+MD+20894/@38.9959508,-77.101021,17z/data=!3m1!4b1!4m5!3m4!1s0x89b7c95e25765ddb:0x19156f88b27635b8!8m2!3d38.9959508!4d-77.0988323">
+                        8600 Rockville Pike<br>
+                        Bethesda, MD 20894
+                    </a>
+                </p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/web_policies.html">
+                    Web Policies
+                </a><br>
+                <a href="https://www.nih.gov/institutes-nih/nih-office-director/office-communications-public-liaison/freedom-information-act-office">
+                    FOIA
+                </a><br>
+                <a href="https://www.hhs.gov/vulnerability-disclosure-policy/index.html">
+                    HHS Vulnerability Disclosure
+                </a></p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href=
+                      "https://support.nlm.nih.gov?from=https://www.nlm.nih.gov/">
+                    NLM Support Center
+                </a><br>
+                <a href="https://www.nlm.nih.gov/accessibility.html">
+                    Accessibility
+                </a><br>
+                <a href="https://www.nlm.nih.gov/careers/careers.html">
+                    Careers
+                </a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+              <p class="text-center"> <a href="https://www.nlm.nih.gov/">NLM</a> | <a href="https://www.nih.gov/">NIH</a> | <a href="https://www.hhs.gov/">HHS</a> | <a href="https://www.usa.gov/">USA.gov</a></p>
+            </div>
+        </div>
+    </div></div>
+<!--BEGIN QUALTRICS WEBSITE FEEDBACK SNIPPET-->
+<script type='text/javascript'>
+(function(){var g=function(e,h,f,g){
+this.get=function(a){for(var a=a+"=",c=document.cookie.split(";"),b=0,e=c.length;b<e;b++){for(var d=c[b];" "==d.charAt(0);)d=d.substring(1,d.length);if(0==d.indexOf(a))return d.substring(a.length,d.length)}return null};
+this.set=function(a,c){var b="",b=new Date;b.setTime(b.getTime()+6048E5);b="; expires="+b.toGMTString();document.cookie=a+"="+c+b+"; path=/; "};
+this.check=function(){var a=this.get(f);if(a)a=a.split(":");else if(100!=e)"v"==h&&(e=Math.random()>=e/100?0:100),a=[h,e,0],this.set(f,a.join(":"));else return!0;var c=a[1];if(100==c)return!0;switch(a[0]){case "v":return!1;case "r":return c=a[2]%Math.floor(100/c),a[2]++,this.set(f,a.join(":")),!c}return!0};
+this.go=function(){if(this.check()){var a=document.createElement("script");a.type="text/javascript";a.src=g;document.body&&document.body.appendChild(a)}};
+this.start=function(){var t=this;"complete"!==document.readyState?window.addEventListener?window.addEventListener("load",function(){t.go()},!1):window.attachEvent&&window.attachEvent("onload",function(){t.go()}):t.go()};};
+try{(new g(100,"r","QSI_S_ZN_cwOHfLkxRr4n4W2","https://zncwohflkxrr4n4w2-nlmenterprise.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_cwOHfLkxRr4n4W2")).start()}catch(i){}})();
+</script><div id='ZN_cwOHfLkxRr4n4W2'><!--DO NOT REMOVE-CONTENTS PLACED HERE--></div>
+<!--END WEBSITE FEEDBACK SNIPPET-->
+</footer>
+
+</body></html>
+

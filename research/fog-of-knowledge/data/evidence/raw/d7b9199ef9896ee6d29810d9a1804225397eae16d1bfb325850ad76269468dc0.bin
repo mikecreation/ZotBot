@@ -1,0 +1,1199 @@
+<!doctype html><html lang="en"><head>
+
+<title>MeSH Browser</title>
+
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+
+<link rel="stylesheet" href="/public/css/font-awesome.css">
+<link rel="stylesheet" href="/public/css/bootstrap.css">
+<link rel="stylesheet" href="/public/css/mongoMesh.css">
+<link rel="icon" type="image/jpeg" href="/public/img/meshLogo.jpg">
+
+<base href="/">
+<script src="https://www.nlm.nih.gov/coop_all_uswds.js?v=1792068851470"></script>
+
+<script>
+
+    if (document.domain != "localhost")
+        document.domain = "nlm.nih.gov";
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        try {
+
+            if (coopmsg
+                && !/(^|; *)shutdown-banner=/.test(document.cookie))
+
+                document.querySelector(
+                    "body > div"
+                ).insertAdjacentHTML(
+                    "afterbegin",
+                    "<div id='shutdown-banner'><p>" + coopmsg
+                    + "</p><button type='button' role='button'"
+                    + " aria-label='Close' onclick='"
+                    + 'document.getElementById("shutdown-banner")'
+                    + '.remove(); document.cookie ='
+                    + ' "shutdown-banner=hidden; path=/";'
+                    + "'>Close</button></div>"
+                );
+
+        } catch (error) {
+            /* The "coopmsg" variable is only defined during a
+             * shutdown. */
+            if (!(error instanceof ReferenceError))
+                throw error;
+        }
+
+    });
+
+    var dcmsLinks = false,
+        dcmsParam = dcmsLinks
+                    ? function (sep) { return sep + "dcmsLinks=true"; }
+                    : function (   ) { return ""                    ; };
+
+</script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){
+        var _fullPath = window.location.href;
+        var urlParams = _fullPath.slice(_fullPath.indexOf('?') + 1).split('&');
+        var IsOpen = "false";
+        if (urlParams != undefined && urlParams != null && urlParams != "") {
+            IsOpen = urlParams[0].split("=")[1];
+        }
+
+        if (IsOpen == "false" || IsOpen == undefined || IsOpen != "true") {
+            w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        }
+    })(window,document,'script','dataLayer','GTM-5QZ7KJZ');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe sandbox src="https://www.googletagmanager.com/ns.html?id=GTM-5QZ7KJZ"
+                  height="0" width="0" style="display:none;visibility:hidden" title="googletagmanager"></iframe></noscript> 
+<!-- End Google Tag Manager (noscript) -->
+
+<script src="/public/js/elemUtil.js"></script>
+
+<script src="/public/js/record.js"  ></script>
+<script src="/public/js/treeDom.js" ></script>
+</head><body>
+
+<div>
+
+    <header class="NLMheader">
+        <a href="https://www.nlm.nih.gov/">
+          <img height="80" alt="NLM Logo"
+               src="https://www.nlm.nih.gov/images/NLM_White.png">
+        </a>
+        <!--<img class="starLogo"src="/public/img/NLM_Star.png" alt="NLM Star">-->
+    </header>
+<nav class="navbar navbar-default">
+
+  <div class="container-fluid">
+
+        <div class="navbar-header">
+
+          <button class="navbar-toggle collapsed" type="button"
+                  aria-expanded="false"
+                  onclick="toggleCollapse('bs-example-navbar-collapse-1')">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://www.nlm.nih.gov/mesh/">
+                <img id="meshNavbarLogo" src="/public/img/meshLogo.jpg" alt="MeSH Logo">
+            </a>
+        </div>
+
+        <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse"
+             aria-expanded="false">
+            <ul class="nav navbar-nav">
+                
+                <li><a href="/" id="mainSearchButton">Search</a></li>
+                <li><a href="/treeView">Tree View</a></li>
+                <li><a href="/MeSHonDemand">MeSH on Demand</a> </li> <!--Delete the Span Tags after  a few months, once MeSH on Demand is no longer new-->
+                <li><a href="https://meshb-prev.nlm.nih.gov/" target="_blank">MeSH 2027</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/mbinfo.html" target="_blank">About</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/meshsugg.html" target="_blank">Suggestions</a> </li>
+                <li><a href="https://support.nlm.nih.gov/support/create-case/" target="_blank">Contact Us</a></li>
+            </ul>
+
+        </div>
+
+  </div>
+
+</nav>
+
+</div>
+
+<div class="container">
+
+
+
+
+<h1>Supervised Machine Learning <small>MeSH Descriptor            Data 2026</small></h1>
+
+<ul class="nav nav-tabs">
+    <li id="details" class="active"
+        onclick="switchTab([ 'details', 'detailsTabContent' ])">
+        <a class="fakeLink">Details</a></li>
+    
+        <li id="qualifiers"
+            onclick="switchTab([ 'qualifiers', 'qualifiersTabContent' ])">
+            <a class="fakeLink">Qualifiers</a></li>
+        <li id="trees" onclick="switchTab([ 'trees', 'treesTabContent' ])">
+            <a class="fakeLink">MeSH Tree Structures</a></li>
+    
+    <li id="concepts" onclick="switchTab([ 'concepts', 'conceptsTabContent' ])">
+        <a class="fakeLink">Concepts</a></li>
+</ul>
+
+
+
+<div class="tab-content"><br>
+<div id="detailsTabContent" class="tab-pane active">
+
+    <dl id="descriptorDetails_SupervisedMachineLearning"
+        class="dl-horizontal">
+
+        <dt>MeSH Heading      </dt>
+
+        <dd>Supervised Machine Learning</dd>
+
+        
+                    <dt>Tree Number(s)</dt>
+                    
+                        <dd><a id="treeNumber_0" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >G17.035.250.500.500</a></dd>
+                    
+                        <dd><a id="treeNumber_1" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >L01.224.050.375.530.500</a></dd>
+                    
+
+        <dt>Unique ID</dt><dd>D000069553</dd>
+
+        <dt>RDF Unique Identifier</dt>
+        <dd><a href="https://id.nlm.nih.gov/mesh/D000069553.html">
+            http://id.nlm.nih.gov/mesh/D000069553
+        </a></dd>
+
+        
+                <span id="scopeNote">
+                    <dt>Scope Note</dt><dd>A MACHINE LEARNING paradigm used to make predictions about future instances based on a given set of labeled paired input-output training (sample) data.</dd>
+                </span>
+            
+                <dt>Entry Term(s)</dt>
+                <dd>
+                    Active Machine Learning
+                    
+                </dd><dd>
+                    Inductive Machine Learning
+                    
+                </dd><dd>
+                    Learning from Labeled Data
+                    
+                </dd><dd>
+                    Machine Learning with a Teacher
+                    
+                </dd><dd>
+                    Semi-supervised Learning
+                    
+                </dd>
+                <dt>See Also</dt>
+                
+                    <dd><a id="seeAlso_UnsupervisedMachineLearning"
+                           href="/record/ui?ui=D000069558"
+                        >Unsupervised Machine Learning</a></dd>
+                
+            <dt>Public MeSH Note</dt><dd>2016</dd>
+        
+            <dt>History Note</dt><dd>2016</dd>
+        
+        
+
+
+        
+                <dt>Date Introduced</dt>
+                <dd>2016/01/01</dd>
+            
+                <dt>Last Updated</dt>
+                <dd>2017/07/03</dd>
+            
+
+    </dl>
+
+</div>
+
+<div id="qualifiersTabContent" class="tab-pane">
+
+    <dl class="dl-horizontal">
+
+        
+<br>
+
+        
+                <span id="allowableQualifiers"><dt>Allowable Qualifiers</dt><dd>
+                <ul class="list-unstyled">
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000145">
+                            classification
+                            (CL)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000191">
+                            economics
+                            (EC)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000941">
+                            ethics
+                            (ES)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000266">
+                            history
+                            (HI)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000331">
+                            legislation &amp; jurisprudence
+                            (LJ)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000592">
+                            standards
+                            (ST)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000706">
+                            statistics &amp; numerical data
+                            (SN)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000600">
+                            supply &amp; distribution
+                            (SD)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000639">
+                            trends
+                            (TD)
+                        </a></li>
+                    
+                </ul></dd></span>
+            
+
+    </dl>
+
+</div><div id="treesTabContent" class="tab-pane">
+
+    <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_G17"
+           
+               href="/record/ui?ui=D055641"
+           
+        ><span>Mathematical Concepts [G17]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_G17_035"
+           
+               href="/record/ui?ui=D000465"
+           
+        ><span>Algorithms [G17.035]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_G17_035_250"
+           
+               href="/record/ui?ui=D001185"
+           
+        ><span>Artificial Intelligence [G17.035.250]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_G17_035_250_500"
+           
+               href="/record/ui?ui=D000069550"
+           
+        ><span>Machine Learning [G17.035.250.500]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_G17_035_250_500_250"
+           
+               href="/record/ui?ui=D000077321"
+           
+        ><span>Deep Learning [G17.035.250.500.250]</span>
+        </a>
+        
+            <i id="plus_Deep_Learning" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Deep_Learning" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G17_035_250_500_375"
+           
+               href="/record/ui?ui=D000098405"
+           
+        ><span>Dimensionality Reduction [G17.035.250.500.375]</span>
+        </a>
+        
+            <i id="plus_Dimensionality_Reduction" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Dimensionality_Reduction" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G17_035_250_500_438"
+           
+               href="/record/ui?ui=D000098406"
+           
+        ><span>Ensemble Learning [G17.035.250.500.438]</span>
+        </a>
+        
+            <i id="plus_Ensemble_Learning" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Ensemble_Learning" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G17_035_250_500_469"
+           
+               href="/record/ui?ui=D000098407"
+           
+        ><span>Federated Learning [G17.035.250.500.469]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G17_035_250_500_485"
+           
+               href="/record/ui?ui=D000098408"
+           
+        ><span>Reinforcement Machine Learning [G17.035.250.500.485]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G17_035_250_500_493"
+           
+               href="/record/ui?ui=D000098409"
+           
+        ><span>Representation Machine Learning [G17.035.250.500.493]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G17_035_250_500_500"
+           
+               href="/record/ui?ui=D000069553"
+           
+        ><strong>Supervised Machine Learning [G17.035.250.500.500]</strong>
+        </a>
+        
+            <i id="plus_Supervised_Machine_Learning" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Supervised_Machine_Learning" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_G17_035_250_500_500_250"
+           
+               href="/record/ui?ui=D000098451"
+           
+        ><span>Multiple-Instance Learning Algorithms [G17.035.250.500.500.250]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G17_035_250_500_500_500"
+           
+               href="/record/ui?ui=D060388"
+           
+        ><span>Support Vector Machine [G17.035.250.500.500.500]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G17_035_250_500_625"
+           
+               href="/record/ui?ui=D000098410"
+           
+        ><span>Transfer Machine Learning [G17.035.250.500.625]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G17_035_250_500_750"
+           
+               href="/record/ui?ui=D000069558"
+           
+        ><span>Unsupervised Machine Learning [G17.035.250.500.750]</span>
+        </a>
+        
+            <i id="plus_Unsupervised_Machine_Learning" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Unsupervised_Machine_Learning" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_L01"
+           
+               href="/record/ui?ui=D007254"
+           
+        ><span>Information Science [L01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_L01_224"
+           
+               href="/record/ui?ui=D003205"
+           
+        ><span>Computing Methodologies [L01.224]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_L01_224_050"
+           
+               href="/record/ui?ui=D000465"
+           
+        ><span>Algorithms [L01.224.050]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_L01_224_050_375"
+           
+               href="/record/ui?ui=D001185"
+           
+        ><span>Artificial Intelligence [L01.224.050.375]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_L01_224_050_375_530"
+           
+               href="/record/ui?ui=D000069550"
+           
+        ><span>Machine Learning [L01.224.050.375.530]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_L01_224_050_375_530_250"
+           
+               href="/record/ui?ui=D000077321"
+           
+        ><span>Deep Learning [L01.224.050.375.530.250]</span>
+        </a>
+        
+            <i id="plus_Deep_Learning" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Deep_Learning" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_L01_224_050_375_530_375"
+           
+               href="/record/ui?ui=D000098405"
+           
+        ><span>Dimensionality Reduction [L01.224.050.375.530.375]</span>
+        </a>
+        
+            <i id="plus_Dimensionality_Reduction" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Dimensionality_Reduction" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_L01_224_050_375_530_438"
+           
+               href="/record/ui?ui=D000098406"
+           
+        ><span>Ensemble Learning [L01.224.050.375.530.438]</span>
+        </a>
+        
+            <i id="plus_Ensemble_Learning" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Ensemble_Learning" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_L01_224_050_375_530_469"
+           
+               href="/record/ui?ui=D000098407"
+           
+        ><span>Federated Learning [L01.224.050.375.530.469]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_L01_224_050_375_530_485"
+           
+               href="/record/ui?ui=D000098408"
+           
+        ><span>Reinforcement Machine Learning [L01.224.050.375.530.485]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_L01_224_050_375_530_493"
+           
+               href="/record/ui?ui=D000098409"
+           
+        ><span>Representation Machine Learning [L01.224.050.375.530.493]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_L01_224_050_375_530_500"
+           
+               href="/record/ui?ui=D000069553"
+           
+        ><strong>Supervised Machine Learning [L01.224.050.375.530.500]</strong>
+        </a>
+        
+            <i id="plus_Supervised_Machine_Learning" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Supervised_Machine_Learning" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_L01_224_050_375_530_500_250"
+           
+               href="/record/ui?ui=D000098451"
+           
+        ><span>Multiple-Instance Learning Algorithms [L01.224.050.375.530.500.250]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_L01_224_050_375_530_500_500"
+           
+               href="/record/ui?ui=D060388"
+           
+        ><span>Support Vector Machine [L01.224.050.375.530.500.500]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_1_node_L01_224_050_375_530_625"
+           
+               href="/record/ui?ui=D000098410"
+           
+        ><span>Transfer Machine Learning [L01.224.050.375.530.625]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_L01_224_050_375_530_750"
+           
+               href="/record/ui?ui=D000069558"
+           
+        ><span>Unsupervised Machine Learning [L01.224.050.375.530.750]</span>
+        </a>
+        
+            <i id="plus_Unsupervised_Machine_Learning" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Unsupervised_Machine_Learning" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+
+</div>
+
+<div id="conceptsTabContent" class="tab-pane">
+
+    <button id="ExpandAll" class="btn btn-default btn-sm pull-right"
+            onclick="toggleConcepts()">
+        <span id="expandConcepts"                        >  Expand All</span>
+        <span id="collapseConcepts" style="display: none">Collapse All</span>
+    </button>
+
+    
+
+        <div>
+        <span id="Nightwatch_cp_0_0"
+              onclick="toggleCollapse('cp_0_0', 'Nightwatch_cp_0_0')">
+        <a class="fakeLink"><b>
+            Supervised Machine Learning
+            <i>Preferred</i>
+        </b></a></span>
+
+        <div id="cp_0_0" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M000606081</dd>
+
+            
+                <dt>Scope Note</dt><dd>A MACHINE LEARNING paradigm used to make predictions about future instances based on a given set of labeled paired input-output training (sample) data.</dd>
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_0_0"
+                      onclick="toggleCollapse('termName_0_0',
+                                              'Nightwatch_termName_0_0')">
+                    <a class="fakeLink"><b>Supervised Machine Learning</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_0_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T000880609<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>05/27/2015<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2016)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_1_1"
+              onclick="toggleCollapse('cp_1_1', 'Nightwatch_cp_1_1')">
+        <a class="fakeLink"><b>
+            Machine Learning with a Teacher
+            <i>Broader</i>
+        </b></a></span>
+
+        <div id="cp_1_1" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M000606082</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_1_0"
+                      onclick="toggleCollapse('termName_1_0',
+                                              'Nightwatch_termName_1_0')">
+                    <a class="fakeLink"><b>Machine Learning with a Teacher</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_1_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T000880610<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>05/27/2015<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2016)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_2_2"
+              onclick="toggleCollapse('cp_2_2', 'Nightwatch_cp_2_2')">
+        <a class="fakeLink"><b>
+            Learning from Labeled Data
+            <i>Broader</i>
+        </b></a></span>
+
+        <div id="cp_2_2" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M000606083</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_2_0"
+                      onclick="toggleCollapse('termName_2_0',
+                                              'Nightwatch_termName_2_0')">
+                    <a class="fakeLink"><b>Learning from Labeled Data</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_2_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T000880611<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>05/27/2015<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2016)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_3_3"
+              onclick="toggleCollapse('cp_3_3', 'Nightwatch_cp_3_3')">
+        <a class="fakeLink"><b>
+            Inductive Machine Learning
+            <i>Broader</i>
+        </b></a></span>
+
+        <div id="cp_3_3" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M000606084</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_3_0"
+                      onclick="toggleCollapse('termName_3_0',
+                                              'Nightwatch_termName_3_0')">
+                    <a class="fakeLink"><b>Inductive Machine Learning</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_3_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T000880612<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>05/27/2015<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2016)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_4_4"
+              onclick="toggleCollapse('cp_4_4', 'Nightwatch_cp_4_4')">
+        <a class="fakeLink"><b>
+            Active Machine Learning
+            <i>Broader</i>
+        </b></a></span>
+
+        <div id="cp_4_4" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M000606085</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_4_0"
+                      onclick="toggleCollapse('termName_4_0',
+                                              'Nightwatch_termName_4_0')">
+                    <a class="fakeLink"><b>Active Machine Learning</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_4_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T000880613<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>05/27/2015<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2016)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_5_5"
+              onclick="toggleCollapse('cp_5_5', 'Nightwatch_cp_5_5')">
+        <a class="fakeLink"><b>
+            Semi-supervised Learning
+            <i>Broader</i>
+        </b></a></span>
+
+        <div id="cp_5_5" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M000606086</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_5_0"
+                      onclick="toggleCollapse('termName_5_0',
+                                              'Nightwatch_termName_5_0')">
+                    <a class="fakeLink"><b>Semi-supervised Learning</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_5_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T000880614<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>05/27/2015<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2016)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+</div></div>
+
+<small class="pull-right">
+    page delivered in 0.118s
+</small>
+
+</div>
+
+<footer class="footer">
+    <div class="container-fluid"><div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/socialmedia/index.html">
+                    Connect with NLM
+                </a></p>
+                <ul class="list-inline">
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://twitter.com/NLM_NIH">
+                        <img src="https://www.nlm.nih.gov/images/Twitter_W.svg"
+                             alt="Twitter">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.facebook.com/nationallibraryofmedicine"
+                    ><img src="https://www.nlm.nih.gov/images/Facebook_W.svg"
+                          alt="Facebook">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.youtube.com/user/NLMNIH">
+                        <img src="https://www.nlm.nih.gov/images/YouTube_W.svg"
+                             alt="You Tube">
+                    </a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p>National Library of Medicine<br>
+                    <a href="https://www.google.com/maps/place/8600+Rockville+Pike,+Bethesda,+MD+20894/@38.9959508,-77.101021,17z/data=!3m1!4b1!4m5!3m4!1s0x89b7c95e25765ddb:0x19156f88b27635b8!8m2!3d38.9959508!4d-77.0988323">
+                        8600 Rockville Pike<br>
+                        Bethesda, MD 20894
+                    </a>
+                </p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/web_policies.html">
+                    Web Policies
+                </a><br>
+                <a href="https://www.nih.gov/institutes-nih/nih-office-director/office-communications-public-liaison/freedom-information-act-office">
+                    FOIA
+                </a><br>
+                <a href="https://www.hhs.gov/vulnerability-disclosure-policy/index.html">
+                    HHS Vulnerability Disclosure
+                </a></p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href=
+                      "https://support.nlm.nih.gov?from=https://www.nlm.nih.gov/">
+                    NLM Support Center
+                </a><br>
+                <a href="https://www.nlm.nih.gov/accessibility.html">
+                    Accessibility
+                </a><br>
+                <a href="https://www.nlm.nih.gov/careers/careers.html">
+                    Careers
+                </a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+              <p class="text-center"> <a href="https://www.nlm.nih.gov/">NLM</a> | <a href="https://www.nih.gov/">NIH</a> | <a href="https://www.hhs.gov/">HHS</a> | <a href="https://www.usa.gov/">USA.gov</a></p>
+            </div>
+        </div>
+    </div></div>
+<!--BEGIN QUALTRICS WEBSITE FEEDBACK SNIPPET-->
+<script type='text/javascript'>
+(function(){var g=function(e,h,f,g){
+this.get=function(a){for(var a=a+"=",c=document.cookie.split(";"),b=0,e=c.length;b<e;b++){for(var d=c[b];" "==d.charAt(0);)d=d.substring(1,d.length);if(0==d.indexOf(a))return d.substring(a.length,d.length)}return null};
+this.set=function(a,c){var b="",b=new Date;b.setTime(b.getTime()+6048E5);b="; expires="+b.toGMTString();document.cookie=a+"="+c+b+"; path=/; "};
+this.check=function(){var a=this.get(f);if(a)a=a.split(":");else if(100!=e)"v"==h&&(e=Math.random()>=e/100?0:100),a=[h,e,0],this.set(f,a.join(":"));else return!0;var c=a[1];if(100==c)return!0;switch(a[0]){case "v":return!1;case "r":return c=a[2]%Math.floor(100/c),a[2]++,this.set(f,a.join(":")),!c}return!0};
+this.go=function(){if(this.check()){var a=document.createElement("script");a.type="text/javascript";a.src=g;document.body&&document.body.appendChild(a)}};
+this.start=function(){var t=this;"complete"!==document.readyState?window.addEventListener?window.addEventListener("load",function(){t.go()},!1):window.attachEvent&&window.attachEvent("onload",function(){t.go()}):t.go()};};
+try{(new g(100,"r","QSI_S_ZN_cwOHfLkxRr4n4W2","https://zncwohflkxrr4n4w2-nlmenterprise.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_cwOHfLkxRr4n4W2")).start()}catch(i){}})();
+</script><div id='ZN_cwOHfLkxRr4n4W2'><!--DO NOT REMOVE-CONTENTS PLACED HERE--></div>
+<!--END WEBSITE FEEDBACK SNIPPET-->
+</footer>
+
+</body></html>
+
