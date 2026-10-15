@@ -1,0 +1,1335 @@
+<!doctype html><html lang="en"><head>
+
+<title>MeSH Browser</title>
+
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+
+<link rel="stylesheet" href="/public/css/font-awesome.css">
+<link rel="stylesheet" href="/public/css/bootstrap.css">
+<link rel="stylesheet" href="/public/css/mongoMesh.css">
+<link rel="icon" type="image/jpeg" href="/public/img/meshLogo.jpg">
+
+<base href="/">
+<script src="https://www.nlm.nih.gov/coop_all_uswds.js?v=1792015121585"></script>
+
+<script>
+
+    if (document.domain != "localhost")
+        document.domain = "nlm.nih.gov";
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        try {
+
+            if (coopmsg
+                && !/(^|; *)shutdown-banner=/.test(document.cookie))
+
+                document.querySelector(
+                    "body > div"
+                ).insertAdjacentHTML(
+                    "afterbegin",
+                    "<div id='shutdown-banner'><p>" + coopmsg
+                    + "</p><button type='button' role='button'"
+                    + " aria-label='Close' onclick='"
+                    + 'document.getElementById("shutdown-banner")'
+                    + '.remove(); document.cookie ='
+                    + ' "shutdown-banner=hidden; path=/";'
+                    + "'>Close</button></div>"
+                );
+
+        } catch (error) {
+            /* The "coopmsg" variable is only defined during a
+             * shutdown. */
+            if (!(error instanceof ReferenceError))
+                throw error;
+        }
+
+    });
+
+    var dcmsLinks = false,
+        dcmsParam = dcmsLinks
+                    ? function (sep) { return sep + "dcmsLinks=true"; }
+                    : function (   ) { return ""                    ; };
+
+</script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){
+        var _fullPath = window.location.href;
+        var urlParams = _fullPath.slice(_fullPath.indexOf('?') + 1).split('&');
+        var IsOpen = "false";
+        if (urlParams != undefined && urlParams != null && urlParams != "") {
+            IsOpen = urlParams[0].split("=")[1];
+        }
+
+        if (IsOpen == "false" || IsOpen == undefined || IsOpen != "true") {
+            w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        }
+    })(window,document,'script','dataLayer','GTM-5QZ7KJZ');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe sandbox src="https://www.googletagmanager.com/ns.html?id=GTM-5QZ7KJZ"
+                  height="0" width="0" style="display:none;visibility:hidden" title="googletagmanager"></iframe></noscript> 
+<!-- End Google Tag Manager (noscript) -->
+
+<script src="/public/js/elemUtil.js"></script>
+
+<script src="/public/js/record.js"  ></script>
+<script src="/public/js/treeDom.js" ></script>
+</head><body>
+
+<div>
+
+    <header class="NLMheader">
+        <a href="https://www.nlm.nih.gov/">
+          <img height="80" alt="NLM Logo"
+               src="https://www.nlm.nih.gov/images/NLM_White.png">
+        </a>
+        <!--<img class="starLogo"src="/public/img/NLM_Star.png" alt="NLM Star">-->
+    </header>
+<nav class="navbar navbar-default">
+
+  <div class="container-fluid">
+
+        <div class="navbar-header">
+
+          <button class="navbar-toggle collapsed" type="button"
+                  aria-expanded="false"
+                  onclick="toggleCollapse('bs-example-navbar-collapse-1')">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://www.nlm.nih.gov/mesh/">
+                <img id="meshNavbarLogo" src="/public/img/meshLogo.jpg" alt="MeSH Logo">
+            </a>
+        </div>
+
+        <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse"
+             aria-expanded="false">
+            <ul class="nav navbar-nav">
+                
+                <li><a href="/" id="mainSearchButton">Search</a></li>
+                <li><a href="/treeView">Tree View</a></li>
+                <li><a href="/MeSHonDemand">MeSH on Demand</a> </li> <!--Delete the Span Tags after  a few months, once MeSH on Demand is no longer new-->
+                <li><a href="https://meshb-prev.nlm.nih.gov/" target="_blank">MeSH 2027</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/mbinfo.html" target="_blank">About</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/meshsugg.html" target="_blank">Suggestions</a> </li>
+                <li><a href="https://support.nlm.nih.gov/support/create-case/" target="_blank">Contact Us</a></li>
+            </ul>
+
+        </div>
+
+  </div>
+
+</nav>
+
+</div>
+
+<div class="container">
+
+
+
+
+<h1>Sex Ratio <small>MeSH Descriptor            Data 2026</small></h1>
+
+<ul class="nav nav-tabs">
+    <li id="details" class="active"
+        onclick="switchTab([ 'details', 'detailsTabContent' ])">
+        <a class="fakeLink">Details</a></li>
+    
+        <li id="qualifiers"
+            onclick="switchTab([ 'qualifiers', 'qualifiersTabContent' ])">
+            <a class="fakeLink">Qualifiers</a></li>
+        <li id="trees" onclick="switchTab([ 'trees', 'treesTabContent' ])">
+            <a class="fakeLink">MeSH Tree Structures</a></li>
+    
+    <li id="concepts" onclick="switchTab([ 'concepts', 'conceptsTabContent' ])">
+        <a class="fakeLink">Concepts</a></li>
+</ul>
+
+
+
+<div class="tab-content"><br>
+<div id="detailsTabContent" class="tab-pane active">
+
+    <dl id="descriptorDetails_SexRatio"
+        class="dl-horizontal">
+
+        <dt>MeSH Heading      </dt>
+
+        <dd>Sex Ratio</dd>
+
+        
+                    <dt>Tree Number(s)</dt>
+                    
+                        <dd><a id="treeNumber_0" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >G05.815</a></dd>
+                    
+                        <dd><a id="treeNumber_1" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >I01.240.800.815</a></dd>
+                    
+                        <dd><a id="treeNumber_2" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >N01.224.803.815</a></dd>
+                    
+                        <dd><a id="treeNumber_3" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >N06.850.505.400.850.815</a></dd>
+                    
+
+        <dt>Unique ID</dt><dd>D012744</dd>
+
+        <dt>RDF Unique Identifier</dt>
+        <dd><a href="https://id.nlm.nih.gov/mesh/D012744.html">
+            http://id.nlm.nih.gov/mesh/D012744
+        </a></dd>
+
+        
+                <span id="scopeNote">
+                    <dt>Scope Note</dt><dd>The number of males per 100 females.</dd>
+                </span>
+            
+                <dt>Previous Indexing</dt>
+                
+                    <dd>Sex (1966-1967)</dd>
+                
+            <dt>Public MeSH Note</dt><dd>68</dd>
+        
+            <dt>History Note</dt><dd>68</dd>
+        
+        
+
+
+        
+                <dt>Date Introduced</dt>
+                <dd>1968/01/01</dd>
+            
+                <dt>Last Updated</dt>
+                <dd>2008/07/08</dd>
+            
+
+    </dl>
+
+</div>
+
+<div id="qualifiersTabContent" class="tab-pane">
+
+    <dl class="dl-horizontal">
+
+        
+<br>
+
+        
+            <dt>No Qualifiers</dt><dd></dd>
+        
+
+    </dl>
+
+</div><div id="treesTabContent" class="tab-pane">
+
+    <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_G05"
+           
+               href="/record/ui?ui=D055614"
+           
+        ><span>Genetic Phenomena [G05]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_G05_045"
+           
+               href="/record/ui?ui=D005075"
+           
+        ><span>Biological Evolution [G05.045]</span>
+        </a>
+        
+            <i id="plus_Biological_Evolution" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Biological_Evolution" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_090"
+           
+               href="/record/ui?ui=D001947"
+           
+        ><span>Breeding [G05.090]</span>
+        </a>
+        
+            <i id="plus_Breeding" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Breeding" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_113"
+           
+               href="/record/ui?ui=D002455"
+           
+        ><span>Cell Division [G05.113]</span>
+        </a>
+        
+            <i id="plus_Cell_Division" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Cell_Division" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_135"
+           
+               href="/record/ui?ui=D065150"
+           
+        ><span>Cellular Reprogramming [G05.135]</span>
+        </a>
+        
+            <i id="plus_Cellular_Reprogramming" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Cellular_Reprogramming" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_158"
+           
+               href="/record/ui?ui=D060965"
+           
+        ><span>Clonal Evolution [G05.158]</span>
+        </a>
+        
+            <i id="plus_Clonal_Evolution" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Clonal_Evolution" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_180"
+           
+               href="/record/ui?ui=D003241"
+           
+        ><span>Consanguinity [G05.180]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_193"
+           
+               href="/record/ui?ui=D053837"
+           
+        ><span>DNA Cleavage [G05.193]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_200"
+           
+               href="/record/ui?ui=D004249"
+           
+        ><span>DNA Damage [G05.200]</span>
+        </a>
+        
+            <i id="plus_DNA_Damage" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_DNA_Damage" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_206"
+           
+               href="/record/ui?ui=D019175"
+           
+        ><span>DNA Methylation [G05.206]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_213"
+           
+               href="/record/ui?ui=D042003"
+           
+        ><span>DNA Packaging [G05.213]</span>
+        </a>
+        
+            <i id="plus_DNA_Packaging" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_DNA_Packaging" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_219"
+           
+               href="/record/ui?ui=D004260"
+           
+        ><span>DNA Repair [G05.219]</span>
+        </a>
+        
+            <i id="plus_DNA_Repair" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_DNA_Repair" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_226"
+           
+               href="/record/ui?ui=D004261"
+           
+        ><span>DNA Replication [G05.226]</span>
+        </a>
+        
+            <i id="plus_DNA_Replication" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_DNA_Replication" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_232"
+           
+               href="/record/ui?ui=D061269"
+           
+        ><span>DNA Transformation Competence [G05.232]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_285"
+           
+               href="/record/ui?ui=D018703"
+           
+        ><span>Founder Effect [G05.285]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_297"
+           
+               href="/record/ui?ui=D015870"
+           
+        ><span>Gene Expression [G05.297]</span>
+        </a>
+        
+            <i id="plus_Gene_Expression" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Gene_Expression" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_308"
+           
+               href="/record/ui?ui=D005786"
+           
+        ><span>Gene Expression Regulation [G05.308]</span>
+        </a>
+        
+            <i id="plus_Gene_Expression_Regulation" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Gene_Expression_Regulation" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_330"
+           
+               href="/record/ui?ui=D005787"
+           
+        ><span>Gene Frequency [G05.330]</span>
+        </a>
+        
+            <i id="plus_Gene_Frequency" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Gene_Frequency" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_340"
+           
+               href="/record/ui?ui=D023061"
+           
+        ><span>Gene Order [G05.340]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_342"
+           
+               href="/record/ui?ui=D005788"
+           
+        ><span>Gene Pool [G05.342]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_344"
+           
+               href="/record/ui?ui=D015321"
+           
+        ><span>Gene Rearrangement [G05.344]</span>
+        </a>
+        
+            <i id="plus_Gene_Rearrangement" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Gene_Rearrangement" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_346"
+           
+               href="/record/ui?ui=D000068617"
+           
+        ><span>Genetic Background [G05.346]</span>
+        </a>
+        
+            <i id="plus_Genetic_Background" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Genetic_Background" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_347"
+           
+               href="/record/ui?ui=D056084"
+           
+        ><span>Genetic Fitness [G05.347]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_348"
+           
+               href="/record/ui?ui=D008040"
+           
+        ><span>Genetic Linkage [G05.348]</span>
+        </a>
+        
+            <i id="plus_Genetic_Linkage" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Genetic_Linkage" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_350"
+           
+               href="/record/ui?ui=D040741"
+           
+        ><span>Genetic Load [G05.350]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_360"
+           
+               href="/record/ui?ui=D040342"
+           
+        ><span>Genetic Structures [G05.360]</span>
+        </a>
+        
+            <i id="plus_Genetic_Structures" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Genetic_Structures" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_365"
+           
+               href="/record/ui?ui=D014644"
+           
+        ><span>Genetic Variation [G05.365]</span>
+        </a>
+        
+            <i id="plus_Genetic_Variation" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Genetic_Variation" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_370"
+           
+               href="/record/ui?ui=D042822"
+           
+        ><span>Genomic Instability [G05.370]</span>
+        </a>
+        
+            <i id="plus_Genomic_Instability" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Genomic_Instability" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_380"
+           
+               href="/record/ui?ui=D005838"
+           
+        ><span>Genotype [G05.380]</span>
+        </a>
+        
+            <i id="plus_Genotype" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Genotype" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_390"
+           
+               href="/record/ui?ui=D040941"
+           
+        ><span>Heredity [G05.390]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_400"
+           
+               href="/record/ui?ui=D006823"
+           
+        ><span>Hybrid Vigor [G05.400]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_410"
+           
+               href="/record/ui?ui=D000071422"
+           
+        ><span>Inbreeding Depression [G05.410]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_420"
+           
+               href="/record/ui?ui=D040582"
+           
+        ><span>Inheritance Patterns [G05.420]</span>
+        </a>
+        
+            <i id="plus_Inheritance_Patterns" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Inheritance_Patterns" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_545"
+           
+               href="/record/ui?ui=D018716"
+           
+        ><span>Molecular Mimicry [G05.545]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_558"
+           
+               href="/record/ui?ui=D016296"
+           
+        ><span>Mutagenesis [G05.558]</span>
+        </a>
+        
+            <i id="plus_Mutagenesis" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Mutagenesis" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_627"
+           
+               href="/record/ui?ui=D009691"
+           
+        ><span>Nucleic Acid Denaturation [G05.627]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_695"
+           
+               href="/record/ui?ui=D010641"
+           
+        ><span>Phenotype [G05.695]</span>
+        </a>
+        
+            <i id="plus_Phenotype" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Phenotype" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_700"
+           
+               href="/record/ui?ui=D011003"
+           
+        ><span>Ploidies [G05.700]</span>
+        </a>
+        
+            <i id="plus_Ploidies" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Ploidies" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_728"
+           
+               href="/record/ui?ui=D011995"
+           
+        ><span>Recombination, Genetic [G05.728]</span>
+        </a>
+        
+            <i id="plus_Recombination_Genetic" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Recombination_Genetic" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_755"
+           
+               href="/record/ui?ui=D059367"
+           
+        ><span>RNA Cleavage [G05.755]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_762"
+           
+               href="/record/ui?ui=D000099022"
+           
+        ><span>RNA Damage [G05.762]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_769"
+           
+               href="/record/ui?ui=D000094405"
+           
+        ><span>RNA Replication [G05.769]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_783"
+           
+               href="/record/ui?ui=D012641"
+           
+        ><span>Selection, Genetic [G05.783]</span>
+        </a>
+        
+            <i id="plus_Selection_Genetic" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Selection_Genetic" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_810"
+           
+               href="/record/ui?ui=D017385"
+           
+        ><span>Sequence Homology [G05.810]</span>
+        </a>
+        
+            <i id="plus_Sequence_Homology" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Sequence_Homology" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_813"
+           
+               href="/record/ui?ui=D019849"
+           
+        ><span>Sex Determination Processes [G05.813]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_815"
+           
+               href="/record/ui?ui=D012744"
+           
+        ><strong>Sex Ratio [G05.815]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_820"
+           
+               href="/record/ui?ui=D040681"
+           
+        ><span>Structural Homology, Protein [G05.820]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_910"
+           
+               href="/record/ui?ui=D061350"
+           
+        ><span>Sympatry [G05.910]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_G05_935"
+           
+               href="/record/ui?ui=D016662"
+           
+        ><span>Virus Integration [G05.935]</span>
+        </a>
+        
+            <i id="plus_Virus_Integration" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Virus_Integration" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_I01"
+           
+               href="/record/ui?ui=D012942"
+           
+        ><span>Social Sciences [I01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_I01_240"
+           
+               href="/record/ui?ui=D003710"
+           
+        ><span>Demography [I01.240]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_I01_240_800"
+           
+               href="/record/ui?ui=D017678"
+           
+        ><span>Sex Distribution [I01.240.800]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_I01_240_800_815"
+           
+               href="/record/ui?ui=D012744"
+           
+        ><strong>Sex Ratio [I01.240.800.815]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_N01"
+           
+               href="/record/ui?ui=D011154"
+           
+        ><span>Population Characteristics [N01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_N01_224"
+           
+               href="/record/ui?ui=D003710"
+           
+        ><span>Demography [N01.224]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_N01_224_803"
+           
+               href="/record/ui?ui=D017678"
+           
+        ><span>Sex Distribution [N01.224.803]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_N01_224_803_815"
+           
+               href="/record/ui?ui=D012744"
+           
+        ><strong>Sex Ratio [N01.224.803.815]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_N06"
+           
+               href="/record/ui?ui=D004778"
+           
+        ><span>Environment and Public Health [N06]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_N06_850"
+           
+               href="/record/ui?ui=D011634"
+           
+        ><span>Public Health [N06.850]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_N06_850_505"
+           
+               href="/record/ui?ui=D015991"
+           
+        ><span>Epidemiologic Measurements [N06.850.505]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_N06_850_505_400"
+           
+               href="/record/ui?ui=D003710"
+           
+        ><span>Demography [N06.850.505.400]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_N06_850_505_400_850"
+           
+               href="/record/ui?ui=D017678"
+           
+        ><span>Sex Distribution [N06.850.505.400.850]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_N06_850_505_400_850_815"
+           
+               href="/record/ui?ui=D012744"
+           
+        ><strong>Sex Ratio [N06.850.505.400.850.815]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+
+</div>
+
+<div id="conceptsTabContent" class="tab-pane">
+
+    <button id="ExpandAll" class="btn btn-default btn-sm pull-right"
+            onclick="toggleConcepts()">
+        <span id="expandConcepts"                        >  Expand All</span>
+        <span id="collapseConcepts" style="display: none">Collapse All</span>
+    </button>
+
+    
+
+        <div>
+        <span id="Nightwatch_cp_0_0"
+              onclick="toggleCollapse('cp_0_0', 'Nightwatch_cp_0_0')">
+        <a class="fakeLink"><b>
+            Sex Ratio
+            <i>Preferred</i>
+        </b></a></span>
+
+        <div id="cp_0_0" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0019750</dd>
+
+            
+                <dt>Scope Note</dt><dd>The number of males per 100 females.</dd>
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_0_0"
+                      onclick="toggleCollapse('termName_0_0',
+                                              'Nightwatch_termName_0_0')">
+                    <a class="fakeLink"><b>Sex Ratio</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_0_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T037657<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>01/01/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        POPLINE (1978)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+</div></div>
+
+<small class="pull-right">
+    page delivered in 0.157s
+</small>
+
+</div>
+
+<footer class="footer">
+    <div class="container-fluid"><div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/socialmedia/index.html">
+                    Connect with NLM
+                </a></p>
+                <ul class="list-inline">
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://twitter.com/NLM_NIH">
+                        <img src="https://www.nlm.nih.gov/images/Twitter_W.svg"
+                             alt="Twitter">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.facebook.com/nationallibraryofmedicine"
+                    ><img src="https://www.nlm.nih.gov/images/Facebook_W.svg"
+                          alt="Facebook">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.youtube.com/user/NLMNIH">
+                        <img src="https://www.nlm.nih.gov/images/YouTube_W.svg"
+                             alt="You Tube">
+                    </a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p>National Library of Medicine<br>
+                    <a href="https://www.google.com/maps/place/8600+Rockville+Pike,+Bethesda,+MD+20894/@38.9959508,-77.101021,17z/data=!3m1!4b1!4m5!3m4!1s0x89b7c95e25765ddb:0x19156f88b27635b8!8m2!3d38.9959508!4d-77.0988323">
+                        8600 Rockville Pike<br>
+                        Bethesda, MD 20894
+                    </a>
+                </p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/web_policies.html">
+                    Web Policies
+                </a><br>
+                <a href="https://www.nih.gov/institutes-nih/nih-office-director/office-communications-public-liaison/freedom-information-act-office">
+                    FOIA
+                </a><br>
+                <a href="https://www.hhs.gov/vulnerability-disclosure-policy/index.html">
+                    HHS Vulnerability Disclosure
+                </a></p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href=
+                      "https://support.nlm.nih.gov?from=https://www.nlm.nih.gov/">
+                    NLM Support Center
+                </a><br>
+                <a href="https://www.nlm.nih.gov/accessibility.html">
+                    Accessibility
+                </a><br>
+                <a href="https://www.nlm.nih.gov/careers/careers.html">
+                    Careers
+                </a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+              <p class="text-center"> <a href="https://www.nlm.nih.gov/">NLM</a> | <a href="https://www.nih.gov/">NIH</a> | <a href="https://www.hhs.gov/">HHS</a> | <a href="https://www.usa.gov/">USA.gov</a></p>
+            </div>
+        </div>
+    </div></div>
+<!--BEGIN QUALTRICS WEBSITE FEEDBACK SNIPPET-->
+<script type='text/javascript'>
+(function(){var g=function(e,h,f,g){
+this.get=function(a){for(var a=a+"=",c=document.cookie.split(";"),b=0,e=c.length;b<e;b++){for(var d=c[b];" "==d.charAt(0);)d=d.substring(1,d.length);if(0==d.indexOf(a))return d.substring(a.length,d.length)}return null};
+this.set=function(a,c){var b="",b=new Date;b.setTime(b.getTime()+6048E5);b="; expires="+b.toGMTString();document.cookie=a+"="+c+b+"; path=/; "};
+this.check=function(){var a=this.get(f);if(a)a=a.split(":");else if(100!=e)"v"==h&&(e=Math.random()>=e/100?0:100),a=[h,e,0],this.set(f,a.join(":"));else return!0;var c=a[1];if(100==c)return!0;switch(a[0]){case "v":return!1;case "r":return c=a[2]%Math.floor(100/c),a[2]++,this.set(f,a.join(":")),!c}return!0};
+this.go=function(){if(this.check()){var a=document.createElement("script");a.type="text/javascript";a.src=g;document.body&&document.body.appendChild(a)}};
+this.start=function(){var t=this;"complete"!==document.readyState?window.addEventListener?window.addEventListener("load",function(){t.go()},!1):window.attachEvent&&window.attachEvent("onload",function(){t.go()}):t.go()};};
+try{(new g(100,"r","QSI_S_ZN_cwOHfLkxRr4n4W2","https://zncwohflkxrr4n4w2-nlmenterprise.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_cwOHfLkxRr4n4W2")).start()}catch(i){}})();
+</script><div id='ZN_cwOHfLkxRr4n4W2'><!--DO NOT REMOVE-CONTENTS PLACED HERE--></div>
+<!--END WEBSITE FEEDBACK SNIPPET-->
+</footer>
+
+</body></html>
+

@@ -1,0 +1,1991 @@
+<!doctype html><html lang="en"><head>
+
+<title>MeSH Browser</title>
+
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+
+<link rel="stylesheet" href="/public/css/font-awesome.css">
+<link rel="stylesheet" href="/public/css/bootstrap.css">
+<link rel="stylesheet" href="/public/css/mongoMesh.css">
+<link rel="icon" type="image/jpeg" href="/public/img/meshLogo.jpg">
+
+<base href="/">
+<script src="https://www.nlm.nih.gov/coop_all_uswds.js?v=1792014948772"></script>
+
+<script>
+
+    if (document.domain != "localhost")
+        document.domain = "nlm.nih.gov";
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        try {
+
+            if (coopmsg
+                && !/(^|; *)shutdown-banner=/.test(document.cookie))
+
+                document.querySelector(
+                    "body > div"
+                ).insertAdjacentHTML(
+                    "afterbegin",
+                    "<div id='shutdown-banner'><p>" + coopmsg
+                    + "</p><button type='button' role='button'"
+                    + " aria-label='Close' onclick='"
+                    + 'document.getElementById("shutdown-banner")'
+                    + '.remove(); document.cookie ='
+                    + ' "shutdown-banner=hidden; path=/";'
+                    + "'>Close</button></div>"
+                );
+
+        } catch (error) {
+            /* The "coopmsg" variable is only defined during a
+             * shutdown. */
+            if (!(error instanceof ReferenceError))
+                throw error;
+        }
+
+    });
+
+    var dcmsLinks = false,
+        dcmsParam = dcmsLinks
+                    ? function (sep) { return sep + "dcmsLinks=true"; }
+                    : function (   ) { return ""                    ; };
+
+</script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){
+        var _fullPath = window.location.href;
+        var urlParams = _fullPath.slice(_fullPath.indexOf('?') + 1).split('&');
+        var IsOpen = "false";
+        if (urlParams != undefined && urlParams != null && urlParams != "") {
+            IsOpen = urlParams[0].split("=")[1];
+        }
+
+        if (IsOpen == "false" || IsOpen == undefined || IsOpen != "true") {
+            w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        }
+    })(window,document,'script','dataLayer','GTM-5QZ7KJZ');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe sandbox src="https://www.googletagmanager.com/ns.html?id=GTM-5QZ7KJZ"
+                  height="0" width="0" style="display:none;visibility:hidden" title="googletagmanager"></iframe></noscript> 
+<!-- End Google Tag Manager (noscript) -->
+
+<script src="/public/js/elemUtil.js"></script>
+
+<script src="/public/js/record.js"  ></script>
+<script src="/public/js/treeDom.js" ></script>
+</head><body>
+
+<div>
+
+    <header class="NLMheader">
+        <a href="https://www.nlm.nih.gov/">
+          <img height="80" alt="NLM Logo"
+               src="https://www.nlm.nih.gov/images/NLM_White.png">
+        </a>
+        <!--<img class="starLogo"src="/public/img/NLM_Star.png" alt="NLM Star">-->
+    </header>
+<nav class="navbar navbar-default">
+
+  <div class="container-fluid">
+
+        <div class="navbar-header">
+
+          <button class="navbar-toggle collapsed" type="button"
+                  aria-expanded="false"
+                  onclick="toggleCollapse('bs-example-navbar-collapse-1')">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://www.nlm.nih.gov/mesh/">
+                <img id="meshNavbarLogo" src="/public/img/meshLogo.jpg" alt="MeSH Logo">
+            </a>
+        </div>
+
+        <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse"
+             aria-expanded="false">
+            <ul class="nav navbar-nav">
+                
+                <li><a href="/" id="mainSearchButton">Search</a></li>
+                <li><a href="/treeView">Tree View</a></li>
+                <li><a href="/MeSHonDemand">MeSH on Demand</a> </li> <!--Delete the Span Tags after  a few months, once MeSH on Demand is no longer new-->
+                <li><a href="https://meshb-prev.nlm.nih.gov/" target="_blank">MeSH 2027</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/mbinfo.html" target="_blank">About</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/meshsugg.html" target="_blank">Suggestions</a> </li>
+                <li><a href="https://support.nlm.nih.gov/support/create-case/" target="_blank">Contact Us</a></li>
+            </ul>
+
+        </div>
+
+  </div>
+
+</nav>
+
+</div>
+
+<div class="container">
+
+
+
+
+<h1>Molecular Epidemiology <small>MeSH Descriptor            Data 2026</small></h1>
+
+<ul class="nav nav-tabs">
+    <li id="details" class="active"
+        onclick="switchTab([ 'details', 'detailsTabContent' ])">
+        <a class="fakeLink">Details</a></li>
+    
+        <li id="qualifiers"
+            onclick="switchTab([ 'qualifiers', 'qualifiersTabContent' ])">
+            <a class="fakeLink">Qualifiers</a></li>
+        <li id="trees" onclick="switchTab([ 'trees', 'treesTabContent' ])">
+            <a class="fakeLink">MeSH Tree Structures</a></li>
+    
+    <li id="concepts" onclick="switchTab([ 'concepts', 'conceptsTabContent' ])">
+        <a class="fakeLink">Concepts</a></li>
+</ul>
+
+
+
+<div class="tab-content"><br>
+<div id="detailsTabContent" class="tab-pane active">
+
+    <dl id="descriptorDetails_MolecularEpidemiology"
+        class="dl-horizontal">
+
+        <dt>MeSH Heading      </dt>
+
+        <dd>Molecular Epidemiology</dd>
+
+        
+                    <dt>Tree Number(s)</dt>
+                    
+                        <dd><a id="treeNumber_0" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >E05.318.416</a></dd>
+                    
+                        <dd><a id="treeNumber_1" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >E05.393.522</a></dd>
+                    
+                        <dd><a id="treeNumber_2" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >H01.158.201.636.475.500</a></dd>
+                    
+                        <dd><a id="treeNumber_3" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >H01.158.273.343.595.475.500</a></dd>
+                    
+                        <dd><a id="treeNumber_4" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >H01.181.122.650.475.550</a></dd>
+                    
+                        <dd><a id="treeNumber_5" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >H02.403.720.500.300</a></dd>
+                    
+                        <dd><a id="treeNumber_6" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >N06.850.520.470</a></dd>
+                    
+
+        <dt>Unique ID</dt><dd>D017720</dd>
+
+        <dt>RDF Unique Identifier</dt>
+        <dd><a href="https://id.nlm.nih.gov/mesh/D017720.html">
+            http://id.nlm.nih.gov/mesh/D017720
+        </a></dd>
+
+        <span id="annotation">
+            <dt>Annotation</dt><dd>the discipline; also used for epidemiologic application of molecular biology (NIM, no qualifiers); prefer specific epidemiologic concept & specific molecular or genetic concept (IM) coordinated with main headings <a id='epidemiol' class='textLink_epidemiol' href='/record/ui?ui=Q000453'>/&zwnj;epidemiol</a> (IM) & <a id='genet' class='textLink_genet' href='/record/ui?ui=Q000235'>/&zwnj;genet</a> (IM), as "molecular epidemiology of rabies virus in France" = <a href="/record/ui?ui=D011820" class="textLink_RABIESVIRUS">RABIES VIRUS</a> <a id='genet' class='textLink_genet' href='/record/ui?ui=Q000235'>/&zwnj;genet</a> (IM) + <a href="/record/ui?ui=D012367" class="textLink_RNAVIRAL">RNA, VIRAL</a> <a id='genet' class='textLink_genet' href='/record/ui?ui=Q000235'>/&zwnj;genet</a> (NIM) (molecular aspect from text) + <a href="/record/ui?ui=D011818" class="textLink_RABIES">RABIES</a> <a id='epidemiol' class='textLink_epidemiol' href='/record/ui?ui=Q000453'>/&zwnj;epidemiol</a> (IM) (epidemiologic aspect from text) + <a href="/record/ui?ui=D005602" class="textLink_FRANCE">FRANCE</a> <a id='epidemiol' class='textLink_epidemiol' href='/record/ui?ui=Q000453'>/&zwnj;epidemiol</a> (NIM)</dd>
+        </span>
+                <span id="scopeNote">
+                    <dt>Scope Note</dt><dd>The application of molecular biology to the answering of epidemiological questions. The examination of patterns of changes in <a href="/record/ui?ui=D004247" class="textLink_DNA">DNA</a> to implicate particular carcinogens and the use of molecular markers to predict which individuals are at highest risk for a disease are common examples.</dd>
+                </span>
+            
+            <dt>Entry Version</dt><dd>MOL EPIDEMIOL</dd>
+        
+                <dt>Entry Term(s)</dt>
+                <dd>
+                    Epidemiology, Molecular
+                    
+                </dd><dd>
+                    Genetic Epidemiology
+                    
+                </dd>
+            <dt>NLM Classification #</dt>
+            <dd>WA 950</dd>
+        
+            <dt>Public MeSH Note</dt><dd>2010; see EPIDEMIOLOGY, MOLECULAR 1994-2009</dd>
+        
+            <dt>History Note</dt><dd>2010 (1994)</dd>
+        
+        
+
+
+        
+                <dt>Date Introduced</dt>
+                <dd>1994/01/01</dd>
+            
+                <dt>Last Updated</dt>
+                <dd>2012/07/03</dd>
+            
+
+    </dl>
+
+</div>
+
+<div id="qualifiersTabContent" class="tab-pane">
+
+    <dl class="dl-horizontal">
+
+        
+<br>
+
+        
+                <span id="allowableQualifiers"><dt>Allowable Qualifiers</dt><dd>
+                <ul class="list-unstyled">
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000145">
+                            classification
+                            (CL)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000191">
+                            economics
+                            (EC)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000193">
+                            education
+                            (ED)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000941">
+                            ethics
+                            (ES)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000266">
+                            history
+                            (HI)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000295">
+                            instrumentation
+                            (IS)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000331">
+                            legislation &amp; jurisprudence
+                            (LJ)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000379">
+                            methods
+                            (MT)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000458">
+                            organization &amp; administration
+                            (OG)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000592">
+                            standards
+                            (ST)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000706">
+                            statistics &amp; numerical data
+                            (SN)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000639">
+                            trends
+                            (TD)
+                        </a></li>
+                    
+                </ul></dd></span>
+            
+
+    </dl>
+
+</div><div id="treesTabContent" class="tab-pane">
+
+    <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_E05"
+           
+               href="/record/ui?ui=D008919"
+           
+        ><span>Investigative Techniques [E05]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_E05_318"
+           
+               href="/record/ui?ui=D004812"
+           
+        ><span>Epidemiologic Methods [E05.318]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_E05_318_270"
+           
+               href="/record/ui?ui=D016358"
+           
+        ><span>Contact Tracing [E05.318.270]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_318_308"
+           
+               href="/record/ui?ui=D003625"
+           
+        ><span>Data Collection [E05.318.308]</span>
+        </a>
+        
+            <i id="plus_Data_Collection" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Data_Collection" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_318_362"
+           
+               href="/record/ui?ui=D018563"
+           
+        ><span>Disease Notification [E05.318.362]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_318_370"
+           
+               href="/record/ui?ui=D015340"
+           
+        ><span>Epidemiologic Research Design [E05.318.370]</span>
+        </a>
+        
+            <i id="plus_Epidemiologic_Research_Design" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Epidemiologic_Research_Design" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_318_372"
+           
+               href="/record/ui?ui=D016020"
+           
+        ><span>Epidemiologic Study Characteristics [E05.318.372]</span>
+        </a>
+        
+            <i id="plus_Epidemiologic_Study_Characteristics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Epidemiologic_Study_Characteristics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_318_375"
+           
+               href="/record/ui?ui=D062665"
+           
+        ><span>Epidemiological Monitoring [E05.318.375]</span>
+        </a>
+        
+            <i id="plus_Epidemiological_Monitoring" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Epidemiological_Monitoring" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_318_389"
+           
+               href="/record/ui?ui=D062305"
+           
+        ><span>Geographic Mapping [E05.318.389]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_318_416"
+           
+               href="/record/ui?ui=D017720"
+           
+        ><strong>Molecular Epidemiology [E05.318.416]</strong>
+        </a>
+        
+            <i id="plus_Molecular_Epidemiology" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Molecular_Epidemiology" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_E05_318_416_249"
+           
+               href="/record/ui?ui=D055106"
+           
+        ><span>Genome-Wide Association Study [E05.318.416.249]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_318_416_500"
+           
+               href="/record/ui?ui=D057182"
+           
+        ><span>Mendelian Randomization Analysis [E05.318.416.500]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_318_650"
+           
+               href="/record/ui?ui=D018571"
+           
+        ><span>Sentinel Surveillance [E05.318.650]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_318_740"
+           
+               href="/record/ui?ui=D013223"
+           
+        ><span>Statistics as Topic [E05.318.740]</span>
+        </a>
+        
+            <i id="plus_Statistics_as_Topic" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Statistics_as_Topic" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_E05_318_870"
+           
+               href="/record/ui?ui=D000085582"
+           
+        ><span>Treatment Switching [E05.318.870]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_E05"
+           
+               href="/record/ui?ui=D008919"
+           
+        ><span>Investigative Techniques [E05]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_E05_393"
+           
+               href="/record/ui?ui=D005821"
+           
+        ><span>Genetic Techniques [E05.393]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_E05_393_085"
+           
+               href="/record/ui?ui=D000067470"
+           
+        ><span>Cellular Reprogramming Techniques [E05.393.085]</span>
+        </a>
+        
+            <i id="plus_Cellular_Reprogramming_Techniques" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Cellular_Reprogramming_Techniques" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_128"
+           
+               href="/record/ui?ui=D000098972"
+           
+        ><span>Chemogenetics [E05.393.128]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_170"
+           
+               href="/record/ui?ui=D047369"
+           
+        ><span>Chromatin Immunoprecipitation [E05.393.170]</span>
+        </a>
+        
+            <i id="plus_Chromatin_Immunoprecipitation" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Chromatin_Immunoprecipitation" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_183"
+           
+               href="/record/ui?ui=D002874"
+           
+        ><span>Chromosome Mapping [E05.393.183]</span>
+        </a>
+        
+            <i id="plus_Chromosome_Mapping" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Chromosome_Mapping" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_220"
+           
+               href="/record/ui?ui=D003001"
+           
+        ><span>Cloning, Molecular [E05.393.220]</span>
+        </a>
+        
+            <i id="plus_Cloning_Molecular" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Cloning_Molecular" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_240"
+           
+               href="/record/ui?ui=D019976"
+           
+        ><span>Cloning, Organism [E05.393.240]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_260"
+           
+               href="/record/ui?ui=D020451"
+           
+        ><span>Contig Mapping [E05.393.260]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_281"
+           
+               href="/record/ui?ui=D003433"
+           
+        ><span>Crosses, Genetic [E05.393.281]</span>
+        </a>
+        
+            <i id="plus_Crosses_Genetic" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Crosses_Genetic" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_285"
+           
+               href="/record/ui?ui=D020732"
+           
+        ><span>Cytogenetic Analysis [E05.393.285]</span>
+        </a>
+        
+            <i id="plus_Cytogenetic_Analysis" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Cytogenetic_Analysis" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_290"
+           
+               href="/record/ui?ui=D016172"
+           
+        ><span>DNA Fingerprinting [E05.393.290]</span>
+        </a>
+        
+            <i id="plus_DNA_Fingerprinting" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_DNA_Fingerprinting" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_300"
+           
+               href="/record/ui?ui=D018983"
+           
+        ><span>DNA Footprinting [E05.393.300]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_332"
+           
+               href="/record/ui?ui=D020869"
+           
+        ><span>Gene Expression Profiling [E05.393.332]</span>
+        </a>
+        
+            <i id="plus_Gene_Expression_Profiling" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Gene_Expression_Profiling" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_335"
+           
+               href="/record/ui?ui=D018390"
+           
+        ><span>Gene Targeting [E05.393.335]</span>
+        </a>
+        
+            <i id="plus_Gene_Targeting" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Gene_Targeting" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_350"
+           
+               href="/record/ui?ui=D018014"
+           
+        ><span>Gene Transfer Techniques [E05.393.350]</span>
+        </a>
+        
+            <i id="plus_Gene_Transfer_Techniques" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Gene_Transfer_Techniques" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_385"
+           
+               href="/record/ui?ui=D056726"
+           
+        ><span>Genetic Association Studies [E05.393.385]</span>
+        </a>
+        
+            <i id="plus_Genetic_Association_Studies" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Genetic_Association_Studies" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_420"
+           
+               href="/record/ui?ui=D005818"
+           
+        ><span>Genetic Engineering [E05.393.420]</span>
+        </a>
+        
+            <i id="plus_Genetic_Engineering" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Genetic_Engineering" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_435"
+           
+               href="/record/ui?ui=D005820"
+           
+        ><span>Genetic Testing [E05.393.435]</span>
+        </a>
+        
+            <i id="plus_Genetic_Testing" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Genetic_Testing" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_442"
+           
+               href="/record/ui?ui=D060005"
+           
+        ><span>Genotyping Techniques [E05.393.442]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_475"
+           
+               href="/record/ui?ui=D020287"
+           
+        ><span>In Situ Nick-End Labeling [E05.393.475]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_520"
+           
+               href="/record/ui?ui=D025202"
+           
+        ><span>Molecular Diagnostic Techniques [E05.393.520]</span>
+        </a>
+        
+            <i id="plus_Molecular_Diagnostic_Techniques" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Molecular_Diagnostic_Techniques" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_522"
+           
+               href="/record/ui?ui=D017720"
+           
+        ><strong>Molecular Epidemiology [E05.393.522]</strong>
+        </a>
+        
+            <i id="plus_Molecular_Epidemiology" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Molecular_Epidemiology" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_E05_393_522_500"
+           
+               href="/record/ui?ui=D055106"
+           
+        ><span>Genome-Wide Association Study [E05.393.522.500]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_542"
+           
+               href="/record/ui?ui=D058889"
+           
+        ><span>Molecular Typing [E05.393.542]</span>
+        </a>
+        
+            <i id="plus_Molecular_Typing" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Molecular_Typing" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_560"
+           
+               href="/record/ui?ui=D009152"
+           
+        ><span>Mutagenicity Tests [E05.393.560]</span>
+        </a>
+        
+            <i id="plus_Mutagenicity_Tests" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Mutagenicity_Tests" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_600"
+           
+               href="/record/ui?ui=D023282"
+           
+        ><span>Nuclease Protection Assays [E05.393.600]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_620"
+           
+               href="/record/ui?ui=D021141"
+           
+        ><span>Nucleic Acid Amplification Techniques [E05.393.620]</span>
+        </a>
+        
+            <i id="plus_Nucleic_Acid_Amplification_Techniques" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Nucleic_Acid_Amplification_Techniques" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_640"
+           
+               href="/record/ui?ui=D009691"
+           
+        ><span>Nucleic Acid Denaturation [E05.393.640]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_661"
+           
+               href="/record/ui?ui=D009693"
+           
+        ><span>Nucleic Acid Hybridization [E05.393.661]</span>
+        </a>
+        
+            <i id="plus_Nucleic_Acid_Hybridization" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Nucleic_Acid_Hybridization" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_667"
+           
+               href="/record/ui?ui=D062308"
+           
+        ><span>Optogenetics [E05.393.667]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_673"
+           
+               href="/record/ui?ui=D010375"
+           
+        ><span>Pedigree [E05.393.673]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_712"
+           
+               href="/record/ui?ui=D015183"
+           
+        ><span>Restriction Mapping [E05.393.712]</span>
+        </a>
+        
+            <i id="plus_Restriction_Mapping" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Restriction_Mapping" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_731"
+           
+               href="/record/ui?ui=D059386"
+           
+        ><span>Reverse Genetics [E05.393.731]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_751"
+           
+               href="/record/ui?ui=D016415"
+           
+        ><span>Sequence Alignment [E05.393.751]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_760"
+           
+               href="/record/ui?ui=D017421"
+           
+        ><span>Sequence Analysis [E05.393.760]</span>
+        </a>
+        
+            <i id="plus_Sequence_Analysis" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Sequence_Analysis" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_880"
+           
+               href="/record/ui?ui=D000089942"
+           
+        ><span>Viral Pseudotyping [E05.393.880]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_E05_393_940"
+           
+               href="/record/ui?ui=D000098625"
+           
+        ><span>Shotgun Sequencing [E05.393.940]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_H01"
+           
+               href="/record/ui?ui=D010811"
+           
+        ><span>Natural Science Disciplines [H01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_H01_158"
+           
+               href="/record/ui?ui=D001690"
+           
+        ><span>Biological Science Disciplines [H01.158]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_H01_158_201"
+           
+               href="/record/ui?ui=D001671"
+           
+        ><span>Biochemistry [H01.158.201]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_H01_158_201_636"
+           
+               href="/record/ui?ui=D008967"
+           
+        ><span>Molecular Biology [H01.158.201.636]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_H01_158_201_636_475"
+           
+               href="/record/ui?ui=D062346"
+           
+        ><span>Molecular Medicine [H01.158.201.636.475]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_H01_158_201_636_475_500"
+           
+               href="/record/ui?ui=D017720"
+           
+        ><strong>Molecular Epidemiology [H01.158.201.636.475.500]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_2_node_H01_158_201_636_475_750"
+           
+               href="/record/ui?ui=D057089"
+           
+        ><span>Pathology, Molecular [H01.158.201.636.475.750]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_H01"
+           
+               href="/record/ui?ui=D010811"
+           
+        ><span>Natural Science Disciplines [H01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_H01_158"
+           
+               href="/record/ui?ui=D001690"
+           
+        ><span>Biological Science Disciplines [H01.158]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_H01_158_273"
+           
+               href="/record/ui?ui=D001695"
+           
+        ><span>Biology [H01.158.273]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_H01_158_273_343"
+           
+               href="/record/ui?ui=D005823"
+           
+        ><span>Genetics [H01.158.273.343]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_H01_158_273_343_595"
+           
+               href="/record/ui?ui=D008967"
+           
+        ><span>Molecular Biology [H01.158.273.343.595]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_H01_158_273_343_595_475"
+           
+               href="/record/ui?ui=D062346"
+           
+        ><span>Molecular Medicine [H01.158.273.343.595.475]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_H01_158_273_343_595_475_500"
+           
+               href="/record/ui?ui=D017720"
+           
+        ><strong>Molecular Epidemiology [H01.158.273.343.595.475.500]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_3_node_H01_158_273_343_595_475_750"
+           
+               href="/record/ui?ui=D057089"
+           
+        ><span>Pathology, Molecular [H01.158.273.343.595.475.750]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_4_node_H01"
+           
+               href="/record/ui?ui=D010811"
+           
+        ><span>Natural Science Disciplines [H01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_4_node_H01_181"
+           
+               href="/record/ui?ui=D002621"
+           
+        ><span>Chemistry [H01.181]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_4_node_H01_181_122"
+           
+               href="/record/ui?ui=D001671"
+           
+        ><span>Biochemistry [H01.181.122]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_4_node_H01_181_122_650"
+           
+               href="/record/ui?ui=D008967"
+           
+        ><span>Molecular Biology [H01.181.122.650]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_4_node_H01_181_122_650_475"
+           
+               href="/record/ui?ui=D062346"
+           
+        ><span>Molecular Medicine [H01.181.122.650.475]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_4_node_H01_181_122_650_475_550"
+           
+               href="/record/ui?ui=D017720"
+           
+        ><strong>Molecular Epidemiology [H01.181.122.650.475.550]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_4_node_H01_181_122_650_475_680"
+           
+               href="/record/ui?ui=D057089"
+           
+        ><span>Pathology, Molecular [H01.181.122.650.475.680]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_5_node_H02"
+           
+               href="/record/ui?ui=D006281"
+           
+        ><span>Health Occupations [H02]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_5_node_H02_403"
+           
+               href="/record/ui?ui=D008511"
+           
+        ><span>Medicine [H02.403]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_5_node_H02_403_720"
+           
+               href="/record/ui?ui=D011634"
+           
+        ><span>Public Health [H02.403.720]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_5_node_H02_403_720_500"
+           
+               href="/record/ui?ui=D004813"
+           
+        ><span>Epidemiology [H02.403.720.500]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_5_node_H02_403_720_500_300"
+           
+               href="/record/ui?ui=D017720"
+           
+        ><strong>Molecular Epidemiology [H02.403.720.500.300]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_5_node_H02_403_720_500_650"
+           
+               href="/record/ui?ui=D017891"
+           
+        ><span>Pharmacoepidemiology [H02.403.720.500.650]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_6_node_N06"
+           
+               href="/record/ui?ui=D004778"
+           
+        ><span>Environment and Public Health [N06]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_6_node_N06_850"
+           
+               href="/record/ui?ui=D011634"
+           
+        ><span>Public Health [N06.850]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_6_node_N06_850_520"
+           
+               href="/record/ui?ui=D004812"
+           
+        ><span>Epidemiologic Methods [N06.850.520]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_6_node_N06_850_520_169"
+           
+               href="/record/ui?ui=D002353"
+           
+        ><span>Carrier State [N06.850.520.169]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_6_node_N06_850_520_203"
+           
+               href="/record/ui?ui=D000086003"
+           
+        ><span>Chain of Infection [N06.850.520.203]</span>
+        </a>
+        
+            <i id="plus_Chain_of_Infection" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Chain_of_Infection" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_6_node_N06_850_520_270"
+           
+               href="/record/ui?ui=D016358"
+           
+        ><span>Contact Tracing [N06.850.520.270]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_6_node_N06_850_520_308"
+           
+               href="/record/ui?ui=D003625"
+           
+        ><span>Data Collection [N06.850.520.308]</span>
+        </a>
+        
+            <i id="plus_Data_Collection" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Data_Collection" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_6_node_N06_850_520_373"
+           
+               href="/record/ui?ui=D018563"
+           
+        ><span>Disease Notification [N06.850.520.373]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_6_node_N06_850_520_445"
+           
+               href="/record/ui?ui=D015340"
+           
+        ><span>Epidemiologic Research Design [N06.850.520.445]</span>
+        </a>
+        
+            <i id="plus_Epidemiologic_Research_Design" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Epidemiologic_Research_Design" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_6_node_N06_850_520_450"
+           
+               href="/record/ui?ui=D016020"
+           
+        ><span>Epidemiologic Study Characteristics [N06.850.520.450]</span>
+        </a>
+        
+            <i id="plus_Epidemiologic_Study_Characteristics" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Epidemiologic_Study_Characteristics" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_6_node_N06_850_520_460"
+           
+               href="/record/ui?ui=D062665"
+           
+        ><span>Epidemiological Monitoring [N06.850.520.460]</span>
+        </a>
+        
+            <i id="plus_Epidemiological_Monitoring" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Epidemiological_Monitoring" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_6_node_N06_850_520_470"
+           
+               href="/record/ui?ui=D017720"
+           
+        ><strong>Molecular Epidemiology [N06.850.520.470]</strong>
+        </a>
+        
+            <i id="plus_Molecular_Epidemiology" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Molecular_Epidemiology" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_6_node_N06_850_520_470_500"
+           
+               href="/record/ui?ui=D055106"
+           
+        ><span>Genome-Wide Association Study [N06.850.520.470.500]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_6_node_N06_850_520_699"
+           
+               href="/record/ui?ui=D018571"
+           
+        ><span>Sentinel Surveillance [N06.850.520.699]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_6_node_N06_850_520_830"
+           
+               href="/record/ui?ui=D013223"
+           
+        ><span>Statistics as Topic [N06.850.520.830]</span>
+        </a>
+        
+            <i id="plus_Statistics_as_Topic" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Statistics_as_Topic" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_6_node_N06_850_520_915"
+           
+               href="/record/ui?ui=D000085582"
+           
+        ><span>Treatment Switching [N06.850.520.915]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+
+</div>
+
+<div id="conceptsTabContent" class="tab-pane">
+
+    <button id="ExpandAll" class="btn btn-default btn-sm pull-right"
+            onclick="toggleConcepts()">
+        <span id="expandConcepts"                        >  Expand All</span>
+        <span id="collapseConcepts" style="display: none">Collapse All</span>
+    </button>
+
+    
+
+        <div>
+        <span id="Nightwatch_cp_0_0"
+              onclick="toggleCollapse('cp_0_0', 'Nightwatch_cp_0_0')">
+        <a class="fakeLink"><b>
+            Molecular Epidemiology
+            <i>Preferred</i>
+        </b></a></span>
+
+        <div id="cp_0_0" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0026786</dd>
+
+            
+                <dt>Scope Note</dt><dd>The application of molecular biology to the answering of epidemiological questions. The examination of patterns of changes in <a href="/record/ui?ui=D004247" class="textLink_DNA">DNA</a> to implicate particular carcinogens and the use of molecular markers to predict which individuals are at highest risk for a disease are common examples.</dd>
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_0_0"
+                      onclick="toggleCollapse('termName_0_0',
+                                              'Nightwatch_termName_0_0')">
+                    <a class="fakeLink"><b>Molecular Epidemiology</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_0_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T052991<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>09/10/1992<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1994)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_0_1"
+                      onclick="toggleCollapse('termName_0_1',
+                                              'Nightwatch_termName_0_1')">
+                    <a class="fakeLink"><b>Epidemiology, Molecular</b></a></span>
+
+                
+
+                <div id="termName_0_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T052992<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>01/01/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1994)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_1_1"
+              onclick="toggleCollapse('cp_1_1', 'Nightwatch_cp_1_1')">
+        <a class="fakeLink"><b>
+            Genetic Epidemiology
+            <i>Related</i>
+        </b></a></span>
+
+        <div id="cp_1_1" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0529230</dd>
+
+            
+                <dt>Scope Note</dt><dd>The epidemiological evaluation of the role of inherited causes of disease in families and in populations; it aims to detect the inheritance pattern of a particular disease, localize the gene and find a marker associated with disease susceptibility. Gene-gene and gene-environment interactions are also studied in genetic epidemiology of a disease. In its broad context, genetic epidemiology includes family studies, molecular epidemiologic studies with genetic components, and more traditional cohort and case-control studies with family history components.</dd>
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_1_0"
+                      onclick="toggleCollapse('termName_1_0',
+                                              'Nightwatch_termName_1_0')">
+                    <a class="fakeLink"><b>Genetic Epidemiology</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_1_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T734607<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>02/05/2009<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2010)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+</div></div>
+
+<small class="pull-right">
+    page delivered in 0.184s
+</small>
+
+</div>
+
+<footer class="footer">
+    <div class="container-fluid"><div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/socialmedia/index.html">
+                    Connect with NLM
+                </a></p>
+                <ul class="list-inline">
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://twitter.com/NLM_NIH">
+                        <img src="https://www.nlm.nih.gov/images/Twitter_W.svg"
+                             alt="Twitter">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.facebook.com/nationallibraryofmedicine"
+                    ><img src="https://www.nlm.nih.gov/images/Facebook_W.svg"
+                          alt="Facebook">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.youtube.com/user/NLMNIH">
+                        <img src="https://www.nlm.nih.gov/images/YouTube_W.svg"
+                             alt="You Tube">
+                    </a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p>National Library of Medicine<br>
+                    <a href="https://www.google.com/maps/place/8600+Rockville+Pike,+Bethesda,+MD+20894/@38.9959508,-77.101021,17z/data=!3m1!4b1!4m5!3m4!1s0x89b7c95e25765ddb:0x19156f88b27635b8!8m2!3d38.9959508!4d-77.0988323">
+                        8600 Rockville Pike<br>
+                        Bethesda, MD 20894
+                    </a>
+                </p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/web_policies.html">
+                    Web Policies
+                </a><br>
+                <a href="https://www.nih.gov/institutes-nih/nih-office-director/office-communications-public-liaison/freedom-information-act-office">
+                    FOIA
+                </a><br>
+                <a href="https://www.hhs.gov/vulnerability-disclosure-policy/index.html">
+                    HHS Vulnerability Disclosure
+                </a></p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href=
+                      "https://support.nlm.nih.gov?from=https://www.nlm.nih.gov/">
+                    NLM Support Center
+                </a><br>
+                <a href="https://www.nlm.nih.gov/accessibility.html">
+                    Accessibility
+                </a><br>
+                <a href="https://www.nlm.nih.gov/careers/careers.html">
+                    Careers
+                </a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+              <p class="text-center"> <a href="https://www.nlm.nih.gov/">NLM</a> | <a href="https://www.nih.gov/">NIH</a> | <a href="https://www.hhs.gov/">HHS</a> | <a href="https://www.usa.gov/">USA.gov</a></p>
+            </div>
+        </div>
+    </div></div>
+<!--BEGIN QUALTRICS WEBSITE FEEDBACK SNIPPET-->
+<script type='text/javascript'>
+(function(){var g=function(e,h,f,g){
+this.get=function(a){for(var a=a+"=",c=document.cookie.split(";"),b=0,e=c.length;b<e;b++){for(var d=c[b];" "==d.charAt(0);)d=d.substring(1,d.length);if(0==d.indexOf(a))return d.substring(a.length,d.length)}return null};
+this.set=function(a,c){var b="",b=new Date;b.setTime(b.getTime()+6048E5);b="; expires="+b.toGMTString();document.cookie=a+"="+c+b+"; path=/; "};
+this.check=function(){var a=this.get(f);if(a)a=a.split(":");else if(100!=e)"v"==h&&(e=Math.random()>=e/100?0:100),a=[h,e,0],this.set(f,a.join(":"));else return!0;var c=a[1];if(100==c)return!0;switch(a[0]){case "v":return!1;case "r":return c=a[2]%Math.floor(100/c),a[2]++,this.set(f,a.join(":")),!c}return!0};
+this.go=function(){if(this.check()){var a=document.createElement("script");a.type="text/javascript";a.src=g;document.body&&document.body.appendChild(a)}};
+this.start=function(){var t=this;"complete"!==document.readyState?window.addEventListener?window.addEventListener("load",function(){t.go()},!1):window.attachEvent&&window.attachEvent("onload",function(){t.go()}):t.go()};};
+try{(new g(100,"r","QSI_S_ZN_cwOHfLkxRr4n4W2","https://zncwohflkxrr4n4w2-nlmenterprise.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_cwOHfLkxRr4n4W2")).start()}catch(i){}})();
+</script><div id='ZN_cwOHfLkxRr4n4W2'><!--DO NOT REMOVE-CONTENTS PLACED HERE--></div>
+<!--END WEBSITE FEEDBACK SNIPPET-->
+</footer>
+
+</body></html>
+

@@ -1,0 +1,1641 @@
+<!doctype html><html lang="en"><head>
+
+<title>MeSH Browser</title>
+
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+
+<link rel="stylesheet" href="/public/css/font-awesome.css">
+<link rel="stylesheet" href="/public/css/bootstrap.css">
+<link rel="stylesheet" href="/public/css/mongoMesh.css">
+<link rel="icon" type="image/jpeg" href="/public/img/meshLogo.jpg">
+
+<base href="/">
+<script src="https://www.nlm.nih.gov/coop_all_uswds.js?v=1792015113076"></script>
+
+<script>
+
+    if (document.domain != "localhost")
+        document.domain = "nlm.nih.gov";
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        try {
+
+            if (coopmsg
+                && !/(^|; *)shutdown-banner=/.test(document.cookie))
+
+                document.querySelector(
+                    "body > div"
+                ).insertAdjacentHTML(
+                    "afterbegin",
+                    "<div id='shutdown-banner'><p>" + coopmsg
+                    + "</p><button type='button' role='button'"
+                    + " aria-label='Close' onclick='"
+                    + 'document.getElementById("shutdown-banner")'
+                    + '.remove(); document.cookie ='
+                    + ' "shutdown-banner=hidden; path=/";'
+                    + "'>Close</button></div>"
+                );
+
+        } catch (error) {
+            /* The "coopmsg" variable is only defined during a
+             * shutdown. */
+            if (!(error instanceof ReferenceError))
+                throw error;
+        }
+
+    });
+
+    var dcmsLinks = false,
+        dcmsParam = dcmsLinks
+                    ? function (sep) { return sep + "dcmsLinks=true"; }
+                    : function (   ) { return ""                    ; };
+
+</script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){
+        var _fullPath = window.location.href;
+        var urlParams = _fullPath.slice(_fullPath.indexOf('?') + 1).split('&');
+        var IsOpen = "false";
+        if (urlParams != undefined && urlParams != null && urlParams != "") {
+            IsOpen = urlParams[0].split("=")[1];
+        }
+
+        if (IsOpen == "false" || IsOpen == undefined || IsOpen != "true") {
+            w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        }
+    })(window,document,'script','dataLayer','GTM-5QZ7KJZ');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe sandbox src="https://www.googletagmanager.com/ns.html?id=GTM-5QZ7KJZ"
+                  height="0" width="0" style="display:none;visibility:hidden" title="googletagmanager"></iframe></noscript> 
+<!-- End Google Tag Manager (noscript) -->
+
+<script src="/public/js/elemUtil.js"></script>
+
+<script src="/public/js/record.js"  ></script>
+<script src="/public/js/treeDom.js" ></script>
+</head><body>
+
+<div>
+
+    <header class="NLMheader">
+        <a href="https://www.nlm.nih.gov/">
+          <img height="80" alt="NLM Logo"
+               src="https://www.nlm.nih.gov/images/NLM_White.png">
+        </a>
+        <!--<img class="starLogo"src="/public/img/NLM_Star.png" alt="NLM Star">-->
+    </header>
+<nav class="navbar navbar-default">
+
+  <div class="container-fluid">
+
+        <div class="navbar-header">
+
+          <button class="navbar-toggle collapsed" type="button"
+                  aria-expanded="false"
+                  onclick="toggleCollapse('bs-example-navbar-collapse-1')">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://www.nlm.nih.gov/mesh/">
+                <img id="meshNavbarLogo" src="/public/img/meshLogo.jpg" alt="MeSH Logo">
+            </a>
+        </div>
+
+        <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse"
+             aria-expanded="false">
+            <ul class="nav navbar-nav">
+                
+                <li><a href="/" id="mainSearchButton">Search</a></li>
+                <li><a href="/treeView">Tree View</a></li>
+                <li><a href="/MeSHonDemand">MeSH on Demand</a> </li> <!--Delete the Span Tags after  a few months, once MeSH on Demand is no longer new-->
+                <li><a href="https://meshb-prev.nlm.nih.gov/" target="_blank">MeSH 2027</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/mbinfo.html" target="_blank">About</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/meshsugg.html" target="_blank">Suggestions</a> </li>
+                <li><a href="https://support.nlm.nih.gov/support/create-case/" target="_blank">Contact Us</a></li>
+            </ul>
+
+        </div>
+
+  </div>
+
+</nav>
+
+</div>
+
+<div class="container">
+
+
+
+
+<h1>Family Structure <small>MeSH Descriptor            Data 2026</small></h1>
+
+<ul class="nav nav-tabs">
+    <li id="details" class="active"
+        onclick="switchTab([ 'details', 'detailsTabContent' ])">
+        <a class="fakeLink">Details</a></li>
+    
+        <li id="qualifiers"
+            onclick="switchTab([ 'qualifiers', 'qualifiersTabContent' ])">
+            <a class="fakeLink">Qualifiers</a></li>
+        <li id="trees" onclick="switchTab([ 'trees', 'treesTabContent' ])">
+            <a class="fakeLink">MeSH Tree Structures</a></li>
+    
+    <li id="concepts" onclick="switchTab([ 'concepts', 'conceptsTabContent' ])">
+        <a class="fakeLink">Concepts</a></li>
+</ul>
+
+
+
+<div class="tab-content"><br>
+<div id="detailsTabContent" class="tab-pane active">
+
+    <dl id="descriptorDetails_FamilyStructure"
+        class="dl-horizontal">
+
+        <dt>MeSH Heading      </dt>
+
+        <dd>Family Structure</dd>
+
+        
+                    <dt>Tree Number(s)</dt>
+                    
+                        <dd><a id="treeNumber_0" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >F01.829.263.315.250</a></dd>
+                    
+                        <dd><a id="treeNumber_1" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >I01.240.361.330</a></dd>
+                    
+                        <dd><a id="treeNumber_2" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >I01.880.761.125</a></dd>
+                    
+                        <dd><a id="treeNumber_3" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >I01.880.853.150.423.250</a></dd>
+                    
+                        <dd><a id="treeNumber_4" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >N01.224.361.330</a></dd>
+                    
+                        <dd><a id="treeNumber_5" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >N01.824.308.125</a></dd>
+                    
+                        <dd><a id="treeNumber_6" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >N06.850.505.400.400.580</a></dd>
+                    
+
+        <dt>Unique ID</dt><dd>D000092822</dd>
+
+        <dt>RDF Unique Identifier</dt>
+        <dd><a href="https://id.nlm.nih.gov/mesh/D000092822.html">
+            http://id.nlm.nih.gov/mesh/D000092822
+        </a></dd>
+
+        
+                <span id="scopeNote">
+                    <dt>Scope Note</dt><dd>Structural nature of relationships among members of a household typically in reference to a <a href="/record/ui?ui=D033242" class="textLink_MINOR">MINOR</a> residing in the same home. More broadly any organizational framework that determines family membership, and the functions and hierarchical position of family members (https://eric.ed.gov/?qt=Family+Structure&ti=Family+Structure).</dd>
+                </span>
+            
+                <dt>Entry Term(s)</dt>
+                <dd>
+                    Family, Reconstituted
+                    
+                </dd><dd>
+                    Matriarchy
+                    
+                </dd><dd>
+                    Patriarchy
+                    
+                </dd><dd>
+                    Reconstituted Family
+                    
+                </dd><dd>
+                    Step-parent Family
+                    
+                </dd><dd>
+                    Stepfamily
+                    
+                </dd><dd>
+                    Stepparent Family
+                    
+                </dd>
+                <dt>Previous Indexing</dt>
+                
+                    <dd>Family (1963-2022)</dd>
+                
+                    <dd>Family Characteristics (1963-2022)</dd>
+                
+            <dt>Public MeSH Note</dt><dd>2023; for STEPFAMILY and FAMILY, RECONSTITUTED see FAMILY 1996-2022; for MATRIARCHY and PATRIARCHY see FAMILY CHARACTERISTICS 1995-2022</dd>
+        
+            <dt>History Note</dt><dd>2023; for STEPFAMILY and FAMILY, RECONSTITUTED use FAMILY 1996-2022; for MATRIARCHY and PATRIARCHY use FAMILY CHARACTERISTICS 1995-2022</dd>
+        
+        
+
+
+        
+                <dt>Date Introduced</dt>
+                <dd>2023/01/01</dd>
+            
+                <dt>Last Updated</dt>
+                <dd>2023/01/01</dd>
+            
+
+    </dl>
+
+</div>
+
+<div id="qualifiersTabContent" class="tab-pane">
+
+    <dl class="dl-horizontal">
+
+        
+<br>
+
+        
+                <span id="allowableQualifiers"><dt>Allowable Qualifiers</dt><dd>
+                <ul class="list-unstyled">
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000208">
+                            ethnology
+                            (EH)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000266">
+                            history
+                            (HI)
+                        </a></li>
+                    
+                </ul></dd></span>
+            
+
+    </dl>
+
+</div><div id="treesTabContent" class="tab-pane">
+
+    <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_F01"
+           
+               href="/record/ui?ui=D001520"
+           
+        ><span>Behavior and Behavior Mechanisms [F01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_F01_829"
+           
+               href="/record/ui?ui=D011593"
+           
+        ><span>Psychology, Social [F01.829]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_F01_829_263"
+           
+               href="/record/ui?ui=D005190"
+           
+        ><span>Family [F01.829.263]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_F01_829_263_315"
+           
+               href="/record/ui?ui=D005191"
+           
+        ><span>Family Characteristics [F01.829.263.315]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_F01_829_263_315_250"
+           
+               href="/record/ui?ui=D000092822"
+           
+        ><strong>Family Structure [F01.829.263.315.250]</strong>
+        </a>
+        
+            <i id="plus_Family_Structure" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Family_Structure" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_F01_829_263_315_250_125"
+           
+               href="/record/ui?ui=D000092842"
+           
+        ><span>Extended Family [F01.829.263.315.250.125]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_829_263_315_250_250"
+           
+               href="/record/ui?ui=D009679"
+           
+        ><span>Nuclear Family [F01.829.263.315.250.250]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_829_263_315_250_500"
+           
+               href="/record/ui?ui=D020954"
+           
+        ><span>Single-Parent Family [F01.829.263.315.250.500]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F01_829_263_315_500"
+           
+               href="/record/ui?ui=D017533"
+           
+        ><span>Marital Status [F01.829.263.315.500]</span>
+        </a>
+        
+            <i id="plus_Marital_Status" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Marital_Status" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_I01"
+           
+               href="/record/ui?ui=D012942"
+           
+        ><span>Social Sciences [I01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_I01_240"
+           
+               href="/record/ui?ui=D003710"
+           
+        ><span>Demography [I01.240]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_I01_240_361"
+           
+               href="/record/ui?ui=D005191"
+           
+        ><span>Family Characteristics [I01.240.361]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_I01_240_361_150"
+           
+               href="/record/ui?ui=D001721"
+           
+        ><span>Birth Intervals [I01.240.361.150]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_I01_240_361_160"
+           
+               href="/record/ui?ui=D001722"
+           
+        ><span>Birth Order [I01.240.361.160]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_I01_240_361_330"
+           
+               href="/record/ui?ui=D000092822"
+           
+        ><strong>Family Structure [I01.240.361.330]</strong>
+        </a>
+        
+            <i id="plus_Family_Structure" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Family_Structure" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_I01_240_361_330_500"
+           
+               href="/record/ui?ui=D000092842"
+           
+        ><span>Extended Family [I01.240.361.330.500]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_I01_240_361_330_750"
+           
+               href="/record/ui?ui=D009679"
+           
+        ><span>Nuclear Family [I01.240.361.330.750]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_I01_240_361_330_875"
+           
+               href="/record/ui?ui=D020954"
+           
+        ><span>Single-Parent Family [I01.240.361.330.875]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_1_node_I01_240_361_500"
+           
+               href="/record/ui?ui=D017533"
+           
+        ><span>Marital Status [I01.240.361.500]</span>
+        </a>
+        
+            <i id="plus_Marital_Status" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Marital_Status" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_I01"
+           
+               href="/record/ui?ui=D012942"
+           
+        ><span>Social Sciences [I01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_I01_880"
+           
+               href="/record/ui?ui=D012961"
+           
+        ><span>Sociology [I01.880]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_I01_880_761"
+           
+               href="/record/ui?ui=D000091485"
+           
+        ><span>Social Structure [I01.880.761]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_I01_880_761_125"
+           
+               href="/record/ui?ui=D000092822"
+           
+        ><strong>Family Structure [I01.880.761.125]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_2_node_I01_880_761_250"
+           
+               href="/record/ui?ui=D000092882"
+           
+        ><span>Social Group [I01.880.761.250]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_I01_880_761_500"
+           
+               href="/record/ui?ui=D000091743"
+           
+        ><span>Social Status [I01.880.761.500]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_I01"
+           
+               href="/record/ui?ui=D012942"
+           
+        ><span>Social Sciences [I01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_I01_880"
+           
+               href="/record/ui?ui=D012961"
+           
+        ><span>Sociology [I01.880]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_I01_880_853"
+           
+               href="/record/ui?ui=D066252"
+           
+        ><span>Sociological Factors [I01.880.853]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_I01_880_853_150"
+           
+               href="/record/ui?ui=D005190"
+           
+        ><span>Family [I01.880.853.150]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_I01_880_853_150_423"
+           
+               href="/record/ui?ui=D005191"
+           
+        ><span>Family Characteristics [I01.880.853.150.423]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_I01_880_853_150_423_250"
+           
+               href="/record/ui?ui=D000092822"
+           
+        ><strong>Family Structure [I01.880.853.150.423.250]</strong>
+        </a>
+        
+            <i id="plus_Family_Structure" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Family_Structure" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_I01_880_853_150_423_250_125"
+           
+               href="/record/ui?ui=D000092842"
+           
+        ><span>Extended Family [I01.880.853.150.423.250.125]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_3_node_I01_880_853_150_423_250_250"
+           
+               href="/record/ui?ui=D009679"
+           
+        ><span>Nuclear Family [I01.880.853.150.423.250.250]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_3_node_I01_880_853_150_423_250_500"
+           
+               href="/record/ui?ui=D020954"
+           
+        ><span>Single-Parent Family [I01.880.853.150.423.250.500]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_3_node_I01_880_853_150_423_500"
+           
+               href="/record/ui?ui=D017533"
+           
+        ><span>Marital Status [I01.880.853.150.423.500]</span>
+        </a>
+        
+            <i id="plus_Marital_Status" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Marital_Status" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_4_node_N01"
+           
+               href="/record/ui?ui=D011154"
+           
+        ><span>Population Characteristics [N01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_4_node_N01_224"
+           
+               href="/record/ui?ui=D003710"
+           
+        ><span>Demography [N01.224]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_4_node_N01_224_361"
+           
+               href="/record/ui?ui=D005191"
+           
+        ><span>Family Characteristics [N01.224.361]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_4_node_N01_224_361_150"
+           
+               href="/record/ui?ui=D001721"
+           
+        ><span>Birth Intervals [N01.224.361.150]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_N01_224_361_160"
+           
+               href="/record/ui?ui=D001722"
+           
+        ><span>Birth Order [N01.224.361.160]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_N01_224_361_330"
+           
+               href="/record/ui?ui=D000092822"
+           
+        ><strong>Family Structure [N01.224.361.330]</strong>
+        </a>
+        
+            <i id="plus_Family_Structure" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Family_Structure" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_4_node_N01_224_361_330_500"
+           
+               href="/record/ui?ui=D000092842"
+           
+        ><span>Extended Family [N01.224.361.330.500]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_N01_224_361_330_750"
+           
+               href="/record/ui?ui=D009679"
+           
+        ><span>Nuclear Family [N01.224.361.330.750]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_N01_224_361_330_875"
+           
+               href="/record/ui?ui=D020954"
+           
+        ><span>Single-Parent Family [N01.224.361.330.875]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_4_node_N01_224_361_500"
+           
+               href="/record/ui?ui=D017533"
+           
+        ><span>Marital Status [N01.224.361.500]</span>
+        </a>
+        
+            <i id="plus_Marital_Status" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Marital_Status" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_5_node_N01"
+           
+               href="/record/ui?ui=D011154"
+           
+        ><span>Population Characteristics [N01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_5_node_N01_824"
+           
+               href="/record/ui?ui=D012959"
+           
+        ><span>Socioeconomic Factors [N01.824]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_5_node_N01_824_308"
+           
+               href="/record/ui?ui=D005191"
+           
+        ><span>Family Characteristics [N01.824.308]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_5_node_N01_824_308_125"
+           
+               href="/record/ui?ui=D000092822"
+           
+        ><strong>Family Structure [N01.824.308.125]</strong>
+        </a>
+        
+            <i id="plus_Family_Structure" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Family_Structure" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_5_node_N01_824_308_125_500"
+           
+               href="/record/ui?ui=D000092842"
+           
+        ><span>Extended Family [N01.824.308.125.500]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_5_node_N01_824_308_125_750"
+           
+               href="/record/ui?ui=D009679"
+           
+        ><span>Nuclear Family [N01.824.308.125.750]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_5_node_N01_824_308_125_875"
+           
+               href="/record/ui?ui=D020954"
+           
+        ><span>Single-Parent Family [N01.824.308.125.875]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_5_node_N01_824_308_250"
+           
+               href="/record/ui?ui=D000091502"
+           
+        ><span>Home Environment [N01.824.308.250]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_5_node_N01_824_308_500"
+           
+               href="/record/ui?ui=D017533"
+           
+        ><span>Marital Status [N01.824.308.500]</span>
+        </a>
+        
+            <i id="plus_Marital_Status" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Marital_Status" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_6_node_N06"
+           
+               href="/record/ui?ui=D004778"
+           
+        ><span>Environment and Public Health [N06]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_6_node_N06_850"
+           
+               href="/record/ui?ui=D011634"
+           
+        ><span>Public Health [N06.850]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_6_node_N06_850_505"
+           
+               href="/record/ui?ui=D015991"
+           
+        ><span>Epidemiologic Measurements [N06.850.505]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_6_node_N06_850_505_400"
+           
+               href="/record/ui?ui=D003710"
+           
+        ><span>Demography [N06.850.505.400]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_6_node_N06_850_505_400_400"
+           
+               href="/record/ui?ui=D005191"
+           
+        ><span>Family Characteristics [N06.850.505.400.400]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_6_node_N06_850_505_400_400_160"
+           
+               href="/record/ui?ui=D001722"
+           
+        ><span>Birth Order [N06.850.505.400.400.160]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_6_node_N06_850_505_400_400_580"
+           
+               href="/record/ui?ui=D000092822"
+           
+        ><strong>Family Structure [N06.850.505.400.400.580]</strong>
+        </a>
+        
+            <i id="plus_Family_Structure" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Family_Structure" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_6_node_N06_850_505_400_400_580_500"
+           
+               href="/record/ui?ui=D000092842"
+           
+        ><span>Extended Family [N06.850.505.400.400.580.500]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_6_node_N06_850_505_400_400_580_750"
+           
+               href="/record/ui?ui=D009679"
+           
+        ><span>Nuclear Family [N06.850.505.400.400.580.750]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_6_node_N06_850_505_400_400_580_875"
+           
+               href="/record/ui?ui=D020954"
+           
+        ><span>Single-Parent Family [N06.850.505.400.400.580.875]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+
+</div>
+
+<div id="conceptsTabContent" class="tab-pane">
+
+    <button id="ExpandAll" class="btn btn-default btn-sm pull-right"
+            onclick="toggleConcepts()">
+        <span id="expandConcepts"                        >  Expand All</span>
+        <span id="collapseConcepts" style="display: none">Collapse All</span>
+    </button>
+
+    
+
+        <div>
+        <span id="Nightwatch_cp_0_0"
+              onclick="toggleCollapse('cp_0_0', 'Nightwatch_cp_0_0')">
+        <a class="fakeLink"><b>
+            Family Structure
+            <i>Preferred</i>
+        </b></a></span>
+
+        <div id="cp_0_0" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M000752738</dd>
+
+            
+                <dt>Scope Note</dt><dd>Structural nature of relationships among members of a household typically in reference to a <a href="/record/ui?ui=D033242" class="textLink_MINOR">MINOR</a> residing in the same home. More broadly any organizational framework that determines family membership, and the functions and hierarchical position of family members (https://eric.ed.gov/?qt=Family+Structure&ti=Family+Structure).</dd>
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_0_0"
+                      onclick="toggleCollapse('termName_0_0',
+                                              'Nightwatch_termName_0_0')">
+                    <a class="fakeLink"><b>Family Structure</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_0_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T001113478<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>10/26/2021<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2023)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_1_1"
+              onclick="toggleCollapse('cp_1_1', 'Nightwatch_cp_1_1')">
+        <a class="fakeLink"><b>
+            Family, Reconstituted
+            <i>Narrower</i>
+        </b></a></span>
+
+        <div id="cp_1_1" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0008186</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_1_0"
+                      onclick="toggleCollapse('termName_1_0',
+                                              'Nightwatch_termName_1_0')">
+                    <a class="fakeLink"><b>Family, Reconstituted</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_1_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T015903<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/22/1994<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1996)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_1_1"
+                      onclick="toggleCollapse('termName_1_1',
+                                              'Nightwatch_termName_1_1')">
+                    <a class="fakeLink"><b>Reconstituted Family</b></a></span>
+
+                
+
+                <div id="termName_1_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T001113552<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>10/27/2021<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2023)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_2_2"
+              onclick="toggleCollapse('cp_2_2', 'Nightwatch_cp_2_2')">
+        <a class="fakeLink"><b>
+            Stepfamily
+            <i>Narrower</i>
+        </b></a></span>
+
+        <div id="cp_2_2" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0008187</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_2_0"
+                      onclick="toggleCollapse('termName_2_0',
+                                              'Nightwatch_termName_2_0')">
+                    <a class="fakeLink"><b>Stepfamily</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_2_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T015904<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>11/22/1994<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (1996)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_2_1"
+                      onclick="toggleCollapse('termName_2_1',
+                                              'Nightwatch_termName_2_1')">
+                    <a class="fakeLink"><b>Step-parent Family</b></a></span>
+
+                
+
+                <div id="termName_2_1" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T001113550<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>10/27/2021<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2023)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+                <dd>
+                <span id="Nightwatch_termName_2_2"
+                      onclick="toggleCollapse('termName_2_2',
+                                              'Nightwatch_termName_2_2')">
+                    <a class="fakeLink"><b>Stepparent Family</b></a></span>
+
+                
+
+                <div id="termName_2_2" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T001113551<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>10/27/2021<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        NLM (2023)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_3_3"
+              onclick="toggleCollapse('cp_3_3', 'Nightwatch_cp_3_3')">
+        <a class="fakeLink"><b>
+            Matriarchy
+            <i>Narrower</i>
+        </b></a></span>
+
+        <div id="cp_3_3" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0008204</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_3_0"
+                      onclick="toggleCollapse('termName_3_0',
+                                              'Nightwatch_termName_3_0')">
+                    <a class="fakeLink"><b>Matriarchy</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_3_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T015923<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>03/23/1995<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        POPLINE (1994)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_4_4"
+              onclick="toggleCollapse('cp_4_4', 'Nightwatch_cp_4_4')">
+        <a class="fakeLink"><b>
+            Patriarchy
+            <i>Narrower</i>
+        </b></a></span>
+
+        <div id="cp_4_4" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0008205</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_4_0"
+                      onclick="toggleCollapse('termName_4_0',
+                                              'Nightwatch_termName_4_0')">
+                    <a class="fakeLink"><b>Patriarchy</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_4_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T015924<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>03/23/1995<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        POPLINE (1994)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+</div></div>
+
+<small class="pull-right">
+    page delivered in 0.127s
+</small>
+
+</div>
+
+<footer class="footer">
+    <div class="container-fluid"><div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/socialmedia/index.html">
+                    Connect with NLM
+                </a></p>
+                <ul class="list-inline">
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://twitter.com/NLM_NIH">
+                        <img src="https://www.nlm.nih.gov/images/Twitter_W.svg"
+                             alt="Twitter">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.facebook.com/nationallibraryofmedicine"
+                    ><img src="https://www.nlm.nih.gov/images/Facebook_W.svg"
+                          alt="Facebook">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.youtube.com/user/NLMNIH">
+                        <img src="https://www.nlm.nih.gov/images/YouTube_W.svg"
+                             alt="You Tube">
+                    </a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p>National Library of Medicine<br>
+                    <a href="https://www.google.com/maps/place/8600+Rockville+Pike,+Bethesda,+MD+20894/@38.9959508,-77.101021,17z/data=!3m1!4b1!4m5!3m4!1s0x89b7c95e25765ddb:0x19156f88b27635b8!8m2!3d38.9959508!4d-77.0988323">
+                        8600 Rockville Pike<br>
+                        Bethesda, MD 20894
+                    </a>
+                </p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/web_policies.html">
+                    Web Policies
+                </a><br>
+                <a href="https://www.nih.gov/institutes-nih/nih-office-director/office-communications-public-liaison/freedom-information-act-office">
+                    FOIA
+                </a><br>
+                <a href="https://www.hhs.gov/vulnerability-disclosure-policy/index.html">
+                    HHS Vulnerability Disclosure
+                </a></p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href=
+                      "https://support.nlm.nih.gov?from=https://www.nlm.nih.gov/">
+                    NLM Support Center
+                </a><br>
+                <a href="https://www.nlm.nih.gov/accessibility.html">
+                    Accessibility
+                </a><br>
+                <a href="https://www.nlm.nih.gov/careers/careers.html">
+                    Careers
+                </a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+              <p class="text-center"> <a href="https://www.nlm.nih.gov/">NLM</a> | <a href="https://www.nih.gov/">NIH</a> | <a href="https://www.hhs.gov/">HHS</a> | <a href="https://www.usa.gov/">USA.gov</a></p>
+            </div>
+        </div>
+    </div></div>
+<!--BEGIN QUALTRICS WEBSITE FEEDBACK SNIPPET-->
+<script type='text/javascript'>
+(function(){var g=function(e,h,f,g){
+this.get=function(a){for(var a=a+"=",c=document.cookie.split(";"),b=0,e=c.length;b<e;b++){for(var d=c[b];" "==d.charAt(0);)d=d.substring(1,d.length);if(0==d.indexOf(a))return d.substring(a.length,d.length)}return null};
+this.set=function(a,c){var b="",b=new Date;b.setTime(b.getTime()+6048E5);b="; expires="+b.toGMTString();document.cookie=a+"="+c+b+"; path=/; "};
+this.check=function(){var a=this.get(f);if(a)a=a.split(":");else if(100!=e)"v"==h&&(e=Math.random()>=e/100?0:100),a=[h,e,0],this.set(f,a.join(":"));else return!0;var c=a[1];if(100==c)return!0;switch(a[0]){case "v":return!1;case "r":return c=a[2]%Math.floor(100/c),a[2]++,this.set(f,a.join(":")),!c}return!0};
+this.go=function(){if(this.check()){var a=document.createElement("script");a.type="text/javascript";a.src=g;document.body&&document.body.appendChild(a)}};
+this.start=function(){var t=this;"complete"!==document.readyState?window.addEventListener?window.addEventListener("load",function(){t.go()},!1):window.attachEvent&&window.attachEvent("onload",function(){t.go()}):t.go()};};
+try{(new g(100,"r","QSI_S_ZN_cwOHfLkxRr4n4W2","https://zncwohflkxrr4n4w2-nlmenterprise.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_cwOHfLkxRr4n4W2")).start()}catch(i){}})();
+</script><div id='ZN_cwOHfLkxRr4n4W2'><!--DO NOT REMOVE-CONTENTS PLACED HERE--></div>
+<!--END WEBSITE FEEDBACK SNIPPET-->
+</footer>
+
+</body></html>
+

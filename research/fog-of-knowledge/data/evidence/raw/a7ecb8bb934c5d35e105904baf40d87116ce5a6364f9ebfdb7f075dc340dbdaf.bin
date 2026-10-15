@@ -1,0 +1,1782 @@
+<!doctype html><html lang="en"><head>
+
+<title>MeSH Browser</title>
+
+<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+
+<link rel="stylesheet" href="/public/css/font-awesome.css">
+<link rel="stylesheet" href="/public/css/bootstrap.css">
+<link rel="stylesheet" href="/public/css/mongoMesh.css">
+<link rel="icon" type="image/jpeg" href="/public/img/meshLogo.jpg">
+
+<base href="/">
+<script src="https://www.nlm.nih.gov/coop_all_uswds.js?v=1792014911108"></script>
+
+<script>
+
+    if (document.domain != "localhost")
+        document.domain = "nlm.nih.gov";
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        try {
+
+            if (coopmsg
+                && !/(^|; *)shutdown-banner=/.test(document.cookie))
+
+                document.querySelector(
+                    "body > div"
+                ).insertAdjacentHTML(
+                    "afterbegin",
+                    "<div id='shutdown-banner'><p>" + coopmsg
+                    + "</p><button type='button' role='button'"
+                    + " aria-label='Close' onclick='"
+                    + 'document.getElementById("shutdown-banner")'
+                    + '.remove(); document.cookie ='
+                    + ' "shutdown-banner=hidden; path=/";'
+                    + "'>Close</button></div>"
+                );
+
+        } catch (error) {
+            /* The "coopmsg" variable is only defined during a
+             * shutdown. */
+            if (!(error instanceof ReferenceError))
+                throw error;
+        }
+
+    });
+
+    var dcmsLinks = false,
+        dcmsParam = dcmsLinks
+                    ? function (sep) { return sep + "dcmsLinks=true"; }
+                    : function (   ) { return ""                    ; };
+
+</script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){
+        var _fullPath = window.location.href;
+        var urlParams = _fullPath.slice(_fullPath.indexOf('?') + 1).split('&');
+        var IsOpen = "false";
+        if (urlParams != undefined && urlParams != null && urlParams != "") {
+            IsOpen = urlParams[0].split("=")[1];
+        }
+
+        if (IsOpen == "false" || IsOpen == undefined || IsOpen != "true") {
+            w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        }
+    })(window,document,'script','dataLayer','GTM-5QZ7KJZ');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe sandbox src="https://www.googletagmanager.com/ns.html?id=GTM-5QZ7KJZ"
+                  height="0" width="0" style="display:none;visibility:hidden" title="googletagmanager"></iframe></noscript> 
+<!-- End Google Tag Manager (noscript) -->
+
+<script src="/public/js/elemUtil.js"></script>
+
+<script src="/public/js/record.js"  ></script>
+<script src="/public/js/treeDom.js" ></script>
+</head><body>
+
+<div>
+
+    <header class="NLMheader">
+        <a href="https://www.nlm.nih.gov/">
+          <img height="80" alt="NLM Logo"
+               src="https://www.nlm.nih.gov/images/NLM_White.png">
+        </a>
+        <!--<img class="starLogo"src="/public/img/NLM_Star.png" alt="NLM Star">-->
+    </header>
+<nav class="navbar navbar-default">
+
+  <div class="container-fluid">
+
+        <div class="navbar-header">
+
+          <button class="navbar-toggle collapsed" type="button"
+                  aria-expanded="false"
+                  onclick="toggleCollapse('bs-example-navbar-collapse-1')">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://www.nlm.nih.gov/mesh/">
+                <img id="meshNavbarLogo" src="/public/img/meshLogo.jpg" alt="MeSH Logo">
+            </a>
+        </div>
+
+        <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse"
+             aria-expanded="false">
+            <ul class="nav navbar-nav">
+                
+                <li><a href="/" id="mainSearchButton">Search</a></li>
+                <li><a href="/treeView">Tree View</a></li>
+                <li><a href="/MeSHonDemand">MeSH on Demand</a> </li> <!--Delete the Span Tags after  a few months, once MeSH on Demand is no longer new-->
+                <li><a href="https://meshb-prev.nlm.nih.gov/" target="_blank">MeSH 2027</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/mbinfo.html" target="_blank">About</a></li>
+                <li><a href="https://www.nlm.nih.gov/mesh/meshsugg.html" target="_blank">Suggestions</a> </li>
+                <li><a href="https://support.nlm.nih.gov/support/create-case/" target="_blank">Contact Us</a></li>
+            </ul>
+
+        </div>
+
+  </div>
+
+</nav>
+
+</div>
+
+<div class="container">
+
+
+
+
+<h1>Forensic Psychiatry <small>MeSH Descriptor            Data 2026</small></h1>
+
+<ul class="nav nav-tabs">
+    <li id="details" class="active"
+        onclick="switchTab([ 'details', 'detailsTabContent' ])">
+        <a class="fakeLink">Details</a></li>
+    
+        <li id="qualifiers"
+            onclick="switchTab([ 'qualifiers', 'qualifiersTabContent' ])">
+            <a class="fakeLink">Qualifiers</a></li>
+        <li id="trees" onclick="switchTab([ 'trees', 'treesTabContent' ])">
+            <a class="fakeLink">MeSH Tree Structures</a></li>
+    
+    <li id="concepts" onclick="switchTab([ 'concepts', 'conceptsTabContent' ])">
+        <a class="fakeLink">Concepts</a></li>
+</ul>
+
+
+
+<div class="tab-content"><br>
+<div id="detailsTabContent" class="tab-pane active">
+
+    <dl id="descriptorDetails_ForensicPsychiatry"
+        class="dl-horizontal">
+
+        <dt>MeSH Heading      </dt>
+
+        <dd>Forensic Psychiatry</dd>
+
+        
+                    <dt>Tree Number(s)</dt>
+                    
+                        <dd><a id="treeNumber_0" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >F04.096.544.335</a></dd>
+                    
+                        <dd><a id="treeNumber_1" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >H02.403.690.208</a></dd>
+                    
+                        <dd><a id="treeNumber_2" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >I01.198.780.937.469</a></dd>
+                    
+                        <dd><a id="treeNumber_3" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >I01.880.604.583.310</a></dd>
+                    
+                        <dd><a id="treeNumber_4" onclick=
+                               "switchTab([ 'trees', 'treesTabContent' ])"
+                            >N03.706.535.351</a></dd>
+                    
+
+        <dt>Unique ID</dt><dd>D005555</dd>
+
+        <dt>RDF Unique Identifier</dt>
+        <dd><a href="https://id.nlm.nih.gov/mesh/D005555.html">
+            http://id.nlm.nih.gov/mesh/D005555
+        </a></dd>
+
+        
+                <span id="scopeNote">
+                    <dt>Scope Note</dt><dd>Psychiatry in its legal aspects. This includes criminology, penology, <a href="/record/ui?ui=D003134" class="textLink_COMMITMENTOFPERSONSWITHPSYCHIATRICDISORDERS">COMMITMENT OF PERSONS WITH PSYCHIATRIC DISORDERS</a>, the psychiatrist's role in compensation cases, the problems of releasing information to the court, and of expert testimony.</dd>
+                </span>
+            
+                <dt>Entry Term(s)</dt>
+                <dd>
+                    Jurisprudence, Psychiatric
+                    
+                </dd>
+            <dt>Public MeSH Note</dt><dd>69; was JURISPRUDENCE, PSYCHIATRIC 1967-68; CRIMINAL INVESTIGATION was see under FORENSIC DENTISTRY &amp; FORENSIC MEDICINE 1965-74, was heading 1963-64</dd>
+        
+            <dt>Online Note</dt><dd>use FORENSIC PSYCHIATRY to search JURISPRUDENCE, PSYCHIATRIC 1967-68; use FORENSIC DENTISTRY &amp; FORENSIC MEDICINE to search CRIMINAL INVESTIGATION 1966-74</dd>
+        
+            <dt>History Note</dt><dd>69; was JURISPRUDENCE, PSYCHIATRIC 1967-68; CRIMINAL INVESTIGATION was see under FORENSIC DENTISTRY &amp; FORENSIC MEDICINE 1965-74, was heading 1963-64</dd>
+        
+        
+
+
+        
+                <dt>Date Introduced</dt>
+                <dd>1969/01/01</dd>
+            
+                <dt>Last Updated</dt>
+                <dd>2024/08/09</dd>
+            
+
+    </dl>
+
+</div>
+
+<div id="qualifiersTabContent" class="tab-pane">
+
+    <dl class="dl-horizontal">
+
+        
+<br>
+
+        
+                <span id="allowableQualifiers"><dt>Allowable Qualifiers</dt><dd>
+                <ul class="list-unstyled">
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000145">
+                            classification
+                            (CL)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000191">
+                            economics
+                            (EC)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000193">
+                            education
+                            (ED)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000941">
+                            ethics
+                            (ES)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000266">
+                            history
+                            (HI)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000295">
+                            instrumentation
+                            (IS)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000331">
+                            legislation &amp; jurisprudence
+                            (LJ)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000379">
+                            methods
+                            (MT)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000458">
+                            organization &amp; administration
+                            (OG)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000592">
+                            standards
+                            (ST)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000706">
+                            statistics &amp; numerical data
+                            (SN)
+                        </a></li>
+                    
+                        <li class="q">
+                        <a href="/record/ui?ui=Q000639">
+                            trends
+                            (TD)
+                        </a></li>
+                    
+                </ul></dd></span>
+            
+
+    </dl>
+
+</div><div id="treesTabContent" class="tab-pane">
+
+    <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_F04"
+           
+               href="/record/ui?ui=D004191"
+           
+        ><span>Behavioral Disciplines and Activities [F04]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_F04_096"
+           
+               href="/record/ui?ui=D001525"
+           
+        ><span>Behavioral Sciences [F04.096]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_F04_096_544"
+           
+               href="/record/ui?ui=D011570"
+           
+        ><span>Psychiatry [F04.096.544]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_F04_096_544_065"
+           
+               href="/record/ui?ui=D000296"
+           
+        ><span>Adolescent Psychiatry [F04.096.544.065]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F04_096_544_090"
+           
+               href="/record/ui?ui=D001689"
+           
+        ><span>Biological Psychiatry [F04.096.544.090]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F04_096_544_193"
+           
+               href="/record/ui?ui=D002665"
+           
+        ><span>Child Psychiatry [F04.096.544.193]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F04_096_544_215"
+           
+               href="/record/ui?ui=D003158"
+           
+        ><span>Community Psychiatry [F04.096.544.215]</span>
+        </a>
+        
+            <i id="plus_Community_Psychiatry" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Community_Psychiatry" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F04_096_544_275"
+           
+               href="/record/ui?ui=D005008"
+           
+        ><span>Ethnopsychology [F04.096.544.275]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F04_096_544_335"
+           
+               href="/record/ui?ui=D005555"
+           
+        ><strong>Forensic Psychiatry [F04.096.544.335]</strong>
+        </a>
+        
+            <i id="plus_Forensic_Psychiatry" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Forensic_Psychiatry" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_0_node_F04_096_544_335_200"
+           
+               href="/record/ui?ui=D003134"
+           
+        ><span>Commitment of Persons with Psychiatric Disorders [F04.096.544.335.200]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F04_096_544_335_240"
+           
+               href="/record/ui?ui=D003219"
+           
+        ><span>Confidentiality [F04.096.544.335.240]</span>
+        </a>
+        
+            <i id="plus_Confidentiality" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Confidentiality" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F04_096_544_335_528"
+           
+               href="/record/ui?ui=D007298"
+           
+        ><span>Insanity Defense [F04.096.544.335.528]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F04_096_544_380"
+           
+               href="/record/ui?ui=D005852"
+           
+        ><span>Geriatric Psychiatry [F04.096.544.380]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F04_096_544_480"
+           
+               href="/record/ui?ui=D008890"
+           
+        ><span>Military Psychiatry [F04.096.544.480]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F04_096_544_504"
+           
+               href="/record/ui?ui=D058027"
+           
+        ><span>Neuropsychiatry [F04.096.544.504]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F04_096_544_528"
+           
+               href="/record/ui?ui=D009986"
+           
+        ><span>Orthopsychiatry [F04.096.544.528]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F04_096_544_779"
+           
+               href="/record/ui?ui=D011572"
+           
+        ><span>Psychoanalysis [F04.096.544.779]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_0_node_F04_096_544_830"
+           
+               href="/record/ui?ui=D011611"
+           
+        ><span>Psychosomatic Medicine [F04.096.544.830]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_H02"
+           
+               href="/record/ui?ui=D006281"
+           
+        ><span>Health Occupations [H02]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_H02_403"
+           
+               href="/record/ui?ui=D008511"
+           
+        ><span>Medicine [H02.403]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_H02_403_690"
+           
+               href="/record/ui?ui=D011570"
+           
+        ><span>Psychiatry [H02.403.690]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_1_node_H02_403_690_080"
+           
+               href="/record/ui?ui=D000296"
+           
+        ><span>Adolescent Psychiatry [H02.403.690.080]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_H02_403_690_100"
+           
+               href="/record/ui?ui=D001689"
+           
+        ><span>Biological Psychiatry [H02.403.690.100]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_H02_403_690_130"
+           
+               href="/record/ui?ui=D002665"
+           
+        ><span>Child Psychiatry [H02.403.690.130]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_H02_403_690_150"
+           
+               href="/record/ui?ui=D003158"
+           
+        ><span>Community Psychiatry [H02.403.690.150]</span>
+        </a>
+        
+            <i id="plus_Community_Psychiatry" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Community_Psychiatry" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_H02_403_690_208"
+           
+               href="/record/ui?ui=D005555"
+           
+        ><strong>Forensic Psychiatry [H02.403.690.208]</strong>
+        </a>
+        <ul class="treeItem">
+
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_1_node_H02_403_690_260"
+           
+               href="/record/ui?ui=D005852"
+           
+        ><span>Geriatric Psychiatry [H02.403.690.260]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_H02_403_690_508"
+           
+               href="/record/ui?ui=D008890"
+           
+        ><span>Military Psychiatry [H02.403.690.508]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_1_node_H02_403_690_754"
+           
+               href="/record/ui?ui=D058027"
+           
+        ><span>Neuropsychiatry [H02.403.690.754]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_I01"
+           
+               href="/record/ui?ui=D012942"
+           
+        ><span>Social Sciences [I01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_I01_198"
+           
+               href="/record/ui?ui=D003418"
+           
+        ><span>Criminology [I01.198]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_I01_198_780"
+           
+               href="/record/ui?ui=D044707"
+           
+        ><span>Forensic Sciences [I01.198.780]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_I01_198_780_937"
+           
+               href="/record/ui?ui=D005554"
+           
+        ><span>Forensic Medicine [I01.198.780.937]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_I01_198_780_937_120"
+           
+               href="/record/ui?ui=D001344"
+           
+        ><span>Autopsy [I01.198.780.937.120]</span>
+        </a>
+        
+            <i id="plus_Autopsy" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Autopsy" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_I01_198_780_937_206"
+           
+               href="/record/ui?ui=D001801"
+           
+        ><span>Blood Stains [I01.198.780.937.206]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_I01_198_780_937_343"
+           
+               href="/record/ui?ui=D003878"
+           
+        ><span>Dermatoglyphics [I01.198.780.937.343]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_I01_198_780_937_375"
+           
+               href="/record/ui?ui=D016172"
+           
+        ><span>DNA Fingerprinting [I01.198.780.937.375]</span>
+        </a>
+        
+            <i id="plus_DNA_Fingerprinting" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_DNA_Fingerprinting" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_I01_198_780_937_422"
+           
+               href="/record/ui?ui=D049249"
+           
+        ><span>Exhumation [I01.198.780.937.422]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_I01_198_780_937_441"
+           
+               href="/record/ui?ui=D053803"
+           
+        ><span>Forensic Genetics [I01.198.780.937.441]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_I01_198_780_937_460"
+           
+               href="/record/ui?ui=D049429"
+           
+        ><span>Forensic Pathology [I01.198.780.937.460]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_I01_198_780_937_469"
+           
+               href="/record/ui?ui=D005555"
+           
+        ><strong>Forensic Psychiatry [I01.198.780.937.469]</strong>
+        </a>
+        
+            <i id="plus_Forensic_Psychiatry" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Forensic_Psychiatry" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_2_node_I01_198_780_937_469_528"
+           
+               href="/record/ui?ui=D007298"
+           
+        ><span>Insanity Defense [I01.198.780.937.469.528]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_2_node_I01_198_780_937_544"
+           
+               href="/record/ui?ui=D000080030"
+           
+        ><span>Legal Epidemiology [I01.198.780.937.544]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_I01_198_780_937_619"
+           
+               href="/record/ui?ui=D008014"
+           
+        ><span>Lie Detection [I01.198.780.937.619]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_I01_198_780_937_766"
+           
+               href="/record/ui?ui=D010334"
+           
+        ><span>Paternity [I01.198.780.937.766]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_2_node_I01_198_780_937_883"
+           
+               href="/record/ui?ui=D000071298"
+           
+        ><span>Body Remains [I01.198.780.937.883]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_I01"
+           
+               href="/record/ui?ui=D012942"
+           
+        ><span>Social Sciences [I01]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_I01_880"
+           
+               href="/record/ui?ui=D012961"
+           
+        ><span>Sociology [I01.880]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_I01_880_604"
+           
+               href="/record/ui?ui=D012926"
+           
+        ><span>Social Control, Formal [I01.880.604]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_I01_880_604_583"
+           
+               href="/record/ui?ui=D007603"
+           
+        ><span>Jurisprudence [I01.880.604.583]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_I01_880_604_583_020"
+           
+               href="/record/ui?ui=D016223"
+           
+        ><span>Advance Directives [I01.880.604.583.020]</span>
+        </a>
+        
+            <i id="plus_Advance_Directives" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Advance_Directives" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_3_node_I01_880_604_583_050"
+           
+               href="/record/ui?ui=D035881"
+           
+        ><span>Compensation and Redress [I01.880.604.583.050]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_3_node_I01_880_604_583_080"
+           
+               href="/record/ui?ui=D003219"
+           
+        ><span>Confidentiality [I01.880.604.583.080]</span>
+        </a>
+        
+            <i id="plus_Confidentiality" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Confidentiality" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_3_node_I01_880_604_583_090"
+           
+               href="/record/ui?ui=D032982"
+           
+        ><span>Contracts [I01.880.604.583.090]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_3_node_I01_880_604_583_100"
+           
+               href="/record/ui?ui=D003416"
+           
+        ><span>Criminal Law [I01.880.604.583.100]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_3_node_I01_880_604_583_133"
+           
+               href="/record/ui?ui=D000085182"
+           
+        ><span>Deportation [I01.880.604.583.133]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_3_node_I01_880_604_583_166"
+           
+               href="/record/ui?ui=D033002"
+           
+        ><span>Duty to Recontact [I01.880.604.583.166]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_3_node_I01_880_604_583_232"
+           
+               href="/record/ui?ui=D005104"
+           
+        ><span>Expert Testimony [I01.880.604.583.232]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_3_node_I01_880_604_583_310"
+           
+               href="/record/ui?ui=D005555"
+           
+        ><strong>Forensic Psychiatry [I01.880.604.583.310]</strong>
+        </a>
+        
+            <i id="plus_Forensic_Psychiatry" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Forensic_Psychiatry" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_3_node_I01_880_604_583_310_528"
+           
+               href="/record/ui?ui=D007298"
+           
+        ><span>Insanity Defense [I01.880.604.583.310.528]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_3_node_I01_880_604_583_427"
+           
+               href="/record/ui?ui=D007258"
+           
+        ><span>Informed Consent [I01.880.604.583.427]</span>
+        </a>
+        
+            <i id="plus_Informed_Consent" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Informed_Consent" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_3_node_I01_880_604_583_458"
+           
+               href="/record/ui?ui=D018973"
+           
+        ><span>Intellectual Property [I01.880.604.583.458]</span>
+        </a>
+        
+            <i id="plus_Intellectual_Property" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Intellectual_Property" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_3_node_I01_880_604_583_466"
+           
+               href="/record/ui?ui=D000069516"
+           
+        ><span>International Law [I01.880.604.583.466]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_3_node_I01_880_604_583_474"
+           
+               href="/record/ui?ui=D033222"
+           
+        ><span>Judicial Role [I01.880.604.583.474]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_3_node_I01_880_604_583_482"
+           
+               href="/record/ui?ui=D000067408"
+           
+        ><span>Legal Services [I01.880.604.583.482]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_3_node_I01_880_604_583_490"
+           
+               href="/record/ui?ui=D016365"
+           
+        ><span>Liability, Legal [I01.880.604.583.490]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_3_node_I01_880_604_583_524"
+           
+               href="/record/ui?ui=D008318"
+           
+        ><span>Malpractice [I01.880.604.583.524]</span>
+        </a>
+        
+            <i id="plus_Malpractice" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Malpractice" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_3_node_I01_880_604_583_527"
+           
+               href="/record/ui?ui=D019221"
+           
+        ><span>Mandatory Reporting [I01.880.604.583.527]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_3_node_I01_880_604_583_530"
+           
+               href="/record/ui?ui=D016743"
+           
+        ><span>Mental Competency [I01.880.604.583.530]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_3_node_I01_880_604_583_594"
+           
+               href="/record/ui?ui=D010067"
+           
+        ><span>Ownership [I01.880.604.583.594]</span>
+        </a>
+        
+            <i id="plus_Ownership" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Ownership" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_3_node_I01_880_604_583_659"
+           
+               href="/record/ui?ui=D019724"
+           
+        ><span>Presumed Consent [I01.880.604.583.659]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_3_node_I01_880_604_583_789"
+           
+               href="/record/ui?ui=D016414"
+           
+        ><span>Resuscitation Orders [I01.880.604.583.789]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_3_node_I01_880_604_583_858"
+           
+               href="/record/ui?ui=D035521"
+           
+        ><span>Supreme Court Decisions [I01.880.604.583.858]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_3_node_I01_880_604_583_927"
+           
+               href="/record/ui?ui=D014918"
+           
+        ><span>Wills [I01.880.604.583.927]</span>
+        </a>
+        
+            <i id="plus_Wills" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Wills" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_3_node_I01_880_604_583_963"
+           
+               href="/record/ui?ui=D015974"
+           
+        ><span>Wrongful Life [I01.880.604.583.963]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+<ul class="treeItem">
+
+        <li >
+        <a id="tree_4_node_N03"
+           
+               href="/record/ui?ui=D004472"
+           
+        ><span>Health Care Economics and Organizations [N03]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_4_node_N03_706"
+           
+               href="/record/ui?ui=D012926"
+           
+        ><span>Social Control, Formal [N03.706]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_4_node_N03_706_535"
+           
+               href="/record/ui?ui=D007603"
+           
+        ><span>Jurisprudence [N03.706.535]</span>
+        </a>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_4_node_N03_706_535_020"
+           
+               href="/record/ui?ui=D016223"
+           
+        ><span>Advance Directives [N03.706.535.020]</span>
+        </a>
+        
+            <i id="plus_Advance_Directives" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Advance_Directives" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_N03_706_535_125"
+           
+               href="/record/ui?ui=D035881"
+           
+        ><span>Compensation and Redress [N03.706.535.125]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_N03_706_535_230"
+           
+               href="/record/ui?ui=D003219"
+           
+        ><span>Confidentiality [N03.706.535.230]</span>
+        </a>
+        
+            <i id="plus_Confidentiality" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Confidentiality" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_N03_706_535_241"
+           
+               href="/record/ui?ui=D032982"
+           
+        ><span>Contracts [N03.706.535.241]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_N03_706_535_247"
+           
+               href="/record/ui?ui=D033002"
+           
+        ><span>Duty to Recontact [N03.706.535.247]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_N03_706_535_253"
+           
+               href="/record/ui?ui=D005104"
+           
+        ><span>Expert Testimony [N03.706.535.253]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_N03_706_535_351"
+           
+               href="/record/ui?ui=D005555"
+           
+        ><strong>Forensic Psychiatry [N03.706.535.351]</strong>
+        </a>
+        
+            <i id="plus_Forensic_Psychiatry" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+            <i id="minus_Forensic_Psychiatry" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+        <ul class="treeItem">
+
+        <li >
+        <a id="tree_4_node_N03_706_535_351_200"
+           
+               href="/record/ui?ui=D003134"
+           
+        ><span>Commitment of Persons with Psychiatric Disorders [N03.706.535.351.200]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_N03_706_535_351_528"
+           
+               href="/record/ui?ui=D007298"
+           
+        ><span>Insanity Defense [N03.706.535.351.528]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+        <li >
+        <a id="tree_4_node_N03_706_535_489"
+           
+               href="/record/ui?ui=D007258"
+           
+        ><span>Informed Consent [N03.706.535.489]</span>
+        </a>
+        
+            <i id="plus_Informed_Consent" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Informed_Consent" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_N03_706_535_518"
+           
+               href="/record/ui?ui=D018973"
+           
+        ><span>Intellectual Property [N03.706.535.518]</span>
+        </a>
+        
+            <i id="plus_Intellectual_Property" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Intellectual_Property" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_N03_706_535_533"
+           
+               href="/record/ui?ui=D000069516"
+           
+        ><span>International Law [N03.706.535.533]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_N03_706_535_547"
+           
+               href="/record/ui?ui=D016365"
+           
+        ><span>Liability, Legal [N03.706.535.547]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_N03_706_535_606"
+           
+               href="/record/ui?ui=D008318"
+           
+        ><span>Malpractice [N03.706.535.606]</span>
+        </a>
+        
+            <i id="plus_Malpractice" onclick="openTree(this)"
+               class="fa fa-plus-circle treeCollapseExpand fakeLink"
+               >
+            </i>
+            <i id="minus_Malpractice" onclick="closeTree(this)"
+               class="fa fa-minus-circle treeCollapseExpand fakeLink"
+               style="display: none">
+            </i>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_N03_706_535_615"
+           
+               href="/record/ui?ui=D019221"
+           
+        ><span>Mandatory Reporting [N03.706.535.615]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_N03_706_535_625"
+           
+               href="/record/ui?ui=D016743"
+           
+        ><span>Mental Competency [N03.706.535.625]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_N03_706_535_664"
+           
+               href="/record/ui?ui=D019724"
+           
+        ><span>Presumed Consent [N03.706.535.664]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_N03_706_535_704"
+           
+               href="/record/ui?ui=D016414"
+           
+        ><span>Resuscitation Orders [N03.706.535.704]</span>
+        </a>
+        
+        </li>
+    
+        <li >
+        <a id="tree_4_node_N03_706_535_803"
+           
+               href="/record/ui?ui=D015974"
+           
+        ><span>Wrongful Life [N03.706.535.803]</span>
+        </a>
+        
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+        </li>
+    
+</ul>
+
+
+</div>
+
+<div id="conceptsTabContent" class="tab-pane">
+
+    <button id="ExpandAll" class="btn btn-default btn-sm pull-right"
+            onclick="toggleConcepts()">
+        <span id="expandConcepts"                        >  Expand All</span>
+        <span id="collapseConcepts" style="display: none">Collapse All</span>
+    </button>
+
+    
+
+        <div>
+        <span id="Nightwatch_cp_0_0"
+              onclick="toggleCollapse('cp_0_0', 'Nightwatch_cp_0_0')">
+        <a class="fakeLink"><b>
+            Forensic Psychiatry
+            <i>Preferred</i>
+        </b></a></span>
+
+        <div id="cp_0_0" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0008750</dd>
+
+            
+                <dt>Scope Note</dt><dd>Psychiatry in its legal aspects. This includes criminology, penology, <a href="/record/ui?ui=D003134" class="textLink_COMMITMENTOFPERSONSWITHPSYCHIATRICDISORDERS">COMMITMENT OF PERSONS WITH PSYCHIATRIC DISORDERS</a>, the psychiatrist's role in compensation cases, the problems of releasing information to the court, and of expert testimony.</dd>
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_0_0"
+                      onclick="toggleCollapse('termName_0_0',
+                                              'Nightwatch_termName_0_0')">
+                    <a class="fakeLink"><b>Forensic Psychiatry</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_0_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T016865<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>01/01/1999<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        BIOETHICS (1991)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+        <div>
+        <span id="Nightwatch_cp_1_1"
+              onclick="toggleCollapse('cp_1_1', 'Nightwatch_cp_1_1')">
+        <a class="fakeLink"><b>
+            Jurisprudence, Psychiatric
+            <i>Narrower</i>
+        </b></a></span>
+
+        <div id="cp_1_1" class="collapse" style="display: none"
+             aria-expanded="false">
+        <dl class="dl-horizontal">
+
+            <dt>Concept UI</dt><dd>M0008751</dd>
+
+            
+
+            <dt>Terms</dt>
+
+            
+
+                <dd>
+                <span id="Nightwatch_termName_1_0"
+                      onclick="toggleCollapse('termName_1_0',
+                                              'Nightwatch_termName_1_0')">
+                    <a class="fakeLink"><b>Jurisprudence, Psychiatric</b></a></span>
+
+                
+                    <i>Preferred Term</i>
+                
+
+                <div id="termName_1_0" class="collapse"
+                     style="display: none" aria-expanded="false">
+
+                    <b class="conceptsTabTermHeading">Term UI</b>
+                    T016866<br>
+
+                    
+                        <b class="conceptsTabTermHeading">Date</b>03/30/1974<br>
+                    
+
+                    <b class="conceptsTabTermHeading">LexicalTag</b>
+                    NON<br>
+
+                    
+                        <b class="conceptsTabTermHeading">ThesaurusID</b>
+                        UNK (19XX)<br>
+                    
+
+                    <br>
+
+                </div>
+
+            </dd>
+
+        </dl></div>
+
+    </div>
+
+</div></div>
+
+<small class="pull-right">
+    page delivered in 0.129s
+</small>
+
+</div>
+
+<footer class="footer">
+    <div class="container-fluid"><div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/socialmedia/index.html">
+                    Connect with NLM
+                </a></p>
+                <ul class="list-inline">
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://twitter.com/NLM_NIH">
+                        <img src="https://www.nlm.nih.gov/images/Twitter_W.svg"
+                             alt="Twitter">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.facebook.com/nationallibraryofmedicine"
+                    ><img src="https://www.nlm.nih.gov/images/Facebook_W.svg"
+                          alt="Facebook">
+                    </a></li>
+                    <li>
+                    <a title="External link: please review our privacy policy."
+                       href="https://www.youtube.com/user/NLMNIH">
+                        <img src="https://www.nlm.nih.gov/images/YouTube_W.svg"
+                             alt="You Tube">
+                    </a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p>National Library of Medicine<br>
+                    <a href="https://www.google.com/maps/place/8600+Rockville+Pike,+Bethesda,+MD+20894/@38.9959508,-77.101021,17z/data=!3m1!4b1!4m5!3m4!1s0x89b7c95e25765ddb:0x19156f88b27635b8!8m2!3d38.9959508!4d-77.0988323">
+                        8600 Rockville Pike<br>
+                        Bethesda, MD 20894
+                    </a>
+                </p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href="https://www.nlm.nih.gov/web_policies.html">
+                    Web Policies
+                </a><br>
+                <a href="https://www.nih.gov/institutes-nih/nih-office-director/office-communications-public-liaison/freedom-information-act-office">
+                    FOIA
+                </a><br>
+                <a href="https://www.hhs.gov/vulnerability-disclosure-policy/index.html">
+                    HHS Vulnerability Disclosure
+                </a></p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p><a href=
+                      "https://support.nlm.nih.gov?from=https://www.nlm.nih.gov/">
+                    NLM Support Center
+                </a><br>
+                <a href="https://www.nlm.nih.gov/accessibility.html">
+                    Accessibility
+                </a><br>
+                <a href="https://www.nlm.nih.gov/careers/careers.html">
+                    Careers
+                </a></p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+              <p class="text-center"> <a href="https://www.nlm.nih.gov/">NLM</a> | <a href="https://www.nih.gov/">NIH</a> | <a href="https://www.hhs.gov/">HHS</a> | <a href="https://www.usa.gov/">USA.gov</a></p>
+            </div>
+        </div>
+    </div></div>
+<!--BEGIN QUALTRICS WEBSITE FEEDBACK SNIPPET-->
+<script type='text/javascript'>
+(function(){var g=function(e,h,f,g){
+this.get=function(a){for(var a=a+"=",c=document.cookie.split(";"),b=0,e=c.length;b<e;b++){for(var d=c[b];" "==d.charAt(0);)d=d.substring(1,d.length);if(0==d.indexOf(a))return d.substring(a.length,d.length)}return null};
+this.set=function(a,c){var b="",b=new Date;b.setTime(b.getTime()+6048E5);b="; expires="+b.toGMTString();document.cookie=a+"="+c+b+"; path=/; "};
+this.check=function(){var a=this.get(f);if(a)a=a.split(":");else if(100!=e)"v"==h&&(e=Math.random()>=e/100?0:100),a=[h,e,0],this.set(f,a.join(":"));else return!0;var c=a[1];if(100==c)return!0;switch(a[0]){case "v":return!1;case "r":return c=a[2]%Math.floor(100/c),a[2]++,this.set(f,a.join(":")),!c}return!0};
+this.go=function(){if(this.check()){var a=document.createElement("script");a.type="text/javascript";a.src=g;document.body&&document.body.appendChild(a)}};
+this.start=function(){var t=this;"complete"!==document.readyState?window.addEventListener?window.addEventListener("load",function(){t.go()},!1):window.attachEvent&&window.attachEvent("onload",function(){t.go()}):t.go()};};
+try{(new g(100,"r","QSI_S_ZN_cwOHfLkxRr4n4W2","https://zncwohflkxrr4n4w2-nlmenterprise.siteintercept.qualtrics.com/SIE/?Q_ZID=ZN_cwOHfLkxRr4n4W2")).start()}catch(i){}})();
+</script><div id='ZN_cwOHfLkxRr4n4W2'><!--DO NOT REMOVE-CONTENTS PLACED HERE--></div>
+<!--END WEBSITE FEEDBACK SNIPPET-->
+</footer>
+
+</body></html>
+
