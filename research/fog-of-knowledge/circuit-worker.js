@@ -35,15 +35,22 @@ onmessage=({data})=>{
       // ring packer spreads over the whole sector as a rigid grid with sector-wide
       // wires. Group them into small alphabetical inventory hubs instead; this is a
       // display aid only and never claims ancestry (hubs are not records).
-      const direct=root.children.filter(t=>t.relation==='placement_pending');
-      if(direct.length>CLUSTER_AT){
-        const label=t=>String(nodes.get(t.id)?.label||t.id),sorted=direct.sort((a,b)=>label(a).localeCompare(label(b))||a.id.localeCompare(b.id));
-        const groups=Math.ceil(sorted.length/CLUSTER_SIZE),per=Math.ceil(sorted.length/groups),hubs=[];
+      // Generalised (follow-up to #115): any parent, not only the field root, whose
+      // unplaced or leaf children exceed CLUSTER_AT gets alphabetical display hubs.
+      // E.g. a reviewed parent with 200 leaf specialties otherwise fans into a grid.
+      // Hubs are display aids only and never claim ancestry (hubs are not records).
+      let grouped=false;
+      for(const entry of flat){const t=entry.tree;if(t.kind==='cluster')continue;
+        const pick=c=>c.kind!=='cluster'&&(t===root?c.relation==='placement_pending':!c.children.length);
+        const direct=t.children.filter(pick);if(direct.length<=CLUSTER_AT)continue;grouped=true;
+        const label=c=>String(nodes.get(c.id)?.label||c.id),sorted=direct.sort((a,b)=>label(a).localeCompare(label(b))||a.id.localeCompare(b.id));
+        const groups=Math.ceil(sorted.length/CLUSTER_SIZE),per=Math.ceil(sorted.length/groups),hubs=[],prefix=t===root?'Unplaced ':'Group ',tag=t===root?f.id:t.key;
         for(let g=0;g<groups;g++){const chunk=sorted.slice(g*per,(g+1)*per);if(!chunk.length)continue;
           const first=label(chunk[0]).charAt(0).toUpperCase(),last=label(chunk[chunk.length-1]).charAt(0).toUpperCase();
-          hubs.push({key:'cluster:'+f.id+':'+g,id:'cluster:'+f.id+':'+g,kind:'cluster',familyId:f.id,relation:'placement_pending',label:'Unplaced '+(first===last?first:first+'\u2013'+last),children:chunk,weight:1})}
-        root.children=root.children.filter(t=>t.relation!=='placement_pending').concat(hubs);
-        flat.length=0;flat.push({tree:root,depth:0,parent:null});
+          hubs.push({key:'cluster:'+tag+':'+g,id:'cluster:'+tag+':'+g,kind:'cluster',familyId:f.id,relation:t===root?'placement_pending':chunk[0].relation,label:prefix+(first===last?first:first+'\u2013'+last),children:chunk,weight:1})}
+        t.children=t.children.filter(c=>!pick(c)).concat(hubs);
+      }
+      if(grouped){flat.length=0;flat.push({tree:root,depth:0,parent:null});
         for(let i=0;i<flat.length;i++)for(const child of flat[i].tree.children)flat.push({tree:child,parent:flat[i].tree,depth:flat[i].depth+1});
       }
       for(let i=flat.length-1;i>=0;i--){const t=flat[i].tree;t.weight=t.children.reduce((s,c)=>s+c.weight,0)||1}
