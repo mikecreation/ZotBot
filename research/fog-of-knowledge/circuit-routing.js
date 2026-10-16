@@ -12,12 +12,33 @@ function pointSegmentDistanceSquared(p,a,b){
 }
 
 function segmentClear(a,b,obstacles,ignoreKeys=new Set()){
-  for(const o of obstacles){
+  const nearby=obstacles.query?obstacles.query({left:Math.min(a.x,b.x),top:Math.min(a.y,b.y),right:Math.max(a.x,b.x),bottom:Math.max(a.y,b.y)}):obstacles;
+  for(const o of nearby){
     if(ignoreKeys.has(o.key))continue;
     const rr=o.r+7;
     if(pointSegmentDistanceSquared({x:o.x,y:o.y},a,b)<rr*rr)return false;
   }
   return true;
+}
+
+// Reuse one broad-phase index for the whole graph. Testing a local wire should
+// visit nearby circles, not every record in the atlas.
+function obstacleIndex(circles,cell=240){
+  const bins=new Map();
+  for(let i=0;i<circles.length;i++){
+    const o=circles[i],r=o.r+7;
+    for(let x=Math.floor((o.x-r)/cell);x<=Math.floor((o.x+r)/cell);x++)for(let y=Math.floor((o.y-r)/cell);y<=Math.floor((o.y+r)/cell);y++){
+      const key=x+':'+y;if(!bins.has(key))bins.set(key,[]);bins.get(key).push(i);
+    }
+  }
+  return {query(box){
+    const found=new Set(),out=[];
+    for(let x=Math.floor(box.left/cell);x<=Math.floor(box.right/cell);x++)for(let y=Math.floor(box.top/cell);y<=Math.floor(box.bottom/cell);y++)for(const i of bins.get(x+':'+y)||[]){
+      if(found.has(i))continue;found.add(i);const o=circles[i],r=o.r+7;
+      if(o.x+r>=box.left&&o.x-r<=box.right&&o.y+r>=box.top&&o.y-r<=box.bottom)out.push(o);
+    }
+    return out;
+  }};
 }
 
 function simplifyPolyline(points){
@@ -33,17 +54,17 @@ function simplifyPolyline(points){
   return out;
 }
 
-function gridRoute(start,end,from,to,obstacles,ignoreKeys){
+function gridRoute(start,end,from,to,obstacles,ignoreKeys,margin=120){
   const dx=end.x-start.x,dy=end.y-start.y;
   const len=Math.hypot(dx,dy)||1;
   const ux=dx/len,uy=dy/len;
 
-  const all=obstacles.filter(o=>!ignoreKeys.has(o.key));
   let minX=Math.min(start.x,end.x),maxX=Math.max(start.x,end.x);
   let minY=Math.min(start.y,end.y),maxY=Math.max(start.y,end.y);
 
-  const margin=1200;
   minX-=margin;minY-=margin;maxX+=margin;maxY+=margin;
+  const nearby=obstacles.query?obstacles.query({left:minX,top:minY,right:maxX,bottom:maxY}):obstacles;
+  const all=nearby.filter(o=>!ignoreKeys.has(o.key));
   const spanX=maxX-minX,spanY=maxY-minY;
   const cell=Math.max(4,Math.ceil(Math.sqrt(spanX*spanY/800000)));
   const cols=Math.max(3,Math.ceil(spanX/cell)+1);
@@ -85,10 +106,12 @@ function gridRoute(start,end,from,to,obstacles,ignoreKeys){
       const ix=base.ix+ox,iy=base.iy+oy;
       if(ix<0||iy<0||ix>=cols||iy>=rows||blocked[idxOf(ix,iy)])continue;
       const point=pointOf(ix,iy);
-      if(segmentClear(p,point,obstacles,ignoreKeys))choices.push({ix,iy,d:(point.x-p.x)**2+(point.y-p.y)**2});
+      choices.push({ix,iy,d:(point.x-p.x)**2+(point.y-p.y)**2});
     }
     choices.sort((a,b)=>a.d-b.d||a.iy-b.iy||a.ix-b.ix);
-    return choices[0];
+    // Select the same nearest visible candidate as filtering before sorting,
+    // but usually perform one indexed visibility test instead of all 169.
+    return choices.find(choice=>segmentClear(p,pointOf(choice.ix,choice.iy),obstacles,ignoreKeys));
   }
   const s=reachableCell(routeStart),g=reachableCell(routeEnd);
   if(!s||!g)return null;
@@ -96,22 +119,36 @@ function gridRoute(start,end,from,to,obstacles,ignoreKeys){
 
   const prev=new Int32Array(cols*rows);
   prev.fill(-1);
-  const queue=new Int32Array(cols*rows);
-  let qh=0,qt=0;
-  queue[qt++]=si;
+  // A* follows the goal instead of flooding the entire rectangular search area.
+  // Manhattan distance is admissible for these unit-cost, four-way grid steps.
+  const costs=new Int32Array(cols*rows);costs.fill(2147483647);costs[si]=0;
+  const heap=[];
+  const heuristic=i=>Math.abs(i%cols-g.ix)+Math.abs(Math.floor(i/cols)-g.iy);
+  const push=(i,cost)=>{
+    const h=heuristic(i),entry={i,cost,h,f:cost+h};let p=heap.length;heap.push(entry);
+    while(p){const parent=(p-1)>>1,q=heap[parent];if(q.f<entry.f||(q.f===entry.f&&q.h<=entry.h))break;heap[p]=q;p=parent}heap[p]=entry;
+  };
+  const pop=()=>{
+    const first=heap[0],last=heap.pop();if(heap.length){let p=0;
+      while(p*2+1<heap.length){let child=p*2+1;const right=child+1;
+        if(right<heap.length&&(heap[right].f<heap[child].f||(heap[right].f===heap[child].f&&heap[right].h<heap[child].h)))child=right;
+        const q=heap[child];if(last.f<q.f||(last.f===q.f&&last.h<=q.h))break;heap[p]=q;p=child;
+      }heap[p]=last;
+    }return first;
+  };
+  push(si,0);
   prev[si]=si;
   const dirs=[[1,0],[-1,0],[0,1],[0,-1]];
 
-  while(qh<qt&&prev[gi]===-1){
-    const cur=queue[qh++],cx=cur%cols,cy=Math.floor(cur/cols);
+  while(heap.length){
+    const entry=pop(),cur=entry.i;if(entry.cost!==costs[cur])continue;if(cur===gi)break;
+    const cx=cur%cols,cy=Math.floor(cur/cols);
     for(const [sx,sy] of dirs){
       const nx=cx+sx,ny=cy+sy;
       if(nx<0||ny<0||nx>=cols||ny>=rows)continue;
       const ni=idxOf(nx,ny);
-      if(blocked[ni]||prev[ni]!==-1)continue;
-      prev[ni]=cur;
-      queue[qt++]=ni;
-      if(ni===gi)break;
+      const cost=entry.cost+1;if(blocked[ni]||cost>=costs[ni])continue;
+      prev[ni]=cur;costs[ni]=cost;push(ni,cost);
     }
   }
   if(prev[gi]===-1)return null;
@@ -149,11 +186,30 @@ function clippedEndpoints(from,to){
   };
 }
 
-function routeEdge(from,to,obstacles,laneSeed=0){
+function routeEdge(from,to,obstacles,laneSeed=0,prefixes=[]){
   const {start,end}=clippedEndpoints(from,to);
   const ignore=new Set([from.tree?.key||from.key,to.tree?.key||to.key]);
   if(segmentClear(start,end,obstacles,ignore)){
     return {d:`M ${start.x} ${start.y} L ${end.x} ${end.y}`,points:[start,end]};
+  }
+
+  // Siblings share a source, so reuse already clear trunk corridors. Only the
+  // short branch to a new endpoint needs finding; never flood the same long
+  // family-to-inventory corridor once for every child. Validate prefixes with
+  // THIS edge's endpoint exclusions: the old child's disk is now an obstacle.
+  const seeds=[];
+  for(const points of prefixes){
+    let cost=0;
+    for(let i=0;i<points.length-1;i++){
+      if(i){if(!segmentClear(points[i-1],points[i],obstacles,ignore))break;cost+=Math.hypot(points[i].x-points[i-1].x,points[i].y-points[i-1].y)}
+      seeds.push({points,index:i,cost,distance:Math.hypot(points[i].x-end.x,points[i].y-end.y)});
+    }
+  }
+  seeds.sort((a,b)=>a.distance-b.distance||a.cost-b.cost);
+  for(const seed of seeds.slice(0,32)){
+    const p=seed.points[seed.index];if(!segmentClear(p,end,obstacles,ignore))continue;
+    const points=simplifyPolyline([...seed.points.slice(0,seed.index+1),end]);
+    return {d:'M '+points.map((p,i)=>(i?'L ':'')+p.x+' '+p.y).join(' '),points};
   }
 
   const dx=end.x-start.x,dy=end.y-start.y;
@@ -177,8 +233,16 @@ function routeEdge(from,to,obstacles,laneSeed=0){
     }
   }
 
-  return gridRoute(start,end,from,to,obstacles,ignore);
+  for(const seed of seeds.slice(0,3)){
+    if(seed.distance>=Math.hypot(dx,dy)*.7)continue;
+    const branch=gridRoute(seed.points[seed.index],end,from,to,obstacles,ignore,120);
+    if(branch){const points=simplifyPolyline([...seed.points.slice(0,seed.index),...branch.points]);return {d:'M '+points.map((p,i)=>(i?'L ':'')+p.x+' '+p.y).join(' '),points}}
+  }
+  for(const margin of [120,400,1200]){
+    const route=gridRoute(start,end,from,to,obstacles,ignore,margin);if(route)return route;
+  }
+  return null;
 }
 
-return {routeEdge,segmentClear};
+return {routeEdge,segmentClear,obstacleIndex};
 });
