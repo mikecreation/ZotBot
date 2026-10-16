@@ -6,12 +6,37 @@
       for(const child of t.children){const span=(next.end-next.start)*child.weight/weight;stack.push({tree:child,start:cursor,end:cursor+span});cursor+=span}
     }
   }
-  function layout(families,trees){
+  // Anchored packing for giant atlases: each record stays near the angle its
+  // subtree was assigned, and only steps outward a ring when its slot is taken.
+  // The even ring packer below spreads every depth across the whole sector,
+  // which at thousands of siblings becomes a rigid grid with sector-wide wires.
+  function anchoredRows(tree,start,end,sweep){
+    const rowOf=new Map([[tree[0].tree,0]]),occupied=new Map();
+    const levels=new Map();for(const entry of tree){if(entry.depth){if(!levels.has(entry.depth))levels.set(entry.depth,[]);levels.get(entry.depth).push(entry)}}
+    for(const depth of [...levels.keys()].sort((a,b)=>a-b)){
+      const level=levels.get(depth).sort((a,b)=>a.tree.angle-b.tree.angle||a.tree.key.localeCompare(b.tree.key)),minCenter=depth<=1?90:82;
+      for(const e of level){
+        let row=(rowOf.get(e.parent)||0)+1,placed=false;
+        while(!placed){
+          const radius=330+row*150,minAngle=2*Math.asin(Math.min(.98,minCenter/(2*radius))),taken=occupied.get(row)||[];
+          const target=Math.min(end-minAngle/2,Math.max(start+minAngle/2,e.tree.angle));
+          for(let k=0;k<=12&&!placed;k++)for(const sign of k?[1,-1]:[1]){
+            const angle=target+sign*k*minAngle;if(angle<start||angle>end)continue;
+            if(taken.some(a=>Math.abs(a-angle)<minAngle*0.999))continue;
+            e.tree.angle=angle;e.rowIndex=row;rowOf.set(e.tree,row);taken.push(angle);occupied.set(row,taken);placed=true;break;
+          }
+          if(!placed)row++;
+        }
+      }
+    }
+  }
+  function layout(families,trees,options={}){
     const entries=trees.flat(),center={x:800,y:500};let gap=150;
     trees.forEach((tree,index)=>{
       const sector=Math.PI*2/families.length,mid=-Math.PI/2+index*sector;
       const start=mid-sector/2+.14,end=mid+sector/2-.14,sweep=end-start;
       assign(tree[0].tree,start,end);tree[0].rowIndex=0;
+      if(options.anchored){anchoredRows(tree,start,end,sweep);return}
       let row=1;
       const levels=new Map();for(const entry of tree){if(entry.depth){if(!levels.has(entry.depth))levels.set(entry.depth,[]);levels.get(entry.depth).push(entry)}}
       for(const depth of [...levels.keys()].sort((a,b)=>a-b)){

@@ -20,7 +20,7 @@ const actualGeometry=crypto.createHash('sha256').update(JSON.stringify(signature
 const count=50000,nodes=Array.from({length:count},(_,i)=>({id:'perf.'+i,domain:families[i%families.length].id}));
 const giant=run({families,nodes,links:nodes.map(n=>({source:'family:'+n.domain,target:n.id,type:'placement_pending'}))});
 assert.equal(giant.complete.routing,'circuit-bus','large graphs must avoid per-edge grid flood-fills');
-const spatial=giant.context.FogCircuitSpatial,scope=spatial.scope(giant.layout.items,giant.layout.edges,'family:physical');assert.equal(scope.scopeKeys.size,5001,'complete family projection preserves every descendant');
+const spatial=giant.context.FogCircuitSpatial,scope=spatial.scope(giant.layout.items,giant.layout.edges,'family:physical');const scopedRecords=giant.layout.items.filter(e=>e.kind==='node'&&scope.scopeKeys.has(e.key)).length;assert.equal(scopedRecords,5000,'complete family projection preserves every descendant');assert(giant.layout.items.filter(e=>e.kind==='cluster'&&e.familyId==='physical').length>=100,'giant unplaced inventory is grouped into hubs, not one flat fan');
 const deepNodes=Array.from({length:12000},(_,i)=>({id:'depth.'+i,domain:'physical'}));
 const deep=run({families,nodes:deepNodes,links:deepNodes.map((n,i)=>({source:i?deepNodes[i-1].id:'family:physical',target:n.id,type:'recorded_lineage'}))});
 assert.equal(Math.max(...deep.layout.items.map(e=>e.depth)),12000,'deep frontiers must not hit a stack or depth cap');

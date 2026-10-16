@@ -72,7 +72,7 @@ root.FogCircuitPainter={draw:function(c,v,scale,ox,oy){
       // Level of detail for giant atlases: bus traces are unrouted above 2,000 records,
       // so thousands of overlapping wires would bury nodes at every zoom. Fade wire ink
       // by on-screen density and let opaque node discs and labels take over as you zoom.
-      const nodeScreen=34*scale,dense=edges.length>300,edgeAlpha=dense?Math.max(.1,Math.min(.78,.78*Math.sqrt(300/edges.length))*(nodeScreen>=10?.6:1)):.78,showLabels=nodeScreen>=3;
+      const nodeScreen=34*scale,dense=edges.length>300,edgeAlpha=dense?Math.max(.1,Math.min(.78,.78*Math.sqrt(300/edges.length))*(nodeScreen>=10?.6:1)):.78,showLabels=nodeScreen>=6;
       // Batch by field; no shadows, SVG filters, DOM mutations or animation per record.
       for(const family of this.data.families){c.strokeStyle=family.color;c.globalAlpha=this.options.frontierLens ? Math.min(.22,edgeAlpha) : edgeAlpha;c.beginPath();for(const edge of edges){if(edge.familyId!==family.id)continue;edge.points.forEach((p,i)=>{if(i)c.lineTo(p.x,p.y);else c.moveTo(p.x,p.y)})}c.stroke()}
       let connectionsDrawn=0;
@@ -95,6 +95,7 @@ root.FogCircuitPainter={draw:function(c,v,scale,ox,oy){
       if(this.options.connectionKey){const focus=this.byKey.get(FogNodeConnections.key(this.options.connectionKey));if(focus){c.strokeStyle='#fff';c.fillStyle='#092537';c.lineWidth=2/scale;c.beginPath();c.arc(focus.x,focus.y,focus.radius,0,Math.PI*2);c.fill();c.stroke()}}
       for(const e of items){
         if(e.kind==='family'){const family=this.families.get(e.id);c.strokeStyle=family.color;c.fillStyle='#06101b';c.lineWidth=2/scale;c.beginPath();c.arc(e.x,e.y,e.radius,0,Math.PI*2);c.fill();c.stroke();c.fillStyle='#def6ff';FogCircleLabel.draw(c,family.title||family.short,e.x,e.y,e.radius);continue}
+        if(e.kind==='cluster'){const family=this.families.get(e.familyId);c.globalAlpha=1;c.strokeStyle=family?.color||'#8aa';c.fillStyle='#0a1624';c.lineWidth=1.5/scale;c.setLineDash([4/scale,3/scale]);c.beginPath();c.arc(e.x,e.y,e.radius,0,Math.PI*2);c.fill();c.stroke();c.setLineDash([]);if(nodeScreen>=4){c.fillStyle='#9fb4c8';FogCircleLabel.draw(c,e.label,e.x,e.y,e.radius)}continue}
         const node=this.nodes.get(e.id);
         if(!showLabels)continue;c.globalAlpha=this.options.frontierLens&&!node.frontier ? .55 : 1;c.fillStyle='#d5e8fa';
         FogCircleLabel.draw(c,node.label,e.x,e.y,e.radius);

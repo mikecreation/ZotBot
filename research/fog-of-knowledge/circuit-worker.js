@@ -1,6 +1,7 @@
 importScripts('branch-layout.js?v=0.11.4','circuit-routing.js?v=0.11.4','circuit-spatial.js?v=0.11.4','circuit-painter.js?v=0.11.4','node-connections.js?v=0.11.4');
 // One immutable geometry build per loaded graph. Camera movement never visits this worker.
 let paintContext=null;
+const CLUSTER_AT=40,CLUSTER_SIZE=24;
 function makeOverview(size,options={}){
   if(!paintContext||typeof OffscreenCanvas==='undefined'||!size.width||!size.height)return null;
   Object.assign(paintContext,options.connectionKey?FogNodeConnections.scope(paintContext.byKey,paintContext.connectionIndex,options.connectionKey):{...FogCircuitSpatial.scope(paintContext.items,paintContext.edges,options.scopeKey),connectionLinks:null});
@@ -29,11 +30,27 @@ onmessage=({data})=>{
           entry.tree.children.push(tree);flat.push({tree,parent:entry.tree,depth:entry.depth+1});
         }
       }
+      // Unplaced inventory components all hang straight off the field root. At
+      // thousands of records that is one flat fan of hundreds of siblings, which the
+      // ring packer spreads over the whole sector as a rigid grid with sector-wide
+      // wires. Group them into small alphabetical inventory hubs instead; this is a
+      // display aid only and never claims ancestry (hubs are not records).
+      const direct=root.children.filter(t=>t.relation==='placement_pending');
+      if(direct.length>CLUSTER_AT){
+        const label=t=>String(nodes.get(t.id)?.label||t.id),sorted=direct.sort((a,b)=>label(a).localeCompare(label(b))||a.id.localeCompare(b.id));
+        const groups=Math.ceil(sorted.length/CLUSTER_SIZE),per=Math.ceil(sorted.length/groups),hubs=[];
+        for(let g=0;g<groups;g++){const chunk=sorted.slice(g*per,(g+1)*per);if(!chunk.length)continue;
+          const first=label(chunk[0]).charAt(0).toUpperCase(),last=label(chunk[chunk.length-1]).charAt(0).toUpperCase();
+          hubs.push({key:'cluster:'+f.id+':'+g,id:'cluster:'+f.id+':'+g,kind:'cluster',familyId:f.id,relation:'placement_pending',label:'Unplaced '+(first===last?first:first+'\u2013'+last),children:chunk,weight:1})}
+        root.children=root.children.filter(t=>t.relation!=='placement_pending').concat(hubs);
+        flat.length=0;flat.push({tree:root,depth:0,parent:null});
+        for(let i=0;i<flat.length;i++)for(const child of flat[i].tree.children)flat.push({tree:child,parent:flat[i].tree,depth:flat[i].depth+1});
+      }
       for(let i=flat.length-1;i>=0;i--){const t=flat[i].tree;t.weight=t.children.reduce((s,c)=>s+c.weight,0)||1}
       return flat;
     });
-    const packed=FogBranches.layout(data.families,trees),entries=packed.entries;
-    const items=entries.map(e=>({key:e.tree.key,id:e.tree.id,kind:e.tree.kind,familyId:e.tree.familyId,relation:e.tree.relation,
+    const packed=FogBranches.layout(data.families,trees,{anchored:data.nodes.length>2000}),entries=packed.entries;
+    const items=entries.map(e=>({key:e.tree.key,id:e.tree.id,kind:e.tree.kind,familyId:e.tree.familyId,relation:e.tree.relation,label:e.tree.label,
       x:e.x,y:e.y,radius:e.radius,angle:e.tree.angle,r:e.r,depth:e.depth,parent:e.parent?.key}));
     const byKey=new Map(entries.map(e=>[e.tree.key,e]));
     const edges=entries.filter(e=>e.parent).map((e,i)=>{
@@ -42,7 +59,9 @@ onmessage=({data})=>{
       // A cheap, deterministic circuit bus is available immediately; refined
       // obstacle routes arrive progressively without changing node positions.
       const horizontal=Math.abs(dx)>Math.abs(dy),lane=horizontal?(start.x+end.x)/2:(start.y+end.y)/2;
-      const points=horizontal?[start,{x:lane,y:start.y},{x:lane,y:end.y},end]:[start,{x:start.x,y:lane},{x:end.x,y:lane},end];
+      // Giant atlases use direct parent-to-child spokes: with anchored placement they
+      // stay local, whereas Manhattan buses become sector-wide parallel grids.
+      const points=entries.length>2000?[start,end]:horizontal?[start,{x:lane,y:start.y},{x:lane,y:end.y},end]:[start,{x:start.x,y:lane},{x:end.x,y:lane},end];
       return {from:a.tree.key,to:e.tree.key,familyId:e.tree.familyId,relation:e.tree.relation,points,index:i};
     });
     for(const f of data.families){const to=byKey.get('family:'+f.id);edges.push({from:'core',to:to.tree.key,familyId:f.id,relation:'category',points:[{x:800,y:500},{x:to.x,y:to.y}]})}
