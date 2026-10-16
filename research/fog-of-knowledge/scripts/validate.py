@@ -20,6 +20,11 @@ from atlas_navigation import build, OUTPUT
 projection = build(g)
 if not OUTPUT.exists() or json.loads(OUTPUT.read_text(encoding="utf-8")) != projection:
     raise SystemExit("VALIDATION FAILED: stale navigation; run python scripts/atlas_navigation.py")
+from atlas_display import validate_display
+try:
+    validate_display(g, projection)
+except (ValueError, OSError) as exc:
+    raise SystemExit("VALIDATION FAILED: " + str(exc))
 g["nodes"].extend(projection["registry_nodes"])
 
 errors=[]

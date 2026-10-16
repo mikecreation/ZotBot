@@ -181,8 +181,35 @@ function drawJunction(parent,a,b,color){
   parent.append(mk("circle",{cx:x,cy:y,r:11,fill:"none",stroke:color,class:"arteryJunctionRing"}));
 }
 
+async function fetchAtlasJSON(name){
+  // Default fetch caching respects immutable HTTP headers on pinned assets.
+  const response=await fetch(`./data/${name}.json`);
+  if(!response.ok)throw Error("Atlas data unavailable: "+name);
+  return response.json();
+}
+
+function validAtlasDisplay(display,nav){
+  return display?.protocol==="fog-atlas-display/1"&&display.schema_version===1&&
+    nav?.protocol==="fog-atlas-navigation/1"&&/^[0-9a-f]{64}$/.test(display.input_sha256)&&
+    display.input_sha256===nav.input_sha256&&
+    display.meta!==null&&typeof display.meta==="object"&&!Array.isArray(display.meta)&&
+    ["nodes","edges","reviews","domains","eras"].every(key=>Array.isArray(display[key]))&&
+    display.nodes.length===nav.counts?.canonical&&
+    display.node_support!==null&&typeof display.node_support==="object"&&!Array.isArray(display.node_support);
+}
+
+async function loadAtlasModel(navigationPromise){
+  const [display,nav]=await Promise.all([
+    fetchAtlasJSON("atlas-display").catch(()=>null),navigationPromise
+  ]);
+  return validAtlasDisplay(display,nav)?display:fetchAtlasJSON("knowledge");
+}
+
 async function boot(){
-  [model,FAMILIES,navigation,evidenceIndex]=await Promise.all(["knowledge","atlas-families","atlas-navigation","evidence-index"].map(name=>fetch(`./data/${name}.json`,{cache:"no-store"}).then(response=>{if(!response.ok)throw Error("Atlas data unavailable: "+name);return response.json()})));
+  const navigationPromise=fetchAtlasJSON("atlas-navigation");
+  [model,FAMILIES,navigation,evidenceIndex]=await Promise.all([
+    loadAtlasModel(navigationPromise),fetchAtlasJSON("atlas-families"),navigationPromise,fetchAtlasJSON("evidence-index")
+  ]);
   familyById=new Map(FAMILIES.map(f=>[f.id,f]));
   model.nodes.push(...navigation.registry_nodes);
   for(const id of navigation.registry_ids){

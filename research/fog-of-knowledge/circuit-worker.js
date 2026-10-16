@@ -1,4 +1,4 @@
-importScripts('branch-layout.js?v=0.11.4','circuit-routing.js?v=0.11.4','circuit-spatial.js?v=0.11.4','circuit-painter.js?v=0.11.4','node-connections.js?v=0.11.4');
+importScripts('branch-layout.js?v=0.16.0','circuit-routing.js?v=0.16.0','circuit-spatial.js?v=0.16.0','circuit-painter.js?v=0.16.0','node-connections.js?v=0.16.0');
 // One immutable geometry build per loaded graph. Camera movement never visits this worker.
 let paintContext=null;
 const CLUSTER_AT=40,CLUSTER_SIZE=24;
@@ -10,10 +10,13 @@ function makeOverview(size,options={}){
   const v=[(b.left+b.right-w)/2,(b.top+b.bottom-h)/2,w,h],scale=Math.min(width/dpr/w,height/dpr/h),ox=(width/dpr-w*scale)/2,oy=(height/dpr-h*scale)/2;
   const canvas=new OffscreenCanvas(width,height),c=canvas.getContext('2d');c.scale(dpr,dpr);paintContext.options=options;
   FogCircuitPainter.draw.call(paintContext,c,v,scale,ox,oy);
-  return {bitmap:canvas.transferToImageBitmap(),width,height,scale,viewport:v,ox,oy,options};
+  return {bitmap:canvas.transferToImageBitmap(),width,height,dpr,scale,viewport:v,ox,oy,options};
 }
-onmessage=({data})=>{
-  if(data.type==='overview'){const overview=makeOverview(data.size,data.options);if(overview)postMessage({type:'overview',overview},[overview.bitmap]);return}
+onmessage=async({data})=>{
+  if(data.type==='overview'){
+    try{const overview=makeOverview(data.size,data.options);postMessage({type:'overview',requestId:data.requestId,overview},overview?[overview.bitmap]:[])}
+    catch(error){postMessage({type:'overview',requestId:data.requestId,overview:null,error:error.message})}return;
+  }
   try{
     const started=performance.now(),nodes=new Map(data.nodes.map(n=>[n.id,n]));
     const outgoing=new Map();
@@ -82,18 +85,22 @@ onmessage=({data})=>{
     paintContext.byKey=new Map(items.map(e=>[e.key,e]));paintContext.connectionIndex=FogNodeConnections.index(data.connectionRecords||[]);
     const layoutMs=performance.now()-started,overview=makeOverview(data.size);
     postMessage({type:'layout',items,edges,itemTree,edgeTree,evidence,evidenceTree:paintContext.evidenceTree,gap:packed.gap,layoutMs,overview},overview?[overview.bitmap]:[]);
-    // Exact obstacle routing is useful at ordinary atlas sizes. At giant sizes
-    // bounded bus geometry prevents a per-wire flood-fill from dominating load.
-    if(entries.length>2000){postMessage({type:'complete',routing:'circuit-bus',total:edges.length,workMs:performance.now()-started});return}
-    const circles=entries.map(e=>({x:e.x,y:e.y,r:e.radius+7,key:e.tree.key})).concat([{x:800,y:500,r:104,key:'core'}]);
-    let update=[];
+    // Indexed local visibility tests and goal-directed routing work at every
+    // scale. Keep a responsive first overview while exact paths arrive in batches.
+    const circles=entries.map(e=>({x:e.x,y:e.y,r:e.radius,key:e.tree.key})).concat([{x:800,y:500,r:95,key:'core'}]);
+    const obstacles=FogCircuitRoutes.obstacleIndex(circles);
+    byKey.set('core',{x:800,y:500,radius:95,tree:{key:'core'}});
+    let update=[],unrouted=0;const trunks=new Map(),routeBatch=Math.max(128,Math.ceil(edges.length/24));
     for(let i=0;i<edges.length;i++){
       const edge=edges[i],a=byKey.get(edge.from),b=byKey.get(edge.to);if(!a||!b)continue;
-      const route=FogCircuitRoutes.routeEdge(a,b,circles,i);
-      if(route){edge.points=route.points;edge.box=edgeBounds(edge);update.push({index:i,points:route.points,box:edge.box})}
-      if(update.length>=24){postMessage({type:'routes',routes:update,edgeTree:edgeIndex(),done:i+1,total:edges.length});update=[]}
+      const previous=trunks.get(edge.from)||[];
+      const route=FogCircuitRoutes.routeEdge(a,b,obstacles,i,previous);
+      if(route){edge.points=route.points;edge.box=edgeBounds(edge);update.push({index:i,points:route.points,box:edge.box});previous.push(route.points);if(previous.length>16)previous.shift();trunks.set(edge.from,previous)}
+      else unrouted++;
+      if((i+1)%routeBatch===0){paintContext.edgeTree=edgeIndex();postMessage({type:'routes',routes:update,edgeTree:paintContext.edgeTree,done:i+1,total:edges.length});update=[]}
+      if((i+1)%128===0)await new Promise(resolve=>setTimeout(resolve,0));
     }
-    if(update.length)postMessage({type:'routes',routes:update,edgeTree:edgeIndex(),done:edges.length,total:edges.length});
-    paintContext.edgeTree=edgeIndex();const finalOverview=makeOverview(data.size);postMessage({type:'complete',routing:'obstacle-routed',total:edges.length,workMs:performance.now()-started,overview:finalOverview},finalOverview?[finalOverview.bitmap]:[]);
+    paintContext.edgeTree=edgeIndex();if(update.length)postMessage({type:'routes',routes:update,edgeTree:paintContext.edgeTree,done:edges.length,total:edges.length});
+    const finalOverview=makeOverview(data.size);postMessage({type:'complete',routing:'indexed-obstacle-routed',unrouted,total:edges.length,workMs:performance.now()-started,overview:finalOverview},finalOverview?[finalOverview.bitmap]:[]);
   }catch(error){postMessage({type:'error',message:error.message})}
 };

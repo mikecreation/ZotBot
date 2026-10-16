@@ -34,6 +34,14 @@ jobs:
         working-directory: research/fog-of-knowledge
         run: python scripts/test_brain_transport_source.py
 
+      - name: Check display projection and responsive renderer regressions
+        working-directory: research/fog-of-knowledge
+        run: |
+          python scripts/test_atlas_display.py
+          node scripts/test_atlas_display.js
+          node scripts/test_massive_atlas_overview.js
+          node scripts/test_anchored_packing.js
+
       - name: Validate canonical knowledge graph
         working-directory: research/fog-of-knowledge
         run: python scripts/validate.py
