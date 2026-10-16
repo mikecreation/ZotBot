@@ -1,0 +1,277 @@
+deductive system
+deductive system
+Introduction
+A
+deductive system
+is a formal (mathematical) setup of reasoning. In order to describe a deductive system, a (formal)
+language
+system must first be in place, consisting of (well-formed)
+formulas
+, strings of symbols constructed according to some prescribed syntax. With the language in place, reasoning, from a formal point of view, is just
+derivation
+of a formula, called a
+conclusion
+, from a given set of formulas, called
+assumptions
+, via a set of formulas, called axioms, and rules, called
+rules of inference
+.
+More specifically, given a language
+L
+of
+well-formed formulas
+, a
+deductive system
+D
+consists of
+1.
+a set of formulas in
+L
+called
+axioms
+, and
+2.
+a set of
+binary relations
+on subsets of
+L
+; each
+relation
+is called a
+rule of inference
+, or simply
+rule
+; if
+R
+is a rule, and
+(
+Δ
+,
+Γ
+)
+∈
+R
+, we say that from
+Δ
+we infer
+Γ
+via
+R
+; elements of
+Δ
+are called
+premises
+, and elements of
+Γ
+are
+conclusions
+. Typically,
+Δ
+is assumed finite (and maybe empty), and
+Γ
+a
+singleton
+.
+There are also
+variations
+to the setup above. Sometimes the formulas are replaced by other
+expressions
+(sequents, etc…), sometimes the rules are not relations, but other constructs (trees, etc…)
+A deduction system is also called a
+deduction system
+or
+proof system
+.
+The
+central
+task of a deduction system is the construction of
+deductions
+, which, informally, is the application of inference rules to assumptions (or axioms, if any) to arrive at a conclusion, in a finite number of steps. For more detail, please see this entry (
+http://planetmath.org/Deduction
+).
+A deductive system together with the underlying language is called a
+formal system
+.
+Some Major Formulations of Deductive Systems in Logic
+Let us fix a language
+L
+(of well-formed formulas). There are four main formulations of deductive systems:
+•
+Hilbert system
+, or axiom system: in this formulation, axioms are the main ingredient, and there are only one or two rules of inference (
+modus ponens
+is usually one of them).
+Theorems
+in a Hilbert system are those formulas which are conclusions of deductions from axioms.
+•
+natural deduction
+: as opposed to a Hilbert system, a natural deduction system consists of all rules and no axioms, so that the focus is on deductions from assumptions. One special aspect about some of the inference rules is the allowance to cancel assumptions, so that theorems are conclusions from those deductions where all of the premises may be cancelled.
+•
+Gentzen system
+, or sequent system: unlike the last two systems, where axioms and inference rules are based on formulas from
+L
+, in a Gentzen system, the building blocks of axioms and inference rules are sequents, which are expressions of the form
+Δ
+⇒
+Γ
+,
+where
+Δ
+and
+Γ
+are
+finite sequences
+of formulas (in
+L
+, and
+⇒
+is a symbol not in
+L
+. In a Gentzen system, all axioms are of the form
+A
+⇒
+A
+, for each formula
+A
+in
+L
+. Theorems in a Gentzen system are those formulas
+B
+(in
+L
+) such that
+⇒
+B
+is the conclusion of a deduction.
+•
+tableau system: in a tableau system, like natural deduction, there are only inference rules and no axioms. However, unlike all of the systems above, the rules are not relations, but
+labeled trees
+, which are used to construct larger labeled trees called tableaux from given formulas. Theorems are those formulas corresponding to tableaux satisfying a certain
+property
+(namely, being closed).
+Of the four formulations above, Hilbert systems are most widely used in logic, and are applicable to many types of logics. Natural deduction and Gentzen systems are more amenable to
+analysis
+of deductions, and therefore are mainly used in structural proof theory.
+Given a language
+L
+, two deductive systems
+D
+1
+and
+D
+2
+are
+deductively equivalent
+if any theorem
+deducible
+from one system is deducible from another. In other words,
+⊢
+D
+1
+A
+iff
+⊢
+D
+2
+A
+.
+There is also a stronger notion of deductive equivalence:
+D
+1
+is (strongly) deductively equivalent to
+D
+2
+exactly when
+Δ
+⊢
+D
+1
+A
+iff
+Δ
+⊢
+D
+2
+A
+,
+where
+Δ
+is a set of formulas, and
+A
+is a formula, in
+L
+. Note that strong deductive equivalence implies weak deductive equivalence. On the other hand, if the
+deduction theorem
+and its
+converse
+hold in both
+D
+1
+and
+D
+2
+, then weak also implies strong.
+In classical
+propositional logic
+(as well as predicate logic), all four formulations of deductive systems which are pairwise deductively equivalent exist. In
+addition
+, each can be shown to be sound and
+complete
+with respect to the usual truth-valuation
+semantics
+.
+References
+1
+A. S. Troelstra, H. Schwichtenberg,
+Basic
+Proof Theory
+, 2nd Edition, Cambridge University Press, 2000
+2
+D. Dalen,
+Logic and
+Structure
+, 4th Edition, Springer, 2008
+3
+G. Priest,
+Introduction
+to Non-Classical Logic: From If to Is
+, 2nd Edition, Cambridge University Press, 2008
+Title
+deductive system
+Canonical
+name
+DeductiveSystem
+Date of creation
+2013-03-22 19:12:47
+Last modified on
+2013-03-22 19:12:47
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+25
+Author
+CWoo (3771)
+Entry type
+Topic
+Classification
+msc 03F03
+Classification
+msc 03B99
+Classification
+msc 03B22
+Synonym
+deduction system
+Synonym
+proof system
+Related topic
+FormalSystem
+Related topic
+InferenceRule
+Related topic
+LogicalAxiom
+Defines
+deductively equivalent
+Generated  on Thu Feb  8 20:23:13 2018 by
+LaTeXML

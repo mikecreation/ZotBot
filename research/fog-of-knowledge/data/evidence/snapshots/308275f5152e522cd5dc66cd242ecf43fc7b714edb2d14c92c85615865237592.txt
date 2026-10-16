@@ -1,0 +1,1052 @@
+bisimulation
+bisimulation
+Given two
+labelled state transition systems
+(LTS)
+M
+=
+(
+S
+1
+,
+Σ
+,
+→
+1
+)
+,
+N
+=
+(
+S
+2
+,
+Σ
+,
+→
+2
+)
+, a
+binary relation
+≈
+⊆
+S
+1
+×
+S
+2
+is called a
+simulation
+if whenever
+p
+≈
+q
+and
+p
+→
+α
+1
+p
+′
+, then there is a
+q
+′
+such that
+p
+′
+≈
+q
+′
+and
+q
+→
+α
+2
+q
+′
+. An LSTS
+M
+=
+(
+S
+1
+,
+Σ
+,
+→
+1
+)
+is
+similar
+to an LTS
+N
+=
+(
+S
+2
+,
+Σ
+,
+→
+2
+)
+if there is a simulation
+≈
+S
+1
+×
+S
+2
+.
+For example, any LTS is similar to itself, as the
+identity relation
+on the set of states is a simulation. In
+addition
+,
+1.
+if
+M
+is similar to
+N
+and
+N
+is similar to
+P
+, then
+M
+is similar to
+P
+:
+Proof.
+Let
+M
+=
+(
+S
+1
+,
+Σ
+,
+→
+1
+)
+,
+N
+=
+(
+S
+2
+,
+Σ
+,
+→
+2
+)
+, and
+P
+=
+(
+S
+3
+,
+Σ
+,
+→
+3
+)
+be LSTS, and suppose
+p
+≈
+1
+∘
+≈
+2
+q
+with
+p
+→
+α
+1
+p
+′
+, where
+≈
+1
+and
+≈
+2
+are simulations. Then there is an
+r
+such that
+p
+≈
+1
+r
+and
+r
+≈
+2
+q
+. Since
+≈
+1
+is a simulation, there is an
+r
+′
+such that
+r
+→
+α
+2
+r
+′
+. But then since
+≈
+2
+is a simulation, there is a
+q
+′
+such that
+q
+→
+α
+3
+q
+′
+. As a result,
+≈
+1
+⁣
+∘
+⁣
+≈
+2
+is a simulation.
+∎
+2.
+a union of simulations is a simulation.
+Proof.
+Let
+≈
+be the union of simulations
+≈
+i
+, where
+i
+∈
+I
+, and suppose
+p
+≈
+q
+, with
+p
+→
+α
+p
+′
+. Then
+p
+≈
+i
+q
+for some
+i
+. Since
+≈
+i
+is a simulation, there is a state
+q
+′
+such that
+p
+′
+≈
+i
+q
+′
+and
+q
+→
+α
+q
+′
+. So
+p
+′
+≈
+q
+′
+and therefore
+≈
+is a simulation.
+∎
+A binary relation
+≈
+between
+S
+1
+and
+S
+2
+is a
+bisimulation
+if both
+≈
+and its
+converse
+≈
+-
+1
+are simulations. A bisimulation is also called a
+strong bisimulation
+, in contrast with
+weak bisimulation
+. When there is a bisimulation between the state sets of two LTS, we say that the two systems are
+bisimilar
+, or
+strongly bisimilar
+. By abuse of notation, we write
+M
+≈
+N
+to denote that
+M
+is bisimilar to
+N
+.
+An
+equivalent
+formulation of bisimulation is given by extending the binary relation on the sets to a binary relation on the corresponding
+power sets
+. Here’s how: let
+≈
+⊆
+S
+1
+×
+S
+2
+. For any
+A
+⊆
+S
+1
+and
+B
+⊆
+S
+2
+, define
+C
+⁢
+(
+A
+)
+:=
+{
+b
+∈
+S
+2
+∣
+a
+≈
+b
+⁢
+for some
+⁢
+a
+∈
+A
+}
+⁢
+and
+⁢
+C
+⁢
+(
+B
+)
+:=
+{
+a
+∈
+S
+1
+∣
+a
+≈
+b
+⁢
+for some
+⁢
+b
+∈
+B
+}
+.
+Then the binary relation
+≈
+can be extended to a binary relation from
+P
+⁢
+(
+S
+1
+)
+to
+P
+⁢
+(
+S
+2
+)
+, still denoted by
+≈
+, as
+A
+≈
+B
+iff
+A
+⊆
+C
+⁢
+(
+B
+)
+⁢
+and
+⁢
+B
+⊆
+C
+⁢
+(
+A
+)
+,
+for any
+A
+⊆
+S
+1
+and
+B
+⊆
+S
+2
+. In other words,
+A
+≈
+B
+iff for any
+a
+∈
+A
+, there is a
+b
+∈
+B
+such that
+a
+≈
+b
+and for any
+b
+∈
+B
+, there is an
+a
+∈
+A
+such that
+a
+≈
+b
+. Now, for any
+p
+∈
+S
+1
+and
+α
+∈
+Σ
+, let
+δ
+1
+⁢
+(
+p
+,
+a
+)
+=
+{
+q
+∈
+S
+1
+∣
+p
+→
+α
+1
+q
+}
+.
+We can similar define
+function
+δ
+2
+:
+S
+2
+×
+Σ
+→
+P
+⁢
+(
+S
+2
+)
+. So a binary relation
+≈
+between
+S
+1
+and
+S
+2
+is a bisimilation iff for any
+(
+p
+,
+q
+)
+∈
+S
+1
+×
+S
+2
+such that
+p
+≈
+q
+, we have
+δ
+1
+⁢
+(
+p
+,
+a
+)
+≈
+δ
+2
+⁢
+(
+q
+,
+a
+)
+for any
+a
+∈
+Σ
+.
+Let
+M
+=
+(
+S
+1
+,
+Σ
+,
+→
+1
+)
+,
+N
+=
+(
+S
+2
+,
+Σ
+,
+→
+2
+)
+, and
+P
+=
+(
+S
+3
+,
+Σ
+,
+→
+3
+)
+be LTS. The following are some basic properties of bisimulation:
+1.
+The identity relation
+=
+is a bisimilation on any LTS, since
+=
+is a simulation and
+=
+-
+1
+is just
+=
+.
+2.
+If
+M
+is bisimilar to
+N
+via
+≈
+, then
+N
+is bisimilar to
+M
+via
+≈
+-
+1
+, since both
+≈
+-
+1
+and
+(
+≈
+-
+1
+)
+-
+1
+=
+≈
+are simulations.
+3.
+If
+M
+≈
+1
+and
+N
+≈
+2
+P
+, then
+M
+≈
+1
+∘
+≈
+2
+P
+, since
+≈
+1
+⁣
+∘
+⁣
+≈
+2
+and
+(
+≈
+1
+∘
+≈
+2
+)
+-
+1
+=
+≈
+2
+1
+-
+∘
+≈
+1
+-
+1
+are both simulations according to the
+argument
+above.
+4.
+A union of bisimilations is a bisimilation.
+Proof.
+Let
+≈
+be the union of bisimulations
+≈
+i
+, where
+i
+∈
+I
+. Then
+≈
+is a simulation by the argument above. Now, suppose
+p
+≈
+-
+1
+q
+and
+p
+→
+α
+p
+′
+, then
+q
+≈
+p
+. Then
+q
+≈
+i
+p
+for some
+i
+∈
+I
+. So
+p
+≈
+i
+-
+1
+q
+. Since
+≈
+i
+is a bisimulation, so is
+≈
+i
+-
+1
+, and therefore for some state
+q
+′
+,
+p
+′
+≈
+i
+-
+1
+q
+′
+and
+q
+→
+α
+q
+′
+. This means that
+p
+′
+≈
+-
+1
+q
+′
+, implying that
+≈
+-
+1
+is a simulation. Hence
+≈
+is a bisimulation.
+∎
+5.
+The union of all bisimilations on an LTS is a bisimulation that is also an
+equivalence relation
+.
+Proof.
+For an LTS
+M
+, let
+≈
+M
+be the union of all bisimulations on
+M
+. Then
+≈
+M
+is a bisimulation by the previous result. Since
+=
+is a bisimulation on
+M
+,
+≈
+M
+is
+reflexive
+. If
+p
+≈
+M
+q
+,
+p
+≈
+q
+for some bisimulation
+≈
+on
+M
+. Then
+≈
+-
+1
+is a bisimulation and therefore
+q
+≈
+-
+1
+p
+implies that
+q
+≈
+M
+p
+, so that
+≈
+M
+is
+symmetric
+. Finally, if
+p
+≈
+M
+q
+and
+q
+≈
+M
+r
+, then
+p
+≈
+1
+q
+and
+q
+≈
+2
+r
+for some bisimulations
+≈
+1
+and
+≈
+2
+. So
+≈
+1
+⁣
+∘
+⁣
+≈
+2
+is a bisimulation. Since
+p
+≈
+1
+∘
+≈
+2
+r
+,
+p
+≈
+M
+r
+and therefore
+≈
+M
+is
+transitive
+.
+∎
+For an LTS
+M
+=
+(
+S
+,
+Σ
+,
+→
+)
+, let
+≈
+M
+be the maximal bisimulation on
+M
+as defined above. Since
+≈
+M
+is an equivalence relation, we can form an
+equivalence class
+[
+p
+]
+for each state
+p
+∈
+S
+. Let
+[
+S
+]
+be the set of all such equivalence classes:
+[
+S
+]
+:=
+{
+[
+p
+]
+∣
+p
+∈
+S
+}
+. Define
+[
+→
+]
+on
+S
+×
+Σ
+×
+S
+by
+[
+p
+]
+[
+→
+]
+α
+[
+q
+]
+iff
+p
+→
+α
+q
+.
+This is a well-defined
+ternary relation
+, for if
+p
+≈
+M
+p
+′
+and
+q
+≈
+M
+q
+′
+, we have
+p
+′
+→
+α
+q
+′
+. Now,
+[
+M
+]
+:=
+(
+[
+S
+]
+,
+Σ
+,
+[
+→
+]
+)
+is an LSTS, and
+M
+is bisimilar to it, with bisimulation given by the
+relation
+{
+(
+p
+,
+[
+p
+]
+)
+∣
+p
+∈
+S
+}
+.
+Title
+bisimulation
+Canonical name
+Bisimulation
+Date of creation
+2013-03-22 19:23:14
+Last modified on
+2013-03-22 19:23:14
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+44
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 03B45
+Classification
+msc 68Q85
+Classification
+msc 68Q10
+Synonym
+strong bisimulation
+Synonym
+strongly bisimilar
+Related topic
+PMorphism
+Defines
+simulation
+Defines
+bisimilar
+Generated  on Thu Feb  8 19:48:47 2018 by
+LaTeXML

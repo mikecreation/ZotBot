@@ -1,0 +1,885 @@
+unique readability of well-formed formulas
+unique readability of well-formed formulas
+Suppose
+V
+is an
+alphabet
+. Two words
+w
+1
+and
+w
+2
+over
+V
+are the same if they have the same length and same symbol for every position of the word. In other words, if
+w
+1
+=
+a
+1
+⁢
+⋯
+⁢
+a
+n
+and
+w
+2
+=
+b
+1
+⁢
+⋯
+⁢
+b
+m
+, where each
+a
+i
+and
+b
+i
+are symbols in
+V
+, then
+n
+=
+m
+and
+a
+i
+=
+b
+i
+. In other words, every word over
+V
+has a unique
+representation
+as
+product
+(
+concatenation
+) of symbols in
+V
+. This is called the
+unique readability
+of words over an alphabet.
+Unique readability remains true if
+V
+is
+infinite
+. Now, suppose
+V
+is a set of
+propositional variables
+, and suppose we have two
+well-formed formulas
+(wffs)
+p
+:=
+α
+⁢
+p
+1
+⁢
+⋯
+⁢
+p
+n
+and
+q
+:=
+β
+⁢
+q
+1
+⁢
+⋯
+⁢
+q
+m
+over
+V
+, where
+α
+,
+β
+are
+logical connectives
+from a
+fixed set
+F
+of
+connectives
+(for example,
+F
+could be the set
+{
+¬
+,
+∨
+,
+∧
+,
+→
+,
+↔
+}
+), and
+p
+i
+,
+q
+j
+are wffs. Does
+p
+=
+q
+mean
+α
+=
+β
+,
+m
+=
+n
+, and
+p
+i
+=
+q
+i
+? This is the notion of
+unique readability
+of well-formed formulas. It is slightly different from the unique readability of words over an alphabet, for
+p
+i
+and
+q
+j
+are no longer symbols in an alphabet, but words themselves.
+Theorem 1
+.
+Given any
+countable set
+V
+of propositional variables and a set
+F
+of logical connectives, well-formed formulas over
+V
+constructed via
+F
+are uniquely readable
+Proof.
+Every
+p
+∈
+V
+¯
+has a representation
+α
+⁢
+p
+1
+⁢
+⋯
+⁢
+p
+n
+for some
+n
+-ary connective
+α
+and wffs
+p
+i
+. The rest of the proof we show that this representation is unique, establishing unique readability.
+Define a
+function
+ϕ
+:
+V
+∪
+F
+→
+ℤ
+such that
+ϕ
+⁢
+(
+v
+)
+=
+1
+for any
+v
+∈
+V
+, and
+ϕ
+⁢
+(
+f
+)
+=
+1
+-
+n
+for any
+n
+-ary connective
+f
+∈
+F
+. Defined inductively on the length of words over
+V
+∪
+F
+,
+ϕ
+can be extended to an integer-valued function
+ϕ
+*
+on the set of all words on
+V
+∪
+F
+so that
+ϕ
+*
+⁢
+(
+w
+1
+⁢
+w
+2
+)
+=
+ϕ
+*
+⁢
+(
+w
+1
+)
++
+ϕ
+*
+⁢
+(
+w
+2
+)
+, for any words
+w
+1
+,
+w
+2
+over
+V
+∪
+F
+. We have
+1.
+ϕ
+*
+is
+constant
+(whose value is
+1
+) when restricted to
+V
+¯
+.
+This can be proved by
+induction
+on
+V
+i
+(for the
+definition
+of
+V
+i
+, see the parent entry). By definition, this is true for any atoms. Assume this is true for
+V
+i
+. Pick any
+p
+∈
+V
+i
++
+1
+. Then
+p
+=
+α
+⁢
+p
+1
+⁢
+⋯
+⁢
+p
+n
+for some
+n
+-ary
+α
+∈
+F
+, and
+p
+j
+∈
+V
+i
+for all
+j
+=
+1
+,
+…
+,
+n
+Then
+ϕ
+*
+⁢
+(
+p
+)
+=
+ϕ
+*
+⁢
+(
+α
+)
++
+ϕ
+*
+⁢
+(
+p
+1
+)
++
+⋯
++
+ϕ
+*
+⁢
+(
+p
+n
+)
+=
+1
+-
+n
++
+n
+×
+1
+=
+1
+. Therefore,
+ϕ
+*
+⁢
+(
+p
+)
+=
+1
+for all
+p
+∈
+V
+¯
+.
+2.
+for any non-trivial suffix
+s
+of a wff
+p
+,
+ϕ
+*
+⁢
+(
+s
+)
+>
+0
+. (A
+suffix
+of a word
+w
+is a word
+s
+such that
+w
+=
+t
+⁢
+s
+for some word
+t
+;
+s
+is non-trivial if
+s
+is not the
+empty word
+)
+This is also proved by induction. If
+p
+∈
+V
+0
+, then
+p
+itself is its only non-trivial final segment, so the assertion is true. Suppose now this is true for any
+proposition
+in
+V
+i
+. If
+p
+∈
+V
+i
++
+1
+, then
+p
+=
+α
+⁢
+p
+1
+⁢
+⋯
+⁢
+p
+n
+, where each
+p
+k
+∈
+V
+i
+. A non-trivial final segment
+s
+of
+p
+is either
+p
+, a final segment of
+p
+n
+, or has the form
+t
+⁢
+p
+j
+⁢
+⋯
+⁢
+p
+n
+, where
+t
+is a non-trivial final segment of
+p
+j
+-
+1
+. In the first case,
+ϕ
+*
+⁢
+(
+s
+)
+=
+ϕ
+*
+⁢
+(
+p
+)
+=
+1
+. In the second case,
+ϕ
+*
+⁢
+(
+s
+)
+>
+0
+from
+assumption
+. In the last case,
+ϕ
+*
+⁢
+(
+s
+)
+=
+ϕ
+*
+⁢
+(
+t
+)
++
+(
+n
+-
+j
++
+1
+)
+>
+0
+.
+Now, back to the main proof. Suppose
+p
+=
+q
+. If
+p
+is an atom, so must
+q
+, and we are done. Otherwise, assume
+p
+=
+α
+⁢
+p
+1
+⁢
+⋯
+⁢
+p
+m
+=
+β
+⁢
+q
+1
+⁢
+⋯
+⁢
+q
+n
+=
+q
+. Then
+α
+=
+β
+since the
+expressions
+are words over
+V
+∪
+F
+, and
+α
+,
+β
+∈
+F
+. Since the two connectives are the same, they have the same arity:
+m
+=
+n
+, and we have
+α
+⁢
+p
+1
+⁢
+⋯
+⁢
+p
+n
+=
+α
+⁢
+q
+1
+⁢
+⋯
+⁢
+q
+n
+. If
+n
+=
+0
+, then we are done. So assume
+n
+>
+0
+. Then
+p
+1
+⁢
+⋯
+⁢
+p
+n
+=
+q
+1
+⁢
+⋯
+⁢
+q
+n
+. We want to show that
+p
+n
+=
+q
+n
+, and therefore
+p
+1
+⁢
+⋯
+⁢
+p
+n
+-
+1
+=
+q
+1
+⁢
+⋯
+⁢
+q
+n
+-
+1
+, and by induction
+p
+i
+=
+q
+i
+for all
+i
+<
+n
+as well, proving the
+theorem
+.
+First, notice that
+p
+n
+is a non-trivial suffix of
+q
+1
+⁢
+⋯
+⁢
+q
+n
+. So
+p
+n
+is either a suffix of
+q
+n
+or has the form
+t
+⁢
+q
+j
+⁢
+⋯
+⁢
+q
+n
+, where
+j
+≤
+n
+, and
+t
+is a non-trivial suffix of
+q
+j
+-
+1
+. In the latter case,
+1
+=
+ϕ
+*
+⁢
+(
+p
+n
+)
+=
+ϕ
+*
+⁢
+(
+t
+⁢
+q
+j
+⁢
+⋯
+⁢
+q
+n
+)
+=
+ϕ
+*
+⁢
+(
+t
+)
++
+n
+-
+j
++
+1
+. Then
+ϕ
+*
+⁢
+(
+t
+)
+=
+j
+-
+n
+≤
+0
+, contradicting 2 above. Therefore
+p
+n
+is a suffix of
+q
+n
+. By
+symmetry
+,
+q
+n
+is also a suffix of
+p
+n
+, hence
+p
+n
+=
+q
+n
+.
+∎
+As a corollary, we see that the well-formed formulas of the classical
+propositional logic
+, written in
+Polish notation
+, are uniquely readable. The unique readability of wffs using parentheses and
+infix notation
+requires a different proof.
+Remark
+. Unique readability will fail if the
+p
+i
+and
+q
+j
+above are not wffs, even if
+V
+is finite. For example, suppose
+v
+∈
+V
+and
+#
+is binary, then
+#
+⁢
+v
+⁢
+#
+⁢
+v
+⁢
+v
+can be read in three non-trivial ways: combining
+v
+and
+#
+⁢
+v
+⁢
+v
+, combining
+v
+⁢
+#
+and
+v
+⁢
+v
+, or combining
+v
+⁢
+#
+⁢
+v
+and
+v
+. Notice that only the first
+combination
+do we get wffs.
+Title
+unique readability of well-formed formulas
+Canonical
+name
+UniqueReadabilityOfWellformedFormulas
+Date of creation
+2013-03-22 18:52:32
+Last modified on
+2013-03-22 18:52:32
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+9
+Author
+CWoo (3771)
+Entry type
+Theorem
+Classification
+msc 03B05
+Defines
+unique readability
+Generated  on Thu Feb  8 19:25:40 2018 by
+LaTeXML

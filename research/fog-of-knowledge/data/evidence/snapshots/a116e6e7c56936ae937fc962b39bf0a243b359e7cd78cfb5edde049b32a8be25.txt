@@ -1,0 +1,397 @@
+transfinite recursion
+transfinite recursion
+Transfinite recursion
+, roughly speaking, is a statement about the ability to define a
+function
+recursively using
+transfinite induction
+. In its most general and intuitive form, it says
+Theorem 1
+.
+Let
+G
+be a (class) function on
+V
+, the class of all sets. Then there exists a unique (class) function
+F
+on
+On
+, the class of
+ordinals
+, such that
+F
+(
+α
+)
+=
+G
+(
+F
+|
+α
+)
+where
+F
+|
+α
+is the function whose domain is
+seg
+⁡
+(
+α
+)
+:=
+{
+β
+∣
+β
+<
+α
+}
+and whose values coincide with
+F
+on every
+β
+∈
+seg
+⁡
+(
+α
+)
+. In other words,
+F
+|
+α
+is the
+restriction
+of
+F
+to
+α
+.
+Notice that the
+theorem
+above is not provable in ZF
+set theory
+, as
+G
+and
+F
+are both classes, not sets. In order to prove this statement, one way of getting around this difficulty is to convert both
+G
+and
+F
+into
+formulas
+, and modify the statement, as follows:
+Let
+φ
+⁢
+(
+x
+,
+y
+)
+be a formula such that
+∀
+x
+∃
+y
+∀
+z
+(
+φ
+(
+x
+,
+z
+)
+↔
+z
+=
+y
+)
+.
+Think of
+G
+=
+{
+(
+x
+,
+y
+)
+∣
+φ
+⁢
+(
+x
+,
+y
+)
+}
+. Then there is a unique formula
+ψ
+⁢
+(
+α
+,
+z
+)
+(think of
+F
+as
+{
+(
+α
+,
+z
+)
+∣
+ψ
+⁢
+(
+α
+,
+z
+)
+}
+) such that the following two
+sentences
+are
+derivable
+using ZF axioms:
+1.
+∀
+x
+∃
+y
+∀
+z
+(
+𝐎𝐧
+(
+x
+)
+∧
+(
+ψ
+(
+x
+,
+z
+)
+↔
+z
+=
+y
+)
+)
+,
+where
+𝐎𝐧
+⁢
+(
+x
+)
+means “
+x
+is an ordinal”,
+2.
+∀
+x
+∀
+y
+(
+𝐎𝐧
+(
+x
+)
+∧
+(
+ψ
+(
+x
+,
+y
+)
+↔
+∃
+f
+(
+A
+∧
+B
+∧
+C
+∧
+D
+)
+)
+)
+, where
+–
+A
+is the formula “
+f
+is a function”,
+–
+B
+is the formula “
+dom
+⁡
+(
+f
+)
+=
+x
+”,
+–
+C
+is the formula
+∀
+z
+(
+z
+∈
+x
+∧
+φ
+(
+f
+|
+z
+,
+f
+(
+z
+)
+)
+)
+, and
+–
+D
+is the formula
+φ
+⁢
+(
+f
+,
+y
+)
+.
+A stronger form of the transfinite recursion theorem says:
+Theorem 2
+.
+Let
+φ
+⁢
+(
+x
+,
+y
+)
+be any formula (in the
+language
+of set theory). Then the following is a theorem: assume that
+φ
+satisfies
+property that, for every
+x
+, there is a unique
+y
+such that
+φ
+⁢
+(
+x
+,
+y
+)
+. If
+A
+be a
+well-ordered set
+(well-ordered by
+≤
+), then there is a unique function
+f
+defined on
+A
+such that
+φ
+(
+f
+|
+seg
+(
+s
+)
+,
+f
+(
+s
+)
+)
+for every
+s
+∈
+A
+. Here,
+seg
+⁡
+(
+s
+)
+:=
+{
+t
+∈
+A
+∣
+t
+<
+s
+}
+, the
+initial segment
+of
+s
+in
+A
+.
+The above theorem is actually a
+collection
+of theorems, or known as a theorem schema, where each theorem corresponds to a formula. The other
+difference
+between this and the previous theorem is that this theorem is provable in ZF, because the domain of the function
+f
+is now a set.
+Title
+transfinite recursion
+Canonical name
+TransfiniteRecursion
+Date of creation
+2013-03-22 17:53:51
+Last modified on
+2013-03-22 17:53:51
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+12
+Author
+CWoo (3771)
+Entry type
+Theorem
+Classification
+msc 03E45
+Classification
+msc 03E10
+Related topic
+WellFoundedRecursion
+Related topic
+TransfiniteInduction
+Generated  on Thu Feb  8 20:19:52 2018 by
+LaTeXML

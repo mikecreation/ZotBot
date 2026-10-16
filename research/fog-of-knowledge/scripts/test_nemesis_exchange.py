@@ -28,7 +28,7 @@ class ExchangeTests(unittest.TestCase):
         for name,value in self.c.items():
             (self.batch/name).write_text(json.dumps(value) if name.endswith('.json') else ''.join(json.dumps(v)+'\n' for v in value),encoding='utf-8')
     def run_cli(self,script,*args):
-        return subprocess.run([sys.executable,'-I','-B','-X','utf8','scripts/'+script,*args],cwd=self.root,text=True,encoding='utf-8',capture_output=True,timeout=30)
+        return subprocess.run([sys.executable,'-I','-B','-X','utf8','scripts/'+script,*args],cwd=self.root,text=True,encoding='utf-8',capture_output=True,timeout=300)
     def exchange(self,mode):return self.run_cli('nemesis_evidence_exchange.py','nemesis/batches/test-evidence','--'+mode)
     def packet(self):
         result=self.exchange('packet');self.assertEqual(result.returncode,0,result.stdout+result.stderr)

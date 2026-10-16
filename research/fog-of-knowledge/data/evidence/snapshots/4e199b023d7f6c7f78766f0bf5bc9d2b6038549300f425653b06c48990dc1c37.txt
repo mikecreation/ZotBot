@@ -1,0 +1,488 @@
+models constructed from constants
+models constructed from constants
+The
+definition
+of a
+structure
+and of the
+satisfaction relation
+is
+nice, but it raises the following question : how do we get models in
+the first place? The most basic construction for models of
+first-order theory
+is the construction that uses
+constants
+. Throughout
+this entry,
+L
+is a fixed
+first-order language
+.
+Let
+C
+be a set of
+constant symbols
+of
+L
+, and
+T
+be a theory in
+L
+. Then we say
+C
+is a
+set of witnesses
+for
+T
+if and only
+if for every
+formula
+φ
+with at most one
+free variable
+x
+,
+we have
+T
+⊢
+∃
+x
+⁢
+(
+φ
+)
+⇒
+φ
+⁢
+(
+c
+)
+for some
+c
+∈
+C
+.
+Lemma.
+Let
+T
+is any consistent
+set of
+sentences
+of
+L
+, and
+C
+is a set of new symbols
+such that
+|
+C
+|
+=
+|
+L
+|
+. Let
+L
+′
+=
+L
+∪
+C
+. Then there is a consistent
+set
+T
+′
+⊆
+L
+′
+extending
+T
+and which has
+C
+as set of
+witnesses.
+Lemma.
+If
+T
+is a
+consistent
+theory in
+L
+, and
+C
+is a set of witnesses
+for
+T
+in
+L
+, then
+T
+has a model whose
+elements
+are the constants
+in
+C
+.
+Proof:
+Let
+Σ
+be the
+signature
+for
+L
+. If
+T
+is a consistent set of
+sentences of
+L
+, then there is a maximal consistent
+T
+′
+⊇
+T
+.
+Note that
+T
+′
+and
+T
+have the same sets of witnesses. As every
+model of
+T
+′
+is also a model of
+T
+, we may assume
+T
+is maximal
+consistent.
+We let the
+universe
+of
+𝔐
+be the set of
+equivalence classes
+C
+/
+∼
+, where
+a
+∼
+b
+if and only if
+“
+⁢
+a
+=
+b
+⁢
+”
+∈
+T
+. As
+T
+is
+maximal consistent, this is an
+equivalence relation
+. We interpret the
+non-logical symbols as follows :
+1.
+[
+a
+]
+=
+𝔐
+[
+b
+]
+if and only if
+a
+∼
+b
+;
+2.
+Constant symbols are interpreted in the
+obvious
+way, i.e. if
+c
+∈
+Σ
+is a constant symbol, then
+c
+𝔐
+=
+[
+c
+]
+;
+3.
+If
+R
+∈
+Σ
+is an
+n
+-ary relation symbol, then
+(
+[
+a
+1
+]
+,
+…
+,
+[
+a
+n
+]
+)
+∈
+R
+𝔐
+if and only if
+R
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+∈
+T
+;
+4.
+If
+F
+∈
+Σ
+is an
+n
+-any function symbol, then
+F
+𝔐
+⁢
+(
+[
+a
+0
+]
+,
+…
+,
+[
+a
+n
+]
+)
+=
+[
+b
+]
+if and only if
+“
+⁢
+F
+⁢
+(
+a
+1
+,
+…
+,
+a
+n
+)
+=
+b
+⁢
+”
+∈
+T
+.
+From the fact that
+T
+is maximal consistent, and
+∼
+is an
+equivalence relation, we get that the
+operations
+are
+well-defined
+(it
+is not so simple, i’ll write it out later).
+The proof that
+𝔐
+⊧
+T
+is a straightforward
+induction
+on the
+complexity of the formulas of
+T
+.
+♢
+Corollary
+.
+(The extended completeness theorem) A set
+T
+of formulas of
+L
+is
+consistent if and only if it has a model (regardless of whether or not
+L
+has witnesses for
+T
+).
+Proof:
+First add a set
+C
+of new constants to
+L
+, and expand
+T
+to
+T
+′
+in
+such a way that
+C
+is a set of witnesses for
+T
+′
+. Then expand
+T
+′
+to a maximal consistent set
+T
+′′
+. This set has a model
+𝔐
+consisting of
+the constants in
+C
+, and
+𝔐
+is also a model of
+T
+.
+♢
+Corollary.
+(Compactness theorem) A set
+T
+of sentences of
+L
+has a model if
+and only if every finite subset of
+T
+has a model.
+Proof:
+Replace “has a model” by “is consistent”, and apply the syntactic
+compactness theorem.
+♢
+Corollary.
+(Gödel’s completeness theorem)
+Let
+T
+be a consistent set of formulas of
+L
+. Then
+A sentence
+φ
+is a
+theorem
+of
+T
+if and only if it is true in
+every model of
+T
+.
+Proof:
+If
+φ
+is not a theorem of
+T
+, then
+¬
+⁢
+φ
+is consistent
+with
+T
+, so
+T
+∪
+{
+¬
+⁢
+φ
+}
+has a model
+𝔐
+, in which
+φ
+cannot be true.
+♢
+Corollary.
+(Downward Löwenheim-Skolem theorem) If
+T
+⊆
+L
+has a model,
+then it has a model of power at most
+|
+L
+|
+.
+Proof:
+If
+T
+has a model, then it is consistent. The model constructed from
+constants has power at most
+|
+L
+|
+(because we must add at most
+|
+L
+|
+many new constants).
+♢
+Most of the treatment found in this entry can be read in more details
+in Chang and Keisler’s book
+Model Theory
+.
+Title
+models constructed from constants
+Canonical
+name
+ModelsConstructedFromConstants
+Date of creation
+2013-03-22 12:44:42
+Last modified on
+2013-03-22 12:44:42
+Owner
+ratboy (4018)
+Last modified by
+ratboy (4018)
+Numerical id
+17
+Author
+ratboy (4018)
+Entry type
+Definition
+Classification
+msc 03C07
+Synonym
+completeness theorem
+Synonym
+Gödel completeness theorem
+Related topic
+UpwardsSkolemLowenheimTheorem
+Defines
+set of witnesses
+Generated  on Thu Feb  8 19:55:14 2018 by
+LaTeXML

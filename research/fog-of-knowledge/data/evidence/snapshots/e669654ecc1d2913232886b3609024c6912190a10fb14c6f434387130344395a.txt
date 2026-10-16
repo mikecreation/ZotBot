@@ -1,0 +1,318 @@
+formal system
+formal system
+In mathematical logic, a
+formal system
+is a “set-up” to study the syntactic structures of statements that we see in everyday mathematics. Thus, instead of looking at the meaning of the statement
+1
++
+1
+=
+2
+, one looks at the expression made up of symbols
+1
+,
++
+,
+1
+,
+=
+, and
+2
+.
+Formally, a formal system
+S
+consists of the following:
+1.
+the
+language
+of
+S
+, which is formed by
+(a)
+a set
+Σ
+of symbols;
+finite sequences
+of these symbols are called
+words
+or
+expressions
+over
+Σ
+;
+(b)
+a set of expressions called
+well-formed formulas
+, or simply
+formulas
+;
+(c)
+a set of rules that specify how these words are generated; the set is called the
+syntax of the language
+; typically, the rules are
+*
+certain expressions are singled out, which are called atoms, or
+atomic formulas
+*
+a set of rules (inductive in nature) showing how formulas can be formed from other formulas that have already been formed
+2.
+a
+deductive system
+(or
+proof system
+) associated with
+S
+, which consists of
+(a)
+a set of axioms; each axiom is usually (but not always) a formula;
+(b)
+a set of rules called
+rules of inference
+on
+S
+; the rules of inferences are used to generate formulas, which are known as
+theorems
+of
+S
+; typically,
+*
+an axiom is a theorem,
+*
+a formula that can be formed (or deduced) from other theorems by a rule of inference is a theorem.
+Thus, in a formal system
+S
+, one starts with a set
+Σ
+of symbol. Three sets are associated:
+Σ
+*
+⊇
+Fmla
+⁡
+(
+S
+)
+⊇
+Thm
+⁡
+(
+S
+)
+where
+Σ
+*
+is the set of all expressions over
+Σ
+,
+Fmla
+⁡
+(
+S
+)
+is the set of all (well-formed) formulas obtained by a set of formula formation rules, and
+Thm
+⁡
+(
+S
+)
+is the set of all theorems obtained from the formulas by a set of rules of inference.
+Here’s an example of a formal system: the (classical)
+propositional logic
+P
+⁢
+R
+⁢
+O
+⁢
+P
+. The symbols of
+P
+⁢
+R
+⁢
+O
+⁢
+P
+consists of
+→
+,
+¬
+,
+(
+,
+)
+,
+(not including
+,
+the symbol for commas, and a set of
+elements
+called
+propositional variables
+. Formulas of
+P
+⁢
+R
+⁢
+O
+⁢
+P
+are generated as follows:
+•
+propositional variables are formulas; and
+•
+if
+α
+,
+β
+are formulas, so are
+(
+¬
+⁢
+α
+)
+and
+(
+α
+∨
+β
+)
+.
+A deduction system for
+P
+⁢
+R
+⁢
+O
+⁢
+P
+may consist the following:
+•
+all formulas of the forms
+(
+α
+→
+(
+α
+→
+β
+)
+)
+,
+(
+(
+α
+→
+(
+β
+→
+γ
+)
+)
+→
+(
+(
+α
+→
+β
+)
+→
+(
+α
+→
+γ
+)
+)
+)
+,
+(
+(
+¬
+(
+¬
+α
+)
+)
+→
+α
+)
+for all formulas
+α
+,
+β
+, and
+•
+γ
+, and the (only) rule of inference is
+modus ponens
+: from
+α
+and
+(
+α
+→
+β
+)
+, we may infer (or deduce)
+β
+.
+The (classical)
+first-order logic
+is another example of a formal system.
+Group theory
+, number theory (a la
+Peano arithmetic
+), theory of
+partially ordered sets
+, and
+set theory
+(a la ZFC) are other examples of formal systems that are extensively studied.
+Remark
+. A formal system is sometimes called a
+logical system
+, although the latter term usually either refers to a formal system where the
+deducibility relation
+⊢
+arising out of the associated deductive system
+satisfies
+certain properties (for example,
+A
+⊢
+A
+for all wffs, etc…), or a formal system together with a semantical
+structure
+.
+References
+1
+R. M. Smullyan,
+Theory of Formal Systems
+, Princeton University Press, 1961
+2
+J. R. Shoenfield,
+Mathematical Logic
+, AK Peters, 2001
+Title
+formal system
+Canonical name
+FormalSystem
+Date of creation
+2013-03-22 19:12:25
+Last modified on
+2013-03-22 19:12:25
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+15
+Author
+CWoo (3771)
+Entry type
+Topic
+Classification
+msc 03B99
+Synonym
+logical system
+Related topic
+DeductiveSystem
+Generated  on Thu Feb  8 19:53:44 2018 by
+LaTeXML

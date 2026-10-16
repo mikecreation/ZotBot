@@ -1,0 +1,400 @@
+subformula
+subformula
+Let
+L
+be a
+first order language
+and suppose
+φ
+is a
+formula
+of
+L
+. A
+subformula
+of
+φ
+is defined as any of the following:
+1.
+φ
+is a subformula of
+φ
+;
+2.
+if
+¬
+⁢
+ψ
+is a subformula of
+φ
+for some
+L
+-formula
+ψ
+, then so is
+ψ
+;
+3.
+if
+α
+∧
+β
+is a subformula of
+φ
+for some
+L
+-formulas
+α
+,
+β
+, then so are
+α
+and
+β
+;
+4.
+if
+∃
+x
+⁢
+(
+ψ
+)
+is a subformula of
+φ
+for some
+L
+-formula
+ψ
+, then so is
+ψ
+⁢
+[
+t
+/
+x
+]
+for any
+t
+free for
+x
+in
+ψ
+.
+Remark
+. And if the
+language
+contains a modal connective, say
+□
+, then we also have
+5.
+if
+□
+⁢
+α
+is a subformula of
+φ
+for some
+L
+-formula
+α
+, then so is
+α
+.
+The phrase “
+t
+is free for
+x
+in
+ψ
+” means that after substituting the term
+t
+for the
+variable
+x
+in the formula
+ψ
+, no
+free variables
+in
+t
+will become
+bound variables
+in
+ψ
+⁢
+[
+t
+/
+x
+]
+.
+For example, if
+φ
+=
+α
+∨
+β
+, then
+α
+and
+β
+are subformulas of
+φ
+. This is so because
+α
+∨
+β
+=
+¬
+⁡
+(
+¬
+⁢
+α
+∧
+¬
+⁢
+β
+)
+, so that
+¬
+⁢
+α
+∧
+¬
+⁢
+β
+is a subformula of
+φ
+by applications of 1 followed by 2 above. By 3 above,
+¬
+⁢
+α
+and
+¬
+⁢
+β
+are subformulas of
+φ
+. Therefore, by 2 again,
+α
+and
+β
+are subformulas of
+φ
+.
+For another example, if
+φ
+=
+∃
+x
+(
+∃
+y
+(
+x
+2
++
+y
+2
+=
+1
+)
+)
+, then
+∃
+y
+(
+t
+2
++
+y
+2
+=
+1
+)
+is a subformula of
+φ
+as long as
+t
+is a term that does not contain the variable
+y
+. Therefore, if
+t
+=
+y
++
+2
+, then
+∃
+y
+(
+(
+y
++
+2
+)
+2
++
+y
+2
+=
+1
+)
+is not a subformula of
+φ
+. In fact, if
+y
+∈
+ℝ
+, the equation
+(
+y
++
+2
+)
+2
++
+y
+2
+=
+1
+is never true.
+Finally, it is easy to see (by
+induction
+) that if
+α
+is a subformula of
+ψ
+and
+ψ
+is a subformula of
+φ
+, then
+α
+is a subformula of
+φ
+. “Being a subformula of” is a
+reflexive
+transitive relation
+on
+L
+-formulas.
+Remark
+. There is also the notion of a
+literal subformula
+of a formula
+φ
+. A formula
+ψ
+is a literal subformula of
+φ
+if it is a subformula of
+φ
+obtained in any one of the first three ways above, or if
+∃
+x
+⁢
+(
+ψ
+)
+is a literal subformula of
+φ
+.
+Note that any literal subformula of
+φ
+is a subformula of
+φ
+, for if
+φ
+=
+∃
+x
+⁢
+(
+ψ
+)
+, then
+x
+occurs free in
+ψ
+and
+ψ
+=
+ψ
+⁢
+[
+x
+/
+x
+]
+.
+In the second example above,
+∃
+y
+(
+x
+2
++
+y
+2
+=
+1
+)
+and
+x
+2
++
+y
+2
+=
+1
+are both literal subformulas of
+φ
+=
+∃
+x
+(
+∃
+y
+(
+x
+2
++
+y
+2
+=
+1
+)
+)
+.
+Title
+subformula
+Canonical
+name
+Subformula
+Date of creation
+2013-03-22 12:42:52
+Last modified on
+2013-03-22 12:42:52
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+13
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 03C07
+Classification
+msc 03B10
+Related topic
+Substitutability
+Defines
+literal subformula
+Generated  on Thu Feb  8 19:55:50 2018 by
+LaTeXML

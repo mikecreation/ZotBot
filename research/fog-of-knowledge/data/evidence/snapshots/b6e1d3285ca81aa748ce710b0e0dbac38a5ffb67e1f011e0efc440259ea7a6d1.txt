@@ -1,0 +1,440 @@
+logical connective
+logical connective
+In
+propositional logic
+, the usual way of forming a
+well-formed formula
+out of existing ones is by attaching a designated symbol to the existing wffs. This designated symbol is variously known as a
+logical connective
+,
+logical symbol
+, or simply a
+connective
+. Given a connective, the number of wffs needed to form a new wff is a fixed
+integer
+, and is called the
+arity
+of the connective. For example, if
+#
+is a connective of arity 3, and
+p
+,
+q
+,
+r
+are three existing wffs, then
+#
+⁢
+p
+⁢
+q
+⁢
+r
+is the wff formed by attaching
+#
+to the
+p
+,
+q
+and
+r
+in order
+. Instead of prefixing to the string of wffs as above, the connective may also be attached at the end (as a suffix), or customarily infixed in case it has arity of 2 (binary).
+0
+-ary connectives are also allowed, in which case it is just a symbol with no wffs attached.
+The common classical logical connectives are:
+•
+¬
+:
+logical not
+(
+http://planetmath.org/
+Negation
+);
+•
+∨
+:
+logical or
+;
+•
+∧
+:
+logical and
+;
+•
+→
+or
+⊃
+:
+material implication
+; and
+•
+↔
+or
+≡
+: material equivalence (
+http://planetmath.org/
+Biconditional
+).
+The symbols
+⊃
+and
+≡
+are due to Russell.
+Remark
+. “
+Logical implication
+”
+→
+and “
+logical is
+equivalent
+to
+”
+↔
+symbols are typically used for logicians. Nevertheless, the symbols
+⇒
+for material implication and
+⇔
+for material equivalence are commonly used in the literature. In particular,
+→
+is usually reserved for the
+concept
+of limit.
+Usually, given a logical connective
+#
+, a
+truth function
+is associated. The arity of the truth function is defined to be the arity of the connective. When there is no confusion, the symbol for the associated truth function is the same as the symbol of the connective. A truth function of small arity can be easily represented by a table, called the
+truth table
+of the truth function. The truth functions and truth tables associated with the connectives listed above are
+•
+¬
+:
+𝟐
+→
+𝟐
+given by
+¬
+⁡
+(
+x
+)
+=
+1
+-
+x
+;
+P
+¬
+⁢
+P
+F
+T
+T
+F
+•
+∨
+:
+𝟐
+2
+→
+𝟐
+given by
+∨
+(
+x
+,
+y
+)
+=
+max
+⁡
+(
+x
+,
+y
+)
+;
+P
+Q
+P
+∨
+Q
+F
+F
+F
+F
+T
+T
+T
+F
+T
+T
+T
+T
+•
+∧
+:
+𝟐
+2
+→
+𝟐
+given by
+∧
+(
+x
+,
+y
+)
+=
+min
+⁡
+(
+x
+,
+y
+)
+;
+P
+Q
+P
+∧
+Q
+F
+F
+F
+F
+T
+F
+T
+F
+F
+T
+T
+T
+•
+→
+:
+𝟐
+2
+→
+𝟐
+given by
+→
+(
+x
+,
+y
+)
+=
+max
+⁡
+(
+1
+-
+x
+,
+y
+)
+; and
+P
+Q
+P
+→
+Q
+F
+F
+T
+F
+T
+T
+T
+F
+F
+T
+T
+T
+•
+↔
+:
+𝟐
+2
+→
+𝟐
+given by
+↔
+(
+x
+,
+y
+)
+=
+(
+x
++
+y
++
+1
+)
+(
+mod
+2
+)
+.
+P
+Q
+P
+↔
+Q
+F
+F
+T
+F
+T
+F
+T
+F
+F
+T
+T
+T
+where
+𝟐
+=
+{
+0
+,
+1
+}
+. Note that
+0
+and
+1
+have been converted to
+F
+and
+T
+in the tables above.
+Any truth function of any finite arity can be written as a finite
+combination
+of these connectives (see the entry on
+functional completeness
+). However, the
+collection
+is redundant; the final three symbols,
+∧
+,
+→
+, and
+↔
+, can be defined in terms of prior ones. By DeMorgan’s law, we can define logical and by
+P
+∧
+Q
+:=
+¬
+⁢
+P
+∨
+¬
+⁢
+Q
+.
+Material implication can be defined by
+P
+→
+Q
+:=
+¬
+⁢
+P
+∨
+Q
+.
+Finally, material equivalence can be defined by
+P
+↔
+Q
+:=
+(
+P
+→
+Q
+)
+∧
+(
+Q
+→
+P
+)
+=
+¬
+⁡
+(
+¬
+⁢
+P
+∨
+Q
+)
+∨
+¬
+⁡
+(
+¬
+⁢
+Q
+∨
+P
+)
+.
+Hence
+¬
+and
+∨
+suffice to define all other connectives.
+Title
+logical connective
+Canonical name
+LogicalConnective
+Date of creation
+2013-03-22 16:26:58
+Last modified on
+2013-03-22 16:26:58
+Owner
+mps (409)
+Last modified by
+mps (409)
+Numerical id
+19
+Author
+mps (409)
+Entry type
+Definition
+Classification
+msc 03B05
+Synonym
+logical symbol
+Synonym
+connective
+Synonym
+conjunctive connective
+Synonym
+disjunctive connective
+Related topic
+Ampheck
+Related topic
+ContradictoryStatement
+Related topic
+LogicalAxiom
+Related topic
+SoleSufficientOperator
+Related topic
+PropositionalCalculus
+Related topic
+LogicalImplication
+Related topic
+ZerothOrderLogic
+Generated  on Thu Feb  8 19:23:29 2018 by
+LaTeXML

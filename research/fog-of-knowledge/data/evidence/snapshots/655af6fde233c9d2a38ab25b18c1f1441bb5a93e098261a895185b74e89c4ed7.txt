@@ -1,0 +1,350 @@
+related rates
+related rates
+The notion of a
+derivative
+has numerous
+interpretations
+and
+applications. A well-known geometric interpretation is that of a
+slope, or more generally that of a linear approximation to a
+mapping
+between
+linear spaces
+(see
+http://
+planetmath
+.org/node/2975
+here). Another useful
+interpretation comes from physics and is based on the idea of
+related
+rates
+. This second point of view is quite general, and sheds light on
+the
+definition
+of the derivative of a
+manifold
+mapping (the latter is
+described in the
+pushforward
+entry).
+Consider two physical quantities
+x
+and
+y
+that are somehow coupled.
+For example:
+•
+the quantities
+x
+and
+y
+could be the
+coordinates
+of a point as it
+moves along the
+unit circle
+;
+•
+the quantity
+x
+could be the radius of a sphere
+and
+y
+the sphere’s
+surface area
+;
+•
+the quantity
+x
+could be the horizontal position of a point on
+a given curve and
+y
+the
+distance
+traversed by that point as it
+moves from some fixed starting position;
+•
+the quantity
+x
+could be depth of water in a conical tank and
+y
+the rate at which the water flows out the bottom.
+Regardless of the application, the situation is such that a change in
+the value of one quantity is accompanied by a change in the value of
+the other quantity. So let’s imagine that we take control of one of
+the quantities, say
+x
+, and change it in any way we like. As we do
+so, quantity
+y
+follows suit and changes along with
+x
+. Now the
+analytical
+relation
+between the values of
+x
+and
+y
+could be quite
+complicated and non-linear, but the relation between the instantaneous
+rates of change of
+x
+and
+y
+is linear
+.
+It does not matter how we vary the two quantities, the ratio of the
+rates of change depends only on the values of
+x
+and
+y
+. This ratio
+is, of course, the derivative of the
+function
+that maps the values of
+x
+to the values of
+y
+. Letting
+x
+˙
+,
+y
+˙
+denote the rates
+of change of the two quantities, we describe this conception of the
+derivative as
+d
+⁢
+y
+d
+⁢
+x
+=
+y
+˙
+x
+˙
+,
+or equivalently as
+y
+˙
+=
+d
+⁢
+y
+d
+⁢
+x
+⁢
+x
+˙
+.
+(1)
+Next, let us generalize the discussion and suppose that the two
+quantities
+𝐱
+and
+𝐲
+represent physical states with multiple
+degrees of freedom. For example,
+𝐱
+could be a point on the
+earth’s surface, and
+𝐲
+the position of a point 1 kilometer to the
+north of
+𝐱
+. Again, the dependence of
+𝐲
+and
+𝐱
+is, in
+general, non-linear, but the rate of change of
+𝐲
+does have a
+linear dependence
+on the rate of change of
+𝐱
+. We would like to
+say that the derivative is precisely this linear relation, but we must
+first contend with the following complication. The rates of change are
+no longer scalars, but rather
+velocity vectors
+, and therefore the
+derivative must be regarded as a
+linear transformation
+that changes
+one vector into another.
+In order to formalize this generalized notion of the derivative we
+must consider
+𝐱
+and
+𝐲
+to be points on manifolds
+X
+and
+Y
+,
+and the relation between them a manifold mapping
+ϕ
+:
+X
+→
+Y
+. A varying
+𝐱
+is formally described by a
+parameterized curve
+γ
+:
+I
+→
+X
+,
+I
+⊂
+ℝ
+.
+The corresponding
+velocities
+take their value in the
+tangent spaces
+of
+X
+:
+γ
+′
+⁢
+(
+t
+)
+∈
+T
+γ
+⁢
+(
+t
+)
+⁢
+X
+.
+The “coupling” of the two quantities is described by the
+composition
+ϕ
+∘
+γ
+:
+I
+→
+Y
+.
+The derivative of
+ϕ
+at any given
+𝐱
+∈
+X
+is a linear mapping
+ϕ
+*
+⁢
+(
+𝐱
+)
+:
+T
+𝐱
+⁢
+X
+→
+T
+ϕ
+⁢
+(
+𝐱
+)
+⁢
+Y
+,
+called the
+pushforward of
+ϕ
+at
+𝐱
+, with the
+property
+that for every
+trajectory
+γ
+passing through
+𝐱
+at time
+t
+, we have
+(
+ϕ
+∘
+γ
+)
+′
+⁢
+(
+t
+)
+=
+ϕ
+*
+⁢
+(
+𝐱
+)
+⁢
+γ
+′
+⁢
+(
+t
+)
+.
+The above is the multi-dimensional and coordinate-free
+generalization
+of the related rates relation (
+1
+).
+All of the above has a perfectly
+rigorous
+presentation in terms of
+manifold theory. The approach of the present entry is more informal;
+our ambition was merely to motivate the notion of a derivative by
+describing it as a linear transformation between velocity vectors.
+Title
+related rates
+Canonical
+name
+RelatedRates
+Date of creation
+2013-03-22 12:44:59
+Last modified on
+2013-03-22 12:44:59
+Owner
+rmilson (146)
+Last modified by
+rmilson (146)
+Numerical id
+6
+Author
+rmilson (146)
+Entry type
+Definition
+Classification
+msc 53A45
+Classification
+msc 53A17
+Classification
+msc 26A24
+Related topic
+Derivative2
+Generated  on Fri Feb  9 22:26:16 2018 by
+LaTeXML

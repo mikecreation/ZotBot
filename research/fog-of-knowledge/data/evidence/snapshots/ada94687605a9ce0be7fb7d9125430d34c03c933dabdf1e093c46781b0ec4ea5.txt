@@ -1,0 +1,573 @@
+axiom system for first order logic
+axiom system for first order logic
+Let FO
+(
+Σ
+)
+be a
+first order language
+over
+signature
+Σ
+. Furthermore, let
+V
+be a
+countably infinite
+set of
+variables
+and
+V
+⁢
+(
+Σ
+)
+the set extending
+V
+to include the
+constants
+in
+Σ
+. Before describing the
+axiom system
+for FO
+(
+Σ
+)
+, we need the following
+definition
+:
+Definition
+. Let
+A
+be a wff. A
+generalization
+of
+A
+is a wff having the form
+∀
+x
+1
+⁢
+∀
+x
+2
+⁢
+⋯
+⁢
+∀
+x
+n
+⁢
+A
+, for any
+n
+≥
+0
+. Thus,
+A
+is a generalization of itself.
+The axiom system of FO
+(
+Σ
+)
+consists of any wff that is a generalization of a wff belonging to any one of the following six schemas:
+1.
+A
+→
+(
+B
+→
+A
+)
+2.
+(
+A
+→
+(
+B
+→
+C
+)
+)
+→
+(
+(
+A
+→
+B
+)
+→
+(
+A
+→
+C
+)
+)
+3.
+¬
+⁢
+¬
+⁢
+A
+→
+A
+4.
+∀
+x
+(
+A
+→
+B
+)
+→
+(
+∀
+x
+A
+→
+∀
+x
+B
+)
+, where
+x
+∈
+V
+5.
+A
+→
+∀
+x
+⁢
+A
+, where
+x
+∈
+V
+is not free in
+A
+6.
+∀
+x
+⁢
+A
+→
+A
+⁢
+[
+a
+/
+x
+]
+, where
+x
+∈
+V
+,
+a
+∈
+V
+⁢
+(
+Σ
+)
+, and
+a
+is
+free for
+x
+in
+A
+and
+modus ponens
+(from
+A
+and
+A
+→
+B
+we may infer
+B
+) as its only
+rule of inference
+.
+In schema 6, the wff
+A
+⁢
+[
+a
+/
+x
+]
+is obtained by replacing all
+free occurrences
+of
+x
+in
+A
+by
+a
+.
+Logical symbols
+∧
+,
+∨
+, and
+∃
+are derived:
+A
+∨
+B
+:=
+¬
+⁢
+A
+→
+B
+;
+A
+∧
+B
+:=
+¬
+⁡
+(
+¬
+⁢
+A
+∨
+¬
+⁢
+B
+)
+; and
+∃
+x
+⁢
+A
+:=
+¬
+⁢
+∀
+x
+⁢
+¬
+⁢
+A
+.
+Remark
+. Again, in schema 6, the reason why we want
+a
+free for
+x
+in
+A
+is to keep the “intended meaning” of
+A
+intact. For example, suppose
+A
+is
+∀
+y
+(
+x
+<
+y
+)
+. Then
+A
+⁢
+[
+y
+/
+x
+]
+is
+∀
+y
+(
+y
+<
+y
+)
+. Obviously the two do not have the same “intended meaning”. In fact,
+A
+⁢
+[
+y
+/
+x
+]
+is not valid in any model. Similarly, in the schema 5, we want
+x
+not occur free in
+A
+to maintain its “intended meaning”. For example, if
+A
+is the
+formula
+x
+=
+0
+, then
+∀
+x
+⁢
+A
+is
+∀
+x
+(
+x
+=
+0
+)
+, which is not true in any model with at least two
+elements
+.
+The
+concepts
+of
+deductions
+and
+theorems
+are exactly the same as those found in
+propositional logic
+. Here is an example: if
+⊢
+A
+, then
+⊢
+∀
+x
+⁢
+A
+. To see this, we induct on the length
+n
+of the deduction of
+A
+. If
+n
+=
+1
+, then
+A
+is an axiom, and therefore so is its generalization
+∀
+x
+⁢
+A
+, so that
+⊢
+∀
+x
+⁢
+A
+. Suppose now that the length is
+n
++
+1
+. If
+A
+is an axiom, we are back to the previous
+argument
+. Otherwise,
+A
+is obtained from earlier formulas
+B
+and
+B
+→
+A
+via modus ponens. Since the deduction of
+B
+and
+B
+→
+A
+are at most
+n
+, by
+induction
+, we have
+⊢
+∀
+x
+⁢
+B
+and
+⊢
+∀
+x
+(
+B
+→
+A
+)
+. Since
+∀
+x
+(
+B
+→
+A
+)
+→
+(
+∀
+x
+B
+→
+∀
+x
+A
+)
+is an axiom, we have
+⊢
+∀
+x
+⁢
+B
+→
+∀
+x
+⁢
+A
+by modus ponens, and then
+⊢
+∀
+x
+⁢
+A
+by modus ponens again.
+Remark
+. Another popular axiom system for first order logic has 1, 2, 3, 6 above as its
+axiom schemas
+, plus the following schema
+•
+∀
+x
+(
+A
+→
+B
+)
+→
+(
+A
+→
+∀
+x
+B
+)
+, where
+x
+∈
+V
+is not free in
+A
+and two rules of inferences: modus ponens, and
+universal generalization
+:
+•
+from
+A
+we may infer
+∀
+x
+⁢
+A
+, where
+x
+∈
+V
+Note the similarity between the rule of generalization and axiom schema 5 above. However, the important
+difference
+is that
+x
+is not permitted to be free in
+A
+in the axiom schema.
+With this change, the concept of deductions needs to be modified: we say that a wff
+A
+is
+deducible
+from a set
+Γ
+of wff’s, if there is a
+finite sequence
+A
+1
+,
+…
+,
+A
+n
+where
+A
+=
+A
+n
+, such that for each
+i
+,
+i
+=
+1
+,
+…
+,
+n
+1.
+A
+i
+is either an axiom or in
+Γ
+2.
+A
+i
+is obtained by an application of modus ponens
+3.
+A
+i
+is obtained by an application of generalization:
+A
+i
+is
+∀
+x
+⁢
+A
+j
+for some
+j
+<
+i
+.
+Title
+axiom system for first order logic
+Canonical
+name
+AxiomSystemForFirstOrderLogic
+Date of creation
+2013-03-22 19:32:22
+Last modified on
+2013-03-22 19:32:22
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+24
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 03B10
+Synonym
+universal generalization
+Defines
+generalization
+Generated  on Thu Feb  8 19:25:56 2018 by
+LaTeXML

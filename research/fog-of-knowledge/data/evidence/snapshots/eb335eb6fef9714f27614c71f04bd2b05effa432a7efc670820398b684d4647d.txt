@@ -1,0 +1,172 @@
+Skolemization
+Skolemization
+Skolemization
+is a way of removing
+existential quantifiers
+from a
+formula
+.
+Variables
+bound by existential quantifiers which are not inside the scope of
+universal quantifiers
+can simply be replaced by constants:
+∃
+x
+[
+x
+<
+3
+]
+can be changed to
+c
+<
+3
+, with
+c
+a suitable constant.
+When the existential quantifier is inside a universal quantifier, the
+bound variable
+must be replaced by a
+Skolem function
+of the variables bound by universal quantifiers. Thus
+∀
+x
+[
+x
+=
+0
+∨
+∃
+y
+[
+x
+=
+y
++
+1
+]
+]
+becomes
+∀
+x
+[
+x
+=
+0
+∨
+x
+=
+f
+(
+x
+)
++
+1
+]
+.
+In general, the
+functions
+and
+constants symbols
+are new ones added to the
+language
+for the purpose of satisfying these formulas, and are often denoted by the formula they realize, for
+instance
+c
+∃
+x
+⁢
+ϕ
+⁢
+(
+x
+)
+.
+This is used in
+second order logic
+to move all existential quantifiers outside the scope of
+first order
+universal quantifiers. This can be done since second order
+quantifiers
+can quantify over functions. For instance
+∀
+1
+x
+⁢
+∀
+1
+y
+⁢
+∃
+1
+z
+⁢
+ϕ
+⁢
+(
+x
+,
+y
+,
+z
+)
+is
+equivalent
+to
+∃
+2
+F
+⁢
+∀
+1
+x
+⁢
+∀
+1
+y
+⁢
+ϕ
+⁢
+(
+x
+,
+y
+,
+F
+⁢
+(
+x
+,
+y
+)
+)
+.
+Title
+Skolemization
+Canonical
+name
+Skolemization
+Date of creation
+2013-03-22 12:59:13
+Last modified on
+2013-03-22 12:59:13
+Owner
+Henry (455)
+Last modified by
+Henry (455)
+Numerical id
+5
+Author
+Henry (455)
+Entry type
+Definition
+Classification
+msc 03B15
+Classification
+msc 03B10
+Defines
+Skolem function
+Defines
+Skolem constant
+Generated  on Thu Feb  8 19:45:57 2018 by
+LaTeXML

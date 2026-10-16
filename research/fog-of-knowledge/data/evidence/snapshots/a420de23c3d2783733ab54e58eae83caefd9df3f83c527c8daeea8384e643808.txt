@@ -1,0 +1,672 @@
+incidence structure
+incidence structure
+Definition
+. An
+incidence structure
+𝒮
+is a triple
+(
+𝒫
+,
+ℬ
+,
+ℐ
+)
+, where
+1.
+𝒫
+and
+ℬ
+are two
+disjoint sets
+; the elements of
+𝒫
+and
+ℬ
+are respectively
+points
+and
+blocks
+of
+𝒮
+, and
+2.
+ℐ
+⊆
+𝒫
+×
+ℬ
+called the
+incidence relation
+of
+𝒮
+.
+and a point
+P
+and a block
+B
+are said to be
+incident
+iff
+(
+P
+,
+B
+)
+∈
+ℐ
+. The
+dual
+incidence structure
+ℐ
+*
+is the same
+structure
+with the labels “point” and “block” reversed.
+Every block
+B
+has a set
+𝒫
+B
+⊆
+𝒫
+of points it is incident with. The
+collection
+of all
+𝒫
+B
+is a
+multiset
+, since it is possible that identical sets of points be related to distinct blocks. When
+𝒫
+B
+′
+≠
+𝒫
+B
+′′
+whenever
+B
+′
+≠
+B
+′′
+, the incidence structure is said to be
+simple
+. In a simple incidence structure, we could identify each block
+B
+with its
+𝒫
+B
+so that blocks no longer
+have
+sets of points they are incident with but
+are
+such sets. If we define it that way, then
+•
+a
+simple
+incidence structure consists of a set
+𝒫
+and a set
+ℬ
+⊆
+P
+⁢
+(
+𝒫
+)
+where
+P
+⁢
+(
+𝒫
+)
+is the
+powerset
+of
+𝒫
+.
+A simple incidence structure is also called a
+hypergraph
+(with points as vertices, and blocks as an extended type of “edges” that are no longer restricted to exactly two vertices each).
+Every point
+P
+also has a set
+ℬ
+P
+⊆
+ℬ
+of blocks it is incident with. Often, a simple incidence structure also has a simple dual, but the
+set theory
+formalism
+does not allow us to regard blocks as sets of points and simultaneously points as sets of blocks! Nevertheless, it is often useful to alternate between these dual
+interpretations
+.
+The definition given above is quite general, so one can easily come up with arbitrary examples. Nevertheless, interesting examples of incidence structures are found mainly in
+geometry
+and
+combinatorics
+. In geometry, incidence is usually interpreted as
+set inclusion
+, so when we say a line is incident with a plane, we are saying that the line is included (as a subset) in the plane. In combinatorics, the main use of incidence structure is in the study of
+block designs
+: grouping a finite collection of objects so that certain “incidence” properties are satisfied.
+Incidence structures are examples of
+relational structures
+. As such, we can define
+substructures
+and
+homomorphisms
+between structures:
+Definition
+. Given an incidence structure
+𝒮
+=
+(
+𝒫
+,
+ℬ
+,
+ℐ
+)
+, a
+substructure
+of
+𝒮
+is an incidence structure
+(
+𝒫
+′
+,
+ℬ
+′
+,
+ℐ
+′
+)
+such that
+𝒫
+′
+⊆
+𝒫
+,
+ℬ
+′
+⊆
+ℬ
+, and
+ℐ
+′
+=
+ℐ
+∩
+(
+𝒫
+′
+×
+ℬ
+′
+)
+.
+Definition
+. Given two incidence structures
+𝒮
+1
+=
+(
+𝒫
+1
+,
+ℬ
+1
+,
+ℐ
+1
+)
+,
+𝒮
+2
+=
+(
+𝒫
+2
+,
+ℬ
+2
+,
+ℐ
+2
+)
+, a
+homomorphism
+from
+𝒮
+1
+to
+𝒮
+2
+is a pair of
+functions
+f
+:
+𝒫
+1
+→
+𝒫
+2
+and
+g
+:
+ℬ
+1
+→
+ℬ
+2
+such that
+(
+P
+,
+B
+)
+∈
+ℐ
+1
+iff
+(
+f
+⁢
+(
+P
+)
+,
+g
+⁢
+(
+B
+)
+)
+∈
+ℐ
+2
+. A homomorphism is an
+isomorphism
+if both
+f
+and
+g
+are
+bijections
+. An isomorphism is an
+automorphism
+if
+𝒮
+′
+=
+𝒮
+. It is easy to see that if both
+𝒮
+1
+and
+𝒮
+2
+are simple, then a homomorphism can be thought of as a single function
+f
+:
+𝒫
+1
+→
+𝒫
+2
+such that
+P
+∈
+B
+iff
+f
+⁢
+(
+P
+)
+∈
+f
+⁢
+(
+B
+)
+, where
+f
+⁢
+(
+B
+)
+=
+{
+f
+⁢
+(
+Q
+)
+∣
+Q
+∈
+B
+}
+.
+Incidence structures are special cases of a general form of geometry called
+Buekenhout-Tits geometry
+. Given an incidence structure
+(
+𝒫
+,
+ℬ
+,
+ℐ
+)
+, form the
+disjoint union
+Λ
+of
+𝒫
+and
+ℬ
+, and define a function
+τ
+:
+Λ
+→
+{
+0
+,
+1
+}
+where
+τ
+⁢
+(
+x
+)
+=
+0
+iff
+x
+is a point. Finally, define
+binary relation
+#
+on
+Λ
+so that
+x
+⁢
+#
+⁢
+y
+iff one is incident with another, or
+x
+=
+y
+. Then
+(
+Λ
+,
+#
+,
+{
+0
+,
+1
+}
+,
+τ
+)
+so constructed is a geometry of rank 2.
+Finite planes
+The term
+line
+has a specific meaning for 2-designs in general: for any two points, it is the
+intersection
+of all blocks containing both those points. For 2-designs that are also
+Steiner systems
+(
+τ
+=
+2
+and
+λ
+=
+1
+) there
+is only one such block, so line becomes a synonym for block. And it becomes a finite analogue of the usual geometric meaning of the word.
+•
+An
+S
+⁢
+(
+2
+,
+κ
+,
+ν
+)
+is the finite analogue of a
+plane
+, with blocks in the rôle of
+lines
+in the following sense: the design property now requires there to be, for any two different points, exactly one line “through” both those points. Just like in a real (
+continuous
+) plane.
+This also implies that, for any two different lines
+l
+and
+m
+, there is
+no more
+than one point “on” both those lines (if both of
+P
+and
+Q
+were on both those lines, there would be two lines through those points).
+It does not imply there is always such a point: just like in a real plane, lines can be
+parallel
+.
+One example is a (finite)
+affine plane
+with
+q
+2
+points and
+q
+2
++
+q
+lines. It can be obtained by deleting one line (and all its points) from a
+projective plane
+(for which see below). Lines that used to intersect in one of the deleted points are parallel in the affine plane.
+•
+A (finite)
+projective plane
+is an
+S
+⁢
+(
+2
+,
+q
++
+1
+,
+q
+2
++
+q
++
+1
+)
+and it has no
+parallel lines
+. Because any two lines meet in a point, the dual is again a projective plane. So a projective plane is a square design, as well as being a great many other things.
+It is easy to prove that the property of being a plane dual to a plane (i.e. the absence of parallel lines) implies, apart from a few
+trivial
+cases, numbers of the form
+q
++
+1
+and
+q
+2
++
+q
++
+1
+. Much harder is determining for which
+q
+such planes exist. The parameter
+q
+is known as the
+order
+of the plane (this agrees with order as defined above for designs in general).
+Highly
+symmetric
+“classical” (aka
+Desarguesian
+,
+Pappian
+) projective planes can be constructed based on finite fields, for any prime power
+q
+. Many non-Desarguesian projective planes are known, but thus far their
+q
+are also prime powers. The
+prime power conjecture
+is that orders of all projective planes will be prime powers.
+The
+Bruck–Ryser
+theorem
+states that if
+q
+≡
+1
+or
+2
+(
+mod
+4
+)
+, and not (a square or) the sum of two squares, it cannot be the order of a projective plane. This rules out 6 for
+instance
+, as well as 14 etc. It has been extended
+to the
+Bruck–Ryser–Chowla theorem
+for all square 2-designs, with a more complicated constraint.
+The only other order ruled out to date is 10, via an epic computer search by Lam, Swiercz and Thiel (read
+http://www.cecm.sfu.ca/organics/papers/lam/index.htmlhttp://www.cecm.sfu.ca/organics/papers/lam/index.html
+for Lam’s account).
+References
+1
+AK93
+E. F. Assmus
+and
+J. D. Key
+,
+Designs and their Codes
+(pbk. ed. w. corr.), Camb. Univ. Pr. 1993,
+ISBN  0 521 45839 0
+first part has thorough
+introduction
+to
+various flavors of incidence structure
+Cam94
+Peter J. Cameron
+,
+Combinatorics: topics, techniques, algorithms
+,
+Camb. Univ. Pr. 1994,
+ISBN  0 521 45761 0
+http://www.maths.qmul.ac.uk/ pjc/comb/http://www.maths.qmul.ac.uk/ pjc/comb/
+(
+solutions
+, errata &c.)
+good combinatorics textbook, with detail
+Pot95
+Alexander Pott
+,
+Finite Geometry
+and Character Theory
+,
+Lect. Notes in Math.
+1601
+, Springer 1995,
+ISBN  3 540 59065 X
+includes clear introduction to incidence
+structures
+CD96
+Charles J. Colbourn
+and
+Jeffrey H. Dinitz
+, eds.
+The CRC Handbook of
+Combinatorial Designs
+,
+CRC Press 1996,
+ISBN  0 8493 8948 8
+http://www.emba.uvm.edu/ dinitz/hcd.htmlhttp://www.emba.uvm.edu/ dinitz/hcd.html
+(errata, new results)
+the reference work on designs incl. Steiner systems,
+proj. planes
+Title
+incidence structure
+Canonical name
+IncidenceStructure
+Date of creation
+2013-03-22 15:10:56
+Last modified on
+2013-03-22 15:10:56
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+18
+Author
+CWoo (3771)
+Entry type
+Topic
+Classification
+msc 62K10
+Classification
+msc 51E30
+Classification
+msc 51E05
+Classification
+msc 05B25
+Classification
+msc 05B07
+Classification
+msc 05B05
+Related topic
+Hypergraph
+Related topic
+SteinerSystem
+Related topic
+TacticalDecomposition
+Related topic
+ProjectivePlane2
+Related topic
+FiniteProjectivePlane4
+Related topic
+BuekenhoutTitsGeometry
+Defines
+incidence relation
+Defines
+point
+Defines
+block
+Defines
+incident
+Defines
+simple incidence structure
+Defines
+affine plane
+Defines
+finite affine plane
+Generated  on Sat Feb 10 12:06:03 2018 by
+LaTeXML

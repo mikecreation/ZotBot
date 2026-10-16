@@ -1,0 +1,415 @@
+Hilbert system
+Hilbert system
+A
+Hilbert system
+is a style (formulation) of
+deductive system
+that emphasizes the role played by the axioms in the system. Typically, a Hilbert system has many
+axiom schemes
+, but only a few, sometimes one,
+rules of inference
+. As such, a Hilbert system is also called an
+axiom system
+. Below we list three examples of axiom systems in mathematical logic:
+•
+(intuitionistic
+propositional logic
+)
+–
+axiom schemes:
+i.
+A
+→
+(
+B
+→
+A
+)
+ii.
+(
+A
+→
+(
+B
+→
+C
+)
+)
+→
+(
+(
+A
+→
+B
+)
+→
+(
+A
+→
+C
+)
+)
+iii.
+A
+→
+A
+∨
+B
+iv.
+B
+→
+A
+∨
+B
+v.
+(
+A
+→
+C
+)
+→
+(
+(
+B
+→
+C
+)
+→
+(
+A
+∨
+B
+→
+C
+)
+)
+vi.
+A
+∧
+B
+→
+A
+vii.
+A
+∧
+B
+→
+B
+viii.
+A
+→
+(
+B
+→
+(
+A
+∧
+B
+)
+)
+ix.
+⟂
+→
+A
+–
+rule of inference: (
+modus ponens
+): from
+A
+→
+B
+and
+A
+, we may infer
+B
+•
+(classical predicate logic without equality)
+–
+axiom schemes:
+i.
+all of the axiom schemes above, and
+ii.
+law of double negation
+:
+¬
+⁡
+(
+¬
+⁢
+A
+)
+→
+A
+iii.
+∀
+x
+⁢
+A
+→
+A
+⁢
+[
+x
+/
+y
+]
+iv.
+∀
+x
+(
+A
+→
+B
+)
+→
+(
+A
+→
+∀
+y
+B
+[
+x
+/
+y
+]
+)
+In the last two axiom schemes, we require that
+y
+is
+free for
+x
+in
+A
+, and in the last axiom scheme, we also require that
+x
+does not
+occur free
+in
+A
+.
+–
+rules of inference:
+i.
+modus ponens, and
+ii.
+generalization
+: from
+A
+, we may infer
+∀
+y
+⁢
+A
+⁢
+[
+x
+/
+y
+]
+, where
+y
+is free for
+x
+in
+A
+•
+(S4 modal propositional logic)
+–
+axiom schemes:
+i.
+all of the axiom schemes in intuitionistic propositional logic, as well as the law of double negation, and
+ii.
+Axiom K, or the
+normality
+axiom:
+□
+(
+A
+→
+B
+)
+→
+(
+□
+A
+→
+□
+B
+)
+iii.
+Axiom T:
+□
+⁢
+A
+→
+A
+iv.
+Axiom 4:
+□
+⁢
+A
+→
+□
+⁢
+(
+□
+⁢
+A
+)
+–
+rules of inference:
+i.
+modus ponens, and
+ii.
+necessitation
+: from
+A
+, we may infer
+□
+⁢
+A
+where
+A
+,
+B
+,
+C
+above are
+well-formed formulas
+,
+x
+,
+y
+are individual variables, and
+→
+,
+∨
+,
+∧
+are binary,
+□
+unary, and
+⟂
+nullary
+logical connectives
+in the respective
+logical systems
+. The
+connective
+¬
+may be defined as
+¬
+⁢
+A
+:=
+A
+→
+⟂
+for any
+formula
+A
+.
+Remarks
+•
+Hilbert systems need not be unique for a given logical system. For example, see this link (
+http://planetmath.org/LogicalAxiom
+).
+•
+For a given logical system, every Hilbert system is deductively equivalent to a
+Gentzen system
+: for any axiom
+A
+in a Hilbert system
+H
+, convert it to the
+sequent
+⇒
+A
+, and for any rule: from
+A
+1
+,
+…
+,
+A
+n
+we may deduce
+B
+, convert it to the rule: from
+Δ
+⇒
+A
+1
+,
+…
+,
+A
+n
+, we may infer
+Δ
+⇒
+B
+.
+•
+Since axioms are semantically valid statements, the use of Hilbert systems is more about deriving other semantically valid statements, or
+theorems
+, and less about the syntactical
+analysis
+of
+deductions
+themselves. Outside of structural proof theory, deductive systems a la Hilbert style are used almost exclusively everywhere in mathematics.
+References
+1
+H. Enderton:
+A Mathematical
+Introduction
+to Logic
+, Academic Press, San Diego (1972).
+2
+A. S. Troelstra, H. Schwichtenberg,
+Basic
+Proof Theory
+, 2nd Edition, Cambridge University Press (2000)
+3
+B. F. Chellas,
+Modal Logic
+, An Introduction
+, Cambridge University Press (1980)
+Title
+Hilbert system
+Canonical
+name
+HilbertSystem
+Date of creation
+2013-03-22 19:13:14
+Last modified on
+2013-03-22 19:13:14
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+15
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 03F03
+Classification
+msc 03B99
+Classification
+msc 03B22
+Synonym
+axiom system
+Related topic
+GentzenSystem
+Defines
+generalization
+Defines
+necessitation
+Defines
+double negation
+Generated  on Thu Feb  8 20:23:33 2018 by
+LaTeXML

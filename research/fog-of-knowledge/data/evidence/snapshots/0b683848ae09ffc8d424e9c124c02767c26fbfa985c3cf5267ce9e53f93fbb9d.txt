@@ -1,0 +1,406 @@
+commutative language
+commutative language
+Let
+Σ
+be an
+alphabet
+and
+u
+a word over
+Σ
+. Write
+u
+as a
+product
+of symbols in
+Σ
+:
+u
+=
+a
+1
+⁢
+⋯
+⁢
+a
+n
+where
+a
+i
+∈
+Σ
+. A  of
+u
+is a word of the form
+a
+π
+⁢
+(
+1
+)
+⁢
+⋯
+⁢
+a
+π
+⁢
+(
+n
+)
+,
+where
+π
+is a
+permutation
+on
+{
+1
+,
+…
+,
+n
+}
+. The set of all permutations of
+u
+is denoted by
+com
+⁡
+(
+u
+)
+. If
+Σ
+=
+{
+b
+1
+,
+…
+,
+b
+m
+}
+, it is easy to see that
+com
+⁡
+(
+u
+)
+has
+n
+!
+n
+1
+!
+⁢
+⋯
+⁢
+n
+m
+!
+elements
+, where
+n
+i
+=
+|
+u
+|
+b
+i
+, the number of
+occurrences
+of
+b
+i
+in
+u
+.
+Define a
+binary relation
+∼
+on
+Σ
+*
+by:
+u
+∼
+v
+if
+v
+is a permutation of
+u
+. Then
+∼
+is a
+congruence relation
+on
+Σ
+*
+with respect to
+concatenation
+. In fact,
+Σ
+*
+/
+∼
+is a
+commutative monoid
+.
+A
+language
+L
+over
+Σ
+is said to be
+commutative
+if for every
+u
+∈
+L
+, we have
+com
+⁡
+(
+u
+)
+⊆
+L
+. Two
+equivalent
+characterization
+of a commutative language
+L
+are:
+•
+If
+u
+=
+v
+⁢
+x
+⁢
+y
+⁢
+w
+∈
+L
+, then
+v
+⁢
+y
+⁢
+x
+⁢
+w
+∈
+L
+.
+•
+Ψ
+-
+1
+∘
+Ψ
+⁢
+(
+L
+)
+⊆
+L
+, where
+Ψ
+is the
+Parikh mapping
+over
+Σ
+(under some
+ordering
+).
+The first equivalence comes from the fact that if
+v
+⁢
+y
+⁢
+x
+⁢
+w
+is just a permutation of
+v
+⁢
+x
+⁢
+y
+⁢
+w
+, and that every permutation on
+{
+1
+,
+…
+,
+n
+}
+may be expressed as a product of
+transpositions
+. The second equivalence is the realization of the fact that
+com
+⁡
+(
+u
+)
+is just the set
+{
+v
+∣
+|
+v
+|
+a
+=
+|
+u
+|
+a
+,
+a
+∈
+Σ
+}
+.
+We have just seen some examples of commutative closed langauges, such as
+com
+⁡
+(
+u
+)
+for any word
+u
+, and
+Ψ
+-
+1
+∘
+Ψ
+⁢
+(
+L
+)
+, for any language
+L
+.
+Given a language
+L
+, the smallest commutative language containing
+L
+is called the
+commutative closure
+of
+L
+. It is not hard to see that
+Ψ
+-
+1
+∘
+Ψ
+⁢
+(
+L
+)
+is the
+commutative closure
+of
+L
+.
+For example, if
+L
+=
+{
+(
+a
+⁢
+b
+⁢
+c
+)
+n
+∣
+n
+≥
+0
+}
+, then
+Ψ
+-
+1
+∘
+Ψ
+⁢
+(
+L
+)
+=
+{
+w
+∣
+|
+w
+|
+a
+=
+|
+w
+|
+b
+=
+|
+w
+|
+c
+}
+.
+Remark
+. The above example illustrates the fact that the families of
+regular languages
+and
+context-free languages
+are not
+closed under
+commutative closures. However, it can be shown that the families of
+context-sensitive languages
+and
+type-0 languages
+are closed under commutative closures.
+References
+1
+M. Ito,
+Algebraic Theory of
+Automata
+and Languages
+, World Scientific, Singapore (2004).
+Title
+commutative language
+Canonical name
+CommutativeLanguage
+Date of creation
+2013-03-22 18:56:56
+Last modified on
+2013-03-22 18:56:56
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+5
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 68Q70
+Defines
+commutative
+Defines
+commutative closure
+Generated  on Sat Feb 10 12:48:05 2018 by
+LaTeXML

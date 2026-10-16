@@ -1,0 +1,2868 @@
+intuitionistic logic
+intuitionistic logic
+Abstract
+The entry "
+intuitionistic logic
+" is a beginner’s
+introduction
+to the defining features of Brouwer’s (and his School) mathematical philosophy. It assumes some familiarity with the basic
+concepts
+of
+classical logic
+. The level of the exposition is
+elementary
+and the emphasis is more on understanding than technicalities. In spite of the provided continuity between the
+sections
+one can read most of them in isolation.
+Intuitionistic logic
+Contents:
+1
+Range of intuitionistic logic
+2
+Evaluation of Brouwer’s mathematical philosophy
+3
+The
+Evidenz
+experience
+4
+Gentzen-type rules for intuitionistic logic
+5
+The Brouwer-Heyting-Kolmogorov Model
+6
+Constructive existence and quantification
+7
+Heyting’s formal system
+8
+Deviation from classical logic
+8.1
+The law of excluded middle
+8.2
+Double negation and proof by contradiction (
+reductio ad absurdum
+)
+8.3
+Contraposition
+8.4
+Triple negation
+8.5
+De Morgan’s laws
+8.6
+Peirce’s law
+9
+Overview and deduction theorem
+9.1
+List A: Examples of intuitionistic derivable formulas
+9.2
+List B: Examples of classical tautologies that are not intuitionistically derivable
+9.3
+Deduction theorem
+10
+Generalized Markov’s principle and the axiom of choice
+11
+Complementary material
+1
+Range of intuitionistic logic
+Intuitionistic logic is the theory of inference advanced by the approach to
+foundations
+known as intuitionism.
+It differs from classical logic in several respects, the first and most salient of which is the
+difference
+in range.
+Whereas classical logic is usually conceived as establishing content-free (for arbitrary objects)
+patterns
+of inference, intuitionistic logic aims at defining only patterns of mathematical inference.
+Secondly it also differs in that classical logic, due to its range, is (wrongly) supposed to be different from mathematics, and for some authors even prior to mathematics, so that it was at one time meaningful to propose the
+reduction
+of mathematics to logic in the approach to foundations known as
+logicism
+.
+In intuitionism there is no
+similar
+conception, actually the opposite is true: intuitionistic logic is conceived as a part of intuitionistic mathematics and in intuitionism to understand a logical law one has to understand a mathematical proof or a rule.
+2
+Evaluation of Brouwer’s mathematical philosophy
+Intuitionism is a creation of the Dutch mathematician, philosopher, poet and man of wisdom L.E.J. Brouwer (1881-1966).
+Around 1915 he became a founding member of the International School for Philosophy in Amersfoort. He held the Chair for
+set theory
+, function theory and axiomatics at the University of Amsterdam between 1912 and 1951.
+Brouwer was able to
+integrate
+his general philosophical views in his mathematical philosophy and we will mention only those of his general views that were relevant to his mathematical philosophy. The best (unintended) over-all judgment of Brouwer’s philosophy is to be found in Rasiowa and Sikorski when they write:
+it is very surprising that some philosophical ideas
+have led to the formulation of a logic whose mathematical contents
+coincide with the theory of lattices of
+open subsets
+of
+topological spaces
+!
+Although Brouwer believed neither in the possibility nor in the value of communication, he wrote a few remarkable philosophical texts and we will be using some of them to sketch his basic outlook: his Vienna lecture from 1928, the Synopsis of the
+Signific
+movement in the Netherlands from 1946 and his address to the International Congress on Philosophy in Amsterdam, 1948.
+3
+The
+Evidenz
+experience
+Unlike Frege or Hilbert, Brouwer’s initial space is not an external mathematical reality where non-denumerably many mathematical objects are supposed to exist, but rather the inner space of the consciousness of a reflective subject, as this space manifests itself in the act of awareness. The mathematical insight arises here, in the consciousness of the reflective subject, when the awareness of
+duality
+, created by the perception of time past and time present, is purged of all individuality and only the pattern common to and binding all dualities remains. It is this primordial act of awareness that Brouwer calls
+Ur-intuition
+, and thus self-awareness is the only source of knowledge and a mental content the only object of knowledge. But the intuitionistic insight does not rest on immediate intuition alone but also on
+reflection
+about what is an evident construction. It does not exclude impredicativity as such, since what counts as a construction is explained in terms of the general notion of construction. (See bellow how the reflective subject can bypass impredicativity.)
+As we know since Brentano and Husserl, in the realm of consciousness there is no distinction between true and false and so the insight reached through the perception of a mental content has the epistemological
+predicate
+of
+Evidenz
+, which means that it is immune to refutation by a counter-example.
+4
+Gentzen-type rules for intuitionistic logic
+In Brouwer’s vocabulary the word "experience" is always supposed to refer to the act of awareness and therefore it is not surprising that he always maintained that no
+language
+can ever capture mental (and therefore mathematical) experience completely. Both positions entail as a
+corollary
+that the meaning of a prime or atomic mathematical statement can not be explained in terms of the conditions under which the statement will be said to be true.
+A mathematical proof expresses a fact of experience, i.e., that a mental act has taken place and for that reason to grasp the meaning of the statement thus proved is to accept the proof of the statement.
+What about molecular, i.e., composite statements? We can see best how
+composition
+works by providing
+natural deduction
+clauses for
+derivations
+in which
+propositional connectives
+are applied.
+1.
+Conjunction Introduction
+:
+If
+X
+and
+Y
+are given we are allowed to infer
+X
+∧
+Y
+.
+2.
+Conjunction Elimination
+:
+If
+X
+and
+Y
+are given we are allowed to infer
+X
+.
+3.
+Disjunction Introduction
+:
+If
+X
+is given we are allowed to infer
+X
+∨
+Y
+.
+4.
+Disjunction Elimination
+:
+If we have a derivation of
+Z
+from a premiss
+X
+and also a derivation of
+Z
+from a premiss
+Y
+,
+then we are allowed to infer
+Z
+from a premiss
+X
+∨
+Y
+, provided the premisses
+X
+and
+Y
+are discharged.
+5.
+Implication
+Introduction
+:
+If we have a derivation of
+Y
+from a
+premises
+X
+then we are allowed to infer
+X
+→
+Y
+,
+provided that the premiss
+X
+is discharged.
+6.
+Implication Elimination
+:
+If
+X
+and
+X
+→
+Y
+are given we are allowed to infer
+Y
+.
+7.
+Universal quantifier
+Introduction
+:
+From
+F
+⁢
+(
+κ
+)
+we are allowed to infer
+(
+∀
+x
+)
+⁢
+F
+⁢
+(
+x
+)
+, provided that
+x
+does not
+occur free
+in
+F
+.
+8.
+Universal quantifier Elimination
+:
+From
+(
+∀
+x
+)
+⁢
+F
+⁢
+(
+x
+)
+we are allowed to infer
+F
+⁢
+(
+κ
+)
+.
+9.
+Existential quantifier
+Introduction
+:
+From
+F
+⁢
+(
+κ
+)
+we are allowed to infer
+(
+∃
+x
+)
+⁢
+F
+⁢
+(
+x
+)
+.
+10.
+Existential quantifier Elimination
+:
+If from a set of
+formulas
+ℱ
+⁢
+(
+x
+)
+and
+F
+⁢
+(
+x
+)
+we are allowed to infer
+X
+, then from a set of formulas
+ℱ
+⁢
+(
+x
+)
+and
+(
+∃
+x
+)
+⁢
+F
+⁢
+(
+x
+)
+,
+we are allowed to infer
+X
+, provided that
+x
+remains constant during the derivations.
+If we take the statement
+0
+=
+1
+as expressing a
+contradiction
+we can define
+negation
+in terms of implication by making:
+¬
+⁢
+X
+=
+X
+→
+0
+=
+1
+.
+One can add the principle
+ex falso sequitur quodlibet
+which means that anything can be derived from
+0
+=
+1
+.
+5
+The Brouwer-Heyting-Kolmogorov Model
+In the classical case we give an account of the composition of statements by means of the already mentioned conditions under which they can be said to be true. A truth-table shows conspicuously how the truth value of the molecular statement is obtained from the truth-values of the
+atomic statements
+. But in intuitionistic logic the terms "
+conjunction
+", "
+disjunction
+" etc. do not denote truth-functions and this means that an intuitionistic statement is neither two-valued nor many-valued nor infinitely many-valued.
+Although in classical logic the set of propositional functions can be
+reduced
+to one of the pairs
+(
+∼
+,
+∨
+)
+,
+(
+∼
+,
+∧
+)
+,
+(
+∼
+,
+→
+)
+, the four intuitionistic
+connectives
+are not inter-definable. This implies that not every classical
+truth function
+in
+normal form
+has an intuitionistic
+equivalent
+. The same holds for classical
+prenex normal form
+.
+The elimination of the concept of truth in intuitionistic logic is best represented by the cumulative effort of Brouwer, Heyting and the Russian constructivist Kolmogorov in their
+interpretation
+of the intuitionistic logical operators, and accordingly their interpretation is known as the BHK model.
+In this model an explanation of the meaning of a composite statement is to be given by reference to the concept of proof. Of course proof here can not be understood as meaning a proof in a
+formal system
+, which is a
+sequence
+of formulas and thus a physical object.
+An
+intuitionistic proof
+is a mental act which aims at building a conclusive mathematical
+argument
+, examples of which are a construction or the implementation of a rule. Both concepts, proof and rule, are intensional notions, not only instruments of mathematical knowledge but also part of the (intensional) reality that mathematics is about.
+If we have a construction that allows the proof of the atomic statement, the explanation of the meaning of the molecular statements in terms of proofs rather than truth-values can be sketched as follows.
+We denote constructions by small Greek letters and will have to assume
+closure axioms
+for constructions, with the following content:
+•
+i
+) The result of joining two constructions
+κ
+and
+μ
+together is a construction, namely the (ordered) pair of constructions
+<
+κ
+,
+μ
+>
+; and
+•
+ii
+) The composition of a construction
+μ
+with another construction
+κ
+is a construction, namely the construction
+(
+κ
+∘
+μ
+)
+.
+The class of constructions on which these closure properties are satisfied is not a completed totality and accordingly we can not specify what is for such a class an admissible construction. The
+definitions
+have a ring of impredicativity about them that we can try to remove by using Brouwer’s conception of the "reflective subject" or the "ideal mathematician". A basic outline is sketched bellow.
+The ideal mathematician builds constructions in stages, denoted by
+ordinal numbers
+1
+,
+2
+,
+…
+Let
+ℬ
+n
+⁢
+(
+π
+)
+mean that the ideal mathematician
+M
+has built
+π
+at stage
+n
+.
+For each
+n
+,
+M
+knows
+if he has built
+π
+or has failed to build
+π
+. So we already have:
+ℬ
+n
+⁢
+(
+π
+)
+∨
+¬
+⁢
+ℬ
+n
+⁢
+(
+π
+)
+.
+Thus
+M
+has a
+decidable
+rule
+f
+with values
+0
+and
+1
+such that:
+(
+∀
+n
+)
+[
+f
+(
+n
+)
+=
+1
+↔
+ℬ
+n
+(
+π
+)
+]
+.
+We are then allowed to assert:
+ℬ
+n
+⁢
+(
+π
+)
+→
+π
+.
+From here it follows that:
+π
+→
+(
+∃
+n
+)
+⁢
+ℬ
+n
+⁢
+(
+π
+)
+and so negation means that:
+¬
+⁢
+π
+→
+¬
+⁡
+(
+∃
+n
+)
+⁢
+ℬ
+n
+⁢
+(
+π
+)
+as it was to be expected. Therefore:
+π
+→
+¬
+⁢
+¬
+⁢
+ℬ
+n
+⁢
+(
+π
+)
+.
+We assume that reflection implies memory in the sense that if
+m
+<
+n
+we have:
+ℬ
+m
+⁢
+(
+π
+)
+→
+ℬ
+n
+⁢
+(
+π
+)
+.
+So that instead of assuming the class of all constructions we can refer only to the
+segment
+of the already completed constructions.
+This motivates the following definitions.
+1.
+Negation
+.
+No construction proves 0 = 1.
+In this sense a proof of
+¬
+⁢
+X
+is a construction
+κ
+which takes every proof
+μ
+of
+X
+as argument and yields as value a proof
+κ
+∘
+μ
+of 0 = 1.
+2.
+Implication
+.
+κ
+proves
+X
+→
+Y
+if
+κ
+is a construction which takes every proof
+μ
+of
+X
+as argument and yields as value a proof
+κ
+∘
+μ
+of
+Y
+.
+3.
+Disjunction
+.
+κ
+proves
+X
+∨
+Y
+if
+κ
+=
+<
+n
+,
+μ
+>
+where
+n
+is a
+natural number
+and
+μ
+proves
+X
+if
+n
+=
+0
+and
+μ
+proves
+Y
+if
+n
+is not 0.
+4.
+Conjunction
+.
+κ
+proves
+X
+∧
+Y
+if
+κ
+=
+<
+μ
+,
+π
+>
+and
+μ
+proves
+X
+and
+π
+proves
+Y
+.
+5.
+Universal quantification
+.
+κ
+proves
+(
+∀
+x
+)
+⁢
+F
+⁢
+(
+x
+)
+if
+κ
+is a construction such that, for every
+element
+a
+,
+κ
+proves
+F
+⁢
+(
+a
+)
+.
+6.
+Existential quantification
+.
+κ
+proves
+(
+∃
+x
+)
+⁢
+F
+⁢
+(
+x
+)
+if
+κ
+=
+<
+a
+,
+μ
+>
+and
+μ
+proves
+F
+⁢
+(
+a
+)
+.
+6
+Constructive existence and quantification
+The only criterion of mathematical existence is the possibility of construction. This possibility is idealized and for that reason Brouwer maintains that constructions are mental acts and the transition from possibility to actuality is the outcome of the intentional act.
+This is better seen by discussing the domain of the
+quantifiers
+in clauses 5. and 6., in particular if the domain is
+infinite
+.
+We can conceive the construction of the natural numbers as an idealized version of the construction of a sequence of symbols. But this idealization can not go so far as to became time-less, i.e. we can not eliminate the fact that the construction is a process in time which is never completed. This is the force of saying that the infinite is meaningful only if it is potential and not actual. An infinite process has no outcome. Although for every natural number
+n
+there is a construction of
+n
+, there is no construction that yields as value the whole natural number sequence.
+In spite of the fact that there is no actual infinite, we have nevertheless to secure a meaning for
+propositions
+about totalities like all natural numbers or some
+infinite sets
+.
+A proposition about all natural numbers
+n
+is meaningful if the meaning is supported by the rule according to which the natural number sequence is generated, and that is the case if we have a proof of the proposition.
+We say then that a proof is constructive if reference to the
+existence
+of an object
+x
+is made in terms of a rule for finding
+x
+. Accordingly mathematical objects can be said to exist only if they can be constructed and so to say that there is a natural number
+x
+such that
+F
+⁢
+(
+x
+)
+is to say that in the construction of the natural number sequence a
+x
+will be found such that
+F
+⁢
+(
+x
+)
+.
+If
+y
+depends on a
+parameter
+x
+, then
+y
+can be computed from
+x
+using the rules for the construction of the numbers and the construction of
+F
+. In this case a claim to prove
+(
+∃
+y
+)
+⁢
+F
+⁢
+(
+y
+)
+is satisfied by showing how to produce the
+y
+involved, and the proof ends when
+y
+is available. In double quantification a claim to prove:
+(
+∀
+x
+)
+⁢
+(
+∃
+y
+)
+⁢
+F
+⁢
+(
+x
+,
+y
+)
+is satisfied by producing a function
+f
+such that for every
+x
+,
+F
+⁢
+(
+x
+,
+f
+⁢
+(
+x
+)
+)
+.
+7
+Heyting’s formal system
+Although no formal system can ever adequately
+represent
+an intuitionistic theory, Heyting has formulated a formal system for intuitionistic propositional and
+predicate calculus
+, the former of which as far back as 1930. It should be mentioned that there are other systems of intuitionistic logic. A very well known one is due to Johansson, and it is called "the minimal calculus". It differs from Heyting’s because of a stricter interpretation of the implication
+operator
+. The formal system that codifies all the logical inferences used in intuitionism is Kleene’s.
+It is worthwhile to review Heyting’s system since it is the system used by GÃÂ¶del in his proof of the
+consistency
+of
+arithmetic
+in 1933. We recall that the
+variables
+denote mathematical propositions.
+1.
+Conjunction
+A1.
+𝒳
+→
+(
+𝒳
+∧
+𝒳
+)
+A2.
+(
+𝒳
+∧
+𝒴
+)
+→
+(
+𝒴
+∧
+𝒳
+)
+A3.
+(
+𝒳
+→
+𝒴
+)
+→
+[
+(
+𝒳
+∧
+𝒵
+)
+→
+(
+𝒴
+∧
+𝒵
+)
+]
+2.
+Implication
+A1.
+[
+(
+𝒳
+→
+𝒴
+)
+∧
+(
+𝒴
+→
+𝒵
+)
+]
+→
+(
+𝒳
+→
+𝒵
+)
+A2.
+𝒴
+→
+(
+𝒳
+→
+𝒴
+)
+A3.
+[
+𝒳
+∧
+(
+𝒳
+→
+𝒴
+)
+]
+→
+𝒴
+3.
+Disjunction
+A1.
+𝒳
+→
+(
+𝒳
+∨
+𝒴
+)
+A2.
+(
+𝒳
+∨
+𝒴
+)
+→
+(
+𝒴
+∨
+𝒳
+)
+A3.
+[
+(
+𝒳
+→
+𝒵
+)
+∧
+(
+𝒴
+→
+𝒵
+)
+]
+→
+[
+(
+𝒳
+∨
+𝒴
+)
+→
+𝒵
+]
+4.
+Negation
+A1.
+¬
+𝒳
+→
+(
+𝒳
+→
+𝒴
+)
+A2.
+[
+(
+𝒳
+→
+𝒴
+)
+∧
+(
+𝒳
+→
+¬
+𝒴
+)
+]
+→
+¬
+𝒳
+The rules of
+deduction
+are the same as in classical
+propositional calculus
+.
+The introduction of predicative symbols with 1 or
+n
+arguments produces the formulas of the intuitionistic
+first order
+predicate calculus with the quantifiers ranging over objects. A formal system for the intuitionistic predicate calculus can be simply obtained from the classical formalization as this is to be found in Hilbert and Ackermann. In particular the axioms are:
+P1.
+(
+∀
+x
+)
+⁢
+F
+⁢
+(
+x
+)
+→
+F
+⁢
+(
+a
+)
+P2.
+F
+⁢
+(
+a
+)
+→
+(
+∃
+x
+)
+⁢
+F
+⁢
+(
+x
+)
+.
+The quantifiers are however interpreted as sketched above.
+8
+Deviation from classical logic
+The interpretation of the logical constants sketched above leads to a number of deviations from some basic laws of classical logic.
+8.1
+The law of excluded middle
+The best known example is the
+tertium non datur
+. In intuitionistic logic an assertion of the general form:
+"
+⁢
+X
+∨
+¬
+⁢
+X
+⁢
+"
+implies a claim to have a decision procedure for
+X
+, i.e. to be actually able either to prove or to refute
+X
+.
+As it was said above, while explaining the intuitionistic interpretation of the logical constants, the notion of truth has been eliminated and replaced by the notion of "intuitionistic proof". But we shall allow as a linguistic convention that if a statement has an intuionistically valid proof then it can be said to be true, resp., false if it has been refuted. Thus if
+X
+is decidable it is also intuitionistically true.
+In this sense to assume a mathematical statement
+X
+as a
+hypothesis
+for a conditional proof is to assume that we have a proof of
+X
+and therefore that
+X
+is true.
+In the case of the
+tertium non datur
+to say that we can not in general assume
+X
+to be either true of false is then equivalent to say that we are not justified in asserting:
+"
+⁢
+X
+∨
+¬
+⁢
+X
+⁢
+"
+.
+But notice that this is not the same as saying that
+X
+is neither true nor false, because this last assertion would then be equivalent to say that neither
+X
+nor
+¬
+⁢
+X
+is true, which we would express by:
+¬
+⁡
+(
+X
+∨
+¬
+⁢
+X
+)
+.
+But since de Morgan’s law:
+¬
+⁡
+(
+X
+∨
+Y
+)
+→
+¬
+⁢
+X
+∧
+¬
+⁢
+Y
+is also valid intuitionisically, the statement:
+¬
+⁡
+(
+X
+∨
+¬
+⁢
+X
+)
+would be equivalent to:
+¬
+⁢
+X
+∧
+¬
+⁢
+¬
+⁢
+X
+,
+which is a contradiction.
+Thus by the intuitionistic interpretation of negation it follows that we have a refutation of:
+¬
+⁡
+(
+X
+∨
+¬
+⁢
+X
+)
+and therefore:
+¬
+⁢
+¬
+⁡
+(
+X
+∨
+¬
+⁢
+X
+)
+can be asserted.
+8.2
+Double negation and proof by contradiction (
+reductio ad absurdum
+)
+Axiom
+2.A.3
+is the rule of
+modus ponens
+.
+Let us assume that we have the implication:
+¬
+⁢
+¬
+⁡
+(
+X
+∨
+¬
+⁢
+X
+)
+→
+(
+X
+∨
+¬
+⁢
+X
+)
+.
+Then one application of
+modus ponens
+would give a proof of:
+(
+X
+∨
+¬
+⁢
+X
+)
+,
+and that as we see from 1. (section 5 above) gives a contradiction. This shows that one half of the
+double negation
+law is intuitionistically invalid.
+The other half is valid. The implication:
+X
+→
+¬
+⁢
+¬
+⁢
+X
+is valid because if a proof of
+X
+is given then a proof of
+¬
+⁢
+X
+would give a contradiction, that is from a proof of
+X
+it follows that we can not have a proof of:
+¬
+⁢
+X
+and therefore:
+¬
+⁢
+¬
+⁢
+X
+.
+Thus the double negation of
+X
+is a weaker statement than the assertion of
+X
+, since a proof that we can not have a proof of
+¬
+⁢
+X
+is not the same as a proof of
+X
+.
+8.3
+Contraposition
+Classical contraposition is also only partially valid in intuitionistic logic. To see this we consider the implication:
+X
+→
+Y
+,
+the contraposition of which is
+¬
+⁢
+Y
+→
+¬
+⁢
+X
+.
+This formula is valid because from a proof of
+¬
+⁢
+Y
+we could derive a contradiction from a proof of
+X
+. But as we already know from the
+analysis
+of double negation that the formula:
+¬
+⁢
+Y
+→
+¬
+⁢
+X
+is not
+invertible
+to
+X
+→
+Y
+.
+8.4
+Triple negation
+If we apply contraposition to:
+X
+→
+¬
+⁢
+¬
+⁢
+X
+we get:
+¬
+⁢
+¬
+⁢
+¬
+⁢
+X
+→
+¬
+⁢
+X
+.
+On the other hand if we introduce negation in:
+X
+→
+¬
+⁢
+¬
+⁢
+X
+we get:
+¬
+⁢
+X
+→
+¬
+⁢
+¬
+⁢
+¬
+⁢
+X
+.
+This proves that triple negation reduces to simple negation.
+8.5
+De Morgan’s laws
+Axiom
+3.A.1
+states that:
+𝒳
+→
+(
+𝒳
+∨
+𝒴
+)
+.
+Applying contraposition one gets:
+¬
+⁡
+(
+X
+∨
+Y
+)
+→
+¬
+⁢
+X
+.
+By the same token:
+Y
+→
+(
+X
+∨
+Y
+)
+and applying contraposition we have:
+¬
+⁡
+(
+X
+∨
+Y
+)
+→
+¬
+⁢
+Y
+.
+Joining both implications we have:
+¬
+⁡
+(
+X
+∨
+Y
+)
+→
+¬
+⁢
+X
+∧
+¬
+⁢
+Y
+.
+This formula is obviously invertible and so one of de Morgan’s laws is also intuitionistically valid.
+Of course if we have a proof that at least one of the pair
+X
+,
+Y
+is refutable we can not have a proof of their conjunction. Thus one half of the other De Morgan’s law is valid namely:
+¬
+⁢
+X
+∨
+¬
+⁢
+Y
+→
+¬
+⁡
+(
+X
+∧
+Y
+)
+.
+But this formula is not invertible to
+¬
+⁡
+(
+X
+∧
+Y
+)
+→
+¬
+⁢
+X
+∨
+¬
+⁢
+Y
+.
+8.6
+Peirce’s law
+It is also important to realize that intuitionistic logic differs from classical logic not only because of a divergent conception of the logical constants but also because classical logic is built on the principle of bivalence and in intuitionistic logic there are no truth values at all. One mentions the truth of a proposition, as it was said above, only as a linguistic abbreviation of the fact that a proof for that proposition is available.
+It should be remarked that there are counter-intuitive
+tautologies
+of the classical propositional calculus whose
+validity
+is secured by bivalence alone and they are not intuitionistically valid. Two well known examples are the classical disjunction:
+X
+→
+Y
+∨
+Y
+→
+X
+and Peirce’s law:
+[
+(
+X
+→
+Y
+)
+→
+X
+]
+→
+X
+.
+(About both formulas see Jon Awbrey’s
+http://mywikibiz.com/Talk:Logical_graph
+Logical graph sandbox.)
+9
+Overview and deduction theorem
+9.1
+List A: Examples of intuitionistic derivable formulas
+1.
+Implication
+1.
+A
+→
+A
+2.
+A
+→
+(
+B
+→
+A
+)
+3.
+A
+→
+[
+B
+→
+(
+A
+∧
+B
+)
+]
+4.
+[
+A
+→
+(
+B
+→
+C
+)
+]
+→
+[
+(
+A
+→
+B
+)
+→
+(
+A
+→
+C
+)
+]
+5.
+[
+A
+→
+(
+B
+→
+C
+)
+]
+→
+[
+B
+→
+(
+A
+→
+C
+)
+]
+6.
+(
+C
+→
+A
+)
+→
+[
+C
+→
+(
+A
+→
+B
+)
+]
+→
+(
+C
+→
+B
+)
+2.
+Negation
+1.
+A
+→
+¬
+⁢
+¬
+⁢
+A
+2.
+¬
+⁡
+(
+A
+∧
+¬
+⁢
+A
+)
+3.
+¬
+⁢
+¬
+⁢
+¬
+⁢
+A
+→
+¬
+⁢
+A
+4.
+¬
+⁢
+A
+→
+¬
+⁢
+¬
+⁢
+¬
+⁢
+A
+5.
+¬
+¬
+(
+A
+→
+B
+)
+→
+(
+A
+→
+¬
+¬
+B
+)
+6.
+[
+(
+¬
+A
+∨
+B
+)
+→
+(
+A
+→
+B
+)
+]
+3.
+Contraposition
+1.
+(
+A
+→
+B
+)
+→
+(
+¬
+B
+→
+¬
+A
+)
+2.
+(
+A
+→
+¬
+B
+)
+→
+(
+B
+→
+¬
+A
+)
+4.
+De Morgan’s laws
+1.
+[
+¬
+⁡
+(
+A
+⁢
+V
+⁢
+B
+)
+→
+(
+¬
+⁢
+A
+∧
+¬
+⁢
+B
+)
+]
+2.
+(
+¬
+⁢
+A
+∧
+¬
+⁢
+B
+)
+→
+¬
+⁡
+(
+A
+∨
+B
+)
+3.
+(
+¬
+⁢
+A
+∨
+¬
+⁢
+B
+)
+→
+¬
+⁡
+(
+A
+∧
+B
+)
+9.2
+List B: Examples of classical tautologies that are not intuitionistically derivable
+1.
+[
+(
+A
+→
+B
+)
+→
+A
+]
+→
+A
+2.
+(
+A
+∨
+¬
+⁢
+A
+)
+3.
+(
+A
+→
+B
+)
+∨
+(
+B
+→
+A
+)
+4.
+(
+¬
+⁢
+¬
+⁢
+A
+→
+A
+)
+5.
+(
+A
+→
+B
+)
+→
+(
+¬
+A
+∨
+B
+)
+6.
+¬
+⁡
+(
+A
+∧
+B
+)
+→
+(
+¬
+⁢
+A
+∨
+¬
+⁢
+B
+)
+7.
+(
+¬
+A
+→
+B
+)
+→
+(
+¬
+B
+→
+A
+)
+8.
+(
+¬
+A
+→
+¬
+B
+)
+→
+(
+B
+→
+A
+)
+9.3
+Deduction theorem
+The
+deduction theorem
+was first proved by Herbrand and in essence it says that if a formula
+B
+is
+derivable
+from a formula
+A
+then the formula
+A
+→
+B
+is derivable, with
+A
+as the discharged premiss.
+We can prove the
+theorem
+for the intuitionistic propositional calculus by providing a construction of the formula
+A
+→
+B
+. For that purpose we use the previously obtained derivation of
+B
+.
+The proof is by (
+complete
+)
+induction
+on the length of the derivation of
+B
+and the argument is as follows.
+The original derivation of
+B
+from
+A
+is a sequence of formulas:
+f
+1
+,
+…
+,
+f
+n
+=
+B
+and the induction variable is
+i
+in
+f
+i
+. If the proof is valid for derivations of length
+k
+, with
+k
+<
+i
+, so that
+A
+→
+f
+k
+, then it is also valid for
+f
+i
+and therefore
+(
+∀
+i
+)
+⁢
+A
+→
+f
+i
+, as it will be shown.
+We first prove the theorem:
+X
+→
+X
+which we need for induction basis.
+1.
+[
+A
+→
+(
+B
+→
+C
+)
+]
+→
+[
+(
+A
+→
+B
+)
+→
+(
+A
+→
+C
+)
+]
+Formula (List A) 1.4
+2.
+[
+X
+→
+(
+X
+→
+X
+)
+→
+X
+]
+→
+[
+X
+→
+(
+X
+→
+X
+)
+→
+(
+X
+→
+X
+)
+]
+1, Rule of Subst.
+3.
+𝒴
+→
+(
+𝒳
+→
+𝒴
+)
+2.A2
+4.
+X
+→
+(
+X
+→
+X
+)
+→
+X
+3, Rule of Subst.
+5.
+X
+→
+(
+X
+→
+X
+)
+→
+(
+X
+→
+X
+)
+2, 4,
+modus ponens
+6.
+X
+→
+(
+X
+→
+X
+)
+3, Rule of Subst.
+7.
+X
+→
+X
+5, 6,
+modus ponens
+We begin by proving
+•
+1. Induction Basis
+.
+If
+i
+=
+1
+,
+f
+1
+can only be an axiom, or an hypothesis or the formula
+A
+itself.
+If
+f
+1
+is an axiom or an hypothesis, we can use the axiom:
+Y
+→
+(
+X
+→
+Y
+)
+and the substitution rule gives immediately:
+f
+1
+→
+(
+A
+→
+f
+1
+)
+.
+In that case one application of modus ponens gives:
+A
+→
+f
+1
+.
+If
+f
+1
+is the formula
+A
+itself then
+A
+=
+f
+1
+. The substitution rule and the theorem:
+X
+→
+X
+gives then:
+A
+→
+f
+1
+.
+•
+2. Induction Step
+.
+The
+induction hypothesis
+is that if
+j
+<
+i
+and
+k
+<
+i
+we already have:
+A
+→
+f
+j
+and
+A
+→
+f
+k
+.
+If
+k
+<
+i
+let:
+f
+k
+=
+(
+f
+j
+→
+f
+i
+)
+.
+This means that
+f
+i
+follows from
+f
+k
+and
+f
+j
+by
+modus ponens
+.
+The derivation is then the following:
+1.
+A
+→
+f
+k
+Ind. hyp.
+2.
+A
+→
+(
+f
+j
+→
+f
+i
+)
+1, Def.
+f
+k
+3.
+[
+A
+→
+(
+f
+j
+→
+f
+i
+)
+]
+→
+(
+A
+→
+f
+j
+)
+→
+(
+A
+→
+f
+i
+)
+2, Formula (List A) 1.4
+4.
+(
+A
+→
+f
+j
+)
+→
+(
+A
+→
+f
+i
+)
+2, 3,
+modus ponens
+5.
+A
+→
+f
+i
+4, Ind. hyp.,
+modus ponens
+The deduction theorem is also useful for
+conditional
+derivations in the predicate calculus. As in the classical case,
+free variables
+have to remain constant as parameters during the derivation.
+Our example is to derive from the hypothesis
+F
+⁢
+(
+x
+)
+the well known formula
+(
+∃
+x
+)
+⁢
+F
+⁢
+(
+x
+)
+→
+¬
+⁡
+(
+∀
+x
+)
+⁢
+¬
+⁢
+F
+⁢
+(
+x
+)
+,
+which in the classical case we can derive easily using the full double negation law.
+1.
+F
+⁢
+(
+x
+)
+Hyp.
+2.
+(
+∃
+x
+)
+⁢
+F
+⁢
+(
+x
+)
+1, Ax.
+P2
+3.
+(
+∀
+x
+)
+⁢
+¬
+⁢
+F
+⁢
+(
+x
+)
+→
+¬
+⁢
+F
+⁢
+(
+x
+)
+Ax.
+P1
+4.
+F
+⁢
+(
+x
+)
+→
+(
+∀
+x
+)
+⁢
+¬
+⁢
+F
+⁢
+(
+x
+)
+→
+F
+⁢
+(
+x
+)
+2.A2
+, Rul. subst.
+5.
+(
+∀
+x
+)
+⁢
+¬
+⁢
+F
+⁢
+(
+x
+)
+→
+F
+⁢
+(
+x
+)
+1, 4,
+modus ponens
+6.
+[
+(
+∀
+x
+)
+¬
+F
+(
+x
+)
+→
+F
+(
+x
+)
+→
+(
+∀
+x
+)
+¬
+F
+(
+x
+)
+→
+¬
+F
+(
+x
+)
+]
+→
+¬
+(
+∀
+x
+)
+¬
+F
+(
+x
+)
+4.A2
+7.
+(
+∀
+x
+)
+⁢
+¬
+⁢
+F
+⁢
+(
+x
+)
+→
+¬
+⁢
+F
+⁢
+(
+x
+)
+→
+¬
+⁡
+(
+∀
+x
+)
+⁢
+¬
+⁢
+F
+⁢
+(
+x
+)
+5, 6,
+modus ponens
+8.
+¬
+⁡
+(
+∀
+x
+)
+⁢
+¬
+⁢
+F
+⁢
+(
+x
+)
+3, 7,
+modus ponens
+9.
+(
+∃
+x
+)
+⁢
+F
+⁢
+(
+x
+)
+→
+¬
+⁡
+(
+∀
+x
+)
+⁢
+¬
+⁢
+F
+⁢
+(
+x
+)
+2, 8, Deduction theorem
+10
+Generalized Markov’s principle and the axiom of choice
+For formulas with quantifiers and negations, as they are known from the classical square of opposition, the only classical inference that is not valid in Heyting’s calculus is the derivation of:
+(
+∃
+x
+)
+⁢
+¬
+⁢
+P
+⁢
+(
+x
+)
+from
+¬
+⁡
+(
+∀
+x
+)
+⁢
+P
+⁢
+(
+x
+)
+.
+The inference is accepted by the russian constructivists under the name of the generalized Markov’s principle.
+Of course the proof by
+reductio ad absurdum
+is also not acceptable, in the sense that a derivation of:
+(
+∃
+x
+)
+⁢
+F
+⁢
+(
+x
+)
+from
+¬
+⁡
+[
+(
+∀
+x
+)
+⁢
+¬
+⁢
+F
+⁢
+(
+x
+)
+]
+does not create the object
+x
+whose existence is supposed to be proved.
+It is to be mentioned that if a formula
+(
+∃
+x
+)
+⁢
+F
+⁢
+(
+x
+)
+has been derived in intuitionistic arithmetic, then
+F
+⁢
+(
+n
+*
+)
+is derivable, where
+n
+*
+is the
+denotation
+of the natural number
+n
+.
+Double quantifications in the form of:
+(
+∀
+x
+)
+⁢
+(
+∃
+y
+)
+⁢
+F
+⁢
+(
+x
+,
+y
+)
+express the existence of functions
+f
+such that:
+(
+∀
+x
+)
+⁢
+F
+⁢
+(
+x
+,
+f
+⁢
+(
+x
+)
+)
+.
+Variables of quantification ranging over sequences are subjected to the
+restrictions
+mentioned above.
+In classical logic an infinite sequence is an
+extensional
+object, it is entirely formed by the terms it contains, regardless of the way in which they are defined. It is a completed totality, with specific properties depending only on the totality of its members, notwithstanding the fact that we can only refer to a finite number of them.
+In intuitionism every mathematical entity that we refer to must be conceived as being presented to us in a particular form and its
+identity
+is constituted by that form. Intuitionistic entities are therefore intensional even if some purpose we isolate extensional properties. In this sense an infinite sequence of objects has to be presented to us by of some effective rule by means of which we can compute its terms. It can not be identified with another sequence that is presented in a different way, resp. by a different rule, even if the two sequences are extensionally identical. The properties of a sequence have to be derived from the way in which the sequence is presented to us.
+The same argument applies to inferences obtained by means of the intuitionistic
+axiom of choice
+, i.e., inferences of the general form:
+(
+⋆
+)
+(
+∀
+x
+)
+⁢
+(
+∃
+y
+)
+⁢
+F
+⁢
+(
+x
+,
+y
+)
+→
+(
+∃
+f
+)
+⁢
+(
+∀
+x
+)
+⁢
+F
+⁢
+[
+x
+,
+f
+⁢
+(
+x
+)
+]
+.
+The variables may be of any sort or many-sorted and
+F
+⁢
+(
+x
+,
+y
+)
+is a statement in which they occur. The variable
+f
+ranges over functions defined on the domain of "
+x
+" and has values in the domain of "
+y
+". In particular
+(
+∃
+f
+)
+means always that
+f
+can be computed.
+If we use the
+meanings
+of the logical constants, already explained above, the formula
+(
+⋆
+)
+is obviously true.
+Let us assume that the variables range over
+ℕ
+. A proof of the implicans will be an effective
+operation
+that carries each natural number
+n
+into a proof of:
+"
+F
+(
+n
+,
+y
+for some
+y
+)".
+But a proof of this statement will be a natural number
+m
+and a proof of
+F
+⁢
+(
+n
+,
+m
+)
+. Therefore a proof of the
+implicans
+yields a function that maps any natural number
+n
+into a natural number
+m
+satisfying
+P
+⁢
+(
+n
+,
+m
+)
+.
+It is to be noticed that the function
+f
+acts not upon elements in the domain of ’
+x
+’ considered extensionally but upon the particular way in which they are presented to us. It does not necessarily map extensionally equivalent elements of ’
+x
+’ on to the same elements of ’
+y
+’.
+11
+Complementary material
+See the following PM entrys: "
+inclusion of classical into intuitionistic logic
+" (
+http://planetmath.org/InclusionOfClassicalIntoIntuitionisticLogic
+), and "the interpretation of intuitionistic logic by means of functionals" (
+http://planetmath.org/InterpretationOfIntuitionisticLogicByMeansOfFunctionals
+).
+References
+1
+Brouwer, L.,
+Collected works: vol. 1
+, North Holland, Amsterdam, 1975.
+2
+Brouwer, L., "Mathematik, Wissenschaft und Sprache",
+Monatshefte fÃÂ¼r Mathematik und Physik
+, Leipzig, 1929.
+3
+Brouwer, L., "Consciousness, philosophy and mathematics", ed. W. Beth,
+Library of the tenth international congress of philosophy
+, Amsterdam, 1948.
+4
+Dummett, M.,
+Elements of intuitionism
+, Clarendon Press, Oxford, 1977.
+5
+Gödel, K.,
+Collected works
+, ed. S. Feferman, Oxford, 1987-2003.
+6
+Heyting, A.
+Intuitionism: An introduction
+, 3. ed., North-Holland, Amsterdam, 1971.
+7
+Hilbert, D., and, Ackermann,
+GrundzÃÂ¼ge der theoretischen Logik
+, Berlin, 1949.
+8
+Kleene, S.,
+Introduction to
+metamathematics
+, North-Holland, Amsterdam, 1964.
+9
+Rasiowa, H., and, Sikorski, R.,
+The mathematics of metamathematics
+, Warsaw, 1963.
+10
+Tarski, A., "Der AussagenkalkÃÂ¼l und die Topologie",
+Fundamenta Mathematicae
+, 31, 1938.
+Title
+intuitionistic logic
+Canonical
+name
+IntuitionisticLogic
+Date of creation
+2013-03-22 18:28:45
+Last modified on
+2013-03-22 18:28:45
+Owner
+gribskoff (21395)
+Last modified by
+gribskoff (21395)
+Numerical id
+85
+Author
+gribskoff (21395)
+Entry type
+Topic
+Classification
+msc 03A05
+Classification
+msc 03B20
+Classification
+msc 03-01
+Synonym
+Brouwer’s logic
+Synonym
+intuitionistic foundations
+Related topic
+AnOutlineOfHilbertsProgramme
+Related topic
+FOUNDATIONSOFMATHEMATICSOVERVIEW
+Related topic
+Logicism
+Related topic
+QuantumTopos
+Related topic
+AxiomsOfTopoi
+Related topic
+InterpretationOfIntuitionisticLogicByMeansOfFunctionals
+Related topic
+InclusionOfClassicalIntoIntuitionisticLogic
+Related topic
+MathematicalPlatonism
+Defines
+intuitionistic proof
+Defines
+functionals
+Generated  on Thu Feb  8 19:21:20 2018 by
+LaTeXML

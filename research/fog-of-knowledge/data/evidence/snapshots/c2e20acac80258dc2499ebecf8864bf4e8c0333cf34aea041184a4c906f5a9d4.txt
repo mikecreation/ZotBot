@@ -1,0 +1,629 @@
+vector field
+vector field
+Vector fields in
+ℝ
+n
+Definition
+.
+A
+vector field
+v
+on some open set
+U
+⊂
+R
+n
+is a
+function
+which associates a vector
+v
+⁢
+(
+x
+)
+to each point
+x
+of
+U
+. That is,
+v
+is a function from
+R
+n
+to
+R
+n
+. However, we give it a rather special
+interpretation
+. This distinction will become clear when we generalize. If
+v
+is
+differentiable
+, then we say the vector field is
+differentiable
+.
+Here and throughout this entry we use “differentiable” to mean “infinitely differentiable”. Other smoothness criteria (
+continuity
+,
+C
+r
+,
+real analytic
+) can of course be substituted in the obvious way.
+Example
+.
+Let
+v
+⁢
+(
+x
+,
+y
+)
+=
+(
+-
+y
+,
+x
+)
+. At the point
+(
+x
+,
+y
+)
+, we view this as an arrow pointing counterclockwise around the origin, with a length proportional to (in fact equal to) the
+distance
+from the origin. So this might be the field of
+velocity vectors
+of a fluid rotating en masse.
+Vector fields on manifolds
+Suppose first that
+M
+is a
+manifold
+of
+dimension
+n
+embedded in
+ℝ
+m
+. Then we would like to define a vector field on
+M
+to be a function as before. But
+M
+has a natural notion of
+tangent space
+at each point, so now we would like all the vectors to be
+tangent
+to
+M
+. If we are to define a vector field as before, as simply a function from some open set
+U
+of
+M
+to
+ℝ
+n
+, we must pick a basis for the tangent space at each point; the basis elements must, however, be differentiable. It is not obvious that we can always pick such a differentiable basis (think of the tangent spaces to the Möbius strip). The problem is that the tangent spaces form a
+fiber bundle
+, and this may not be
+trivial
+. We could get around this by shrinking
+U
+until we could always
+construct
+such a basis, but then we would have to describe how to convert bases on the overlap. This can be done, and it is one way to approach the theory of differential manifolds; at this point one might as well do away with the ambient space
+ℝ
+n
+.
+Instead of doing this, we will take a coordinate-free approach. The first thing to notice is that given a
+tangent vector
+to a manifold, it makes sense to take a differentiable function on the manifold and ask what the
+directional derivative
+along the vector is. If we have two different tangent vectors, then we can find a function whose directional derivative along each vector is different. So we could identify tangent vectors with directional derivative
+operators
+. This is how we will define them in a general setting.
+Definition
+.
+Let
+M
+be a differential manifold of dimension
+n
+, and let
+x
+be a point on
+M
+. Let
+V
+be the space of differentiable functions defined in some neighborhood of
+x
+. Then a
+tangent vector
+X
+at
+x
+is a
+linear operator
+on
+V
+such that
+1.
+X
+⁢
+(
+f
+⁢
+g
+)
+=
+f
+⁢
+X
+⁢
+(
+g
+)
++
+g
+⁢
+X
+⁢
+(
+f
+)
+, and
+2.
+if
+f
+and
+g
+agree on some neighborhood of
+x
+, then
+X
+⁢
+(
+f
+)
+=
+X
+⁢
+(
+g
+)
+.
+We write the set of tangent vectors at
+x
+as
+T
+x
+⁢
+M
+; it is a
+vector space
+of dimension
+n
+.
+A
+vector field
+on an open set
+U
+⊂
+M
+is a family of tangent vectors
+X
+x
+at each
+x
+such that for every differentiable function
+f
+on an open set
+V
+⊂
+U
+, the function
+x
+↦
+X
+x
+⁢
+(
+f
+)
+is differentiable.
+What does this definition actually mean? Suppose we have a
+coordinate chart
+ϕ
+:
+V
+→
+ℝ
+n
+on some open set
+V
+⊂
+M
+. Then we can define a differentiable function
+x
+i
+on
+V
+by applying
+ϕ
+followed by extracting the
+i
+th
+coordinate
+. So the function
+x
+i
+really extracts the
+x
+i
+coordinate in this
+coordinate system
+. Now, let
+X
+be a vector field on
+V
+. With some thought, we see that
+X
+⁢
+(
+f
+)
+=
+∑
+i
+=
+1
+n
+X
+⁢
+(
+x
+i
+)
+⁢
+∂
+∂
+⁡
+x
+i
+⁢
+f
+,
+or, in some sense
+X
+=
+∑
+i
+=
+1
+n
+X
+⁢
+(
+x
+i
+)
+⁢
+∂
+∂
+⁡
+x
+i
+.
+Each
+X
+⁢
+(
+x
+i
+)
+is by definition just a differentiable function on
+V
+.
+If we had chosen a different coordinate chart
+ψ
+on an open set
+W
+⊂
+M
+, we would obtain coordinate functions
+y
+i
+by
+analogy
+with the
+x
+i
+. Then in this coordinate system we would have
+X
+=
+∑
+i
+=
+1
+n
+X
+⁢
+(
+y
+i
+)
+⁢
+∂
+∂
+⁡
+y
+i
+.
+If
+V
+and
+W
+overlap, then on their overlap we can compare the components of
+X
+in these two coordinate systems. A calculation will reveal
+X
+=
+∑
+i
+=
+1
+n
+X
+⁢
+(
+y
+i
+)
+⁢
+∂
+∂
+⁡
+y
+i
+=
+∑
+i
+=
+1
+n
+∑
+j
+=
+1
+n
+X
+⁢
+(
+x
+j
+)
+⁢
+∂
+⁡
+y
+i
+∂
+⁡
+x
+j
+⁢
+∂
+∂
+⁡
+y
+i
+.
+An alternative definition of vector fields defines tangent vectors locally and then requires that they
+satisfy
+this
+transformation
+law.
+Observe that this transformation law means that we can’t compare vectors at different points in a coordinate-independent way, or at least, it will require some significant cleverness to transport a vector from one point to another. This is in fact possible with some extra information in the form of a
+connection
+on
+M
+, allowing
+parallel transport
+of vectors along curves. The result will continue to depend on the curve, as you can imagine if you imagine trying to parallel-transport a vector from the
+North Pole
+to Baghdad to Mexico City and then back to the North Pole: it will have rotated. This is in fact a direct result of the
+curvature
+of the Earth.
+Example
+.
+Let
+M
+be
+ℝ
+2
+, and let
+ν
+t
+⁢
+(
+x
+,
+y
+)
+:=
+(
+cos
+⁡
+t
+-
+sin
+⁡
+t
+sin
+⁡
+t
+cos
+⁡
+t
+)
+⁢
+(
+x
+y
+)
+.
+Then define a vector field
+X
+by
+f
+↦
+∂
+∂
+⁡
+t
+⁢
+(
+f
+∘
+ν
+t
+)
+.
+We have a natural coordinate patch defined by the
+identity function
+; in this coordinate system, we can easily calculate that
+X
+=
+-
+y
+⁢
+∂
+∂
+⁡
+x
++
+x
+⁢
+∂
+∂
+⁡
+y
+;
+this
+X
+is precisely the vector field we had before, viewed in a new and more confusing light. Now, with a little imagination, we can see that even for fixed
+t
+, the function
+ν
+t
+is a different kind of object than
+X
+; while
+ν
+t
+represents
+a
+rotation
+, a smooth map from
+M
+to itself, while
+X
+is a piece of information attached in an essential way to each point, perhaps representing a velocity vector field.
+The Tangent Bundle
+Definition
+.
+Let
+T
+⁢
+M
+denote the
+vector bundle
+with
+base space
+M
+having fiber over
+x
+given by
+T
+x
+⁢
+M
+, and having local trivializations over coordinate charts with
+change of coordinates
+given by the
+formulas
+in the previous
+section
+. Then the bunlde
+T
+⁢
+M
+is called the
+tangent bundle
+of
+M
+.
+The tangent bundle is extremely useful in its own right, and other bundles of interest are also constructed from it. For example, the
+cotangent bundle
+is obtained by taking the dual vector space at each point. Sections of the cotangent bundle are
+one-forms
+, and since they are obtained by taking the dual, they transform according to the inverse matrix at each point. Higher wedge and
+tensor products
+of these bundles are used to construct tensors and
+differential forms
+.
+Vector fields on a
+smooth manifold
+support
+an
+operation
+called the
+Lie bracket
+, making them into a Lie algebra; this construction produces an intimate link between Lie algebras and Lie groups, which are of great interest to physicists and mathematicians alike.
+This viewpoint on vector fields emphasizes the machinery of modern
+geometry
+, namely sheaves, local rings, and bundles; this machinery is useful in
+differential geometry
+, important in complex analtyic geometry, and foundational in
+algebraic geometry
+— schemes cannot be described without it.
+References
+See the
+bibliography for differential geometry
+.
+Title
+vector field
+Canonical name
+VectorField
+Date of creation
+2013-03-22 11:59:27
+Last modified on
+2013-03-22 11:59:27
+Owner
+mathcam (2727)
+Last modified by
+mathcam (2727)
+Numerical id
+16
+Author
+mathcam (2727)
+Entry type
+Definition
+Classification
+msc 46E40
+Synonym
+vector-valued function
+Related topic
+Gradient
+Related topic
+LeibnizNotationForVectorFields
+Related topic
+TangentBundle
+Related topic
+TangentSpace
+Related topic
+PrimitiveRecursiveVectorValuedFunction
+Generated  on Fri Feb  9 21:40:24 2018 by
+LaTeXML

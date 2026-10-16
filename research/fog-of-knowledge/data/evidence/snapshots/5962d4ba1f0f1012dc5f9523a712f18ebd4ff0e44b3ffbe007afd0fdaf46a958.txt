@@ -1,0 +1,253 @@
+recursive set
+recursive set
+A subset
+S
+of the
+natural numbers
+ℕ
+is said to be
+recursive
+if its
+characteristic function
+χ
+S
+⁢
+(
+x
+)
+:=
+{
+1
+if
+⁢
+x
+∈
+S
+0
+if
+⁢
+x
+∈
+ℕ
+-
+S
+is recursive (
+computable
+). In other words, there is an
+algorithm
+(via
+Turing machine
+for example) that determines whether an
+element
+is in
+S
+or not in
+S
+.
+More generally, a subset
+S
+⊆
+ℕ
+n
+is
+recursive
+if its characteristic function
+f
+S
+is recursive.
+A
+recursive set
+is also known as a
+decidable set
+or a
+computable set
+.
+Examples of recursive sets are finite subset of
+ℕ
+, the set
+ℕ
+itself, the set of
+even integers
+, the set of
+Fibonacci numbers
+, the set of pairs
+(
+a
+,
+b
+)
+where
+a
+divides
+b
+, and the set of
+prime numbers
+. In the last example, one may use the
+Sieve of Eratosthenes
+as an algorithm to determine the
+primality
+of an
+integer
+.
+A set
+S
+⊆
+ℕ
+is
+recursively enumerable
+if the
+partial function
+f
+⁢
+(
+x
+)
+:=
+{
+1
+if
+⁢
+x
+∈
+S
+undefined
+if
+⁢
+x
+∈
+ℕ
+-
+S
+is computable. In other words, there is an algorithm that halts (and returns
+1
+) only when an element in
+S
+is used as an input.
+Remarks
+•
+A special case of a recursive set is that of a
+primitive recursive set
+. A set is
+primitive recursive
+if its characteristic function is primitive recursive (
+http://planetmath.org/PrimitiveRecursive
+). All of the examples cited above are primitive recursive.
+•
+On the other hand, one can broaden the scope of recursiveness to sets which are not necessarily subsets of
+ℕ
+n
+. Below are two examples:
+–
+Since
+ℤ
+can be effectively embedded in
+ℕ
+, so the notion of recursive sets be extended to subsets of
+ℤ
+.
+–
+Since every
+finite set
+Σ
+can be encoded by the natural numbers, we can define a
+recursive language
+over
+Σ
+to be a subset
+L
+⊆
+Σ
+*
+such that
+L
+, when encoded by the natural numbers, is a recursive set. Equivalently,
+L
+is recursive iff there is a Turing machine that decides
+L
+(accepts
+L
+and rejects
+Σ
+*
+-
+L
+).
+•
+Similarly, recursive enumerability can be defined on
+languages
+: a language
+L
+over
+Σ
+is
+recursively enumerable
+if its
+encoding
+by the natural numbers is a
+recursively enumerable set
+. This is
+equivalent
+to saying that
+L
+is accepted by a Turing machine.
+•
+Using the above definition, one can define a
+recursive predicate
+or a
+recursively enumerable predicate
+φ
+⁢
+(
+x
+)
+according to whether
+{
+x
+∣
+φ
+⁢
+(
+x
+)
+}
+is a recursive or recursively enumerable set respectively.
+Title
+recursive set
+Canonical name
+RecursiveSet
+Date of creation
+2013-03-22 17:34:52
+Last modified on
+2013-03-22 17:34:52
+Owner
+CWoo (3771)
+Last modified by
+CWoo (3771)
+Numerical id
+16
+Author
+CWoo (3771)
+Entry type
+Definition
+Classification
+msc 03B25
+Classification
+msc 03D20
+Synonym
+decidable set
+Synonym
+computable set
+Synonym
+decidable predicate
+Synonym
+computable predicate
+Defines
+recursively enumerable set
+Defines
+recursive predicate
+Defines
+recursively enumerable predicate
+Defines
+recursive language
+Generated  on Thu Feb  8 19:48:08 2018 by
+LaTeXML

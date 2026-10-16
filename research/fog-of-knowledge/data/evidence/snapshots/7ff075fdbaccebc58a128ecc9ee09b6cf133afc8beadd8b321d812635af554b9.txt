@@ -1,0 +1,791 @@
+alternative characterizations of recursive functions
+alternative characterizations of recursive functions
+The class of
+recursive functions
+may be characterized by considerably weaker conditions than those given in the entry “recursive function (
+http://planetmath.org/RecursiveFunction
+)” of this encyclopaedia. This entry will discuss several such
+characterizations
+.
+Criteria 2 and 3 in the list may be replaced by the considerably weaker criterion:
+2’) The successor function
+S
+:
+ℤ
++
+→
+ℤ
++
+defined as
+S
+⁢
+(
+x
+)
+=
+x
++
+1
+is a recursive function.
+By means of a
+pairing function
+, the
+definition
+may be simplified considerably. Using such a
+function
+and its
+inverses
+, the set of recursive functions of
+m
+variables
+may be put in
+one-to-one correspondence
+with recursive functions of
+n
+variables for any pair of non-zero positive integers
+m
+and
+n
+. Hence one can focus attention on recursive functions of a small fixed number of variables. One characterization of recursive functions of not more than two variables is the following:
+The class of recursive functions is the smallest class of positive integer valued functions of not more than two positive integers which
+satisfies
+the following criteria:
+1’
+The
+constant function
+c
+:
+ℤ
++
+→
+ℤ
++
+defined by
+c
+⁢
+(
+x
+)
+=
+1
+for all
+x
+∈
+ℤ
++
+is a recursive function.
+2’
+The successor function
+S
+:
+ℤ
++
+→
+ℤ
++
+defined as
+S
+⁢
+(
+x
+)
+=
+x
++
+1
+is a recursive function.
+3’
+The projection functions
+I
+1
+1
+:
+ℤ
++
+→
+ℤ
++
+,
+I
+1
+2
+:
+ℤ
++
+2
+→
+ℤ
++
+, and
+I
+2
+2
+:
+ℤ
++
+2
+→
+ℤ
++
+defined as
+I
+1
+1
+⁢
+(
+x
+)
+=
+x
+I
+1
+2
+⁢
+(
+x
+,
+y
+)
+=
+x
+I
+2
+2
+⁢
+(
+x
+,
+y
+)
+=
+y
+are recursive functions.
+4’
+If
+a
+:
+ℤ
++
+2
+→
+ℤ
++
+,
+b
+:
+ℤ
++
+2
+→
+ℤ
++
+,
+c
+:
+ℤ
++
+2
+→
+ℤ
++
+,
+d
+:
+ℤ
++
+→
+ℤ
++
+, and
+e
+:
+ℤ
++
+→
+ℤ
++
+are recursive functions, then
+f
+:
+ℤ
++
+2
+→
+ℤ
++
+,
+g
+:
+ℤ
++
+→
+ℤ
++
+, and
+h
+:
+ℤ
++
+2
+→
+ℤ
++
+, defined by
+f
+⁢
+(
+x
+,
+y
+)
+=
+d
+⁢
+(
+a
+⁢
+(
+x
+,
+y
+)
+)
+g
+⁢
+(
+x
+)
+=
+a
+⁢
+(
+d
+⁢
+(
+x
+)
+,
+e
+⁢
+(
+y
+)
+)
+h
+⁢
+(
+x
+,
+y
+)
+=
+a
+⁢
+(
+b
+⁢
+(
+x
+,
+y
+)
+,
+c
+⁢
+(
+x
+,
+y
+)
+)
+are recursive functions.
+5’
+If
+f
+:
+ℤ
++
+→
+ℤ
++
+,
+g
+:
+ℤ
++
+→
+ℤ
++
+are recursive functions, then the function
+h
+:
+ℤ
++
+2
+→
+ℤ
++
+defined by the
+recursion
+h
+⁢
+(
+n
++
+1
+,
+x
+)
+=
+g
+⁢
+(
+h
+⁢
+(
+n
+,
+x
+)
+)
+with the initial condition
+h
+⁢
+(
+0
+,
+x
+)
+=
+f
+⁢
+(
+x
+)
+is a recursive function.
+6’
+If
+f
+:
+ℤ
++
+2
+→
+ℤ
++
+is a recursive function then
+g
+:
+ℤ
++
+→
+ℤ
++
+is a recursive function, where
+g
+⁢
+(
+x
+)
+is defined to equal
+y
+if there exists a
+y
+∈
+ℤ
++
+such that
+(a)
+f
+⁢
+(
+0
+,
+x
+)
+,
+f
+⁢
+(
+1
+,
+x
+)
+,
+…
+⁢
+f
+⁢
+(
+y
+,
+x
+)
+are all defined,
+(b)
+f
+⁢
+(
+z
+,
+x
+)
+≠
+0
+when
+1
+≤
+z
+<
+y
+, and
+(c)
+f
+⁢
+(
+y
+,
+x
+)
+=
+0
+.
+Otherwise,
+g
+⁢
+(
+x
+)
+is undefined.
+The criterion 5’ may be shown to follow from the remaining criteria, and hence it may be dropped.
+By further exploiting the marvelous
+properties
+of the pairing function, criterion 6’ may be replaced by the following:
+6”) If
+f
+:
+ℤ
++
+→
+ℤ
++
+is a recursive function then
+g
+:
+ℤ
++
+→
+ℤ
++
+is a recursive function, where
+g
+⁢
+(
+x
+)
+is defined to equal
+y
+if there exists a
+y
+∈
+ℤ
++
+such that
+a
+f
+⁢
+(
+0
+)
+,
+f
+⁢
+(
+1
+)
+,
+…
+⁢
+f
+⁢
+(
+y
+)
+are all defined,
+b
+f
+⁢
+(
+z
+)
+≠
+x
+when
+1
+≤
+z
+<
+y
+, and
+c
+f
+⁢
+(
+y
+)
+=
+x
+.
+Otherwise,
+g
+⁢
+(
+x
+)
+is undefined.
+The
+operation
+introduced in this new criterion is called
+minimized inversion
+and will be denoted as
+g
+=
+f
+-
+1
+. Note that there is no conflict with the usual notion of inverse of a function because, if
+f
+is invertible, the minimized inverse of
+f
+is the same as the inverse of
+f
+in the usual sense; otherwise the notion of minimized inverse extends the definition of inverse to a larger class of functions.
+Finally, by taking these ideas even further, Czirmaz showed that recursive functions of a single variable had the following simple characterization:
+The class of recursive functions is the smallest class of positive integer valued functions of a positive integer which satisfies the following criteria:
+1”
+The constant function
+c
+:
+ℤ
++
+→
+ℤ
++
+defined by
+c
+⁢
+(
+x
+)
+=
+1
+for all
+x
+∈
+ℤ
++
+is a recursive function.
+2”
+The successor function
+S
+:
+ℤ
++
+→
+ℤ
++
+defined as
+S
+⁢
+(
+x
+)
+=
+x
++
+1
+is a recursive function.
+3”
+The function
+Q
+:
+ℤ
++
+→
+ℤ
++
+defined as
+Q
+⁢
+(
+x
+)
+=
+x
+-
+⌈
+x
+⌉
+2
+is a recursive function. In words,
+Q
+⁢
+(
+x
+)
+is the
+difference
+between
+x
+and the largest square number smaller than
+x
+.
+4”
+If
+f
+:
+ℤ
++
+→
+ℤ
++
+and
+g
+:
+ℤ
++
+→
+ℤ
++
+are recursive functions, then
+h
+:
+ℤ
++
+→
+ℤ
++
+is a recursive function, where
+h
+⁢
+(
+x
+)
+=
+f
+⁢
+(
+g
+⁢
+(
+x
+)
+)
+6”
+If
+f
+:
+ℤ
++
+→
+ℤ
++
+is a recursive function then
+g
+:
+ℤ
++
+→
+ℤ
++
+is a recursive function, where
+g
+⁢
+(
+x
+)
+is defined to equal
+y
+if there exists a
+y
+∈
+ℤ
++
+such that
+a
+f
+⁢
+(
+0
+)
+,
+f
+⁢
+(
+1
+)
+,
+…
+⁢
+f
+⁢
+(
+y
+)
+are all defined,
+b
+f
+⁢
+(
+z
+)
+≠
+x
+when
+1
+≤
+z
+<
+y
+, and
+c
+f
+⁢
+(
+y
+)
+=
+x
+.
+Otherwise,
+g
+⁢
+(
+x
+)
+is undefined.
+Title
+alternative characterizations of recursive functions
+Canonical
+name
+AlternativeCharacterizationsOfRecursiveFunctions
+Date of creation
+2013-03-22 14:34:42
+Last modified on
+2013-03-22 14:34:42
+Owner
+rspuzio (6075)
+Last modified by
+rspuzio (6075)
+Numerical id
+12
+Author
+rspuzio (6075)
+Entry type
+Topic
+Classification
+msc 03D20
+Defines
+minimized inversion
+Generated  on Thu Feb  8 20:01:58 2018 by
+LaTeXML
