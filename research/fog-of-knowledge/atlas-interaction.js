@@ -140,6 +140,12 @@ function fitEvidenceContext(){
   graph.setAttribute('viewBox',`${(left+right-width)/2} ${(top+bottom-height)/2} ${width} ${height}`);
 }
 
+function reviewedNodeAssertions(nodeId){
+  if(model.node_support)return Object.prototype.hasOwnProperty.call(model.node_support,nodeId)?model.node_support[nodeId]:[];
+  return (model.evidence_reviews||[]).flatMap(bundle=>bundle.assertions)
+    .filter(a=>a.canonical_record?.id===nodeId&&a.target_kind==='node');
+}
+
 function augmentEvidenceDetails(){
   const token=currentToken();
   if(token?.kind!=="node")return;
@@ -164,7 +170,7 @@ function augmentEvidenceDetails(){
       else{expandAll=false;expandFieldDeep=false;activePath=[familyToken(id.replace('family:',''))];render()}
     });
   }
-  const assertions=(model.evidence_reviews||[]).flatMap(bundle=>bundle.assertions).filter(a=>a.canonical_record?.id===node.id&&a.target_kind==='node');
+  const assertions=reviewedNodeAssertions(node.id);
   const quotes=document.createElement("section");quotes.className="detailSection";
   quotes.innerHTML='<h3>EXACT REVIEWED SUPPORT</h3>'+(assertions.length?assertions.map(a=>'<p>'+esc(a.statement)+'</p>'+a.support.map(span=>'<blockquote>'+esc(span.quote)+'</blockquote><small>'+esc(span.source_id)+' · retained revision '+esc(span.source_sha256.slice(0,12))+'</small>').join('')).join(''):'<p>No source-to-assertion review is retained for this legacy record yet. Citation presence alone does not establish support.</p>');
   detail.append(quotes);

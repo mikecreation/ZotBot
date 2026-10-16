@@ -153,6 +153,8 @@ def build(graph: dict | None = None) -> dict:
 
 def write_projection(projection: dict) -> None:
     OUTPUT.write_text(json.dumps(projection, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    from atlas_display import write_display
+    write_display(json.loads((ROOT / "data/knowledge.json").read_text(encoding="utf-8")), projection)
     from evidence_pipeline import write_index
     write_index()
 
@@ -165,6 +167,8 @@ if __name__ == "__main__":
     if args.check:
         if not OUTPUT.exists() or json.loads(OUTPUT.read_text(encoding="utf-8")) != projection:
             raise SystemExit("Stale navigation: run python scripts/atlas_navigation.py")
+        from atlas_display import validate_display
+        validate_display(json.loads((ROOT / "data/knowledge.json").read_text(encoding="utf-8")), projection)
     else:
         write_projection(projection)
     print(json.dumps(projection["counts"]))

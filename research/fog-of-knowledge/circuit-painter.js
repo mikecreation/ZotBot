@@ -69,10 +69,10 @@ root.FogCircuitPainter={draw:function(c,v,scale,ox,oy){
       const pad=200/scale,box={left:v[0]-pad,top:v[1]-pad,right:v[0]+v[2]+pad,bottom:v[1]+v[3]+pad};
       const edgeIndices=[],itemIndices=[];if(!this.options.connectionKey)query(this.edgeTree,box,edgeIndices);query(this.itemTree,box,itemIndices);const edges=edgeIndices.map(i=>this.edges[i]).filter(e=>!this.scopeKeys||(this.scopeKeys.has(e.from)&&this.scopeKeys.has(e.to))),items=itemIndices.map(i=>this.items[i]).filter(e=>!this.scopeKeys||this.scopeKeys.has(e.key));
       c.lineJoin='miter';c.lineCap='butt';c.lineWidth=.75/scale;
-      // Level of detail for giant atlases: bus traces are unrouted above 2,000 records,
-      // so thousands of overlapping wires would bury nodes at every zoom. Fade wire ink
+      // Level of detail for giant atlases: many clear shared trunks can still
+      // bury nodes at a tiny overview scale. Fade wire ink
       // by on-screen density and let opaque node discs and labels take over as you zoom.
-      const nodeScreen=34*scale,dense=edges.length>300,edgeAlpha=dense?Math.max(.1,Math.min(.78,.78*Math.sqrt(300/edges.length))*(nodeScreen>=10?.6:1)):.78,showLabels=nodeScreen>=6;
+      const nodeScreen=34*scale,dense=edges.length>300,edgeAlpha=dense?Math.max(.1,Math.min(.78,.78*Math.sqrt(300/edges.length))*(nodeScreen>=10?.6:1)):.78,showLabels=this.options.allLabels||nodeScreen>=6;
       // Batch by field; no shadows, SVG filters, DOM mutations or animation per record.
       for(const family of this.data.families){c.strokeStyle=family.color;c.globalAlpha=this.options.frontierLens ? Math.min(.22,edgeAlpha) : edgeAlpha;c.beginPath();for(const edge of edges){if(edge.familyId!==family.id)continue;edge.points.forEach((p,i)=>{if(i)c.lineTo(p.x,p.y);else c.moveTo(p.x,p.y)})}c.stroke()}
       let connectionsDrawn=0;
