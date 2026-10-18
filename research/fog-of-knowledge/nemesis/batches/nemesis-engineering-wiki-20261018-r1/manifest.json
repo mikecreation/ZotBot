@@ -1,0 +1,22 @@
+{
+  "protocol": "fog-nemesis-batch/1",
+  "batch_id": "nemesis-engineering-wiki-20261018-r1",
+  "created_at": "2026-10-18T12:26:16.350059+00:00",
+  "agent": "nemesis-direct-author",
+  "mission": "Grow the engineering great field with missing entries from captured English Wikipedia lead sentences",
+  "scope": {
+    "domains": [
+      "engineering"
+    ],
+    "topics": [
+      "Wikipedia categories: Mechanical engineering; Civil engineering; Electrical engineering; Chemical engineering; Structural engineering; Aerospace engineering; Control theory; Manufacturing; Electronic engineering; Industrial engineering; Systems engineering; Hydraulic engineering; Geotechnical engineering; Mechanisms (engineering); Machines; Engines; Electrical components; Power engineering; Telecommunications engineering; Robotics; Welding; Machining; Tribology; Semiconductor devices; Electric motors; Pumps; Valves; Gears; Fasteners; Construction; Mechanical power transmission; Building engineering; Signal processing; Materials science; Reliability engineering; Engineering disciplines; Environmental engineering; Transport engineering; Petroleum engineering; Nuclear technology; Metalworking; Electronic circuits; Mechanical engineering terminology; Structural system; Bearings (mechanical); Heat exchangers; Turbines; Actuators; Sensors"
+    ],
+    "date_range": null
+  },
+  "source_policy": "English Wikipedia article lead sentences and category listings (CC BY-SA 4.0, Wikimedia Foundation and contributors, attributed per article and category URL via the MediaWiki API); quotes are attributed definitions, not original research evidence.",
+  "notes": "Directly authored by deterministic code (wiki_author.py). One article -> one node; quote = exact first sentence of the article lead as returned by the MediaWiki extracts API. Taxonomy only where the captured category listing names the child and the category is named for a same-family node; parents capped at 150 direct children. Existing labels, aliases, registry seeds and open-PR labels excluded. REVIEW: reviewer=code-only (code:nemesis-provenance/1) under the [\"provenance\"] role set approved in PR #109. No adversarial model review is claimed.",
+  "review": {
+    "reviewer": "code-only",
+    "adversarial_review": "not performed; owner-approved provenance-only role set (PR #109)"
+  }
+}
