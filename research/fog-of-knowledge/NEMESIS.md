@@ -131,6 +131,10 @@ These neutral values must be proposed explicitly by the author: `status: reporte
 
 Unknown metadata remains explicit. If a candidate claims acceptance, chronology or frontier standing that its sources do not establish, the author must submit a new candidate revision with justified or neutral metadata. The compiler does not rewrite the captured source, summary or assertion scope to make a candidate pass. The complete revised representation still requires both independent review roles.
 
+#### Owner waiver: code-provenance public results (2026-10-18)
+
+`data/evidence-policy.json` (`owner_waivers`, id `code-provenance-frontier-public-results`) records the repository owner's approval on 2026-10-18 at 10:19 CT: the deterministic code provenance receipt (`code:nemesis-provenance/1`, role set `["provenance"]`) counts as review for frontier public-result nodes only. Such a node carries `frontier: true`, `status: frontier`, `era: frontier` and `public_frontier` with category `public-result`, `capability_status: publicly-described`, `disclosed_at` set to the exact publication date stated in the retained source, and `source_ids` naming that retained source. Its summary attributes the paper and quotes the finding sentence verbatim from the retained abstract; its sources include the DOI or arXiv link, and the retained record's licence must permit reuse (CC BY or CC0/public domain). The waiver also covers that node's `related` or `refines` edges to existing same-family concepts, each with its own exact abstract span naming the concept, and `narrower` placements only where the abstract itself classifies the result as a kind of the parent. Direct children per parent stay well below 150. No semantic model review is claimed for these records, and the frontier/era values are a recency placement, not a claim of acceptance, priority or current leadership. Open questions and company-tool records keep their existing rules.
+
 ### edges.jsonl
 
 One relationship per line.
