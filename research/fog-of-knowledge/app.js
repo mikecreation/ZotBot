@@ -1294,7 +1294,7 @@ function drawCurrentChildren(parent,center){
   if(!all.length&&token.kind==="node"){
     const node=nodeById.get(token.id);
     const p=polar(center.x,center.y,token.r+DEPTH_GAP,token.angle);
-    drawFrontierMarker(parent,p,node?.frontier?"RECORDED OPEN QUESTION":"UNMAPPED NEXT LAYER");
+    drawFrontierMarker(parent,p,node?.public_frontier?.category==="public-result"?"RECENT PUBLIC RESULT":node?.frontier?"RECORDED OPEN QUESTION":"UNMAPPED NEXT LAYER");
   }
 }
 function drawKnowledgeNode(parent,node,p,token,isCurrent,role,onClick,relation=""){
@@ -1368,7 +1368,7 @@ function drawFrontierMarker(parent,p,label){
   g.append(mk("path",{d:"M -70 8 Q -36 -18 0 3 Q 34 25 72 -7",class:"fogWisp"}));
   g.append(mk("path",{d:"M -62 26 Q -25 4 12 24 Q 42 38 68 19",class:"fogWisp secondary"}));
   g.append(textNode(0,-4,label,"frontierTitle"));
-  g.append(textNode(0,14,label==="RECORDED OPEN QUESTION"?"Recorded open question":"Nemesis can map what comes next","frontierSub"));
+  g.append(textNode(0,14,label==="RECORDED OPEN QUESTION"?"Recorded open question":label==="RECENT PUBLIC RESULT"?"Recorded public result":"Nemesis can map what comes next","frontierSub"));
   parent.append(g);
 }
 

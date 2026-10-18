@@ -7,10 +7,12 @@
   "representation_policy": {
     "protocol": "fog-representation-policy/1",
     "status": {
-      "reported": "A captured source reports this scoped result or proposal. This does not assert scientific acceptance, replication, current consensus, or truth beyond the attributed report."
+      "reported": "A captured source reports this scoped result or proposal. This does not assert scientific acceptance, replication, current consensus, or truth beyond the attributed report.",
+      "frontier": "Public-result lane only (owner waiver code-provenance-frontier-public-results): a recently published public result, attributed to its paper and quoted verbatim. This does not assert acceptance, replication, consensus, or that it is the latest human knowledge."
     },
     "era": {
-      "undated": "Chronological placement is unresolved. This does not assert an origin date, contemporary relevance, or current frontier currency; any explicit date in the scientific statement still needs exact source support."
+      "undated": "Chronological placement is unresolved. This does not assert an origin date, contemporary relevance, or current frontier currency; any explicit date in the scientific statement still needs exact source support.",
+      "frontier": "Public-result lane only (owner waiver code-provenance-frontier-public-results): the retained source states the publication date recorded in public_frontier.disclosed_at. This is a recency placement, not a claim of priority, acceptance or current world leadership."
     },
     "frontier": {
       "false": "No positive claim that this record identifies a current frontier or latest public capability. This does not mean settled, obsolete, or disproved.",
@@ -18,5 +20,32 @@
     },
     "review_rule": "Authors must explicitly propose neutral metadata when acceptance, chronology, or currency is unresolved. Reviewers evaluate reported/undated/frontier:false by these definitions, without requiring proof of endorsement or currency that they do not assert. Exact support, scope, label, kind, domain, relationships, and every other represented claim remain subject to both full reviews. Neutral metadata cannot rescue an unsupported or strengthened statement. The compiler never changes scientific metadata to obtain approval."
   },
+  "owner_waivers": [
+    {
+      "id": "code-provenance-neutral-definitions",
+      "approved": "Repository owner, 2026-10-14 20:16 and 20:19 CT (PR #109)",
+      "role_set": ["provenance"],
+      "scope": "Code-authored exact definition quotes from uniform authoritative vocabularies with neutral metadata (status reported, era undated, frontier:false) and their explicit source-hierarchy narrower placements."
+    },
+    {
+      "id": "code-provenance-frontier-public-results",
+      "approved": "Repository owner, 2026-10-18 10:19 CT",
+      "role_set": ["provenance"],
+      "scope": "Frontier public-result nodes and their links to existing same-family concepts. The code provenance receipt (code:nemesis-provenance/1) counts as the review; no semantic model review is claimed.",
+      "node_requirements": [
+        "frontier:true, status frontier and era frontier",
+        "public_frontier.category public-result, capability_status publicly-described, disclosed_at = the exact ISO publication date stated in the retained source, source_ids = the retained source",
+        "the summary attributes the paper and quotes its finding sentence verbatim from the retained abstract; no paraphrase, merging or strengthening",
+        "node sources include the DOI or arXiv link; the abstract licence stated in the retained record permits reuse (CC BY or CC0/public domain)",
+        "exact support spans for the finding sentence and the publication date in the same retained capture"
+      ],
+      "link_requirements": [
+        "related or refines edges from the result to an existing same-family concept, each with its own assertion whose exact abstract span names that concept",
+        "narrower placement only where the abstract itself classifies the result as a kind of the parent concept, quoted as an exact span",
+        "direct children per parent stay well below 150"
+      ],
+      "excludes": "Open questions (legacy frontier questions and public_frontier category open-question) and company-tool records keep their existing rules and are not covered by this waiver."
+    }
+  ],
   "policy": "Exact retained excerpts and scoped assertions are mandatory. Review records bind the whole canonical representation; model agreement is not independent scientific corroboration. Legacy records remain visible and unreviewed."
 }
