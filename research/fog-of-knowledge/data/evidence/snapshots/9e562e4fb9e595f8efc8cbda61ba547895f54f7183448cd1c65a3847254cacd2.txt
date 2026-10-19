@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+    <responseDate>2026-10-18T16:23:31Z</responseDate>
+                <request verb="GetRecord" identifier="oai:arXiv.org:2607.06237" metadataPrefix="arXiv">http://oaipmh.arxiv.org/oai</request>
+
+
+    <GetRecord>
+                <record>
+                <header>
+        <identifier>oai:arXiv.org:2607.06237</identifier>
+        <datestamp>2026-07-27</datestamp>
+            <setSpec>math:math:NA</setSpec>
+            <setSpec>cs:cs:NA</setSpec>
+    </header>
+
+            <metadata>
+                        <arXiv xmlns="http://arxiv.org/OAI/arXiv/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://arxiv.org/OAI/arXiv/ https://oaipmh.arxiv.org/OAI/arXiv.xsd">
+        <id>2607.06237</id>
+        <created>2026-07-24</created>
+            <updated>2026-07-27</updated>
+        <authors>
+                <author>
+                    <keyname>Lu</keyname>
+                        <forenames>Zheng</forenames>
+                </author>
+                <author>
+                    <keyname>Jia</keyname>
+                        <forenames>Jiwei</forenames>
+                </author>
+                <author>
+                    <keyname>Lee</keyname>
+                        <forenames>Young Ju</forenames>
+                </author>
+        </authors>
+        <title>ResiPhy-MDNF: A Residual-Based Physics-Aware Multilevel Discrete Neural Field Framework for PDE-Constrained Inverse Problems</title>
+            <categories>math.NA cs.NA</categories>
+            <license>http://creativecommons.org/licenses/by/4.0/</license>
+            <abstract>Inverse problems governed by partial differential equations are difficult when observations are sparse and the unknown coefficient field contains both large- and small-scale structures. We introduce a residual-based, physics-aware multilevel discrete neural field framework, ResiPhy-MDNF, for such problems. The method couples a coarse-to-fine discrete neural field (DNF) optimizer with a residual-based graph neural network (GNN) transfer operator, called ResiPhy-GNN. At each level, the DNF directly optimizes trainable grid- or mesh-based state and coefficient arrays using the prescribed numerical model. Between levels, ResiPhy-GNN maps the coarse representation to the fine representation through a learned prolongation based on graph connectivity, spatial features, and residual information. The method requires neither surrogate models nor offline pretraining. We evaluate the framework on coefficient inversion in Darcy flow for subsurface modeling and on electrical impedance tomography (EIT). In the controlled Darcy test case, the \(64^2\!\to128^2\) multilevel path uses \(1.25\times\) the cumulative grid-work proxy of the direct single-level \(128^2\) solve, while achieving \(6.76\times\) lower permeability error and \(10.4\times\) lower state error. On measured Kuopio Tomography Challenge 2023 EIT data, the framework improves the mean intersection-over-union after Otsu thresholding by roughly \(3.4\%\) over the official linearized complete electrode model reconstruction and by \(16.9\%\) over direct single-level discrete-field optimization. These results indicate that the same multilevel construction can be used across different coefficient structures, discretizations, and observation geometries.</abstract>
+    </arXiv>
+
+            </metadata>
+        </record>
+
+    </GetRecord>
+</OAI-PMH>
