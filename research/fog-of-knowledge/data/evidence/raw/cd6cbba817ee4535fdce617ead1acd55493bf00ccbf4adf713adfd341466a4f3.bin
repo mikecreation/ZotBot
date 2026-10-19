@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+    <responseDate>2026-10-18T16:27:36Z</responseDate>
+                <request verb="GetRecord" identifier="oai:arXiv.org:2608.07289" metadataPrefix="arXiv">http://oaipmh.arxiv.org/oai</request>
+
+
+    <GetRecord>
+                <record>
+                <header>
+        <identifier>oai:arXiv.org:2608.07289</identifier>
+        <datestamp>2026-08-10</datestamp>
+            <setSpec>eess:eess:SY</setSpec>
+            <setSpec>cs:cs:SY</setSpec>
+            <setSpec>cs:cs:DC</setSpec>
+            <setSpec>cs:cs:LO</setSpec>
+    </header>
+
+            <metadata>
+                        <arXiv xmlns="http://arxiv.org/OAI/arXiv/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://arxiv.org/OAI/arXiv/ https://oaipmh.arxiv.org/OAI/arXiv.xsd">
+        <id>2608.07289</id>
+        <created>2026-08-07</created>
+            <updated>2026-08-10</updated>
+        <authors>
+                <author>
+                    <keyname>Wang</keyname>
+                        <forenames>Wayne</forenames>
+                </author>
+                <author>
+                    <keyname>Bhatnagar</keyname>
+                        <forenames>Archit</forenames>
+                </author>
+                <author>
+                    <keyname>Miao</keyname>
+                        <forenames>Tongyuan</forenames>
+                </author>
+                <author>
+                    <keyname>Kalamkar</keyname>
+                        <forenames>Saniya</forenames>
+                </author>
+                <author>
+                    <keyname>Cui</keyname>
+                        <forenames>Wenqi</forenames>
+                </author>
+                <author>
+                    <keyname>Incer</keyname>
+                        <forenames>Inigo</forenames>
+                </author>
+                <author>
+                    <keyname>Chen</keyname>
+                        <forenames>Ang</forenames>
+                </author>
+        </authors>
+        <title>Synthesizing Voltage Ride-Through Controllers for Data Centers</title>
+            <categories>eess.SY cs.DC cs.LO cs.SY</categories>
+            <comments>12 pages, 10 figures, 1 table</comments>
+            <license>http://creativecommons.org/licenses/by/4.0/</license>
+            <abstract>Data centers are among the power grid&#39;s fastest-growing loads. Since data center servers are sensitive electronic components, they need to be protected against the grid&#39;s voltage disturbances during grid faults. While disconnecting from the grid achieves this, it can further destabilize the power system if many data centers trip at once. To address this emerging concern, voltage ride-through (VRT) grid codes have been proposed to standardize data center behavior. They require a data center to stay connected for a period of time through the disturbance, hold an active power floor, and recover its draw within a deadline upon restoration. However, systematically designing and certifying controllers that satisfy these coupled temporal and operational requirements remains challenging.
+  We propose SolVRT, a system that synthesizes a grid-code-compliant VRT controller for a given data center using formal methods. We develop a specification language that expresses a grid code in Signal Temporal Logic (STL) as the basis for formal reasoning. Our encoding algorithm takes the specification, along with a model of the data center&#39;s power topology, and translates the constraints into a controller synthesis problem. This step produces a correct-by-construction controller if a solution can be found, or a proof that no such controller exists. For the latter case, SolVRT provides a diagnostic step: it traces the facility&#39;s &#34;conflict frontier,&#34; isolates the conflicting clauses that led to non-compliance, and computes the smallest hardware or workload change that would enable compliance. We evaluate SolVRT through closed-loop simulations of a 200 MW data center connected to a 140-bus transmission system. The results demonstrate that SolVRT can synthesize compliant VRT controllers, certify infeasibility when compliance is unattainable, and identify targeted modifications that enable compliance.</abstract>
+    </arXiv>
+
+            </metadata>
+        </record>
+
+    </GetRecord>
+</OAI-PMH>

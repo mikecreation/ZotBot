@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+    <responseDate>2026-10-18T16:41:25Z</responseDate>
+                <request verb="GetRecord" identifier="oai:arXiv.org:2609.21813" metadataPrefix="arXiv">http://oaipmh.arxiv.org/oai</request>
+
+
+    <GetRecord>
+                <record>
+                <header>
+        <identifier>oai:arXiv.org:2609.21813</identifier>
+        <datestamp>2026-10-01</datestamp>
+            <setSpec>stat:stat:ML</setSpec>
+            <setSpec>cs:cs:CV</setSpec>
+            <setSpec>eess:eess:SP</setSpec>
+    </header>
+
+            <metadata>
+                        <arXiv xmlns="http://arxiv.org/OAI/arXiv/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://arxiv.org/OAI/arXiv/ https://oaipmh.arxiv.org/OAI/arXiv.xsd">
+        <id>2609.21813</id>
+        <created>2026-09-30</created>
+            <updated>2026-10-01</updated>
+        <authors>
+                <author>
+                    <keyname>Corlay</keyname>
+                        <forenames>Vincent</forenames>
+                </author>
+                <author>
+                    <keyname>Enttsel</keyname>
+                        <forenames>Andriy</forenames>
+                </author>
+        </authors>
+        <title>How Many Posterior Samples? Calibrated Stopping for Adaptive Sensing</title>
+            <categories>stat.ML cs.CV eess.SP</categories>
+            <license>http://creativecommons.org/licenses/by/4.0/</license>
+            <abstract>In classification-oriented adaptive sensing, posterior samples characterize uncertainty at the current measurement state and can serve two roles: they may guide the next sensing direction, while their class labels provide votes for the candidate classes and determine whether sensing should continue. We focus on the stopping layer that turns these votes into a declaration, without modifying the posterior sampler or sensing directions. A natural plug-in rule declares when the observed vote share exceeds a threshold. We show that this threshold is not itself a confidence guarantee: when the underlying vote mass equals the threshold, the plug-in rule declares about half the time. As alternatives, we calibrate a fixed-sample rule and a finite-horizon sequential rule to a prescribed false-declaration probability, and study exact curtailment, which stops a fixed-pool rule once its final verdict is forced. We then derive how one-round declaration probabilities determine posterior-sample cost and classification accuracy along a sensing path. On MNIST with DDRM and a fixed PCA-guided probe sequence, curtailment saves up to 62% of posterior samples. Among the evaluated rules at matched operating points, sequential stopping reduces the cost the most. At a high accuracy, that same sequential rule can trade more posterior samples for fewer measurements.</abstract>
+    </arXiv>
+
+            </metadata>
+        </record>
+
+    </GetRecord>
+</OAI-PMH>
