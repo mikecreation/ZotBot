@@ -1,0 +1,24 @@
+{
+  "protocol": "fog-nemesis-batch/1",
+  "batch_id": "nemesis-frontier-arxiv-a-20261018-r1",
+  "created_at": "2026-10-18T16:25:24.703695+00:00",
+  "agent": "nemesis-direct-author",
+  "mission": "Add recent public research results (2026-04-18 to 2026-10-18) as frontier public-result nodes linked to the existing concepts they name",
+  "scope": {
+    "domains": [
+      "formal",
+      "physical",
+      "roots"
+    ],
+    "topics": [
+      "recent public results from arxiv"
+    ],
+    "date_range": "2026-04-18/2026-10-18"
+  },
+  "source_policy": "arXiv OAI-PMH records (arXiv metadata CC0; abstracts used only where the record states CC BY or CC0); one retained capture per paper.",
+  "notes": "Directly authored by deterministic code (frontier_author.py). One paper -> one frontier public-result node: frontier:true, status/era frontier, public_frontier public-result with disclosed_at = the date stated in the retained record. Quote = exact finding sentence of the abstract plus exact date and licence spans. Link = one related edge to an existing same-family concept named in the abstract (subject-category field + label match), or a narrower placement only where the abstract itself classifies the work as that concept; at most 25 new links per concept and parents below 100 children. Deduplicated against map ids, labels, aliases, source DOIs/arXiv ids, open PRs and other batches. REVIEW: code-only (code:nemesis-provenance/1) under owner waiver code-provenance-frontier-public-results (2026-10-18). No adversarial model review is claimed.",
+  "review": {
+    "reviewer": "code-only",
+    "adversarial_review": "not performed; owner waiver code-provenance-frontier-public-results (2026-10-18)"
+  }
+}
