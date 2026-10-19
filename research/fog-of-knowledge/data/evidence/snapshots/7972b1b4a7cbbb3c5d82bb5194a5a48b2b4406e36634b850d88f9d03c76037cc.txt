@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+    <responseDate>2026-10-18T16:28:29Z</responseDate>
+                <request verb="GetRecord" identifier="oai:arXiv.org:2608.00959" metadataPrefix="arXiv">http://oaipmh.arxiv.org/oai</request>
+
+
+    <GetRecord>
+                <record>
+                <header>
+        <identifier>oai:arXiv.org:2608.00959</identifier>
+        <datestamp>2026-08-04</datestamp>
+            <setSpec>cs:cs:GT</setSpec>
+            <setSpec>cs:cs:RO</setSpec>
+            <setSpec>cs:cs:SY</setSpec>
+            <setSpec>eess:eess:SY</setSpec>
+    </header>
+
+            <metadata>
+                        <arXiv xmlns="http://arxiv.org/OAI/arXiv/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://arxiv.org/OAI/arXiv/ https://oaipmh.arxiv.org/OAI/arXiv.xsd">
+        <id>2608.00959</id>
+        <created>2026-08-02</created>
+            <updated>2026-08-04</updated>
+        <authors>
+                <author>
+                    <keyname>Fridovich-Keil</keyname>
+                        <forenames>David</forenames>
+                </author>
+        </authors>
+        <title>MixedComplementarityProblems.jl: A Fast, Batched, Open-Source Interior Point Solver for Mixed Complementarity Problems</title>
+            <categories>cs.GT cs.RO cs.SY eess.SY</categories>
+            <license>http://creativecommons.org/licenses/by/4.0/</license>
+            <abstract>Mixed complementarity problems (MCPs) arise as the first-order optimality conditions of nonlinear programs and noncooperative games, and provide a natural formulation for multi-agent trajectory optimization problems that appear throughout robotics. The dominant solver for problems of this form is PATH, which offers strong performance on robotics problems but remains closed-source. We present MixedComplementarityProblems.jl, an open-source, pure Julia implementation of an interior point method for parametric MCPs that: (i) matches PATH&#39;s reliability on standard benchmarks, (ii) natively supports batched, parallel processing of many parameter instances, either across CPU threads or on an NVIDIA GPU, and (iii) supports efficient automatic differentiation of solutions with respect to problem parameters. On a multi-agent lane-change trajectory game representative of robotics planning problems, our CPU-multithreaded batched solver clears a batch of parametric instances ~100x faster than sequential calls to PATH. A GPU backend, running the same solver implementation unmodified, also clears these batches far faster than PATH, but does not outperform the multithreaded CPU on this problem; the GPU pulls ahead only once each per-instance KKT system grows large, and we characterize this regime dependence. We describe the solver&#39;s interior point formulation, the abstraction that lets a single solver implementation run unmodified across dense, batched-sparse, and single-large linear-algebra backends, and report benchmarks against PATH on both randomly generated quadratic programs and trajectory games.</abstract>
+    </arXiv>
+
+            </metadata>
+        </record>
+
+    </GetRecord>
+</OAI-PMH>

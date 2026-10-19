@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+    <responseDate>2026-10-18T16:42:02Z</responseDate>
+                <request verb="GetRecord" identifier="oai:arXiv.org:2609.23085" metadataPrefix="arXiv">http://oaipmh.arxiv.org/oai</request>
+
+
+    <GetRecord>
+                <record>
+                <header>
+        <identifier>oai:arXiv.org:2609.23085</identifier>
+        <datestamp>2026-09-22</datestamp>
+            <setSpec>cs:cs:PF</setSpec>
+            <setSpec>cs:cs:DC</setSpec>
+            <setSpec>cs:cs:LG</setSpec>
+            <setSpec>cs:cs:SY</setSpec>
+            <setSpec>eess:eess:SY</setSpec>
+    </header>
+
+            <metadata>
+                        <arXiv xmlns="http://arxiv.org/OAI/arXiv/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://arxiv.org/OAI/arXiv/ https://oaipmh.arxiv.org/OAI/arXiv.xsd">
+        <id>2609.23085</id>
+        <created>2026-09-19</created>
+            <updated>2026-09-22</updated>
+        <authors>
+                <author>
+                    <keyname>Siddiqui</keyname>
+                        <forenames>Muhammad Abdur Rab</forenames>
+                </author>
+                <author>
+                    <keyname>Rojas</keyname>
+                        <forenames>Daniela</forenames>
+                </author>
+                <author>
+                    <keyname>Yang</keyname>
+                        <forenames>Chen</forenames>
+                </author>
+                <author>
+                    <keyname>Cui</keyname>
+                        <forenames>Wenqi</forenames>
+                </author>
+                <author>
+                    <keyname>Shi</keyname>
+                        <forenames>Yuanyuan</forenames>
+                </author>
+                <author>
+                    <keyname>Chen</keyname>
+                        <forenames>Yize</forenames>
+                </author>
+        </authors>
+        <title>Measured Joules, Learned Routes: Learning to Route for Energy-Efficient LLM Serving</title>
+            <categories>cs.PF cs.DC cs.LG cs.SY eess.SY</categories>
+            <comments>16 pages, 10 figures, in submission</comments>
+            <license>http://creativecommons.org/licenses/by/4.0/</license>
+            <abstract>Large language models (LLMs) and agentic AI systems are creating rapidly growing inference energy demands as model sizes grow and reasoning trajectories extend. While in practice, many queries do not require the capabilities of the largest available model, and routinely directing such queries to a high-capability model can introduce unnecessary, considerable computation and energy consumption. In this paper, we investigate whether adaptive routing across a heterogeneous pool of LLMs can reduce this energy burden without substantially compromising task performance. We design a language-model-based router that reads in each query and selects an answer model from a fixed candidate pool. The candidate models are first profiled through an offline tournament that records their correctness, latency, power, and GPU energy for each query. Using these measurements, the router is trained through supervised fine-tuning followed by group relative policy optimization (GRPO) with the tailored paradigms. Results demonstrate that learned routing can selectively allocate expensive model capacity based on query context and improve the accuracy-energy tradeoff in multi-LLM serving. Across seven benchmark tasks, we also observe a sharp accuracy-energy phase transition among routers, providing practical insights into improving energy efficiency while maintaining LLM performance.</abstract>
+    </arXiv>
+
+            </metadata>
+        </record>
+
+    </GetRecord>
+</OAI-PMH>
