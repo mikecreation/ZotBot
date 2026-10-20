@@ -9,7 +9,7 @@ export function runBot(W,opts={}){
   const realRandom=Math.random;let rs=(seed*2654435761)>>>0;Math.random=()=>{rs=(rs+0x6D2B79F5)>>>0;let t=rs;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296};
   try{return play()}finally{Math.random=realRandom}
   function play(){
-  W.newGame(seed);W.closePopup();W.keysClear();
+  W.newGame(seed);W.help.close();W.closePopup();W.keysClear();
   let simT=0,goal=null,lastProg={t:0,d:1e9},stuckT=0,detour=0,swimT=0,deaths=0,actions=0;
   const black=new Set(),bk=(x,z)=>Math.round(x)+","+Math.round(z),deathSpots={};
   const dropAhead=yaw=>{const p=P().pos,h0=W.height(p.x,p.z);for(const r of [1,2,3]){if(h0-W.height(p.x-Math.sin(yaw)*r,p.z-Math.cos(yaw)*r)>1.8)return true}return false};

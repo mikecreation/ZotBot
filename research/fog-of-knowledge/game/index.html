@@ -35,7 +35,7 @@
       <div id="wHands" class="wHands"></div>
       <div id="wObj" class="wObj"></div>
       <div id="wThought" class="wThought" hidden></div>
-      <div class="wKeys">WASD move · Shift run · C crouch (quiet) · Space jump/swim · mouse look (drag up to see the sky) · E interact/pick up/sleep/pet · F observe held item · Q / click use, throw, shoot, eat, drink · P pet companion · 1–0 right hand (Shift: left) · right-click item menu · R stow held item (Shift+R both) · I backpack &amp; crafting · Tab journal · J curiosity · H physics · Esc settings</div>
+      <div class="wKeys">WASD move · Shift run · C crouch (quiet) · Space jump/swim · mouse look (drag up to see the sky) · E interact/pick up/sleep/pet · F observe held item · Q / click use, throw, shoot, eat, drink · P pet companion · 1–0 right hand (Shift: left) · right-click item menu · R stow held item (Shift+R both) · I backpack &amp; crafting · Tab journal · J curiosity · H help · G physics readout · Esc settings</div>
     </div>
     <div id="wInv" class="wPanel" hidden></div>
     <div id="wJournal" class="wPanel wide" hidden></div>
@@ -47,9 +47,12 @@
     <div id="wPopup" class="wOverlay" hidden></div>
     <div id="wDeath" class="wOverlay" hidden></div>
     <button id="wGear" class="wGear" title="Settings (Esc)">⚙</button>
+    <button id="wHelpBtn" class="wGear wHelpBtn" title="How to play (H)">?</button>
+    <div id="wHelp" class="wOverlay help" hidden></div>
     <div id="wFps" class="wFps" hidden></div>
     <div id="wSettings" class="wPanel settings" hidden>
       <div class="pHead"><h3>SETTINGS</h3><button data-close>✕ (Esc)</button></div>
+      <button id="wHelpSet" class="primary helpSet">❓ How to play <small>(H)</small></button>
       <h4>GRAPHICS QUALITY</h4>
       <div class="qRow"><button data-q="low">LOW<small>no shadows · no post · simple water</small></button><button data-q="high">HIGH<small>soft shadows · bloom · reflective water · grass</small></button><button data-q="ultra">ULTRA<small>4K shadows · SMAA · dense grass · fire shadows</small></button></div>
       <label class="chk"><input type="checkbox" id="wShowFps"> Show frame rate</label>
@@ -60,9 +63,10 @@
       <label class="vol">Day length <select id="wDayLen"><option value="long">Long (default): ~24 min day, ~6 min night</option><option value="normal">Normal: ~12 min day, ~3 min night</option><option value="short">Short: ~6 min day, ~1.5 min night</option></select></label>
       <label class="vol">Weather <select id="wWeatherSel"><option value="calm">Calm (default): sunny start, rare short showers</option><option value="natural">Natural: rain, storms, lightning, cold snaps</option></select></label>
       <label class="chk"><input type="checkbox" id="wSurvChk"> Classic survival <small>(off by default: Discovery mode has no hunger, thirst, illness or injuries — danger only sets you back)</small></label>
+      <label class="chk"><input type="checkbox" id="wTipsChk" checked> Just-in-time tips <small>(short one-time hints for the basics, like placing a firewood pile)</small></label>
       <label class="chk"><input type="checkbox" id="wNeedyChk" checked> Needy pets <small>(companions sometimes interrupt focused work and ask to be petted — never a penalty)</small></label>
       <h4>CONTROLS</h4>
-      <table class="keys"><tr><td>W A S D</td><td>move (Shift run, C crouch = quiet)</td></tr><tr><td>Space</td><td>jump / swim up</td></tr><tr><td>E</td><td>interact · pick up · gather · sleep · pet</td></tr><tr><td>F</td><td>observe the held item up close (F / Esc to put away; press another number to hold a second item)</td></tr><tr><td>Q / click</td><td>use · throw · shoot · eat · drink · place</td></tr><tr><td>P</td><td>pet the nearest companion</td></tr><tr><td>1–0</td><td>hotbar item to right hand (Shift+1–0: left hand)</td></tr><tr><td>Right-click</td><td>item menu: hands · observe · use · drop 1 / X / all</td></tr><tr><td>R · Shift+R</td><td>stow the held item back in your backpack · stow both hands</td></tr><tr><td>I · Tab · J</td><td>backpack &amp; crafting · journal · curiosity</td></tr><tr><td>H</td><td>physics readout</td></tr><tr><td>Esc</td><td>settings</td></tr></table>
+      <table class="keys"><tr><td>W A S D</td><td>move (Shift run, C crouch = quiet)</td></tr><tr><td>Space</td><td>jump / swim up</td></tr><tr><td>E</td><td>interact · pick up · gather · sleep · pet</td></tr><tr><td>F</td><td>observe the held item up close (F / Esc to put away; press another number to hold a second item)</td></tr><tr><td>Q / click</td><td>use · throw · shoot · eat · drink · place</td></tr><tr><td>P</td><td>pet the nearest companion</td></tr><tr><td>1–0</td><td>hotbar item to right hand (Shift+1–0: left hand)</td></tr><tr><td>Right-click</td><td>item menu: hands · observe · use · drop 1 / X / all</td></tr><tr><td>R · Shift+R</td><td>stow the held item back in your backpack · stow both hands</td></tr><tr><td>I · Tab · J</td><td>backpack &amp; crafting · journal · curiosity</td></tr><tr><td>H</td><td>how to play (help)</td></tr><tr><td>G</td><td>physics readout</td></tr><tr><td>Esc</td><td>settings</td></tr></table>
       <h4>CREDITS</h4>
       <p class="muted small">3D engine: three.js r160 and its examples addons (Sky, Water, GLTFLoader, post-processing) — MIT, © 2010-2023 three.js authors. Water normal map from the three.js examples (MIT).<br>
       Human model and animations: <b>Universal Animation Library</b> by Quaternius — CC0 1.0 (public domain), quaternius.com. Clothing, animals, trees, terrain, sky, clouds and effects are procedural.<br>
@@ -74,7 +78,7 @@
         <h1 class="gTitle"><span class="l1">FOG OF KNOWLEDGE</span><span class="l2">THE GAME</span></h1>
         <p class="tag">One human. A real world with real physics. Discover your way out of the fog.</p>
         <div class="row tBtns"><button id="wPlay" class="primary big">PLAY</button><button id="wContinue" class="primary" hidden>CONTINUE</button><button id="wNew" class="ghost">NEW WORLD</button><button id="wTitleSettings" class="ghost">SETTINGS</button></div>
-        <p class="muted small keysHint">WASD move · Shift run · C crouch · Space jump · mouse look · E interact · F observe · Q use/throw/eat · P pet · R stow · I backpack · Tab journal · Esc settings</p>
+        <p class="muted small keysHint">WASD move · Shift run · C crouch · Space jump · mouse look · E interact · F observe · Q use/throw/eat · P pet · R stow · I backpack · Tab journal · H help · Esc settings</p>
       </div>
     </div>
   </section>

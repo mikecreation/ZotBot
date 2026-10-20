@@ -10,7 +10,7 @@ export function runSuite(W,opts={}){
   const lastToasts=n=>W.toasts().slice(-n).join(" | ");
   // ---------- setup helpers ----------
   const SEED=opts.seed||20261019;
-  function fresh(hour=10){W.setSurvival(false);W.setWeatherPref("calm");W.setDayLen("long");W.closePopup();for(const id of ["#wInv","#wJournal","#wCtx","#wChest"]){const e=document.querySelector(id);if(e)e.hidden=true}W.reseed(SEED);W.setWeather("clear",0);W.setHour(hour);W.clearStructs();W.clearDrops();W.clearAnimals();S().inv={};S().held=null;S().worn=null;
+  function fresh(hour=10){W.help.close();W.setSurvival(false);W.setWeatherPref("calm");W.setDayLen("long");W.closePopup();for(const id of ["#wInv","#wJournal","#wCtx","#wChest"]){const e=document.querySelector(id);if(e)e.hidden=true}W.reseed(SEED);W.setWeather("clear",0);W.setHour(hour);W.clearStructs();W.clearDrops();W.clearAnimals();S().inv={};S().held=null;S().worn=null;
     Object.assign(S().st,{health:100,hunger:85,thirst:85,stamina:100,tb:37,wet:0,sick:0,sprain:0});S().snap=null;W.crouch(false);W.keysClear();P().zoom=false;P().camPitch=.3;}
   const surv=()=>W.setSurvival(true);   // classic-survival tests opt in (Discovery mode is the default)
   const learn=(...ids)=>{for(const id of ids)if(!has(id))S().disc.push(id)};      // setup-only: mark prerequisites known
@@ -399,6 +399,22 @@ export function runSuite(W,opts={}){
   test(PT,"at night, strays and companions curl up by your fire",()=>{fresh(10);nearCamp();W.sim(4);lightFire(6);W.setHour(22.5);W.updateSky();W.sim(25);const f=S().structures.find(s=>s.type==="fire");const ents=pets().entities?pets().entities():[];const by=ents.filter(e=>(e.kind==="cat"||e.kind==="frenchie")&&Math.hypot(e.pos.x-f.x,e.pos.z-f.z)<3&&e.state==="sleep");
     return want(by.length>=2,`by fire asleep: ${by.map(e=>e.kind)} all ${ents.map(e=>e.kind+":"+e.state+":"+(e.wild?"w":"c")+":"+(e.special||"-")+":"+Math.hypot(e.pos.x-f.x,e.pos.z-f.z).toFixed(1))}`)});
   test(LT,"fire heating scales with size: bonfire > campfire > small pile at 3 m",()=>{fresh(12);goFlat();const f=lightFire(4);f.heat=1;const at=fuel=>{f.fuel=fuel;return W.fireHeatAt(f.x+3,f.z)};const s=at(.7),m=at(3),b=at(14);return want(s<m&&m<b&&b/m>1.8,`small ${s.toFixed(0)} W, camp ${m.toFixed(0)} W, bonfire ${b.toFixed(0)} W`)});
+  const HL="Help";const tKeys=()=>Object.keys(S().counters).filter(k=>k.startsWith("tip_"));
+  test(HL,"tutorial: a new game opens the paged 'How to play' card, paused, basics only",()=>{W.newGame(SEED);const h=W.help,open=h.isOpen,pz=W.paused,pg=h.pages(),all=pg.join(" ");
+    const basics=["WASD","Backpack","Right-click","Observe","Firewood pile","flint","pyrite","Journal"].every(w=>all.includes(w)),spoil=/bronze|kiln|pottery|smelt|telescope|lens|compass|bow drill/i.test(all);
+    const last=pg[pg.length-1];h.close();return want(open&&pz&&pg.length===8&&basics&&!spoil&&!!last,`open ${open} paused ${pz} pages ${pg.length} basics ${basics} spoilers ${spoil}`)});
+  test(HL,"tutorial: Next / Back / Got it, the last page says how to reopen it",()=>{fresh();W.help.open(0);key("ArrowRight");key("ArrowRight");const p2=W.help.page;key("ArrowLeft");const p1=W.help.page;for(let i=0;i<10;i++)key("ArrowRight");const lastHTML=document.querySelector("#wHelp").innerHTML,closed=!W.help.isOpen;
+    W.help.open(7);const html=document.querySelector("#wHelp").innerHTML;document.querySelector('[data-help="done"]').click();
+    return want(p2===2&&p1===1&&closed&&/Reopen this anytime: press <kbd>H<\/kbd> \(Help\) or the <b>\?<\/b> button/.test(html)&&!W.help.isOpen&&lastHTML.length>0,`p2 ${p2} p1 ${p1} closed-by-next ${closed} done-closes ${!W.help.isOpen}`)});
+  test(HL,"tutorial: H reopens it, Esc closes it, G is the physics readout",()=>{fresh();key("KeyH");const o=W.help.isOpen;key("Escape");const c=!W.help.isOpen;key("KeyG");const r=!!P().readout;key("KeyG");return want(o&&c&&r,`H open ${o} Esc closed ${c} G readout ${r}`)});
+  test(HL,"tutorial: the ? button and Settings → How to play open it; it never blocks input after closing",()=>{fresh();document.querySelector("#wHelpBtn").click();const a=W.help.isOpen;W.help.close();document.querySelector("#wHelpSet").click();const b=W.help.isOpen;key("KeyI");const blocked=document.querySelector("#wInv").hidden;key("Escape");
+    const p0=W.paused;key("KeyI");const inv=!document.querySelector("#wInv").hidden;key("KeyI");
+    return want(a&&b&&blocked&&!p0&&inv,`? ${a} settings ${b} input blocked while open ${blocked} paused after ${p0} I works ${inv}`)});
+  test(HL,"tutorial: walking works right after 'Got it'",()=>{fresh();goFlat();W.help.open(7);document.querySelector('[data-help="done"]').click();const p0={x:P().pos.x,z:P().pos.z};W.keyDown("KeyW");step(1.2);W.keyUp("KeyW");const d=Math.hypot(P().pos.x-p0.x,P().pos.z-p0.z);return want(!W.paused&&d>.8,`moved ${d.toFixed(2)} m`)});
+  test(HL,"tips: holding the firewood pile and standing at it with flint each show a basics tip once",()=>{fresh();goFlat();localStorage.setItem("fog-of-knowledge:game:tips","1");give("campfire");W.hold("campfire");step(1.2);const t1=W.toasts().some(t=>t.includes("press Q to place the firewood pile"));
+    const cnt=()=>W.toasts().filter(t=>t.includes("press Q next to the pile to strike sparks")).length;W.useHeld();step(.5);const c0=cnt();give("flint");give("pyrite");step(1.2);const t2=cnt()-c0;step(2);const t2b=cnt()-c0;
+    return want(t1&&t2===1&&t2b===1,`place tip ${t1} strike tip ${t2}/${t2b}`)});
+  test(HL,"tips: can be turned off in settings",()=>{fresh();goFlat();const chk=document.querySelector("#wTipsChk");chk.checked=false;chk.onchange();give("campfire");W.hold("campfire");step(1.2);const shown=tKeys().length;chk.checked=true;chk.onchange();return want(shown===0&&!W.toasts().slice(-3).some(t=>t.includes("place the firewood pile")),`tips shown while off: ${shown}`)});
   test(D,"ALL discoveries reachable in tests",()=>{const all=W.discoveries(),got=new Set();for(const r of T)if(r.pass)for(const id of all)if(r.name.split(" ")[0]===id||r.name.includes(id))got.add(id);
     const miss=all.filter(id=>!got.has(id));return want(!miss.length,"not covered: "+miss.join(", "))});
   return {results:T,ms:Math.round(performance.now()-t0)};
