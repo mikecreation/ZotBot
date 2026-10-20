@@ -56,7 +56,7 @@ export const CURIOSITY=[
 export const OBJECTIVES=[
  ["o_sticks","Gather sticks and stones (E)",c=>c.inv("stick")>=3||c.struct("fire")||c.has("fire")],
  ["o_pile","Craft a firewood pile (I) and place it (Q)",c=>c.struct("fire")],
- ["o_fire","Light a fire before dark",c=>c.has("fire")],
+ ["o_fire","Light a fire before nightfall",c=>c.has("fire")],
  ["o_tools","Make sharp stone tools",c=>c.has("knapping")],
  ["o_shelter","Build a shelter at your camp",c=>c.has("shelter")],
  ["o_night","Survive the first night",c=>c.has("daynight")],

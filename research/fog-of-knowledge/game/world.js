@@ -19,7 +19,18 @@ const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const SAVE_KEY="fog-of-knowledge:game:world:v1";
 const G_ACC=9.81, RHO_AIR=1.225, RHO_WATER=1000, BODY_MASS=70, BODY_HEAT_CAP=70*3500;
-const GAME_SPEED=96;             // 1 real second = 96 game seconds → a day lasts 15 real minutes
+const GAME_SPEED=96;             // legacy constant (kept for reference); the clock now runs at gameSpeed()
+// Long days, short nights: on "Long" (default) a full cycle is ~30 real minutes — 06:00–18:12 daylight (incl. golden hour) takes ~24 min,
+// the 11.8-hour night (incl. dusk & dawn) only ~6 min. "Normal" halves that, "Short" quarters it.
+const DAY_H0=6,DAY_H1=18.2,DAYLEN_MUL={long:1,normal:2,short:4};
+let dayLenPref=(()=>{try{const v=localStorage.getItem("fog-of-knowledge:game:daylen");return DAYLEN_MUL[v]?v:"long"}catch(_){return "long"}})();
+let weatherPref=(()=>{try{return localStorage.getItem("fog-of-knowledge:game:weather")==="natural"?"natural":"calm"}catch(_){return "calm"}})();
+function gameSpeed(t){const h=(((t??world?.gameTime??0)/3600)%24+24)%24,m=DAYLEN_MUL[dayLenPref]||1;return (h>=DAY_H0&&h<DAY_H1?(DAY_H1-DAY_H0)*3600/1440:(24-DAY_H1+DAY_H0)*3600/360)*m}
+function setDayLen(v){if(!DAYLEN_MUL[v])return;dayLenPref=v;try{localStorage.setItem("fog-of-knowledge:game:daylen",v)}catch(_){}}
+function setWeatherPref(v){weatherPref=v==="natural"?"natural":"calm";try{localStorage.setItem("fog-of-knowledge:game:weather",weatherPref)}catch(_){}if(world&&weatherPref==="calm"){world.snap=null;if(["rain","storm","drystorm"].includes(world.weather.kind)){world.weather.kind="clear";world.weather.next=null;world.weather.t=3*3600}}}
+// saves from before the long-day build (no timeV) never start in the dark or the rain: jump to the next morning, clear skies
+function migrateTime(w){if(!w)return w;if(!w.timeV){const h=((w.gameTime||0)/3600)%24;if(h>=17||h<7)w.gameTime=(Math.floor((w.gameTime||0)/86400)+(h>=17?1:0))*86400+8*3600;w.timeV=2;w.weather={kind:"clear",t:3*3600,amt:0}}
+  if(weatherPref==="calm"&&w.weather&&["rain","storm","drystorm"].includes(w.weather.kind))w.weather={kind:"clear",t:3*3600,amt:0};return w}
 const CHUNK=64, VIEW=6, OBJ_VIEW=3, NEAR_LOD=2;
 const WD=new Map(WORLD_DISCOVERIES.map(d=>[d.id,d]));
 
@@ -233,7 +244,7 @@ function newWorld(seed){
   initNoise(seed);
   let sx=0,sz=0;
   for(let r=0;r<4000;r+=24){let ok=false;for(let a=0;a<12&&!ok;a++){const x=Math.cos(a/12*6.283)*r,z=Math.sin(a/12*6.283)*r,h=heightAt(x,z),b=biomeAt(x,z,h);if(h>3&&h<25&&(b==="grass"||b==="forest")&&slopeAt(x,z)<.35&&dryAround(x,z)){sx=x;sz=z;ok=true}}if(ok)break}
-  return {v:1,seed,camp:[sx,sz],pos:[sx,heightAt(sx,sz)+.1,sz],yaw:0,cam:[0,.35,6],gameTime:8*3600,dayStart:8*3600,
+  return {v:1,seed,camp:[sx,sz],pos:[sx,heightAt(sx,sz)+.1,sz],yaw:0,cam:[0,.35,6],gameTime:8*3600,dayStart:8*3600,timeV:2,
     st:{health:100,hunger:85,thirst:85,stamina:100,tb:37,wet:0,sick:0,sprain:0},inv:{},held:null,worn:null,dur:{},seenQ:[],pets:[],observed:[],ideas:[],
     disc:[],counters:{falls:0,throws:[],nights:[],species:[],berries:[],tally:0,raftDist:0,lookT:0,warmFrom:0,boils:[],pend:[],drops:[],sick:0,packs:0,wolvesKilled:0,sleeps:0,strikes:0,deathsBy:{}},
     weather:{kind:"clear",t:3*3600,amt:0},structures:[],drops:[],removed:[],burnt:[],moved:{},ks:freshKS(),deaths:0};
@@ -618,26 +629,28 @@ function airTemp(x,z,y){
   return t+(b==="desert"?6:0)+diurnal+w-snapNow();   // includes −6.5 °C/km lapse rate via climate()
 }
 function rollWeather(){const b=biomeAt(player.pos.x,player.pos.z,player.pos.y),r=Math.random(),storm=Math.min(.2,.05+.03*dayNum());
+  // Calm (default): sunny for the first 3 days and until your first fire; after that mostly fair, a short shower ~10% of days, no storms
+  if(weatherPref==="calm"){if(dayNum()<3||!hasD("fire"))return "clear";return r<.03?"rain":r<.18?"cloudy":"clear"}
   if(b==="desert")return r<.8?"clear":r<.9?"cloudy":r<.97?"drystorm":"rain";
   return r<storm?"storm":r<storm+.05?"drystorm":r<.5?"clear":r<.72?"cloudy":"rain"}
 function stepWeather(dtg){
   const w=world.weather;w.t-=dtg;
   if(!w.next)w.next=rollWeather();
   if(w.t<=3600&&!w.warned&&w.next!==w.kind&&(w.next==="storm"||w.next==="drystorm"||w.next==="rain")){w.warned=true;toast(w.next==="rain"?"Clouds are building on the horizon — rain is coming within the hour.":"The air turns heavy and the sky darkens — a thunderstorm is coming. Shelter your fire.")}
-  if(w.t<=0){w.kind=w.next;w.next=rollWeather();w.warned=false;w.t=(w.kind==="storm"||w.kind==="drystorm"?1.2+Math.random()*1.8:2+Math.random()*5)*3600}
+  if(w.t<=0){w.kind=w.next;w.next=rollWeather();w.warned=false;w.t=(w.kind==="storm"||w.kind==="drystorm"?1.2+Math.random()*1.8:weatherPref==="calm"&&w.kind==="rain"?.6+Math.random()*.6:2+Math.random()*5)*3600}   // calm showers: a few real minutes
   const target={rain:1,storm:1,drystorm:.12}[w.kind]||0;
   w.amt=lerp(w.amt,target,Math.min(1,dtg/1800));
   // cold snaps: announced two hours ahead, bitter for 8–18 hours, harsher as the days pass
   const s=world.snap;
   if(s){if(world.gameTime>s.end){world.snap=null;toast("The cold snap breaks; the air softens.")}else if(!s.arrived&&world.gameTime>=s.start){s.arrived=true;toast(`The cold snap arrives: air ${Math.round(s.dT)} °C colder than usual. Keep your fire fed.`)}}
-  else if(dayNum()>=1&&Math.random()<dtg/86400*(.22+.06*dayNum())){const start=world.gameTime+2*3600;world.snap={start,end:start+(8+Math.random()*10)*3600,dT:6+Math.min(8,dayNum())+Math.random()*3};
+  else if(weatherPref==="natural"&&dayNum()>=1&&Math.random()<dtg/86400*(.22+.06*dayNum())){const start=world.gameTime+2*3600;world.snap={start,end:start+(8+Math.random()*10)*3600,dT:6+Math.min(8,dayNum())+Math.random()*3};
     toast("A bitter north wind is rising — a cold snap will arrive in about two hours. Gather fuel and get to shelter.");AU.warn()}
 }
 /* lightning: flash now, thunder after d / 343 m/s; strikes on tall trees can start wildfires when the storm is dry */
 let flashT=0,bolt=null;const thunders=[];
 function stepLightning(dt){
   const w=world.weather;
-  if(((w.kind==="storm"&&w.amt>.5)||w.kind==="drystorm")&&Math.random()<dt*.07)strike();
+  if(weatherPref==="natural"&&((w.kind==="storm"&&w.amt>.5)||w.kind==="drystorm")&&Math.random()<dt*.07)strike();   // lightning only in Natural weather
   for(let i=thunders.length-1;i>=0;i--){const t=thunders[i];t.t-=dt;if(t.t<=0){thunders.splice(i,1);AU.thunder(t.d);onThunder(t)}}
   flashT=Math.max(0,flashT-dt);if(bolt&&bolt.visible){bolt.userData.t-=dt;bolt.material.opacity=Math.max(0,bolt.userData.t/.3);if(bolt.userData.t<=0)bolt.visible=false}
 }
@@ -756,7 +769,7 @@ function fireHeatAt(x,z){ // radiant power received (W): P·A/(4πd²), body cro
 function makeSick(sec,msg){const st=world.st;st.sick=Math.max(st.sick,sec);world.counters.sick++;toast(msg);AU.hurt()}
 function stepSurvival(dt){
   if(player.dead)return;
-  const st=world.st,dtg=dt*GAME_SPEED,x=player.pos.x,z=player.pos.z,lv=player.swimming?0:shelterLevel(x,z);
+  const st=world.st,dtg=dt*gameSpeed(),x=player.pos.x,z=player.pos.z,lv=player.swimming?0:shelterLevel(x,z);
   let Ta=player.swimming?waterTemp(x,z):airTemp(x,z,player.pos.y);
   if(lv===3)Ta=lerp(Ta,17,.65);else if(lv===2)Ta+=3;          // thermal mass of stone walls / still air in a hut
   const speed=Math.hypot(player.vel.x,player.vel.z),activity=player.swimming?4:speed>3.5?3:speed>.5?1:0;
@@ -1134,9 +1147,9 @@ function guideCtx(){return {has:hasD,inv,night:isNight(),hour:hourOf(),day:dayNu
   wolfSeen:!!world.counters.wolfSeen,era:world.ks.era,allDone:world.disc.length>=WORLD_DISCOVERIES.length}}
 function nearWater(x,z,r){for(let a=0;a<12;a++)for(const rr of [r*.5,r])if(heightAt(x+Math.cos(a/12*6.283)*rr,z+Math.sin(a/12*6.283)*rr)<0)return true;return false}
 let objHTML="";
-function duskNeedsFire(){const h=hourOf();if(!(h>=16.5||h<5))return false;return !world.structures.some(s=>s.lit&&s.type==="fire"&&Math.hypot(s.x-player.pos.x,s.z-player.pos.z)<25)}
-function duskCheck(){const h=hourOf(),C=world.counters;if(h>=16.5&&h<20&&C.duskWarned!==dayNum()&&duskNeedsFire()){C.duskWarned=dayNum();AU.warn?.();toast(hasD("fire")?"🔥 The sun is low. First priority: get a fire burning before dark — nights here are truly dark, and wolves fear the flames.":"🔥 The sun is low. First priority: a firewood pile (I) and flint + pyrite to light it — nights here are truly dark.")}}
-function renderObjectives(){const el=$("#wObj");if(!el)return;const c=guideCtx(),open=(duskNeedsFire()?[["o_dusk","🔥 Dusk: light a fire before dark",()=>false]]:[]).concat(OBJECTIVES.filter(o=>!o[2](c))).slice(0,3),done=OBJECTIVES.length-OBJECTIVES.filter(o=>!o[2](c)).length;
+function duskNeedsFire(){const h=hourOf();if(!(h>=16.8||h<5))return false;return !world.structures.some(s=>s.lit&&s.type==="fire"&&Math.hypot(s.x-player.pos.x,s.z-player.pos.z)<25)}
+function duskCheck(){const h=hourOf(),C=world.counters;if(h>=16.8&&h<20&&C.duskWarned!==dayNum()&&duskNeedsFire()){C.duskWarned=dayNum();AU.warn?.();toast(hasD("fire")?"🔥 The sun is low. First priority: get a fire burning before dark — nights here are truly dark, and wolves fear the flames.":"🔥 The sun is low. First priority: a firewood pile (I) and flint + pyrite to light it — nights here are truly dark.")}}
+function renderObjectives(){const el=$("#wObj");if(!el)return;const c=guideCtx(),open=(duskNeedsFire()?[["o_dusk","🔥 Dusk: light a fire before nightfall",()=>false]]:[]).concat(OBJECTIVES.filter(o=>!o[2](c))).slice(0,3),done=OBJECTIVES.length-OBJECTIVES.filter(o=>!o[2](c)).length;
   const html=`<h5>OBJECTIVES <small>${done}/${OBJECTIVES.length}</small></h5>`+open.map((o,i)=>`<div class="ob${i?"":" now"}"><i></i>${esc(o[1])}</div>`).join("");if(html!==objHTML){el.innerHTML=html;objHTML=html}}
 let thoughtT=8,thoughtShowT=0;
 function stepCuriosity(dt){thoughtT-=dt;thoughtShowT-=dt;const el=$("#wThought");if(el&&thoughtShowT<=0&&!el.hidden)el.hidden=true;if(thoughtT>0)return;thoughtT=4;
@@ -1377,7 +1390,7 @@ function tick(){
 }
 const _v1=new THREE.Vector3();
 function stepWorld(dt){
-  const dtg=dt*GAME_SPEED;
+  const dtg=dt*gameSpeed();
   world.gameTime+=dtg;
   stepWeather(dtg);stepPlayer(dt);stepSurvival(dt);stepDrops(dt);stepFires(dt,dtg);stepBurning(dt);stepLightning(dt);spawnAnimals(dt);updateAnimals(dt);if(PETS)PETS.update(dt);stepPendulums(dt);stepCuriosity(dt);
   const p=player;p.model.position.copy(p.pos);if(p.raft)p.model.position.y=.12;p.model.rotation.y=p.yaw;
@@ -1408,7 +1421,7 @@ function stepWorld(dt){
 /* ---------------- boot ---------------- */
 function startWorld(w){
   titleMode=false;document.body.classList.remove("titleOn");
-  world=hydrate(w);initNoise(world.seed);
+  world=hydrate(migrateTime(w));initNoise(world.seed);
   for(const ch of chunks.values())disposeChunk(ch);chunks.clear();
   for(const s of world.structures)if(s.obj)scene.remove(s.obj);
   if(player&&player.model)scene.remove(player.model);
@@ -1433,7 +1446,7 @@ function newGame(seed){
 let titleCenter=null;
 function beginTitle(preview){
   initNoise(preview.seed);
-  world=hydrate({...preview,removed:[...(preview.removed||[])],burnt:[...(preview.burnt||[])],structures:[],drops:[],gameTime:Math.floor((preview.gameTime||0)/86400)*86400+16.6*3600,weather:{kind:"clear",t:9e9,amt:0}});
+  world=hydrate({...preview,removed:[...(preview.removed||[])],burnt:[...(preview.burnt||[])],structures:[],drops:[],gameTime:Math.floor((preview.gameTime||0)/86400)*86400+9*3600,weather:{kind:"clear",t:9e9,amt:0}});
   const [cx,cz]=preview.camp||[0,0];titleCenter=new THREE.Vector3(cx,heightAt(cx,cz),cz);
   player={pos:titleCenter.clone(),vel:new THREE.Vector3(),camYaw:0,camPitch:.3,camDist:6,model:null,swimming:false};
   titleMode=true;titleT=0;document.body.classList.add("titleOn");updateChunks(true);
@@ -1495,9 +1508,10 @@ export function initWorld(){
   document.addEventListener("visibilitychange",()=>{if(document.hidden&&started&&world)save()});
   // debug / test hook (used by the headless verification and the automated playtests)
   const br=$("#wBright");if(br){br.value=Math.round(brightBoost*100);$("#wBrightV").textContent="+"+br.value+"%";br.oninput=()=>{brightBoost=clamp(br.value/100,0,.4);$("#wBrightV").textContent="+"+br.value+"%";try{localStorage.setItem("fog-of-knowledge:game:bright",String(brightBoost))}catch(_){}}}
+  const dl=$("#wDayLen");if(dl){dl.value=dayLenPref;dl.onchange=()=>setDayLen(dl.value)}const wp=$("#wWeatherSel");if(wp){wp.value=weatherPref;wp.onchange=()=>setWeatherPref(wp.value)}
   const schk=$("#wSurvChk");if(schk){schk.checked=survivalMode;schk.onchange=()=>{setSurvival(schk.checked);toast(schk.checked?"Classic survival on: hunger, thirst, illness and injuries.":"Discovery mode: no hunger, illness or injuries — just you, the world and its puzzles.")}}
   const nchk=$("#wNeedyChk");if(nchk){nchk.checked=PETS.needyOn;nchk.onchange=()=>{PETS.needyOn=nchk.checked}}
-  window.__fogWorld={get pets(){return PETS},updateSky:()=>updateSky(.016),setSurvival,get survival(){return survivalMode},hud:()=>{renderHUD();renderObjectives();return {bars:$("#wBars").textContent,obj:$("#wObj").textContent}},cookbook:()=>COOKBOOK.map(c=>c[0]),duskNeedsFire:()=>duskNeedsFire(),fireShadowBudget:reset=>{if(reset)Object.assign(fireFps,{on:true,low:0,high:0,ema:60});return {...fireFps}},envLight:()=>({sun:GFX.sun.intensity,hemi:GFX.hemi.intensity,moon:GFX.ENV.moonFrac,exposure:GFX.renderer?.toneMappingExposure,expMul:GFX.ENV.expMul,lights:fireLights.map(l=>({i:+l.intensity.toFixed(2),d:+l.distance.toFixed(1),sh:l.castShadow}))}),moonPhase:t=>GFX.moonPhase(t),fireLight:(fuel,heat=1,type="fire",lit=true)=>{const r=fireLight({fuel,heat,type,lit});delete r.color;return r},get lux(){return world._luxAtPlayer||0},get exposure(){return GFX.renderer?.toneMappingExposure},setBright:v=>{brightBoost=clamp(v,0,.4)},inventory:{capacity,slotsUsed,roomFor,ordered,setHand,swapHands,dropItem,dropEverything,ctxActions,ctxDo,openCtx,sortInv,moveTo,STACK,BASE_SLOTS,handItems:()=>{const u=player.model.userData;return {R:u.held?.userData.k||null,L:u.heldL?.userData.k||null,Rbone:u.held?.parent?.name,Lbone:u.heldL?.parent?.name,Rpos:u.held?.getWorldPosition(new THREE.Vector3()),Lpos:u.heldL?.getWorldPosition(new THREE.Vector3())}}},get paused(){return paused},items:ITEMS,drop:(k,x,z)=>addDrop(k,x,heightAt(x,z)+.15,z),get obs(){return OBS},observeHeld,needyUI,curiousSpot,oreSpot,landmark,PET_INFO,MAX_ACTIVE,get state(){return world},get player(){return player},get animals(){return animals},discover:id=>discover(id),closePopup,
+  window.__fogWorld={get pets(){return PETS},updateSky:()=>updateSky(.016),setSurvival,get survival(){return survivalMode},gameSpeed:t=>gameSpeed(t),setDayLen,get dayLen(){return dayLenPref},setWeatherPref,get weatherPref(){return weatherPref},rollWeather:()=>rollWeather(),migrateTime:w=>migrateTime(w),hud:()=>{renderHUD();renderObjectives();return {bars:$("#wBars").textContent,obj:$("#wObj").textContent}},cookbook:()=>COOKBOOK.map(c=>c[0]),duskNeedsFire:()=>duskNeedsFire(),fireShadowBudget:reset=>{if(reset)Object.assign(fireFps,{on:true,low:0,high:0,ema:60});return {...fireFps}},envLight:()=>({sun:GFX.sun.intensity,hemi:GFX.hemi.intensity,moon:GFX.ENV.moonFrac,exposure:GFX.renderer?.toneMappingExposure,expMul:GFX.ENV.expMul,lights:fireLights.map(l=>({i:+l.intensity.toFixed(2),d:+l.distance.toFixed(1),sh:l.castShadow}))}),moonPhase:t=>GFX.moonPhase(t),fireLight:(fuel,heat=1,type="fire",lit=true)=>{const r=fireLight({fuel,heat,type,lit});delete r.color;return r},get lux(){return world._luxAtPlayer||0},get exposure(){return GFX.renderer?.toneMappingExposure},setBright:v=>{brightBoost=clamp(v,0,.4)},inventory:{capacity,slotsUsed,roomFor,ordered,setHand,swapHands,dropItem,dropEverything,ctxActions,ctxDo,openCtx,sortInv,moveTo,STACK,BASE_SLOTS,handItems:()=>{const u=player.model.userData;return {R:u.held?.userData.k||null,L:u.heldL?.userData.k||null,Rbone:u.held?.parent?.name,Lbone:u.heldL?.parent?.name,Rpos:u.held?.getWorldPosition(new THREE.Vector3()),Lpos:u.heldL?.getWorldPosition(new THREE.Vector3())}}},get paused(){return paused},items:ITEMS,drop:(k,x,z)=>addDrop(k,x,heightAt(x,z)+.15,z),get obs(){return OBS},observeHeld,needyUI,curiousSpot,oreSpot,landmark,PET_INFO,MAX_ACTIVE,get state(){return world},get player(){return player},get animals(){return animals},discover:id=>discover(id),closePopup,
     give:(k,n)=>give(k,n),press:(code,ms)=>{keys.add(code);setTimeout(()=>keys.delete(code),ms)},keyEvent:code=>window.dispatchEvent(new KeyboardEvent("keydown",{code,bubbles:true})),keyDown:c=>keys.add(c),keyUp:c=>keys.delete(c),keysClear:()=>keys.clear(),
     teleport:(x,z)=>{player.pos.set(x,heightAt(x,z),z);player.vel.set(0,0,0);updateChunks(true)},stats:()=>({pos:player&&player.pos.toArray().map(v=>+v.toFixed(2)),chunks:chunks.size,animals:animals.length,frames,
       revealed:world?.ks.revealed.length,disc:world?.disc.length,atlas:!!atlas,drawCalls:renderer.info.render.calls,tris:renderer.info.render.triangles,fps:+fps.toFixed(1),quality:GFX.qName,human:!!player?.model?.userData?.mixer,audio:{...AU.stats}}),
@@ -1505,7 +1519,7 @@ export function initWorld(){
     setHour:h=>{world.gameTime=Math.floor(world.gameTime/86400)*86400+h*3600},setWeather:(kind,amt)=>{world.weather.kind=kind;world.weather.amt=amt??(kind==="rain"||kind==="storm"?1:0);world.weather.t=9e9;world.weather.next=kind},
     look:(yaw,pitch,dist)=>{player.camYaw=yaw;if(pitch!==undefined)player.camPitch=pitch;if(dist!==undefined)player.camDist=dist},throwHeld,useHeld,interact,craft,eat,hold:k=>{if(world&&world.inv[k]){world.held=k;renderHotbar();return true}return false},
     sim,scan,target:()=>{const t=findTarget();return t?{kind:t.kind,label:targetLabel(t),type:t.obj?.type||t.obj?.item||t.obj?.r?.type||t.obj?.kind}:null},respawn:()=>$("#wRespawn")?.click(),
-    toasts:()=>toastLog.slice(),discLog:()=>discLog.slice(),hourOf:()=>hourOf(),airTemp:()=>airTemp(player.pos.x,player.pos.z,player.pos.y),shelterLevel:()=>shelterLevel(player.pos.x,player.pos.z),
+    toasts:()=>toastLog.slice(),discLog:()=>discLog.slice(),hourOf:()=>hourOf(),sunElevation:()=>sunElevation(),airTemp:()=>airTemp(player.pos.x,player.pos.z,player.pos.y),shelterLevel:()=>shelterLevel(player.pos.x,player.pos.z),
     strike:(x,z)=>strike([x,z]),jupDir:()=>jupDir().toArray(),moonDir:()=>moonDirV().toArray(),firstPerson,save,crouch:v=>{player.crouch=!!v},sleepNow:()=>{const s=world.structures.find(o=>sleepable(o.type)&&Math.hypot(o.x-player.pos.x,o.z-player.pos.z)<4);return s?(sleep(s),true):false},
     recipes:()=>RECIPES.map(r=>({out:r.out,req:r.req,in:r.in,tool:r.tool||null,n:r.n||1})),discoveries:()=>WORLD_DISCOVERIES.map(d=>d.id),curiosity:()=>world.seenQ.slice(),objectives:()=>{const c=guideCtx();return OBJECTIVES.map(o=>({id:o[0],done:!!o[2](c)}))},
     audio:()=>({...AU.stats,volume:AU.volume}),

@@ -10,7 +10,7 @@ export function runSuite(W,opts={}){
   const lastToasts=n=>W.toasts().slice(-n).join(" | ");
   // ---------- setup helpers ----------
   const SEED=opts.seed||20261019;
-  function fresh(hour=10){W.setSurvival(false);W.closePopup();for(const id of ["#wInv","#wJournal","#wCtx","#wChest"]){const e=document.querySelector(id);if(e)e.hidden=true}W.reseed(SEED);W.setWeather("clear",0);W.setHour(hour);W.clearStructs();W.clearDrops();W.clearAnimals();S().inv={};S().held=null;S().worn=null;
+  function fresh(hour=10){W.setSurvival(false);W.setWeatherPref("calm");W.setDayLen("long");W.closePopup();for(const id of ["#wInv","#wJournal","#wCtx","#wChest"]){const e=document.querySelector(id);if(e)e.hidden=true}W.reseed(SEED);W.setWeather("clear",0);W.setHour(hour);W.clearStructs();W.clearDrops();W.clearAnimals();S().inv={};S().held=null;S().worn=null;
     Object.assign(S().st,{health:100,hunger:85,thirst:85,stamina:100,tb:37,wet:0,sick:0,sprain:0});S().snap=null;W.crouch(false);W.keysClear();P().zoom=false;P().camPitch=.3;}
   const surv=()=>W.setSurvival(true);   // classic-survival tests opt in (Discovery mode is the default)
   const learn=(...ids)=>{for(const id of ids)if(!has(id))S().disc.push(id)};      // setup-only: mark prerequisites known
@@ -39,7 +39,7 @@ export function runSuite(W,opts={}){
   test(D,"knapping (flint on boulder, holding pyrite too)",()=>{fresh();give("pyrite");give("flint");const b=W.scan("boulder");W.teleport(b.x+b.s+1.1,b.z);step(.1);face(b.x,b.z);W.hold("flint");W.useHeld();
     return want(has("knapping")&&inv("flake")===2,"target "+JSON.stringify(W.target())+" "+lastToasts(2))});
   test(D,"fire (firewood pile + flint & pyrite)",()=>{fresh();goFlat();const f=lightFire();return want(f&&f.lit&&has("fire"),lastToasts(3))});
-  test(D,"combustion (fire burns out)",()=>{fresh();goFlat();const f=lightFire();f.fuel=.02;step(3);return want(has("combustion")&&!f.lit,`lit ${f.lit} fuel ${f.fuel}`)});
+  test(D,"combustion (fire burns out)",()=>{fresh();goFlat();const f=lightFire();f.fuel=.02;step(10);return want(has("combustion")&&!f.lit,`lit ${f.lit} fuel ${f.fuel}`)});
   test(D,"warmth (radiant heat warms you)",()=>{fresh(23);goFlat();const f=lightFire();S().st.tb=35.6;step(12);return want(has("warmth"),`tb ${S().st.tb.toFixed(2)} fireW ${Math.round(W.fireAt())}`)});
   test(D,"evaporative (wet in the cold)",()=>{fresh(4);goFlat();S().snap={start:0,end:1e12,dT:25};S().st.wet=.9;step(.5);const r=want(has("evaporative"),"air "+W.airTemp().toFixed(1));S().snap=null;return r});
   test(D,"cooking (meat over fire)",()=>{fresh();goFlat();lightFire();step(4);give("meat_raw");W.hold("meat_raw");W.useHeld();return want(has("cooking")&&inv("meat_cooked")===1,lastToasts(2))});
@@ -56,7 +56,7 @@ export function runSuite(W,opts={}){
   test(D,"shelter (lean-to)",()=>{fresh();goFlat();learn("knapping");give("stick",6);give("fiber",3);W.craft("leanto");W.hold("leanto");W.useHeld();return want(has("shelter")&&S().structures.some(s=>s.type==="leanto"),lastToasts(2))});
   test(D,"clothing (hide clothes)",()=>{fresh();learn("hunting");give("hide",2);give("fiber",2);W.craft("clothing");return want(has("clothing")&&S().worn==="clothing")});
   test(D,"daynight (a full day passes)",()=>{fresh();S().gameTime=S().dayStart+86400-5;step(.2);return want(has("daynight"))});
-  test(D,"sundial (watch the shadow 1 h)",()=>{fresh(11);goFlat();learn("daynight");give("stick");W.craft("gnomon");W.hold("gnomon");W.useHeld();step(40);return want(has("sundial"))});
+  test(D,"sundial (watch the shadow 1 h)",()=>{fresh(11);goFlat();learn("daynight");give("stick");W.craft("gnomon");W.hold("gnomon");W.useHeld();step(150);return want(has("sundial"),"hour "+W.hourOf().toFixed(2))});
   test(D,"astronomy (look up on 3 nights)",()=>{fresh(23);goFlat();for(let n=0;n<3;n++){W.look(P().camYaw,-1.2);step(7.5);S().gameTime+=86400}const fp=W.firstPerson();return want(has("astronomy"),"nights "+S().counters.nights+" fp "+fp)});
   test(D,"counting (10 tally notches)",()=>{fresh();learn("knapping");give("stick");give("flake");W.craft("tally");W.hold("tally");for(let i=0;i<10;i++)W.useHeld();return want(has("counting"))});
   test(D,"lever (log rolls a boulder)",()=>{fresh();const b=W.scan("boulder");W.teleport(b.x+b.s+1.1,b.z);step(.1);face(b.x,b.z);give("log");W.hold("log");W.useHeld();return want(has("lever"),"target "+JSON.stringify(W.target()))});
@@ -182,7 +182,7 @@ export function runSuite(W,opts={}){
   test(H,"torches also repel wolves",()=>{fresh(21.2);goFlat();give("torch");W.hold("torch");W.useHeld();const t=S().structures.find(s=>s.type==="torch");give("flint");give("pyrite");face(t.x,t.z);W.hold("flint");W.useHeld();
     W.teleport(t.x+1,t.z);S().counters.howled=-1;const h0=S().st.health;let maxW=0;W.sim(120,()=>{maxW=Math.max(maxW,W.animals.filter(a=>a.kind==="wolf").length)});return want(t.lit&&maxW>=2&&S().st.health>=h0-1,`lit ${t.lit} wolves ${maxW} health ${S().st.health.toFixed(1)}`)});
   test(H,"spear kills a wolf (kill count)",()=>{fresh(22);goFlat();const p=P().pos;give("spear",4);const a=W.spawn("wolf",p.x,p.z-2);let tg=[];for(let i=0;i<6&&!a.dead;i++){const d=Math.hypot(a.pos.x-p.x,a.pos.z-p.z);if(d>1.8)W.teleport(a.pos.x+(p.x-a.pos.x)/d*1.6,a.pos.z+(p.z-a.pos.z)/d*1.6);face(a.pos.x,a.pos.z);tg.push(JSON.stringify(W.target()));W.hold("spear");W.useHeld();step(.7)}return want(a.dead,`hp ${a.hp} kills ${S().counters.wolvesKilled} targets ${tg.join(" ")} `+lastToasts(3))});
-  test(H,"storm: lightning strikes and thunder lag = distance / 343 m/s",()=>{fresh();goFlat();W.setWeather("storm",1);let n0=S().counters.strikes;step(90);return want(S().counters.strikes>n0,`strikes ${S().counters.strikes-n0} in 90 s`)});
+  test(H,"storm: lightning strikes and thunder lag = distance / 343 m/s",()=>{fresh();goFlat();W.setWeatherPref("natural");W.setWeather("storm",1);let n0=S().counters.strikes;step(90);W.setWeatherPref("calm");return want(S().counters.strikes>n0,`strikes ${S().counters.strikes-n0} in 90 s`)});
   test(H,"lightning sets a tree ablaze → wildfire spreads/burns out",()=>{fresh();const t=W.scan("tree");W.teleport(t.x+30,t.z);W.setWeather("drystorm",0);W.strike(t.x,t.z);step(1);const burning=W.toasts().some(s=>/fire|burn|ablaze|flame/i.test(s));step(60);return want(S().burnt.size>0,`burnt trees ${S().burnt.size} ${burning}`)});
   test(H,"cold snap lowers air temperature",()=>{fresh();goFlat();const a=W.airTemp();S().snap={start:S().gameTime-1,end:S().gameTime+9999,dT:12};const b=W.airTemp();S().snap=null;return want(a-b>11,`${a.toFixed(1)} → ${b.toFixed(1)}`)});
   test(H,"stealth: crouching still is quieter than running",()=>{fresh();goFlat();W.crouch(true);step(.2);const q=W.noise();W.crouch(false);W.keyDown("KeyW");W.keyDown("ShiftLeft");step(1);const l=W.noise();W.keysClear();return want(l-q>=25,`crouch ${q} dB, run ${l} dB`)});
@@ -371,6 +371,20 @@ export function runSuite(W,opts={}){
     return want(b&&rows===W.cookbook().length&&/Ingredients:/.test(txt)&&/Stew/.test(txt)&&/\?\?\?/.test(txt),`tab ${!!b} rows ${rows}`)});
   test(CK,"inventory menu offers Cook for nuts/dough/pot at a fire; Cooking craft category",()=>{fresh();goFlat();learn("boiling","ceramics");const f=hotFire(200);face(f.x,f.z);const a=W.inventory.ctxActions("pot_clean").map(x=>x[0]);give("nuts");const b=W.inventory.ctxActions("nuts").map(x=>x[0]);
     give("grain",2);give("pot_clean");W.keyEvent("KeyI");const t=document.querySelector("#wInv").textContent;document.querySelector("#wInv").hidden=true;return want(a.includes("cook")&&b.includes("cook")&&/COOKING & KITCHEN/.test(t),`${a} | ${b}`)});
+  // ======================= TIME & WEATHER (long days, short nights, calm skies) =======================
+  const TW="Time & weather";
+  test(TW,"a new game starts in the morning (08:00, bright daylight), not at dusk",()=>{W.closePopup();W.reseed(SEED);const h=W.hourOf(),el=W.sunElevation(),title=document.querySelector("#wObj")?.textContent||"";fresh();return want(Math.abs(h-8)<.01&&el>.3,`hour ${h} sun ${el.toFixed(2)}`)});
+  test(TW,"Long day length: ~30 real min per cycle, ~24 min day vs ~6 min night",()=>{W.setDayLen("long");let day=0,night=0;for(let t=0;t<86400;t+=60){const r=60/W.gameSpeed(t),h=t/3600;if(h>=6&&h<18.2)day+=r;else night+=r}
+    return want(Math.abs(day+night-1800)<30&&day>=1380&&day<=1500&&night>=300&&night<=400,`day ${(day/60).toFixed(1)} min, night ${(night/60).toFixed(1)} min`)});
+  test(TW,"day length setting: Normal halves, Short quarters; Long is default",()=>{const def=W.dayLen;W.setDayLen("normal");const n=W.gameSpeed(12*3600);W.setDayLen("short");const s=W.gameSpeed(12*3600);W.setDayLen("long");const l=W.gameSpeed(12*3600);
+    const sel=document.querySelector("#wDayLen");return want(def==="long"&&Math.abs(n/l-2)<1e-6&&Math.abs(s/l-4)<1e-6&&sel&&sel.value==="long",`${def} ${l.toFixed(1)}/${n.toFixed(1)}/${s.toFixed(1)}`)});
+  test(TW,"Calm weather: always clear for the first 3 days and before the first fire",()=>{fresh();S().disc=S().disc.filter(d=>d!=="fire");let bad=0;S().gameTime=5*86400+10*3600;for(let i=0;i<300;i++)if(W.rollWeather()!=="clear")bad++;
+    learn("fire");for(const d of [0,1,2])for(let i=0;i<200;i++){S().gameTime=d*86400+10*3600;if(W.rollWeather()!=="clear")bad++}return want(W.weatherPref==="calm"&&!bad,`non-clear rolls ${bad}`)});
+  test(TW,"Calm weather later: rain rare (short showers), never storms or lightning",()=>{fresh();learn("fire");S().gameTime=6*86400+10*3600;let rain=0,storm=0;for(let i=0;i<2000;i++){const k=W.rollWeather();if(k==="rain")rain++;if(k==="storm"||k==="drystorm")storm++}
+    return want(rain/2000<.06&&rain>0&&!storm,`rain ${(rain/20).toFixed(1)}% storms ${storm}`)});
+  test(TW,"Natural weather option brings back storms",()=>{fresh();learn("fire");W.setWeatherPref("natural");S().gameTime=6*86400+10*3600;let storm=0;for(let i=0;i<1000;i++){const k=W.rollWeather();if(k==="storm"||k==="drystorm")storm++}W.setWeatherPref("calm");return want(storm>0,`storms ${storm}`)});
+  test(TW,"old night-time / rainy save migrates to a clear morning; new saves keep their time",()=>{const o=W.migrateTime({gameTime:2*86400+21*3600,weather:{kind:"rain",t:1000,amt:1}}),h=(o.gameTime/3600)%24;const n=W.migrateTime({timeV:2,gameTime:2*86400+21*3600,weather:{kind:"clear",t:1,amt:0}});
+    const r=W.migrateTime({timeV:2,gameTime:86400*4+12*3600,weather:{kind:"rain",t:1,amt:1}});return want(Math.abs(h-8)<.01&&o.gameTime>2*86400+21*3600&&o.weather.kind==="clear"&&((n.gameTime/3600)%24)===21&&r.weather.kind==="clear",`old→${h} new ${(n.gameTime/3600)%24} rain→${r.weather.kind}`)});
   test(D,"ALL discoveries reachable in tests",()=>{const all=W.discoveries(),got=new Set();for(const r of T)if(r.pass)for(const id of all)if(r.name.split(" ")[0]===id||r.name.includes(id))got.add(id);
     const miss=all.filter(id=>!got.has(id));return want(!miss.length,"not covered: "+miss.join(", "))});
   return {results:T,ms:Math.round(performance.now()-t0)};
