@@ -95,8 +95,10 @@ export function createPets(C){
     const w=W(),have=k=>pets().some(p=>p.kind===k),wildOf=k=>list.find(e=>e.wild&&e.kind===k),age=w.gameTime-w.dayStart,Pp=P().pos;
     for(const e of list.slice())if(e.wild&&e.pos.distanceTo(Pp)>130)remove(e);
     const want=[];
-    if(!have("cat"))want.push(["cat",w.camp[0],w.camp[1],7,13]);                         // the stray cat lives around your camp from the start
-    if(!have("frenchie")&&(have("cat")||age>1.5*3600))want.push(["frenchie",w.camp[0],w.camp[1],10,18]);
+    // the stray cat and a French bulldog greet you right at the start: a few metres in front of you, in plain view; later they stay around camp
+    const early=age<1800,f=C.forward(),fx=Pp.x+f.x*4.2,fz=Pp.z+f.z*4.2;
+    if(!have("cat"))want.push(early?["cat",fx-f.z*1.2,fz+f.x*1.2,0,1.2]:["cat",w.camp[0],w.camp[1],5,10]);
+    if(!have("frenchie"))want.push(early?["frenchie",fx+f.z*1.4,fz-f.x*1.4,0,1.2]:["frenchie",w.camp[0],w.camp[1],6,12]);
     if(!have("squirrel")&&age>5*3600){const t=C.nearTree(Pp.x,Pp.z,40);if(t)want.push(["squirrel",t.x,t.z,1,3])}
     if(!have("crow")&&age>14*3600)want.push(["crow",Pp.x,Pp.z,14,22]);
     for(const [k,x,z,r0,r1] of want)if(!wildOf(k)&&Math.hypot(x-Pp.x,z-Pp.z)<90){const p=landNear(x,z,r0,r1);if(p){const coat=Math.floor(Math.random()*COATS[k].length),e=makeEntity(k,coat,null,true);e.coat=coat;e.home=p;place(e,p[0],p[1])}}}
@@ -104,9 +106,12 @@ export function createPets(C){
     const Pp=P().pos,info=PET_INFO[e.kind];
     const lvl=C.noiseDb()-20*Math.log10(Math.max(1,d));
     e.waryT-=dt;
-    if(d<12&&lvl>info.thr&&e.trust<1){ // too loud: it backs off and loses a little trust
+    const night=C.isNight?.(),fire=night?C.litFireNear(Pp.x,Pp.z,30)||C.litFireNear(W().camp[0],W().camp[1],20):null;
+    if(!fire&&d<12&&lvl>info.thr&&e.trust<1){ // too loud: it backs off and loses a little trust
       e.trust=Math.max(0,e.trust-dt*.12);const away=e.pos.clone().sub(Pp).setY(0).normalize();e.target=e.pos.clone().addScaledVector(away,3);e.speed=info.speed*.8;e.state="walk";
       if(e.waryT<=0&&d<8){e.waryT=25;C.toast(`The ${info.label.toLowerCase()} startles at your noise (${Math.round(lvl)} dB here). Move slowly — crouch (C) — and let it come to you.`)}return}
+    // strays are drawn to warmth: at night they curl up by your lit fire too
+    if(fire){if(e.fireA==null)e.fireA=e.kind==="cat"?2.3:4.1;if(!e.target&&e.state==="walk")e.fireA+=1.1;const a=e.fireA,t=new THREE.Vector3(fire.x+Math.cos(a)*1.9,0,fire.z+Math.sin(a)*1.9);if(Math.hypot(t.x-e.pos.x,t.z-e.pos.z)>.4){e.target=t;e.speed=1.1;e.state="walk"}else{e.target=null;e.speed=0;if(e.state!=="sleep"){e.state="sleep";sound(e,"sleep")}}return}
     if(d<4.5&&e.trust<1){e.trust=Math.min(1,e.trust+info.rate*dt*(C.crouching()?1.4:1));if(e.trust>.45){e.target=Pp.clone();e.speed=d>1.1?1:0;e.state=d>1.1?"walk":"sit"}
       if(e.trust>=1&&!e.readyToast){e.readyToast=1;C.toast(`The ${info.label.toLowerCase()} ${e.kind==="cat"?"rubs against your legs and purrs":e.kind==="frenchie"?"snorts happily and sits on your foot":"comes right up to you"}. Press E to pet it gently.`);sound(e,"happy")}return}
     if(e.trust>=1){e.target=d>1.2?Pp.clone():e.pos.clone();e.speed=d>1.2?1.2:0;e.state=d>1.2?"walk":e.kind==="cat"?"rub":"sit";return}
@@ -241,7 +246,7 @@ export function createPets(C){
     target(x,z,r=2.4){let b=null,bd=r;for(const e of list){if(!e.mdl.g.visible)continue;const d=Math.hypot(e.pos.x-x,e.pos.z-z)-.2;if(d<bd){bd=d;b=e}}return b?{e:b,d:bd}:null},
     label(e,held){const info=PET_INFO[e.kind];if(e.wild){const lk=held&&info.likes.includes(held);return `${info.label} (wild · trust ${Math.round(e.trust*100)}%) · ${e.trust>=.75?"E pet":lk?"Q offer "+C.itemName(held).toLowerCase():"approach quietly (C)"}`}
       return `${e.data.name} the ${info.label.toLowerCase()} · E / P pet${held&&info.likes.includes(held)?" · Q treat":""}`},
-    get needy(){return needy},set needyOn(v){needyOn=!!v;try{localStorage.setItem("fog-of-knowledge:game:needy",v?"1":"0")}catch(_){}},get needyOn(){return needyOn},
+    entities:()=>list.slice(),get needy(){return needy},set needyOn(v){needyOn=!!v;try{localStorage.setItem("fog-of-knowledge:game:needy",v?"1":"0")}catch(_){}},get needyOn(){return needyOn},
     forceNextNeedy(){forceNeedy=true;lastNeedy=-1e9},clearNeedy(){if(needy){needy.done=true;const e=needy.e;needy=null;endSpecial(e);C.needyUI(null)}},
     behaviours:()=>W().counters.behav||[]}
 }
