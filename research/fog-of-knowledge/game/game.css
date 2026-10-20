@@ -112,3 +112,50 @@ main#app{flex:1;min-height:0;position:relative;overflow:auto}
 .row.center{justify-content:center}.small{font-size:11px}
 .disc-pop small{color:#ffc857;letter-spacing:.14em;font-size:10.5px}.disc-pop h2{margin:4px 0 6px;font-size:26px}.disc-pop .how{color:#8fb1cc;font-style:italic;margin:0 0 6px}.disc-pop h4{font-size:11px;letter-spacing:.14em;color:#8fb1cc;margin:14px 0 6px}.disc-pop p{line-height:1.55}
 .atlasWait{padding:40px;grid-column:1/-1}
+/* ---------- v3 visual polish ---------- */
+.wBars,.wTime,.wReadout,.wToast div,.slot,.wPanel,.wFps,.wGear{backdrop-filter:blur(8px) saturate(1.2);-webkit-backdrop-filter:blur(8px) saturate(1.2)}
+.wBars{background:linear-gradient(160deg,#0a1422cc,#04080fb3);border:1px solid #ffffff1a;box-shadow:0 8px 30px #0006;border-radius:14px}
+.hb .t{height:7px;border-radius:4px;background:#ffffff14;box-shadow:inset 0 1px 2px #0008}.hb .t i{border-radius:4px;box-shadow:0 0 8px currentColor;transition:width .4s}
+.wTime{background:linear-gradient(200deg,#0a1422cc,#04080fb3);border:1px solid #ffffff1a;box-shadow:0 8px 30px #0006;border-radius:14px}
+.slot{background:linear-gradient(#0c1726d9,#060b14d9);border:1px solid #ffffff1f;border-radius:11px;transition:transform .15s,border-color .15s}
+.slot:hover{transform:translateY(-2px)}.slot.on{border-color:#ffc857;box-shadow:0 0 16px #ffc85770,inset 0 0 12px #ffc85730;transform:translateY(-3px)}
+.slot i{box-shadow:0 0 0 1px #0008,0 2px 6px #0008}
+.wPrompt{border:1px solid #ffd88a55;box-shadow:0 0 18px #ffc85733;background:#06090fd0}
+.wGear{position:absolute;right:14px;bottom:30px;width:38px;height:38px;border-radius:50%;border:1px solid #ffffff2a;background:#0a1422cc;color:#cfe3f7;font-size:18px;cursor:pointer;z-index:4}
+.wGear:hover{border-color:#67dcff;color:#fff}
+.wFps{position:absolute;right:60px;bottom:38px;font:11px ui-monospace,monospace;color:#9fe;background:#02040acc;padding:3px 8px;border-radius:6px;pointer-events:none;z-index:4}
+.wPanel{background:linear-gradient(170deg,#0b1626f2,#050a12f2);border:1px solid #ffffff22;box-shadow:0 20px 70px #000a}
+.wPanel.settings{z-index:30;width:min(620px,92vw)}
+.qRow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.qRow button{display:flex;flex-direction:column;gap:4px;padding:12px;font-weight:700;letter-spacing:.12em;text-align:left}
+.qRow button small{font-weight:400;letter-spacing:0;color:#8fa7bd;font-size:10.5px}.qRow button.on{border-color:#67dcff;box-shadow:0 0 14px #67dcff55;color:#e6fbff}
+.chk{display:flex;gap:8px;align-items:center;margin:12px 0;font-size:12.5px}
+/* title screen over the live flyover */
+body.titleOn .wHud,body.titleOn .wGear{display:none}
+.wOverlay.title{background:radial-gradient(ellipse at 50% 60%,#02040a00 0%,#02040a33 55%,#02040acc 100%),linear-gradient(#02040a00 55%,#02040ad0);align-items:flex-end;justify-content:center;padding-bottom:9vh}
+.titleBox{text-align:center;max-width:880px;animation:tIn 1.6s cubic-bezier(.2,.7,.2,1) both}
+.titleBox .kicker{letter-spacing:.5em;font-size:11px;color:#cfe3f7b0}
+.gTitle{margin:10px 0 8px;line-height:1;font-weight:800}
+.gTitle .l1{display:block;font-size:clamp(34px,6.4vw,78px);letter-spacing:.14em;color:#fff;text-shadow:0 0 2px #fff,0 0 22px #9fd8ffaa,0 0 60px #67dcff66,0 6px 30px #000d}
+.gTitle .l2{display:block;margin-top:10px;font-size:clamp(16px,2.4vw,28px);letter-spacing:.7em;color:#ffd88a;text-shadow:0 0 18px #ffb84a99}
+.titleBox .tag{color:#dbe8f6;font-size:15px;margin:10px 0 20px;text-shadow:0 2px 10px #000}
+.tBtns{justify-content:center;gap:10px}
+button.big{padding:14px 46px;font-size:15px;letter-spacing:.3em;box-shadow:0 0 30px #67dcff55;animation:pulse 2.6s ease-in-out infinite}
+.keysHint{margin-top:16px;text-shadow:0 1px 6px #000}
+@keyframes tIn{from{opacity:0;transform:translateY(30px);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
+@keyframes pulse{0%,100%{box-shadow:0 0 18px #67dcff44}50%{box-shadow:0 0 36px #67dcffaa}}
+/* discovery reveal */
+#wPopup{background:radial-gradient(circle at 50% 45%,#ffc85722,#02040ad0 60%)}
+#wPopup .box.disc-pop{position:relative;overflow:hidden;border:1px solid #ffc85766;box-shadow:0 0 0 1px #ffc85722,0 0 60px #ffc85740,0 30px 80px #000c;animation:popIn .7s cubic-bezier(.2,.9,.25,1.2) both}
+#wPopup .box.disc-pop::before{content:"";position:absolute;inset:-40%;background:conic-gradient(from 0deg,#ffc85700,#ffc85755,#67dcff44,#ffc85700 40%);animation:spin 6s linear infinite;z-index:0;opacity:.35}
+#wPopup .box.disc-pop::after{content:"";position:absolute;inset:1px;border-radius:15px;background:linear-gradient(170deg,#0b1626f7,#060b14f7);z-index:0}
+#wPopup .box.disc-pop>*{position:relative;z-index:1}
+#wPopup .disc-pop h2{background:linear-gradient(90deg,#fff 0%,#ffd88a 40%,#fff 60%,#ffd88a 100%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shine 2.4s linear infinite}
+#wPopup .disc-pop .chip{animation:chipIn .5s both}
+#wPopup .disc-pop .chip:nth-child(2){animation-delay:.12s}#wPopup .disc-pop .chip:nth-child(3){animation-delay:.24s}#wPopup .disc-pop .chip:nth-child(4){animation-delay:.36s}#wPopup .disc-pop .chip:nth-child(n+5){animation-delay:.48s}
+@keyframes popIn{0%{opacity:0;transform:scale(.7) translateY(20px);filter:blur(6px) brightness(2)}60%{filter:blur(0) brightness(1.4)}100%{opacity:1;transform:none;filter:none}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shine{to{background-position:-200% 0}}
+@keyframes chipIn{from{opacity:0;transform:translateY(8px) scale(.8);box-shadow:0 0 20px #ffc857}to{opacity:1;transform:none}}
+
+.tBtns button{flex:0 0 auto}
+.wOverlay.title .gTitle .l1{color:#fff}.wOverlay.title .gTitle .l2{color:#ffd88a}

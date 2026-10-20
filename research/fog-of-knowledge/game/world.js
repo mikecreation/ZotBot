@@ -8,6 +8,7 @@
  */
 import * as THREE from "./vendor/three.module.min.js";
 import {ITEMS,WORLD_DISCOVERIES,RECIPES} from "./world-data.js";
+import * as GFX from "./gfx.js";
 const E=window.FogGameEngine,TREE=E.G;
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -70,44 +71,13 @@ const BIOME_COL={water:0x5a5240,beach:0xdccb8f,desert:0xd2b479,snow:0xeef3f7,roc
 function slopeAt(x,z){const e=1.5;return Math.hypot(heightAt(x+e,z)-heightAt(x-e,z),heightAt(x,z+e)-heightAt(x,z-e))/(2*e)}
 
 /* ---------------- three.js scene ---------------- */
-let renderer,scene,camera,sun,hemi,sunMesh,moonMesh,stars,water,rain,clock;
+let renderer,scene,camera,moonMesh,clock;
 const chunks=new Map();
-const MAT={};
-const GEO={};
+const MAT=GFX.MAT,GEO=GFX.GEO;
 function initScene(container){
-  renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:"high-performance",preserveDrawingBuffer:true});
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));
-  renderer.setSize(container.clientWidth,container.clientHeight);
-  container.appendChild(renderer.domElement);
-  scene=new THREE.Scene();
-  scene.fog=new THREE.Fog(0x9fb8cc,60,330);
-  camera=new THREE.PerspectiveCamera(65,container.clientWidth/container.clientHeight,.1,1400);
-  hemi=new THREE.HemisphereLight(0xbfd8ff,0x4a4030,.7);scene.add(hemi);
-  sun=new THREE.DirectionalLight(0xfff2d8,1.3);scene.add(sun);scene.add(sun.target);
-  sunMesh=new THREE.Mesh(new THREE.SphereGeometry(18,12,8),new THREE.MeshBasicMaterial({color:0xfff1b0,fog:false}));scene.add(sunMesh);
-  moonMesh=new THREE.Mesh(new THREE.SphereGeometry(12,12,8),new THREE.MeshBasicMaterial({color:0xdfe6f2,fog:false}));scene.add(moonMesh);
-  const sp=[],r=mulberry(7);for(let i=0;i<1600;i++){const u=r()*2-1,a=r()*Math.PI*2,s=Math.sqrt(1-u*u);sp.push(Math.cos(a)*s*900,Math.abs(u)*900,Math.sin(a)*s*900)}
-  const sg=new THREE.BufferGeometry();sg.setAttribute("position",new THREE.Float32BufferAttribute(sp,3));
-  stars=new THREE.Points(sg,new THREE.PointsMaterial({color:0xffffff,size:2,sizeAttenuation:false,transparent:true,opacity:0,fog:false,depthWrite:false}));scene.add(stars);
-  water=new THREE.Mesh(new THREE.PlaneGeometry(2400,2400),new THREE.MeshLambertMaterial({color:0x2f6f9a,transparent:true,opacity:.72}));
-  water.rotation.x=-Math.PI/2;scene.add(water);
-  const rp=new Float32Array(1800*3);for(let i=0;i<rp.length;i++)rp[i]=(Math.random()-.5)*40;
-  const rg=new THREE.BufferGeometry();rg.setAttribute("position",new THREE.BufferAttribute(rp,3));
-  rain=new THREE.Points(rg,new THREE.PointsMaterial({color:0xaac4dd,size:.08,transparent:true,opacity:.7,depthWrite:false}));rain.visible=false;scene.add(rain);
-  MAT.terrain=new THREE.MeshLambertMaterial({vertexColors:true,flatShading:true});
-  MAT.trunk=new THREE.MeshLambertMaterial({color:0x6b4a2b,flatShading:true});
-  MAT.crown=new THREE.MeshLambertMaterial({color:0xffffff,flatShading:true});
-  MAT.rock=new THREE.MeshLambertMaterial({color:0xffffff,flatShading:true});
-  MAT.flame=new THREE.MeshBasicMaterial({color:0xffa030,transparent:true,opacity:.85});
-  GEO.trunk=new THREE.CylinderGeometry(.18,.28,1,6);GEO.trunk.translate(0,.5,0);
-  GEO.cone=new THREE.ConeGeometry(1,1,7);GEO.cone.translate(0,.5,0);
-  GEO.ball=new THREE.IcosahedronGeometry(1,0);
-  GEO.boulder=new THREE.DodecahedronGeometry(1,0);
-  GEO.small=new THREE.IcosahedronGeometry(1,0);
-  GEO.stick=new THREE.CylinderGeometry(.035,.045,1,5);GEO.stick.rotateZ(Math.PI/2);
-  GEO.tuft=new THREE.ConeGeometry(.25,.6,5);GEO.tuft.translate(0,.3,0);
-  clock=new THREE.Clock();
-  window.addEventListener("resize",()=>{const w=container.clientWidth,h=container.clientHeight;if(!w||!h)return;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix()});
+  GFX.initGfx(container,GFX.loadQualityPref());GFX.initMaterials();
+  renderer=GFX.renderer;scene=GFX.scene;camera=GFX.camera;moonMesh=GFX.moonMesh;
+  clock=new THREE.Clock();GFX.loadHuman();
 }
 
 /* ---------------- chunks: terrain + instanced objects ---------------- */
@@ -139,67 +109,87 @@ function genObjects(cx,cz){
   }
   return {trees,res,boulders};
 }
+const BI={water:0,beach:1,desert:2,snow:3,rock:4,forest:5,grass:6},BN=Object.keys(BI);
 function buildTerrain(cx,cz,res){
-  const n=res+3,pos=new Float32Array(n*n*3),col=new Float32Array(n*n*3),c=new THREE.Color(),step=CHUNK/res;
+  const n=res+3,pos=new Float32Array(n*n*3),col=new Float32Array(n*n*3),nor=new Float32Array(n*n*3),c=new THREE.Color(),step=CHUNK/res;
+  const grid=res>16?{res,step,h:new Float32Array((res+1)*(res+1)),b:new Uint8Array((res+1)*(res+1))}:null;
   let k=0;
   for(let j=-1;j<=res+1;j++)for(let i=-1;i<=res+1;i++){
     const ii=clamp(i,0,res),jj=clamp(j,0,res),x=cx*CHUNK+ii*step,z=cz*CHUNK+jj*step;
-    let h=heightAt(x,z);const b=biomeAt(x,z,h),sl=res>16?slopeAt(x,z):0;
+    let h=heightAt(x,z);const b=biomeAt(x,z,h);
+    const e=.8,hx=heightAt(x+e,z)-heightAt(x-e,z),hz=heightAt(x,z+e)-heightAt(x,z-e),nl=Math.hypot(hx,2*e,hz),sl=Math.hypot(hx,hz)/(2*e);
     c.setHex(BIOME_COL[b]);
     if(sl>1.1&&b!=="water")c.setHex(0x7a7268);
-    const v=(hash3(Math.floor(x),Math.floor(z),3)%1000)/1000*.08-.04;c.r+=v;c.g+=v;c.b+=v;
+    const v=(hash3(Math.floor(x/3),Math.floor(z/3),3)%1000)/1000*.06-.03;c.r+=v*c.r;c.g+=v*c.g;c.b+=v*c.b;
+    if(grid&&i===ii&&j===jj){grid.h[jj*(res+1)+ii]=h;grid.b[jj*(res+1)+ii]=BI[b]}
     if(i!==ii||j!==jj)h-=4; // skirt hides LOD cracks
-    pos[k*3]=x;pos[k*3+1]=h;pos[k*3+2]=z;col[k*3]=c.r;col[k*3+1]=c.g;col[k*3+2]=c.b;k++;
+    pos[k*3]=x;pos[k*3+1]=h;pos[k*3+2]=z;col[k*3]=c.r;col[k*3+1]=c.g;col[k*3+2]=c.b;nor[k*3]=-hx/nl;nor[k*3+1]=2*e/nl;nor[k*3+2]=-hz/nl;k++;
   }
   const idx=[];for(let j=0;j<n-1;j++)for(let i=0;i<n-1;i++){const a=j*n+i,b=a+1,d=a+n,e=d+1;idx.push(a,d,b,b,d,e)}
-  const g=new THREE.BufferGeometry();g.setAttribute("position",new THREE.BufferAttribute(pos,3));g.setAttribute("color",new THREE.BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
+  const g=new THREE.BufferGeometry();g.setAttribute("position",new THREE.BufferAttribute(pos,3));g.setAttribute("color",new THREE.BufferAttribute(col,3));g.setAttribute("normal",new THREE.BufferAttribute(nor,3));g.setIndex(idx);
   g.computeBoundingSphere();
-  return new THREE.Mesh(g,MAT.terrain);
+  const m=new THREE.Mesh(g,MAT.terrain);m.receiveShadow=true;m.castShadow=res>16;m.userData.grid=grid;return m;
 }
+function grassSampler(ch){const G=ch.terrain&&ch.terrain.userData.grid;if(!G)return null;const x0=ch.cx*CHUNK,z0=ch.cz*CHUNK,R=G.res+1;
+  return (x,z)=>{const fx=clamp((x-x0)/G.step,0,G.res-.001),fz=clamp((z-z0)/G.step,0,G.res-.001),i=Math.floor(fx),j=Math.floor(fz),u=fx-i,v=fz-j;
+    const a=G.h[j*R+i],b=G.h[j*R+i+1],c=G.h[(j+1)*R+i],d=G.h[(j+1)*R+i+1];
+    const h=(a*(1-u)+b*u)*(1-v)+(c*(1-u)+d*u)*v,sl=Math.max(Math.abs(b-a),Math.abs(c-a),Math.abs(d-b))/G.step;
+    return {h,biome:BN[G.b[Math.round(fz)*R+Math.round(fx)]],slope:sl}}}
 const _m=new THREE.Matrix4(),_q=new THREE.Quaternion(),_s=new THREE.Vector3(),_p=new THREE.Vector3(),_e=new THREE.Euler(),_c=new THREE.Color();
 const ZERO=new THREE.Matrix4().makeScale(0,0,0);
 function setInst(mesh,i,x,y,z,sx,sy,sz,ry=0,rx=0){_e.set(rx,ry,0);_q.setFromEuler(_e);_p.set(x,y,z);_s.set(sx,sy,sz);_m.compose(_p,_q,_s);mesh.setMatrixAt(i,_m)}
+const TREE_TYPES=["conifer","broad","palm","dead"],TREE_GEO={conifer:["pineTrunk","pineCrown"],broad:["broadTrunk","broadCrown"],palm:["palmTrunk","palmCrown"],dead:["deadTrunk",null]};
+function treeVis(t){if(t.vis)return t.vis;let v=t.kind;if(v==="broad"&&t.y<7&&climate(t.x,t.z,t.y).t>19)v="palm";t.vis=v;return v}
 function buildObjects(ch){
   const o=ch.obj,grp=new THREE.Group(),key=ch.key;
-  const T=o.trees.length;
-  ch.trunks=new THREE.InstancedMesh(GEO.trunk,MAT.trunk,Math.max(1,T));
-  ch.crowns=new THREE.InstancedMesh(GEO.cone,MAT.crown,Math.max(1,T));
-  ch.crownsB=new THREE.InstancedMesh(GEO.ball,MAT.crown,Math.max(1,T));
-  ch.trunks.count=ch.crowns.count=ch.crownsB.count=T;
-  o.trees.forEach(t=>refreshTree(ch,t));
+  const T=o.trees.length;ch.tr={};ch.cr={};
+  for(const ty of TREE_TYPES){const [tg,cg]=TREE_GEO[ty];
+    const tm=new THREE.InstancedMesh(GEO[tg],MAT.bark,Math.max(1,T));tm.count=T;tm.castShadow=tm.receiveShadow=true;ch.tr[ty]=tm;
+    if(cg){const cm=new THREE.InstancedMesh(GEO[cg],MAT.leaf,Math.max(1,T));cm.count=T;cm.castShadow=cm.receiveShadow=true;ch.cr[ty]=cm}}
+  o.trees.forEach(t=>refreshTree(ch,t,true));
   ch.boulders=new THREE.InstancedMesh(GEO.boulder,MAT.rock,Math.max(1,o.boulders.length));ch.boulders.count=o.boulders.length;
-  o.boulders.forEach(b=>{const mv=world.moved[key+"|"+b.i];if(mv){b.x=mv[0];b.z=mv[1];b.y=heightAt(b.x,b.z)}setInst(ch.boulders,b.i,b.x,b.y+b.s*.35,b.z,b.s*1.2,b.s*.8,b.s,b.i);_c.setHex(0x8a857d);ch.boulders.setColorAt(b.i,_c)});
+  o.boulders.forEach(b=>{const mv=world.moved[key+"|"+b.i];if(mv){b.x=mv[0];b.z=mv[1];b.y=heightAt(b.x,b.z)}setInst(ch.boulders,b.i,b.x,b.y+b.s*.35,b.z,b.s*1.2,b.s*.8,b.s,b.i);const v=.85+(b.i*37%10)/40;_c.setRGB(v,v,v*.97);ch.boulders.setColorAt(b.i,_c)});
   const smalls=o.res.filter(r=>!["stick","fiber","seeds","berry_red","berry_dark"].includes(r.type));
   const sticks=o.res.filter(r=>r.type==="stick"),plants=o.res.filter(r=>["fiber","seeds","berry_red","berry_dark"].includes(r.type));
   ch.small=new THREE.InstancedMesh(GEO.small,MAT.rock,Math.max(1,smalls.length));ch.small.count=smalls.length;
-  ch.sticks=new THREE.InstancedMesh(GEO.stick,MAT.trunk,Math.max(1,sticks.length));ch.sticks.count=sticks.length;
-  ch.plants=new THREE.InstancedMesh(GEO.tuft,MAT.crown,Math.max(1,plants.length));ch.plants.count=plants.length;
+  ch.sticks=new THREE.InstancedMesh(GEO.stick,MAT.bark,Math.max(1,sticks.length));ch.sticks.count=sticks.length;
+  ch.plants=new THREE.InstancedMesh(GEO.tuft,MAT.leaf,Math.max(1,plants.length));ch.plants.count=plants.length;
   smalls.forEach((r,j)=>{r.mesh=ch.small;r.slot=j;const s=r.type==="clay"?.28:r.type==="sand"?.3:.17;setInst(ch.small,j,r.x,r.y+s*.4,r.z,s,s*.7,s,r.i);_c.setHex(ITEMS[r.type].color);ch.small.setColorAt(j,_c)});
   sticks.forEach((r,j)=>{r.mesh=ch.sticks;r.slot=j;setInst(ch.sticks,j,r.x,r.y+.05,r.z,.9,1,1,r.i)});
-  plants.forEach((r,j)=>{r.mesh=ch.plants;r.slot=j;const berry=r.type.startsWith("berry");setInst(ch.plants,j,r.x,r.y,r.z,berry?2.2:1.2,berry?1.4:1,berry?2.2:1.2,r.i);_c.setHex(berry?(r.type==="berry_red"?0x7a3b3b:0x3f3f6a):r.type==="seeds"?0xb8a95a:0x7fa84a);ch.plants.setColorAt(j,_c)});
+  plants.forEach((r,j)=>{r.mesh=ch.plants;r.slot=j;const berry=r.type.startsWith("berry");setInst(ch.plants,j,r.x,r.y-.05,r.z,berry?.55:.32,berry?.5:.42,berry?.55:.32,r.i);_c.setHex(berry?(r.type==="berry_red"?0xc04848:0x5a5ac0):r.type==="seeds"?0xd8c46a:0x9ccc5a);ch.plants.setColorAt(j,_c)});
   for(const r of o.res)if(world.removed.has(key+"|r"+r.i)){r.gone=true;r.mesh.setMatrixAt(r.slot,ZERO)}
-  for(const m of [ch.trunks,ch.crowns,ch.crownsB,ch.boulders,ch.small,ch.sticks,ch.plants]){m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true;m.computeBoundingSphere();grp.add(m)}
+  // decorative bushes (visual only, own random stream)
+  const rd=mulberry(hash3(world.seed,ch.cx+31337,ch.cz-4242)),bl=[];
+  for(let i=0;i<34;i++){const x=ch.cx*CHUNK+rd()*CHUNK,z=ch.cz*CHUNK+rd()*CHUNK,h=heightAt(x,z),b=biomeAt(x,z,h);if((b==="forest"&&rd()<.8)||(b==="grass"&&rd()<.35)||(b==="beach"&&rd()<.1))bl.push([x,h,z,.45+rd()*.7,b])}
+  ch.bushes=new THREE.InstancedMesh(GEO.bush,MAT.bush,Math.max(1,bl.length));ch.bushes.count=bl.length;ch.bushes.castShadow=true;ch.bushes.receiveShadow=true;
+  bl.forEach(([x,h,z,s,b],j)=>{setInst(ch.bushes,j,x,h-.1,z,s*1.2,s,s*1.2,j*1.7);_c.setRGB(b==="forest"?.16:.28,b==="forest"?.33:.42,b==="forest"?.12:.14);ch.bushes.setColorAt(j,_c)});
+  const all=[...Object.values(ch.tr),...Object.values(ch.cr),ch.boulders,ch.small,ch.sticks,ch.plants,ch.bushes];
+  for(const m of all){m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true;m.computeBoundingSphere();m.receiveShadow=true;if(m!==ch.small&&m!==ch.sticks)m.castShadow=true;grp.add(m)}
   ch.group=grp;scene.add(grp);
 }
-function refreshTree(ch,t){
-  const key=ch.key+"|t"+t.i;
-  if(world.removed.has(key)){t.gone=true;ch.trunks.setMatrixAt(t.i,ZERO);ch.crowns.setMatrixAt(t.i,ZERO);ch.crownsB.setMatrixAt(t.i,ZERO);return}
-  const burnt=world.burnt.has(key);t.burnt=burnt;
-  const h=t.kind==="conifer"?3.2*t.s:t.kind==="dead"?2*t.s:2.4*t.s;
-  setInst(ch.trunks,t.i,t.x,t.y-.2,t.z,t.s,h+.3,t.s,t.i);
-  _c.setHex(burnt?0x1e1a18:t.burning?0xff6a20:t.kind==="conifer"?0x2e5a33:0x4f8a35);
-  if(t.kind==="conifer"&&!burnt){setInst(ch.crowns,t.i,t.x,t.y+h*.45,t.z,1.5*t.s,h*1.1,1.5*t.s,t.i);ch.crownsB.setMatrixAt(t.i,ZERO)}
-  else if(t.kind==="broad"&&!burnt){setInst(ch.crownsB,t.i,t.x,t.y+h+.6*t.s,t.z,1.7*t.s,1.4*t.s,1.7*t.s,t.i);ch.crowns.setMatrixAt(t.i,ZERO)}
-  else{ch.crowns.setMatrixAt(t.i,ZERO);ch.crownsB.setMatrixAt(t.i,ZERO)}
-  ch.crowns.setColorAt(t.i,_c);ch.crownsB.setColorAt(t.i,_c);
-  ch.trunks.instanceMatrix.needsUpdate=ch.crowns.instanceMatrix.needsUpdate=ch.crownsB.instanceMatrix.needsUpdate=true;
-  ch.crowns.instanceColor.needsUpdate=ch.crownsB.instanceColor.needsUpdate=true;
+function refreshTree(ch,t,init){
+  const key=ch.key+"|t"+t.i,vis=treeVis(t);
+  const hideAll=()=>{for(const ty of TREE_TYPES){ch.tr[ty].setMatrixAt(t.i,ZERO);if(ch.cr[ty])ch.cr[ty].setMatrixAt(t.i,ZERO)}};
+  if(world.removed.has(key)){t.gone=true;hideAll()}
+  else{
+    const burnt=world.burnt.has(key);t.burnt=burnt;const rot=t.i*2.39996,s=t.s,sy=s*(.9+((t.i*7)%5)*.05);
+    for(const ty of TREE_TYPES){
+      if(ty!==vis){ch.tr[ty].setMatrixAt(t.i,ZERO);if(ch.cr[ty])ch.cr[ty].setMatrixAt(t.i,ZERO);continue}
+      setInst(ch.tr[ty],t.i,t.x,t.y-.15,t.z,s,sy,s,rot);_c.setRGB(burnt?.12:1,burnt?.1:1,burnt?.09:1);ch.tr[ty].setColorAt(t.i,_c);
+      const cm=ch.cr[ty];if(!cm)continue;
+      if(burnt){cm.setMatrixAt(t.i,ZERO);continue}
+      setInst(cm,t.i,t.x,t.y-.15,t.z,s,sy,s,rot);
+      const v=.86+((t.i*13)%7)*.045,snow=biomeAt(t.x,t.z,t.y)==="snow";
+      if(t.burning)_c.setRGB(2.4,.9,.3);else if(snow)_c.setRGB(1.25*v,1.32*v,1.4*v);else _c.setRGB(v,v*(.95+((t.i*5)%3)*.04),v*.9);
+      cm.setColorAt(t.i,_c)}
+  }
+  for(const m of [...Object.values(ch.tr),...Object.values(ch.cr)]){m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true}
 }
-function disposeChunk(ch){if(ch.terrain){scene.remove(ch.terrain);ch.terrain.geometry.dispose()}if(ch.group){scene.remove(ch.group);for(const m of ch.group.children)m.dispose?.()}}
+function disposeChunk(ch){if(ch.grass){GFX.disposeGroup(ch.grass);ch.grass=null}if(ch.terrain){scene.remove(ch.terrain);ch.terrain.geometry.dispose()}if(ch.group){scene.remove(ch.group);for(const m of ch.group.children)m.dispose?.()}}
 let lastChunkUpdate=0;
 function updateChunks(force){
   const px=Math.floor(player.pos.x/CHUNK),pz=Math.floor(player.pos.z/CHUNK);let built=0;const budget=force?999:2;
-  const want=[];
+  const want=[];let grassBuilt=force?-99:0;
   for(let dz=-VIEW;dz<=VIEW;dz++)for(let dx=-VIEW;dx<=VIEW;dx++){const d=Math.max(Math.abs(dx),Math.abs(dz));if(d*d>VIEW*VIEW+2)continue;want.push([px+dx,pz+dz,d])}
   want.sort((a,b)=>a[2]-b[2]);
   const keep=new Set();
@@ -210,6 +200,8 @@ function updateChunks(force){
     if(ch.lod!==lod&&built<budget){if(ch.terrain){scene.remove(ch.terrain);ch.terrain.geometry.dispose()}ch.terrain=buildTerrain(cx,cz,lod);scene.add(ch.terrain);ch.lod=lod;built++}
     if(d<=OBJ_VIEW&&!ch.group&&built<budget){ch.obj=ch.obj||genObjects(cx,cz);buildObjects(ch);built++}
     if(d>OBJ_VIEW+1&&ch.group){scene.remove(ch.group);for(const m of ch.group.children)m.dispose?.();ch.group=null}
+    if(GFX.Q.grass&&d<=GFX.Q.grassR&&!ch.grass&&ch.lod===32&&grassBuilt<1){const smp=grassSampler(ch);if(smp){ch.grass=GFX.buildGrass(cx,cz,CHUNK,smp,hash3(world.seed,cx,cz));if(ch.grass)scene.add(ch.grass);grassBuilt++}}
+    if(ch.grass&&(d>GFX.Q.grassR+1||!GFX.Q.grass)){GFX.disposeGroup(ch.grass);ch.grass=null}
   }
   for(const [key,ch] of chunks)if(!keep.has(key)){disposeChunk(ch);chunks.delete(key)}
 }
@@ -236,29 +228,9 @@ function serialize(){const o={...world,removed:[...world.removed].slice(-6000),b
 function save(){try{localStorage.setItem(SAVE_KEY,serialize())}catch(_){toast("Could not save (storage full or blocked)")}}
 function loadSave(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY)||"null");if(s&&s.v===1)return s}catch(_){}return null}
 
-/* ---------------- low-poly human ---------------- */
-function box(w,h,d,col,y=0){const g=new THREE.BoxGeometry(w,h,d);g.translate(0,y,0);return new THREE.Mesh(g,new THREE.MeshLambertMaterial({color:col,flatShading:true}))}
-function limb(w,h,col){const p=new THREE.Group();const m=box(w,h,w,col,-h/2);p.add(m);p.mesh=m;return p}
-function makeHuman(){
-  const g=new THREE.Group(),skin=0xc68e5e;
-  const hips=new THREE.Group();hips.position.y=.95;g.add(hips);
-  const torso=box(.42,.6,.24,0x8a6a48,.3);hips.add(torso);
-  const head=box(.24,.26,.24,skin,.75);hips.add(head);
-  const hair=box(.26,.08,.26,0x2b1d12,.9);hips.add(hair);
-  const armL=limb(.11,.62,skin),armR=limb(.11,.62,skin);armL.position.set(-.27,.58,0);armR.position.set(.27,.58,0);hips.add(armL,armR);
-  const legL=limb(.15,.9,0x5a4632),legR=limb(.15,.9,0x5a4632);legL.position.set(-.11,0,0);legR.position.set(.11,0,0);hips.add(legL,legR);
-  const held=new THREE.Mesh(GEO.small,new THREE.MeshLambertMaterial({color:0xffffff,flatShading:true}));held.scale.setScalar(.07);held.position.set(0,-.62,.05);armR.add(held);
-  g.userData={hips,torso,armL,armR,legL,legR,held,phase:0};
-  return g;
-}
-function animateHuman(h,speed,dt,swim,air){
-  const u=h.userData;u.phase+=dt*(2+speed*2.6);
-  const sw=Math.min(1,speed/2.5)*.9;
-  if(swim){u.hips.rotation.x=1.2;u.armL.rotation.x=Math.sin(u.phase*1.4)*1.6-1.6;u.armR.rotation.x=-Math.sin(u.phase*1.4)*1.6-1.6;u.legL.rotation.x=Math.sin(u.phase*2)*.5;u.legR.rotation.x=-Math.sin(u.phase*2)*.5;u.hips.position.y=.45;return}
-  u.hips.rotation.x=0;u.hips.position.y=.95+Math.abs(Math.sin(u.phase))*.05*sw;
-  const a=air?.6:Math.sin(u.phase)*sw;
-  u.legL.rotation.x=a;u.legR.rotation.x=air?-.3:-a;u.armL.rotation.x=-a*.8;u.armR.rotation.x=air?-1.2:a*.8;
-}
+/* ---------------- props ---------------- */
+function box(w,h,d,col,y=0){const g=new THREE.BoxGeometry(w,h,d);g.translate(0,y,0);const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:col,roughness:.85}));m.castShadow=m.receiveShadow=true;return m}
+const makeHuman=GFX.makeHuman,animateHuman=GFX.animateHuman;
 /* ---------------- animals ---------------- */
 const SPECIES={
   rabbit:{biomes:["grass","forest","snow"],col:0xb8a58a,size:.35,hp:30,speed:7,meat:1,hide:0,hear:25},
@@ -269,11 +241,7 @@ const SPECIES={
 };
 const animals=[];
 function makeAnimal(kind){
-  const sp=SPECIES[kind],g=new THREE.Group(),s=sp.size;
-  const body=box(.5*s,.45*s,1.1*s,sp.col);body.position.y=.75*s;g.add(body);
-  const head=box(.3*s,.3*s,.38*s,sp.col);head.position.set(0,1*s,.62*s);g.add(head);
-  const legs=[];for(const [x,z] of [[-.17,.38],[.17,.38],[-.17,-.38],[.17,-.38]]){const l=limb(.1*s,.55*s,sp.col);l.position.set(x*s,.55*s,z*s);g.add(l);legs.push(l)}
-  if(kind==="deer"){const a=box(.05,.35,.05,0xd8c8a8);a.position.set(.1,1.3,.6);const b=a.clone();b.position.x=-.1;g.add(a,b)}
+  const sp=SPECIES[kind],{g,legs}=GFX.makeAnimalModel(kind,sp.col,sp.size);
   return {kind,sp,g,legs,hp:sp.hp,pos:new THREE.Vector3(),vel:new THREE.Vector3(),target:null,flee:0,phase:Math.random()*6,attackCd:0};
 }
 function spawnAnimals(dt){
@@ -307,7 +275,7 @@ function updateAnimals(dt){
     if(len>.2){dir.multiplyScalar(1/len);const nx=a.pos.x+dir.x*speed*dt,nz=a.pos.z+dir.z*speed*dt;const nh=heightAt(nx,nz);if(nh>.2){a.pos.x=nx;a.pos.z=nz}else a.target=null;
       a.g.rotation.y=Math.atan2(dir.x,dir.z)}
     a.pos.y=heightAt(a.pos.x,a.pos.z);a.g.position.copy(a.pos);
-    a.phase+=dt*speed*3;const sw=Math.min(1,speed/3)*.7;a.legs.forEach((l,i)=>l.rotation.x=Math.sin(a.phase+(i%2?Math.PI:0)+(i>1?Math.PI/2:0))*sw);
+    a.phase+=dt*speed*3;const sw=Math.min(1,speed/3)*.7;a.legs.forEach((l,i)=>l.rotation.x=Math.sin(a.phase+(i%2?Math.PI:0)+(i>1?Math.PI/2:0))*sw);const ud=a.g.userData;if(ud.head){ud.head.rotation.x=speed<1.5?.25+.2*Math.sin(a.phase*.3+a.pos.x):-.05;ud.tail.rotation.y=Math.sin(a.phase*2)*.4}
   }
 }
 function killAnimal(a){
@@ -321,7 +289,7 @@ function killAnimal(a){
 function inv(k){return world.inv[k]||0}
 function give(k,n=1){if(!ITEMS[k])return;world.inv[k]=(world.inv[k]||0)+n;if(!world.held)world.held=k;renderHotbar()}
 function take(k,n=1){if(inv(k)<n)return false;world.inv[k]-=n;if(world.inv[k]<=0){delete world.inv[k];if(world.held===k)world.held=Object.keys(world.inv)[0]||null}renderHotbar();return true}
-function itemMesh(k){const it=ITEMS[k];const m=new THREE.Mesh(k==="stick"||k==="log"||k==="spear"?GEO.stick:GEO.small,new THREE.MeshLambertMaterial({color:it.color,flatShading:true}));
+function itemMesh(k){const it=ITEMS[k];const m=new THREE.Mesh(k==="stick"||k==="log"||k==="spear"?GEO.stick:GEO.small,k==="stick"||k==="log"||k==="spear"?MAT.bark:new THREE.MeshStandardMaterial({color:it.color,roughness:.75}));m.castShadow=true;
   const s=k==="log"?1.4:k==="spear"?1.8:k==="stick"?.9:Math.max(.06,it.r*1.4);m.scale.set(s,k==="log"?3.5:k==="stick"||k==="spear"?1:s,k==="log"?3.5:k==="stick"||k==="spear"?1:s);return m}
 function addDrop(item,x,y,z,vel){const d={item,pos:new THREE.Vector3(x,y,z),vel:vel?vel.clone():new THREE.Vector3(),mesh:itemMesh(item),flying:!!vel,t:0};d.mesh.position.copy(d.pos);scene.add(d.mesh);world.drops.push(d);return d}
 function throwHeld(){
@@ -333,14 +301,14 @@ function throwHeld(){
   const o=player.pos.clone().add(new THREE.Vector3(0,1.55,0)).addScaledVector(new THREE.Vector3(dir.x,0,dir.z).normalize(),.4);
   const d=addDrop(k,o.x,o.y,o.z,dir.clone().multiplyScalar(v).add(new THREE.Vector3(player.vel.x,0,player.vel.z)));
   d.launch=o.clone();d.v0=v;d.theta=Math.asin(clamp(dir.y,-1,1));d.thrown=true;
-  player.throwAnim=.3;
+  GFX.playOnce(player.model,"Spell_Simple_Shoot",.45);
 }
 function aimDir(){const p=clamp(-player.camPitch+.32,-1.2,1.2),y=player.camYaw;return new THREE.Vector3(-Math.sin(y)*Math.cos(p),Math.sin(p),-Math.cos(y)*Math.cos(p)).normalize()}
 function stepDrops(dt){
   for(const d of world.drops){
     if(!d.flying){if(d.floating){d.t+=dt;d.pos.y=Math.sin(d.t*2)*.03-.02;d.mesh.position.copy(d.pos);d.mesh.rotation.y+=dt*.2}continue}
     const it=ITEMS[d.item];d.t+=dt;
-    const ground=heightAt(d.pos.x,d.pos.z),inWater=d.pos.y<0&&ground<0;
+    const ground=heightAt(d.pos.x,d.pos.z),inWater=d.pos.y<0&&ground<0;if(inWater&&!d.splashed){d.splashed=true;GFX.FX.splash(d.pos.x,d.pos.z,14)}
     const vol=it.mass/it.density,area=Math.PI*it.r*it.r*(d.item==="stick"||d.item==="spear"||d.item==="log"?2:1);
     const sp=d.vel.length();
     const rho=inWater?RHO_WATER:RHO_AIR,Cd=d.item==="spear"?.3:.6;
@@ -376,13 +344,14 @@ function onLanded(d){
 function structMesh(s){
   const g=new THREE.Group();
   if(s.type==="fire"||s.type==="kiln"){
-    if(s.type==="kiln"){const d=new THREE.Mesh(new THREE.SphereGeometry(.9,8,6,0,Math.PI*2,0,Math.PI/2),new THREE.MeshLambertMaterial({color:0x9c5a3c,flatShading:true}));g.add(d);const hole=box(.45,.4,.2,0x1a0d08,.2);hole.position.z=.82;g.add(hole)}
-    else for(let i=0;i<3;i++){const l=new THREE.Mesh(GEO.stick,MAT.trunk);l.scale.set(.8,1.2,1.2);l.rotation.y=i*2.1;l.position.y=.06;g.add(l)}
-    const f=new THREE.Mesh(new THREE.ConeGeometry(s.type==="kiln"?.25:.35,.9,6),MAT.flame.clone());f.position.y=s.type==="kiln"?.25:.45;f.visible=false;g.add(f);s.flame=f;
+    if(s.type==="kiln"){const d=new THREE.Mesh(new THREE.SphereGeometry(.9,20,10,0,Math.PI*2,0,Math.PI/2),new THREE.MeshStandardMaterial({color:0x9c5a3c,roughness:.95}));d.castShadow=d.receiveShadow=true;g.add(d);const hole=box(.45,.4,.2,0x1a0d08,.2);hole.position.z=.82;g.add(hole)}
+    else{for(let i=0;i<5;i++){const l=new THREE.Mesh(GEO.stick,MAT.bark);l.scale.set(.85,1.4,1.4);l.rotation.set(0,i*1.256,.45);l.position.set(Math.cos(i*1.256)*.12,.16,-Math.sin(i*1.256)*.12);l.castShadow=true;g.add(l)}
+      for(let i=0;i<9;i++){const r=new THREE.Mesh(GEO.small,MAT.stone);r.scale.set(.13,.09,.11);r.position.set(Math.cos(i/9*6.283)*.5,.04,Math.sin(i/9*6.283)*.5);g.add(r)}}
+    const f=GFX.makeFlame(s.type==="kiln");f.visible=false;if(s.type==="kiln")f.position.z=.8;g.add(f);s.flame=f;
   }else if(s.type==="leanto"){const r=box(2.4,.08,2.2,0x7a6a3e);r.rotation.x=-.85;r.position.set(0,1,-.2);g.add(r);const p1=box(.08,1.6,.08,0x6b4a2b,.8);p1.position.set(-1.1,0,.55);const p2=p1.clone();p2.position.x=1.1;g.add(p1,p2)}
-  else if(s.type==="raft"){for(let i=0;i<4;i++){const l=new THREE.Mesh(GEO.stick,MAT.trunk);l.scale.set(2.6,4,4);l.position.set(0,.05,(i-1.5)*.32);g.add(l)}}
+  else if(s.type==="raft"){for(let i=0;i<4;i++){const l=new THREE.Mesh(GEO.stick,MAT.bark);l.scale.set(2.6,4,4);l.position.set(0,.05,(i-1.5)*.32);g.add(l)}}
   else if(s.type==="table"){g.add(box(1.4,.08,.8,0x7a5a34,.8));for(const [x,z] of [[-.6,-.3],[.6,-.3],[-.6,.3],[.6,.3]]){const l=box(.08,.8,.08,0x6b4a2b,.4);l.position.set(x,0,z);g.add(l)}const t=box(.3,.05,.22,0xb67a52,.87);g.add(t)}
-  else if(s.type==="crop"){for(let i=0;i<5;i++){const t=new THREE.Mesh(GEO.tuft,new THREE.MeshLambertMaterial({color:0x7fb04a,flatShading:true}));t.position.set((i%3-1)*.35,0,(Math.floor(i/3)-.5)*.4);g.add(t)}}
+  else if(s.type==="crop"){for(let i=0;i<5;i++){const t=new THREE.Mesh(GEO.tuft,new THREE.MeshStandardMaterial({color:0x7fb04a,roughness:.8}));t.scale.setScalar(.4);t.position.set((i%3-1)*.35,0,(Math.floor(i/3)-.5)*.4);g.add(t)}}
   else if(s.type==="gnomon"){g.add(box(.05,1,.05,0xa07a4a,.5));const sh=box(.04,.01,1,0x1a1a1a,.01);sh.geometry.translate(0,0,-.5);g.add(sh);s.shadow=sh}
   g.position.set(s.x,s.y,s.z);g.rotation.y=s.ry||0;scene.add(g);s.obj=g;return g;
 }
@@ -412,19 +381,20 @@ function stepFires(dt,dtg){
       // spread to dry trees (needs oxygen & dry fuel)
       if(s.type==="fire"&&!raining&&s.heat>.8&&Math.random()<dt*.01){const t=nearestTree(s.x,s.z,3.2);if(t&&!t.t.burnt&&!t.t.burning&&biomeAt(t.t.x,t.t.z,t.t.y)!=="snow")igniteTree(t)}
     }else{s.temp=lerp(s.temp,airTemp(s.x,s.z,s.y),Math.min(1,dt*.05));s.heat=Math.max(0,s.heat-dt*.1)}
-    if(s.flame){s.flame.visible=s.lit;if(s.lit){const k=.6+.4*s.heat+Math.sin(performance.now()/90+s.x)*.08;s.flame.scale.set(k,k*(.8+Math.random()*.3),k)}}
+    if(s.flame){s.flame.visible=s.lit;if(s.lit){const k=.6+.4*s.heat+Math.sin(performance.now()/90+s.x)*.08;s.flame.scale.set(k,k*(.8+Math.random()*.3),k);if(Math.hypot(s.x-player.pos.x,s.z-player.pos.z)<120)GFX.FX.fire("s"+s.x.toFixed(1)+s.z.toFixed(1),s.x+(s.type==="kiln"?0:0),s.y+(s.type==="kiln"?.9:.1),s.z,s.heat,dt,s.type==="kiln"?.45:1)}}
   }
   // up to 4 nearest lit fires get real point lights (physically-based 1/d² decay)
   const lit=world.structures.filter(s=>s.lit).sort((a,b)=>Math.hypot(a.x-player.pos.x,a.z-player.pos.z)-Math.hypot(b.x-player.pos.x,b.z-player.pos.z)).slice(0,4);
-  while(fireLights.length<4){const l=new THREE.PointLight(0xff9a40,0,40,2);scene.add(l);fireLights.push(l)}
-  fireLights.forEach((l,i)=>{const s=lit[i];if(s){l.position.set(s.x,s.y+1,s.z);l.intensity=(s.type==="kiln"?6:14)*s.heat}else l.intensity=0});
+  while(fireLights.length<4){const l=new THREE.PointLight(0xff8a3a,0,45,2);l.shadow.mapSize.set(512,512);l.shadow.bias=-.002;scene.add(l);fireLights.push(l)}
+  const tt=performance.now()/1000;
+  fireLights.forEach((l,i)=>{const s=lit[i];l.castShadow=i===0&&GFX.Q.fireShadow&&!!s;if(s){l.position.set(s.x,s.y+1.1,s.z);const fl=.82+.1*Math.sin(tt*11+i)+.08*Math.sin(tt*23.7+i*3);l.intensity=(s.type==="kiln"?14:34)*s.heat*fl}else l.intensity=0});
 }
 const burning=[];
 function nearestTree(x,z,r){let best=null,bd=r;for(const ch of nearbyChunks(x,z,r))for(const t of ch.obj.trees){if(t.gone)continue;const d=Math.hypot(t.x-x,t.z-z);if(d<bd){bd=d;best={ch,t,d}}}return best}
 function igniteTree(tt){if(burning.length>25)return;tt.t.burning=true;burning.push({...tt,time:0});refreshTree(tt.ch,tt.t);toast("A tree caught fire!")}
 function stepBurning(dt){
   const raining=world.weather.kind==="rain"&&world.weather.amt>.3;
-  for(let i=burning.length-1;i>=0;i--){const b=burning[i];b.time+=dt*(raining?3:1);
+  for(let i=burning.length-1;i>=0;i--){const b=burning[i];b.time+=dt*(raining?3:1);GFX.FX.fire("t"+b.ch.key+b.t.i,b.t.x,b.t.y+2.2*b.t.s,b.t.z,1,dt,2.2);
     if(!raining&&Math.random()<dt*.06){const n=nearestTree(b.t.x+(Math.random()-.5)*6,b.t.z+(Math.random()-.5)*6,4);if(n&&!n.t.burning&&!n.t.burnt)igniteTree(n)}
     if(b.time>25){b.t.burning=false;world.burnt.add(b.ch.key+"|t"+b.t.i);refreshTree(b.ch,b.t);burning.splice(i,1)}}
 }
@@ -446,24 +416,14 @@ function stepWeather(dtg){
     w.kind=b==="desert"?(r<.85?"clear":r<.97?"cloudy":"rain"):(r<.5?"clear":r<.72?"cloudy":"rain");w.t=(2+Math.random()*5)*3600}
   w.amt=lerp(w.amt,w.kind==="rain"?1:0,Math.min(1,dtg/1800));
 }
-const SKY_DAY=new THREE.Color(0x9fc4e4),SKY_DUSK=new THREE.Color(0xd9906a),SKY_NIGHT=new THREE.Color(0x050914),SKY_RAIN=new THREE.Color(0x6f7c88),_sky=new THREE.Color();
-function updateSky(){
+const _sunDir=new THREE.Vector3();
+function updateSky(dt=.016){
   const el=sunElevation(),a=2*Math.PI*(hourOf()-6)/24;
-  const dir=new THREE.Vector3(Math.cos(a),Math.sin(a),.25).normalize();
-  sun.position.copy(player.pos).addScaledVector(dir,300);sun.target.position.copy(player.pos);
-  sunMesh.position.copy(camera.position).addScaledVector(dir,800);moonMesh.position.copy(camera.position).addScaledVector(dir,-800);
-  const day=smooth(-.12,.25,el);
-  sun.intensity=1.35*smooth(-.05,.3,el)*(1-.55*world.weather.amt);
-  hemi.intensity=.12+.6*day;
-  _sky.copy(SKY_NIGHT).lerp(SKY_DUSK,smooth(-.2,.05,el)).lerp(SKY_DAY,smooth(.05,.35,el)).lerp(SKY_RAIN,world.weather.amt*.6*day);
-  scene.background=_sky;scene.fog.color.copy(_sky);
-  scene.fog.near=lerp(60,15,world.weather.amt*.7);scene.fog.far=lerp(330,140,world.weather.amt*.7)*(.55+.45*day);
-  stars.material.opacity=(1-day)*(1-world.weather.amt*.8);stars.position.copy(camera.position);
-  stars.rotation.y=world.gameTime/86164*2*Math.PI; // sidereal day 23 h 56 min
-  water.position.set(player.pos.x,0,player.pos.z);
+  _sunDir.set(Math.cos(a),Math.sin(a),.25).normalize();
   const snow=airTemp(player.pos.x,player.pos.z,player.pos.y)<.5;
-  rain.visible=world.weather.amt>.15;rain.material.color.setHex(snow?0xffffff:0xaac4dd);rain.material.size=snow?.16:.07;
-  if(rain.visible){const p=rain.geometry.attributes.position,fall=(snow?1.2:9)/60;for(let i=0;i<p.count;i++){let y=p.getY(i)-fall;if(y<-20)y+=40;p.setY(i,y)}p.needsUpdate=true;rain.position.copy(camera.position)}
+  const under=camera.position.y<-.05&&heightAt(camera.position.x,camera.position.z)<0;
+  GFX.updateEnvironment({sunDir:_sunDir,el,amt:world.weather.amt,kind:world.weather.kind,pos:player.pos,cam:camera.position,snow,gameTime:world.gameTime,dt,under});
+  GFX.setUnderwater(under?1:0);
 }
 
 /* ---------------- player physics & survival ---------------- */
@@ -512,7 +472,7 @@ function stepPlayer(dt){
   if(p.pos.y<-.2&&ground<0)st.wet=Math.max(st.wet,.8);
   const g=heightAt(p.pos.x,p.pos.z);
   if(!p.swimming&&p.pos.y<=g){
-    const impact=-p.vel.y;
+    const impact=-p.vel.y;if(impact>3.2)GFX.FX.dust(p.pos.x,g,p.pos.z,Math.min(30,impact*3));
     if(impact>9){const dmg=(impact-9)*11;hurt(dmg,`Hard landing at ${impact.toFixed(1)} m/s`);if(!p.dead)discover("impact")}
     p.pos.y=g;p.vel.y=0;p.onGround=true;
     const sl=slopeAt(p.pos.x,p.pos.z);if(sl>1.05){const e=1;const gx=(heightAt(p.pos.x+e,p.pos.z)-heightAt(p.pos.x-e,p.pos.z)),gz=(heightAt(p.pos.x,p.pos.z+e)-heightAt(p.pos.x,p.pos.z-e));p.vel.x-=gx*2*dt*G_ACC*.3;p.vel.z-=gz*2*dt*G_ACC*.3}
@@ -636,6 +596,7 @@ function hasAxe(){return inv("axe_iron")?3:inv("axe_bronze")?2:inv("axe_stone")?
 function cropGrowth(s){return clamp((world.gameTime-s.planted)/(6*3600)*(s.cold?.5:1),0,1)}
 function interact(){
   const t=findTarget();if(!t)return;
+  if(t.kind==="drop"||t.kind==="res")GFX.playOnce(player.model,"PickUp_Table",.6);
   if(t.kind==="drop"){const d=t.obj;scene.remove(d.mesh);world.drops.splice(world.drops.indexOf(d),1);give(d.item);toast(`Picked up ${ITEMS[d.item].name}.`);return}
   if(t.kind==="res"){const {ch,r}=t.obj;r.gone=true;r.mesh.setMatrixAt(r.slot,ZERO);r.mesh.instanceMatrix.needsUpdate=true;world.removed.add(ch.key+"|r"+r.i);
     const n=r.type==="stick"?2:1;give(r.type,n);if(r.type==="fiber"&&Math.random()<.4)give("seeds");toast(`Gathered ${n>1?n+"× ":""}${ITEMS[r.type].name}.`);return}
@@ -655,12 +616,12 @@ function useHeld(){
   if(!k)return toast("Nothing in hand.");
   const fireNear=structuresNear(player.pos.x,player.pos.z,2.6).find(x=>(x.type==="fire"||x.type==="kiln"));
   const raining=world.weather.amt>.4&&!sheltered(player.pos.x,player.pos.z);
-  if((k==="flint"&&inv("pyrite"))||(k==="pyrite"&&inv("flint"))){
+  if((k==="flint"&&inv("pyrite"))||(k==="pyrite"&&inv("flint"))){GFX.playOnce(player.model,"Punch_Cross",.5);{const fp=fireNear||frontPoint(.7);GFX.FX.sparks(fp.x,(fireNear?fireNear.y:player.pos.y)+.35,fp.z,30)}
     if(fireNear&&!fireNear.lit){if(fireNear.fuel<=0)return toast("Sparks fly, but there's no fuel. Add sticks first.");if(raining&&Math.random()<.7)return toast("Sparks fly, but the tinder is soaked by rain.");
       fireNear.lit=true;fireNear.heat=.3;toast("Sparks catch the dry tinder — fire!");discover("fire");if(fireNear.type==="kiln")discover("kiln");return}
     if(!fireNear)return toast("Sparks fly from the pyrite! You need dry fuel nearby — craft a firewood pile.");
   }
-  if(k==="flint"&&(t?.kind==="boulder"||inv("stone"))){take("flint");give("flake",2);toast("Conchoidal flakes split off: 2 sharp stone flakes.");discover("knapping");return}
+  if(k==="flint"&&(t?.kind==="boulder"||inv("stone"))){GFX.playOnce(player.model,"Punch_Cross",.5);{const fp=frontPoint(.6);GFX.FX.sparks(fp.x,player.pos.y+1,fp.z,10);GFX.FX.dust(fp.x,player.pos.y+.6,fp.z,6)}take("flint");give("flake",2);toast("Conchoidal flakes split off: 2 sharp stone flakes.");discover("knapping");return}
   if(k==="flint")return toast("Flint on ordinary stone barely sparks. Try pyrite, or a hammerstone for knapping.");
   if(k==="lens"){if(fireNear&&!fireNear.lit){if(sunElevation()>.25&&world.weather.kind==="clear"){fireNear.lit=true;fireNear.heat=.3;toast("The lens focuses sunlight to a burning point — smoke, then flame!");discover("optics");if(fireNear.type==="kiln")discover("kiln")}else toast("You need strong, direct sunlight to focus.");return}return toast("A lens: try focusing the sun onto a firewood pile.")}
   if(k==="log"&&t?.kind==="boulder"){const {ch,b}=t.obj,f=forward();b.x+=f.x*1.6;b.z+=f.z*1.6;b.y=heightAt(b.x,b.z);setInst(ch.boulders,b.i,b.x,b.y+b.s*.35,b.z,b.s*1.2,b.s*.8,b.s,b.i);ch.boulders.instanceMatrix.needsUpdate=true;world.moved[ch.key+"|"+b.i]=[b.x,b.z];toast("With a long lever, the boulder rolls.");discover("lever");return}
@@ -794,7 +755,7 @@ function bindInput(container){
     if(e.code==="Tab"||e.code==="KeyK"){e.preventDefault();togglePanel("#wJournal");return}
     if(e.code==="KeyI"){togglePanel("#wInv");return}
     if(e.code==="KeyH"){player.readout=!player.readout;return}
-    if(e.code==="Escape"){$("#wInv").hidden=$("#wJournal").hidden=true;return}
+    if(e.code==="Escape"){if($("#wInv").hidden&&$("#wJournal").hidden)window.__openSettings?.();else $("#wInv").hidden=$("#wJournal").hidden=true;return}
     if(paused)return;
     if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.code))e.preventDefault();
     keys.add(e.code);
@@ -821,29 +782,37 @@ function bindInput(container){
 
 /* ---------------- main loop ---------------- */
 const camTarget=new THREE.Vector3();
+function inCrown(x,y,z){for(const ch of nearbyChunks(x,z,4))for(const t of ch.obj.trees){if(t.gone||t.burnt)continue;const v=t.vis||t.kind;if(v==="dead")continue;
+  const r=(v==="conifer"?1.9:v==="palm"?2.2:2.3)*t.s,y0=t.y+(v==="conifer"?.8:v==="palm"?4:2.2)*t.s,y1=t.y+(v==="conifer"?5.6:v==="palm"?5.6:5.4)*t.s;
+  if(y>y0&&y<y1&&Math.hypot(x-t.x,z-t.z)<r)return true}return false}
+let camDistNow=6;
 function updateCamera(dt){
-  const p=player,t=camTarget.set(p.pos.x,p.pos.y+(p.swimming?.3:1.6),p.pos.z),d=p.camDist;
-  camera.position.set(t.x+Math.sin(p.camYaw)*Math.cos(p.camPitch)*d,t.y+Math.sin(p.camPitch)*d,t.z+Math.cos(p.camYaw)*Math.cos(p.camPitch)*d);
-  const gh=heightAt(camera.position.x,camera.position.z)+.5;if(camera.position.y<gh)camera.position.y=gh;
+  const p=player,t=camTarget.set(p.pos.x,p.pos.y+(p.swimming?.3:1.6),p.pos.z);
+  const sy=Math.sin(p.camYaw)*Math.cos(p.camPitch),cy=Math.cos(p.camYaw)*Math.cos(p.camPitch),sp=Math.sin(p.camPitch);
+  // keep the camera out of tree crowns (pull in towards the player)
+  let d=p.camDist;while(d>1.6&&inCrown(t.x+sy*d,t.y+sp*d,t.z+cy*d))d-=.5;
+  camDistNow=d<camDistNow?d:lerp(camDistNow,d,Math.min(1,dt*3));
+  camera.position.set(t.x+sy*camDistNow,t.y+sp*camDistNow,t.z+cy*camDistNow);
+  const gh=Math.max(heightAt(camera.position.x,camera.position.z),p.swimming?-9:0)+.5;if(camera.position.y<gh)camera.position.y=gh;
   camera.lookAt(t);
-  const fov=p.zoom?14:65;if(Math.abs(camera.fov-fov)>.1){camera.fov=lerp(camera.fov,fov,Math.min(1,dt*8));camera.updateProjectionMatrix()}
+  const fov=p.zoom?14:62;if(Math.abs(camera.fov-fov)>.1){camera.fov=lerp(camera.fov,fov,Math.min(1,dt*8));camera.updateProjectionMatrix()}
 }
-let saveT=0,chunkT=0,frames=0;
+let saveT=0,chunkT=0,frames=0,fps=0,fpsN=0,fpsT=0,fpsLast=0,titleMode=false,titleT=0;
 function tick(){
   requestAnimationFrame(tick);
   const dt=Math.min(.05,clock.getDelta());
   if(started&&!paused&&!$("#mode-world").hidden)stepWorld(dt);
-  if(started){updateCamera(dt);updateSky()}
-  renderer.render(scene,camera);frames++;
+  if(started){updateCamera(dt);updateSky(dt)}
+  else if(titleMode)stepTitle(dt);
+  GFX.render(dt);frames++;fpsN++;fpsT+=clock.elapsedTime-fpsLast;fpsLast=clock.elapsedTime;if(fpsT>=1){fps=fpsN/fpsT;fpsN=0;fpsT=0;const fe=$("#wFps");if(fe&&!fe.hidden)fe.textContent=`${Math.round(fps)} fps · ${GFX.Q.label}`}
 }
 function stepWorld(dt){
   const dtg=dt*GAME_SPEED,prevDay=Math.floor(world.gameTime/86400);
   world.gameTime+=dtg;
   stepWeather(dtg);stepPlayer(dt);stepSurvival(dt);stepDrops(dt);stepFires(dt,dtg);stepBurning(dt);spawnAnimals(dt);updateAnimals(dt);
   const p=player;p.model.position.copy(p.pos);if(p.raft)p.model.position.y=.12;p.model.rotation.y=p.yaw;
-  animateHuman(p.model,Math.hypot(p.vel.x,p.vel.z),dt,p.swimming,!p.onGround&&!p.swimming);
-  if(p.throwAnim>0){p.throwAnim-=dt;p.model.userData.armR.rotation.x=-2.6+p.throwAnim*6}
-  if(p.dead)p.model.rotation.z=Math.PI/2;else p.model.rotation.z=0;
+  animateHuman(p.model,Math.hypot(p.vel.x,p.vel.z),dt,p.swimming,!p.onGround&&!p.swimming&&p.pos.y>heightAt(p.pos.x,p.pos.z)+.25,p.dead);
+  if(p.swimming&&!p.wasSwim)GFX.FX.splash(p.pos.x,p.pos.z,40);p.wasSwim=p.swimming;
   // sky watching (astronomy) — night, clear-ish sky, looking up
   if(sunElevation()<-.1&&world.weather.amt<.5){const dir=new THREE.Vector3();camera.getWorldDirection(dir);if(dir.y>.45){p.lookUpT+=dt;const night=Math.floor((world.gameTime-6*3600)/86400);
     if(p.lookUpT>6&&!world.counters.nights.includes(night)){world.counters.nights.push(night);toast(`You study the stars (night ${world.counters.nights.length}/3). They wheel slowly around the pole.`);p.lookUpT=0;if(world.counters.nights.length>=3)discover("astronomy")}}else p.lookUpT=0}
@@ -860,10 +829,11 @@ function stepWorld(dt){
 
 /* ---------------- boot ---------------- */
 function startWorld(w){
+  titleMode=false;document.body.classList.remove("titleOn");
   world=hydrate(w);initNoise(world.seed);
   for(const ch of chunks.values())disposeChunk(ch);chunks.clear();
   for(const s of world.structures)if(s.obj)scene.remove(s.obj);
-  if(player)scene.remove(player.model);
+  if(player&&player.model)scene.remove(player.model);
   for(const a of animals)scene.remove(a.g);animals.length=0;
   player=makePlayer(world);
   for(const s of world.structures)structMesh(s);
@@ -881,6 +851,32 @@ function newGame(){
   startWorld(w);save();
   toast("You wake at the edge of the fog. Gather what you can — E to pick up, I for inventory, Tab for your journal.");
 }
+/* title screen: slow time-lapse flyover of the world */
+let titleCenter=null;
+function beginTitle(preview){
+  initNoise(preview.seed);
+  world=hydrate({...preview,removed:[...(preview.removed||[])],burnt:[...(preview.burnt||[])],structures:[],drops:[],gameTime:Math.floor((preview.gameTime||0)/86400)*86400+16.6*3600,weather:{kind:"clear",t:9e9,amt:0}});
+  const [cx,cz]=preview.camp||[0,0];titleCenter=new THREE.Vector3(cx,heightAt(cx,cz),cz);
+  player={pos:titleCenter.clone(),vel:new THREE.Vector3(),camYaw:0,camPitch:.3,camDist:6,model:null,swimming:false};
+  titleMode=true;titleT=0;document.body.classList.add("titleOn");updateChunks(true);
+}
+function stepTitle(dt){
+  titleT+=dt;world.gameTime+=dt*55;
+  const a=titleT*.045,R=78+14*Math.sin(titleT*.07),c=titleCenter;
+  const x=c.x+Math.cos(a)*R,z=c.z+Math.sin(a)*R;
+  const gy=Math.max(heightAt(x,z),0);
+  camera.position.set(x,Math.max(gy+9,c.y+16+5*Math.sin(titleT*.11)),z);
+  camera.lookAt(c.x+Math.cos(a+1.25)*90,c.y+4,c.z+Math.sin(a+1.25)*90);
+  if(camera.fov!==62){camera.fov=62;camera.updateProjectionMatrix()}
+  chunkT-=dt;if(chunkT<=0){updateChunks(false);chunkT=.25}
+  updateSky(dt);
+}
+function applyQuality(q){
+  GFX.setQuality(q);GFX.saveQualityPref(q);
+  for(const ch of chunks.values())if(ch.grass){GFX.disposeGroup(ch.grass);ch.grass=null}
+  document.querySelectorAll("[data-q]").forEach(b=>b.classList.toggle("on",b.dataset.q===GFX.qName));
+  if(player&&player.pos)updateChunks(true);
+}
 export function initWorld(){
   const container=$("#wCanvas");
   initScene(container);bindInput(container);
@@ -891,10 +887,15 @@ export function initWorld(){
   $("#wContinue").onclick=$("#wPlay").onclick;
   $("#wNew").onclick=()=>{if(saved&&!confirm("Start a new world? Your current world and knowledge will be replaced."))return;$("#wTitle").hidden=true;newGame()};
   if(saved){$("#wPlay").textContent="CONTINUE";$("#wContinue").hidden=true}
-  // render a pretty backdrop behind the title
-  const preview=saved||newWorld(1234);initNoise(preview.seed);world=hydrate({...preview,removed:[],burnt:[]});player=makePlayer(world);updateChunks(true);started=true;paused=true;
-  updateCamera(0);updateSky();started=false;
-  scene.remove(player.model);player=null;world=null;
+  // animated world flyover behind the title
+  beginTitle(saved||newWorld(1234));
+  // settings
+  const openSettings=()=>{const el=$("#wSettings");el.hidden=!el.hidden;document.querySelectorAll("[data-q]").forEach(b=>b.classList.toggle("on",b.dataset.q===GFX.qName));if(!el.hidden){try{document.exitPointerLock?.()}catch(_){}}};
+  $("#wGear")&&($("#wGear").onclick=openSettings);$("#wTitleSettings")&&($("#wTitleSettings").onclick=openSettings);
+  document.querySelectorAll("[data-q]").forEach(b=>b.onclick=()=>applyQuality(b.dataset.q));
+  $("#wShowFps")&&($("#wShowFps").onchange=e=>{$("#wFps").hidden=!e.target.checked;try{localStorage.setItem("fog-of-knowledge:game:fps",e.target.checked?"1":"")}catch(_){}});
+  try{if(localStorage.getItem("fog-of-knowledge:game:fps")){$("#wFps").hidden=false;$("#wShowFps").checked=true}}catch(_){}
+  window.__openSettings=openSettings;
   tick();
   (window.__fogAtlasPromise||Promise.reject()).then(A=>{atlas=A;if(world)onAtlas(A)}).catch(()=>{});
   window.addEventListener("beforeunload",()=>{if(started&&world)save()});
@@ -903,6 +904,8 @@ export function initWorld(){
   window.__fogWorld={get state(){return world},get player(){return player},discover:id=>discover(id),closePopup,
     give:(k,n)=>give(k,n),press:(code,ms)=>{keys.add(code);setTimeout(()=>keys.delete(code),ms)},
     teleport:(x,z)=>{player.pos.set(x,heightAt(x,z),z);updateChunks(true)},stats:()=>({pos:player&&player.pos.toArray().map(v=>+v.toFixed(2)),chunks:chunks.size,animals:animals.length,frames,
-      revealed:world?.ks.revealed.length,disc:world?.disc.length,atlas:!!atlas,drawCalls:renderer.info.render.calls,tris:renderer.info.render.triangles}),
-    start:()=>$("#wPlay").click(),throwHeld,useHeld,interact,craft,hold:k=>{if(world&&world.inv[k]){world.held=k;renderHotbar()}}};
+      revealed:world?.ks.revealed.length,disc:world?.disc.length,atlas:!!atlas,drawCalls:renderer.info.render.calls,tris:renderer.info.render.triangles,fps:+fps.toFixed(1),quality:GFX.qName,human:!!player?.model?.userData?.mixer}),
+    start:()=>$("#wPlay").click(),height:(x,z)=>heightAt(x,z),reseed:seed=>{const w=newWorld(seed);w.removed=[];w.burnt=[];startWorld(w)},fps:()=>fps,quality:q=>{if(q)applyQuality(q);return GFX.qName},
+    setHour:h=>{world.gameTime=Math.floor(world.gameTime/86400)*86400+h*3600},setWeather:(kind,amt)=>{world.weather.kind=kind;world.weather.amt=amt??(kind==="rain"?1:0);world.weather.t=9e9},
+    look:(yaw,pitch,dist)=>{player.camYaw=yaw;if(pitch!==undefined)player.camPitch=pitch;if(dist!==undefined)player.camDist=dist},throwHeld,useHeld,interact,craft,hold:k=>{if(world&&world.inv[k]){world.held=k;renderHotbar()}}};
 }
