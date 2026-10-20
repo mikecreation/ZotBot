@@ -8,14 +8,14 @@
  */
 import * as THREE from "./vendor/three.module.min.js";
 import {ITEMS,WORLD_DISCOVERIES,RECIPES} from "./world-data.js";
-import * as GFX from "./gfx.js?v=3.9.4";
+import * as GFX from "./gfx.js?v=3.10.1";
 import * as AU from "./audio.js";
 import {ESSENTIAL_QUICKBAR,quickbarOrder} from "./quickbar.js";
 import {temperature,temperatureDelta} from "./units.js";
 import {createBirds} from "./birds.js";
-import {fireSize,stepCombustion,addFuel,lightningPulse} from "./fire-model.js";
-import {ensureFuelBed,recordFuelPiece,stepFuelBed} from "./fuel-bed.js";
-import {createFireBed,updateFireBed} from "./fire-visuals.js?v=3.9.4";
+import {fireSize,stepCombustion,addFuel,lightningPulse} from "./fire-model.js?v=3.10.1";
+import {ensureFuelBed,recordFuelPiece,stepFuelBed} from "./fuel-bed.js?v=3.10.1";
+import {createFireBed,updateFireBed} from "./fire-visuals.js?v=3.10.1";
 import {CURIOSITY,OBJECTIVES} from "./content.js?v=3.8.3";
 import {createPets,PET_INFO,MAX_ACTIVE} from "./pets.js";
 import {createObserve,NOTES} from "./observe.js";
@@ -528,7 +528,7 @@ function structMesh(s){
   const g=new THREE.Group();
   if(s.type==="fire"||s.type==="kiln"){
     if(s.type==="kiln"){const d=new THREE.Mesh(new THREE.SphereGeometry(.9,20,10,0,Math.PI*2,0,Math.PI/2),stdMat(0x9c5a3c,.95));d.castShadow=d.receiveShadow=true;g.add(d);const hole=box(.45,.4,.2,0x1a0d08,.2);hole.position.z=.82;g.add(hole)}
-    else{clearFireGrass(s);const wood=createFireBed(s);s.wood=wood;g.add(wood);
+    else{clearFireGrass(s);const wood=createFireBed(s,heightAt);s.wood=wood;g.add(wood);
       for(let i=0;i<9;i++){const r=new THREE.Mesh(GEO.small,MAT.stone);r.scale.set(.13,.09,.11);r.position.set(Math.cos(i/9*6.283)*.5,.04,Math.sin(i/9*6.283)*.5);g.add(r)}}
     const f=GFX.makeFlame(s.type==="kiln");f.visible=false;if(s.type==="kiln")f.position.z=.8;g.add(f);s.flame=f;
     if(s.type==="fire"){const bed=new THREE.Mesh(new THREE.CylinderGeometry(.47,.53,.035,18),new THREE.MeshStandardMaterial({color:0x373739,roughness:1,emissive:0}));bed.position.y=.025;bed.receiveShadow=true;g.add(bed);s.residue=bed}
@@ -584,7 +584,7 @@ function collide(pos,rad){let hit=false;for(const s of world.structures){if(s.ty
 // Discovery mode (default): no hunger, thirst, illness or injuries — setbacks instead of damage. Classic survival is an opt-in setting.
 let survivalMode=(()=>{try{return localStorage.getItem("fog-of-knowledge:game:survival")==="1"}catch(_){return false}})();const SURV=()=>survivalMode;
 function setSurvival(v){survivalMode=!!v;try{localStorage.setItem("fog-of-knowledge:game:survival",v?"1":"0")}catch(_){}if(world)Object.assign(world.st,{hunger:Math.max(world.st.hunger,85),thirst:Math.max(world.st.thirst,85),sick:0,sprain:0,health:Math.max(world.st.health,60)});if(player)renderHUD()}
-const fireLights=[];let fireShFrame=0;const fireFps={ema:60,low:0,high:0,on:true,t:0};let eyeAdapt=0,brightBoost=(()=>{try{return +localStorage.getItem("fog-of-knowledge:game:bright")||0}catch(_){return 0}})();
+const fireLights=[],fireFillLights=[];let fireShFrame=0;const fireFps={ema:60,low:0,high:0,on:true,t:0};let eyeAdapt=0,brightBoost=(()=>{try{return +localStorage.getItem("fog-of-knowledge:game:bright")||0}catch(_){return 0}})();
 /* Fire size & light, from fuel physics.
    size  F = clamp(√(fuel/3 kg), 0.45, 4.0)       — a bigger fuel load builds a bigger, taller fire
    burn  ṁ = F kg/h  (fresh 1.5 kg pile ≈ 0.7 kg/h; 14 kg bonfire ≈ 2.2 kg/h, lasting ~13 h as it shrinks)
@@ -593,7 +593,7 @@ const fireLights=[];let fireShFrame=0;const fireFps={ema:60,low:0,high:0,on:true
    I = Φ/4π candela; E(d) = I/d² lux; "usable" radius where E = 3 lux (enough to see ground and faces with dark-adapted eyes).
    Torch: 0.125 kg/h, η 0.4. Colour: blackbody ≈1900 K at full heat, cooling to ≈1000 K dull red as embers.
    Scene units: 1 lux → 0.09 (so the 3-lux edge of the circle renders just readable at night exposure). */
-const LUX_TO_SCENE=.09;
+const LUX_TO_SCENE=.18;
 
 function kelvinColor(K,out){const t=K/100;let r=255,g=t<=66?99.47*Math.log(t)-161.12:288*Math.pow(t-60,-.133),b=t<=19?0:138.5*Math.log(t-10)-305;out.setRGB(clamp(r,0,255)/255,clamp(g,0,255)/255,clamp(b,0,255)/255);out.convertSRGBToLinear?.();return out}
 function fireLight(s){const torch=s.type==="torch",kiln=s.type==="kiln",F=torch?.45:kiln?1:fireSize(s),heat=clamp(s.heat,0,1.2);
@@ -616,12 +616,12 @@ function stepFires(dt,dtg){
       // spread to dry trees (needs oxygen & dry fuel)
       if(s.type==="fire"&&!raining&&s.heat>.8&&Math.random()<dt*.01){const t=nearestTree(s.x,s.z,3.2);if(t&&!t.t.burnt&&!t.t.burning&&biomeAt(t.t.x,t.t.z,t.t.y)!=="snow")igniteTree(t)}
     }else{s.temp=lerp(s.temp,airTemp(s.x,s.z,s.y),Math.min(1,dt*.05));s.heat=Math.max(0,s.heat)}
-    if(s.flame){s.flame.visible=s.lit;if(s.lit){const k=(.6+.4*s.heat+Math.sin(performance.now()/90+s.x)*.08)*(s.type==="torch"?.38:s.type==="fire"?Math.pow(fireSize(s),.8):1);s.flame.scale.set(k,k*(.94+.06*Math.sin(performance.now()/183+s.z)),k);GFX.animateFlame(s.flame,performance.now()/1000,s.heat);
-      if(near<(s.type==="torch"?60:120))GFX.FX.fire("s"+s.x.toFixed(1)+s.z.toFixed(1),s.x,s.y+(s.type==="kiln"?.9:s.type==="torch"?1.45:.1),s.z,s.heat,dt,s.type==="kiln"?.45:s.type==="torch"?.28:Math.pow(fireSize(s),.85))}}
+    if(s.flame){s.flame.visible=s.lit;if(s.lit){const k=(.6+.4*s.heat+Math.sin(performance.now()/220+s.x)*.035)*(s.type==="torch"?.38:s.type==="fire"?Math.pow(fireSize(s),.8):1);const width=s.type==="fire"?Math.pow(fireSize(s),.68):1,height=s.type==="fire"?fireSize(s)*1.18:1,base=s.type==="fire"?(.6+.4*s.heat):k;s.flame.scale.set(base*width,base*height,base*width);GFX.animateFlame(s.flame,performance.now()/1000,s.heat);
+      if(near<(s.type==="torch"?60:120))GFX.FX.fire("s"+s.x.toFixed(1)+s.z.toFixed(1),s.x,s.y+(s.type==="kiln"?.9:s.type==="torch"?1.45:.1),s.z,s.heat,dt,s.type==="kiln"?.45:s.type==="torch"?.28:Math.pow(fireSize(s),.85),.25+.65*(s.wet||0)+.55*(1-s.heat))}}
   }
   // the 4 nearest glowing fires get physically-scaled point lights (inverse-square decay); nearest 1 (High) / 2 (Ultra) cast flickering shadows
   const glow=world.structures.filter(s=>(s.lit||s.heat>.03)&&s.type!=="pack").sort((a,b)=>Math.hypot(a.x-P.x,a.z-P.z)-Math.hypot(b.x-P.x,b.z-P.z)).slice(0,4);
-  while(fireLights.length<4){const l=new THREE.PointLight(0xff8a3a,0,20,2);l.shadow.bias=-.004;l.shadow.autoUpdate=false;l.shadow.camera.near=.3;scene.add(l);fireLights.push(l)}
+  while(fireLights.length<4){const l=new THREE.PointLight(0xff8a3a,0,20,2);l.shadow.bias=-.0005;l.shadow.normalBias=.025;l.shadow.radius=2;l.shadow.autoUpdate=false;l.shadow.camera.near=.3;scene.add(l);fireLights.push(l)}
   const tt=performance.now()/1000;let eAtPlayer=0;fireShFrame++;
   // shadow budget: fire shadows only matter at night; and if the frame rate sags below ~55 fps they switch off (back on above 75) so High stays smooth
   const rdt=Math.max(1e-3,tt-(fireFps.t||tt-.016));fireFps.t=tt;fireFps.ema+=(1/rdt-fireFps.ema)*Math.min(1,rdt*2);
@@ -629,12 +629,20 @@ function stepFires(dt,dtg){
   if(fireFps.low>2.5)fireFps.on=false;if(fireFps.high>6)fireFps.on=true;
   const nSh=(fireFps.on&&GFX.ENV.night>.6)?(GFX.Q.fireShadow||0):0;
   fireLights.forEach((l,i)=>{const s=glow[i];const L=s&&fireLight(s);const want=!!L&&i<nSh&&s.type!=="torch"&&Math.hypot(s.x-P.x,s.z-P.z)<35;
-    if(l.castShadow!==want){l.castShadow=want;if(want){const m=GFX.Q.fireShadowMap||256;l.shadow.mapSize.set(m,m);l.shadow.map?.dispose();l.shadow.map=null}}
+    if(l.castShadow!==want){l.castShadow=want;if(want){const m=Math.max(512,GFX.Q.fireShadowMap||256);l.shadow.mapSize.set(m,m);l.shadow.map?.dispose();l.shadow.map=null}}
     if(l.castShadow)l.shadow.needsUpdate=!l.shadow.map||(fireShFrame+i)%2===0;   // cube shadows re-render every other frame (6 faces each): halves their cost, flicker still reads
     if(L){const fl=1+.05*Math.sin(tt*9.3+i)+.035*Math.sin(tt*21.7+i*3)+.02*Math.sin(tt*37+i*5);
-      l.position.set(s.x+.04*Math.sin(tt*13+i),s.y+(s.type==="torch"?1.6:s.type==="kiln"?1:.45+.35*Math.min(2,fireSize(s))),s.z+.04*Math.cos(tt*11+i));
-      l.intensity=L.scene*fl*(1-.7*GFX.ENV.day);l.distance=Math.max(4,L.rUse*3.2);l.shadow.camera.far=l.distance;l.color.copy(L.color);
+      l.position.set(s.x+.04*Math.sin(tt*13+i),s.y+(s.type==="torch"?1.6:s.type==="kiln"?1:.9+.55*Math.min(4,fireSize(s))),s.z+.04*Math.cos(tt*11+i));
+      l.intensity=L.scene*fl*(1-.7*GFX.ENV.day)*(i===0&&s.type==="fire"?.55:1);l.distance=Math.max(4,L.rUse*3.2);l.shadow.camera.far=l.distance;l.color.copy(L.color);
       const d=Math.max(.5,l.position.distanceTo(P));eAtPlayer+=L.cd/(d*d)}else{l.intensity=0}});
+  // Approximate the broad emitting flame and nearby ground bounce without
+  // six more shadow renders: share two unshadowed fills with the nearest fire.
+  while(fireFillLights.length<2){const l=new THREE.PointLight(0xffa45c,0,20,2);scene.add(l);fireFillLights.push(l)}
+  const closest=glow[0],fill=closest?.type==="fire"?fireLight(closest):null;
+  fireFillLights.forEach((l,i)=>{if(!fill){l.intensity=0;return}const spread=.45+.35*Math.sqrt(fireSize(closest)),a=i*Math.PI+.6;
+    l.position.set(closest.x+Math.cos(a)*spread,closest.y+.7+.22*fireSize(closest),closest.z+Math.sin(a)*spread);
+    l.intensity=fill.scene*.225*(1-.7*GFX.ENV.day);l.distance=Math.max(6,fill.rUse*3.5);l.color.copy(fill.color);
+  });
   world._luxAtPlayer=eAtPlayer;
   // eye adaptation: after ~a minute in the dark the eye gains a little (≤ +30%); firelight resets it. Plus the optional brightness slider.
   const dark=isNight()&&eAtPlayer<1.5;eyeAdapt+=((dark?1:0)-eyeAdapt)*Math.min(1,dt/(dark?40:4));GFX.ENV.expMul=(1+.3*eyeAdapt)*(1+brightBoost);
@@ -1017,7 +1025,7 @@ function interact(){
     if(s.heat>.08||s.temp>55)return toast("The embers are still hot. Wait for the fire bed to cool before collecting it.");
     let collected=0;for(const [k,unit] of [["charcoal",.05],["ash",.01]]){const n=Math.floor(((s[k]||0)+1e-8)/unit);if(n){const got=give(k,n);s[k]-=got*unit;collected+=got}}
     toast(collected?"Collected cooled fire remains. Unburned wood stays here.":"Your Backpack is full. Make room for the fire remains.");return}
-  if(BURN.has(s.type)){if(s.type!=="torch"&&take("log")){feedFire(s,5,"log");toast("Added a log (5 kg).")}else if(take("stick")){feedFire(s,.5,"stick");toast(`Added a stick (0.5 kg${s.type==="torch"?" ≈ 4 hours of torchlight":""}).`)}else if(take("charcoal")){feedFire(s,.08,"charcoal");toast("Added charcoal from a previous fire.")}else toast("You need sticks, logs or charcoal as fuel.");AU.place();return}
+  if(BURN.has(s.type)){if(s.type!=="torch"&&take("log")){feedFire(s,5,"log");toast("Added a log (5 kg).")}else if(take("stick")){feedFire(s,.5,"stick");toast(`Added a stick (0.5 kg${s.type==="torch"?" ≈ 4 hours of torchlight":""}).`)}else if(take("charcoal")){feedFire(s,.08,"charcoal");toast("Added charcoal from a previous fire.")}else toast("No firewood left in your Backpack. Gather more logs or sticks (E); the fire can take more.");AU.place();return}
   if(s.type==="pack"){for(const k in s.items)give(k,s.items[k]);scene.remove(s.obj);world.structures.splice(world.structures.indexOf(s),1);AU.pickup();toast("You recover your belongings.");renderHotbar();return}
   if(s.type==="raft"){player.raft=s;toast("You board the raft. Move with WASD; walk into land to step ashore.");return}
   if(s.type==="table")return study(s);
@@ -1639,7 +1647,7 @@ export function initWorld(){
   const dl=$("#wDayLen");if(dl){dl.value=dayLenPref;dl.onchange=()=>setDayLen(dl.value)}const wp=$("#wWeatherSel");if(wp){wp.value=weatherPref;wp.onchange=()=>setWeatherPref(wp.value)}
   const schk=$("#wSurvChk");if(schk){schk.checked=survivalMode;schk.onchange=()=>{setSurvival(schk.checked);toast(schk.checked?"Classic survival on: hunger, thirst, illness and injuries.":"Discovery mode: no hunger, illness or injuries — just you, the world and its puzzles.")}}
   const nchk=$("#wNeedyChk");if(nchk){nchk.checked=PETS.needyOn;nchk.onchange=()=>{PETS.needyOn=nchk.checked}}
-  window.__fogWorld={help:{open:p=>openHelp(p||0),close:closeHelp,nav:helpNav,get isOpen(){return helpIsOpen()},get page(){return helpPage},pages:()=>helpPages().map(p=>p.t+" "+p.b.replace(/<[^>]+>/g,""))},tipsOn,get pets(){return PETS},updateSky:()=>updateSky(.016),stow,curiosityAll:()=>CURIOSITY.map(q=>q.q),throwSpeed:k=>throwSpeed(k),setSurvival,get survival(){return survivalMode},gameSpeed:t=>gameSpeed(t),setDayLen,get dayLen(){return dayLenPref},setWeatherPref,get weatherPref(){return weatherPref},rollWeather:()=>rollWeather(),migrateTime:w=>migrateTime(w),hud:()=>{renderHUD();renderObjectives();return {bars:$("#wBars").textContent,obj:$("#wObj").textContent}},cookbook:()=>COOKBOOK.map(c=>c[0]),duskNeedsFire:()=>duskNeedsFire(),fireHeatAt:(x,z)=>fireHeatAt(x,z),get lightningState(){return {remaining:flashT,strength:flashStrength,pulse:lightningPulse(flashT,flashStrength),pendingThunder:thunders.map(t=>({...t}))}},fireShadowBudget:reset=>{if(reset)Object.assign(fireFps,{on:true,low:0,high:0,ema:60});return {...fireFps}},envLight:()=>({sun:GFX.sun.intensity,hemi:GFX.hemi.intensity,moon:GFX.ENV.moonFrac,exposure:GFX.renderer?.toneMappingExposure,expMul:GFX.ENV.expMul,lights:fireLights.map(l=>({i:+l.intensity.toFixed(2),d:+l.distance.toFixed(1),sh:l.castShadow}))}),moonPhase:t=>GFX.moonPhase(t),fireLight:(fuel,heat=1,type="fire",lit=true)=>{const r=fireLight({fuel,heat,type,lit});delete r.color;return r},get lux(){return world._luxAtPlayer||0},get exposure(){return GFX.renderer?.toneMappingExposure},setBright:v=>{brightBoost=clamp(v,0,.4)},inventory:{hotbarItems,essentialQuickbar:ESSENTIAL_QUICKBAR,get activeHand(){return activeHand},selectHand,toggleHand,withActiveHand,capacity,slotsUsed,roomFor,ordered,setHand,swapHands,dropItem,dropEverything,ctxActions,ctxDo,openCtx,sortInv,moveTo,STACK,BASE_SLOTS,handItems:()=>{const u=player.model.userData;return {R:u.held?.userData.k||null,L:u.heldL?.userData.k||null,Rbone:u.held?.parent?.name,Lbone:u.heldL?.parent?.name,Rpos:u.held?.getWorldPosition(new THREE.Vector3()),Lpos:u.heldL?.getWorldPosition(new THREE.Vector3())}}},get paused(){return paused},items:ITEMS,drop:(k,x,z)=>addDrop(k,x,heightAt(x,z)+.15,z),get obs(){return OBS},observeHeld,needyUI,curiousSpot,oreSpot,landmark,PET_INFO,MAX_ACTIVE,get state(){return world},get player(){return player},get animals(){return animals},discover:id=>discover(id),closePopup,
+  window.__fogWorld={help:{open:p=>openHelp(p||0),close:closeHelp,nav:helpNav,get isOpen(){return helpIsOpen()},get page(){return helpPage},pages:()=>helpPages().map(p=>p.t+" "+p.b.replace(/<[^>]+>/g,""))},tipsOn,get pets(){return PETS},updateSky:()=>updateSky(.016),stow,curiosityAll:()=>CURIOSITY.map(q=>q.q),throwSpeed:k=>throwSpeed(k),setSurvival,get survival(){return survivalMode},gameSpeed:t=>gameSpeed(t),setDayLen,get dayLen(){return dayLenPref},setWeatherPref,get weatherPref(){return weatherPref},rollWeather:()=>rollWeather(),migrateTime:w=>migrateTime(w),hud:()=>{renderHUD();renderObjectives();return {bars:$("#wBars").textContent,obj:$("#wObj").textContent}},cookbook:()=>COOKBOOK.map(c=>c[0]),duskNeedsFire:()=>duskNeedsFire(),fireHeatAt:(x,z)=>fireHeatAt(x,z),get lightningState(){return {remaining:flashT,strength:flashStrength,pulse:lightningPulse(flashT,flashStrength),pendingThunder:thunders.map(t=>({...t}))}},fireShadowBudget:reset=>{if(reset)Object.assign(fireFps,{on:true,low:0,high:0,ema:60});return {...fireFps}},envLight:()=>({sun:GFX.sun.intensity,hemi:GFX.hemi.intensity,moon:GFX.ENV.moonFrac,exposure:GFX.renderer?.toneMappingExposure,expMul:GFX.ENV.expMul,fills:fireFillLights.map(l=>({i:l.intensity,sh:l.castShadow})),lights:fireLights.map(l=>({i:+l.intensity.toFixed(2),y:l.position.y,d:+l.distance.toFixed(1),sh:l.castShadow}))}),moonPhase:t=>GFX.moonPhase(t),fireLight:(fuel,heat=1,type="fire",lit=true)=>{const r=fireLight({fuel,heat,type,lit});delete r.color;return r},get lux(){return world._luxAtPlayer||0},get exposure(){return GFX.renderer?.toneMappingExposure},setBright:v=>{brightBoost=clamp(v,0,.4)},inventory:{hotbarItems,essentialQuickbar:ESSENTIAL_QUICKBAR,get activeHand(){return activeHand},selectHand,toggleHand,withActiveHand,capacity,slotsUsed,roomFor,ordered,setHand,swapHands,dropItem,dropEverything,ctxActions,ctxDo,openCtx,sortInv,moveTo,STACK,BASE_SLOTS,handItems:()=>{const u=player.model.userData;return {R:u.held?.userData.k||null,L:u.heldL?.userData.k||null,Rbone:u.held?.parent?.name,Lbone:u.heldL?.parent?.name,Rpos:u.held?.getWorldPosition(new THREE.Vector3()),Lpos:u.heldL?.getWorldPosition(new THREE.Vector3())}}},get paused(){return paused},items:ITEMS,drop:(k,x,z)=>addDrop(k,x,heightAt(x,z)+.15,z),get obs(){return OBS},observeHeld,needyUI,curiousSpot,oreSpot,landmark,PET_INFO,MAX_ACTIVE,get state(){return world},get player(){return player},get animals(){return animals},discover:id=>discover(id),closePopup,
     give:(k,n)=>give(k,n),press:(code,ms)=>{keys.add(code);setTimeout(()=>keys.delete(code),ms)},keyEvent:code=>window.dispatchEvent(new KeyboardEvent("keydown",{code,bubbles:true})),keyDown:c=>keys.add(c),keyUp:c=>keys.delete(c),keysClear:()=>keys.clear(),
     teleport:(x,z)=>{player.pos.set(x,heightAt(x,z),z);player.vel.set(0,0,0);updateChunks(true)},stats:()=>({pos:player&&player.pos.toArray().map(v=>+v.toFixed(2)),chunks:chunks.size,animals:animals.length,frames,
       revealed:world?.ks.revealed.length,disc:world?.disc.length,atlas:!!atlas,drawCalls:renderer.info.render.calls,tris:renderer.info.render.triangles,fps:+fps.toFixed(1),quality:GFX.qName,birds:{...birds.stats},human:!!player?.model?.userData?.mixer,audio:{...AU.stats}}),

@@ -23,3 +23,12 @@ export function stepFuelBed(s,dt=0){
   }
   return pieces;
 }
+
+// Two low interlocked courses; further fuel rolls onto the surrounding ground.
+export function fuelPiecePose(index,piece){
+  const fraction=Math.max(0,piece.left/piece.mass),split=piece.kind==='split',coal=piece.kind==='charcoal';
+  const radius=(coal?.09:split?.115:.17)*(.42+.58*Math.sqrt(fraction)),length=(coal?.3:split?.72:1.05)*(.6+.4*Math.sqrt(fraction));
+  if(index<6){const layer=Math.floor(index/3),a=layer*Math.PI/2+.1*Math.sin(piece.id*3.7),cross=(index%3-1)*(split?.22:.31);return {x:-Math.sin(a)*cross,z:Math.cos(a)*cross,y:radius+layer*.19,a,tilt:.02*Math.sin(piece.id),radius,length,spill:false}}
+  const j=index-6,angle=j*2.39996323+.35,ring=Math.floor(j/8),r=.83+ring*.37+.07*Math.sin(piece.id*2.7);
+  return {x:Math.cos(angle)*r,z:Math.sin(angle)*r,y:radius+.025,a:angle+Math.PI/2+.3*Math.sin(piece.id),tilt:.06*Math.sin(piece.id*2),radius,length,spill:true};
+}

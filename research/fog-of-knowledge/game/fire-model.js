@@ -1,7 +1,7 @@
 // Gameplay approximation, not a calibrated combustion solver. Real seconds govern
 // rain/cooling; accelerated world seconds govern fuel use. Old saves need no migration.
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-export function fireSize(s){return clamp(Math.sqrt(Math.max(0,s.fuel||0)/3),.45,4)}
+export function fireSize(s){const fuel=Math.max(0,s.fuel||0);return Math.max(.45,fuel<=48?Math.sqrt(fuel/3):4+1.5*Math.log1p((fuel-48)/12))}
 export function burnRate(s){return s.type==='torch'?.125:s.type==='kiln'?(s.bellows?2:1)*1.3:fireSize(s)}
 export function stepCombustion(s,dt,dtg,rain=0,sheltered=false){
   s.wet=clamp(Number.isFinite(s.wet)?s.wet:0,0,1);

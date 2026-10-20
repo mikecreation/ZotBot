@@ -14,3 +14,5 @@ const before=fireSize(big);addFuel(big,5);assert(fireSize(big)>before,'fuel incr
 const save=JSON.parse(JSON.stringify(small));assert.equal(save.wet,small.wet);assert.equal(save.fuel,small.fuel);
 assert.equal(lightningPulse(0),0);assert.equal(lightningPulse(.5),0);assert(lightningPulse(.32)>.99);assert(lightningPulse(.225)>.5);
 console.log('8 fire/rain/residue/frame-time/flash checks passed',JSON.stringify({small,big,roof,burned}));
+
+for(const fuel of [15,20,30,48,60,120,500])assert.ok(fireSize({fuel:fuel+5})>fireSize({fuel}),'every added log grows even above the old cap');

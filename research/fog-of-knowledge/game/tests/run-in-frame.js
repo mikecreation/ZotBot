@@ -1,3 +1,3 @@
 import {runSuite} from './suite.js';
-import {runUpgradeTests} from './upgrades.js?v=3.9.4';
+import {runUpgradeTests} from './upgrades.js?v=3.10.1';
 try{const base=await runSuite(window.__fogWorld,{only:new URL(parent.location.href).searchParams.get('only')||undefined,onResult:(last,count)=>parent.postMessage({type:'fog-test-progress',last,count},location.origin)}),extra=runUpgradeTests(window.__fogWorld);parent.postMessage({type:'fog-test-results',result:{results:[...base.results,...extra],ms:base.ms}},location.origin)}catch(e){parent.postMessage({type:'fog-test-results',result:{results:[{name:'runner',pass:false,detail:e.stack}]}},location.origin)}

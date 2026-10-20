@@ -458,12 +458,12 @@ export function makeFlame(kiln){
   const g=new THREE.Group(),geo=new THREE.BoxGeometry(1.3,1.6,1.3);geo.translate(0,.8,0);
   // A small ray-marched volume: turbulent density fills space rather than
   // exposing intersecting flat flame cards when the camera moves around it.
-  const mat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,uniforms:{uTime:{value:0},uHeat:{value:1},uEye:{value:new THREE.Vector3()},uSteps:{value:Q.label==='Low'?12:20}},
+  const mat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,side:THREE.DoubleSide,forceSinglePass:true,uniforms:{uInside:{value:0},uTime:{value:0},uHeat:{value:1},uEye:{value:new THREE.Vector3()},uSteps:{value:Q.label==='Low'?12:20}},
     vertexShader:`varying vec3 vP;void main(){vP=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
-    fragmentShader:`uniform float uTime;uniform float uHeat;uniform float uSteps;uniform vec3 uEye;varying vec3 vP;
+    fragmentShader:`uniform float uTime;uniform float uHeat;uniform float uSteps;uniform float uInside;uniform vec3 uEye;varying vec3 vP;
     float hash(vec3 p){p=fract(p*.1031);p+=dot(p,p.yzx+33.33);return fract((p.x+p.y)*p.z);}
     float noise(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(mix(hash(i),hash(i+vec3(1,0,0)),f.x),mix(hash(i+vec3(0,1,0)),hash(i+vec3(1,1,0)),f.x),f.y),mix(mix(hash(i+vec3(0,0,1)),hash(i+vec3(1,0,1)),f.x),mix(hash(i+vec3(0,1,1)),hash(i+vec3(1,1,1)),f.x),f.y),f.z);}
-    void main(){vec3 ray=normalize(vP-uEye),p=vP+ray*.015;float stepSize=2.25/uSteps,alpha=0.;vec3 sum=vec3(0.);
+    void main(){if((uInside<.5&&!gl_FrontFacing)||(uInside>.5&&gl_FrontFacing))discard;vec3 ray=normalize(vP-uEye),invRay=1./mix(vec3(.00001),ray,step(vec3(.00001),abs(ray)));vec3 t0=(vec3(-.65,0.,-.65)-uEye)*invRay,t1=(vec3(.65,1.6,.65)-uEye)*invRay,lo=min(t0,t1),hi=max(t0,t1);float entry=max(0.,max(lo.x,max(lo.y,lo.z))),exit=min(hi.x,min(hi.y,hi.z));if(exit<=entry)discard;float stepSize=(exit-entry)/uSteps,alpha=0.;vec3 p=uEye+ray*(entry+stepSize*.5),sum=vec3(0.);
       for(int i=0;i<24;i++){if(float(i)>=uSteps||alpha>.97)break;if(abs(p.x)>.655||abs(p.z)>.655||p.y<0.||p.y>1.605)break;
         float y=p.y/1.6;vec3 q=p*4.1-vec3(uTime*.13,uTime*1.9,uTime*.09);float n=noise(q)*.65+noise(q*2.03+7.1)*.35;
         vec2 curl=vec2(sin(y*6.-uTime*1.6),cos(y*7.+uTime*1.3))*.095*y;float radius=.49*pow(1.-y,.72);
@@ -475,7 +475,7 @@ export function makeFlame(kiln){
       #include <tonemapping_fragment>
       #include <colorspace_fragment>
     }`});
-  const core=new THREE.Mesh(geo,mat);core.position.y=.04;if(kiln)core.scale.setScalar(.62);core.onBeforeRender=(_r,_s,cam)=>{core.worldToLocal(mat.uniforms.uEye.value.copy(cam.position))};g.add(core);
+  const core=new THREE.Mesh(geo,mat);core.position.y=.04;if(kiln)core.scale.setScalar(.62);core.onBeforeRender=(_r,_s,cam)=>{const eye=core.worldToLocal(mat.uniforms.uEye.value.copy(cam.position));const inside=Math.abs(eye.x)<.65&&Math.abs(eye.z)<.65&&eye.y>0&&eye.y<1.6;mat.uniforms.uInside.value=inside?1:0;mat.depthTest=!inside};g.add(core);
   const halo=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTexture(),color:0xff862b,transparent:true,opacity:.025,depthWrite:false,blending:THREE.AdditiveBlending}));halo.scale.setScalar(kiln?1:1.65);halo.position.y=.5;g.add(halo);g.userData={core,halo};return g;
 }
 export function animateFlame(g,time,heat){const m=g.userData.core?.material;if(m?.uniforms){m.uniforms.uTime.value=time;m.uniforms.uHeat.value=heat}}
@@ -495,10 +495,10 @@ export const FX={
   resize(){const h=container.clientHeight*renderer.getPixelRatio();for(const s of this.sys)s.pts.material.uniforms.uScale.value=h/(2*Math.tan(camera.fov*Math.PI/360))},
   emit(s,o){if(!s.free.length)return;const i=s.free.pop();s.live.push({i,...o,age:0})},
   rate(key,perSec,dt){const a=(this.acc.get(key)||0)+perSec*dt*Q.particles;const n=Math.floor(a);this.acc.set(key,a-n);return n},
-  fire(key,x,y,z,heat,dt,big=1){
+  fire(key,x,y,z,heat,dt,big=1,smoke=1){
     for(let k=this.rate(key+"f",10*heat*big,dt);k>0;k--)this.emit(this.add,{t:"flame",x:x+(Math.random()-.5)*.35*big,y:y+.05,z:z+(Math.random()-.5)*.35*big,vx:(Math.random()-.5)*.2,vy:1.1+Math.random()*1.1,vz:(Math.random()-.5)*.2,life:.45+Math.random()*.4,s:(.12+Math.random()*.16)*big});
     for(let k=this.rate(key+"e",6*heat,dt);k>0;k--)this.emit(this.add,{t:"ember",x,y:y+.3,z,vx:(Math.random()-.5)*.6,vy:1.5+Math.random()*2,vz:(Math.random()-.5)*.6,life:1.4+Math.random()*1.4,s:.06});
-    for(let k=this.rate(key+"s",7*heat*big,dt);k>0;k--)this.emit(this.alpha,{t:"smoke",x:x+(Math.random()-.5)*.3,y:y+.9*big,z:z+(Math.random()-.5)*.3,vx:.25+(Math.random()-.5)*.2,vy:.7+Math.random()*.5,vz:(Math.random()-.5)*.2,life:3+Math.random()*2.5,s:.5*big});
+    for(let k=this.rate(key+"s",7*heat*big*smoke,dt);k>0;k--)this.emit(this.alpha,{t:"smoke",x:x+(Math.random()-.5)*.3,y:y+.9*big,z:z+(Math.random()-.5)*.3,vx:.25+(Math.random()-.5)*.2,vy:.7+Math.random()*.5,vz:(Math.random()-.5)*.2,life:3+Math.random()*2.5,s:.5*big});
   },
   sparks(x,y,z,n=24){for(let i=0;i<n*Q.particles;i++){const a=Math.random()*6.283,u=Math.random()*2-1,sp=2+Math.random()*4,q=Math.sqrt(1-u*u);this.emit(this.add,{t:"spark",x,y,z,vx:Math.cos(a)*q*sp,vy:Math.abs(u)*sp+1,vz:Math.sin(a)*q*sp,life:.25+Math.random()*.45,s:.05,g:1})}},
   dust(x,y,z,n=12){for(let i=0;i<n*Q.particles;i++){const a=Math.random()*6.283,sp=.5+Math.random()*1.2;this.emit(this.alpha,{t:"dust",x,y:y+.05,z,vx:Math.cos(a)*sp,vy:.2+Math.random()*.4,vz:Math.sin(a)*sp,life:.7+Math.random()*.6,s:.35})}},
