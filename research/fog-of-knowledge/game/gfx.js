@@ -454,22 +454,24 @@ const _m4=new THREE.Matrix4(),_q4=new THREE.Quaternion(),_p3=new THREE.Vector3()
 export function disposeGroup(g){if(!g)return;MIRROR_HIDE.delete(g);g.parent?.remove(g);g.traverse(o=>{if(o.isInstancedMesh)o.dispose()})}
 
 /* ---------------- fire visuals ---------------- */
+let emptyFireBed;
 export function makeFlame(kiln){
+  if(!emptyFireBed){emptyFireBed=new THREE.DataTexture(new Uint8Array([255]),1,1,THREE.RedFormat);emptyFireBed.needsUpdate=true}
   const g=new THREE.Group(),geo=new THREE.BoxGeometry(1.3,1.6,1.3);geo.translate(0,.8,0);
   // A small ray-marched volume: turbulent density fills space rather than
   // exposing intersecting flat flame cards when the camera moves around it.
-  const mat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,side:THREE.DoubleSide,forceSinglePass:true,uniforms:{uInside:{value:0},uTime:{value:0},uHeat:{value:1},uEye:{value:new THREE.Vector3()},uSteps:{value:Q.label==='Low'?12:20}},
+  const mat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,side:THREE.DoubleSide,forceSinglePass:true,uniforms:{uBedMap:{value:emptyFireBed},uUseBed:{value:0},uHeight:{value:1},uBed:{value:0},uInside:{value:0},uTime:{value:0},uHeat:{value:1},uEye:{value:new THREE.Vector3()},uSteps:{value:Q.label==='Low'?12:20}},
     vertexShader:`varying vec3 vP;void main(){vP=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
-    fragmentShader:`uniform float uTime;uniform float uHeat;uniform float uSteps;uniform float uInside;uniform vec3 uEye;varying vec3 vP;
+    fragmentShader:`uniform sampler2D uBedMap;uniform float uUseBed;uniform float uHeight;uniform float uTime;uniform float uHeat;uniform float uSteps;uniform float uBed;uniform float uInside;uniform vec3 uEye;varying vec3 vP;
     float hash(vec3 p){p=fract(p*.1031);p+=dot(p,p.yzx+33.33);return fract((p.x+p.y)*p.z);}
     float noise(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(mix(hash(i),hash(i+vec3(1,0,0)),f.x),mix(hash(i+vec3(0,1,0)),hash(i+vec3(1,1,0)),f.x),f.y),mix(mix(hash(i+vec3(0,0,1)),hash(i+vec3(1,0,1)),f.x),mix(hash(i+vec3(0,1,1)),hash(i+vec3(1,1,1)),f.x),f.y),f.z);}
     void main(){if((uInside<.5&&!gl_FrontFacing)||(uInside>.5&&gl_FrontFacing))discard;vec3 ray=normalize(vP-uEye),invRay=1./mix(vec3(.00001),ray,step(vec3(.00001),abs(ray)));vec3 t0=(vec3(-.65,0.,-.65)-uEye)*invRay,t1=(vec3(.65,1.6,.65)-uEye)*invRay,lo=min(t0,t1),hi=max(t0,t1);float entry=max(0.,max(lo.x,max(lo.y,lo.z))),exit=min(hi.x,min(hi.y,hi.z));if(exit<=entry)discard;float stepSize=(exit-entry)/uSteps,alpha=0.;vec3 p=uEye+ray*(entry+stepSize*.5),sum=vec3(0.);
       for(int i=0;i<24;i++){if(float(i)>=uSteps||alpha>.97)break;if(abs(p.x)>.655||abs(p.z)>.655||p.y<0.||p.y>1.605)break;
         float y=p.y/1.6;vec3 q=p*4.1-vec3(uTime*.13,uTime*1.9,uTime*.09);float n=noise(q)*.65+noise(q*2.03+7.1)*.35;
-        vec2 curl=vec2(sin(y*6.-uTime*1.6),cos(y*7.+uTime*1.3))*.095*y;float radius=.49*pow(1.-y,.72);
-        float density=clamp((radius-length(p.xz+curl))*2.8+(n-.52)*1.8,0.,1.)*smoothstep(.12,.27,p.y)*(1.-smoothstep(.78,1.,y));
+        vec2 curl=vec2(sin(y*6.-uTime*1.6),cos(y*7.+uTime*1.3))*.095*y;float radial=length(p.xz),surface=texture2D(uBedMap,p.xz/1.3+.5).r,bed=uUseBed>.5?surface*1.6:uBed*pow(clamp(1.-radial/.65,0.,1.),2.);float radius=.53*pow(1.-y,.38);
+        float density=clamp((radius-length(p.xz+curl))*2.8+(n-.52)*1.8,0.,1.)*smoothstep(max(.04/uHeight,bed-.08/uHeight),bed+.12/uHeight,p.y)*(uUseBed>.5?smoothstep(0.,.002,surface):1.)*(1.-smoothstep(.78,1.,y));
         density=smoothstep(.22,.84,density);float a=density*(.055+.02*uHeat)*(stepSize/.1125),hot=clamp(density*.7+(1.-y)*.35,0.,1.);vec3 color=mix(vec3(1.5,.105,.003),vec3(1.85,.8,.1),hot);color=mix(color,vec3(2.1,1.55,.55),pow(hot,8.)*.4);
-        sum+=(1.-alpha)*a*color;alpha+=(1.-alpha)*a;p+=ray*stepSize;
+        sum+=(1.-alpha)*a*color*3.;alpha+=(1.-alpha)*a;p+=ray*stepSize;
       }
       if(alpha<.008)discard;gl_FragColor=vec4(sum/max(alpha,.001),alpha);
       #include <tonemapping_fragment>
@@ -478,7 +480,17 @@ export function makeFlame(kiln){
   const core=new THREE.Mesh(geo,mat);core.position.y=.04;if(kiln)core.scale.setScalar(.62);core.onBeforeRender=(_r,_s,cam)=>{const eye=core.worldToLocal(mat.uniforms.uEye.value.copy(cam.position));const inside=Math.abs(eye.x)<.65&&Math.abs(eye.z)<.65&&eye.y>0&&eye.y<1.6;mat.uniforms.uInside.value=inside?1:0;mat.depthTest=!inside};g.add(core);
   const halo=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTexture(),color:0xff862b,transparent:true,opacity:.025,depthWrite:false,blending:THREE.AdditiveBlending}));halo.scale.setScalar(kiln?1:1.65);halo.position.y=.5;g.add(halo);g.userData={core,halo};return g;
 }
-export function animateFlame(g,time,heat){const m=g.userData.core?.material;if(m?.uniforms){m.uniforms.uTime.value=time;m.uniforms.uHeat.value=heat}}
+export function animateFlame(g,time,heat,bed=0,pile=null,support=null){const m=g.userData.core?.material;if(!m?.uniforms)return;m.uniforms.uTime.value=time;m.uniforms.uHeat.value=heat;m.uniforms.uBed.value=bed;m.uniforms.uHeight.value=g.scale.y;m.uniforms.uSteps.value=g.scale.x>8?12:Q.label==='Low'?12:20;
+  if(!pile)return;
+  const stamp=pile.ids.length+':'+Math.round(g.scale.x*20)+':'+Math.round(g.scale.y*20)+':'+Math.floor((pile.surfaceMass||0)*2);if(g.userData.bedStamp===stamp)return;g.userData.bedStamp=stamp;
+  if(!g.userData.bedMap){const t=new THREE.DataTexture(new Uint8Array(32*32),32,32,THREE.RedFormat);t.minFilter=t.magFilter=THREE.LinearFilter;g.userData.bedMap=t;m.uniforms.uBedMap.value=t;m.uniforms.uUseBed.value=1}
+  const texture=g.userData.bedMap,data=texture.image.data;data.fill(0);
+  for(const [k,h] of support||pile.grid){const z=Math.round(k/65536),x=k-z*65536,value=Math.max(1,Math.min(255,Math.round(h/g.scale.y/1.6*255)));
+    const x0=Math.max(0,Math.floor(((x*.3-.16)/g.scale.x/1.3+.5)*32)),x1=Math.min(31,Math.ceil(((x*.3+.16)/g.scale.x/1.3+.5)*32)),z0=Math.max(0,Math.floor(((z*.3-.16)/g.scale.z/1.3+.5)*32)),z1=Math.min(31,Math.ceil(((z*.3+.16)/g.scale.z/1.3+.5)*32));
+    for(let iz=z0;iz<=z1;iz++)for(let ix=x0;ix<=x1;ix++){const i=iz*32+ix;data[i]=Math.max(data[i],value)}
+  }texture.needsUpdate=true;
+}
+
 
 /* ---------------- particles ---------------- */
 export const FX={

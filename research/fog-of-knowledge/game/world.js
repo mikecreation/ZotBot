@@ -8,14 +8,14 @@
  */
 import * as THREE from "./vendor/three.module.min.js";
 import {ITEMS,WORLD_DISCOVERIES,RECIPES} from "./world-data.js";
-import * as GFX from "./gfx.js?v=3.10.1";
+import * as GFX from "./gfx.js?v=3.11.5";
 import * as AU from "./audio.js";
 import {ESSENTIAL_QUICKBAR,quickbarOrder} from "./quickbar.js";
 import {temperature,temperatureDelta} from "./units.js";
 import {createBirds} from "./birds.js";
-import {fireSize,stepCombustion,addFuel,lightningPulse} from "./fire-model.js?v=3.10.1";
-import {ensureFuelBed,recordFuelPiece,stepFuelBed} from "./fuel-bed.js?v=3.10.1";
-import {createFireBed,updateFireBed} from "./fire-visuals.js?v=3.10.1";
+import {fireSize,stepCombustion,addFuel,lightningPulse} from "./fire-model.js?v=3.11.5";
+import {ensureFuelBed,recordFuelPiece,stepFuelBed,fuelLayout} from "./fuel-bed.js?v=3.11.5";
+import {createFireBed,updateFireBed} from "./fire-visuals.js?v=3.11.5";
 import {CURIOSITY,OBJECTIVES} from "./content.js?v=3.8.3";
 import {createPets,PET_INFO,MAX_ACTIVE} from "./pets.js";
 import {createObserve,NOTES} from "./observe.js";
@@ -168,7 +168,7 @@ function grassSampler(ch){const G=ch.terrain&&ch.terrain.userData.grid;if(!G)ret
   return (x,z)=>{const fx=clamp((x-x0)/G.step,0,G.res-.001),fz=clamp((z-z0)/G.step,0,G.res-.001),i=Math.floor(fx),j=Math.floor(fz),u=fx-i,v=fz-j;
     const a=G.h[j*R+i],b=G.h[j*R+i+1],c=G.h[(j+1)*R+i],d=G.h[(j+1)*R+i+1];
     const h=(a*(1-u)+b*u)*(1-v)+(c*(1-u)+d*u)*v,sl=Math.max(Math.abs(b-a),Math.abs(c-a),Math.abs(d-b))/G.step;
-    return {h,biome:clearings.some(s=>Math.hypot(s.x-x,s.z-z)<1.1)?"rock":BN[G.b[Math.round(fz)*R+Math.round(fx)]],slope:sl}}}
+    return {h,biome:clearings.some(s=>Math.hypot(s.x-x,s.z-z)<(s._clearRadius||1.1))?"rock":BN[G.b[Math.round(fz)*R+Math.round(fx)]],slope:sl}}}
 const _m=new THREE.Matrix4(),_q=new THREE.Quaternion(),_s=new THREE.Vector3(),_p=new THREE.Vector3(),_e=new THREE.Euler(),_c=new THREE.Color();
 const ZERO=new THREE.Matrix4().makeScale(0,0,0);
 function setInst(mesh,i,x,y,z,sx,sy,sz,ry=0,rx=0){_e.set(rx,ry,0);_q.setFromEuler(_e);_p.set(x,y,z);_s.set(sx,sy,sz);_m.compose(_p,_q,_s);mesh.setMatrixAt(i,_m)}
@@ -519,9 +519,9 @@ function cyl(rt,rb,h,col,y=0,seg=8){const m=new THREE.Mesh(new THREE.CylinderGeo
 const PEND_L=[.5,1,2];
 function setPendLen(s){const a=s.arm;if(!a)return;a.userData.str.scale.y=s.L;a.userData.str.position.y=-s.L/2;a.userData.bob.position.y=-s.L}
 function updateRack(s){if(!s.obj)return;s.obj.userData.strips?.forEach((m,i)=>{m.visible=i<s.meat.length;if(m.visible)m.material.color.setHex(world.gameTime-s.meat[i]>=4*3600?0x6b3a24:0xb53a3a)})}
-function clearFireGrass(s){
+function clearFireGrass(s,radius=1.1){
   for(const ch of chunks.values()){if(!ch.grass||Math.abs((ch.cx+.5)*CHUNK-s.x)>CHUNK||Math.abs((ch.cz+.5)*CHUNK-s.z)>CHUNK)continue;
-    ch.grass.traverse(m=>{if(!m.isInstancedMesh)return;let changed=false;for(let i=0;i<m.count;i++){m.getMatrixAt(i,_m);const e=_m.elements;if(Math.hypot(e[12]-s.x,e[14]-s.z)<1.1){m.setMatrixAt(i,ZERO);changed=true}}if(changed)m.instanceMatrix.needsUpdate=true});
+    ch.grass.traverse(m=>{if(!m.isInstancedMesh)return;let changed=false;for(let i=0;i<m.count;i++){m.getMatrixAt(i,_m);const e=_m.elements;if(Math.hypot(e[12]-s.x,e[14]-s.z)<radius){m.setMatrixAt(i,ZERO);changed=true}}if(changed)m.instanceMatrix.needsUpdate=true});
   }
 }
 function structMesh(s){
@@ -608,7 +608,7 @@ function stepFires(dt,dtg){
     if(s.type==="fire")ensureFuelBed(s);
     const out=stepCombustion(s,dt,dtg,raining?world.weather.amt:0,!!sheltered(s.x,s.z));
     if(out){if(near<60)toast(out==="fuel"?"The fire has burned down to embers. Let it cool to collect the remains.":"Rain has extinguished the flames. The fuel bed remains — shelter it and relight it.");discover("combustion")}
-    if(s.type==="fire"){stepFuelBed(s,dt);if(s.wood&&near<120)updateFireBed(s.wood,s,performance.now()/1000)}
+    if(s.type==="fire"){stepFuelBed(s,dt);const pile=fuelLayout(s);if(pile.radius>(s._clearRadius||1.1)+.3){clearFireGrass(s,pile.radius+.2);s._clearRadius=pile.radius+.2}if(s.wood&&near<Math.max(120,pile.radius*3))updateFireBed(s.wood,s,performance.now()/1000)}
     if(s.residue){s.residue.visible=(s.charcoal||0)+(s.ash||0)>.005;s.residue.material.emissive.setHex(s.heat>.08?0x9b2605:0);s.residue.material.emissiveIntensity=s.heat*.7}
     if(s.lit){
       const target=s.type==="kiln"?(s.bellows?1300:1150):s.type==="torch"?600:850;
@@ -616,7 +616,7 @@ function stepFires(dt,dtg){
       // spread to dry trees (needs oxygen & dry fuel)
       if(s.type==="fire"&&!raining&&s.heat>.8&&Math.random()<dt*.01){const t=nearestTree(s.x,s.z,3.2);if(t&&!t.t.burnt&&!t.t.burning&&biomeAt(t.t.x,t.t.z,t.t.y)!=="snow")igniteTree(t)}
     }else{s.temp=lerp(s.temp,airTemp(s.x,s.z,s.y),Math.min(1,dt*.05));s.heat=Math.max(0,s.heat)}
-    if(s.flame){s.flame.visible=s.lit;if(s.lit){const k=(.6+.4*s.heat+Math.sin(performance.now()/220+s.x)*.035)*(s.type==="torch"?.38:s.type==="fire"?Math.pow(fireSize(s),.8):1);const width=s.type==="fire"?Math.pow(fireSize(s),.68):1,height=s.type==="fire"?fireSize(s)*1.18:1,base=s.type==="fire"?(.6+.4*s.heat):k;s.flame.scale.set(base*width,base*height,base*width);GFX.animateFlame(s.flame,performance.now()/1000,s.heat);
+    if(s.flame){s.flame.visible=s.lit;if(s.lit){const k=(.6+.4*s.heat+Math.sin(performance.now()/220+s.x)*.035)*(s.type==="torch"?.38:s.type==="fire"?Math.pow(fireSize(s),.8):1);const pile=s.type==="fire"?fuelLayout(s):null,width=pile?Math.max(Math.pow(fireSize(s),.68),pile.radius*1.8):1,height=pile?Math.max(fireSize(s)*1.18,pile.height+1.2):1,base=s.type==="fire"?(.6+.4*s.heat):k;s.flame.scale.set(base*width,base*height,base*width);if(pile)pile.surfaceMass=s.fuel;GFX.animateFlame(s.flame,performance.now()/1000,s.heat,pile?pile.height/(base*height):0,pile,s.wood?.userData.support);
       if(near<(s.type==="torch"?60:120))GFX.FX.fire("s"+s.x.toFixed(1)+s.z.toFixed(1),s.x,s.y+(s.type==="kiln"?.9:s.type==="torch"?1.45:.1),s.z,s.heat,dt,s.type==="kiln"?.45:s.type==="torch"?.28:Math.pow(fireSize(s),.85),.25+.65*(s.wet||0)+.55*(1-s.heat))}}
   }
   // the 4 nearest glowing fires get physically-scaled point lights (inverse-square decay); nearest 1 (High) / 2 (Ultra) cast flickering shadows
@@ -632,15 +632,15 @@ function stepFires(dt,dtg){
     if(l.castShadow!==want){l.castShadow=want;if(want){const m=Math.max(512,GFX.Q.fireShadowMap||256);l.shadow.mapSize.set(m,m);l.shadow.map?.dispose();l.shadow.map=null}}
     if(l.castShadow)l.shadow.needsUpdate=!l.shadow.map||(fireShFrame+i)%2===0;   // cube shadows re-render every other frame (6 faces each): halves their cost, flicker still reads
     if(L){const fl=1+.05*Math.sin(tt*9.3+i)+.035*Math.sin(tt*21.7+i*3)+.02*Math.sin(tt*37+i*5);
-      l.position.set(s.x+.04*Math.sin(tt*13+i),s.y+(s.type==="torch"?1.6:s.type==="kiln"?1:.9+.55*Math.min(4,fireSize(s))),s.z+.04*Math.cos(tt*11+i));
+      l.position.set(s.x+.04*Math.sin(tt*13+i),s.y+(s.type==="torch"?1.6:s.type==="kiln"?1:Math.max(.9+.55*Math.min(4,fireSize(s)),fuelLayout(s).height+.8)),s.z+.04*Math.cos(tt*11+i));
       l.intensity=L.scene*fl*(1-.7*GFX.ENV.day)*(i===0&&s.type==="fire"?.55:1);l.distance=Math.max(4,L.rUse*3.2);l.shadow.camera.far=l.distance;l.color.copy(L.color);
       const d=Math.max(.5,l.position.distanceTo(P));eAtPlayer+=L.cd/(d*d)}else{l.intensity=0}});
   // Approximate the broad emitting flame and nearby ground bounce without
   // six more shadow renders: share two unshadowed fills with the nearest fire.
   while(fireFillLights.length<2){const l=new THREE.PointLight(0xffa45c,0,20,2);scene.add(l);fireFillLights.push(l)}
   const closest=glow[0],fill=closest?.type==="fire"?fireLight(closest):null;
-  fireFillLights.forEach((l,i)=>{if(!fill){l.intensity=0;return}const spread=.45+.35*Math.sqrt(fireSize(closest)),a=i*Math.PI+.6;
-    l.position.set(closest.x+Math.cos(a)*spread,closest.y+.7+.22*fireSize(closest),closest.z+Math.sin(a)*spread);
+  fireFillLights.forEach((l,i)=>{if(!fill){l.intensity=0;return}const pile=fuelLayout(closest),spread=Math.max(.45+.35*Math.sqrt(fireSize(closest)),pile.radius*.55),a=i*Math.PI+.6;
+    l.position.set(closest.x+Math.cos(a)*spread,closest.y+Math.max(.7+.22*fireSize(closest),pile.height*.6+.5),closest.z+Math.sin(a)*spread);
     l.intensity=fill.scene*.225*(1-.7*GFX.ENV.day);l.distance=Math.max(6,fill.rUse*3.5);l.color.copy(fill.color);
   });
   world._luxAtPlayer=eAtPlayer;
@@ -932,6 +932,7 @@ function onAtlas(A){atlas=A;for(const id of world.disc)applyKnowledge(WD.get(id)
 /* ---------------- interaction ---------------- */
 function frontPoint(r=1){const f=forward();return {x:player.pos.x+f.x*r,z:player.pos.z+f.z*r}}
 const STRUCT_R={pack:.3,kiln:.6,table:.6,hut:1.6,house:2,well:.5,chest:.3,rack:.4,wall:.8,pendulum:.4};
+function structureRadius(s){return s.type==="fire"?fuelLayout(s).radius:STRUCT_R[s.type]??.2}
 function findTarget(){
   const fp=frontPoint(.9),x=fp.x,z=fp.z;let best=null,bd=2.4;
   const cons=(kind,obj,d)=>{if(d<bd){bd=d;best={kind,obj}}};
@@ -943,7 +944,7 @@ function findTarget(){
   }
   if(PETS){const pt=PETS.target(x,z);if(pt)cons("pet",pt.e,pt.d)}
   for(const a of animals)if(!a.dead)cons("animal",a,Math.hypot(a.pos.x-x,a.pos.z-z)-.25-a.sp.size*.4+(a.kind==="dog"?1.2:0)); // the dog never hides what you're reaching for
-  for(const s of world.structures)if(s.type!=="raft"||!player.raft)cons("struct",s,Math.hypot(s.x-x,s.z-z)-(STRUCT_R[s.type]??.2));
+  for(const s of world.structures)if(s.type!=="raft"||!player.raft)cons("struct",s,Math.hypot(s.x-x,s.z-z)-structureRadius(s));
   if(!best&&(heightAt(x,z)<0||player.swimming))best={kind:"water"};
   return best;
 }
@@ -954,12 +955,12 @@ function fireSiteError(){
   const p=frontPoint(1.8);
   if(player.swimming||heightAt(p.x,p.z)<0)return "Move onto land to build a firewood pile";
   if(slopeAt(p.x,p.z)>.6)return "Face flatter ground to build a firewood pile";
-  if(world.structures.some(s=>Math.hypot(s.x-p.x,s.z-p.z)<(STRUCT_R[s.type]??.4)+.7))return "Face clear ground away from other structures";
+  if(world.structures.some(s=>Math.hypot(s.x-p.x,s.z-p.z)<structureRadius(s)+.7))return "Face clear ground away from other structures";
   return "";
 }
 // The HUD and Q share this decision: advertised costs and requirements are the
 // same ones checked before consuming anything. k/other are relative to selection.
-function nearbyHandFire(){return structuresNear(player.pos.x,player.pos.z,2.6).filter(s=>BURN.has(s.type)).sort((a,b)=>Math.hypot(a.x-player.pos.x,a.z-player.pos.z)-Math.hypot(b.x-player.pos.x,b.z-player.pos.z))[0]}
+function nearbyHandFire(){const distance=s=>Math.hypot(s.x-player.pos.x,s.z-player.pos.z)-(s.type==="fire"?Math.max(1.7,structureRadius(s)):1.7);return world.structures.filter(s=>BURN.has(s.type)&&distance(s)<.9).sort((a,b)=>distance(a)-distance(b))[0]}
 function handFireAction(k,other,t=findTarget()){
   if(t?.kind==="pet"&&PET_INFO[t.obj.kind].likes.includes(k)||t?.kind==="animal"||t?.kind==="struct"&&t.obj.type==="pendulum")return null;
   const fire=nearbyHandFire();
@@ -1554,7 +1555,9 @@ function stepWorld(dt){
 /* ---------------- boot ---------------- */
 function startWorld(w){
   titleMode=false;document.body.classList.remove("titleOn");$("#wTip").hidden=true;
-  world=hydrate(migrateTime(w));AU.resetMilestones();activeHand="R";flashT=0;flashStrength=0;thunders.length=0;initNoise(world.seed);
+  for(const s of world?.structures||[])if(s.obj)GFX.disposeGroup(s.obj);
+  for(const d of world?.drops||[])if(d.mesh)scene.remove(d.mesh);
+  world=hydrate(migrateTime(w));AU.resetMilestones();eyeAdapt=0;GFX.ENV.expMul=1+brightBoost;activeHand="R";flashT=0;flashStrength=0;thunders.length=0;initNoise(world.seed);
   for(const ch of chunks.values())disposeChunk(ch);chunks.clear();
   for(const s of world.structures)if(s.obj)scene.remove(s.obj);
   if(player&&player.model)scene.remove(player.model);
@@ -1567,7 +1570,7 @@ function startWorld(w){
   if(atlas)onAtlas(atlas);
 }
 function newGame(seed){
-  const w=newWorld(seed);world=hydrate(w);initNoise(w.seed);
+  const w=newWorld(seed);initNoise(w.seed);
   const [cx,cz]=w.camp;
   const start=[["flint",2],["pyrite",1],["stone",1],["stick",4],["clay",1]];let a=0;
   for(const [k,n] of start)for(let i=0;i<n;i++){a+=.9;const x=cx+Math.cos(a)*(2+a*.3),z=cz+Math.sin(a)*(2+a*.3);w.drops.push({item:k,x,y:heightAt(x,z)+.03,z})}
@@ -1648,7 +1651,7 @@ export function initWorld(){
   const schk=$("#wSurvChk");if(schk){schk.checked=survivalMode;schk.onchange=()=>{setSurvival(schk.checked);toast(schk.checked?"Classic survival on: hunger, thirst, illness and injuries.":"Discovery mode: no hunger, illness or injuries — just you, the world and its puzzles.")}}
   const nchk=$("#wNeedyChk");if(nchk){nchk.checked=PETS.needyOn;nchk.onchange=()=>{PETS.needyOn=nchk.checked}}
   window.__fogWorld={help:{open:p=>openHelp(p||0),close:closeHelp,nav:helpNav,get isOpen(){return helpIsOpen()},get page(){return helpPage},pages:()=>helpPages().map(p=>p.t+" "+p.b.replace(/<[^>]+>/g,""))},tipsOn,get pets(){return PETS},updateSky:()=>updateSky(.016),stow,curiosityAll:()=>CURIOSITY.map(q=>q.q),throwSpeed:k=>throwSpeed(k),setSurvival,get survival(){return survivalMode},gameSpeed:t=>gameSpeed(t),setDayLen,get dayLen(){return dayLenPref},setWeatherPref,get weatherPref(){return weatherPref},rollWeather:()=>rollWeather(),migrateTime:w=>migrateTime(w),hud:()=>{renderHUD();renderObjectives();return {bars:$("#wBars").textContent,obj:$("#wObj").textContent}},cookbook:()=>COOKBOOK.map(c=>c[0]),duskNeedsFire:()=>duskNeedsFire(),fireHeatAt:(x,z)=>fireHeatAt(x,z),get lightningState(){return {remaining:flashT,strength:flashStrength,pulse:lightningPulse(flashT,flashStrength),pendingThunder:thunders.map(t=>({...t}))}},fireShadowBudget:reset=>{if(reset)Object.assign(fireFps,{on:true,low:0,high:0,ema:60});return {...fireFps}},envLight:()=>({sun:GFX.sun.intensity,hemi:GFX.hemi.intensity,moon:GFX.ENV.moonFrac,exposure:GFX.renderer?.toneMappingExposure,expMul:GFX.ENV.expMul,fills:fireFillLights.map(l=>({i:l.intensity,sh:l.castShadow})),lights:fireLights.map(l=>({i:+l.intensity.toFixed(2),y:l.position.y,d:+l.distance.toFixed(1),sh:l.castShadow}))}),moonPhase:t=>GFX.moonPhase(t),fireLight:(fuel,heat=1,type="fire",lit=true)=>{const r=fireLight({fuel,heat,type,lit});delete r.color;return r},get lux(){return world._luxAtPlayer||0},get exposure(){return GFX.renderer?.toneMappingExposure},setBright:v=>{brightBoost=clamp(v,0,.4)},inventory:{hotbarItems,essentialQuickbar:ESSENTIAL_QUICKBAR,get activeHand(){return activeHand},selectHand,toggleHand,withActiveHand,capacity,slotsUsed,roomFor,ordered,setHand,swapHands,dropItem,dropEverything,ctxActions,ctxDo,openCtx,sortInv,moveTo,STACK,BASE_SLOTS,handItems:()=>{const u=player.model.userData;return {R:u.held?.userData.k||null,L:u.heldL?.userData.k||null,Rbone:u.held?.parent?.name,Lbone:u.heldL?.parent?.name,Rpos:u.held?.getWorldPosition(new THREE.Vector3()),Lpos:u.heldL?.getWorldPosition(new THREE.Vector3())}}},get paused(){return paused},items:ITEMS,drop:(k,x,z)=>addDrop(k,x,heightAt(x,z)+.15,z),get obs(){return OBS},observeHeld,needyUI,curiousSpot,oreSpot,landmark,PET_INFO,MAX_ACTIVE,get state(){return world},get player(){return player},get animals(){return animals},discover:id=>discover(id),closePopup,
-    give:(k,n)=>give(k,n),press:(code,ms)=>{keys.add(code);setTimeout(()=>keys.delete(code),ms)},keyEvent:code=>window.dispatchEvent(new KeyboardEvent("keydown",{code,bubbles:true})),keyDown:c=>keys.add(c),keyUp:c=>keys.delete(c),keysClear:()=>keys.clear(),
+    addFireFuel:feedFire,give:(k,n)=>give(k,n),press:(code,ms)=>{keys.add(code);setTimeout(()=>keys.delete(code),ms)},keyEvent:code=>window.dispatchEvent(new KeyboardEvent("keydown",{code,bubbles:true})),keyDown:c=>keys.add(c),keyUp:c=>keys.delete(c),keysClear:()=>keys.clear(),
     teleport:(x,z)=>{player.pos.set(x,heightAt(x,z),z);player.vel.set(0,0,0);updateChunks(true)},stats:()=>({pos:player&&player.pos.toArray().map(v=>+v.toFixed(2)),chunks:chunks.size,animals:animals.length,frames,
       revealed:world?.ks.revealed.length,disc:world?.disc.length,atlas:!!atlas,drawCalls:renderer.info.render.calls,tris:renderer.info.render.triangles,fps:+fps.toFixed(1),quality:GFX.qName,birds:{...birds.stats},human:!!player?.model?.userData?.mixer,audio:{...AU.stats}}),
     start:()=>$("#wPlay").click(),height:(x,z)=>heightAt(x,z),biome:(x,z)=>biomeAt(x,z,heightAt(x,z)),slope:(x,z)=>slopeAt(x,z),reseed:seed=>{const w=newWorld(seed);w.removed=[];w.burnt=[];startWorld(w)},newGame:seed=>newGame(seed),fps:()=>fps,quality:q=>{if(q)applyQuality(q);return GFX.qName},
