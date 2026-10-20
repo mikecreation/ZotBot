@@ -130,7 +130,7 @@ export function runBot(W,opts={}){
     const pk=structs("pack")[0];if(pk&&(!nightTime||dist(pk.x,pk.z)<40)&&!black.has(bk(pk.x,pk.z))){if(reach(pk.x,pk.z,"struct","pack",1.2)){act(()=>W.interact());ev("recovered belongings")}return}
     if(nightTime&&st.thirst<18&&scan("water",null,50))return drink();
     if(nightTime||st.tb<35.9)return night();
-    if(h>=17&&(!campFire()||(campFire().fuel<14&&!(inv("log")>=2)))){if(campFire()&&(inv("axe_stone")||inv("axe_copper")||inv("axe_bronze")||inv("axe_iron")))return chop();return night()}
+    if(h>=16.5&&(!campFire()||(campFire().fuel<14&&!(inv("log")>=2)))){if(campFire()&&(inv("axe_stone")||inv("axe_copper")||inv("axe_bronze")||inv("axe_iron")))return chop();return night()}
     if(h>=16.5&&st.thirst<75&&scan("water",null,90))return drink();
     if(h>=17.8)return night();
     if(st.thirst<45)return drink();
@@ -163,6 +163,6 @@ export function runBot(W,opts={}){
   }
   W.keysClear();W.crouch(false);
   return {seed,simSeconds:Math.round(simT),gameDays:+dayF().toFixed(2),computeMs:Math.round(performance.now()-t0),milestones:ms,discoveries:S().disc.slice(),deaths,deathsBy:S().counters.deathsBy,
-    nightsSurvived,packs:S().counters.packs,wolvesKilled:S().counters.wolvesKilled,warnings:S().counters.warnings||0,sick:S().counters.sick,minBodyTemp:+minTb.v.toFixed(2),actions,inv:{...S().inv},trace,events};
+    nightsSurvived,setbacks:S().counters.setbacks||0,setbacksBy:S().counters.setbacksBy||{},rescues:S().counters.rescues||0,packs:S().counters.packs,wolvesKilled:S().counters.wolvesKilled,warnings:S().counters.warnings||0,sick:S().counters.sick,minBodyTemp:+minTb.v.toFixed(2),actions,inv:{...S().inv},trace,events};
 }
 }

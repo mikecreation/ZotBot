@@ -16,7 +16,7 @@ export const ITEMS={
  grain:{name:"Grain",mass:.3,density:1100,r:.04,color:0xe8cf72,food:18},
  meat_raw:{name:"Raw meat",mass:1,density:1050,r:.07,color:0xb53a3a,food:20},
  meat_dried:{name:"Dried meat",mass:.4,density:1000,r:.06,color:0x6b3a24,food:28},
- meat_cooked:{name:"Cooked meat",mass:.8,density:1050,r:.07,color:0x8a4b2a,food:35},
+ meat_cooked:{name:"Cooked meat",mass:.8,density:1050,r:.07,color:0x8a4b2a,food:35,hot:true},
  hide:{name:"Hide",mass:1.5,density:950,r:.09,color:0x9c7a52},
  flake:{name:"Stone flake",mass:.1,density:2600,r:.03,color:0x55585e},
  axe_stone:{name:"Stone axe",mass:1,density:1500,r:.08,color:0x7d7468,tool:"axe",power:1,dur:40},
@@ -69,7 +69,13 @@ export const ITEMS={
  leaf:{name:"Leaf",mass:.005,density:700,r:.05,color:0x4f9a3a},
  snow:{name:"Handful of snow",mass:.2,density:300,r:.05,color:0xf4fbff},
  nuts:{name:"Hazelnuts",mass:.1,density:1000,r:.03,color:0x9a6a3a,food:12},
- satchel:{name:"Hide satchel",mass:.8,density:900,r:.12,color:0x8a5a32,tool:true}
+ satchel:{name:"Hide satchel",mass:.8,density:900,r:.12,color:0x8a5a32,tool:true},
+ nuts_roasted:{name:"Roasted hazelnuts",mass:.1,density:950,r:.03,color:0x6e4220,food:16,hot:true},
+ jam:{name:"Pot of berry jam",mass:2,density:1300,r:.09,color:0x5a1f4a,food:24,pot:true},
+ dough:{name:"Bread dough",mass:.6,density:1100,r:.06,color:0xeedcae},
+ flatbread:{name:"Flatbread",mass:.4,density:500,r:.07,color:0xc99a55,food:30,hot:true},
+ stew:{name:"Pot of stew",mass:3,density:1100,r:.09,color:0x8a5530,food:45,pot:true,hot:true},
+ berry_mash:{name:"Pot of berry mash",mass:2,density:1100,r:.09,color:0x4a2a6a,food:10,pot:true}
 };
 // id, name, age (0..10 as ERAS), how, principle, tree ids, direct atlas ids
 const RAW=[
@@ -118,7 +124,7 @@ const RAW=[
  ["drying","Food preservation",1,"Dry raw meat on a drying rack (Q with meat at the rack, wait a few hours, E to collect).","Microbes that spoil food need water. Drying lowers the 'water activity' of meat until bacteria and moulds cannot grow, so dried meat keeps for months. Salting, smoking and fermenting work on similar principles.",[],["field.microbiology"]],
  ["groundwater","Groundwater & wells",1,"Dig a well low enough to reach the water table and draw water from it.","Rain soaks into the ground and fills the pores of rock and soil below the water table. Water drawn from a well has been filtered through sand and soil, so it carries far fewer germs than a river or pond. Wells over 8,000 years old are known from Cyprus and Israel.",["irrigation"],["ology.hydrology"]],
  ["masonry","Masonry & thermal mass",1,"Build a stone house.","Thick stone and clay walls store heat by day and release it slowly at night (high 'thermal mass'), and block the wind completely, so the inside stays far steadier than the air outside. Permanent mud-brick and stone houses mark the first villages such as Jericho and Çatalhöyük.",["settlement"],["field.archaeology"]],
- ["hygiene","Contamination & illness",0,"Fall ill from bad food or untreated water and recover.","Many illnesses are caused by microbes in contaminated water or undercooked meat. Boiling, cooking thoroughly and clean wells break the chain of infection — ideas that became germ theory in the 19th century (Pasteur, Koch) but were practised long before.",[],["field.epidemiology"]],
+ ["hygiene","Contamination & illness",0,"Drink untreated pond water, then boil a pot of it at a fire.","Many illnesses are caused by microbes in contaminated water or undercooked meat. Boiling, cooking thoroughly and clean wells break the chain of infection — ideas that became germ theory in the 19th century (Pasteur, Koch) but were practised long before.",[],["field.epidemiology"]],
  ["elastic","Stored elastic energy",0,"Shoot an arrow from a bow or a stone from a sling.","A drawn bow stores elastic potential energy in the bent wood and releases it into the arrow's kinetic energy ½mv² in a fraction of a second; a sling lengthens your arm so the stone leaves much faster than a throw. Both let a hunter strike from a safe distance. Bows appear by about 64,000 years ago.",["spear"],["physical.classical-mechanics"]],
  ["scholarship","Scholarship",2,"Study at a study table (E).","Recorded knowledge accumulates: each generation can build on the written results of earlier ones. Study now advances the rest of the discovery tree and maps the atlas.",[],[]],
  ["sparks","Striking sparks",0,"Observe (F) flint and pyrite together: hold one, press F, then press the other's hotbar number.","Pyrite (iron sulfide, FeS₂) struck with hard flint sheds tiny fragments heated by the blow; they burn in air as glowing sparks. Prehistoric fire kits paired exactly these two stones.",[],["field.chemistry","ology.mineralogy"]],
@@ -130,6 +136,12 @@ const RAW=[
  ["wonder_feather","Wonder: the feather",0,"Observe a feather.","Feather vanes are held together by tiny hooked barbules that zip like Velcro; birds re-zip them when preening. Feathers evolved from dinosaur scales and first served for warmth.",[],["ology.ornithology"]],
  ["wonder_snow","Wonder: the snowflake",0,"Observe a handful of snow in the cold.","Water molecules freeze into a hexagonal lattice because of the 104.5° angle of the H–O–H bond, so snow crystals grow six arms. Each takes its own path through the cloud, so no two are alike.",[],["ology.glaciology","ology.meteorology"]],
  ["wonder_leaf","Wonder: leaf veins",0,"Observe a leaf.","Leaf veins form a branching network that carries water in and sugars out; the green comes from chlorophyll absorbing red and blue light and reflecting green.",[],["ology.photobiology"]],
+ ["maillard","Browning (Maillard reaction)",0,"Roast hazelnuts at a burning fire (hold nuts, Q at the fire).","Above about 140 °C, sugars and amino acids in food react and form hundreds of new flavour and aroma molecules plus brown pigments (melanoidins). Louis-Camille Maillard described it in 1912; it is why roasted, toasted and seared food tastes so different from boiled.",[],["field.chemistry"]],
+ ["caramel","Caramelisation",0,"Hold a pot of boiled water at a fire with at least 3 dark berries in your pack.","Heated sugars break down and recombine into caramel compounds — brown colour and toffee-like flavour. Cooking fruit also drives off water and frees pectin, which sets into a jelly as it cools: jam is preserved by its high sugar concentration.",[],["field.chemistry"]],
+ ["baking","Baking bread",1,"Knead grain and boiled water into dough (crafting), then bake it at a fire (Q).","Heat makes starch granules swell and gelatinise while steam puffs the dough and the crust browns. Flatbreads were baked on hot stones more than 14,000 years ago — before farming began.",[],["field.chemistry"]],
+ ["stew","Stewing & simmering",1,"Hold a pot of boiled water at a fire with raw meat and grain, nuts or seeds in your pack.","Water cannot get hotter than its boiling point, so a simmering pot cooks gently and evenly by convection. Long, moist heat turns tough collagen into soft gelatin and pulls flavour into the broth.",[],["field.thermodynamics"]],
+ ["fermentation","Fermentation",1,"Mash dark berries in an empty pot (crafting), wait about a day, then taste or observe it.","Wild yeasts on berry skins eat the sugars and release carbon dioxide and alcohol; bacteria can turn alcohol into vinegar. Fermentation preserved food long before anyone knew microbes existed (Pasteur showed it was alive in the 1850s).",[],["ology.mycology","field.microbiology"]],
+ ["gastronomy","The chef",1,"Master five cooking discoveries (roasting meat, browning, caramelisation, baking, stewing, fermentation, drying).","Cooking is applied chemistry and physics: heat transfer, phase changes, browning reactions, emulsions and microbes. Cooking may even have shaped us — cooked food releases more energy, which may have helped fuel larger human brains.",[],["field.chemistry","ology.physiology"]],
 ];
 export const WORLD_DISCOVERIES=RAW.map(r=>({id:r[0],name:r[1],age:r[2],how:r[3],principle:r[4],tree:r[5],atlas:r[6]}));
 // recipe: item -> {needs discovery id or null, inputs}
@@ -165,9 +177,11 @@ export const RECIPES=[
  {out:"well",req:"ceramics",in:{stone:6,log:1}},
  {out:"house",req:"ceramics",in:{stone:10,clay:4,log:2}},
  {out:"pendulum",req:"counting",in:{stick:3,fiber:1,stone:1}},
- {out:"prism",req:"glass",in:{glass:1,flake:1}}
+ {out:"prism",req:"glass",in:{glass:1,flake:1}},
+ {out:"dough",req:"boiling",in:{grain:2,pot_clean:1},ret:"pot"},
+ {out:"berry_mash",req:"ceramics",in:{berry_dark:4,pot:1}}
 ];
-const CAT={satchel:"tools",campfire:"build",leanto:"build",hut:"build",house:"build",wall:"build",chest:"build",rack:"build",well:"build",kiln:"build",raft:"build",table:"science",torch:"build",
+const CAT={dough:"cooking",berry_mash:"cooking",satchel:"tools",campfire:"build",leanto:"build",hut:"build",house:"build",wall:"build",chest:"build",rack:"build",well:"build",kiln:"build",raft:"build",table:"science",torch:"build",
  axe_stone:"tools",axe_copper:"tools",axe_bronze:"tools",axe_iron:"tools",wheel:"tools",bellows:"tools",clothing:"tools",
  spear:"weapons",sling:"weapons",bow:"weapons",arrow:"weapons",
  tally:"science",tablet:"science",gnomon:"science",lens:"science",compass:"science",telescope:"science",pendulum:"science",prism:"science"};

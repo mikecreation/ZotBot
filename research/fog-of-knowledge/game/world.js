@@ -535,6 +535,9 @@ function structSegs(s){if(s._seg)return s._seg;const c=Math.cos(s.ry||0),sn=Math
 function collide(pos,rad){let hit=false;for(const s of world.structures){if(s.type!=="wall"&&s.type!=="house")continue;if(Math.abs(s.x-pos.x)>6||Math.abs(s.z-pos.z)>6)continue;
   for(const [ax,az,bx,bz] of structSegs(s)){const dx=bx-ax,dz=bz-az,l2=dx*dx+dz*dz,t=clamp(((pos.x-ax)*dx+(pos.z-az)*dz)/l2,0,1),cx=ax+dx*t,cz=az+dz*t,ex=pos.x-cx,ez=pos.z-cz,d=Math.hypot(ex,ez),r=rad+.18;
     if(d<r){hit=true;if(d<1e-4){pos.x+=r;continue}pos.x=cx+ex/d*r;pos.z=cz+ez/d*r}}}return hit}
+// Discovery mode (default): no hunger, thirst, illness or injuries — setbacks instead of damage. Classic survival is an opt-in setting.
+let survivalMode=(()=>{try{return localStorage.getItem("fog-of-knowledge:game:survival")==="1"}catch(_){return false}})();const SURV=()=>survivalMode;
+function setSurvival(v){survivalMode=!!v;try{localStorage.setItem("fog-of-knowledge:game:survival",v?"1":"0")}catch(_){}if(world)Object.assign(world.st,{hunger:Math.max(world.st.hunger,85),thirst:Math.max(world.st.thirst,85),sick:0,sprain:0,health:Math.max(world.st.health,60)});if(player)renderHUD()}
 const fireLights=[];let fireShFrame=0;const fireFps={ema:60,low:0,high:0,on:true,t:0};let eyeAdapt=0,brightBoost=(()=>{try{return +localStorage.getItem("fog-of-knowledge:game:bright")||0}catch(_){return 0}})();
 /* Fire size & light, from fuel physics.
    size  F = clamp(√(fuel/3 kg), 0.45, 2.2)       — a bigger fuel load builds a bigger, taller fire
@@ -705,7 +708,7 @@ function stepPlayer(dt){
   const depth=-p.pos.y;p.swimming=ground<-.6&&p.pos.y<-.55;if(p.swimming)p.crouch=false;
   const lame=st.sprain>0;
   const running=(keys.has("ShiftLeft")||keys.has("ShiftRight"))&&st.stamina>5&&mv.lengthSq()>0&&!p.swimming&&!p.crouch&&!lame;
-  const maxV=(p.swimming?1.3:p.crouch?1.1:running?5.2:2.2)*(lame&&!p.swimming?.55:1);
+  const maxV=(p.swimming?1.3:p.crouch?1.1:running?5.2:2.2)*(lame&&!p.swimming?.55:1)*(!SURV()&&st.tb<35.6?.7:1);   // shivering slows you (Discovery mode)
   const desired=mv.multiplyScalar(maxV);
   const accel=p.swimming?3:p.onGround?groundMu()*G_ACC:1.2;   // friction limits how fast feet can change velocity
   const dvx=desired.x-p.vel.x,dvz=desired.z-p.vel.z,dl=Math.hypot(dvx,dvz),lim=accel*dt;
@@ -733,7 +736,7 @@ function stepPlayer(dt){
     const impact=-p.vel.y;if(impact>3.2)GFX.FX.dust(p.pos.x,g,p.pos.z,Math.min(30,impact*3));
     if(impact>6.5){AU.hit(true);world.counters.maxImpact=Math.max(world.counters.maxImpact||0,+impact.toFixed(1))}
     if(impact>8){const dmg=(impact-8)*11;hurt(dmg,`Hard landing at ${impact.toFixed(1)} m/s`,"a fall")}
-    if(impact>7&&!p.dead&&Math.random()<.5&&!(st.sprain>0)){st.sprain=120;toast("You land badly and sprain your ankle — you can't run for a while. Resting by a fire or in shelter heals it faster.")}
+    if(SURV()&&impact>7&&!p.dead&&Math.random()<.5&&!(st.sprain>0)){st.sprain=120;toast("You land badly and sprain your ankle — you can't run for a while. Resting by a fire or in shelter heals it faster.")}
     if(impact>6.5&&!p.dead)discover("impact");
     p.pos.y=g;p.vel.y=0;p.onGround=true;
     const sl=slopeAt(p.pos.x,p.pos.z);if(sl>1.05){const e=1;const gx=(heightAt(p.pos.x+e,p.pos.z)-heightAt(p.pos.x-e,p.pos.z)),gz=(heightAt(p.pos.x,p.pos.z+e)-heightAt(p.pos.x,p.pos.z-e));p.vel.x-=gx*2*dt*G_ACC*.3;p.vel.z-=gz*2*dt*G_ACC*.3}
@@ -757,7 +760,7 @@ function stepSurvival(dt){
   let Ta=player.swimming?waterTemp(x,z):airTemp(x,z,player.pos.y);
   if(lv===3)Ta=lerp(Ta,17,.65);else if(lv===2)Ta+=3;          // thermal mass of stone walls / still air in a hut
   const speed=Math.hypot(player.vel.x,player.vel.z),activity=player.swimming?4:speed>3.5?3:speed>.5?1:0;
-  let M=100+activity*90+(st.tb<36.3?80:0);                                  // metabolic heat (W), shivering adds heat
+  let M=100+activity*90+(st.tb<36.3?80:0)+((st.warmT||0)>0?70:0);if(st.warmT>0)st.warmT-=dt;   // a hot meal warms from the inside                                  // metabolic heat (W), shivering adds heat
   const clothed=world.worn==="clothing";
   let hA=player.swimming?22:9*(world.weather.amt>.3&&!lv?1.4:1)*[1,.6,.4,.3][lv];  // heat transfer coefficient·area (W/K)
   if(snapNow()&&!lv)hA*=1.25;                                                    // north wind during a cold snap
@@ -775,29 +778,40 @@ function stepSurvival(dt){
   else if(!player.swimming)st.wet=Math.max(0,st.wet-dt*.01*(1+Math.max(0,Ta)/15+fire/60));
   if(st.wet>.6&&Ta<10)discover("evaporative");
   const meta=1+(M-100)/200;                          // basal metabolism + a share of activity
-  st.hunger=Math.max(0,st.hunger-dtg*100/129600*meta*(st.sick>0?2:1));
-  st.thirst=Math.max(0,st.thirst-dtg*100/86400*(Ta>30?1.8:1)*(st.sick>0?2:1));
+  if(SURV()){st.hunger=Math.max(0,st.hunger-dtg*100/129600*meta*(st.sick>0?2:1));
+  st.thirst=Math.max(0,st.thirst-dtg*100/86400*(Ta>30?1.8:1)*(st.sick>0?2:1))}else{st.hunger=Math.max(st.hunger,85);st.thirst=Math.max(st.thirst,85);st.sick=0;st.sprain=0;st.tb=Math.max(st.tb,34.6)}
   if(st.sick>0){st.sick-=dt;hurt(dt*.15,null,"illness");if(st.sick<=0&&!player.dead){st.sick=0;toast("The sickness passes. You feel yourself again.");discover("hygiene")}}
   if(st.sprain>0){st.sprain-=dt*(lv||fire>40?2:1);if(st.sprain<=0){st.sprain=0;toast("Your ankle feels strong again.")}}
   if(st.hunger<=0)hurt(dt*.4,null,"starvation");if(st.thirst<=0)hurt(dt*.6,null,"thirst");
   if(st.tb<35)hurt(dt*.6*(35-st.tb),null,"the cold");if(st.tb>39.5)hurt(dt*.6*(st.tb-39.5),null,"heatstroke");
   if(st.hunger>30&&st.thirst>30&&st.tb>35.5&&st.tb<38.5&&st.sick<=0)st.health=Math.min(100,st.health+dt*.25);
-  player.Ta=Ta;player.netW=net;player.fireW=fire;player.shelter=lv;
+  player.Ta=Ta;player.netW=net;player.fireW=fire;player.shelter=lv;duskCheck();
   warnings(dt);
 }
 let warnT=0;
 function warnings(dt){warnT-=dt;if(warnT>0)return;const st=world.st;let m=null;
   if(player.swimming&&st.stamina<35)m=`You are tiring in the water (stamina ${Math.round(st.stamina)}) — swim for the shore!`;
-  else if(st.tb<35.7)m=`You are dangerously cold (body ${st.tb.toFixed(1)} °C). Get to a fire or shelter now!`;
+  else if(st.tb<35.7)m=SURV()?`You are dangerously cold (body ${st.tb.toFixed(1)} °C). Get to a fire or shelter now!`:`You are shivering (body ${st.tb.toFixed(1)} °C) and moving slowly. A fire or shelter will warm you.`;
   else if(st.tb<36.2&&(player.netW||0)<0)m=`You're getting cold (body ${st.tb.toFixed(1)} °C, losing ${Math.round(-(player.netW||0))} W). A fire, shelter or clothing would help.`;
-  else if(st.thirst<15)m="You are badly dehydrated — drink soon.";
-  else if(st.hunger<15)m="You are starving — eat something soon.";
-  else if(st.health<30)m="Your health is low — rest by a fire, eat and drink.";
+  else if(SURV()&&st.thirst<15)m="You are badly dehydrated — drink soon.";
+  else if(SURV()&&st.hunger<15)m="You are starving — eat something soon.";
+  else if(SURV()&&st.health<30)m="Your health is low — rest by a fire, eat and drink.";
   else if(st.tb>39)m="You are overheating — find shade or water.";
   if(m){toast("⚠ "+m);AU.warn();warnT=14;world.counters.warnings=(world.counters.warnings||0)+1}else warnT=2}
 let lastHurtSnd=0;
-function hurt(n,why,cause){const st=world.st;st.health-=n;if(why){toast(why+` (−${Math.round(n)} health)`);if(performance.now()-lastHurtSnd>400){AU.hurt();lastHurtSnd=performance.now()}}
+function hurt(n,why,cause){if(!SURV())return setback(n,why,cause);const st=world.st;st.health-=n;if(why){toast(why+` (−${Math.round(n)} health)`);if(performance.now()-lastHurtSnd>400){AU.hurt();lastHurtSnd=performance.now()}}
   if(st.health<=0&&!player.dead)die(why||"Your body gave out",cause||"unknown")}
+let setbackSnd=0,rescueT=0;
+function setback(n,why,cause){const st=world.st,C=world.counters;
+  if(cause==="drowning")return washAshore();
+  if(["the cold","illness","starvation","thirst","heatstroke"].includes(cause))return;   // handled softly in stepSurvival (shivering, slowed), never damage
+  st.stamina=Math.max(0,st.stamina-Math.min(30,n*2));C.setbacks=(C.setbacks||0)+1;C.setbacksBy=C.setbacksBy||{};C.setbacksBy[cause||"unknown"]=(C.setbacksBy[cause||"unknown"]||0)+1;
+  if(cause==="wolves"||cause==="a boar"){let a=null,bd=4;for(const o of animals){const d=o.pos.distanceTo(player.pos);if(!o.dead&&o.kind!=="dog"&&d<bd){bd=d;a=o}}
+    if(a){const away=player.pos.clone().sub(a.pos).setY(0);if(away.lengthSq()<1e-4)away.set(1,0,0);away.normalize();player.vel.x+=away.x*5;player.vel.z+=away.z*5;a.flee=4}}
+  if(why&&performance.now()-setbackSnd>1200){setbackSnd=performance.now();toast(`${why} — you stumble back, shaken (stamina −${Math.round(Math.min(30,n*2))}).${cause==="wolves"?" Fire keeps them away.":""}`);AU.hurt()}}
+function washAshore(){if(performance.now()-rescueT<3000)return;rescueT=performance.now();const P=player.pos;
+  for(let r=4;r<600;r+=4)for(let a=0;a<24;a++){const x=P.x+Math.cos(a/24*6.283)*r,z=P.z+Math.sin(a/24*6.283)*r;if(heightAt(x,z)>.6){player.pos.set(x,heightAt(x,z),z);player.vel.set(0,0,0);player.swimming=false;world.st.stamina=40;
+    world.counters.rescues=(world.counters.rescues||0)+1;toast("Exhausted, you let the current carry you — you wash up on the shore, cold and wet but alive.");updateChunks(true);return}}}
 function die(why,cause){
   player.dead=true;world.deaths++;world.counters.deathsBy[cause]=(world.counters.deathsBy[cause]||0)+1;player.zoom=false;
   const o=$("#wDeath");o.hidden=false;o.innerHTML=`<div class="box"><h2>YOU DIED</h2><p>${esc(why)}.</p><p class="muted">Cause: ${esc(cause)}. Your knowledge survives. What you carried stays in a bundle where you fell — walk back to recover it. You will wake at your camp.</p><button class="primary" id="wRespawn">RETURN TO CAMP</button></div>`;
@@ -825,11 +839,21 @@ function applyKnowledge(d){
   return ks.revealed.length-before;
 }
 const discLog=[];
+const COOK_DISC=["cooking","maillard","caramel","baking","stew","fermentation","drying"];
+// Cookbook: [discovery, dish, ingredients, method, effect]
+const COOKBOOK=[["cooking","Roast meat","Raw meat","Hold it at a burning fire, Q","Hot meal: warms you, restores stamina"],
+ ["maillard","Roasted hazelnuts","Hazelnuts","Hold them at a fire hotter than ~140 °C, Q","Hot snack"],
+ ["caramel","Berry jam","Pot of boiled water + 3 dark berries","Hold the pot at a fire, Q","Sweet energy; the pot comes back"],
+ ["baking","Flatbread","2 grain + pot of boiled water → dough (craft)","Bake the dough at a fire, Q","Hot meal"],
+ ["stew","Stew","Pot of boiled water + raw meat + grain, nuts or seeds","Hold the pot at a fire, Q","Big hot meal; the pot comes back"],
+ ["fermentation","Fermented berries","4 dark berries + empty pot → mash (craft)","Wait about a day, then taste it (Q)","Fizzy and sour"],
+ ["drying","Dried meat","Raw meat","Hang it on a drying rack for ~4 hours","Keeps for months"]];
 function discover(id,quiet){
   if(!world||hasD(id))return false;const d=WD.get(id);if(!d)return false;
   world.disc.push(id);const added=applyKnowledge(d);discLog.push({id,gameTime:Math.round(world.gameTime),day:+(world.gameTime/86400).toFixed(2)});
   const unlocked=RECIPES.filter(r=>r.req===id).map(r=>ITEMS[r.out].name);
   if(!quiet)showDiscovery(d,added,unlocked);
+  if(id!=="gastronomy"&&COOK_DISC.includes(id)&&COOK_DISC.filter(hasD).length>=5)discover("gastronomy");
   save();return true;
 }
 function linkedAtlasIds(d){const out=[];for(const t of d.tree){const td=treeById.get(t);if(td)out.push(...td.atlas)}out.push(...d.atlas);return [...new Set(out)].filter(a=>!atlas||atlas.index.has(a))}
@@ -911,7 +935,7 @@ function interact(){
   if(t.kind==="boulder"){const {b}=t.obj,ax=bestAxe(),max=ax?4:1;b.mined=b.mined||0;if(b.mined>=max)return toast(ax?"No loose rock left on this boulder.":"Nothing else comes loose by hand. A hard-edged tool could chip more off.");
     b.mined++;player.actCd=.3;give("stone");if(ax)useTool(ax,2);AU.chop();GFX.FX.dust(b.x,b.y+.5,b.z,6);toast(ax?"You chip a stone off the boulder.":"You pry a loose stone from the boulder.");return}
   if(t.kind==="animal"){const a=t.obj;if(a.kind==="dog"){toast("Your dog wags its tail.");return}return toast(`A ${a.kind}. ${a.kind==="wolf"?"Careful.":"It watches you warily."}`)}
-  if(t.kind==="water"){world.st.thirst=Math.min(100,world.st.thirst+25);AU.drink();if(Math.random()<.12)makeSick(60,"You drank untreated water and feel ill.");else toast("You drink from the water.");return}
+  if(t.kind==="water"){world.st.thirst=Math.min(100,world.st.thirst+25);AU.drink();if(!SURV()){world.counters.untreated=1;toast("You drink from the water. It tastes of earth — untreated water can carry microbes you cannot see.")}else if(Math.random()<.12)makeSick(60,"You drank untreated water and feel ill.");else toast("You drink from the water.");return}
   const s=t.obj;
   if(BURN.has(s.type)){if(s.type!=="torch"&&take("log")){s.fuel+=5;toast("Added a log (5 kg).")}else if(take("stick")){s.fuel+=.5;toast(`Added a stick (0.5 kg${s.type==="torch"?" ≈ 4 hours of torchlight":""}).`)}else toast("You need sticks or logs as fuel.");AU.place();return}
   if(s.type==="pack"){for(const k in s.items)give(k,s.items[k]);scene.remove(s.obj);world.structures.splice(world.structures.indexOf(s),1);AU.pickup();toast("You recover your belongings.");renderHotbar();return}
@@ -947,12 +971,19 @@ function useHeld(){
   if(k==="log"&&t?.kind==="boulder"){const {ch,b}=t.obj,f=forward();b.x+=f.x*1.6;b.z+=f.z*1.6;b.y=heightAt(b.x,b.z);setInst(ch.boulders,b.i,b.x,b.y+b.s*.35,b.z,b.s*1.2,b.s*.8,b.s,b.i);ch.boulders.instanceMatrix.needsUpdate=true;world.moved[ch.key+"|"+b.i]=[b.x,b.z];AU.place();toast("With a long lever, the boulder rolls.");discover("lever");return}
   if(k==="meat_raw"&&s?.type==="rack"){if(s.meat.length>=4)return toast("The rack is full.");take("meat_raw");s.meat.push(world.gameTime);updateRack(s);toast("You hang the meat in strips to dry. It will take about 4 hours.");return}
   if(k==="meat_raw"&&fireNear?.lit&&fireNear.temp>70){take("meat_raw");give("meat_cooked");AU.ignite();if(PETS)PETS.distract("cook");toast("The meat sizzles and cooks through.");discover("cooking");return}
+  if(k==="nuts"&&fireNear?.lit&&fireNear.temp>140){take("nuts");give("nuts_roasted");AU.ignite();toast("The hazelnuts crackle and turn golden-brown — a toasty smell rises.");discover("maillard");return}
+  if(k==="dough"&&fireNear?.lit&&fireNear.temp>180){take("dough");give("flatbread");AU.ignite();if(PETS)PETS.distract("cook");toast("The dough puffs and browns on the hot stones: flatbread!");discover("baking");return}
+  if(k==="pot_clean"&&fireNear?.lit&&fireNear.temp>120){const veg=["grain","nuts","seeds"].find(v=>inv(v));
+    if(inv("meat_raw")&&veg){take("pot_clean");take("meat_raw");take(veg);give("stew");AU.ignite();if(PETS)PETS.distract("cook");toast(`Meat and ${ITEMS[veg].name.toLowerCase()} simmer gently in the pot: stew.`);discover("stew");return}
+    if(inv("berry_dark")>=3){take("pot_clean");take("berry_dark",3);give("jam");AU.ignite();toast("The berries bubble down, darken and thicken into sticky jam.");discover("caramel");return}
+    return toast("A pot of clean water simmers. Add ingredients to your pack: raw meat + grain/nuts/seeds for stew, or 3 dark berries for jam.")}
+  if(k==="berry_mash")return tasteMash();
   if(k==="clay"&&fireNear?.lit&&fireNear.temp>550&&fireNear.type!=="kiln"){take("clay");give("pot");toast(`Fired at ${Math.round(fireNear.temp)} °C, the clay becomes a ceramic pot.`);discover("ceramics");return}
   if(k==="clay"&&fireNear?.lit&&fireNear.type!=="kiln")return toast(`The fire is only ${Math.round(fireNear.temp)} °C — let it build up (clay needs ~600 °C).`);
   if(k==="pot"&&s?.type==="well"){take("pot");give("pot_clean");AU.drink();toast("You draw a pot of clean, filtered well water.");discover("groundwater");return}
   if(k==="pot"&&(t?.kind==="water"||player.swimming||heightAt(frontPoint(1.2).x,frontPoint(1.2).z)<0)){take("pot");give("pot_water");AU.splash(false);toast("Filled the pot with water.");return}
   if(k==="pot_water"&&fireNear?.lit&&fireNear.temp>150){const alt=Math.max(0,player.pos.y),bp=100-alt/285;take("pot_water");give("pot_clean");AU.ignite();
-    toast(`The water boils at ${bp.toFixed(1)} °C here (altitude ${Math.round(alt)} m).`);const B=world.counters.boils;B.push(+alt.toFixed(1));discover("boiling");
+    toast(`The water boils at ${bp.toFixed(1)} °C here (altitude ${Math.round(alt)} m).`);const B=world.counters.boils;B.push(+alt.toFixed(1));discover("boiling");if(world.counters.untreated)discover("hygiene");
     const lo=Math.min(...B),hi=Math.max(...B);if(hi-lo>=150){toast(`Compared: ${(100-lo/285).toFixed(1)} °C at ${Math.round(lo)} m vs ${(100-hi/285).toFixed(1)} °C at ${Math.round(hi)} m — lower air pressure, lower boiling point.`);discover("pressure")}
     else if(B.length>1)toast(`Your boiling tests so far span ${Math.round(hi-lo)} m of altitude. Try one at least 150 m higher or lower.`);return}
   if(k==="pot_water"&&fireNear?.lit)return toast(`The flame is still only ${Math.round(fireNear.temp)} °C — give it a moment to build up heat before boiling.`);
@@ -982,6 +1013,9 @@ function useHeld(){
   if(it.food||it.drink)return eat();
   throwHeld();
 }
+function tasteMash(){const t=world.counters.mashT,age=t==null?0:(world.gameTime-t)/3600;
+  if(age<18)return toast(`The berry mash smells sweet and flat. Give it time (${Math.max(1,Math.round(18-age))} more hours) — something invisible needs to work.`);
+  take("berry_mash");give("pot");world.st.stamina=Math.min(100,world.st.stamina+10);AU.eat();toast("Fizzy, sour and faintly alcoholic! Tiny bubbles rise — the mash has fermented.");discover("fermentation");return true}
 function kilnUse(k,item){
   if(item==="bellows"){if(!k.bellows){take("bellows");k.bellows=true;AU.place();toast("Bellows fitted: forced air raises the kiln temperature.")}return}
   const T=k.temp;
@@ -998,18 +1032,20 @@ function kilnUse(k,item){
 function eat(){
   const k=world.held,it=k&&ITEMS[k];if(!it||!(it.food||it.drink))return toast("You can't eat or drink that.");
   const st=world.st;
-  if(it.drink){take(k);give("pot");st.thirst=Math.min(100,st.thirst+it.drink);AU.drink();if(k==="pot_water"&&Math.random()<.12)makeSick(60,"Unboiled water — you feel ill.");else toast("Refreshing.");return}
-  take(k);st.hunger=Math.min(100,st.hunger+it.food);AU.eat();
-  if(k==="berry_red")makeSick(45,"Bitter… these red berries make you sick.");
-  else if(k==="meat_raw"&&Math.random()<.35)makeSick(60,"Raw meat — food poisoning!");
-  else toast(`You eat the ${it.name.toLowerCase()}.`);
+  if(it.drink){take(k);give("pot");st.thirst=Math.min(100,st.thirst+it.drink);AU.drink();if(k==="pot_water"&&!SURV())world.counters.untreated=1;if(k==="pot_water"&&SURV()&&Math.random()<.12)makeSick(60,"Unboiled water — you feel ill.");else toast("Refreshing.");return}
+  if(k==="berry_mash")return tasteMash();
+  take(k);if(it.pot)give("pot");st.hunger=Math.min(100,st.hunger+it.food);AU.eat();
+  if(!SURV()){st.stamina=Math.min(100,st.stamina+it.food);if(it.hot){st.warmT=Math.max(st.warmT||0,180);st.tb=Math.min(37.4,st.tb+.3)}}
+  if(k==="berry_red")SURV()?makeSick(45,"Bitter… these red berries make you sick."):toast("Bitter! You spit them out — many bitter plants carry toxic alkaloids. Your tongue is an old chemical detector.");
+  else if(k==="meat_raw")SURV()&&Math.random()<.35?makeSick(60,"Raw meat — food poisoning!"):toast(SURV()?"You chew the raw meat.":"Raw meat is tough and risky — cooking kills parasites. Try it at a fire.");
+  else toast(`You eat the ${it.name.toLowerCase()}.${!SURV()&&it.hot?" It warms you from the inside.":""}`);
   if(k.startsWith("berry")&&!world.counters.berries.includes(k)){world.counters.berries.push(k);if(world.counters.berries.length>=2)discover("edible")}
 }
 function craft(out){
   const r=RECIPES.find(x=>x.out===out);if(!r)return false;
   if(r.req&&!hasD(r.req))return false;if(r.tool&&!inv(r.tool)){toast(`You need a ${ITEMS[r.tool].name}.`);return false}
   for(const k in r.in)if(inv(k)<r.in[k]){toast("Missing ingredients.");return false}
-  for(const k in r.in)take(k,r.in[k]);give(out,r.n||1);world.held=out;AU.craft();if(PETS)PETS.distract("craft");
+  for(const k in r.in)take(k,r.in[k]);if(r.ret)give(r.ret);if(out==="berry_mash")world.counters.mashT=world.gameTime;give(out,r.n||1);world.held=out;AU.craft();if(PETS)PETS.distract("craft");
   world.counters.crafted=(world.counters.crafted||0)+1;
   toast(`Crafted ${r.n>1?r.n+"× ":""}${ITEMS[out].name}.${ITEMS[out].place?" Press Q to place it.":""}`);
   if(out==="clothing"){take("clothing");world.worn="clothing";toast("You wear the hide clothing.");discover("clothing")}
@@ -1081,9 +1117,9 @@ function bar(n,v,col,txt,warn){return `<div class="hb${warn?" warn":""}"><span>$
 let hudT=0;
 function renderHUD(){
   const st=world.st,h=hourOf(),hh=Math.floor(h),mm=Math.floor((h-hh)*60);
-  $("#wBars").innerHTML=bar("HEALTH",st.health,"#ff4d67",Math.round(st.health),st.health<30)+bar("FOOD",st.hunger,"#ffc857",Math.round(st.hunger),st.hunger<15)+bar("WATER",st.thirst,"#55a8ff",Math.round(st.thirst),st.thirst<15)+bar("STAMINA",st.stamina,"#64e886",Math.round(st.stamina))+
+  $("#wBars").innerHTML=(SURV()?bar("HEALTH",st.health,"#ff4d67",Math.round(st.health),st.health<30)+bar("FOOD",st.hunger,"#ffc857",Math.round(st.hunger),st.hunger<15)+bar("WATER",st.thirst,"#55a8ff",Math.round(st.thirst),st.thirst<15):"")+bar("STAMINA",st.stamina,"#64e886",Math.round(st.stamina))+
     bar("BODY",(st.tb-30)/(42-30)*100,st.tb<35.5?"#7fb4ff":st.tb>38.5?"#ff7a3a":"#c8e9ff",st.tb.toFixed(1)+" °C",st.tb<35.8||st.tb>39)+(st.wet>.05?bar("WET",st.wet*100,"#3a7bd5",Math.round(st.wet*100)+"%"):"")+
-    (st.sick>0?`<div class="hb sick">SICK</div>`:"")+(st.sprain>0?`<div class="hb sick">SPRAINED ANKLE</div>`:"")+(player.crouch?`<div class="hb tag">CROUCHING · quiet</div>`:"")+(player.shelter?`<div class="hb tag">${["","LEAN-TO","HUT","STONE HOUSE"][player.shelter]} · sheltered</div>`:"");
+    (!SURV()&&st.tb<35.6?`<div class="hb sick">SHIVERING · slowed</div>`:"")+(!SURV()&&st.warmT>0?`<div class="hb tag">WARM MEAL</div>`:"")+(st.sick>0?`<div class="hb sick">SICK</div>`:"")+(st.sprain>0?`<div class="hb sick">SPRAINED ANKLE</div>`:"")+(player.crouch?`<div class="hb tag">CROUCHING · quiet</div>`:"")+(player.shelter?`<div class="hb tag">${["","LEAN-TO","HUT","STONE HOUSE"][player.shelter]} · sheltered</div>`:"");
   const day=Math.floor(world.gameTime/86400)+1,w=world.weather,Ta=player.Ta??airTemp(player.pos.x,player.pos.z,player.pos.y);
   const wk=w.kind==="storm"?"Thunderstorm":w.kind==="drystorm"?"Dry storm":w.amt>.3?(Ta<.5?"Snow":"Rain"):w.kind==="cloudy"?"Cloudy":"Clear";
   $("#wTime").innerHTML=`<b>Day ${day} · ${String(hh).padStart(2,"0")}:${String(mm).padStart(2,"0")}</b><span>${wk}${snapNow()?" · COLD SNAP":""} · air ${Ta.toFixed(1)} °C</span><span>${esc(TREE.ERAS[world.ks.era].name)} · ${world.disc.length}/${WORLD_DISCOVERIES.length} discoveries</span><span>${atlas?`Knowledge ${world.ks.revealed.length.toLocaleString()} / ${atlas.total.toLocaleString()}`:"Atlas loading…"}</span>`;
@@ -1093,19 +1129,21 @@ function renderHUD(){
   $("#wPrompt").textContent=player.dead?"":targetLabel(findTarget());
   renderObjectives();
 }
-function guideCtx(){return {has:hasD,inv,night:isNight(),hour:hourOf(),day:dayNum(),cold:(player.Ta??20)<10||world.st.tb<36.3,wet:world.st.wet>.5,sick:world.st.sick>0,sickCount:world.counters.sick,
+function guideCtx(){return {has:hasD,inv,night:isNight(),hour:hourOf(),day:dayNum(),cold:(player.Ta??20)<10||world.st.tb<36.3,wet:world.st.wet>.5,sick:world.st.sick>0,sickCount:world.counters.sick,untreated:!!world.counters.untreated,
   nearWater:nearWater(player.pos.x,player.pos.z,14),struct:t=>world.structures.some(s=>s.type===t),seen:world.counters.species.length,storm:world.weather.kind==="storm"||world.weather.kind==="drystorm",
   wolfSeen:!!world.counters.wolfSeen,era:world.ks.era,allDone:world.disc.length>=WORLD_DISCOVERIES.length}}
 function nearWater(x,z,r){for(let a=0;a<12;a++)for(const rr of [r*.5,r])if(heightAt(x+Math.cos(a/12*6.283)*rr,z+Math.sin(a/12*6.283)*rr)<0)return true;return false}
 let objHTML="";
-function renderObjectives(){const el=$("#wObj");if(!el)return;const c=guideCtx(),open=OBJECTIVES.filter(o=>!o[2](c)).slice(0,3),done=OBJECTIVES.length-OBJECTIVES.filter(o=>!o[2](c)).length;
+function duskNeedsFire(){const h=hourOf();if(!(h>=16.5||h<5))return false;return !world.structures.some(s=>s.lit&&s.type==="fire"&&Math.hypot(s.x-player.pos.x,s.z-player.pos.z)<25)}
+function duskCheck(){const h=hourOf(),C=world.counters;if(h>=16.5&&h<20&&C.duskWarned!==dayNum()&&duskNeedsFire()){C.duskWarned=dayNum();AU.warn?.();toast(hasD("fire")?"🔥 The sun is low. First priority: get a fire burning before dark — nights here are truly dark, and wolves fear the flames.":"🔥 The sun is low. First priority: a firewood pile (I) and flint + pyrite to light it — nights here are truly dark.")}}
+function renderObjectives(){const el=$("#wObj");if(!el)return;const c=guideCtx(),open=(duskNeedsFire()?[["o_dusk","🔥 Dusk: light a fire before dark",()=>false]]:[]).concat(OBJECTIVES.filter(o=>!o[2](c))).slice(0,3),done=OBJECTIVES.length-OBJECTIVES.filter(o=>!o[2](c)).length;
   const html=`<h5>OBJECTIVES <small>${done}/${OBJECTIVES.length}</small></h5>`+open.map((o,i)=>`<div class="ob${i?"":" now"}"><i></i>${esc(o[1])}</div>`).join("");if(html!==objHTML){el.innerHTML=html;objHTML=html}}
 let thoughtT=8,thoughtShowT=0;
 function stepCuriosity(dt){thoughtT-=dt;thoughtShowT-=dt;const el=$("#wThought");if(el&&thoughtShowT<=0&&!el.hidden)el.hidden=true;if(thoughtT>0)return;thoughtT=4;
   const since=(world.counters.lastThought??-1e9),now=world.gameTime;if(now-since<(world.seenQ.length<4?1800:3600))return;
   const c=guideCtx();const q=CURIOSITY.find(q=>!world.seenQ.includes(q.id)&&!hasD(q.ans)&&q.when(c));if(!q)return;
   world.seenQ.push(q.id);world.counters.lastThought=now;if(el){el.innerHTML=`<small>CURIOSITY · press J for your journal</small>${esc(q.q)}`;el.hidden=false;thoughtShowT=11}AU.chime()}
-const ICON={stick:"🥢",log:"🪵",stone:"🪨",flint:"🔪",pyrite:"✨",clay:"🟫",fiber:"🌾",berry_red:"🍒",berry_dark:"🫐",seeds:"🌱",grain:"🌾",meat_raw:"🥩",meat_dried:"🥓",meat_cooked:"🍖",hide:"🟤",flake:"🔺",
+const ICON={nuts_roasted:"🌰",jam:"🍯",dough:"🫓",flatbread:"🫓",stew:"🍲",berry_mash:"🍷",stick:"🥢",log:"🪵",stone:"🪨",flint:"🔪",pyrite:"✨",clay:"🟫",fiber:"🌾",berry_red:"🍒",berry_dark:"🫐",seeds:"🌱",grain:"🌾",meat_raw:"🥩",meat_dried:"🥓",meat_cooked:"🍖",hide:"🟤",flake:"🔺",
   axe_stone:"🪓",axe_copper:"🪓",axe_bronze:"🪓",axe_iron:"🪓",spear:"🔱",tally:"🧮",clothing:"🧥",pot:"🏺",pot_water:"💧",pot_clean:"♨️",copper_ore:"🟢",tin_ore:"⚪",iron_ore:"🔴",copper:"🟠",tin:"🔘",bronze:"🥉",iron:"⚫",
   quartz:"💎",sand:"⏳",glass:"🔷",lens:"🔍",lodestone:"🧲",tablet:"📜",gnomon:"🕐",bellows:"🪗",wheel:"☸️",telescope:"🔭",compass:"🧭",campfire:"🔥",leanto:"⛺",kiln:"🏭",raft:"🛶",table:"📚",sling:"🪃",bow:"🏹",arrow:"➶",
   prism:"🌈",torch:"🕯️",hut:"🛖",house:"🏠",chest:"🧰",rack:"🪜",well:"🪣",wall:"🧱",pendulum:"⏱️",shell:"🐚",feather:"🪶",leaf:"🍃",snow:"❄️",nuts:"🌰",satchel:"🎒"};
@@ -1120,7 +1158,7 @@ function renderHotbar(){
   const h=$("#wHands");if(h)h.innerHTML=[["L","left","LEFT HAND"],["R","held","RIGHT HAND"]].map(([s2,f,l])=>{const k=world[f];return `<div class="hand${k?" full":""}" data-hand="${s2}" ${k?`data-k="${k}"`:""}><small>${l}</small>${k?`<i style="--c:${hex(k)}">${icon(k)}</i><em>${esc(ITEMS[k].name)}</em>`:"<em class=muted>empty</em>"}</div>`}).join("");
   const u=player?.model?.userData;if(u){handMesh(u.held,world.held);handMesh(u.heldL,world.left)}
 }
-const CAT_NAMES={build:"BUILDING & CAMP",tools:"TOOLS & GEAR",weapons:"HUNTING & DEFENCE",science:"SCIENCE & RECORDS"};
+const CAT_NAMES={cooking:"COOKING & KITCHEN",build:"BUILDING & CAMP",tools:"TOOLS & GEAR",weapons:"HUNTING & DEFENCE",science:"SCIENCE & RECORDS"};
 let invQ="",invSort="",invCraftFor=null,dropAllArm=false;
 function itemTip(k){const it=ITEMS[k],n=NOTES[k]||[],seen=(world.observed||[]).includes(k);
   return `<b>${icon(k)} ${esc(it.name)}</b><p>${esc(n[0]||"")}</p>${seen&&n.length>1?`<p class="obs">Observed: ${esc(n.slice(1).join(" "))}</p>`:`<p class="muted">${seen?"":"Not observed yet — hold it and press F."}</p>`}<small>${it.mass} kg · ${it.density} kg/m³${it.food?` · +${it.food} food`:""}${it.power?` · power ${it.power}`:""}${it.place?" · placeable":""}</small>`}
@@ -1152,7 +1190,7 @@ function ctxActions(k,hand){const it=ITEMS[k],n=inv(k),a=[];if(!it)return a;
   if(hand){a.push(["away","Put Away"]);a.push(["swap","Swap Hands"]);a.push(["observe","Observe (F)"]);a.push(["drop1","Drop"]);return a}
   if(world.held!==k)a.push(["right","Place in Right Hand"]);if(world.left!==k)a.push(["left","Place in Left Hand"]);a.push(["observe","Observe (F)"]);
   if(it.food||it.drink)a.push(["use",it.drink||k.startsWith("pot_")?"Drink":"Eat"]);else if(it.place)a.push(["use","Place in world"]);else if(it.tool||it.weapon||["flint","pyrite","lens","log","tally","gnomon","telescope","compass","pot"].includes(k))a.push(["use","Use"]);
-  if((k==="meat_raw"||k==="pot_water"||k==="clay")&&nearLitFire())a.push(["cook",k==="clay"?"Fire in the flames":k==="pot_water"?"Boil on the fire":"Cook on the fire"]);
+  if(["meat_raw","pot_water","clay","nuts","dough","pot_clean"].includes(k)&&nearLitFire())a.push(["cook",k==="clay"?"Fire in the flames":k==="pot_water"?"Boil on the fire":k==="pot_clean"?"Cook in the pot (stew / jam)":"Cook on the fire"]);
   if(RECIPES.some(r=>r.in[k]&&(!r.req||hasD(r.req))))a.push(["craftwith","Craft with…"]);
   a.push(["drop1","Drop 1"]);if(n>1){a.push(["dropx","Drop X…"]);a.push(["dropall","Drop All ("+n+")"])}return a}
 function openCtx(k,x,y,hand){const m=$("#wCtx");if(!m||!inv(k))return;const tip=$("#wTip");if(tip)tip.hidden=true;const acts=ctxActions(k,hand);
@@ -1193,10 +1231,12 @@ function renderJournal(){
       body=`<div class="bigCount"><b>${ks.revealed.length.toLocaleString()}</b> / ${atlas.total.toLocaleString()} atlas nodes revealed</div><div class="fieldBars">${atlas.families.map(f=>{const n=counts[f.id]||0,t=atlas.fieldTotals[f.id]||1,p=n/t*100;return `<div class="fb"><span style="color:${f.color}">${f.icon||""} ${esc(f.short)}</span><span class="t"><i style="width:${p.toFixed(2)}%;background:${f.color}"></i></span><span>${p>0&&p<10?p.toFixed(1):Math.round(p)}%</span></div>`}).join("")}</div>
       <h4>RECENTLY REVEALED</h4><div class="chips">${(ks.recent||[]).slice(-30).reverse().map(chip).join("")||"<span class=muted>Nothing yet.</span>"}</div>`}}
   if(jTab==="tree"){const av=E.available(ks);body=`<p>Age: <b>${esc(TREE.ERAS[ks.era].name)}</b> · discovery tree ${ks.known.length} / ${TREE.DISCOVERIES.length}. Hands-on discoveries rediscover tree entries; build a <b>study table</b> (needs Writing) and press E at it to advance the rest and map the atlas.</p><h4>OPEN TO STUDY</h4><div class="chips">${av.map(d=>`<span class="chip" title="${esc(d.note)}">${esc(d.name)} · ${Math.floor(ks.progress[d.id]||0)}/${E.costOf(d)}</span>`).join("")||"<span class=muted>none</span>"}</div><h4>KNOWN</h4><p class="muted">${ks.known.map(id=>esc(treeById.get(id)?.name||id)).join(" · ")||"none"}</p>`}
+  if(jTab==="cook"){const n=COOKBOOK.filter(c=>hasD(c[0])).length;body=`<p class="muted">Your Cookbook: every dish is a small experiment in heat, chemistry and microbes. ${n} / ${COOKBOOK.length} recipes found${hasD("gastronomy")?" · <b>You are a chef.</b>":" · master five to become a chef"}.</p>`+
+    COOKBOOK.map(([id,dish,ing,how,eff])=>{const k=hasD(id),d=WD.get(id);return `<div class="jd${k?"":" fog"} cookRow"><b>${k?esc(dish):"??? — "+esc(d.name)}</b><small>${k?esc(eff):"undiscovered"}</small><p>${k?`<b>Ingredients:</b> ${esc(ing)}<br><b>Method:</b> ${esc(how)}<br><i>${esc(d.principle)}</i>`:"Hint: "+esc(d.how)}</p></div>`}).join("")}
   if(jTab==="pets"){const P=world.pets;body=`<p class="muted">Companions are befriended, never caught: move quietly (C), offer food they like (Q), be patient, then pet them (E). Up to ${MAX_ACTIVE} follow you; the rest rest by your camp fire. Perks are gentle nudges, never required.</p>`+
     (P.length?P.map(p=>{const i=PET_INFO[p.kind];return `<div class="petRow"><span class="petE">${i.emoji}</span><div><input class="petName" data-petname="${p.id}" value="${esc(p.name)}" maxlength="18" aria-label="Name"><small>${esc(i.label)} · ${p.active?"following you":"resting at camp"}</small><p>${esc(i.perk)}</p></div><button data-petact="${p.id}">${p.active?"Rest at camp":"Follow me"}</button></div>`}).join(""):`<p>No companions yet. A stray cat has been seen near your camp…</p>`)+
     `<p class="muted">${PETS?PETS.activeCount():0} / ${MAX_ACTIVE} following · behaviours noticed: ${(world.counters.behav||[]).length}</p>`}
-  el.innerHTML=`<div class="pHead"><h3>KNOWLEDGE JOURNAL</h3><button data-close>✕ (Tab)</button></div><div class="jTabs">${[["disc",`Discoveries ${world.disc.length}/${WORLD_DISCOVERIES.length}`],["cur",`Curiosity ${world.seenQ.length}`],["exp","Experiments"],["know","Your Knowledge"],["tree","Discovery tree"],["pets",`Companions ${world.pets.length}`]].map(([k,l])=>`<button data-jtab="${k}" class="${k===jTab?"on":""}">${l}</button>`).join("")}</div><div class="jBody">${body}</div>`;
+  el.innerHTML=`<div class="pHead"><h3>KNOWLEDGE JOURNAL</h3><button data-close>✕ (Tab)</button></div><div class="jTabs">${[["disc",`Discoveries ${world.disc.length}/${WORLD_DISCOVERIES.length}`],["cur",`Curiosity ${world.seenQ.length}`],["exp","Experiments"],["know","Your Knowledge"],["tree","Discovery tree"],["cook",`Cookbook ${COOKBOOK.filter(c=>hasD(c[0])).length}/${COOKBOOK.length}`],["pets",`Companions ${world.pets.length}`]].map(([k,l])=>`<button data-jtab="${k}" class="${k===jTab?"on":""}">${l}</button>`).join("")}</div><div class="jBody">${body}</div>`;
 }
 function togglePanel(id){const el=$(id);el.hidden=!el.hidden;if(!el.hidden){try{document.exitPointerLock?.()}catch(_){}if(id==="#wInv")renderInventory();else renderJournal()}}
 
@@ -1250,7 +1290,7 @@ function bindInput(container){
     if(!$("#wPopup").hidden){if(e.code==="KeyE"||e.code==="KeyF"||e.code==="Enter"||e.code==="Space"||e.code==="Escape")closePopup();e.preventDefault();return}
     if(OBS&&OBS.isOpen){e.preventDefault();if(e.repeat)return;if(e.code==="KeyF"||e.code==="Escape")OBS.close();else if(e.code==="KeyP")PETS&&PETS.pet();else if(/^Digit[0-9]$/.test(e.code)){const k=ordered()[(+e.code.slice(5)+9)%10];OBS.second(k)}return}
     if(e.code==="Tab"||e.code==="KeyK"||e.code==="KeyJ"){e.preventDefault();if(e.code==="KeyJ"){jTab="cur";$("#wJournal").hidden=true}togglePanel("#wJournal");return}
-    if(e.code==="KeyI"){togglePanel("#wInv");return}
+    if(e.code==="KeyI"){if($("#wInv").hidden)invCraftFor=null;togglePanel("#wInv");return}   // a fresh open clears any old "Craft with…" filter
     if(e.code==="KeyH"){player.readout=!player.readout;return}
     if(e.code==="Escape"){if(!$("#wCtx").hidden){closeCtx();return}if(player.zoom){player.zoom=false;return}if($("#wInv").hidden&&$("#wJournal").hidden&&$("#wChest").hidden)window.__openSettings?.();else $("#wInv").hidden=$("#wJournal").hidden=$("#wChest").hidden=true;return}
     if(paused)return;
@@ -1455,8 +1495,9 @@ export function initWorld(){
   document.addEventListener("visibilitychange",()=>{if(document.hidden&&started&&world)save()});
   // debug / test hook (used by the headless verification and the automated playtests)
   const br=$("#wBright");if(br){br.value=Math.round(brightBoost*100);$("#wBrightV").textContent="+"+br.value+"%";br.oninput=()=>{brightBoost=clamp(br.value/100,0,.4);$("#wBrightV").textContent="+"+br.value+"%";try{localStorage.setItem("fog-of-knowledge:game:bright",String(brightBoost))}catch(_){}}}
+  const schk=$("#wSurvChk");if(schk){schk.checked=survivalMode;schk.onchange=()=>{setSurvival(schk.checked);toast(schk.checked?"Classic survival on: hunger, thirst, illness and injuries.":"Discovery mode: no hunger, illness or injuries — just you, the world and its puzzles.")}}
   const nchk=$("#wNeedyChk");if(nchk){nchk.checked=PETS.needyOn;nchk.onchange=()=>{PETS.needyOn=nchk.checked}}
-  window.__fogWorld={get pets(){return PETS},updateSky:()=>updateSky(.016),fireShadowBudget:reset=>{if(reset)Object.assign(fireFps,{on:true,low:0,high:0,ema:60});return {...fireFps}},envLight:()=>({sun:GFX.sun.intensity,hemi:GFX.hemi.intensity,moon:GFX.ENV.moonFrac,exposure:GFX.renderer?.toneMappingExposure,expMul:GFX.ENV.expMul,lights:fireLights.map(l=>({i:+l.intensity.toFixed(2),d:+l.distance.toFixed(1),sh:l.castShadow}))}),moonPhase:t=>GFX.moonPhase(t),fireLight:(fuel,heat=1,type="fire",lit=true)=>{const r=fireLight({fuel,heat,type,lit});delete r.color;return r},get lux(){return world._luxAtPlayer||0},get exposure(){return GFX.renderer?.toneMappingExposure},setBright:v=>{brightBoost=clamp(v,0,.4)},inventory:{capacity,slotsUsed,roomFor,ordered,setHand,swapHands,dropItem,dropEverything,ctxActions,ctxDo,openCtx,sortInv,moveTo,STACK,BASE_SLOTS,handItems:()=>{const u=player.model.userData;return {R:u.held?.userData.k||null,L:u.heldL?.userData.k||null,Rbone:u.held?.parent?.name,Lbone:u.heldL?.parent?.name,Rpos:u.held?.getWorldPosition(new THREE.Vector3()),Lpos:u.heldL?.getWorldPosition(new THREE.Vector3())}}},get paused(){return paused},items:ITEMS,drop:(k,x,z)=>addDrop(k,x,heightAt(x,z)+.15,z),get obs(){return OBS},observeHeld,needyUI,curiousSpot,oreSpot,landmark,PET_INFO,MAX_ACTIVE,get state(){return world},get player(){return player},get animals(){return animals},discover:id=>discover(id),closePopup,
+  window.__fogWorld={get pets(){return PETS},updateSky:()=>updateSky(.016),setSurvival,get survival(){return survivalMode},hud:()=>{renderHUD();renderObjectives();return {bars:$("#wBars").textContent,obj:$("#wObj").textContent}},cookbook:()=>COOKBOOK.map(c=>c[0]),duskNeedsFire:()=>duskNeedsFire(),fireShadowBudget:reset=>{if(reset)Object.assign(fireFps,{on:true,low:0,high:0,ema:60});return {...fireFps}},envLight:()=>({sun:GFX.sun.intensity,hemi:GFX.hemi.intensity,moon:GFX.ENV.moonFrac,exposure:GFX.renderer?.toneMappingExposure,expMul:GFX.ENV.expMul,lights:fireLights.map(l=>({i:+l.intensity.toFixed(2),d:+l.distance.toFixed(1),sh:l.castShadow}))}),moonPhase:t=>GFX.moonPhase(t),fireLight:(fuel,heat=1,type="fire",lit=true)=>{const r=fireLight({fuel,heat,type,lit});delete r.color;return r},get lux(){return world._luxAtPlayer||0},get exposure(){return GFX.renderer?.toneMappingExposure},setBright:v=>{brightBoost=clamp(v,0,.4)},inventory:{capacity,slotsUsed,roomFor,ordered,setHand,swapHands,dropItem,dropEverything,ctxActions,ctxDo,openCtx,sortInv,moveTo,STACK,BASE_SLOTS,handItems:()=>{const u=player.model.userData;return {R:u.held?.userData.k||null,L:u.heldL?.userData.k||null,Rbone:u.held?.parent?.name,Lbone:u.heldL?.parent?.name,Rpos:u.held?.getWorldPosition(new THREE.Vector3()),Lpos:u.heldL?.getWorldPosition(new THREE.Vector3())}}},get paused(){return paused},items:ITEMS,drop:(k,x,z)=>addDrop(k,x,heightAt(x,z)+.15,z),get obs(){return OBS},observeHeld,needyUI,curiousSpot,oreSpot,landmark,PET_INFO,MAX_ACTIVE,get state(){return world},get player(){return player},get animals(){return animals},discover:id=>discover(id),closePopup,
     give:(k,n)=>give(k,n),press:(code,ms)=>{keys.add(code);setTimeout(()=>keys.delete(code),ms)},keyEvent:code=>window.dispatchEvent(new KeyboardEvent("keydown",{code,bubbles:true})),keyDown:c=>keys.add(c),keyUp:c=>keys.delete(c),keysClear:()=>keys.clear(),
     teleport:(x,z)=>{player.pos.set(x,heightAt(x,z),z);player.vel.set(0,0,0);updateChunks(true)},stats:()=>({pos:player&&player.pos.toArray().map(v=>+v.toFixed(2)),chunks:chunks.size,animals:animals.length,frames,
       revealed:world?.ks.revealed.length,disc:world?.disc.length,atlas:!!atlas,drawCalls:renderer.info.render.calls,tris:renderer.info.render.triangles,fps:+fps.toFixed(1),quality:GFX.qName,human:!!player?.model?.userData?.mixer,audio:{...AU.stats}}),

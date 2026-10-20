@@ -6,7 +6,7 @@
 <title>Fog of Knowledge: The Game</title>
 <meta name="description" content="An open world with real physical laws: explore as one human and discover your way out of the Fog of Knowledge.">
 <style>html,body{background:#02040a}</style>
-<link rel="stylesheet" href="game.css?v=3.3.0">
+<link rel="stylesheet" href="game.css?v=3.4.0">
 </head>
 <body>
 <header class="gTop">
@@ -57,6 +57,7 @@
       <h4>SOUND</h4>
       <label class="vol">Volume <input type="range" id="wVol" min="0" max="100" step="5" value="70"> <b id="wVolV">70%</b></label>
       <h4>COMPANIONS</h4>
+      <label class="chk"><input type="checkbox" id="wSurvChk"> Classic survival <small>(off by default: Discovery mode has no hunger, thirst, illness or injuries — danger only sets you back)</small></label>
       <label class="chk"><input type="checkbox" id="wNeedyChk" checked> Needy pets <small>(companions sometimes interrupt focused work and ask to be petted — never a penalty)</small></label>
       <h4>CONTROLS</h4>
       <table class="keys"><tr><td>W A S D</td><td>move (Shift run, C crouch = quiet)</td></tr><tr><td>Space</td><td>jump / swim up</td></tr><tr><td>E</td><td>interact · pick up · gather · sleep · pet</td></tr><tr><td>F</td><td>observe the held item up close (F / Esc to put away; press another number to hold a second item)</td></tr><tr><td>Q / click</td><td>use · throw · shoot · eat · drink · place</td></tr><tr><td>P</td><td>pet the nearest companion</td></tr><tr><td>1–0</td><td>hotbar item to right hand (Shift+1–0: left hand)</td></tr><tr><td>Right-click</td><td>item menu: hands · observe · use · drop 1 / X / all</td></tr><tr><td>I · Tab · J</td><td>inventory &amp; crafting · journal · curiosity</td></tr><tr><td>H</td><td>physics readout</td></tr><tr><td>Esc</td><td>settings</td></tr></table>
@@ -111,11 +112,11 @@
     <div class="gCol gRight atlasNeed" hidden><div class="card"><h3>Your trail</h3><ol id="dyTrail" class="trail"></ol></div></div>
   </section>
 </main>
-<script src="discoveries.js?v=3.3.0" defer></script>
-<script src="engine.js?v=3.3.0" defer></script>
-<script src="game.js?v=3.3.0" defer></script>
+<script src="discoveries.js?v=3.4.0" defer></script>
+<script src="engine.js?v=3.4.0" defer></script>
+<script src="game.js?v=3.4.0" defer></script>
 <script type="module">
-import {initWorld} from "./world.js?v=3.3.0";
+import {initWorld} from "./world.js?v=3.4.0";
 initWorld();
 </script>
 </body>

@@ -10,8 +10,9 @@ export function runSuite(W,opts={}){
   const lastToasts=n=>W.toasts().slice(-n).join(" | ");
   // ---------- setup helpers ----------
   const SEED=opts.seed||20261019;
-  function fresh(hour=10){W.closePopup();for(const id of ["#wInv","#wJournal","#wCtx","#wChest"]){const e=document.querySelector(id);if(e)e.hidden=true}W.reseed(SEED);W.setWeather("clear",0);W.setHour(hour);W.clearStructs();W.clearDrops();W.clearAnimals();S().inv={};S().held=null;S().worn=null;
+  function fresh(hour=10){W.setSurvival(false);W.closePopup();for(const id of ["#wInv","#wJournal","#wCtx","#wChest"]){const e=document.querySelector(id);if(e)e.hidden=true}W.reseed(SEED);W.setWeather("clear",0);W.setHour(hour);W.clearStructs();W.clearDrops();W.clearAnimals();S().inv={};S().held=null;S().worn=null;
     Object.assign(S().st,{health:100,hunger:85,thirst:85,stamina:100,tb:37,wet:0,sick:0,sprain:0});S().snap=null;W.crouch(false);W.keysClear();P().zoom=false;P().camPitch=.3;}
+  const surv=()=>W.setSurvival(true);   // classic-survival tests opt in (Discovery mode is the default)
   const learn=(...ids)=>{for(const id of ids)if(!has(id))S().disc.push(id)};      // setup-only: mark prerequisites known
   const face=(x,z,pitch)=>W.look(Math.atan2(-(x-P().pos.x),-(z-P().pos.z)),pitch);
   const step=s=>W.sim(s);
@@ -33,7 +34,7 @@ export function runSuite(W,opts={}){
   const aimPitch=(v,d,h)=>{let best=0,be=1e9;for(let p=-.4;p<.8;p+=.005){const vy=v*Math.sin(p),vx=v*Math.cos(p),t=(vy+Math.sqrt(vy*vy+2*9.81*h))/9.81,e=Math.abs(vx*t-d);if(e<be){be=e;best=p}}return .32-best};
   // ======================= DISCOVERIES (every one, through its in-game interaction) =======================
   const D="Discovery";
-  test(D,"edible + illness + hygiene (berries)",()=>{fresh();give("berry_dark");give("berry_red");W.hold("berry_dark");W.eat();W.hold("berry_red");W.eat();
+  test(D,"edible + illness + hygiene (berries)",()=>{fresh();surv();give("berry_dark");give("berry_red");W.hold("berry_dark");W.eat();W.hold("berry_red");W.eat();
     const sick=S().st.sick>0;step(48);return want(has("edible")&&sick&&has("hygiene"),`edible ${has("edible")} sick ${sick} hygiene ${has("hygiene")}`)});
   test(D,"knapping (flint on boulder, holding pyrite too)",()=>{fresh();give("pyrite");give("flint");const b=W.scan("boulder");W.teleport(b.x+b.s+1.1,b.z);step(.1);face(b.x,b.z);W.hold("flint");W.useHeld();
     return want(has("knapping")&&inv("flake")===2,"target "+JSON.stringify(W.target())+" "+lastToasts(2))});
@@ -158,23 +159,23 @@ export function runSuite(W,opts={}){
 
   // ======================= SURVIVAL =======================
   const V="Survival";
-  test(V,"hunger & thirst fall over a day",()=>{fresh();goFlat();step(60);return want(S().st.hunger<85&&S().st.thirst<85,`hunger ${S().st.hunger.toFixed(1)} thirst ${S().st.thirst.toFixed(1)} after 1.6 game h`)});
+  test(V,"hunger & thirst fall over a day",()=>{fresh();surv();goFlat();step(60);return want(S().st.hunger<85&&S().st.thirst<85,`hunger ${S().st.hunger.toFixed(1)} thirst ${S().st.thirst.toFixed(1)} after 1.6 game h`)});
   test(V,"cold night: unprotected body cools, fire keeps you warm",()=>{fresh(23);goFlat();S().snap={start:0,end:1e12,dT:8};step(40);const cold=S().st.tb;fresh(23);goFlat();S().snap={start:0,end:1e12,dT:8};const f=lightFire(6);step(40);const warm=S().st.tb;S().snap=null;
     return want(cold<36.3&&warm>36.5,`no fire ${cold.toFixed(2)} °C, by fire ${warm.toFixed(2)} °C (air ${W.airTemp().toFixed(1)} °C)`)});
-  test(V,"starvation damages health",()=>{fresh();goFlat();S().st.hunger=0;const h=S().st.health;step(5);return want(S().st.health<h)});
-  test(V,"raw meat can cause illness (35%)",()=>{fresh();let n=0;for(let i=0;i<40;i++){S().st.sick=0;give("meat_raw");W.hold("meat_raw");W.eat();if(S().st.sick>0)n++}return want(n>4&&n<26,`${n}/40 sick`)});
-  test(V,"dirty water can cause illness; boiled never",()=>{fresh();let n=0,m=0;for(let i=0;i<60;i++){S().st.sick=0;give("pot_water");W.hold("pot_water");W.eat();if(S().st.sick>0)n++;S().st.sick=0;give("pot_clean");W.hold("pot_clean");W.eat();if(S().st.sick>0)m++}return want(n>0&&m===0,`dirty ${n}/60, boiled ${m}/60`)});
-  test(V,"sprain from a hard fall slows you",()=>{fresh();goFlat();S().st.sprain=30;const p0=P().pos.clone();W.look(0,.3);W.keyDown("KeyW");W.keyDown("ShiftLeft");step(2);W.keysClear();const d=Math.hypot(P().pos.x-p0.x,P().pos.z-p0.z);S().st.sprain=0;
+  test(V,"starvation damages health",()=>{fresh();surv();goFlat();S().st.hunger=0;const h=S().st.health;step(5);return want(S().st.health<h)});
+  test(V,"raw meat can cause illness (35%)",()=>{fresh();surv();let n=0;for(let i=0;i<40;i++){S().st.sick=0;give("meat_raw");W.hold("meat_raw");W.eat();if(S().st.sick>0)n++}return want(n>4&&n<26,`${n}/40 sick`)});
+  test(V,"dirty water can cause illness; boiled never",()=>{fresh();surv();let n=0,m=0;for(let i=0;i<60;i++){S().st.sick=0;give("pot_water");W.hold("pot_water");W.eat();if(S().st.sick>0)n++;S().st.sick=0;give("pot_clean");W.hold("pot_clean");W.eat();if(S().st.sick>0)m++}return want(n>0&&m===0,`dirty ${n}/60, boiled ${m}/60`)});
+  test(V,"sprain from a hard fall slows you",()=>{fresh();surv();goFlat();S().st.sprain=30;const p0=P().pos.clone();W.look(0,.3);W.keyDown("KeyW");W.keyDown("ShiftLeft");step(2);W.keysClear();const d=Math.hypot(P().pos.x-p0.x,P().pos.z-p0.z);S().st.sprain=0;
     const p1=P().pos.clone();W.keyDown("KeyW");W.keyDown("ShiftLeft");step(2);W.keysClear();const d2=Math.hypot(P().pos.x-p1.x,P().pos.z-p1.z);return want(d<d2*.7,`sprained ${d.toFixed(1)} m vs healthy ${d2.toFixed(1)} m in 2 s`)});
-  test(V,"warnings fire before damage",()=>{fresh();goFlat();S().st.thirst=13;let seen=false;for(let i=0;i<22&&!seen;i++){step(1);S().st.thirst=Math.max(S().st.thirst,8);seen=W.toasts().some(t=>t.includes("dehydrated"))}return want(seen&&S().st.health>=99,"health "+S().st.health)});
-  test(V,"death → respawn at camp, knowledge kept, items left in a recoverable bundle",()=>{fresh();goFlat();learn("fire");give("stone",3);S().camp=[P().pos.x+5,P().pos.z];S().st.health=1;S().st.hunger=0;step(5);const dead=P().dead,overlay=!document.querySelector("#wDeath").hidden;W.respawn();
+  test(V,"warnings fire before damage",()=>{fresh();surv();goFlat();S().st.thirst=13;let seen=false;for(let i=0;i<22&&!seen;i++){step(1);S().st.thirst=Math.max(S().st.thirst,8);seen=W.toasts().some(t=>t.includes("dehydrated"))}return want(seen&&S().st.health>=99,"health "+S().st.health)});
+  test(V,"death → respawn at camp, knowledge kept, items left in a recoverable bundle",()=>{fresh();surv();goFlat();learn("fire");give("stone",3);S().camp=[P().pos.x+5,P().pos.z];S().st.health=1;S().st.hunger=0;step(5);const dead=P().dead,overlay=!document.querySelector("#wDeath").hidden;W.respawn();
     const atCamp=Math.hypot(P().pos.x-S().camp[0],P().pos.z-S().camp[1])<1,emptied=!inv("stone");const pk=S().structures.find(s=>s.type==="pack");let rec=false;if(pk){W.teleport(pk.x+1,pk.z);face(pk.x,pk.z);W.interact();rec=inv("stone")===3}
     return want(dead&&overlay&&!P().dead&&has("fire")&&emptied&&atCamp&&rec,`dead ${dead} overlay ${overlay} atCamp ${atCamp} bundle ${!!pk} recovered ${rec} cause ${JSON.stringify(S().counters.deathsBy)}`)});
   test(V,"shelter is the respawn point",()=>{fresh();goFlat();give("leanto");W.hold("leanto");W.useHeld();const l=S().structures.find(s=>s.type==="leanto");return want(l&&S().camp[0]===l.x&&S().camp[1]===l.z)});
 
   // ======================= THREATS =======================
   const H="Threats";
-  test(H,"night wolf pack arrives & bites the unprotected",()=>{fresh(21.2);goFlat();S().counters.howled=-1;let t=0,bit=false;const h0=S().st.health;
+  test(H,"night wolf pack arrives & bites the unprotected",()=>{fresh(21.2);surv();goFlat();S().counters.howled=-1;let t=0,bit=false;const h0=S().st.health;
     W.sim(300,()=>{t++;S().st.hunger=80;S().st.thirst=80;if(S().st.health<h0-2)bit=true;if(bit)return"stop"});const wolves=W.animals.filter(a=>a.kind==="wolf"&&!a.dead).length;return want(wolves>=2&&bit,`wolves ${wolves} packs ${S().counters.packs} bitten ${bit} after ${(t/30).toFixed(0)} s`)});
   test(H,"wolves fear fire: no bites inside the light",()=>{fresh(21.2);goFlat();const f=lightFire(4);give("log",3);face(f.x,f.z);for(let i=0;i<3;i++){W.interact();step(.35)}S().counters.howled=-1;const h0=S().st.health;let maxW=0;
     W.sim(300,()=>{maxW=Math.max(maxW,W.animals.filter(a=>a.kind==="wolf"&&a.pack).length);S().st.hunger=80;S().st.thirst=80;if(f.fuel<3)f.fuel=6});return want(maxW>=2&&S().st.health>=h0-1,`pack wolves seen ${maxW}, health ${h0}→${S().st.health.toFixed(1)} fuel ${f.fuel.toFixed(1)}`)});
@@ -337,6 +338,39 @@ export function runSuite(W,opts={}){
   test(LT,"fire shadows: off by day, on at night (fps budget keeps High smooth)",()=>{fresh(12);goFlat();W.fireShadowBudget(true);lightFire(4);W.updateSky();step(2);const day=W.envLight().lights.filter(l=>l.sh).length;W.setHour(22.5);W.updateSky();step(2);const night=W.envLight().lights.filter(l=>l.sh).length;const b=W.fireShadowBudget();return want(day===0&&night===1&&b.on,`day ${day}, night ${night}, budget ${JSON.stringify(b)}`)});
   test(LT,"4 fire lights max; shadow casters limited to nearest 1 (High)",()=>{fresh(22);goFlat();for(let i=0;i<6;i++){W.teleport(S().camp[0]+i*5,S().camp[1]);step(.1);lightFire(3)}step(5);const L=W.envLight().lights;
     return want(L.length===4&&L.filter(l=>l.sh).length<=1&&L.filter(l=>l.i>0).length===4,JSON.stringify(L))});
+  // ======================= DISCOVERY MODE (default: no hunger, thirst, illness or injuries) =======================
+  const DM="Discovery mode";
+  const hotFire=(min=250)=>{const f=lightFire(4);give("log");face(f.x,f.z);W.interact();let t=0;while(f.temp<min&&t<200){step(1);t++}return f};
+  test(DM,"default mode is Discovery; no hunger/thirst drain; HUD shows no health/food/water bars",()=>{fresh();goFlat();const m=W.survival;step(120);const h=W.hud();
+    return want(!m&&S().st.hunger>=85&&S().st.thirst>=85&&!/HEALTH|FOOD|WATER/.test(h.bars)&&/STAMINA/.test(h.bars),`mode ${m} hunger ${S().st.hunger} bars ${h.bars}`)});
+  test(DM,"no illness: red berries, raw meat and untreated water never make you sick",()=>{fresh();goFlat();let sick=0;for(let i=0;i<30;i++){for(const k of ["berry_red","meat_raw","pot_water"]){give(k);W.hold(k);W.eat();step(.05);if(S().st.sick>0)sick++}}
+    return want(!sick&&S().st.health===100,`sick ${sick} health ${S().st.health}`)});
+  test(DM,"hygiene without illness: drink pond water, then boil a pot of it",()=>{fresh();const e=atShore();if(!e)return want(false,"no shore");give("pot");W.hold("pot");W.useHeld();W.hold("pot_water");W.eat();step(.3);const u=S().counters.untreated;
+    goFlat();const f=hotFire(200);give("pot_water");W.hold("pot_water");face(f.x,f.z);W.useHeld();return want(u&&has("hygiene"),`untreated ${u} ${lastToasts(2)}`)});
+  test(DM,"hard fall: no damage, no sprain (impact still discovered)",()=>{fresh();goFlat();P().pos.y+=9;P().vel.set(0,0,0);step(3);return want(S().st.health===100&&!S().st.sprain&&has("impact"),`health ${S().st.health} sprain ${S().st.sprain}`)});
+  test(DM,"wolf lunge is a setback: no health lost, knocked back, the wolf retreats",()=>{fresh(22);goFlat();const p=P().pos;const a=W.spawn("wolf",p.x+1.2,p.z);a.pack=true;let t=0;
+    W.sim(20,()=>{t++;if(S().counters.setbacks)return"stop"});return want(S().counters.setbacks>=1&&S().st.health===100&&a.flee>0&&!P().dead,`setbacks ${S().counters.setbacks} health ${S().st.health} flee ${a.flee?.toFixed?.(1)} ${lastToasts(1)}`)});
+  test(DM,"exhausted swimmer washes ashore instead of drowning",()=>{fresh();const e=waterEdge();let x=e.wx,z=e.wz;for(let k=0;k<40&&W.height(x,z)>-3;k++){x+=(e.wx-e.x)*.2;z+=(e.wz-e.z)*.2}W.teleport(x,z);step(.5);S().st.stamina=0;step(4);
+    return want(!P().dead&&!P().swimming&&W.height(P().pos.x,P().pos.z)>.3&&S().counters.rescues>=1,`dead ${P().dead} swim ${P().swimming} rescues ${S().counters.rescues}`)});
+  test(DM,"cold never kills — it only slows you (shivering)",()=>{fresh(3);goFlat();S().st.tb=30;step(1);const tb=S().st.tb;const p0=P().pos.clone();W.look(0,.3);W.keyDown("KeyW");W.sim(2,()=>{S().st.tb=34.7});W.keysClear();const dc=Math.hypot(P().pos.x-p0.x,P().pos.z-p0.z);
+    S().st.tb=37;const p1=P().pos.clone();W.keyDown("KeyW");W.sim(2,()=>{S().st.tb=37});W.keysClear();const dw=Math.hypot(P().pos.x-p1.x,P().pos.z-p1.z);return want(tb>=34.6&&S().st.health===100&&dc<dw*.8,`tb floor ${tb} cold ${dc.toFixed(1)} m vs warm ${dw.toFixed(1)} m`)});
+  test(DM,"a hot meal warms you and restores stamina",()=>{fresh();goFlat();S().st.stamina=20;give("meat_cooked");W.hold("meat_cooked");W.eat();return want(S().st.warmT>0&&S().st.stamina>=50,`warm ${S().st.warmT} stamina ${S().st.stamina}`)});
+  test(DM,"Classic survival toggle brings hunger back (opt-in)",()=>{fresh();goFlat();surv();step(60);const h=S().st.hunger,b=W.hud().bars;W.setSurvival(false);return want(h<85&&/HEALTH/.test(b),`hunger ${h.toFixed(1)}`)});
+  test(DM,"dusk: lighting a fire becomes the first priority (warned, pinned objective)",()=>{fresh(17.2);goFlat();step(1);const need=W.duskNeedsFire(),o1=W.hud().obj,warned=W.toasts().some(t=>/First priority/.test(t));lightFire(3);step(1);const o2=W.hud().obj;
+    return want(need&&/Dusk: light a fire/.test(o1)&&warned&&!W.duskNeedsFire()&&!/Dusk: light a fire/.test(o2),`need ${need} warned ${warned} obj ${o1}`)});
+  test(DM,"settings has the Classic survival toggle (off by default)",()=>{const c=document.querySelector("#wSurvChk");return want(c&&!c.checked,String(!!c))});
+  // ======================= COOKING & COOKBOOK =======================
+  const CK="Cooking";
+  test(CK,"maillard: roasting hazelnuts at a fire",()=>{fresh();goFlat();const f=hotFire(200);give("nuts",2);W.hold("nuts");face(f.x,f.z);W.useHeld();return want(has("maillard")&&inv("nuts_roasted")===1,lastToasts(1))});
+  test(CK,"caramel: berry jam in a pot (pot comes back when eaten)",()=>{fresh();goFlat();const f=hotFire(200);give("pot_clean");give("berry_dark",3);W.hold("pot_clean");face(f.x,f.z);W.useHeld();const ok=has("caramel")&&inv("jam")===1&&!inv("berry_dark");W.hold("jam");W.eat();return want(ok&&inv("pot")===1,lastToasts(2))});
+  test(CK,"baking: dough (craft, pot returned) baked into flatbread",()=>{fresh();goFlat();learn("boiling");const f=hotFire(250);give("grain",2);give("pot_clean");const c=W.craft("dough");const pot=inv("pot");W.hold("dough");face(f.x,f.z);W.useHeld();return want(c&&pot===1&&has("baking")&&inv("flatbread")===1,lastToasts(2))});
+  test(CK,"stew: pot + raw meat + nuts simmered; hot meal",()=>{fresh();goFlat();const f=hotFire(200);give("pot_clean");give("meat_raw");give("nuts");W.hold("pot_clean");face(f.x,f.z);W.useHeld();const ok=has("stew")&&inv("stew")===1&&!inv("meat_raw");W.hold("stew");W.eat();return want(ok&&inv("pot")===1&&S().st.warmT>0,lastToasts(2))});
+  test(CK,"fermentation: berry mash needs about a day",()=>{fresh();goFlat();learn("ceramics");give("berry_dark",4);give("pot");const c=W.craft("berry_mash");W.hold("berry_mash");W.useHeld();const early=has("fermentation");S().gameTime+=20*3600;W.hold("berry_mash");W.useHeld();return want(c&&!early&&has("fermentation")&&inv("pot")===1,lastToasts(2))});
+  test(CK,"gastronomy: five cooking discoveries make you a chef",()=>{fresh();goFlat();learn("cooking","drying","maillard");const f=hotFire(200);give("pot_clean",2);give("berry_dark",3);give("meat_raw");give("seeds");W.hold("pot_clean");face(f.x,f.z);W.useHeld();const before=has("gastronomy");W.hold("pot_clean");W.useHeld();return want(!before&&has("stew")&&has("caramel")&&has("gastronomy"),`${S().disc.filter(d=>["stew","caramel","gastronomy"].includes(d))}`)});
+  test(CK,"Cookbook tab lists every dish; found ones show ingredients + method",()=>{fresh();learn("cooking","stew");W.closePopup();const j=document.querySelector("#wJournal");W.keyEvent("Tab");const b=[...j.querySelectorAll("[data-jtab]")].find(x=>x.dataset.jtab==="cook");b?.click();const rows=j.querySelectorAll(".cookRow").length,txt=j.textContent;j.hidden=true;
+    return want(b&&rows===W.cookbook().length&&/Ingredients:/.test(txt)&&/Stew/.test(txt)&&/\?\?\?/.test(txt),`tab ${!!b} rows ${rows}`)});
+  test(CK,"inventory menu offers Cook for nuts/dough/pot at a fire; Cooking craft category",()=>{fresh();goFlat();learn("boiling","ceramics");const f=hotFire(200);face(f.x,f.z);const a=W.inventory.ctxActions("pot_clean").map(x=>x[0]);give("nuts");const b=W.inventory.ctxActions("nuts").map(x=>x[0]);
+    give("grain",2);give("pot_clean");W.keyEvent("KeyI");const t=document.querySelector("#wInv").textContent;document.querySelector("#wInv").hidden=true;return want(a.includes("cook")&&b.includes("cook")&&/COOKING & KITCHEN/.test(t),`${a} | ${b}`)});
   test(D,"ALL discoveries reachable in tests",()=>{const all=W.discoveries(),got=new Set();for(const r of T)if(r.pass)for(const id of all)if(r.name.split(" ")[0]===id||r.name.includes(id))got.add(id);
     const miss=all.filter(id=>!got.has(id));return want(!miss.length,"not covered: "+miss.join(", "))});
   return {results:T,ms:Math.round(performance.now()-t0)};
