@@ -1,13 +1,13 @@
 <!doctype html><html lang="en"><meta charset="utf-8"><title>Fog game verification</title>
 <style>body{margin:0;background:#08111b;color:#e1edf4;font:14px system-ui}header{padding:12px;display:flex;gap:16px;align-items:center}button{padding:8px 16px}iframe{width:100%;height:75vh;border:0}pre{white-space:pre-wrap;padding:16px}</style>
-<header><strong>Fog game integration verification · isolated, muted preview</strong><button id="run">Run game suite</button><button id="scene">Show hand/fire scene</button><button id="quickFire">Show quick-fire scene</button><span id="status">Ready</span></header>
+<header><strong>Fog game integration verification · isolated, muted preview</strong><button id="run">Run game suite</button><button id="scene">Show hand/fire scene</button><button id="quickFire">Show quick-fire scene</button><button id="fireside">Show burning-log close-up</button><span id="status">Ready</span></header>
 <iframe id="game" src="../index.html?verification=1#world" allow="autoplay"></iframe><pre id="results"></pre>
 <script type="module">
 import {runSuite} from './suite.js';
-import {runUpgradeTests,showScene} from './upgrades.js';
+import {runUpgradeTests,showScene} from './upgrades.js?v=3.9.4';
 const frame=document.querySelector('#game'),status=document.querySelector('#status'),out=document.querySelector('#results');
 function get(){const W=frame.contentWindow.__fogWorld;if(!W)throw Error('Game is still loading');frame.contentDocument.querySelector('#wPlay').click();W.help.close();return W}
-document.querySelector('#run').onclick=async()=>{try{status.textContent='Running';await new Promise(r=>setTimeout(r,80));const W=get();
+document.querySelector('#run').onclick=async()=>{try{clearInterval(window.sceneStats);status.textContent='Running';await new Promise(r=>setTimeout(r,80));const W=get();
   // Suite uses the game document and constructors, so execute its imported runner
   // in that same iframe via an ordinary authored test module.
   const module=frame.contentDocument.createElement('script');module.type='module';module.src='./tests/run-in-frame.js';frame.contentDocument.body.append(module);
@@ -15,4 +15,5 @@ document.querySelector('#run').onclick=async()=>{try{status.textContent='Running
 window.addEventListener('message',e=>{if(e.origin!==location.origin||e.source!==frame.contentWindow)return;if(e.data?.type==='fog-test-progress'){status.textContent=`${e.data.count} checked · ${e.data.last.name}`;return}if(e.data?.type!=='fog-test-results')return;const r=e.data.result;window.testResult=r;const fail=r.results.filter(t=>!t.pass);status.textContent=`${r.results.length-fail.length}/${r.results.length} passed`;out.textContent=JSON.stringify(r,null,2)});
 document.querySelector('#scene').onclick=()=>{try{const W=get();showScene(W);status.textContent='Hand/fire scene';clearInterval(window.sceneStats);window.sceneStats=setInterval(()=>out.textContent='Preview-only setup · '+JSON.stringify(W.stats()),1000)}catch(e){out.textContent=e.stack}};
 document.querySelector("#quickFire").onclick=()=>{try{const W=get();showScene(W);W.clearStructs();W.give("stick",6);W.inventory.setHand("R","stick");W.inventory.setHand("L","flint");W.inventory.selectHand("R");W.hud();frame.contentDocument.querySelector("#wToast").textContent="";status.textContent="Quick-fire preview · Q builds from held sticks";out.textContent="Isolated preview fixture; user save untouched."}catch(e){out.textContent=e.stack}};
+document.querySelector('#fireside').onclick=()=>{try{const W=get();showScene(W);const f=W.state.structures.find(s=>s.type==='fire');f.fuel=f.fuelPieces.reduce((n,p)=>n+p.left,0);W.give('log',3);W.inventory.selectHand('R');W.inventory.setHand('R','log');for(let i=0;i<3;i++){W.useHeld();W.sim(.5)}W.closePopup();W.sim(55);W.closePopup();W.setHour(20.3);W.setWeather('clear',0);let angle=0,best=1e9;for(let i=0;i<24;i++){const a=i/24*Math.PI*2,d=Math.abs(W.height(f.x+Math.cos(a)*14,f.z+Math.sin(a)*14)-f.y);if(d<best){best=d;angle=a}}W.teleport(f.x+Math.cos(angle)*14,f.z+Math.sin(angle)*14);W.stow(true);W.player.zoom=true;W.look(Math.atan2(W.player.pos.x-f.x,W.player.pos.z-f.z),Math.atan2(W.player.pos.y+1.62-f.y-.55,14));W.updateSky();W.hud();frame.contentDocument.querySelector('#wToast').textContent='';status.textContent='Burning-log close-up · isolated preview';clearInterval(window.sceneStats);out.textContent='Preview only: three individually added logs; no user save changes.'}catch(e){out.textContent=e.stack}};
 </script>

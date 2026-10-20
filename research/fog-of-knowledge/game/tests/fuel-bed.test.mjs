@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {ensureFuelBed,recordFuelPiece,stepFuelBed,MAX_FUEL_PIECES} from '../fuel-bed.js';
+const s={fuel:1.5,lit:true,heat:1};assert.equal(ensureFuelBed(s).length,3);
+recordFuelPiece(s,5,'log');s.fuel+=5;assert.equal(s.fuelPieces.at(-1).kind,'log');assert.equal(s.fuelPieces.at(-1).left,5);
+s.fuel-=.75;stepFuelBed(s,10);assert.equal(s.fuelPieces.at(-1).left,5);assert.ok(s.fuelPieces[0].char>0);assert.ok(s.fuelPieces.at(-1).char>0);
+assert.ok(Math.abs(s.fuelPieces.reduce((n,p)=>n+p.left,0)-s.fuel)<1e-8);
+const saved=JSON.parse(JSON.stringify(s));assert.deepEqual(ensureFuelBed(saved),s.fuelPieces);
+const char=saved.fuelPieces.at(-1).char;saved.lit=false;stepFuelBed(saved,120);assert.equal(saved.fuelPieces.at(-1).char,char);assert.equal(saved.fuelPieces.at(-1).left,5);
+for(let i=0;i<100;i++){recordFuelPiece(s,5,'log');s.fuel+=5}assert.equal(s.fuelPieces.length,MAX_FUEL_PIECES);assert.equal(s.fuelPieces.at(-1).left,5);assert.ok(Math.abs(s.fuelPieces.reduce((n,p)=>n+p.left,0)-s.fuel)<1e-8);
+s.fuel=0;stepFuelBed(s,1);assert.ok(s.fuelPieces.every(p=>p.left===0));
+console.log('Fuel pieces: legacy migration, individual additions, oldest-first burn, charring, persistence, rain preservation and bounded mass conservation passed');

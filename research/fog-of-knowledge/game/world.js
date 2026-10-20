@@ -8,12 +8,14 @@
  */
 import * as THREE from "./vendor/three.module.min.js";
 import {ITEMS,WORLD_DISCOVERIES,RECIPES} from "./world-data.js";
-import * as GFX from "./gfx.js";
+import * as GFX from "./gfx.js?v=3.9.4";
 import * as AU from "./audio.js";
 import {ESSENTIAL_QUICKBAR,quickbarOrder} from "./quickbar.js";
 import {temperature,temperatureDelta} from "./units.js";
 import {createBirds} from "./birds.js";
 import {fireSize,stepCombustion,addFuel,lightningPulse} from "./fire-model.js";
+import {ensureFuelBed,recordFuelPiece,stepFuelBed} from "./fuel-bed.js";
+import {createFireBed,updateFireBed} from "./fire-visuals.js?v=3.9.4";
 import {CURIOSITY,OBJECTIVES} from "./content.js?v=3.8.3";
 import {createPets,PET_INFO,MAX_ACTIVE} from "./pets.js";
 import {createObserve,NOTES} from "./observe.js";
@@ -162,11 +164,11 @@ function buildTerrain(cx,cz,res){
   g.computeBoundingSphere();
   const m=new THREE.Mesh(g,MAT.terrain);m.receiveShadow=true;m.castShadow=res>16;m.userData.grid=grid;return m;
 }
-function grassSampler(ch){const G=ch.terrain&&ch.terrain.userData.grid;if(!G)return null;const x0=ch.cx*CHUNK,z0=ch.cz*CHUNK,R=G.res+1;
+function grassSampler(ch){const G=ch.terrain&&ch.terrain.userData.grid;if(!G)return null;const x0=ch.cx*CHUNK,z0=ch.cz*CHUNK,R=G.res+1,clearings=world.structures.filter(s=>s.type==="fire"&&s.x>x0-2&&s.x<x0+CHUNK+2&&s.z>z0-2&&s.z<z0+CHUNK+2);
   return (x,z)=>{const fx=clamp((x-x0)/G.step,0,G.res-.001),fz=clamp((z-z0)/G.step,0,G.res-.001),i=Math.floor(fx),j=Math.floor(fz),u=fx-i,v=fz-j;
     const a=G.h[j*R+i],b=G.h[j*R+i+1],c=G.h[(j+1)*R+i],d=G.h[(j+1)*R+i+1];
     const h=(a*(1-u)+b*u)*(1-v)+(c*(1-u)+d*u)*v,sl=Math.max(Math.abs(b-a),Math.abs(c-a),Math.abs(d-b))/G.step;
-    return {h,biome:BN[G.b[Math.round(fz)*R+Math.round(fx)]],slope:sl}}}
+    return {h,biome:clearings.some(s=>Math.hypot(s.x-x,s.z-z)<1.1)?"rock":BN[G.b[Math.round(fz)*R+Math.round(fx)]],slope:sl}}}
 const _m=new THREE.Matrix4(),_q=new THREE.Quaternion(),_s=new THREE.Vector3(),_p=new THREE.Vector3(),_e=new THREE.Euler(),_c=new THREE.Color();
 const ZERO=new THREE.Matrix4().makeScale(0,0,0);
 function setInst(mesh,i,x,y,z,sx,sy,sz,ry=0,rx=0){_e.set(rx,ry,0);_q.setFromEuler(_e);_p.set(x,y,z);_s.set(sx,sy,sz);_m.compose(_p,_q,_s);mesh.setMatrixAt(i,_m)}
@@ -517,12 +519,16 @@ function cyl(rt,rb,h,col,y=0,seg=8){const m=new THREE.Mesh(new THREE.CylinderGeo
 const PEND_L=[.5,1,2];
 function setPendLen(s){const a=s.arm;if(!a)return;a.userData.str.scale.y=s.L;a.userData.str.position.y=-s.L/2;a.userData.bob.position.y=-s.L}
 function updateRack(s){if(!s.obj)return;s.obj.userData.strips?.forEach((m,i)=>{m.visible=i<s.meat.length;if(m.visible)m.material.color.setHex(world.gameTime-s.meat[i]>=4*3600?0x6b3a24:0xb53a3a)})}
+function clearFireGrass(s){
+  for(const ch of chunks.values()){if(!ch.grass||Math.abs((ch.cx+.5)*CHUNK-s.x)>CHUNK||Math.abs((ch.cz+.5)*CHUNK-s.z)>CHUNK)continue;
+    ch.grass.traverse(m=>{if(!m.isInstancedMesh)return;let changed=false;for(let i=0;i<m.count;i++){m.getMatrixAt(i,_m);const e=_m.elements;if(Math.hypot(e[12]-s.x,e[14]-s.z)<1.1){m.setMatrixAt(i,ZERO);changed=true}}if(changed)m.instanceMatrix.needsUpdate=true});
+  }
+}
 function structMesh(s){
   const g=new THREE.Group();
   if(s.type==="fire"||s.type==="kiln"){
     if(s.type==="kiln"){const d=new THREE.Mesh(new THREE.SphereGeometry(.9,20,10,0,Math.PI*2,0,Math.PI/2),stdMat(0x9c5a3c,.95));d.castShadow=d.receiveShadow=true;g.add(d);const hole=box(.45,.4,.2,0x1a0d08,.2);hole.position.z=.82;g.add(hole)}
-    else{const wood=new THREE.Group(),woodMat=stdMat(0x69503a);s.wood=wood;
-      for(let i=0;i<7;i++){const l=new THREE.Mesh(new THREE.CylinderGeometry(.075,.095,.9,9,2),woodMat);l.rotation.set(Math.PI/2,(i%2)*Math.PI/2+.15*i,0);l.position.set((i%3-1)*.15,.12+Math.floor(i/3)*.12,(i%2-.5)*.23);l.castShadow=l.receiveShadow=true;wood.add(l)}g.add(wood);
+    else{clearFireGrass(s);const wood=createFireBed(s);s.wood=wood;g.add(wood);
       for(let i=0;i<9;i++){const r=new THREE.Mesh(GEO.small,MAT.stone);r.scale.set(.13,.09,.11);r.position.set(Math.cos(i/9*6.283)*.5,.04,Math.sin(i/9*6.283)*.5);g.add(r)}}
     const f=GFX.makeFlame(s.type==="kiln");f.visible=false;if(s.type==="kiln")f.position.z=.8;g.add(f);s.flame=f;
     if(s.type==="fire"){const bed=new THREE.Mesh(new THREE.CylinderGeometry(.47,.53,.035,18),new THREE.MeshStandardMaterial({color:0x373739,roughness:1,emissive:0}));bed.position.y=.025;bed.receiveShadow=true;g.add(bed);s.residue=bed}
@@ -599,9 +605,10 @@ function stepFires(dt,dtg){
   for(const s of world.structures){
     if(!BURN.has(s.type))continue;
     const near=Math.hypot(s.x-P.x,s.z-P.z);
+    if(s.type==="fire")ensureFuelBed(s);
     const out=stepCombustion(s,dt,dtg,raining?world.weather.amt:0,!!sheltered(s.x,s.z));
     if(out){if(near<60)toast(out==="fuel"?"The fire has burned down to embers. Let it cool to collect the remains.":"Rain has extinguished the flames. The fuel bed remains — shelter it and relight it.");discover("combustion")}
-    if(s.wood){s.wood.visible=s.fuel>0;const scale=.65+.55*Math.sqrt(fireSize(s));s.wood.scale.set(scale,scale,scale)}
+    if(s.type==="fire"){stepFuelBed(s,dt);if(s.wood&&near<120)updateFireBed(s.wood,s,performance.now()/1000)}
     if(s.residue){s.residue.visible=(s.charcoal||0)+(s.ash||0)>.005;s.residue.material.emissive.setHex(s.heat>.08?0x9b2605:0);s.residue.material.emissiveIntensity=s.heat*.7}
     if(s.lit){
       const target=s.type==="kiln"?(s.bellows?1300:1150):s.type==="torch"?600:850;
@@ -609,7 +616,7 @@ function stepFires(dt,dtg){
       // spread to dry trees (needs oxygen & dry fuel)
       if(s.type==="fire"&&!raining&&s.heat>.8&&Math.random()<dt*.01){const t=nearestTree(s.x,s.z,3.2);if(t&&!t.t.burnt&&!t.t.burning&&biomeAt(t.t.x,t.t.z,t.t.y)!=="snow")igniteTree(t)}
     }else{s.temp=lerp(s.temp,airTemp(s.x,s.z,s.y),Math.min(1,dt*.05));s.heat=Math.max(0,s.heat)}
-    if(s.flame){s.flame.visible=s.lit;if(s.lit){const k=(.6+.4*s.heat+Math.sin(performance.now()/90+s.x)*.08)*(s.type==="torch"?.38:s.type==="fire"?Math.pow(fireSize(s),.8):1);s.flame.scale.set(k,k*(.8+Math.random()*.3),k);
+    if(s.flame){s.flame.visible=s.lit;if(s.lit){const k=(.6+.4*s.heat+Math.sin(performance.now()/90+s.x)*.08)*(s.type==="torch"?.38:s.type==="fire"?Math.pow(fireSize(s),.8):1);s.flame.scale.set(k,k*(.94+.06*Math.sin(performance.now()/183+s.z)),k);GFX.animateFlame(s.flame,performance.now()/1000,s.heat);
       if(near<(s.type==="torch"?60:120))GFX.FX.fire("s"+s.x.toFixed(1)+s.z.toFixed(1),s.x,s.y+(s.type==="kiln"?.9:s.type==="torch"?1.45:.1),s.z,s.heat,dt,s.type==="kiln"?.45:s.type==="torch"?.28:Math.pow(fireSize(s),.85))}}
   }
   // the 4 nearest glowing fires get physically-scaled point lights (inverse-square decay); nearest 1 (High) / 2 (Ultra) cast flickering shadows
@@ -933,6 +940,7 @@ function findTarget(){
   return best;
 }
 const sleepable=t=>t==="leanto"||t==="hut"||t==="house";
+function feedFire(s,kg,kind){if(s.type==="fire")recordFuelPiece(s,kg,kind);addFuel(s,kg)}
 const HAND_FUEL={stick:.5,log:5,charcoal:.08};
 function fireSiteError(){
   const p=frontPoint(1.8);
@@ -1009,7 +1017,7 @@ function interact(){
     if(s.heat>.08||s.temp>55)return toast("The embers are still hot. Wait for the fire bed to cool before collecting it.");
     let collected=0;for(const [k,unit] of [["charcoal",.05],["ash",.01]]){const n=Math.floor(((s[k]||0)+1e-8)/unit);if(n){const got=give(k,n);s[k]-=got*unit;collected+=got}}
     toast(collected?"Collected cooled fire remains. Unburned wood stays here.":"Your Backpack is full. Make room for the fire remains.");return}
-  if(BURN.has(s.type)){if(s.type!=="torch"&&take("log")){addFuel(s,5);toast("Added a log (5 kg).")}else if(take("stick")){addFuel(s,.5);toast(`Added a stick (0.5 kg${s.type==="torch"?" ≈ 4 hours of torchlight":""}).`)}else if(take("charcoal")){addFuel(s,.08);toast("Added charcoal from a previous fire.")}else toast("You need sticks, logs or charcoal as fuel.");AU.place();return}
+  if(BURN.has(s.type)){if(s.type!=="torch"&&take("log")){feedFire(s,5,"log");toast("Added a log (5 kg).")}else if(take("stick")){feedFire(s,.5,"stick");toast(`Added a stick (0.5 kg${s.type==="torch"?" ≈ 4 hours of torchlight":""}).`)}else if(take("charcoal")){feedFire(s,.08,"charcoal");toast("Added charcoal from a previous fire.")}else toast("You need sticks, logs or charcoal as fuel.");AU.place();return}
   if(s.type==="pack"){for(const k in s.items)give(k,s.items[k]);scene.remove(s.obj);world.structures.splice(world.structures.indexOf(s),1);AU.pickup();toast("You recover your belongings.");renderHotbar();return}
   if(s.type==="raft"){player.raft=s;toast("You board the raft. Move with WASD; walk into land to step ashore.");return}
   if(s.type==="table")return study(s);
@@ -1038,7 +1046,7 @@ function useHeld(){
     toast("Built a firewood pile with 3 sticks. Equip flint + pyrite in your hands (V switches hand, 1–0 equips), then Q to light it.");renderInventory();return;
   }
   if(handAction?.kind==="fuel"){
-    const f=handAction.fire;take(k);addFuel(f,HAND_FUEL[k]);player.actCd=.35;AU.place();
+    const f=handAction.fire;take(k);feedFire(f,HAND_FUEL[k],k);player.actCd=.35;AU.place();
     toast(`Added ${ITEMS[k].name.toLowerCase()} (+${HAND_FUEL[k]} kg fuel).${f.lit?" The fire will grow as it heats up.":" Equip flint + pyrite and Q to light it."}`);return;
   }
   if(k==="flint"||k==="pyrite"){
