@@ -535,7 +535,7 @@ function structSegs(s){if(s._seg)return s._seg;const c=Math.cos(s.ry||0),sn=Math
 function collide(pos,rad){let hit=false;for(const s of world.structures){if(s.type!=="wall"&&s.type!=="house")continue;if(Math.abs(s.x-pos.x)>6||Math.abs(s.z-pos.z)>6)continue;
   for(const [ax,az,bx,bz] of structSegs(s)){const dx=bx-ax,dz=bz-az,l2=dx*dx+dz*dz,t=clamp(((pos.x-ax)*dx+(pos.z-az)*dz)/l2,0,1),cx=ax+dx*t,cz=az+dz*t,ex=pos.x-cx,ez=pos.z-cz,d=Math.hypot(ex,ez),r=rad+.18;
     if(d<r){hit=true;if(d<1e-4){pos.x+=r;continue}pos.x=cx+ex/d*r;pos.z=cz+ez/d*r}}}return hit}
-const fireLights=[];let eyeAdapt=0,brightBoost=(()=>{try{return +localStorage.getItem("fog-of-knowledge:game:bright")||0}catch(_){return 0}})();
+const fireLights=[];let fireShFrame=0;let eyeAdapt=0,brightBoost=(()=>{try{return +localStorage.getItem("fog-of-knowledge:game:bright")||0}catch(_){return 0}})();
 /* Fire size & light, from fuel physics.
    size  F = clamp(√(fuel/3 kg), 0.45, 2.2)       — a bigger fuel load builds a bigger, taller fire
    burn  ṁ = F kg/h  (fresh 1.5 kg pile ≈ 0.7 kg/h; 14 kg bonfire ≈ 2.2 kg/h, lasting ~13 h as it shrinks)
@@ -571,10 +571,11 @@ function stepFires(dt,dtg){
   }
   // the 4 nearest glowing fires get physically-scaled point lights (inverse-square decay); nearest 1 (High) / 2 (Ultra) cast flickering shadows
   const glow=world.structures.filter(s=>(s.lit||s.heat>.03)&&s.type!=="pack").sort((a,b)=>Math.hypot(a.x-P.x,a.z-P.z)-Math.hypot(b.x-P.x,b.z-P.z)).slice(0,4);
-  while(fireLights.length<4){const l=new THREE.PointLight(0xff8a3a,0,20,2);l.shadow.bias=-.004;l.shadow.camera.near=.3;scene.add(l);fireLights.push(l)}
-  const tt=performance.now()/1000,nSh=GFX.Q.fireShadow||0;let eAtPlayer=0;
+  while(fireLights.length<4){const l=new THREE.PointLight(0xff8a3a,0,20,2);l.shadow.bias=-.004;l.shadow.autoUpdate=false;l.shadow.camera.near=.3;scene.add(l);fireLights.push(l)}
+  const tt=performance.now()/1000,nSh=GFX.Q.fireShadow||0;let eAtPlayer=0;fireShFrame++;
   fireLights.forEach((l,i)=>{const s=glow[i];const L=s&&fireLight(s);const want=!!L&&i<nSh&&s.type!=="torch"&&Math.hypot(s.x-P.x,s.z-P.z)<35;
     if(l.castShadow!==want){l.castShadow=want;if(want){const m=GFX.Q.fireShadowMap||256;l.shadow.mapSize.set(m,m);l.shadow.map?.dispose();l.shadow.map=null}}
+    if(l.castShadow)l.shadow.needsUpdate=!l.shadow.map||(fireShFrame+i)%2===0;   // cube shadows re-render every other frame (6 faces each): halves their cost, flicker still reads
     if(L){const fl=1+.05*Math.sin(tt*9.3+i)+.035*Math.sin(tt*21.7+i*3)+.02*Math.sin(tt*37+i*5);
       l.position.set(s.x+.04*Math.sin(tt*13+i),s.y+(s.type==="torch"?1.6:s.type==="kiln"?1:.45+.35*Math.min(2,fireSize(s))),s.z+.04*Math.cos(tt*11+i));
       l.intensity=L.scene*fl;l.distance=Math.max(4,L.rUse*3.2);l.shadow.camera.far=l.distance;l.color.copy(L.color);
