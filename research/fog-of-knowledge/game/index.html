@@ -6,7 +6,7 @@
 <title>Fog of Knowledge: The Game</title>
 <meta name="description" content="An open world with real physical laws: explore as one human and discover your way out of the Fog of Knowledge.">
 <style>html,body{background:#02040a}</style>
-<link rel="stylesheet" href="game.css?v=3.0.0">
+<link rel="stylesheet" href="game.css?v=3.3.0">
 </head>
 <body>
 <header class="gTop">
@@ -32,10 +32,18 @@
       <div id="wPrompt" class="wPrompt"></div>
       <div id="wToast" class="wToast"></div>
       <div id="wHotbar" class="wHotbar"></div>
-      <div class="wKeys">WASD move · Shift run · Space jump/swim up · mouse orbit (click to lock) · E interact · Q / click use or throw · F eat/drink · 1–0 select · I inventory · Tab/K journal · H physics readout · Esc settings</div>
+      <div id="wHands" class="wHands"></div>
+      <div id="wObj" class="wObj"></div>
+      <div id="wThought" class="wThought" hidden></div>
+      <div class="wKeys">WASD move · Shift run · C crouch (quiet) · Space jump/swim · mouse look (drag up to see the sky) · E interact/pick up/sleep/pet · F observe held item · Q / click use, throw, shoot, eat, drink · P pet companion · 1–0 right hand (Shift: left) · right-click item menu · I inventory &amp; crafting · Tab journal · J curiosity · H physics · Esc settings</div>
     </div>
     <div id="wInv" class="wPanel" hidden></div>
     <div id="wJournal" class="wPanel wide" hidden></div>
+    <div id="wChest" class="wPanel" hidden></div>
+    <div id="wFlash" class="wFlash"></div>
+    <div id="wNeedy" class="wNeedy" hidden></div>
+    <div id="wCtx" class="wCtx" hidden></div>
+    <div id="wTip" class="wTip" hidden></div>
     <div id="wPopup" class="wOverlay" hidden></div>
     <div id="wDeath" class="wOverlay" hidden></div>
     <button id="wGear" class="wGear" title="Settings (Esc)">⚙</button>
@@ -45,9 +53,17 @@
       <h4>GRAPHICS QUALITY</h4>
       <div class="qRow"><button data-q="low">LOW<small>no shadows · no post · simple water</small></button><button data-q="high">HIGH<small>soft shadows · bloom · reflective water · grass</small></button><button data-q="ultra">ULTRA<small>4K shadows · SMAA · dense grass · fire shadows</small></button></div>
       <label class="chk"><input type="checkbox" id="wShowFps"> Show frame rate</label>
+      <label class="vol">Brightness boost <input type="range" id="wBright" min="0" max="40" step="5" value="0"> <b id="wBrightV">+0%</b> <small>(default off: nights are meant to be dark — use fire)</small></label>
+      <h4>SOUND</h4>
+      <label class="vol">Volume <input type="range" id="wVol" min="0" max="100" step="5" value="70"> <b id="wVolV">70%</b></label>
+      <h4>COMPANIONS</h4>
+      <label class="chk"><input type="checkbox" id="wNeedyChk" checked> Needy pets <small>(companions sometimes interrupt focused work and ask to be petted — never a penalty)</small></label>
+      <h4>CONTROLS</h4>
+      <table class="keys"><tr><td>W A S D</td><td>move (Shift run, C crouch = quiet)</td></tr><tr><td>Space</td><td>jump / swim up</td></tr><tr><td>E</td><td>interact · pick up · gather · sleep · pet</td></tr><tr><td>F</td><td>observe the held item up close (F / Esc to put away; press another number to hold a second item)</td></tr><tr><td>Q / click</td><td>use · throw · shoot · eat · drink · place</td></tr><tr><td>P</td><td>pet the nearest companion</td></tr><tr><td>1–0</td><td>hotbar item to right hand (Shift+1–0: left hand)</td></tr><tr><td>Right-click</td><td>item menu: hands · observe · use · drop 1 / X / all</td></tr><tr><td>I · Tab · J</td><td>inventory &amp; crafting · journal · curiosity</td></tr><tr><td>H</td><td>physics readout</td></tr><tr><td>Esc</td><td>settings</td></tr></table>
       <h4>CREDITS</h4>
       <p class="muted small">3D engine: three.js r160 and its examples addons (Sky, Water, GLTFLoader, post-processing) — MIT, © 2010-2023 three.js authors. Water normal map from the three.js examples (MIT).<br>
-      Human model and animations: <b>Universal Animation Library</b> by Quaternius — CC0 1.0 (public domain), quaternius.com. Clothing, animals, trees, terrain, sky, clouds and effects are procedural.</p>
+      Human model and animations: <b>Universal Animation Library</b> by Quaternius — CC0 1.0 (public domain), quaternius.com. Clothing, animals, trees, terrain, sky, clouds and effects are procedural.<br>
+      Sound: every sound and ambience is synthesised live with the Web Audio API — no audio files are used.</p>
     </div>
     <div id="wTitle" class="wOverlay title" hidden>
       <div class="titleBox">
@@ -55,7 +71,7 @@
         <h1 class="gTitle"><span class="l1">FOG OF KNOWLEDGE</span><span class="l2">THE GAME</span></h1>
         <p class="tag">One human. A real world with real physics. Discover your way out of the fog.</p>
         <div class="row tBtns"><button id="wPlay" class="primary big">PLAY</button><button id="wContinue" class="primary" hidden>CONTINUE</button><button id="wNew" class="ghost">NEW WORLD</button><button id="wTitleSettings" class="ghost">SETTINGS</button></div>
-        <p class="muted small keysHint">WASD move · Shift run · Space jump · mouse look · E interact · Q use/throw · F eat · I inventory · Tab journal · Esc settings</p>
+        <p class="muted small keysHint">WASD move · Shift run · C crouch · Space jump · mouse look · E interact · F observe · Q use/throw/eat · P pet · I inventory · Tab journal · Esc settings</p>
       </div>
     </div>
   </section>
@@ -95,11 +111,11 @@
     <div class="gCol gRight atlasNeed" hidden><div class="card"><h3>Your trail</h3><ol id="dyTrail" class="trail"></ol></div></div>
   </section>
 </main>
-<script src="discoveries.js?v=3.0.0" defer></script>
-<script src="engine.js?v=3.0.0" defer></script>
-<script src="game.js?v=3.0.0" defer></script>
+<script src="discoveries.js?v=3.3.0" defer></script>
+<script src="engine.js?v=3.3.0" defer></script>
+<script src="game.js?v=3.3.0" defer></script>
 <script type="module">
-import {initWorld} from "./world.js?v=3.0.0";
+import {initWorld} from "./world.js?v=3.3.0";
 initWorld();
 </script>
 </body>

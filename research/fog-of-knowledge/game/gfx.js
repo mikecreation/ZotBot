@@ -20,8 +20,8 @@ import {FXAAShader} from "./vendor/addons/shaders/FXAAShader.js";
 /* ---------------- quality presets ---------------- */
 export const QUALITY={
   low:  {label:"Low",  pr:1,   shadows:0,    post:false,bloom:false,aa:"none",water:"simple",reflect:0,   grass:0,    grassR:0,flowers:0,  clouds:true, fireShadow:false,particles:.5},
-  high: {label:"High", pr:1.25,shadows:2048, post:true, bloom:true, aa:"fxaa",water:"mirror",reflect:512, grass:7000, grassR:1,flowers:140,clouds:true, fireShadow:false,particles:1},
-  ultra:{label:"Ultra",pr:2,   shadows:4096, post:true, bloom:true, aa:"smaa",water:"mirror",reflect:1024,grass:14000,grassR:1,flowers:260,clouds:true, fireShadow:true, particles:1.4}
+  high: {label:"High", pr:1.25,shadows:2048, post:true, bloom:true, aa:"fxaa",water:"mirror",reflect:512, grass:7000, grassR:1,flowers:140,clouds:true, fireShadow:1,fireShadowMap:256,particles:1},
+  ultra:{label:"Ultra",pr:2,   shadows:4096, post:true, bloom:true, aa:"smaa",water:"mirror",reflect:1024,grass:14000,grassR:1,flowers:260,clouds:true, fireShadow:2,fireShadowMap:512,particles:1.4}
 };
 const QKEY="fog-of-knowledge:game:quality";
 export function loadQualityPref(){try{const q=localStorage.getItem(QKEY);if(QUALITY[q])return q}catch(_){}return "high"}
@@ -212,7 +212,9 @@ const C={dayFog:new THREE.Color(0xa9c6e2),duskFog:new THREE.Color(0xd8a27c),nigh
   hemiDay:new THREE.Color(0xbcd6ff),hemiNight:new THREE.Color(0x2a3c66),gDay:new THREE.Color(0x5a4c38),gNight:new THREE.Color(0x0e1218),
   wDay:new THREE.Color(0x0a3444),wNight:new THREE.Color(0x02080e)};
 const _c1=new THREE.Color(),_v=new THREE.Vector3(),_tgt=new THREE.Vector3();
-export const ENV={fogColor:new THREE.Color(),day:1,lightDir:new THREE.Vector3(0,1,0)};
+export const ENV={fogColor:new THREE.Color(),day:1,lightDir:new THREE.Vector3(0,1,0),moonFrac:.5,moonPhase:0,expMul:1,night:0};
+// moon phase from the game calendar: synodic month 29.53 days; illuminated fraction f = (1 − cos 2π·phase)/2
+export function moonPhase(gameTime){const ph=((gameTime/86400+11)/29.53)%1;return {phase:ph,frac:(1-Math.cos(2*Math.PI*ph))/2}}
 export function updateEnvironment(o){
   // o: {sunDir, el, amt, kind, pos (player), cam, snow, gameTime, dt, under}
   const {sunDir,el,amt}=o,day=sm(-.12,.25,el),gold=1-sm(.04,.42,Math.abs(el)),cloudy=o.kind==="cloudy"?1:0;
@@ -220,6 +222,7 @@ export function updateEnvironment(o){
   // fog colour (also the sky's horizon colour)
   _c1.copy(C.nightFog).lerp(C.duskFog,sm(-.2,.06,el)).lerp(C.dayFog,sm(.06,.4,el));
   _c1.lerp(C.rainFog.clone().multiplyScalar(.25+.75*day),Math.min(1,amt*.8+cloudy*.25));
+  _c1.multiplyScalar(1-(1-day)*(.6-.35*ENV.moonFrac));   // moonless nights: the horizon is nearly black too
   ENV.fogColor.copy(_c1);
   if(o.under){ENV.fogColor.setRGB(.02,.16,.2).multiplyScalar(.3+.7*day);scene.fog.density=.05}
   else scene.fog.density=(.0023+.0075*amt+cloudy*.0008)*(1+.3*(1-day));
@@ -235,17 +238,19 @@ export function updateEnvironment(o){
   const useSun=el>-.04;ENV.lightDir.copy(useSun?sunDir:moonDir);
   if(ENV.lightDir.y<.08){ENV.lightDir.y=.08;ENV.lightDir.normalize()}
   if(useSun){sun.color.copy(C.sunNoon).lerp(C.sunGold,gold);sun.intensity=4.2*sm(-.04,.22,el)*(1-.7*amt)*(1-.3*cloudy)}
-  else{sun.color.copy(C.moon);sun.intensity=.55*sm(-.04,.3,moonDir.y)*(1-.8*amt)}
+  // night: moonlight only (faint, phase-dependent: full moon ≈ 0.25 lux), starlight minimal; no exposure boost
+  const mp=moonPhase(o.gameTime||0);ENV.moonFrac=mp.frac;ENV.moonPhase=mp.phase;ENV.night=1-day;
+  if(!useSun){sun.color.copy(C.moon);sun.intensity=(.006+.15*mp.frac)*sm(-.04,.3,moonDir.y)*(1-.85*amt)}
   U.sunDir.value.copy(ENV.lightDir);
   // shadow camera follows the player, snapped to texels to avoid shimmering
   const ts=140/(Q.shadows||512);_tgt.set(Math.round(o.pos.x/ts)*ts,o.pos.y,Math.round(o.pos.z/ts)*ts);
   sun.target.position.copy(_tgt);sun.position.copy(_tgt).addScaledVector(ENV.lightDir,200);
-  hemi.color.copy(C.hemiNight).lerp(C.hemiDay,day);hemi.groundColor.copy(C.gNight).lerp(C.gDay,day);hemi.intensity=.55+.75*day;
-  renderer.toneMappingExposure=.62+.38*(1-day);
+  hemi.color.copy(C.hemiNight).lerp(C.hemiDay,day);hemi.groundColor.copy(C.gNight).lerp(C.gDay,day);hemi.intensity=(.035+.07*mp.frac*sm(-.04,.3,moonDir.y)*(1-.8*amt))*(1-day)+1.3*day;
+  renderer.toneMappingExposure=.62*ENV.expMul; // eye adaptation + optional brightness slider (world.js); never an automatic night boost
   // stars & moon
   stars.material.opacity=(1-day)*(1-amt*.9)*(1-cloudy*.5);stars.position.copy(o.cam);stars.rotation.y=o.gameTime/86164*2*Math.PI;stars.visible=stars.material.opacity>.01;
   moonMesh.position.copy(o.cam).addScaledVector(moonDir,820);moonGlow.position.copy(moonMesh.position);
-  moonMesh.visible=moonGlow.visible=moonDir.y>-.08;moonGlow.material.opacity=.45*(1-day*.8)*(1-amt);moonMesh.material.opacity=1-amt*.85;
+  moonMesh.visible=moonGlow.visible=moonDir.y>-.08;moonGlow.material.opacity=.45*(1-day*.8)*(1-amt)*(.15+.85*mp.frac);moonMesh.material.opacity=(1-amt*.85)*(.2+.8*mp.frac);
   // clouds
   const cu=clouds.material.uniforms;cu.uCover.value=.4+cloudy*.2+amt*.35;cu.uFog.value.copy(ENV.fogColor);
   cu.uLit.value.copy(sun.color).multiplyScalar(.35+1.25*day).lerp(C.rainFog,amt*.6);cu.uShade.value.copy(ENV.fogColor).multiplyScalar(.55+.2*day);
@@ -483,9 +488,10 @@ const _dressMat=()=>(_dm||(_dm=dressedMaterial()));let _dm=null;
 const SWIM_DROP=-.62;
 export function makeHuman(){
   const g=new THREE.Group();
-  const held=new THREE.Mesh(GEO.small,new THREE.MeshStandardMaterial({color:0xffffff,roughness:.7}));held.scale.setScalar(.07);held.castShadow=true;
-  const fb=makeFallbackHuman();g.add(fb.root);fb.hand.add(held);held.position.set(0,-.6,.05);
-  g.userData={held,fb,mixer:null,actions:{},cur:null,once:0,onceName:null,phase:0,dead:false,inner:null};
+  // hand anchors: the game puts real item meshes inside them (right = main hand, left = off hand)
+  const held=new THREE.Group(),heldL=new THREE.Group();held.name="heldR";heldL.name="heldL";
+  const fb=makeFallbackHuman();g.add(fb.root);fb.hand.add(held);held.position.set(0,-.6,.05);(fb.handL||fb.root).add(heldL);heldL.position.set(fb.handL?0:-.32,fb.handL?-.6:1,.05);
+  g.userData={held,heldL,fb,mixer:null,actions:{},cur:null,once:0,onceName:null,phase:0,dead:false,inner:null};
   loadHuman().then(a=>{if(a)attachHuman(g,a)});
   return g;
 }
@@ -493,7 +499,10 @@ function attachHuman(g,asset){
   const u=g.userData,model=cloneSkinned(asset.scene);model.scale.setScalar(1.75/1.83);
   model.traverse(o=>{if(o.isMesh){o.material=_dressMat();o.castShadow=true;o.receiveShadow=true;o.frustumCulled=false}});
   const hand=model.getObjectByName("DEF-handR")||model.getObjectByName("DEF-hand.R");
-  if(hand){u.held.removeFromParent();hand.add(u.held);u.held.position.set(0,.09,.04);u.held.scale.setScalar(.07/ (1.75/1.83))}
+  if(hand){u.held.removeFromParent();hand.add(u.held);u.held.position.set(0,.09,.04);u.held.scale.setScalar(1/(1.75/1.83))}
+  const handL=model.getObjectByName("DEF-handL")||model.getObjectByName("DEF-hand.L");
+  if(handL){u.heldL.removeFromParent();handL.add(u.heldL);u.heldL.position.set(0,.09,.04);u.heldL.scale.setScalar(1/(1.75/1.83))}
+  u.handBones={R:hand?.name||null,L:handL?.name||null};
   g.remove(u.fb.root);g.add(model);u.inner=model;
   u.mixer=new THREE.AnimationMixer(model);
   for(const c of asset.animations){const a=u.mixer.clipAction(c);if(/Death|Jump_Land|Jump_Start|Shoot|Punch|PickUp|Interact/.test(c.name)){a.setLoop(THREE.LoopOnce,1);a.clampWhenFinished=true}u.actions[c.name]=a}
@@ -522,8 +531,8 @@ function makeFallbackHuman(){
   const head=new THREE.Mesh(new THREE.SphereGeometry(.12,16,12),skin);head.position.y=.74;head.castShadow=true;hips.add(head);
   const pivot=(x,y,m,r,l)=>{const p=new THREE.Group();p.position.set(x,y,0);p.add(cap(r,l,m));hips.add(p);return p};
   const armL=pivot(-.24,.56,skin,.05,.5),armR=pivot(.24,.56,skin,.05,.5),legL=pivot(-.1,.02,dark,.07,.72),legR=pivot(.1,.02,dark,.07,.72);
-  const hand=new THREE.Group();hand.position.y=0;armR.add(hand);
-  return {root,hips,armL,armR,legL,legR,hand};
+  const hand=new THREE.Group();hand.position.y=0;armR.add(hand);const handL=new THREE.Group();armL.add(handL);
+  return {root,hips,armL,armR,legL,legR,hand,handL};
 }
 function animateFallback(u,speed,dt,swim,air,dead){const f=u.fb;u.phase+=dt*(2+speed*2.6);const sw=Math.min(1,speed/2.5)*.9;
   f.root.rotation.z=dead?Math.PI/2:0;
