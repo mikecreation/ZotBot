@@ -42,3 +42,9 @@ node game/tests/audio-units.test.mjs
 ```
 
 They cover sustained rain, shelter, fuel preservation, residue, time-step consistency, growth above the previous cap, flash envelope, temperature conversion, independent noise layers, contextual scheduling/pause, and milestone-only reward semantics. Audio scheduling tests do not substitute for subjective listening.
+
+## Flint safety and essential hotbar follow-up
+
+Flint, pyrite and logs are prioritized in the first available quickbar slots whenever carried, including pickups after ten other item types. Backpack sorting/order remains separate and no item is discarded. The priority list is `ESSENTIAL_QUICKBAR` in `quickbar.js`; number keys and observation shortcuts read the same projection as the displayed bar.
+
+Captured primary clicks now invoke the selected hand's normal use action rather than unconditionally throwing its item. The click that captures the mouse never performs an action, even if capture completes between mouse-down and mouse-up. Fire striking preserves flint and pyrite. An already-burning fire reports that state before considering knapping; simply carrying a stone is no longer enough to knap flint. Deliberately targeting a boulder still converts one flint into two flakes, and the prompt and toast explicitly state that consumption. Pyrite without flint produces guidance instead of falling through to throwing.
