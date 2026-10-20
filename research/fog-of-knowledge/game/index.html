@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fog of Knowledge: The Game</title>
+<meta name="description" content="Lead early humans from the Stone Age to the frontier of knowledge — every discovery clears the Fog of Knowledge atlas.">
+<style>html,body{background:#02040a}</style>
+<link rel="stylesheet" href="game.css?v=1.0.0">
+</head>
+<body>
+<header class="gTop">
+  <div class="gBrand">
+    <small>OPEN KNOWLEDGE ATLAS</small>
+    <h1>FOG OF KNOWLEDGE: <span>THE GAME</span></h1>
+    <p>Lead humankind out of the fog — one discovery at a time.</p>
+  </div>
+  <nav class="gTabs" role="tablist" aria-label="Game modes">
+    <button role="tab" data-mode="civ" aria-selected="true">CIVILIZATION</button>
+    <button role="tab" data-mode="explore" aria-selected="false">FOG EXPLORER</button>
+    <button role="tab" data-mode="daily" aria-selected="false">DAILY EXPEDITION</button>
+  </nav>
+  <a class="gBack" href="../index.html">← Back to atlas</a>
+</header>
+<div id="loading" class="gLoading" role="status">Loading the atlas…</div>
+<main id="app" hidden>
+  <!-- CIVILIZATION -->
+  <section id="mode-civ" class="gMode">
+    <div class="gCol gLeft">
+      <div class="card eraCard"><small id="eraSpan"></small><h2 id="eraName"></h2><div id="yearLabel" class="muted"></div><div class="eraTrack" id="eraTrack"></div></div>
+      <div class="card"><div class="stats" id="stats"></div></div>
+      <div class="card"><h3>Assign your people</h3><div id="jobs"></div>
+        <div class="row"><button id="endTurn" class="primary">END SEASON ▸</button><button id="endYear">+1 YEAR</button></div>
+        <div class="row small"><button id="newGame" class="ghost">New game</button><span id="saveNote" class="muted"></span></div>
+      </div>
+    </div>
+    <div class="gCol gMid">
+      <div class="card"><h3>Research <span class="muted" id="insightRate"></span></h3>
+        <label class="lbl">Focus <select id="focus"></select></label>
+        <div id="studyBox" class="studyBox"></div>
+        <div id="available" class="discList"></div>
+      </div>
+      <div class="card"><h3>Discoveries <span class="muted" id="discCount"></span></h3><div id="known" class="knownList"></div></div>
+    </div>
+    <div class="gCol gRight">
+      <div class="card"><h3>Your Knowledge <span class="muted" id="revealCount"></span></h3>
+        <canvas id="civMap" class="miniMap" width="420" height="420" aria-label="Fogged mini-map of the knowledge atlas"></canvas>
+        <div id="mapHover" class="mapHover muted">Hover the map to read revealed nodes.</div>
+        <div id="civFields" class="fieldBars"></div>
+      </div>
+      <div class="card"><h3>Recently revealed</h3><div id="recent" class="chips"></div></div>
+      <div class="card"><h3>Chronicle</h3><ol id="log" class="log"></ol></div>
+    </div>
+    <div id="overlay" class="overlay" hidden></div>
+  </section>
+  <!-- FOG EXPLORER -->
+  <section id="mode-explore" class="gMode" hidden>
+    <div class="gCol gLeft">
+      <div class="card"><h3>Fog Explorer</h3><p class="muted">Start at HUMAN KNOWLEDGE. Click a revealed node on the fog's edge to clear it and uncover its children.</p>
+        <div class="bigCount"><b id="exCount">0</b> / <span id="exTotal">0</span> revealed</div>
+        <div class="row"><button id="exReset" class="ghost">Reset explorer</button></div></div>
+      <div class="card"><div id="exFields" class="fieldBars"></div></div>
+    </div>
+    <div class="gCol gWide">
+      <div class="card"><h3>Edge of the fog <span class="muted" id="exEdgeCount"></span></h3>
+        <input id="exFilter" class="filter" type="search" placeholder="Filter revealed nodes…">
+        <div id="exEdge" class="cards"></div></div>
+    </div>
+    <div class="gCol gRight"><div class="card"><canvas id="exMap" class="miniMap" width="420" height="420"></canvas><div id="exHover" class="mapHover muted"></div></div></div>
+  </section>
+  <!-- DAILY EXPEDITION -->
+  <section id="mode-daily" class="gMode" hidden>
+    <div class="gCol gLeft">
+      <div class="card"><h3>Daily Expedition <span class="muted" id="dyDate"></span></h3>
+        <p class="muted">Travel through connected atlas nodes from today's start to today's target in as few hops as possible. Frontier nodes you pass through earn bonus points.</p>
+        <div class="route"><div><small>START</small><div id="dyStart"></div></div><div><small>TARGET</small><div id="dyTarget"></div></div></div>
+        <div class="bigCount">Hops <b id="dyHops">0</b> · optimal <span id="dyOpt">?</span> · frontier <span id="dyFront">0</span></div>
+        <div class="row"><button id="dyBack" class="ghost">Undo hop</button><button id="dyRestart" class="ghost">Restart today</button></div>
+        <div id="dyResult"></div>
+      </div>
+    </div>
+    <div class="gCol gWide">
+      <div class="card"><h3>You are at</h3><div id="dyHere" class="here"></div>
+        <input id="dyFilter" class="filter" type="search" placeholder="Filter connections…">
+        <div id="dyNext" class="cards"></div></div>
+    </div>
+    <div class="gCol gRight"><div class="card"><h3>Your trail</h3><ol id="dyTrail" class="trail"></ol></div></div>
+  </section>
+</main>
+<script src="discoveries.js?v=1.0.0" defer></script>
+<script src="engine.js?v=1.0.0" defer></script>
+<script src="game.js?v=1.0.0" defer></script>
+</body>
+</html>
