@@ -4,8 +4,10 @@
 const E=window.FogGameEngine,G=E.G;
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const KEY_CIV="fog-of-knowledge:game:civ:v1",KEY_EX="fog-of-knowledge:game:explorer:v1",KEY_DAY="fog-of-knowledge:game:daily:v1";
-let A=null,civ=null,ex=null,day=null,dayPair=null;
+const KEY_EX="fog-of-knowledge:game:explorer:v1",KEY_DAY="fog-of-knowledge:game:daily:v1";
+let A=null,ex=null,day=null,dayPair=null;
+// Start loading the atlas immediately, in the background; the open world never waits for it.
+const atlasPromise=window.__fogAtlasPromise=(async()=>{const a=await loadAtlasLater();return a})();
 
 /* ---------- data (same files + same validation as the atlas viewer) ---------- */
 async function fetchAtlasJSON(name){const r=await fetch(`../data/${name}.json`);if(!r.ok)throw Error("Atlas data unavailable: "+name);return r.json()}
@@ -13,6 +15,7 @@ function validAtlasDisplay(display,nav){
   return display?.protocol==="fog-atlas-display/1"&&display.schema_version===1&&nav?.protocol==="fog-atlas-navigation/1"&&
     /^[0-9a-f]{64}$/.test(display.input_sha256)&&display.input_sha256===nav.input_sha256&&Array.isArray(display.nodes)&&display.nodes.length===nav.counts?.canonical;
 }
+async function loadAtlasLater(){await new Promise(r=>setTimeout(r,0));return loadAtlas()}
 async function loadAtlas(){
   const navP=fetchAtlasJSON("atlas-navigation");
   const [display,nav,families]=await Promise.all([fetchAtlasJSON("atlas-display").catch(()=>null),navP,fetchAtlasJSON("atlas-families")]);
@@ -36,7 +39,7 @@ function layout(){
   }
 }
 function makeMap(canvas,hoverEl,getRevealed){
-  const ctx=canvas.getContext("2d");let fog=null;
+  const ctx=canvas.getContext("2d");let fog=null;const civ=null;
   function size(){const w=canvas.width,h=canvas.height;return {w,h,R:Math.min(w,h)/2-8,cx:w/2,cy:h/2}}
   function drawFog(){const {w,h,R,cx,cy}=size();fog=document.createElement("canvas");fog.width=w;fog.height=h;const c=fog.getContext("2d");
     c.fillStyle="#1a2638";for(const n of A.nodes)c.fillRect(cx+n.mx*R-0.6,cy+n.my*R-0.6,1.2,1.2);
@@ -62,81 +65,6 @@ function fieldBars(el,counts,openSet,eraIdx){
     return `<div class="fb${locked?" locked":""}" title="${esc(f.title)}${locked?" — not yet discovered":""}"><span style="color:${f.color}">${f.icon||""} ${esc(f.short)}</span><span class="t"><i style="width:${p.toFixed(2)}%;background:${f.color}"></i></span><span>${p<10&&p>0?p.toFixed(1):Math.round(p)}%</span></div>`}).join("");
 }
 function countsFor(ids){const out={};for(const f of A.families)out[f.id]=0;for(const id of ids){const n=nodeOf(id);if(n)out[n.field]++}return out}
-
-/* ---------- civilization ---------- */
-function save(){try{localStorage.setItem(KEY_CIV,E.serialize(civ));$("#saveNote").textContent="Saved"}catch(_){$("#saveNote").textContent="Could not save (storage full or blocked)"}}
-function loadCiv(){try{const s=JSON.parse(localStorage.getItem(KEY_CIV)||"null");if(s&&s.v===1)return s}catch(_){}return null}
-const FX_LABEL={warmth:"warmth",food:"food",hunt:"hunting",build:"building",research:"research",explore:"exploration",health:"health",morale:"morale",capacity:"shelter capacity",growth:"growth",storage:"food storage",defense:"defence",cooked:"food efficiency"};
-const fxText=fx=>Object.entries(fx).map(([k,v])=>`+${Math.round(v*100)}% ${FX_LABEL[k]||k}`).join(" · ");
-const JOB_LABEL={gather:"Gather",hunt:"Hunt",build:"Build",explore:"Explore",research:"Research"};
-let civMap;
-function setJob(j,v){
-  v=Math.max(0,Math.min(100,Math.round(v)));const others=E.JOBS.filter(x=>x!==j),rest=100-v;
-  const sum=others.reduce((a,x)=>a+(civ.jobs[x]||0),0);civ.jobs[j]=v;
-  others.forEach(x=>civ.jobs[x]=sum>0?Math.floor((civ.jobs[x]||0)*rest/sum):Math.floor(rest/others.length));
-  let diff=100-E.JOBS.reduce((a,x)=>a+civ.jobs[x],0);for(const x of others){if(diff<=0)break;civ.jobs[x]++;diff--}
-}
-function renderCiv(){
-  const s=civ,fx=E.effects(s,A),w=E.workers(s),housed=Math.floor(s.shelter*(1+fx.capacity));
-  const era=G.ERAS[s.era];$("#eraName").textContent=era.name;$("#eraSpan").textContent=era.span.toUpperCase();$("#yearLabel").textContent=E.yearLabel(s);
-  $("#eraTrack").innerHTML=G.ERAS.map((e,i)=>`<i class="${i<=s.era?"on":""}${i===s.era?" cur":""}" title="${esc(e.name)}"></i>`).join("");
-  const stat=(n,v,extra="",bar=null,col="")=>`<div class="stat"><small>${n}</small><b>${v}</b>${extra}${bar!==null?`<div class="bar"><i style="width:${bar}%;background:${col}"></i></div>`:""}</div>`;
-  const df=s.lastFood||0;
-  $("#stats").innerHTML=stat("POPULATION",s.pop.toLocaleString(),`<em class="muted">peak ${s.stats.peak.toLocaleString()}</em>`)+
-    stat("FOOD",Math.floor(s.food).toLocaleString(),`<em class="${df>=0?"up":"down"}">${df>=0?"+":""}${Math.round(df)}</em>`)+
-    stat("SHELTER",`${housed.toLocaleString()}`,`<em class="${housed>=s.pop?"up":"down"}">${housed>=s.pop?"housed":"crowded"}</em>`)+
-    stat("WARMTH",`${Math.round(Math.min(.95,fx.warmth)*100)}%`,`<em class="muted">winter protection</em>`)+
-    stat("HEALTH",Math.round(s.health),"",s.health,"#64e886")+stat("MORALE",Math.round(s.morale),"",s.morale,"#ffc857")+
-    stat("INSIGHT / SEASON",(s.lastInsight||0).toFixed(1))+stat("DISCOVERIES",`${s.known.length} / ${G.DISCOVERIES.length}`);
-  $("#jobs").innerHTML=E.JOBS.map(j=>`<div class="job"><label for="job-${j}">${JOB_LABEL[j]}${j==="gather"&&s.known.includes("agriculture")?" / Farm":""}</label><input id="job-${j}" type="range" min="0" max="100" value="${s.jobs[j]}" data-job="${j}"><span>${w[j].toLocaleString()}</span></div>`).join("");
-  // research
-  const av=E.available(s);
-  $("#focus").innerHTML=`<option value="auto">Curiosity — cheapest open discovery</option>`+av.map(d=>`<option value="${d.id}"${s.focus===d.id?" selected":""}>${esc(d.name)} (${G.ERAS[d.era].name})</option>`).join("");
-  if(s.focus!=="auto"&&!av.some(d=>d.id===s.focus))s.focus="auto";$("#focus").value=s.focus;
-  $("#insightRate").textContent=`${(s.lastInsight||0).toFixed(1)} insight / season`;
-  const writing=s.known.includes("writing");
-  if(writing){const opts=A.families.filter(f=>s.fields.includes(f.id));const cands=E.studyCandidates(s,A,s.studyField==="auto"?null:s.studyField).length;
-    $("#studyBox").innerHTML=`<div class="job"><label for="studyShare">Atlas study</label><input id="studyShare" type="range" min="0" max="100" value="${s.study}"><span>${s.study}%</span></div>
-      <label class="lbl">Field <select id="studyField"><option value="auto">Auto — balance open fields</option>${opts.map(f=>`<option value="${f.id}"${s.studyField===f.id?" selected":""}>${esc(f.short)}</option>`).join("")}</select></label>
-      Each atlas node costs ${E.nodeCost(s).toFixed(1)} insight. ${cands.toLocaleString()} node${cands===1?"":"s"} studiable now${s.era<10?"; later ages and new fields open more (frontier nodes need the Frontier age)":""}.`;
-  }else $("#studyBox").innerHTML=`Discover <b>Writing & records</b> to let scholars map the atlas field by field. Until then, every discovery reveals its own atlas nodes.`;
-  const sel=s.focus==="auto"?av.slice().sort((a,b)=>E.costOf(a)-E.costOf(b)||(b.gateway-a.gateway)||(a.id<b.id?-1:1))[0]?.id:s.focus;
-  $("#available").innerHTML=av.length?av.sort((a,b)=>a.era-b.era||E.costOf(a)-E.costOf(b)).map(d=>{const p=s.progress[d.id]||0,c=E.costOf(d);
-    return `<div class="disc${d.gateway?" gate":""}${d.id===sel?" sel":""}" data-disc="${d.id}"><h4>${esc(d.name)}<small>${d.gateway?"⟶ "+esc(G.ERAS[d.era].name)+" · ":""}${Math.floor(p)}/${c}</small></h4>
-      <div class="date">${esc(d.date)}</div><p>${esc(d.note)}</p><div class="fx">${fxText(d.fx)}</div>
-      ${d.atlas.length?`<div class="chips" style="margin-top:6px">${d.atlas.map(chip).join("")}</div>`:""}<div class="prog"><i style="width:${Math.min(100,p/c*100)}%"></i></div></div>`}).join(""):`<p class="muted">Every hand-authored discovery is known. Put all insight into atlas study to clear the remaining fog.</p>`;
-  $("#discCount").textContent=`${s.known.length} / ${G.DISCOVERIES.length}`;
-  const k=new Set(s.known);
-  $("#known").innerHTML=G.ERAS.map((e,i)=>{const ds=G.DISCOVERIES.filter(d=>d.era===i&&k.has(d.id));if(!ds.length)return "";
-    return `<h5>${esc(e.name.toUpperCase())} · ${ds.length}/${G.DISCOVERIES.filter(d=>d.era===i).length}</h5>`+ds.map(d=>`<div class="k" title="${esc(d.note)}">✓ ${esc(d.name)} <small>${esc(d.date)}</small></div>`).join("")}).reverse().join("")||`<p class="muted">Nothing yet. Assign people to Research and Explore.</p>`;
-  // knowledge
-  const counts=E.fieldRevealCounts(s,A);
-  $("#revealCount").textContent=`${s.revealed.length.toLocaleString()} / ${A.total.toLocaleString()} revealed`;
-  fieldBars($("#civFields"),counts,new Set(s.fields),s.era);
-  $("#recent").innerHTML=(s.recent||[]).slice(-24).reverse().map(chip).join("")||`<span class="muted">Nothing new this season.</span>`;
-  $("#log").innerHTML=s.log.slice(-70).reverse().map(l=>`<li class="${l.k}"><small>Y${Math.floor(l.t/4)+1}</small>${esc(l.m)}</li>`).join("");
-  civMap.draw();
-  $("#endTurn").disabled=$("#endYear").disabled=s.over;
-  overlay();
-}
-function overlay(){
-  const o=$("#overlay"),s=civ;
-  if(s.over){o.hidden=false;o.innerHTML=`<div class="box"><h2>THE FOG CLOSES IN</h2><p>Your people survived ${Math.floor(s.turn/4)} years and reached the <b>${esc(G.ERAS[s.era].name)}</b>, making ${s.known.length} discoveries and revealing ${s.revealed.length.toLocaleString()} atlas nodes. Peak population ${s.stats.peak.toLocaleString()}.</p><button class="primary" id="ovNew">BEGIN AGAIN</button></div>`;$("#ovNew").onclick=newCiv;return}
-  if(s.won&&!s.winSeen){o.hidden=false;o.innerHTML=`<div class="box"><h2>YOU REACHED THE FRONTIER</h2><p>After ${Math.floor(s.turn/4)} years your civilization stands at the edge of what humans know. ${s.revealed.length.toLocaleString()} of ${A.total.toLocaleString()} atlas nodes are revealed. Frontier nodes are now studiable — clear the rest of the fog.</p><button class="primary" id="ovGo">CONTINUE EXPLORING</button></div>`;$("#ovGo").onclick=()=>{s.winSeen=true;save();o.hidden=true};return}
-  o.hidden=true;
-}
-function newCiv(){if(civ&&!civ.over&&civ.turn>0&&!confirm("Start a new game? Your current civilization will be lost."))return;civ=E.newGame();save();renderCiv()}
-function bindCiv(){
-  $("#jobs").addEventListener("input",e=>{const j=e.target.dataset.job;if(!j)return;setJob(j,+e.target.value);E.JOBS.forEach(x=>{$("#job-"+x).value=civ.jobs[x]});const w=E.workers(civ);E.JOBS.forEach(x=>$("#job-"+x).nextElementSibling.textContent=w[x].toLocaleString())});
-  $("#jobs").addEventListener("change",save);
-  $("#focus").addEventListener("change",e=>{civ.focus=e.target.value;save();renderCiv()});
-  $("#available").addEventListener("click",e=>{const c=e.target.closest("[data-disc]");if(!c)return;civ.focus=civ.focus===c.dataset.disc?"auto":c.dataset.disc;save();renderCiv()});
-  $("#studyBox").addEventListener("input",e=>{if(e.target.id==="studyShare"){civ.study=+e.target.value;e.target.nextElementSibling.textContent=civ.study+"%"}});
-  $("#studyBox").addEventListener("change",e=>{if(e.target.id==="studyField")civ.studyField=e.target.value;save();renderCiv()});
-  $("#endTurn").onclick=()=>{E.endTurn(civ,A);save();renderCiv()};
-  $("#endYear").onclick=()=>{for(let i=0;i<4&&!civ.over;i++){const r=civ.recent||[];E.endTurn(civ,A);civ.recent=r.concat(civ.recent).slice(-60)}save();renderCiv()};
-  $("#newGame").onclick=newCiv;
-}
 
 /* ---------- fog explorer ---------- */
 let exMap;
@@ -194,22 +122,20 @@ function bindDay(){
 
 /* ---------- modes ---------- */
 function setMode(m){document.querySelectorAll(".gTabs button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.mode===m)));
-  for(const k of ["civ","explore","daily"])$("#mode-"+k).hidden=k!==m;
-  if(m==="explore")renderEx();if(m==="daily")renderDay();if(m==="civ")renderCiv();
+  for(const k of ["world","explore","daily"])$("#mode-"+k).hidden=k!==m;
+  if(m!=="world")try{document.exitPointerLock?.()}catch(_){}
+  if(A){if(m==="explore")renderEx();if(m==="daily")renderDay()}
   try{history.replaceState(null,"","#"+m)}catch(_){}}
-
-async function boot(){
-  try{A=await loadAtlas()}catch(err){$("#loading").textContent="Could not load the atlas data: "+err.message;return}
-  layout();
-  civ=loadCiv()||E.newGame();
-  civMap=makeMap($("#civMap"),$("#mapHover"),()=>civ.revealed);
-  ex=loadEx();exMap=makeMap($("#exMap"),$("#exHover"),()=>[...ex.revealed].filter(id=>A.index.has(id)));
-  dayPair=E.dailyPair(A,E.dayKey());day=loadDay(dayPair.key);
-  bindCiv();bindEx();bindDay();
+function boot(){
   document.querySelectorAll(".gTabs button").forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
-  $("#loading").hidden=true;$("#app").hidden=false;
-  const m=(location.hash||"#civ").slice(1);setMode(["civ","explore","daily"].includes(m)?m:"civ");
-  window.__fogGameReady={nodes:A.total,discoveries:G.DISCOVERIES.length};
+  const m=(location.hash||"#world").slice(1);setMode(["world","explore","daily"].includes(m)?m:"world");
+  atlasPromise.then(a=>{A=a;layout();
+    ex=loadEx();exMap=makeMap($("#exMap"),$("#exHover"),()=>[...ex.revealed].filter(id=>A.index.has(id)));
+    dayPair=E.dailyPair(A,E.dayKey());day=loadDay(dayPair.key);
+    bindEx();bindDay();document.querySelectorAll(".atlasWait").forEach(e=>e.hidden=true);document.querySelectorAll(".atlasNeed").forEach(e=>e.hidden=false);
+    const cur=(location.hash||"#world").slice(1);if(cur==="explore")renderEx();if(cur==="daily")renderDay();
+    window.__fogGameReady={nodes:A.total,discoveries:G.DISCOVERIES.length};
+  }).catch(err=>{document.querySelectorAll(".atlasWait").forEach(e=>e.textContent="Could not load the atlas data: "+err.message)});
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
 })();

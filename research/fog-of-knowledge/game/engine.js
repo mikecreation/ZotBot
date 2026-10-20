@@ -260,5 +260,5 @@ function dailyPair(atlas,key){
   }
   return null;
 }
-root.FogGameEngine={G,SEASONS,JOBS,FIELD_ERA,buildAtlas,newGame,endTurn,available,effects,costOf,workers,fieldRevealCounts,yearLabel,serialize,discById,knownSet,revealedSet,neighbors,bfs,dailyPair,dayKey,hashStr,nodeCost,studyCandidates};
+root.FogGameEngine={G,revealNode,discover,studyAtlas,SEASONS,JOBS,FIELD_ERA,buildAtlas,newGame,endTurn,available,effects,costOf,workers,fieldRevealCounts,yearLabel,serialize,discById,knownSet,revealedSet,neighbors,bfs,dailyPair,dayKey,hashStr,nodeCost,studyCandidates};
 })(typeof window!=="undefined"?window:globalThis);
