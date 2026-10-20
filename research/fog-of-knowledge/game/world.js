@@ -14,7 +14,7 @@ import {ESSENTIAL_QUICKBAR,quickbarOrder} from "./quickbar.js";
 import {temperature,temperatureDelta} from "./units.js";
 import {createBirds} from "./birds.js";
 import {fireSize,stepCombustion,addFuel,lightningPulse} from "./fire-model.js";
-import {CURIOSITY,OBJECTIVES} from "./content.js";
+import {CURIOSITY,OBJECTIVES} from "./content.js?v=3.8.3";
 import {createPets,PET_INFO,MAX_ACTIVE} from "./pets.js";
 import {createObserve,NOTES} from "./observe.js";
 let PETS=null,OBS=null;
@@ -933,6 +933,33 @@ function findTarget(){
   return best;
 }
 const sleepable=t=>t==="leanto"||t==="hut"||t==="house";
+const HAND_FUEL={stick:.5,log:5,charcoal:.08};
+function fireSiteError(){
+  const p=frontPoint(1.8);
+  if(player.swimming||heightAt(p.x,p.z)<0)return "Move onto land to build a firewood pile";
+  if(slopeAt(p.x,p.z)>.6)return "Face flatter ground to build a firewood pile";
+  if(world.structures.some(s=>Math.hypot(s.x-p.x,s.z-p.z)<(STRUCT_R[s.type]??.4)+.7))return "Face clear ground away from other structures";
+  return "";
+}
+// The HUD and Q share this decision: advertised costs and requirements are the
+// same ones checked before consuming anything. k/other are relative to selection.
+function nearbyHandFire(){return structuresNear(player.pos.x,player.pos.z,2.6).filter(s=>BURN.has(s.type)).sort((a,b)=>Math.hypot(a.x-player.pos.x,a.z-player.pos.z)-Math.hypot(b.x-player.pos.x,b.z-player.pos.z))[0]}
+function handFireAction(k,other,t=findTarget()){
+  if(t?.kind==="pet"&&PET_INFO[t.obj.kind].likes.includes(k)||t?.kind==="animal"||t?.kind==="struct"&&t.obj.type==="pendulum")return null;
+  const fire=nearbyHandFire();
+  if(k in HAND_FUEL&&!(k==="log"&&t?.kind==="boulder")){
+    if(fire)return {kind:"fuel",fire,text:`Q add ${ITEMS[k].name.toLowerCase()} to ${fire.type==="fire"?"fire":fire.type} (+${HAND_FUEL[k]} kg fuel)`};
+    if(k==="stick"){const error=inv("stick")<3?`Need ${3-inv("stick")} more stick${inv("stick")===2?"":"s"} (3 total)`:fireSiteError();return {kind:"build",error,text:error||"Q build firewood pile here · uses 3 sticks · then equip flint + pyrite"}}
+  }
+  if((k==="flint"||k==="pyrite")&&fire){
+    const need=k==="flint"?"pyrite":"flint",slot=hotbarItems().indexOf(need),equip=`V → ${slot>=0&&slot<10?(slot+1)%10:ITEMS[need].name} in the other hand`;
+    const error=fire.lit?"The fire is already burning. Neither stone was consumed.":fire.fuel<=0?"No fuel — hold sticks or a log and press Q to add it":!inv(need)?`Find ${ITEMS[need].name.toLowerCase()} to strike against ${ITEMS[k].name.toLowerCase()}`:other&&other!==need?`Need ${ITEMS[need].name.toLowerCase()} in the other hand · ${equip}`:"";
+    return {kind:"spark",fire,need,error,text:error||(other===need?"Q strike flint + pyrite → light fire · stones kept":`Q ready ${ITEMS[need].name.toLowerCase()} in empty hand & light fire · stones kept`)};
+  }
+  if((k==="flint"||k==="pyrite")&&t?.kind!=="boulder")return {kind:"guide",text:"Need a firewood pile first · hold 3 sticks, then Q on clear ground"};
+  return null;
+}
+function handActionLabel(t){const left=activeHand==="L",a=handFireAction(left?world.left:world.held,left?world.held:world.left,t);return a?`${left?"LEFT":"RIGHT"} HAND · ${a.text}`:""}
 function targetLabel(t){
   if(!t)return "";const k=world.held;
   if(t.kind==="pet")return PETS.label(t.obj,k);
@@ -998,12 +1025,27 @@ function useHeld(){
   const k=world.held,t=findTarget(),s=t&&t.kind==="struct"?t.obj:null;
   if(s&&s.type==="pendulum"&&s.swingT==null){s.L=PEND_L[(PEND_L.indexOf(s.L)+1)%PEND_L.length];setPendLen(s);toast(`Pendulum length set to ${s.L} m.`);return}
   if(!k)return toast("Nothing in hand.");
-  const fireNear=structuresNear(player.pos.x,player.pos.z,2.6).find(x=>BURN.has(x.type));
+  const fireNear=nearbyHandFire();
   const raining=isRaining()&&!sheltered(player.pos.x,player.pos.z);
   if(t?.kind==="pet"&&k&&PET_INFO[t.obj.kind].likes.includes(k))return void PETS.offer(t.obj,k);
   if(WOLF_FOOD.has(k)){const cw=animals.find(a=>a.kind==="wolf"&&!a.dead&&a.curious&&a.pos.distanceTo(player.pos)<3.2);if(cw)return feedWolf(cw,k)}   // a curious wolf right beside you takes priority over a pet in view
   if(t?.kind==="animal"){const a=t.obj;if(a.kind==="wolf"&&WOLF_FOOD.has(k))return feedWolf(a,k);if(SURV()&&isMelee(k)&&a.kind!=="dog")return melee(a,k)}
+  const handAction=handFireAction(k,world.left,t);
+  if(handAction?.kind==="build"){
+    if(handAction.error)return toast(handAction.error);
+    const p=place("fire");if(!p)return;
+    take("stick",3);world.counters.crafted=(world.counters.crafted||0)+1;player.actCd=.35;
+    toast("Built a firewood pile with 3 sticks. Equip flint + pyrite in your hands (V switches hand, 1–0 equips), then Q to light it.");renderInventory();return;
+  }
+  if(handAction?.kind==="fuel"){
+    const f=handAction.fire;take(k);addFuel(f,HAND_FUEL[k]);player.actCd=.35;AU.place();
+    toast(`Added ${ITEMS[k].name.toLowerCase()} (+${HAND_FUEL[k]} kg fuel).${f.lit?" The fire will grow as it heats up.":" Equip flint + pyrite and Q to light it."}`);return;
+  }
   if(k==="flint"||k==="pyrite"){
+    if(handAction?.kind==="spark"){
+      if(handAction.error)return toast(handAction.error);
+      if(!world.left){world.left=handAction.need;renderHotbar()}
+    }
     const canSpark=inv("flint")&&inv("pyrite");
     if(canSpark&&fireNear?.lit)return toast("The fire is already burning. Neither stone was consumed.");
     if(canSpark&&fireNear&&!fireNear.lit){GFX.playOnce(player.model,"Punch_Cross",.5);GFX.FX.sparks(fireNear.x,fireNear.y+.35,fireNear.z,30);AU.strike();player.actCd=.3;
@@ -1011,8 +1053,8 @@ function useHeld(){
       fireNear.lit=true;fireNear.heat=.3;AU.ignite();toast(fireNear.type==="torch"?"The torch flares into light.":"Sparks catch the dry tinder — fire!");discover("fire");if(fireNear.type==="kiln")discover("kiln");return}
     if(k==="flint"&&t?.kind==="boulder"){GFX.playOnce(player.model,"Punch_Cross",.5);const fp=frontPoint(.6);GFX.FX.sparks(fp.x,player.pos.y+1,fp.z,10);GFX.FX.dust(fp.x,player.pos.y+.6,fp.z,6);AU.strike();player.actCd=.3;
       take("flint");give("flake",2);toast("Knapped 1 flint into 2 sharp stone flakes — check your Backpack.");discover("knapping");return}
-    if(canSpark){GFX.playOnce(player.model,"Punch_Cross",.5);const fp=frontPoint(.7);GFX.FX.sparks(fp.x,player.pos.y+.35,fp.z,30);AU.strike();return toast(fireNear?"The fire is already burning.":"Sparks fly from the pyrite! You need dry fuel nearby — craft a firewood pile.")}
-    return toast(k==="flint"?"Hold flint with pyrite in your Backpack to strike sparks. Aim at a boulder to knap it into flakes (uses 1 flint).":"Pyrite strikes sparks against flint. Keep a flint in your Backpack; this does not consume either stone.");
+    if(canSpark){GFX.playOnce(player.model,"Punch_Cross",.5);const fp=frontPoint(.7);GFX.FX.sparks(fp.x,player.pos.y+.35,fp.z,30);AU.strike();return toast(fireNear?"The fire is already burning.":"Sparks need fuel: hold 3 sticks and press Q on clear ground to build a firewood pile.")}
+    return toast(k==="flint"?"Flint + pyrite in your hands strike sparks. V switches hand; numbers equip. Hold 3 sticks and Q to build a pile. Aim at a boulder to knap (uses 1 flint).":"Pyrite + flint in your hands strike sparks without consuming either stone. V switches hand; numbers equip. Hold 3 sticks and Q to build a pile.");
   }
   if(k==="lens"){if(fireNear&&!fireNear.lit){if(sunElevation()>.25&&world.weather.kind==="clear"){fireNear.lit=true;fireNear.heat=.3;AU.ignite();toast("The lens focuses sunlight to a burning point — smoke, then flame!");discover("optics");if(fireNear.type==="kiln")discover("kiln")}else toast("You need strong, direct sunlight to focus.");return}return toast("A lens: try focusing the sun onto a firewood pile.")}
   if(k==="log"&&t?.kind==="boulder"){const {ch,b}=t.obj,f=forward();b.x+=f.x*1.6;b.z+=f.z*1.6;b.y=heightAt(b.x,b.z);setInst(ch.boulders,b.i,b.x,b.y+b.s*.35,b.z,b.s*1.2,b.s*.8,b.s,b.i);ch.boulders.instanceMatrix.needsUpdate=true;world.moved[ch.key+"|"+b.i]=[b.x,b.z];AU.place();toast("With a long lever, the boulder rolls.");discover("lever");return}
@@ -1174,7 +1216,7 @@ function renderHUD(){
   if(player.readout){const sp=player.vel.length(),alt=player.pos.y;
     $("#wReadout").hidden=false;$("#wReadout").innerHTML=`speed ${sp.toFixed(2)} m/s · vertical ${player.vel.y.toFixed(2)} m/s<br>altitude ${alt.toFixed(1)} m · g = ${G_ACC} m/s²<br>air ${temperature(Ta.toFixed(1))} · body ${temperature(st.tb.toFixed(2))} · net heat ${Math.round(player.netW||0)} W<br>fire radiant ${Math.round(player.fireW||0)} W · wet ${Math.round(st.wet*100)}%<br>water boils at ${temperature((100-Math.max(0,alt)/285).toFixed(1))} here<br>your noise ${playerNoiseDb()} dB @1 m (−20·log₁₀ r)${inv("compass")?`<br>heading ${Math.round(((Math.atan2(-forward().x,-forward().z)*180/Math.PI)+360)%360)}°`:""}<br>biome ${biomeAt(player.pos.x,player.pos.z,heightAt(player.pos.x,player.pos.z))}`}
   else $("#wReadout").hidden=true;
-  $("#wPrompt").textContent=player.dead?"":targetLabel(findTarget());
+    {const t=findTarget(),action=handActionLabel(t),target=targetLabel(t);$("#wPrompt").textContent=player.dead?"":action?(target.startsWith("E ")?`${action} · ${target}`:action):target;}
   renderObjectives();
 }
 function guideCtx(){return {has:hasD,inv,night:isNight(),hour:hourOf(),day:dayNum(),cold:(player.Ta??20)<10||world.st.tb<36.3,wet:world.st.wet>.5,sick:world.st.sick>0,sickCount:world.counters.sick,untreated:!!world.counters.untreated,
@@ -1183,7 +1225,7 @@ function guideCtx(){return {has:hasD,inv,night:isNight(),hour:hourOf(),day:dayNu
 function nearWater(x,z,r){for(let a=0;a<12;a++)for(const rr of [r*.5,r])if(heightAt(x+Math.cos(a/12*6.283)*rr,z+Math.sin(a/12*6.283)*rr)<0)return true;return false}
 let objHTML="";
 function duskNeedsFire(){const h=hourOf();if(!(h>=16.8||h<5))return false;return !world.structures.some(s=>s.lit&&s.type==="fire"&&Math.hypot(s.x-player.pos.x,s.z-player.pos.z)<25)}
-function duskCheck(){const h=hourOf(),C=world.counters;if(h>=16.8&&h<20&&C.duskWarned!==dayNum()&&duskNeedsFire()){C.duskWarned=dayNum();toast(hasD("fire")?"🔥 The sun is low. First priority: get a fire burning before dark — nights here are truly dark, and wolves fear the flames.":"🔥 The sun is low. First priority: a firewood pile (I) and flint + pyrite to light it — nights here are truly dark.")}}
+function duskCheck(){const h=hourOf(),C=world.counters;if(h>=16.8&&h<20&&C.duskWarned!==dayNum()&&duskNeedsFire()){C.duskWarned=dayNum();toast(hasD("fire")?"🔥 The sun is low. First priority: get a fire burning before dark — nights here are truly dark, and wolves fear the flames.":"🔥 The sun is low. First priority: hold 3 sticks and Q to build a pile, then flint + pyrite and Q to light it — nights here are truly dark.")}}
 function renderObjectives(){const el=$("#wObj");if(!el)return;const c=guideCtx(),open=(duskNeedsFire()?[["o_dusk","🔥 Dusk: light a fire before nightfall",()=>false]]:[]).concat(OBJECTIVES.filter(o=>!o[2](c))).slice(0,3),done=OBJECTIVES.length-OBJECTIVES.filter(o=>!o[2](c)).length;
   const html=`<h5>OBJECTIVES <small>${done}/${OBJECTIVES.length}</small></h5>`+open.map((o,i)=>`<div class="ob${i?"":" now"}"><i></i>${esc(o[1])}</div>`).join("");if(html!==objHTML){el.innerHTML=html;objHTML=html}}
 let thoughtT=8,thoughtShowT=0;
@@ -1340,9 +1382,9 @@ function helpPages(){return [
   {art:"✋",t:"Pick things up",b:`Look at an item on the ground and press ${kb("E")}. It goes into your <b>Backpack</b> — open it with ${kb("I")}.<br>${kb("R")} puts the item in your hand back into the Backpack (${kb("Shift")}+${kb("R")}: both hands).`},
   {art:"🎒",t:"Backpack & hands",b:`Press ${kb("V")} (or click a hand below) to select left or right, then ${kb("1")}–${kb("0")} or click a hotbar item to equip it. No Backpack needed.<br>${kb("Q")} uses the selected hand; ${kb("X")} swaps held objects.<br><b>Right-click</b> an item for options: left / right hand, observe, drop, put away.`},
   {art:"🔍",t:"Observe",b:`Press ${kb("F")} to look at what you hold up close. Turn it with the mouse and read your field notes.<br>Press another item's number to look at two things together — sometimes that sparks an idea. ${kb("F")} or ${kb("Esc")} to put it away.`},
-  {art:"🪵",t:"Craft",b:`The Backpack has a <b>crafting list</b>. Recipes you can make light up — click one to craft it.<br>Example: <b>3 sticks → Firewood pile</b>. More recipes appear as you discover things.`},
+  {art:"🪵",t:"Craft",b:`The Backpack has a <b>crafting list</b>. Recipes you can make light up — click one to craft it.<br><b>Quick fire:</b> hold sticks and press ${kb("Q")} on clear ground to build a pile with 3 sticks — no Backpack needed. More recipes appear as you discover things.`},
   {art:"📍",t:"Place things",b:`Hold something placeable (like the Firewood pile), look at the ground in front of you and press ${kb("Q")} to put it down.<br>${kb("Q")} (or left-click) also uses what you hold: eat, drink, throw…`},
-  {art:"🔥",t:"Your first fire",b:`1. Craft a <b>Firewood pile</b> and place it with ${kb("Q")}.<br>2. Hold <b>flint</b> in your hand, stand next to the pile and press ${kb("Q")} — the <b>pyrite</b> only needs to be in your Backpack.<br>Flint and pyrite lie on the ground around where you wake up.`},
+  {art:"🔥",t:"Your first fire",b:`1. Hold <b>sticks</b> and press ${kb("Q")} on clear ground: 3 sticks become a placed <b>Firewood pile</b>.<br>2. Equip <b>flint + pyrite</b>, one per hand: ${kb("V")} switches hands, numbers equip. Beside the pile, ${kb("Q")} strikes sparks without consuming the stones. An empty second hand can ready the matching stone from your pack automatically; an occupied hand is never replaced.<br>3. Hold a <b>log or stick</b> and ${kb("Q")} beside the fire to add fuel. Read the action prompt before pressing.`},
   {art:"📖",t:"Journal, pets & settings",b:`${kb("Tab")} / ${kb("J")} journal: discoveries, knowledge and curious thoughts. Objectives are shown on the right.<br>Friendly animals may follow you — ${kb("P")} to pet a companion. ${kb("Esc")} opens settings.`,last:true}
 ]}
 let helpPage=0,helpWasPaused=false;
@@ -1362,8 +1404,8 @@ function tipOnce(id,text){const C=world.counters;if(C["tip_"+id]||!tipsOn())retu
 function stepTips(dt){tipT-=dt;if(tipT>0||helpIsOpen())return;tipT=.5;const P=player.pos,held=world.held;
   if(held==="campfire")tipOnce("placePile","Look at the ground in front of you and press Q to place the firewood pile.");
   const pile=world.structures.find(s=>s.type==="fire"&&!s.lit&&Math.hypot(s.x-P.x,s.z-P.z)<4);
-  if(pile&&inv("flint")&&!hasD("fire"))tipOnce("strike",inv("pyrite")?"Hold flint (click it in the Backpack or press its number) and press Q next to the pile to strike sparks — the pyrite only needs to be in your Backpack.":"Hold flint and press Q next to the pile to strike sparks — you'll also need a piece of pyrite (a brassy, heavy stone) in your Backpack.");
-  if(!pile&&inv("stick")>=3&&!inv("campfire")&&!world.structures.some(s=>s.type==="fire"))tipOnce("craftPile","You have 3 sticks: open the Backpack (I) and click 'Firewood pile' in the crafting list.");
+  if(pile&&inv("flint")&&!hasD("fire"))tipOnce("strike",inv("pyrite")?"Hold flint (click it in the Backpack or press its number) and press Q next to the pile to strike sparks — V selects the other hand; equip pyrite by its number. An empty hand readies it automatically.":"Hold flint and press Q next to the pile to strike sparks — you'll also need a piece of pyrite (a brassy, heavy stone) in your Backpack.");
+  if(!pile&&inv("stick")>=3&&!inv("campfire")&&!world.structures.some(s=>s.type==="fire"))tipOnce("craftPile","You have 3 sticks: hold sticks (their hotbar number), face clear ground and press Q to build a firewood pile. No Backpack needed.");
 }
 function bindInput(container){
   canvasEl=renderer.domElement;
