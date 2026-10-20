@@ -281,7 +281,7 @@ function spawnAnimals(dt){
   const h=hourOf(),night=isNight(),C=world.counters;
   // night packs: a warning howl at dusk, then a hunting pack that grows with the days and your age
   if(night&&h>=18.3&&C.howled!==dayNum()+1){C.howled=dayNum()+1;AU.howl(120);toast("Wolves howl somewhere in the dark. They hunt at night — but they fear fire.")}
-  const wolves=animals.filter(a=>a.kind==="wolf"&&!a.dead).length;
+  const wolves=animals.filter(a=>a.kind==="wolf"&&a.pack&&!a.dead).length;   // roaming (non-pack) wolves no longer suppress the night pack
   if(night&&wolves<2&&(h>=(dayNum()===0?21:19.5)||h<4.5)&&Math.random()<dt*.02*(1+dayNum()*.25)){
     const ang=Math.random()*6.283,n=packSize();let made=0;
     for(let k=0;k<n*5&&made<n;k++){const r=70+Math.random()*30,aa=ang+(Math.random()-.5)*.7,x=player.pos.x+Math.cos(aa)*r,z=player.pos.z+Math.sin(aa)*r;if(heightAt(x,z)>.6&&!nearLight(x,z,4)){addAnimal("wolf",x,z).pack=true;made++}}
@@ -345,10 +345,12 @@ function updateAnimals(dt){
     else wander(a,dt);
     if(!a.target)a.target=a.pos.clone();
     const dir=a.target.clone().sub(a.pos).setY(0);const len=dir.length();
-    if(len>.2&&speed>0){dir.multiplyScalar(1/len);const nx=a.pos.x+dir.x*speed*dt,nz=a.pos.z+dir.z*speed*dt;
-      const intoLight=a.kind==="wolf"&&a.calm<=0&&nearLight(nx,nz)&&!nearLight(a.pos.x,a.pos.z);
-      if(heightAt(nx,nz)>.2&&!intoLight){a.pos.x=nx;a.pos.z=nz}else a.target=null;
-      a.g.rotation.y=Math.atan2(dir.x,dir.z)}
+    if(len>.2&&speed>0){dir.multiplyScalar(1/len);let moved=false;
+      // steer around water / light edges instead of freezing at the shore (a pack across a lake used to stall forever)
+      for(const off of [0,.6,-.6,1.2,-1.2,1.9,-1.9]){const o=off*a.dir,c=Math.cos(o),sn=Math.sin(o),dx=dir.x*c-dir.z*sn,dz=dir.x*sn+dir.z*c,nx=a.pos.x+dx*speed*dt,nz=a.pos.z+dz*speed*dt;
+        const intoLight=a.kind==="wolf"&&a.calm<=0&&nearLight(nx,nz)&&!nearLight(a.pos.x,a.pos.z);
+        if(heightAt(nx,nz)>.2&&!intoLight){a.pos.x=nx;a.pos.z=nz;a.g.rotation.y=Math.atan2(dx,dz);moved=true;break}}
+      if(!moved){a.target=null;a.dir=-a.dir}}
     collide(a.pos,.45);
     a.pos.y=heightAt(a.pos.x,a.pos.z);a.g.position.copy(a.pos);
     a.phase+=dt*speed*3;const sw=Math.min(1,speed/3)*.7;a.legs.forEach((l,i)=>l.rotation.x=Math.sin(a.phase+(i%2?Math.PI:0)+(i>1?Math.PI/2:0))*sw);const ud=a.g.userData;if(ud.head){ud.head.rotation.x=speed<1.5?.25+.2*Math.sin(a.phase*.3+a.pos.x):-.05;ud.tail.rotation.y=Math.sin(a.phase*2)*.4}
@@ -632,7 +634,7 @@ function stepLightning(dt){
 }
 function strike(at){
   let x,z,tree=null;
-  if(at){x=at[0];z=at[1]}
+  if(at){x=at[0];z=at[1];tree=nearestTree(x,z,1.5)}   // a strike aimed at a tree can set it alight too (was: only random strikes)
   else if(Math.random()<.5){const list=[];for(const ch of chunks.values())if(ch.group)for(const t of ch.obj.trees)if(!t.gone&&!t.burnt&&!t.burning)list.push({ch,t});if(list.length){tree=list[Math.floor(Math.random()*list.length)];x=tree.t.x;z=tree.t.z}}
   if(x===undefined){const a=Math.random()*6.283,r=150+Math.random()*1800;x=player.pos.x+Math.cos(a)*r;z=player.pos.z+Math.sin(a)*r}
   const d=Math.max(30,Math.hypot(x-player.pos.x,z-player.pos.z));
