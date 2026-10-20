@@ -271,3 +271,20 @@ body.titleOn .wObj,body.titleOn .wThought{display:none}
 .helpCard .hBtns button[disabled]{opacity:.35;cursor:default}
 .settings .helpSet{display:block;width:100%;margin:4px 0 10px;padding:9px;font-size:15px;cursor:pointer}
 body.titleOn .wHelpBtn{display:none}
+
+/* Select a hand without opening the backpack. */
+.wHands{bottom:42px;align-items:stretch}.wHands .hand{height:78px;cursor:pointer;color:#dbe8f5;font-family:inherit;padding:5px;transition:background .15s,border-color .15s}
+.wHands .hand.selected{border:2px solid #ffd272;background:#3f3219e6;box-shadow:0 0 0 2px #ffc85725,0 4px 18px #0008}
+.wHands .hand[data-hand=L].selected{border-color:#67dcff;background:#173743e6;box-shadow:0 0 0 2px #67dcff25,0 4px 18px #0008}
+.wHands .hand.selected small{color:#fff}.wHands .hand .stowK{font-size:8px;color:#d6f3ff;opacity:1;line-height:1.4}
+.handToggle{background:#0b1a28e8;border:1px solid #58738b;border-radius:11px;color:#e6f4ff;cursor:pointer;padding:8px;font-size:17px}.handToggle small{display:block;font-size:9px;margin-top:5px}
+.wHands button:focus-visible{outline:2px solid white;outline-offset:3px}
+@media(max-width:800px){.wHands{right:8px;bottom:115px}.wHands .hand{width:76px}.wHands .handToggle{max-width:62px}.wKeys{max-height:38px;overflow:auto}}
+
+.wBars{min-width:270px}.hb b{min-width:110px}.wTime{min-width:220px}
+
+@media(max-width:1250px){.wHands{right:12px;bottom:112px}}
+@media(max-width:600px){.wBars{min-width:200px}.wTime{top:112px;right:8px;min-width:190px}.wObj{top:202px}.wHotbar{max-width:calc(100% - 16px);overflow-x:auto}.wHotbar .slot{flex-shrink:0}}
+
+.wBars{width:300px}.hb{grid-template-columns:52px minmax(30px,1fr) 112px}.hb b{min-width:0;white-space:nowrap}
+@media(max-width:600px){.wBars{width:265px;min-width:265px}.hb{grid-template-columns:43px minmax(20px,1fr) 106px}}

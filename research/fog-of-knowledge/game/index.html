@@ -6,7 +6,7 @@
 <title>Fog of Knowledge: The Game</title>
 <meta name="description" content="An open world with real physical laws: explore as one human and discover your way out of the Fog of Knowledge.">
 <style>html,body{background:#02040a}</style>
-<link rel="stylesheet" href="game.css?v=3.6.0">
+<link rel="stylesheet" href="game.css?v=3.8.0">
 </head>
 <body>
 <header class="gTop">
@@ -35,7 +35,7 @@
       <div id="wHands" class="wHands"></div>
       <div id="wObj" class="wObj"></div>
       <div id="wThought" class="wThought" hidden></div>
-      <div class="wKeys">WASD move · Shift run · C crouch (quiet) · Space jump/swim · mouse look (drag up to see the sky) · E interact/pick up/sleep/pet · F observe held item · Q / click use, throw, shoot, eat, drink · P pet companion · 1–0 right hand (Shift: left) · right-click item menu · R stow held item (Shift+R both) · I backpack &amp; crafting · Tab journal · J curiosity · H help · G physics readout · Esc settings</div>
+      <div class="wKeys">WASD move · Shift run · C crouch (quiet) · Space jump/swim · mouse look (drag up to see the sky) · E interact/pick up/sleep/pet · F observe held item · Q / click use, throw, shoot, eat, drink · P pet companion · V select hand · 1–0 equip selected hand (Shift: left) · X swap objects · right-click item menu · R stow held item (Shift+R both) · I backpack &amp; crafting · Tab journal · J curiosity · H help · G physics readout · Esc settings</div>
     </div>
     <div id="wInv" class="wPanel" hidden></div>
     <div id="wJournal" class="wPanel wide" hidden></div>
@@ -118,11 +118,13 @@
     <div class="gCol gRight atlasNeed" hidden><div class="card"><h3>Your trail</h3><ol id="dyTrail" class="trail"></ol></div></div>
   </section>
 </main>
-<script src="discoveries.js?v=3.6.0" defer></script>
-<script src="engine.js?v=3.6.0" defer></script>
-<script src="game.js?v=3.6.0" defer></script>
+<script src="discoveries.js?v=3.8.0" defer></script>
+<script src="engine.js?v=3.8.0" defer></script>
+<script src="game.js?v=3.8.0" defer></script>
 <script type="module">
-import {initWorld} from "./world.js?v=3.6.0";
+import {initWorld} from "./world.js?v=3.8.0";
+import {setVolume} from "./audio.js";
+if(new URLSearchParams(location.search).get("verification")==="1")setVolume(0);
 initWorld();
 </script>
 </body>

@@ -20,8 +20,8 @@ import {FXAAShader} from "./vendor/addons/shaders/FXAAShader.js";
 /* ---------------- quality presets ---------------- */
 export const QUALITY={
   low:  {label:"Low",  pr:1,   shadows:0,    post:false,bloom:false,aa:"none",water:"simple",reflect:0,   grass:0,    grassR:0,flowers:0,  clouds:true, fireShadow:false,particles:.5},
-  high: {label:"High", pr:1.25,shadows:2048, post:true, bloom:true, aa:"fxaa",water:"mirror",reflect:512, grass:7000, grassR:1,flowers:140,clouds:true, fireShadow:1,fireShadowMap:256,particles:1},
-  ultra:{label:"Ultra",pr:2,   shadows:4096, post:true, bloom:true, aa:"smaa",water:"mirror",reflect:1024,grass:14000,grassR:1,flowers:260,clouds:true, fireShadow:2,fireShadowMap:512,particles:1.4}
+  high: {label:"High", pr:1.25,shadows:2048, post:true, bloom:true, aa:"fxaa",water:"mirror",reflect:512, grass:9000, grassR:1,flowers:140,clouds:true, fireShadow:1,fireShadowMap:256,particles:1},
+  ultra:{label:"Ultra",pr:2,   shadows:4096, post:true, bloom:true, aa:"smaa",water:"mirror",reflect:1024,grass:18000,grassR:1,flowers:260,clouds:true, fireShadow:2,fireShadowMap:512,particles:1.4}
 };
 const QKEY="fog-of-knowledge:game:quality";
 export function loadQualityPref(){try{const q=localStorage.getItem(QKEY);if(QUALITY[q])return q}catch(_){}return "high"}
@@ -29,7 +29,7 @@ export function saveQualityPref(q){try{localStorage.setItem(QKEY,q)}catch(_){}}
 export let Q=QUALITY.high, qName="high";
 
 /* shared animated uniforms */
-export const U={time:{value:0},wind:{value:1},grassFar:{value:55},sunDir:{value:new THREE.Vector3(0,1,0)}};
+export const U={time:{value:0},wind:{value:1},grassFar:{value:55},wet:{value:0},sunDir:{value:new THREE.Vector3(0,1,0)}};
 
 /* ---------------- height + distance fog (patched into every material) ---------------- */
 THREE.ShaderChunk.fog_pars_vertex=`#ifdef USE_FOG
@@ -67,7 +67,7 @@ float fk_fbm(vec2 p){float s=0.,a=.5;for(int i=0;i<4;i++){s+=a*fk_vn(p);p=p*2.03
 
 /* ---------------- renderer / scene / post ---------------- */
 export let renderer,scene,camera,composer,sun,hemi,sky,water,waterSimple,clouds,stars,moonMesh,moonGlow,rainLines,snowPts,bloomPass;
-let container,renderPass,outputPass,aaPass,gradePass;
+let container,renderPass,outputPass,aaPass,gradePass,lightningLight;
 export function initGfx(el,q){
   container=el;
   renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:"high-performance",preserveDrawingBuffer:true,stencil:false});
@@ -83,11 +83,12 @@ export function initGfx(el,q){
   sun=new THREE.DirectionalLight(0xfff0d8,3.2);scene.add(sun);scene.add(sun.target);
   const sc=sun.shadow.camera;sc.left=-70;sc.right=70;sc.top=70;sc.bottom=-70;sc.near=1;sc.far=420;
   sun.shadow.bias=-.0004;sun.shadow.normalBias=.04;
+  lightningLight=new THREE.DirectionalLight(0xdceaff,0);scene.add(lightningLight);scene.add(lightningLight.target);
   // sky (Preetham) with night, overcast and horizon blending added
   sky=new Sky();sky.scale.setScalar(1200);sky.renderOrder=-10;
   const su=sky.material.uniforms;su.turbidity.value=2.2;su.rayleigh.value=2.4;su.mieCoefficient.value=.0045;su.mieDirectionalG.value=.86;
-  su.fogCol={value:new THREE.Color()};su.skyGain={value:.32};su.skySat={value:1.9};su.nightAmt={value:0};su.overcast={value:0};su.overcastCol={value:new THREE.Color(.42,.46,.5)};
-  sky.material.fragmentShader="uniform vec3 fogCol; uniform float nightAmt; uniform float overcast; uniform vec3 overcastCol; uniform float skyGain; uniform float skySat;\n"+
+  su.flash={value:0};su.fogCol={value:new THREE.Color()};su.skyGain={value:.32};su.skySat={value:1.9};su.nightAmt={value:0};su.overcast={value:0};su.overcastCol={value:new THREE.Color(.42,.46,.5)};
+  sky.material.fragmentShader="uniform float flash; uniform vec3 fogCol; uniform float nightAmt; uniform float overcast; uniform vec3 overcastCol; uniform float skyGain; uniform float skySat;\n"+
     sky.material.fragmentShader.replace("gl_FragColor = vec4( retColor, 1.0 );",`
       retColor *= skyGain; { float sl = dot(retColor, vec3(.2126,.7152,.0722)); retColor = max(mix(vec3(sl), retColor, skySat), 0.); }
       vec3 nightC = mix(vec3(0.010,0.018,0.045), vec3(0.0015,0.003,0.012), clamp(direction.y*1.6,0.,1.));
@@ -95,6 +96,7 @@ export function initGfx(el,q){
       retColor = mix(retColor, overcastCol*(0.75+0.35*clamp(direction.y,0.,1.)), overcast);
       float hz = 1.0 - smoothstep(-0.03, 0.11, direction.y);
       retColor = mix(retColor, fogCol, hz);
+      retColor += vec3(.62,.75,1.) * flash * .75;
       gl_FragColor = vec4( retColor, 1.0 );`);
   scene.add(sky);
   // stars + moon
@@ -219,6 +221,11 @@ export function updateEnvironment(o){
   // o: {sunDir, el, amt, kind, pos (player), cam, snow, gameTime, dt, under}
   const {sunDir,el,amt}=o,day=sm(-.12,.25,el),gold=1-sm(.04,.42,Math.abs(el)),cloudy=o.kind==="cloudy"?1:0;
   ENV.day=day;
+  const flash=Math.max(0,Math.min(1,o.flash||0));
+  lightningLight.intensity=flash*7;
+  lightningLight.target.position.copy(o.pos);lightningLight.position.set(o.pos.x+50,o.pos.y+180,o.pos.z-70);
+  U.wet.value+=(amt-U.wet.value)*Math.min(1,(o.dt||0)*.07);
+
   // fog colour (also the sky's horizon colour)
   _c1.copy(C.nightFog).lerp(C.duskFog,sm(-.2,.06,el)).lerp(C.dayFog,sm(.06,.4,el));
   _c1.lerp(C.rainFog.clone().multiplyScalar(.25+.75*day),Math.min(1,amt*.8+cloudy*.25));
@@ -229,7 +236,7 @@ export function updateEnvironment(o){
   scene.fog.color.copy(ENV.fogColor);
   // sky
   const su=sky.material.uniforms;su.sunPosition.value.copy(sunDir);su.fogCol.value.copy(ENV.fogColor);
-  su.nightAmt.value=1-sm(-.16,.06,el);su.overcast.value=Math.min(.92,amt*.85+cloudy*.35)*(.3+.7*day);
+  su.flash.value=flash;su.nightAmt.value=1-sm(-.16,.06,el);su.overcast.value=Math.min(.92,amt*.85+cloudy*.35)*(.3+.7*day);
   su.overcastCol.value.copy(C.rainFog).multiplyScalar(.35+.65*day);
   su.rayleigh.value=2.4+1.2*gold;su.turbidity.value=2.2+7*amt;
   sky.position.copy(o.cam);
@@ -247,13 +254,15 @@ export function updateEnvironment(o){
   sun.target.position.copy(_tgt);sun.position.copy(_tgt).addScaledVector(ENV.lightDir,200);
   hemi.color.copy(C.hemiNight).lerp(C.hemiDay,day);hemi.groundColor.copy(C.gNight).lerp(C.gDay,day);hemi.intensity=(.035+.07*mp.frac*sm(-.04,.3,moonDir.y)*(1-.8*amt))*(1-day)+1.3*day;
   renderer.toneMappingExposure=.62*ENV.expMul; // eye adaptation + optional brightness slider (world.js); never an automatic night boost
+  hemi.intensity+=flash*2.5;
+  scene.fog.color.lerp(new THREE.Color(.65,.76,.95),flash*.6);
   // stars & moon
   stars.material.opacity=(1-day)*(1-amt*.9)*(1-cloudy*.5);stars.position.copy(o.cam);stars.rotation.y=o.gameTime/86164*2*Math.PI;stars.visible=stars.material.opacity>.01;
   moonMesh.position.copy(o.cam).addScaledVector(moonDir,820);moonGlow.position.copy(moonMesh.position);
   moonMesh.visible=moonGlow.visible=moonDir.y>-.08;moonGlow.material.opacity=.45*(1-day*.8)*(1-amt)*(.15+.85*mp.frac);moonMesh.material.opacity=(1-amt*.85)*(.2+.8*mp.frac);
   // clouds
   const cu=clouds.material.uniforms;cu.uCover.value=.4+cloudy*.2+amt*.35;cu.uFog.value.copy(ENV.fogColor);
-  cu.uLit.value.copy(sun.color).multiplyScalar(.35+1.25*day).lerp(C.rainFog,amt*.6);cu.uShade.value.copy(ENV.fogColor).multiplyScalar(.55+.2*day);
+  cu.uLit.value.copy(sun.color).multiplyScalar(.35+1.25*day).lerp(C.rainFog,amt*.6);cu.uShade.value.copy(ENV.fogColor).multiplyScalar(.55+.2*day);cu.uLit.value.addScalar(flash*1.7);cu.uShade.value.addScalar(flash*.7);
   clouds.position.set(o.cam.x,270,o.cam.z);
   // water tint
   if(water.material.uniforms){const wu=water.material.uniforms;wu.sunDirection.value.copy(ENV.lightDir);wu.sunColor.value.copy(sun.color).multiplyScalar(Math.min(1,sun.intensity/3));wu.waterColor.value.copy(C.wNight).lerp(C.wDay,day)}
@@ -302,9 +311,9 @@ function grassPatch(sh){sh.uniforms.uTime=U.time;sh.uniforms.uWind=U.wind;sh.uni
    float dc=distance(ip.xz,cameraPosition.xz);
    transformed*=1.-smoothstep(uFar*.6,uFar,dc);`);
   sh.fragmentShader=sh.fragmentShader.replace("#include <normal_fragment_begin>","#include <normal_fragment_begin>\n normal=normalize((viewMatrix*vec4(0.,1.,0.,0.)).xyz);")}
-function terrainPatch(sh){sh.uniforms.uTime=U.time;
+function terrainPatch(sh){sh.uniforms.uTime=U.time;sh.uniforms.uWet=U.wet;
   sh.vertexShader="varying vec3 vTW;varying vec3 vTN;\n"+sh.vertexShader.replace("#include <begin_vertex>","#include <begin_vertex>\n vTW=(modelMatrix*vec4(transformed,1.)).xyz; vTN=normalize(mat3(modelMatrix)*objectNormal);");
-  sh.fragmentShader="varying vec3 vTW;varying vec3 vTN;uniform float uTime;\n"+NOISE_GLSL+sh.fragmentShader
+  sh.fragmentShader="varying vec3 vTW;varying vec3 vTN;uniform float uWet;uniform float uTime;\n"+NOISE_GLSL+sh.fragmentShader
    .replace("#include <color_fragment>",`#include <color_fragment>
     vec2 tp=vTW.xz;
     float n1=fk_vn(tp*.31),n2=fk_vn(tp*1.9+7.),n3=fk_fbm(tp*.045),n4=fk_vn(tp*6.5);
@@ -329,15 +338,40 @@ function terrainPatch(sh){sh.uniforms.uTime=U.time;
     float wave=.07*sin(uTime*1.4+n2*6.28+tp.x*.05);
     float fo=(1.-smoothstep(0.,.2,abs(vTW.y-.06-wave)))*smoothstep(.45,.75,fk_vn(tp*1.3+vec2(uTime*.25,0.)));
     base=mix(base,vec3(.85,.9,.92),fo*.85);
+    // Soil flecks, pebbles and weather-driven wetness, stable in world space.
+    float grit=fk_vn(tp*22.0),pebbles=smoothstep(.80,.94,fk_vn(tp*8.0));
+    base*=.90+.16*grit; base=mix(base,base*vec3(.68,.64,.58),pebbles*.24);
+    base*=1.-uWet*.18*(1.-sn);
     diffuseColor.rgb=base;`)
    .replace("#include <roughnessmap_fragment>",`#include <roughnessmap_fragment>
-    roughnessFactor=mix(roughnessFactor,.32,tWet*(1.-smoothstep(-.3,-1.,vTW.y)));roughnessFactor=mix(roughnessFactor,.55,sn);`)}
+    roughnessFactor=mix(roughnessFactor,.32,tWet*(1.-smoothstep(-.3,-1.,vTW.y)));roughnessFactor=mix(roughnessFactor,.55,sn);roughnessFactor=mix(roughnessFactor,.4,uWet*(1.-sn));`)
+   .replace("#include <normal_fragment_maps>",`#include <normal_fragment_maps>
+    float closeDetail=1.-smoothstep(18.,55.,distance(vTW,cameraPosition));
+    float relief=fk_vn(vTW.xz*7.)*.035+fk_vn(vTW.xz*23.)*.008;
+    vec3 q0=dFdx(vViewPosition),q1=dFdy(vViewPosition);
+    vec3 surfR=cross(q1,normal),surfS=cross(normal,q0);
+    normal=normalize(normal-(surfR*dFdx(relief)+surfS*dFdy(relief))*closeDetail/max(abs(dot(q0,surfR)),.0001));`)}
+function surfaceDetail(kind){return sh=>{
+  sh.uniforms.uWet=U.wet;
+  sh.vertexShader="varying vec3 vSurface;\n"+sh.vertexShader.replace("#include <begin_vertex>",`#include <begin_vertex>
+    #ifdef USE_INSTANCING
+    vSurface=(modelMatrix*instanceMatrix*vec4(transformed,1.)).xyz;
+    #else
+    vSurface=(modelMatrix*vec4(transformed,1.)).xyz;
+    #endif`);
+  sh.fragmentShader="varying vec3 vSurface;uniform float uWet;\n"+NOISE_GLSL+sh.fragmentShader.replace("#include <color_fragment>",`#include <color_fragment>
+    float fleck=fk_vn(vSurface.xz*15.+vSurface.y*3.);
+    float groove=${kind==="bark"?"pow(abs(sin(vSurface.y*1.7+fk_vn(vSurface.xz*6.)*12.)),12.)":"smoothstep(.35,.7,fk_fbm(vSurface.xz*2.+vSurface.y))"};
+    diffuseColor.rgb*=.78+.28*fleck-.16*groove;
+    diffuseColor.rgb*=1.-uWet*.2;`).replace("#include <roughnessmap_fragment>",`#include <roughnessmap_fragment>
+    roughnessFactor=mix(roughnessFactor,.42,uWet*.65);`);
+}}
 export function initMaterials(){
   MAT.terrain=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.93,metalness:0});MAT.terrain.onBeforeCompile=terrainPatch;
-  MAT.bark=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.95});
+  MAT.bark=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.95});MAT.bark.onBeforeCompile=surfaceDetail("bark");
   MAT.leaf=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.8,side:THREE.DoubleSide});MAT.leaf.onBeforeCompile=windPatch(.035);
   MAT.bush=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.85});MAT.bush.onBeforeCompile=windPatch(.0);
-  MAT.rock=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.88,metalness:.02});
+  MAT.rock=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.88,metalness:.02});MAT.rock.onBeforeCompile=surfaceDetail("rock");
   MAT.item=new THREE.MeshStandardMaterial({vertexColors:false,roughness:.7});
   MAT.grass=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.9,side:THREE.DoubleSide});MAT.grass.onBeforeCompile=grassPatch;
   MAT.flower=new THREE.MeshStandardMaterial({vertexColors:false,roughness:.6,emissive:0x111111});MAT.flower.onBeforeCompile=grassPatch;
@@ -354,11 +388,19 @@ function buildGeometries(){
   // broadleaf
   const bt=new THREE.CylinderGeometry(.13,.27,3,8,4);bt.translate(0,1.5,0);
   const br1=new THREE.CylinderGeometry(.05,.1,1.4,6);br1.rotateZ(.8);br1.translate(.5,2.6,0);const br2=br1.clone();br2.rotateY(2.4);
-  GEO.broadTrunk=merge([vcolor(bt,bark),vcolor(br1,bark),vcolor(br2,bark)]);
-  const blobs=[];const r=rng(11);for(let i=0;i<6;i++){const rad=.95+r()*.6;let g=new THREE.IcosahedronGeometry(rad,2);const cx=(r()-.5)*1.7,cy=3.1+r()*1.3,cz=(r()-.5)*1.7;
+  const forks=[];for(let j=0;j<5;j++){const branch=new THREE.CylinderGeometry(.025,.09,1.55,6,2);branch.rotateZ(.7+j*.08);branch.translate(.52,2.6+j*.13,0);branch.rotateY(j*2.4);forks.push(vcolor(branch,bark))}
+  GEO.broadTrunk=merge([vcolor(bt,bark),vcolor(br1,bark),vcolor(br2,bark),...forks]);
+  const blobs=[];const r=rng(11);for(let i=0;i<14;i++){const rad=.62+r()*.48;let g=new THREE.IcosahedronGeometry(rad,1);const angle=i*2.39996,spread=.35+Math.sqrt(r())*1.05;const cx=Math.cos(angle)*spread,cy=3.0+r()*1.65,cz=Math.sin(angle)*spread;
     g=displace(g,.13,1.3,i*3);g.translate(cx,cy,cz);
     const p=g.attributes.position,nrm=g.attributes.normal;for(let k=0;k<p.count;k++){_v.set(p.getX(k),p.getY(k)-3.5,p.getZ(k)).normalize();nrm.setXYZ(k,(nrm.getX(k)+_v.x*2)/3,(nrm.getY(k)+_v.y*2)/3,(nrm.getZ(k)+_v.z*2)/3)}
-    vcolor(g,(col,x,y,z)=>{const n=vn3(x*2.5,y*2.5,z*2.5),ao=.55+.45*Math.min(1,Math.max(0,(y-2.4)/2.4));col.setRGB(lin((.2+.08*n)*ao),lin((.38+.12*n)*ao),lin((.12+.05*n)*ao))});blobs.push(g)}
+    vcolor(g,(col,x,y,z)=>{const n=vn3(x*2.5,y*2.5,z*2.5),ao=.55+.45*Math.min(1,Math.max(0,(y-2.4)/2.4));col.setRGB(lin((.2+.08*n)*ao),lin((.38+.12*n)*ao),lin((.12+.05*n)*ao))});blobs.push(g);
+    // Pointed leaves break up the old smooth ball silhouette; merged into the
+    // same instanced canopy geometry, without one draw call per leaf.
+    for(let j=0;j<12;j++){const leaf=new THREE.BufferGeometry(),w=.11+r()*.12,len=.22+r()*.19;
+      leaf.setAttribute("position",new THREE.Float32BufferAttribute([0,0,-len,w,.035,0,0,0,len,0,0,-len,0,0,len,-w,.035,0],3));leaf.computeVertexNormals();
+      leaf.rotateX(r()*3);leaf.rotateY(r()*6.283);const a=r()*6.283,yy=r()*2-1,rr=Math.sqrt(1-yy*yy)*rad;
+      leaf.translate(cx+Math.cos(a)*rr,cy+yy*rad,cz+Math.sin(a)*rr);vcolor(leaf,col=>col.setRGB(lin(.22+r()*.12),lin(.40+r()*.12),lin(.10+r()*.08)));blobs.push(leaf)}
+  }
   GEO.broadCrown=merge(blobs);
   // palm: curved trunk + drooping fronds
   const segs=[];for(let i=0;i<6;i++){const c=new THREE.CylinderGeometry(.15-i*.012,.18-i*.012,.85,8);c.rotateZ(-.06*i);c.translate(.05*i*i,.42+i*.8,0);vcolor(c,(col,x,y,z)=>{const ring=.5+.5*Math.sin(y*14);col.setRGB(lin(.42+.08*ring),lin(.33+.05*ring),lin(.22+.03*ring))});segs.push(c)}
@@ -379,7 +421,7 @@ function buildGeometries(){
   vcolor(bu,(c,x,y,z)=>{const n=vn3(x*4,y*4,z*4),ao=.5+.5*Math.min(1,y/1.1);c.setRGB(ao*(.75+.25*n),ao*(.8+.2*n),ao*(.75+.25*n))});
   GEO.bush=merge([bu]);GEO.tuft=GEO.bush;
   // grass clump: 3 curved tapered blades
-  const blades=[];for(let i=0;i<3;i++){const g=new THREE.PlaneGeometry(.075,.6,1,3);const p=g.attributes.position;
+  const blades=[];for(let i=0;i<5;i++){const g=new THREE.PlaneGeometry(.085,.6,1,2);const p=g.attributes.position;
     for(let k=0;k<p.count;k++){const t=(p.getY(k)+.3)/.6;p.setXYZ(k,p.getX(k)*(1-t*.85),t*.6,t*t*.12)}
     g.rotateY(i*2.1+.4);g.translate(Math.cos(i*2.1)*.06,0,Math.sin(i*2.1)*.06);
     vcolor(g,(c,x,y)=>{const t=y/.6;c.setRGB(lin(.24+.2*t),lin(.4+.22*t),lin(.1+.1*t))});
@@ -412,12 +454,19 @@ const _m4=new THREE.Matrix4(),_q4=new THREE.Quaternion(),_p3=new THREE.Vector3()
 export function disposeGroup(g){if(!g)return;MIRROR_HIDE.delete(g);g.parent?.remove(g);g.traverse(o=>{if(o.isInstancedMesh)o.dispose()})}
 
 /* ---------------- fire visuals ---------------- */
+let _flameTexture;
+function flameTexture(){if(_flameTexture)return _flameTexture;
+  const c=document.createElement("canvas");c.width=128;c.height=256;const g=c.getContext("2d"),gr=g.createLinearGradient(0,245,0,12);
+  gr.addColorStop(0,"rgba(255,120,18,0)");gr.addColorStop(.16,"rgba(255,240,170,.8)");gr.addColorStop(.45,"rgba(255,204,100,.65)");gr.addColorStop(1,"rgba(255,100,20,0)");g.fillStyle=gr;
+  g.beginPath();g.moveTo(20,238);g.bezierCurveTo(-6,171,74,136,48,15);g.bezierCurveTo(126,79,81,136,101,168);g.bezierCurveTo(139,225,92,254,20,238);g.fill();
+  _flameTexture=new THREE.CanvasTexture(c);_flameTexture.colorSpace=THREE.SRGBColorSpace;return _flameTexture;
+}
 export function makeFlame(kiln){
   const g=new THREE.Group();
-  const core=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTexture(),color:new THREE.Color(1.5,.62,.18),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));
+  const core=new THREE.Sprite(new THREE.SpriteMaterial({map:flameTexture(),color:new THREE.Color(1.5,.85,.35),transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));
   core.scale.set(kiln?.5:.8,kiln?.6:1.1,1);core.position.y=kiln?.3:.55;g.add(core);
   const halo=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTexture(),color:new THREE.Color(1.4,.55,.15),transparent:true,opacity:.55,depthWrite:false,blending:THREE.AdditiveBlending}));
-  halo.scale.setScalar(kiln?1.4:2.6);halo.material.opacity=.35;halo.position.y=kiln?.3:.6;g.add(halo);
+  halo.scale.setScalar(kiln?1.1:1.8);halo.material.opacity=.12;halo.position.y=kiln?.3:.6;g.add(halo);
   g.userData={core,halo};return g;
 }
 
@@ -452,7 +501,7 @@ export const FX={
         p.x+=p.vx*dt;p.y+=p.vy*dt;p.z+=p.vz*dt;if(p.t==="splash"&&p.y<0)p.age=p.life;
         pos[i*3]=p.x;pos[i*3+1]=p.y;pos[i*3+2]=p.z;
         let r,g,b,a,sz;
-        if(p.t==="flame"){const f=1-t;r=3.2*f+.4;g=1.5*f*f+.15;b=.35*f*f*f;a=f;sz=p.s*(1-t*.65)}
+        if(p.t==="flame"){const f=1-t;r=2.1*f+.3;g=1.1*f*f+.12;b=.22*f*f*f;a=f;sz=p.s*(1-t*.65)}
         else if(p.t==="ember"){r=3;g=1.1*(1-t);b=.2;a=1-t;sz=p.s}
         else if(p.t==="spark"){r=4;g=2.6*(1-t)+.6;b=1*(1-t);a=1-t;sz=p.s}
         else if(p.t==="smoke"){const v=.28-.08*t;r=v;g=v;b=v*1.04;a=.32*Math.sin(Math.PI*Math.min(1,t*1.4))*(1-t);sz=p.s*(1+3.2*t)}
