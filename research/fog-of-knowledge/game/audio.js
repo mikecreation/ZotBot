@@ -80,13 +80,9 @@ export function eat(){for(let i=0;i<3;i++)burst({freq:1500+Math.random()*900,q:2
 export function drink(){for(let i=0;i<3;i++)tone({f:300+i*40,f2:200,peak:.06,d:.08,delay:i*.18})}
 export function hurt(){tone({f:220,f2:140,type:"square",peak:.06,d:.15});burst({freq:400,q:1,peak:.2,d:.08,type:"lowpass",buf:brownBuf})}
 export function ignite(){burst({freq:500,q:.6,peak:.3,a:.05,d:.6,type:"lowpass",buf:brownBuf})}
-export function howl(dist){if(!ok||T()-lastHowl<45)return;lastHowl=T();const k=Math.max(.15,Math.min(1,30/Math.max(10,dist||40))),f0=380+Math.random()*80;
-  const t0=T(),os=ctx.createOscillator(),g=ctx.createGain(),lp=ctx.createBiquadFilter();lp.type="lowpass";lp.frequency.value=1400;os.type="triangle";
-  os.frequency.setValueAtTime(f0*.75,t0);os.frequency.linearRampToValueAtTime(f0*1.2,t0+.6);os.frequency.linearRampToValueAtTime(f0*1.15,t0+1.8);os.frequency.linearRampToValueAtTime(f0*.7,t0+2.6);
-  const l=ctx.createOscillator(),lg=ctx.createGain();l.frequency.value=5.5;lg.gain.value=7;l.connect(lg);lg.connect(os.frequency);
-  os.connect(lp);lp.connect(g);g.connect(ctx._out);g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(.16*k,t0+.5);g.gain.setValueAtTime(.16*k,t0+1.8);g.gain.linearRampToValueAtTime(0,t0+2.7);
-  os.start(t0);l.start(t0);os.stop(t0+2.8);l.stop(t0+2.8);stats.oneShots++}
-export function growl(){tone({f:90,f2:70,type:"sawtooth",peak:.08,d:.4,vib:23,vibAmt:12})}
+// Sustained synthetic calls removed: they sounded like unexplained ghost events.
+export function howl(){}
+export function growl(){burst({freq:250,q:.7,peak:.06,d:.2,type:"lowpass",buf:brownBuf})}
 export function thunder(dist){if(!ok)return;const near=dist<600,k=Math.max(.08,Math.min(1,800/Math.max(200,dist))),pan=Math.random()*1.6-.8;
   if(near)burst({freq:1400+Math.random()*2200,q:.4,peak:.3*k,a:.003,d:.12+Math.random()*.2,pan});
   const rolls=3+Math.floor(Math.random()*4);
@@ -105,12 +101,12 @@ export function warn(){} // warnings stay visible; no repeating warning bells
 export function tick(){} // no periodic UI/pendulum ticks
 
 /* ---- companions (all synthesised) ---- */
-export function purr(len=1.4){if(!ok)return;const n=Math.round(len/.11);for(let i=0;i<n;i++)burst({freq:120,q:.8,peak:.07*(i%2?.7:1),a:.03,d:.08,type:"lowpass",buf:brownBuf,delay:i*.11});tone({f:26,type:"sine",peak:.05,a:.2,d:len,vib:4,vibAmt:3})}
+export function purr(len=1.4){if(!ok)return;const n=Math.round(len/.11);for(let i=0;i<n;i++)burst({freq:120,q:.8,peak:.07*(i%2?.7:1),a:.03,d:.08,type:"lowpass",buf:brownBuf,delay:i*.11})}
 export function meow(){tone({f:520,f2:880,type:"sawtooth",peak:.035,a:.05,d:.18,glide:.14});tone({f:880,f2:430,type:"triangle",peak:.05,d:.32,delay:.16,glide:.3});burst({freq:1800,q:5,peak:.03,d:.3,delay:.05})}
 export function snort(){burst({freq:380,q:1.4,peak:.22,a:.01,d:.09,type:"bandpass",buf:brownBuf});burst({freq:520,q:1.2,peak:.16,a:.01,d:.07,delay:.13,buf:brownBuf})}
-export function snore(){burst({freq:160,q:1.2,peak:.12,a:.5,d:.7,type:"lowpass",buf:brownBuf});tone({f:70,f2:55,type:"sawtooth",peak:.025,a:.5,d:.6,vib:30,vibAmt:6})}
+export function snore(){}
 export function boof(){tone({f:300,f2:180,type:"square",peak:.06,d:.1});burst({freq:600,q:1,peak:.12,d:.08,buf:brownBuf})}
-export function whine(){tone({f:900,f2:1250,type:"sine",peak:.04,a:.08,d:.45,glide:.4,vib:7,vibAmt:25})}
+export function whine(){}
 export function chirp(){for(let i=0;i<4;i++)tone({f:2600+Math.random()*600,f2:3400,type:"sine",peak:.035,d:.04,delay:i*.07})}
 export function caw(){for(let i=0;i<2;i++){tone({f:480,f2:380,type:"sawtooth",peak:.05,a:.02,d:.22,delay:i*.32});burst({freq:1100,q:3,peak:.06,d:.22,delay:i*.32})}}
 export function heart(){tone({f:784,type:"sine",peak:.05,d:.18});tone({f:1047,type:"sine",peak:.05,d:.3,delay:.12})}

@@ -1,3 +1,4 @@
+import {GEAR_STEPS} from "./gear-progression.js?v=3.12.3";
 /* Fog of Knowledge: The Game: OBSERVE (F).
  * A close-up look at what you hold: the world blurs and pauses, the item sits large in your hands; drag to turn it,
  * wheel to zoom, the light follows your cursor so texture, sheen and weight show. Notes describe what a careful
@@ -76,6 +77,7 @@ export const WONDERS={shell:"wonder_shell",feather:"wonder_feather",snow:"wonder
 const LOOK={pyrite:{metal:.9,rough:.28},copper:{metal:.85,rough:.35},bronze:{metal:.85,rough:.32},tin:{metal:.8,rough:.3},iron:{metal:.6,rough:.7},flint:{rough:.32},quartz:{glass:1},glass:{glass:1},lens:{glass:1},prism:{glass:1},clay:{rough:1},pot:{rough:.7},lodestone:{metal:.4,rough:.5},shell:{rough:.25}};
 export function comboFor(a,b){for(const c of COMBOS){const hit=(x,y)=>c.a.includes(x)&&c.b.includes(y??null);if(hit(a,b)||(b&&hit(b,a)))return c}return null}
 
+for(const [k,steps] of Object.entries(GEAR_STEPS))NOTES[k]=steps;
 export function createObserve(C){
   let el=null,rnd=null,scene,cam,key,group,items=[],open=false,rotX=.35,rotY=.6,zoom=1,drag=null,timer=0,comboDone=false,lastT=0,raf=0,needyPaw=0;
   function build(){

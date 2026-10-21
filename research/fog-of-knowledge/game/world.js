@@ -1,3 +1,4 @@
+import {GEAR_RECIPES,GEAR_STEPS,gearProblem,CLIMB_GUIDE} from "./gear-progression.js?v=3.12.3";
 /* Fog of Knowledge: The Game — OPEN WORLD mode.
  * Real-time 3D world (three.js r160, vendored, MIT) with simple real physics:
  * gravity 9.81 m/s², friction-limited acceleration, quadratic air/water drag, Archimedes buoyancy,
@@ -7,21 +8,21 @@
  * Discoveries happen by doing things in the world and reveal real atlas nodes.
  */
 import * as THREE from "./vendor/three.module.min.js";
-import {ITEMS,WORLD_DISCOVERIES,RECIPES} from "./world-data.js?v=3.12.2";
-import {walkPath} from "./walk-path.js?v=3.12.2";
-import {drillProblem,advanceDrill} from "./friction-fire.js?v=3.12.2";
-import {primitiveItem,workbenchMesh} from "./primitive-models.js?v=3.12.2";
-import * as GFX from "./gfx.js?v=3.12.2";
+import {ITEMS,WORLD_DISCOVERIES,RECIPES} from "./world-data.js?v=3.12.3";
+import {walkPath} from "./walk-path.js?v=3.12.3";
+import {drillProblem,advanceDrill} from "./friction-fire.js?v=3.12.3";
+import {primitiveItem,workbenchMesh} from "./primitive-models.js?v=3.12.3";
+import * as GFX from "./gfx.js?v=3.12.3";
 import * as AU from "./audio.js";
-import {ESSENTIAL_QUICKBAR,quickbarOrder} from "./quickbar.js?v=3.12.2";
+import {ESSENTIAL_QUICKBAR,quickbarOrder} from "./quickbar.js?v=3.12.3";
 import {temperature,temperatureDelta} from "./units.js";
 import {createBirds} from "./birds.js";
-import {fireSize,stepCombustion,addFuel,lightningPulse} from "./fire-model.js?v=3.12.2";
-import {ensureFuelBed,recordFuelPiece,stepFuelBed,fuelLayout} from "./fuel-bed.js?v=3.12.2";
-import {createFireBed,updateFireBed} from "./fire-visuals.js?v=3.12.2";
+import {fireSize,stepCombustion,addFuel,lightningPulse} from "./fire-model.js?v=3.12.3";
+import {ensureFuelBed,recordFuelPiece,stepFuelBed,fuelLayout} from "./fuel-bed.js?v=3.12.3";
+import {createFireBed,updateFireBed} from "./fire-visuals.js?v=3.12.3";
 import {CURIOSITY,OBJECTIVES} from "./content.js?v=3.8.3";
 import {createPets,PET_INFO,MAX_ACTIVE} from "./pets.js";
-import {createObserve,NOTES} from "./observe.js?v=3.12.2";
+import {createObserve,NOTES} from "./observe.js?v=3.12.3";
 let PETS=null,OBS=null;
 const E=window.FogGameEngine,TREE=E.G;
 const $=s=>document.querySelector(s);
@@ -144,6 +145,13 @@ function genObjects(cx,cz){
   // marvels: shells on beaches, feathers in meadows, leaves in woods, snow up high — nothing needs them; they're for wonder
   const rm=mulberry(hash3(world.seed,cx*31+7,cz*17+11));for(let k=0;k<3;k++){const x=x0+rm()*CHUNK,z=z0+rm()*CHUNK,h=heightAt(x,z),b=biomeAt(x,z,h),t={beach:"shell",grass:"feather",forest:"leaf",snow:"snow"}[b];
     if(t&&rm()<(t==="feather"?.5:.8))res.push({type:t,x,y:h,z,i:res.length,marvel:true})}
+  // Independent appended stream preserves all existing resource and save IDs.
+  const rf=mulberry(hash3(world.seed,cx+8191,cz-131071));
+  for(let iz=0;iz<CHUNK;iz+=5)for(let ix=0;ix<CHUNK;ix+=5){
+    const x=x0+ix+1+rf()*3,z=z0+iz+1+rf()*3,h=heightAt(x,z),b=biomeAt(x,z,h);
+    if(h>.5&&(b==="grass"||b==="forest")&&slopeAt(x,z)<.7)
+      res.push({type:"fiber",flower:true,x,y:h,z,i:res.length});
+  }
   return {trees,res,boulders};
 }
 const BI={water:0,beach:1,desert:2,snow:3,rock:4,forest:5,grass:6},BN=Object.keys(BI);
@@ -186,11 +194,13 @@ function buildObjects(ch){
   o.trees.forEach(t=>refreshTree(ch,t,true));
   ch.boulders=new THREE.InstancedMesh(GEO.boulder,MAT.rock,Math.max(1,o.boulders.length));ch.boulders.count=o.boulders.length;
   o.boulders.forEach(b=>{const mv=world.moved[key+"|"+b.i];if(mv){b.x=mv[0];b.z=mv[1];b.y=heightAt(b.x,b.z)}setInst(ch.boulders,b.i,b.x,b.y+b.s*.35,b.z,b.s*1.2,b.s*.8,b.s,b.i);const v=.85+(b.i*37%10)/40;_c.setRGB(v,v,v*.97);ch.boulders.setColorAt(b.i,_c)});
-  const smalls=o.res.filter(r=>!["stick","fiber","seeds","berry_red","berry_dark"].includes(r.type));
-  const sticks=o.res.filter(r=>r.type==="stick"),plants=o.res.filter(r=>["fiber","seeds","berry_red","berry_dark"].includes(r.type));
+  const smalls=o.res.filter(r=>!r.flower&&!["stick","fiber","seeds","berry_red","berry_dark"].includes(r.type));
+  const sticks=o.res.filter(r=>r.type==="stick"),plants=o.res.filter(r=>!r.flower&&["fiber","seeds","berry_red","berry_dark"].includes(r.type)),flowers=o.res.filter(r=>r.flower);
   ch.small=new THREE.InstancedMesh(GEO.small,MAT.rock,Math.max(1,smalls.length));ch.small.count=smalls.length;
   ch.sticks=new THREE.InstancedMesh(GEO.stick,MAT.bark,Math.max(1,sticks.length));ch.sticks.count=sticks.length;
   ch.plants=new THREE.InstancedMesh(GEO.tuft,MAT.leaf,Math.max(1,plants.length));ch.plants.count=plants.length;
+  ch.flowers=new THREE.InstancedMesh(GEO.flower,MAT.flower,Math.max(1,flowers.length));ch.flowers.count=flowers.length;
+  flowers.forEach((r,j)=>{r.mesh=ch.flowers;r.slot=j;setInst(ch.flowers,j,r.x,r.y-.02,r.z,1.3,1.5+(r.i%5)*.12,1.3,r.i);_c.setHex([0xffffff,0xffd84a,0xb48cff,0xff6a7a,0x8ac8ff][r.i%5]);ch.flowers.setColorAt(j,_c)});
   smalls.forEach((r,j)=>{r.mesh=ch.small;r.slot=j;const s=r.marvel?.11:r.type==="clay"?.28:r.type==="sand"?.3:.17;setInst(ch.small,j,r.x,r.y+s*.4,r.z,s,s*.7,s,r.i);_c.setHex(ITEMS[r.type].color);ch.small.setColorAt(j,_c)});
   sticks.forEach((r,j)=>{r.mesh=ch.sticks;r.slot=j;setInst(ch.sticks,j,r.x,r.y+.05,r.z,.9,1,1,r.i)});
   plants.forEach((r,j)=>{r.mesh=ch.plants;r.slot=j;const berry=r.type.startsWith("berry");setInst(ch.plants,j,r.x,r.y-.05,r.z,berry?.55:.32,berry?.5:.42,berry?.55:.32,r.i);_c.setHex(berry?(r.type==="berry_red"?0xc04848:0x5a5ac0):r.type==="seeds"?0xd8c46a:0x9ccc5a);ch.plants.setColorAt(j,_c)});
@@ -200,7 +210,7 @@ function buildObjects(ch){
   for(let i=0;i<34;i++){const x=ch.cx*CHUNK+rd()*CHUNK,z=ch.cz*CHUNK+rd()*CHUNK,h=heightAt(x,z),b=biomeAt(x,z,h);if((b==="forest"&&rd()<.8)||(b==="grass"&&rd()<.35)||(b==="beach"&&rd()<.1))bl.push([x,h,z,.45+rd()*.7,b])}
   ch.bushes=new THREE.InstancedMesh(GEO.bush,MAT.bush,Math.max(1,bl.length));ch.bushes.count=bl.length;ch.bushes.castShadow=true;ch.bushes.receiveShadow=true;
   bl.forEach(([x,h,z,s,b],j)=>{setInst(ch.bushes,j,x,h-.1,z,s*1.2,s,s*1.2,j*1.7);_c.setRGB(b==="forest"?.16:.28,b==="forest"?.33:.42,b==="forest"?.12:.14);ch.bushes.setColorAt(j,_c)});
-  const all=[...Object.values(ch.tr),...Object.values(ch.cr),ch.boulders,ch.small,ch.sticks,ch.plants,ch.bushes];
+  const all=[...Object.values(ch.tr),...Object.values(ch.cr),ch.boulders,ch.small,ch.sticks,ch.plants,ch.flowers,ch.bushes];
   for(const m of all){m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true;m.computeBoundingSphere();m.receiveShadow=true;if(m!==ch.small&&m!==ch.sticks)m.castShadow=true;grp.add(m)}
   ch.group=grp;scene.add(grp);
 }
@@ -438,6 +448,8 @@ function dropSpawn(k,n,f){f=f||forward();const piles=Math.min(n,8),per=Math.floo
 function dropItem(k,n=1){n=Math.min(Math.max(1,Math.floor(n)),inv(k));if(!n)return 0;take(k,n);dropSpawn(k,n);AU.pickup?.();toast(`Dropped ${n}× ${ITEMS[k].name}.`);renderInventory();return n}
 function dropEverything(){let n=0;for(const k of ordered().slice()){if(k===world.worn)continue;n+=inv(k);dropItem(k,inv(k))}world.held=world.left=null;renderHotbar();renderInventory();return n}
 function bestAxe(){return inv("axe_iron")?"axe_iron":inv("axe_bronze")?"axe_bronze":inv("axe_copper")?"axe_copper":inv("axe_stone")?"axe_stone":null}
+function bestKnife(){return ["knife_iron","knife_bronze","knife_copper","knife_stone"].find(k=>inv(k))||null}
+function craftTool(k){return k==="knife_stone"?bestKnife():inv(k)?k:null}
 function bestPick(){return inv("pickaxe_stone")?"pickaxe_stone":null}
 function hasAxe(){const a=bestAxe();return a?ITEMS[a].power:0}
 function useTool(k,cost){const it=ITEMS[k];if(!it||!it.dur)return;if(world.dur[k]==null)world.dur[k]=it.dur;world.dur[k]-=cost;
@@ -752,7 +764,8 @@ function makePlayer(w){
 }
 function groundMu(){const b=biomeAt(player.pos.x,player.pos.z,heightAt(player.pos.x,player.pos.z));return b==="snow"?.35:b==="beach"||b==="desert"?.6:.8} // friction coefficients
 function stepPlayer(dt){
-  const p=player,st=world.st;if(p.dead||document.hidden||["wInv","wJournal","wChest","wCtx","wSettings","wPopup","wHelp"].some(id=>$("#"+id)&&!$("#"+id).hidden)){stopMovement();return;}
+  const p=player,st=world.st;if(p.dead||document.hidden||["wInv","wJournal","wChest","wCtx","wSettings","wPopup","wHelp","wClimbHelp"].some(id=>$("#"+id)&&!$("#"+id).hidden)){stopMovement();return;}
+  const startX=p.pos.x,startZ=p.pos.z;p.moveSpeed=0;
   p.actCd=Math.max(0,p.actCd-dt);
   const f=forward(),r=new THREE.Vector3(-f.z,0,f.x);
   const mv=new THREE.Vector3();
@@ -776,15 +789,23 @@ function stepPlayer(dt){
     const s=p.raft,sp=3.2,nx=s.x+mv.x*sp*dt,nz=s.z+mv.z*sp*dt;
     if(heightAt(nx,nz)<-.25){world.counters.raftDist+=Math.hypot(nx-s.x,nz-s.z);s.x=nx;s.z=nz;s.obj.position.set(s.x,.02+Math.sin(performance.now()/600)*.03,s.z);if(world.counters.raftDist>10)discover("raft")}
     else if(mv.lengthSq()){p.raft=null;p.pos.set(nx,heightAt(nx,nz),nz);toast("You stepped ashore.");return}
-    p.pos.set(s.x,.12,s.z);p.vel.set(mv.x*sp,0,mv.z*sp);p.onGround=true;p.swimming=false;if(mv.lengthSq())p.yaw=Math.atan2(mv.x,mv.z);return;
+    p.pos.set(s.x,.12,s.z);p.vel.set(mv.x*sp,0,mv.z*sp);p.moveSpeed=mv.length()*sp;p.onGround=true;p.swimming=false;if(mv.lengthSq())p.yaw=Math.atan2(mv.x,mv.z);return;
   }
   const depth=-p.pos.y;p.swimming=ground<-.6&&p.pos.y<-.55;if(p.swimming)p.crouch=false;
+  p.climbing=false;
+  const terrainSlope=slopeAt(p.pos.x,p.pos.z),grip=inv("climbing_gloves")>0;
+  p.climbing=grip&&!p.swimming&&terrainSlope>.7&&mv.lengthSq()>0;
+  if(!grip&&!p.swimming&&p.onGround&&terrainSlope>.7){
+    const gx=heightAt(p.pos.x+.5,p.pos.z)-heightAt(p.pos.x-.5,p.pos.z),gz=heightAt(p.pos.x,p.pos.z+.5)-heightAt(p.pos.x,p.pos.z-.5),len=Math.hypot(gx,gz)||1,up=mv.x*gx/len+mv.z*gz/len;
+    if(up>0){mv.x-=up*gx/len;mv.z-=up*gz/len}
+    if(!world.counters.climbGuideSeen){world.counters.climbGuideSeen=1;openClimbGuide();return}
+  }
   const lame=st.sprain>0;
   const wantsSprint=keys.has("ShiftLeft")||keys.has("ShiftRight");
   if(st.stamina<=5)p.sprintExhausted=true;
   if(st.stamina>=35||!wantsSprint)p.sprintExhausted=false;
   const running=wantsSprint&&!p.sprintExhausted&&st.stamina>5&&mv.lengthSq()>0&&!p.swimming&&!p.crouch&&!lame;
-  const maxV=(p.swimming?1.3:p.crouch?1.1:running?5.2:2.2)*(lame&&!p.swimming?.55:1)*(!SURV()&&st.tb<35.6?.7:1);   // shivering slows you (Discovery mode)
+  const maxV=(p.climbing?1.1:p.swimming?1.3:p.crouch?1.1:running?5.2:2.2)*(lame&&!p.swimming?.55:1)*(!SURV()&&st.tb<35.6?.7:1);   // shivering slows you (Discovery mode)
   const desired=mv.multiplyScalar(maxV);
   const accel=p.swimming?3:p.onGround?groundMu()*G_ACC:1.2;   // friction limits how fast feet can change velocity
   const dvx=desired.x-p.vel.x,dvz=desired.z-p.vel.z,dl=Math.hypot(dvx,dvz),lim=accel*dt;
@@ -815,13 +836,14 @@ function stepPlayer(dt){
     if(SURV()&&impact>7&&!p.dead&&Math.random()<.5&&!(st.sprain>0)){st.sprain=120;toast("You land badly and sprain your ankle — you can't run for a while. Resting by a fire or in shelter heals it faster.")}
     if(impact>6.5&&!p.dead)discover("impact");
     p.pos.y=g;p.vel.y=0;p.onGround=true;
-    const sl=slopeAt(p.pos.x,p.pos.z);if(sl>1.05){const e=1;const gx=(heightAt(p.pos.x+e,p.pos.z)-heightAt(p.pos.x-e,p.pos.z)),gz=(heightAt(p.pos.x,p.pos.z+e)-heightAt(p.pos.x,p.pos.z-e));p.vel.x-=gx*2*dt*G_ACC*.3;p.vel.z-=gz*2*dt*G_ACC*.3}
+    const sl=slopeAt(p.pos.x,p.pos.z);if(sl>.7&&!grip){const e=1;const gx=(heightAt(p.pos.x+e,p.pos.z)-heightAt(p.pos.x-e,p.pos.z)),gz=(heightAt(p.pos.x,p.pos.z+e)-heightAt(p.pos.x,p.pos.z-e));p.vel.x-=gx*2*dt*G_ACC*.3;p.vel.z-=gz*2*dt*G_ACC*.3}
   }else if(p.pos.y>g+.05)p.onGround=false;
   if(p.swimming&&p.pos.y<g)p.pos.y=g;
   // boulders, walls and stone houses block the way
   for(const ch of nearbyChunks(p.pos.x,p.pos.z,4))for(const b of ch.obj.boulders){const dx=p.pos.x-b.x,dz=p.pos.z-b.z,d=Math.hypot(dx,dz),rr=b.s*.95+.3;if(d<rr&&p.pos.y<b.y+b.s*1.2){p.pos.x=b.x+dx/d*rr;p.pos.z=b.z+dz/d*rr}}
   collide(p.pos,.35);
-  const hs=Math.hypot(p.vel.x,p.vel.z);if(hs>.3)p.yaw=Math.atan2(p.vel.x,p.vel.z);
+  p.moveSpeed=mv.lengthSq()?Math.min(maxV,Math.hypot(p.pos.x-startX,p.pos.z-startZ)/Math.max(dt,.001)):0;
+  const hs=p.moveSpeed;if(hs>.3)p.yaw=Math.atan2(p.vel.x,p.vel.z);
   if(!running&&!p.swimming&&!drilling&&world.st.hunger>5)st.stamina=Math.min(100,st.stamina+dt*12);
   // footsteps by surface
   if(p.onGround&&hs>.5){p.stepAcc+=hs*dt;const stride=running?1.15:p.crouch?.5:.75;if(p.stepAcc>stride){p.stepAcc=0;AU.step(p.pos.y<-.15?"water":biomeAt(p.pos.x,p.pos.z,g),hs,false)}}
@@ -954,8 +976,9 @@ let hoverAt=0,hovered=null,autoPickup=null;
 // Clear route, stale input and horizontal inertia together, before modal handlers.
 function stopMovement(clearKeys=true){
   const wasWalking=!!autoPickup;autoPickup=null;
+  if(player)player.climbing=false;
   if(clearKeys)keys.clear();
-  if(player?.vel){player.vel.x=0;player.vel.z=0}
+  if(player?.vel){player.vel.x=0;player.vel.z=0;player.moveSpeed=0}
   dragging=false;if(canvasEl)canvasEl._down=null;
   const button=$("#wStopWalk");if(button)button.hidden=true;
   return wasWalking;
@@ -968,7 +991,7 @@ function cursorTarget(force=false){
   const rect=canvasEl.getBoundingClientRect();hoverNDC.set(locked?0:(cursorAim.x-rect.left)/rect.width*2-1,locked?0:1-(cursorAim.y-rect.top)/rect.height*2);hoverRay.setFromCamera(hoverNDC,camera);hoverRay.far=180;
   const roots=[],meta=new Map();
   for(const ch of chunks.values())if(ch.group?.visible){
-    for(const [mesh,kind] of [[ch.small,"res"],[ch.sticks,"res"],[ch.plants,"res"],[ch.boulders,"boulder"],...Object.values(ch.tr).map(m=>[m,"tree"]),...Object.values(ch.cr).map(m=>[m,"tree"])])if(mesh){roots.push(mesh);meta.set(mesh,{ch,kind})}
+    for(const [mesh,kind] of [[ch.small,"res"],[ch.sticks,"res"],[ch.plants,"res"],[ch.flowers,"res"],[ch.boulders,"boulder"],...Object.values(ch.tr).map(m=>[m,"tree"]),...Object.values(ch.cr).map(m=>[m,"tree"])])if(mesh){roots.push(mesh);meta.set(mesh,{ch,kind})}
     if(ch.terrain)roots.push(ch.terrain);if(ch.bushes)roots.push(ch.bushes);
   }
   for(const s of world.structures)if(s.obj){roots.push(s.obj);meta.set(s.obj,{kind:"struct",obj:s})}
@@ -996,7 +1019,7 @@ function updateHover(){
   let tip=$("#wHover");if(!tip){tip=document.createElement("div");tip.id="wHover";tip.setAttribute("role","tooltip");tip.className="wHover";$("#mode-world").append(tip)}
   const t=cursorTarget();if(!t||player.dead||!['wInv','wJournal','wChest','wCtx'].every(id=>$("#"+id).hidden)){tip.hidden=true;return}
   const pt=pickupPoint(t)||t.point,d=Math.hypot(pt.x-player.pos.x,pt.z-player.pos.z),far=d>2.6;
-  const name=t.kind==="res"?ITEMS[t.obj.r.type].name:t.kind==="drop"?ITEMS[t.obj.item].name:t.kind==="tree"?"Tree":t.kind==="boulder"?"Boulder":Object.values(ITEMS).find(i=>i.place===t.obj.type)?.name||t.obj.type;
+  const name=t.kind==="res"?(t.obj.r.flower?"Wildflower stem / Plant fiber":ITEMS[t.obj.r.type].name):t.kind==="drop"?ITEMS[t.obj.item].name:t.kind==="tree"?"Tree":t.kind==="boulder"?"Boulder":Object.values(ITEMS).find(i=>i.place===t.obj.type)?.name||t.obj.type;
   const action=far&&(t.kind==="res"||t.kind==="drop")?`E · walk over & ${t.kind==="res"&&["copper_ore","tin_ore","iron_ore","quartz","lodestone","pyrite"].includes(t.obj.r.type)?"mine (pickaxe required)":"pick up"}`:far?"Move closer to interact":targetLabel(t);
   tip.textContent=`${name} · ${Math.round(d)} m\n${action}`;tip.hidden=false;
   const rect=$("#mode-world").getBoundingClientRect(),locked=document.pointerLockElement===canvasEl;
@@ -1053,7 +1076,7 @@ function stepDrill(dt){
   if(result.ember){fire.lit=true;fire.heat=.3;delete fire._drill;delete fire.drillTinder;AU.ignite();toast("Friction makes an ember; the tinder catches and lights the wood! Your hand-drill kit is kept.");clearDrill();discover("fire")}
 }
 function quickCarve(){const k=world[activeHand==="L"?"left":"held"];
-  if(k==="log")return craft("hand_drill");if(k==="flake")return craft("knife_stone");if(k==="knife_stone")return craft("bench_joint");
+  if(k==="log")return craft("hand_drill");if(k==="flake")return craft("knife_stone");if(ITEMS[k]?.tool==="knife")return craft("bench_joint");
   toast("Hold a flake + B for a knife; log + B for a hand drill; knife + B for a notched bench joint.");
 }
 function handFireAction(k,other,t=findTarget()){
@@ -1079,13 +1102,14 @@ function handFireAction(k,other,t=findTarget()){
 function handActionLabel(t){const left=activeHand==="L",k=left?world.left:world.held,a=handFireAction(k,left?world.held:world.left,t);let text=a?.text||"";
   if(k==="log")text+=(text?" · ":"")+"B carve fire-drill kit (knife required)";
   if(k==="flake")text="B shape stone knife · flake becomes the blade";
-  if(k==="knife_stone")text="B carve notched joint (1 log) · I craft axe, pickaxe or workbench";
+  if(ITEMS[k]?.tool==="knife")text="B carve notched joint (1 log) · I craft axe, pickaxe or workbench";
   if(k==="stone"&&world[left?"held":"left"]==="stone")text="Q strike suitable stones → sharp flakes (uses one stone)";
   return text?`${left?"LEFT":"RIGHT"} HAND · ${text}`:""}
 function targetLabel(t){
   if(!t)return "";const k=world.held;
   if(t.kind==="pet")return PETS.label(t.obj,k);
   if(t.kind==="drop")return `E  pick up ${ITEMS[t.obj.item].name}`;
+  if(t.kind==="res"&&t.obj.r.flower)return "E gather stem → Plant fiber (no tool needed)";
   if(t.kind==="res")return `E  ${["copper_ore","tin_ore","iron_ore","quartz","lodestone","pyrite"].includes(t.obj.r.type)?"mine (pickaxe)":"gather"} ${ITEMS[t.obj.r.type].name}`;
   if(t.kind==="tree")return t.obj.t.burning?"Burning tree":bestAxe()?`E  chop tree (${ITEMS[bestAxe()].name.toLowerCase()})`:"E  break off sticks";
   if(t.kind==="boulder")return k==="log"?"Q  lever the boulder with the log":k==="flint"||k==="stone"?"Q knap suitable stone → 2 flakes (uses 1 stone)":bestPick()?"E mine boulder with pickaxe":"E pry loose stone · pickaxe needed for further mining";
@@ -1119,7 +1143,7 @@ function interact(override=null){
   if(t.kind==="pet"){PETS.pet(t.obj);return}
   if(t.kind==="drop"){const d=t.obj,n=d.n||1;if(!roomFor(d.item)&&!(d.item==="satchel"))return toast(`Your pack is full (${capacity()} slots). Drop something first.`);
     const fit=Math.min(n,roomFor(d.item)||n);scene.remove(d.mesh);world.drops.splice(world.drops.indexOf(d),1);give(d.item,fit);if(fit<n){const r=addDrop(d.item,d.pos.x,d.pos.y,d.pos.z);r.n=n-fit}stowMsg(d.item,fit);return}
-  if(t.kind==="res"){const {ch,r}=t.obj;const ore=["copper_ore","tin_ore","iron_ore","quartz","lodestone","pyrite"].includes(r.type);if(ore&&!bestPick())return toast("This mineral deposit needs a pickaxe. Craft a stone knife, then lash a stone head to a handle with plant fiber (I).");if(ore){useTool(bestPick(),1);AU.chop()}
+  if(t.kind==="res"){const {ch,r}=t.obj;if(r.gone)return;if(!roomFor(r.type))return toast("Your backpack is full. Make room before gathering.");const ore=["copper_ore","tin_ore","iron_ore","quartz","lodestone","pyrite"].includes(r.type);if(ore&&!bestPick())return toast("This mineral deposit needs a pickaxe. Craft a stone knife, then lash a stone head to a handle with plant fiber (I).");if(ore){useTool(bestPick(),1);AU.chop()}
     r.gone=true;r.mesh.setMatrixAt(r.slot,ZERO);r.mesh.instanceMatrix.needsUpdate=true;world.removed.add(ch.key+"|r"+r.i);
     const n=r.type==="stick"?2:1;give(r.type,n);if(r.type==="fiber"&&Math.random()<.4)give("seeds");stowMsg(r.type,n);return}
   if(t.kind==="tree"){const {ch,t:tr}=t.obj;if(tr.burning)return toast("Too hot — it's burning!");const ax=bestAxe();
@@ -1268,7 +1292,8 @@ function eat(){
 }
 function craft(out){
   const r=RECIPES.find(x=>x.out===out);if(!r)return false;
-  if(r.req&&!hasD(r.req))return false;if(r.tool&&!inv(r.tool)){toast(`You need a ${ITEMS[r.tool].name}.`);return false}
+  if(r.req&&!hasD(r.req))return false;if(r.tool&&!craftTool(r.tool)){toast(`You need a ${ITEMS[r.tool].name}.`);return false}
+  const problem=gearProblem(r,inv,world.structures,player.pos);if(problem){toast(problem);return false}
   for(const k in r.in)if(inv(k)<r.in[k]){toast("Missing ingredients.");return false}
   for(const k in r.in)take(k,r.in[k]);if(r.ret)give(r.ret);if(out==="berry_mash")world.counters.mashT=world.gameTime;give(out,r.n||1);setHand(activeHand,out);AU.craft();if(PETS)PETS.distract("craft");
   world.counters.crafted=(world.counters.crafted||0)+1;
@@ -1278,7 +1303,10 @@ function craft(out){
   if(out==="knife_stone")toast("Stone knife ready. Hold a log + B for a fire-drill kit; hold the knife + B to carve a notched bench joint. I shows the axe and pickaxe recipes.");
   if(out==="hand_drill")toast("Hand drill carved: spindle + notched hearth board. Stow your other hand, carry plant fiber and HOLD Q beside a dry firewood pile.");
   if(out==="bench_joint")toast("Notched joint carved. F inspects the open shoulders and matching tongue. Four joints make a workbench frame (I).");
-  if(r.tool)useTool(r.tool,3);
+  if(r.tool)useTool(craftTool(r.tool),3);
+  if(r.unlock)discover(r.unlock);if(out==="pot")discover("ceramics");
+  if(out==="climbing_gloves"){stow(true);toast("Climbing gloves equipped. Walk uphill to climb; your hands grip steep ground.")}
+  if(GEAR_STEPS[out]){craftStory=out;GFX.playOnce(player.model,"Interact",.9)}
   renderHotbar();renderInventory();return true;
 }
 function study(table){
@@ -1354,7 +1382,7 @@ function renderHUD(){
   if(player.readout){const sp=player.vel.length(),alt=player.pos.y;
     $("#wReadout").hidden=false;$("#wReadout").innerHTML=`speed ${sp.toFixed(2)} m/s · vertical ${player.vel.y.toFixed(2)} m/s<br>altitude ${alt.toFixed(1)} m · g = ${G_ACC} m/s²<br>air ${temperature(Ta.toFixed(1))} · body ${temperature(st.tb.toFixed(2))} · net heat ${Math.round(player.netW||0)} W<br>fire radiant ${Math.round(player.fireW||0)} W · wet ${Math.round(st.wet*100)}%<br>water boils at ${temperature((100-Math.max(0,alt)/285).toFixed(1))} here<br>your noise ${playerNoiseDb()} dB @1 m (−20·log₁₀ r)${inv("compass")?`<br>heading ${Math.round(((Math.atan2(-forward().x,-forward().z)*180/Math.PI)+360)%360)}°`:""}<br>biome ${biomeAt(player.pos.x,player.pos.z,heightAt(player.pos.x,player.pos.z))}`}
   else $("#wReadout").hidden=true;
-    {const cursor=cursorTarget(),t=cursor||findTarget(),pt=pickupPoint(cursor),distant=pt&&Math.hypot(pt.x-player.pos.x,pt.z-player.pos.z)>2.6,action=distant?"":handActionLabel(t),target=distant?`E walk to ${ITEMS[t.kind==="res"?t.obj.r.type:t.obj.item].name} & collect · WASD cancels`:targetLabel(t);$("#wPrompt").textContent=player.dead?"":action?(target.startsWith("E ")?`${action} · ${target}`:action):target;}
+    {const cursor=cursorTarget(),t=cursor||findTarget(),pt=pickupPoint(cursor),distant=pt&&Math.hypot(pt.x-player.pos.x,pt.z-player.pos.z)>2.6,action=distant?"":handActionLabel(t),target=distant?`E walk to ${ITEMS[t.kind==="res"?t.obj.r.type:t.obj.item].name} & collect · WASD cancels`:targetLabel(t);$("#wPrompt").textContent=player.dead?"":action?(target?`${action} · ${target}`:action):target;}
   renderObjectives();
 }
 function guideCtx(){return {has:hasD,inv,night:isNight(),hour:hourOf(),day:dayNum(),cold:(player.Ta??20)<10||world.st.tb<36.3,wet:world.st.wet>.5,sick:world.st.sick>0,sickCount:world.counters.sick,untreated:!!world.counters.untreated,
@@ -1371,7 +1399,7 @@ function stepCuriosity(dt){thoughtT-=dt;thoughtShowT-=dt;const el=$("#wThought")
   const since=(world.counters.lastThought??-1e9),now=world.gameTime;if(now-since<(world.seenQ.length<4?1800:3600))return;
   const c=guideCtx();const q=CURIOSITY.find(q=>!world.seenQ.includes(q.id)&&!hasD(q.ans)&&q.when(c));if(!q)return;
   world.seenQ.push(q.id);world.counters.lastThought=now;if(el){el.innerHTML=`<small>CURIOSITY · press J for your journal</small>${esc(q.q)}`;el.hidden=false;thoughtShowT=11}}
-const ICON={knife_stone:"🔪",pickaxe_stone:"⛏",hand_drill:"🪵",bench_joint:"🧩",workbench:"🛠",workbench_bundle:"🛠",charcoal:"◼",ash:"◻",berries_dried:"🍇",nuts_roasted:"🌰",jam:"🍯",dough:"🫓",flatbread:"🫓",stew:"🍲",berry_mash:"🍷",stick:"🥢",log:"🪵",stone:"🪨",flint:"🔪",pyrite:"✨",clay:"🟫",fiber:"🌾",berry_red:"🍒",berry_dark:"🫐",seeds:"🌱",grain:"🌾",meat_raw:"🥩",meat_dried:"🥓",meat_cooked:"🍖",hide:"🟤",flake:"🔺",
+const ICON={bark:"🪵",thread:"🧵",leather:"🟫",hammer_stone:"🔨",tongs:"🗜",needle_iron:"🪡",iron_spike:"📌",leather_gloves:"🧤",climbing_gloves:"🧤",knife_copper:"🔪",knife_bronze:"🔪",knife_iron:"🔪",knife_stone:"🔪",pickaxe_stone:"⛏",hand_drill:"🪵",bench_joint:"🧩",workbench:"🛠",workbench_bundle:"🛠",charcoal:"◼",ash:"◻",berries_dried:"🍇",nuts_roasted:"🌰",jam:"🍯",dough:"🫓",flatbread:"🫓",stew:"🍲",berry_mash:"🍷",stick:"🥢",log:"🪵",stone:"🪨",flint:"🔪",pyrite:"✨",clay:"🟫",fiber:"🌾",berry_red:"🍒",berry_dark:"🫐",seeds:"🌱",grain:"🌾",meat_raw:"🥩",meat_dried:"🥓",meat_cooked:"🍖",hide:"🟤",flake:"🔺",
   axe_stone:"🪓",axe_copper:"🪓",axe_bronze:"🪓",axe_iron:"🪓",spear:"🔱",tally:"🧮",clothing:"🧥",pot:"🏺",pot_water:"💧",pot_clean:"♨️",copper_ore:"🟢",tin_ore:"⚪",iron_ore:"🔴",copper:"🟠",tin:"🔘",bronze:"🥉",iron:"⚫",
   quartz:"💎",sand:"⏳",glass:"🔷",lens:"🔍",lodestone:"🧲",tablet:"📜",gnomon:"🕐",bellows:"🪗",wheel:"☸️",telescope:"🔭",compass:"🧭",campfire:"🔥",leanto:"⛺",kiln:"🏭",raft:"🛶",table:"📚",sling:"🪃",bow:"🏹",arrow:"➶",
   prism:"🌈",torch:"🕯️",hut:"🛖",house:"🏠",chest:"🧰",rack:"🪜",well:"🪣",wall:"🧱",pendulum:"⏱️",shell:"🐚",feather:"🪶",leaf:"🍃",snow:"❄️",nuts:"🌰",satchel:"🎒"};
@@ -1387,7 +1415,8 @@ function renderHotbar(){
   const u=player?.model?.userData;if(u){handMesh(u.held,world.held);handMesh(u.heldL,world.left)}
 }
 const CAT_NAMES={cooking:"COOKING & KITCHEN",build:"BUILDING & CAMP",tools:"TOOLS & GEAR",weapons:"HUNTING & DEFENCE",science:"SCIENCE & RECORDS"};
-let invQ="",invSort="",invCraftFor=null,dropAllArm=false;
+let invQ="",invSort="",invCraftFor=null,dropAllArm=false,craftStory=null,invChain=false;
+function assemblyCard(){if(!craftStory)return "";const r=RECIPES.find(r=>r.out===craftStory),steps=GEAR_STEPS[craftStory];return `<section class="craftAssembly"><h4>ASSEMBLY · ${esc(ITEMS[craftStory].name)}</h4><div class="assemblyParts">${Object.keys(r.in).map(k=>`<span>${icon(k)} ${esc(ITEMS[k].name)}</span>`).join("<b> + </b>")}<b> → </b><strong>${icon(craftStory)} ${esc(ITEMS[craftStory].name)}</strong></div><ol>${steps.map(t=>`<li>${esc(t)}</li>`).join("")}</ol><small>Materials and tools come from your inventory; no hand juggling. Process time is compressed.</small></section>`}
 function itemTip(k){const it=ITEMS[k],n=NOTES[k]||[],seen=(world.observed||[]).includes(k);
   return `<b>${icon(k)} ${esc(it.name)}</b><p>${esc(n[0]||"")}</p>${seen&&n.length>1?`<p class="obs">Observed: ${esc(n.slice(1).join(" "))}</p>`:`<p class="muted">${seen?"":"Not observed yet — hold it and press F."}</p>`}<small>${it.mass} kg · ${it.density} kg/m³${it.food?` · +${it.food} food`:""}${it.power?` · power ${it.power}`:""}${it.place?" · placeable":""}</small>`}
 function renderInventory(){
@@ -1397,12 +1426,13 @@ function renderInventory(){
   const cap=capacity(),used=slotsUsed();while(cells.length<(invQ?cells.length:cap))cells.push(null);
   const grid=cells.map(c=>{if(!c)return `<div class="cell empty"></div>`;const [k,n]=c,it=ITEMS[k],du=it.dur&&world.dur[k]!=null?world.dur[k]/it.dur:null;
     return `<div class="cell${k===world.held?" on":""}${k===world.left?" onL":""}" data-k="${k}" draggable="true"><i style="--c:${hex(k)}">${icon(k)}</i><b>${n}</b>${k===world.held?"<s>R</s>":""}${k===world.left?"<s class=l>L</s>":""}${du!=null?`<u style="width:${Math.round(du*100)}%"></u>`:""}</div>`}).join("");
-  const avail=RECIPES.filter(r=>(!r.req||hasD(r.req))&&(!invCraftFor||r.in[invCraftFor])),locked=RECIPES.length-RECIPES.filter(r=>!r.req||hasD(r.req)).length;
-  const rec=Object.keys(CAT_NAMES).map(cat=>{const list=avail.filter(r=>r.cat===cat);if(!list.length)return "";return `<h4>${CAT_NAMES[cat]}</h4>`+list.map(r=>{const ok=Object.entries(r.in).every(([k,n])=>inv(k)>=n)&&(!r.tool||inv(r.tool));
-    return `<div class="rec${ok?" ok":" no"}"><b>${icon(r.out)} ${esc(ITEMS[r.out].name)}${r.n>1?` ×${r.n}`:""}</b><span>${Object.entries(r.in).map(([k,n])=>`<em class="${inv(k)>=n?"have":"miss"}">${n}× ${esc(ITEMS[k].name)}</em>`).join(" ")}${r.tool?` · needs ${esc(ITEMS[r.tool].name)}`:""}${r.out.startsWith("workbench")?" · four supports + rectangular board top; housed joints, wedges & plant-fiber lashings (no nails)":r.out==="bench_joint"?" · carve shoulders and matching tongue; F inspects the joint":r.out==="hand_drill"?" · carve spindle + hearth; tinder needs 1 plant fiber per prepared fire":""}</span><button data-craft="${r.out}" ${ok?"":"disabled"}>CRAFT</button></div>`}).join("")}).join("");
+  const chain=new Set([...GEAR_RECIPES.map(r=>r.out),"knife_stone","pickaxe_stone","campfire","kiln","bellows"]);
+  const avail=RECIPES.filter(r=>(!invChain||chain.has(r.out))&&(!r.req||hasD(r.req))&&(!invCraftFor||r.in[invCraftFor])),locked=RECIPES.length-RECIPES.filter(r=>!r.req||hasD(r.req)).length;
+  const rec=Object.keys(CAT_NAMES).map(cat=>{const list=avail.filter(r=>r.cat===cat);if(!list.length)return "";return `<h4>${CAT_NAMES[cat]}</h4>`+list.map(r=>{const ok=Object.entries(r.in).every(([k,n])=>inv(k)>=n)&&(!r.tool||craftTool(r.tool))&&!gearProblem(r,inv,world.structures,player.pos);
+    return `<div class="rec${ok?" ok":" no"}"><b>${icon(r.out)} ${esc(ITEMS[r.out].name)}${r.n>1?` ×${r.n}`:""}</b><span>${Object.entries(r.in).map(([k,n])=>`<em class="${inv(k)>=n?"have":"miss"}">${n}× ${esc(ITEMS[k].name)}</em>`).join(" ")}${r.tool?` · needs ${esc(ITEMS[r.tool].name)} or better`:""}${r.tools?` · tools: ${r.tools.map(k=>esc(ITEMS[k].name)).join(", ")}`:""}${r.knife?" · needs a knife":""}${r.station?` · ${esc(gearProblem(r,inv,world.structures,player.pos)||"station ready")}`:""}${r.out.startsWith("workbench")?" · four supports + rectangular board top; housed joints, wedges & plant-fiber lashings (no nails)":r.out==="bench_joint"?" · carve shoulders and matching tongue; F inspects the joint":r.out==="hand_drill"?" · carve spindle + hearth; tinder needs 1 plant fiber per prepared fire":""}</span><button data-craft="${r.out}" ${ok?"":"disabled"}>CRAFT</button>${GEAR_STEPS[r.out]?`<details><summary>How it is made</summary><ol>${GEAR_STEPS[r.out].map(t=>`<li>${esc(t)}</li>`).join("")}</ol></details>`:""}</div>`}).join("")}).join("");
   const hands=[["L","left","LEFT HAND"],["R","held","RIGHT HAND"]].map(([sd,f,l])=>{const k=world[f];return `<div class="handBig${k?" full":""}" data-hand="${sd}" ${k?`data-k="${k}"`:""}><small>${l}</small>${k?`<i style="--c:${hex(k)}">${icon(k)}</i><em>${esc(ITEMS[k].name)}</em>`:"<em class=muted>drag an item here</em>"}</div>`}).join("");
   el.innerHTML=`<div class="pHead"><h3>BACKPACK <small class="cap">${used} / ${cap} slots · stacks of ${STACK}${world.inv.satchel?" · satchel +"+SATCHEL_SLOTS:""}</small></h3><button data-close>✕ (I)</button></div>
-  <div class="invBar"><input id="wInvQ" placeholder="Search…" value="${esc(invQ)}" aria-label="Search inventory"><button data-isort="type">Sort: type</button><button data-isort="name">A–Z</button><button data-isort="count">Count</button>
+  <button data-climb-guide>CLIMBING GLOVES · Materials & guide</button> <button data-climb-filter>${invChain?"SHOW ALL RECIPES":"CLIMBING CRAFT PATH"}</button>${assemblyCard()}<div class="invBar"><input id="wInvQ" placeholder="Search…" value="${esc(invQ)}" aria-label="Search inventory"><button data-isort="type">Sort: type</button><button data-isort="name">A–Z</button><button data-isort="count">Count</button>
   ${dropAllArm?`<span class="warnTxt">Drop everything on the ground?</span><button data-dropall="yes" class="danger">Yes, drop all</button><button data-dropall="no">Cancel</button>`:`<button data-dropall="arm" class="danger">Drop All Items</button>`}</div>
   <div class="hands">${hands}</div><div class="invCells">${grid}</div>
   <p class="muted">Click: equip selected hand (V switches) · right-click: more (hands, observe, use, drop…) · drag to rearrange, onto the hotbar or a hand. E pick up · F observe · R stow held item · I backpack.${world.worn?" Wearing: "+esc(ITEMS[world.worn].name)+".":""}</p>
@@ -1535,6 +1565,8 @@ function renderHelp(){const el=$("#wHelp");if(!el)return;const P=helpPages(),p=P
   <p class="hAgain">Minimize and reopen here anytime: press ${kb("H")} or the <b>?</b> button in the corner.</p>
   <div class="hDots">${P.map((_,i)=>`<i class="${i===helpPage?"on":""}"></i>`).join("")}</div>
   <div class="hBtns"><button data-help="back" ${helpPage?"":"disabled"}>◀ Back</button>${p.last?`<button data-help="done" class="primary">Got it</button>`:`<button data-help="minimize" class="ghost">MINIMIZE</button><button data-help="next" class="primary">Next ▶</button>`}</div></div>`}
+function openClimbGuide(){stopMovement();const el=$("#wClimbHelp");el.innerHTML=`<div class="box">${CLIMB_GUIDE}<p><button data-climb-craft>OPEN BACKPACK</button> <button data-climb-min>MINIMIZE</button></p></div>`;el.hidden=false;paused=true;try{document.exitPointerLock?.()}catch(_){}}
+function closeClimbGuide(){const el=$("#wClimbHelp");if(el)el.hidden=true;paused=false;stopMovement()}
 function openHelp(page=(world?.counters?.helpPage??helpPage)){stopMovement();const el=$("#wHelp");if(!el)return;helpPage=clamp(Number(page)||0,0,helpPages().length-1);if(el.hidden)helpWasPaused=paused;el.hidden=false;paused=true;keys.clear();try{document.exitPointerLock?.()}catch(_){}renderHelp()}
 function closeHelp(){const el=$("#wHelp");if(!el||el.hidden)return;el.hidden=true;paused=helpWasPaused&&!!(OBS&&OBS.isOpen);keys.clear();clock.getDelta();if(world){world.counters.helpSeen=1;world.counters.helpPage=helpPage}}
 function helpNav(a){const n=helpPages().length;if(a==="next"){if(helpPage<n-1){helpPage++;renderHelp()}else closeHelp()}else if(a==="back"){if(helpPage>0){helpPage--;renderHelp()}}else closeHelp()}
@@ -1551,11 +1583,12 @@ function bindInput(container){
   canvasEl=renderer.domElement;
   window.addEventListener("keydown",e=>{
     if(!started)return;
-    if(e.code==="Escape"){stopMovement();return}
+    if(e.code==="Escape"){stopMovement();if(!$("#wClimbHelp").hidden){closeClimbGuide();e.preventDefault();e.stopImmediatePropagation()}return}
     if(autoPickup&&!e.repeat&&!["ShiftLeft","ShiftRight","ControlLeft","ControlRight","AltLeft","AltRight","MetaLeft","MetaRight"].includes(e.code)){
       stopMovement();if(e.code==="KeyE"){e.preventDefault();e.stopImmediatePropagation()}
     }
   },true);
+  document.addEventListener("click",e=>{if(e.target.closest("[data-climb-filter]")){invChain=!invChain;renderInventory()}if(e.target.closest("[data-climb-guide]"))openClimbGuide();if(e.target.closest("[data-climb-min]"))closeClimbGuide();if(e.target.closest("[data-climb-craft]")){closeClimbGuide();invChain=true;$("#wInv").hidden=false;renderInventory()}});
   $("#wStopWalk").onclick=()=>stopMovement();
   document.addEventListener("pointerdown",e=>{if(e.target!==canvasEl)stopMovement()},true);
   document.addEventListener("focusin",e=>{if(e.target!==canvasEl)stopMovement()});
@@ -1667,7 +1700,9 @@ function stepWorld(dt){
   world.gameTime+=dtg;
   stepWeather(dtg);stepPlayer(dt);stepSurvival(dt);stepDrill(dt);stepDrops(dt);stepFires(dt,dtg);stepBurning(dt);stepLightning(dt);spawnAnimals(dt);updateAnimals(dt);if(PETS)PETS.update(dt);stepPendulums(dt);stepCuriosity(dt);stepTips(dt);
   const p=player;p.model.position.copy(p.pos);if(p.raft)p.model.position.y=.12;p.model.rotation.y=p.yaw;
-  animateHuman(p.model,Math.hypot(p.vel.x,p.vel.z)*(p.crouch?1.6:1),dt,p.swimming,!p.onGround&&!p.swimming&&p.pos.y>heightAt(p.pos.x,p.pos.z)+.25,p.dead);
+  animateHuman(p.model,(p.moveSpeed||0)*(p.crouch?1.6:1),dt,p.swimming,!p.onGround&&!p.swimming&&p.pos.y>heightAt(p.pos.x,p.pos.z)+.25,p.dead);
+  GFX.fitClimbingGloves(p.model,inv("climbing_gloves")>0);
+  if(p.climbing)GFX.poseClimbing(p.model,clock.elapsedTime);
   p.model.scale.y=drilling?.72:p.crouch?.72:1;
   if(drilling&&drillProp)GFX.poseHandDrill(p.model,drillProp.position,clock.elapsedTime);
   if(p.swimming&&!p.wasSwim){GFX.FX.splash(p.pos.x,p.pos.z,40);AU.splash(true)}p.wasSwim=p.swimming;
@@ -1754,7 +1789,7 @@ function sim(sec,ctl,step=1/30){const n=Math.round(sec/step);simming=true;let i=
 function scan(kind,type,r=180,ok){ // bot perception: nearest thing of a kind (what the player could see); ok(x,z) filters
   const P=player.pos;let best=null,bd=r;const c=(o,x,z)=>{const d=Math.hypot(x-P.x,z-P.z);if(d<bd&&(!ok||ok(x,z))){bd=d;best={...o,x,z,d}}};
   if(kind==="res"||kind==="drop"){for(const d of world.drops)if(!d.flying&&!d.floating&&(!type||d.item===type))c({kind:"drop",item:d.item},d.pos.x,d.pos.z);
-    if(kind==="res")for(const ch of chunks.values())if(ch.group)for(const rr of ch.obj.res)if(!rr.gone&&(!type||rr.type===type))c({kind:"res",item:rr.type},rr.x,rr.z)}
+    if(kind==="res")for(const ch of chunks.values())if(ch.group)for(const rr of ch.obj.res)if(!rr.gone&&(!type||rr.type===type))c({kind:"res",item:rr.type,flower:!!rr.flower},rr.x,rr.z)}
   if(kind==="tree")for(const ch of chunks.values())if(ch.group)for(const t of ch.obj.trees)if(!t.gone&&!t.burning&&(!type||t.kind===type)&&slopeAt(t.x,t.z)<.6)c({kind:"tree",sticks:t.sticks||0},t.x,t.z);
   if(kind==="boulder")for(const ch of chunks.values())if(ch.group)for(const b of ch.obj.boulders)c({kind:"boulder",s:b.s,mined:b.mined||0},b.x,b.z);
   if(kind==="animal")for(const a of animals)if(!a.dead&&(!type||a.kind===type))c({kind:"animal",type:a.kind,y:a.pos.y,size:a.sp.size},a.pos.x,a.pos.z);

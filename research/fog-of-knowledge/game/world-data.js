@@ -1,3 +1,4 @@
+import {GEAR_ITEMS,GEAR_RECIPES} from "./gear-progression.js?v=3.12.3";
 /* Fog of Knowledge: The Game — open-world content: items, hands-on discoveries, recipes.
  * Principle texts summarise well-established science/history; dates are approximate ("c.").
  * `tree` links to discoveries.js ids (which carry the verified atlas node ids); `atlas` adds direct atlas ids.
@@ -173,7 +174,7 @@ export const RECIPES=[
  {out:"kiln",req:"ceramics",in:{clay:4,stone:4}},
  {out:"tablet",req:"counting",in:{clay:1}},
  {out:"lens",req:"glass",in:{quartz:1,sand:1}},
- {out:"bellows",req:"bronze",in:{fiber:4,log:1,clay:1}},
+ {out:"bellows",req:null,in:{hide:2,fiber:4,log:1,clay:1}},
  {out:"axe_bronze",req:"bronze",in:{bronze:1,stick:1}},
  {out:"wheel",req:"bronze",in:{log:1},tool:"axe_bronze"},
  {out:"axe_iron",req:"iron",in:{iron:1,stick:1}},
@@ -196,6 +197,8 @@ export const RECIPES=[
  {out:"dough",req:"boiling",in:{grain:2,pot_clean:1},ret:"pot"},
  {out:"berry_mash",req:"ceramics",in:{berry_dark:4,pot:1}}
 ];
+Object.assign(ITEMS,GEAR_ITEMS);
+RECIPES.push(...GEAR_RECIPES.map(r=>({req:null,...r})));
 const CAT={workbench:"build",workbench_bundle:"build",dough:"cooking",berry_mash:"cooking",satchel:"tools",campfire:"build",leanto:"build",hut:"build",house:"build",wall:"build",chest:"build",rack:"build",well:"build",kiln:"build",raft:"build",table:"science",torch:"build",
  axe_stone:"tools",axe_copper:"tools",axe_bronze:"tools",axe_iron:"tools",wheel:"tools",bellows:"tools",clothing:"tools",
  spear:"weapons",sling:"weapons",bow:"weapons",arrow:"weapons",

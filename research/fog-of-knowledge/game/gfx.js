@@ -427,7 +427,7 @@ function buildGeometries(){
     vcolor(g,(c,x,y)=>{const t=y/.6;c.setRGB(lin(.24+.2*t),lin(.4+.22*t),lin(.1+.1*t))});
     const nn=g.attributes.normal;for(let k=0;k<nn.count;k++)nn.setXYZ(k,0,1,0);blades.push(g)}
   GEO.grass=merge(blades);
-  const fl=new THREE.IcosahedronGeometry(.055,0);fl.translate(0,.36,0);const st=new THREE.CylinderGeometry(.006,.008,.36,3);st.translate(0,.18,0);
+  const fl=new THREE.IcosahedronGeometry(.055,0);fl.translate(0,.36,0);const st=new THREE.CylinderGeometry(.012,.018,.36,5);st.translate(0,.18,0);
   GEO.flower=mergeGeometries([fl.toNonIndexed(),st.toNonIndexed()].map(g=>{g.deleteAttribute("uv");return g}),false);
 }
 
@@ -437,17 +437,14 @@ export function buildGrass(cx,cz,size,sample,seed){
   // sample(x,z) → {h, biome, slope}
   if(!Q.grass)return null;
   const r=rng(seed),n=Q.grass,m=new THREE.InstancedMesh(GEO.grass,MAT.grass,n),c=new THREE.Color();
-  const fl=Q.flowers?new THREE.InstancedMesh(GEO.flower,MAT.flower,Q.flowers):null;
-  let k=0,f=0;const x0=cx*size,z0=cz*size;
-  const FLC=[0xffffff,0xffd84a,0xb48cff,0xff6a7a,0x8ac8ff];
+  // Flowers are harvestable resource instances, independent of grass quality.
+  let k=0;const x0=cx*size,z0=cz*size;
   for(let i=0;i<n;i++){const x=x0+r()*size,z=z0+r()*size,s=sample(x,z),t=BIOME_GRASS[s.biome];
     if(!t||s.h<.5||s.slope>.7)continue;
     const sc=.45+r()*.5;_m4.compose(_p3.set(x,s.h-.03,z),_q4.setFromAxisAngle(_up,r()*6.283),_s3.set(sc,sc*(.7+r()*.6),sc));m.setMatrixAt(k,_m4);
-    const v=.85+r()*.3;c.setRGB(t[0]*v,t[1]*v,t[2]*v*(.9+r()*.2));m.setColorAt(k,c);k++;
-    if(fl&&f<Q.flowers&&s.biome==="grass"&&r()<.05){_m4.compose(_p3.set(x+.2,s.h-.02,z+.1),_q4.identity(),_s3.set(1,.8+r()*.6,1));fl.setMatrixAt(f,_m4);c.setHex(FLC[Math.floor(r()*FLC.length)]);fl.setColorAt(f,c);f++}}
+    const v=.85+r()*.3;c.setRGB(t[0]*v,t[1]*v,t[2]*v*(.9+r()*.2));m.setColorAt(k,c);k++;}
   m.count=k;m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true;m.receiveShadow=true;m.frustumCulled=true;m.computeBoundingSphere();
   const g=new THREE.Group();g.add(m);MIRROR_HIDE.add(g);
-  if(fl&&f){fl.count=f;fl.instanceMatrix.needsUpdate=true;fl.instanceColor.needsUpdate=true;fl.computeBoundingSphere();g.add(fl)}
   return g;
 }
 const _m4=new THREE.Matrix4(),_q4=new THREE.Quaternion(),_p3=new THREE.Vector3(),_s3=new THREE.Vector3(),_up=new THREE.Vector3(0,1,0);
@@ -579,8 +576,8 @@ function attachHuman(g,asset){
   for(const c of asset.animations){const a=u.mixer.clipAction(c);if(/Death|Jump_Land|Jump_Start|Shoot|Punch|PickUp|Interact/.test(c.name)){a.setLoop(THREE.LoopOnce,1);a.clampWhenFinished=true}u.actions[c.name]=a}
   u.cur=null;
 }
-function fade(u,name,t=.2){if(u.cur===name)return;const n=u.actions[name];if(!n)return;const o=u.actions[u.cur];n.reset();n.enabled=true;n.setEffectiveWeight(1);n.play();if(o)o.crossFadeTo(n,t,false);u.cur=name}
-export function playOnce(h,name,dur){const u=h.userData;if(u.mixer&&u.actions[name]){u.onceName=name;u.once=dur||u.actions[name].getClip().duration*.85;u.cur=null;fade(u,name,.12)}else u.fbThrow=.3}
+function fade(u,name,t=.2,restart=false){if(u.cur===name&&!restart)return;const n=u.actions[name];if(!n)return;const o=u.actions[u.cur];n.reset();n.enabled=true;n.setEffectiveWeight(1);n.play();if(o&&o!==n)o.crossFadeTo(n,t,false);u.cur=name}
+export function playOnce(h,name,dur){const u=h.userData;if(u.mixer&&u.actions[name]){u.onceName=name;u.once=dur||u.actions[name].getClip().duration*.85;fade(u,name,.12,true)}else u.fbThrow=.3}
 export function animateHuman(h,speed,dt,swim,air,dead){
   const u=h.userData;
   if(!u.mixer){animateFallback(u,speed,dt,swim,air,dead);return}
@@ -606,7 +603,7 @@ function makeFallbackHuman(){
   return {root,hips,armL,armR,legL,legR,hand,handL};
 }
 // Apply after the normal mixer: a two-bone reach keeps both real hands at the spindle.
-export function poseHandDrill(h,point,time){
+export function poseHandDrill(h,point,time,climbing=false){
   const u=h.userData;u.held.visible=u.heldL.visible=false;h.updateMatrixWorld(true);
   for(const [side,anchor] of [[1,u.held],[-1,u.heldL]]){
     const hand=anchor.parent,lower=hand?.parent,upper=lower?.parent;
@@ -614,7 +611,7 @@ export function poseHandDrill(h,point,time){
       const arm=side===1?u.fb.armR:u.fb.armL;arm.rotation.x=-1.1;arm.rotation.z=side*.35;continue;
     }
     const a=upper.getWorldPosition(new THREE.Vector3()),b=lower.getWorldPosition(new THREE.Vector3()),c=hand.getWorldPosition(new THREE.Vector3());
-    const target=point.clone();target.y+=.38+Math.sin(time*8)*.025;target.x+=side*.025;
+    const target=point.clone();target.y+=(climbing?1.25+Math.sin(time*5+side)*.15:.38+Math.sin(time*8)*.025);target.x+=Math.cos(h.rotation.y)*side*(climbing?.24:.025);target.z-=Math.sin(h.rotation.y)*side*(climbing?.24:.025);
     const l1=a.distanceTo(b),l2=b.distanceTo(c),dir=target.clone().sub(a),d=Math.max(.001,Math.min(dir.length(),(l1+l2)*.98));dir.normalize();
     const pole=new THREE.Vector3(side,-.2,0).applyAxisAngle(new THREE.Vector3(0,1,0),h.rotation.y);pole.addScaledVector(dir,-pole.dot(dir)).normalize();
     const along=(l1*l1-l2*l2+d*d)/(2*d),elbow=a.clone().addScaledVector(dir,along).addScaledVector(pole,Math.sqrt(Math.max(0,l1*l1-along*along)));
@@ -623,7 +620,7 @@ export function poseHandDrill(h,point,time){
       const q=new THREE.Quaternion().setFromUnitVectors(v,want).multiply(bone.getWorldQuaternion(new THREE.Quaternion()));
       bone.quaternion.copy(bone.parent.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(q));h.updateMatrixWorld(true);
     }
-    hand.rotateY(Math.sin(time*32)*.35);
+    if(!climbing)hand.rotateY(Math.sin(time*32)*.35);
   }
 }
 function animateFallback(u,speed,dt,swim,air,dead){const f=u.fb;u.phase+=dt*(2+speed*2.6);const sw=Math.min(1,speed/2.5)*.9;
@@ -671,3 +668,14 @@ export function makeAnimalModel(kind,col,s){
   g.userData={head,tail};
   return {g,legs};
 }
+
+export function fitClimbingGloves(h,on){
+ const u=h.userData;if(u.gloveInner===u.inner&&u.glovesOn===on)return;
+ for(const g of u.gloves||[]){g.removeFromParent();g.traverse(m=>{if(m.isMesh){m.geometry.dispose();m.material.dispose()}})}u.gloves=[];u.gloveInner=u.inner;u.glovesOn=on;if(!on)return;
+ for(const anchor of [u.held,u.heldL]){const g=new THREE.Group(),skin=new THREE.MeshStandardMaterial({color:0x805236,roughness:.9});
+ const palm=new THREE.Mesh(new THREE.BoxGeometry(.085,.12,.055),skin);g.add(palm);
+ for(let i=0;i<3;i++){const spike=new THREE.Mesh(new THREE.ConeGeometry(.012,.055,6),new THREE.MeshStandardMaterial({color:0x9ba0a6,metalness:.8,roughness:.35}));spike.rotation.x=Math.PI/2;spike.position.set((i-1)*.025,0,.045);g.add(spike)}
+ g.position.copy(anchor.position);anchor.parent.add(g);u.gloves.push(g);
+ }
+}
+export function poseClimbing(h,time){const p=h.position.clone();p.x+=Math.sin(h.rotation.y)*.4;p.z+=Math.cos(h.rotation.y)*.4;poseHandDrill(h,p,time,true)}

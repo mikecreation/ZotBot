@@ -10,9 +10,20 @@ function wrap(g,x,y,z,axis='x',radius=.085){
   for(let i=-1;i<=1;i++){const m=new T.Mesh(new T.TorusGeometry(radius,.009,5,14),cord());m.position.set(x+(axis==='x'?i*.025:0),y+(axis==='y'?i*.025:0),z);m.rotation.y=axis==='x'?Math.PI/2:0;m.rotation.x=axis==='y'?Math.PI/2:0;g.add(m)}
 }
 export function primitiveItem(k){
+  if(['needle_iron','iron_spike','hammer_stone','tongs','leather_gloves','climbing_gloves','leather','thread','bark'].includes(k)){
+    const g=new T.Group(),metal=new T.MeshStandardMaterial({color:0x9a9fa5,metalness:.8,roughness:.4}),hide=new T.MeshStandardMaterial({color:0x885b39,roughness:.95});
+    if(k.endsWith('gloves'))for(const side of [-1,1]){const x=side*.1;block(g,x,0,0,.14,.18,.045,hide);for(let i=0;i<4;i++)block(g,x+(i-1.5)*.03,.13,0,.024,.1,.035,hide);block(g,x+side*.08,.02,0,.05,.09,.04,hide);if(k==='climbing_gloves')for(let i=0;i<3;i++){const m=new T.Mesh(new T.ConeGeometry(.012,.07,6),metal);m.rotation.x=Math.PI/2;m.position.set(x+(i-1)*.04,0,.05);g.add(m)}}
+    else if(k==='needle_iron'){const m=new T.Mesh(new T.ConeGeometry(.008,.3,8),metal);g.add(m);const eye=new T.Mesh(new T.TorusGeometry(.012,.004,5,12),metal);eye.position.y=-.15;g.add(eye)}
+    else if(k==='iron_spike'){const m=new T.Mesh(new T.ConeGeometry(.035,.19,6),metal);g.add(m);block(g,0,-.1,0,.1,.025,.08,metal)}
+    else if(k==='hammer_stone'){block(g,0,-.08,0,.04,.4,.04,wood());block(g,0,.13,0,.23,.13,.1,new T.MeshStandardMaterial({color:0x777777}));wrap(g,0,.13,0,'y',.04)}
+    else if(k==='tongs'){for(const side of [-1,1]){const rod=block(g,side*.025,0,0,.025,.4,.025,metal);rod.rotation.z=side*.17}block(g,0,.04,.018,.035,.035,.025,metal)}
+    else if(k==='thread'){const coil=new T.Mesh(new T.TorusGeometry(.08,.02,8,24),cord());g.add(coil)}
+    else block(g,0,0,0,k==='bark'?.12:.3,k==='bark'?.25:.02,.18,k==='bark'?wood():hide);
+    return g;
+  }
   if(k==='workbench'||k==='workbench_bundle')return workbenchMesh(k==='workbench_bundle');
-  if(!['knife_stone','pickaxe_stone','axe_stone','hand_drill','bench_joint'].includes(k))return null;
-  const g=new T.Group(),w=wood(),s=new T.MeshStandardMaterial({color:0x777a81,roughness:.9,flatShading:true});
+  if(!['knife_stone','knife_copper','knife_bronze','knife_iron','axe_copper','axe_bronze','axe_iron','pickaxe_stone','axe_stone','hand_drill','bench_joint'].includes(k))return null;
+  const g=new T.Group(),w=wood(),s=new T.MeshStandardMaterial({color:k.endsWith("copper")?0xd98a4a:k.endsWith("bronze")?0xc5913c:0x777a81,metalness:k.endsWith("stone")?0:.7,roughness:.6,flatShading:true});
   if(k==='hand_drill'){
     block(g,0,-.12,0,.38,.055,.16,w);
     const spindle=new T.Mesh(new T.CylinderGeometry(.016,.01,.52,10),w);spindle.position.y=.16;g.add(spindle);
@@ -21,7 +32,7 @@ export function primitiveItem(k){
     // Two separated shoulders leave an actual open lap notch, plus a matching tongue.
     block(g,-.17,0,0,.24,.16,.16,w);block(g,.17,0,0,.24,.16,.16,w);block(g,0,-.055,0,.1,.05,.16,w);
     block(g,0,.18,0,.09,.16,.15,w);
-  }else if(k==='knife_stone'){
+  }else if(k.startsWith('knife_')){
     const blade=new T.Mesh(new T.ConeGeometry(.085,.32,4),s);blade.scale.z=.25;blade.position.y=.13;g.add(blade);block(g,0,-.08,0,.065,.12,.045,s);
   }else{
     block(g,0,-.14,0,.065,.67,.065,w);
