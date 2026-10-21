@@ -17,7 +17,7 @@ function benches(){reset();const x=W.player.pos.x,z=W.player.pos.z;
  plaque('4 single legs',x,W.height(x,z-1.8)+1.45,z-1.8);plaque('4 bundled supports',x+2.8,W.height(x+2.8,z-1.8)+1.45,z-1.8);
  const kinds=['knife_stone','axe_stone','pickaxe_stone','hand_drill','bench_joint'];
  for(let i=0;i<kinds.length;i++){const k=kinds[i],xx=x-1.5+i*1.4,zz=z-4.5,m=primitiveItem(k);m.position.set(xx,W.height(xx,zz)+.8,zz);m.scale.setScalar(1.4);GFX.scene.add(m);exhibits.push(m);plaque(W.items[k].name,xx,W.height(xx,zz)+1.6,zz)}
- W.teleport(x+1.4,z+1.7);W.stow(true);W.give('knife_stone');W.give('pickaxe_stone');W.inventory.setHand('R','knife_stone');W.inventory.setHand('L','pickaxe_stone');W.player.zoom=true;W.look(0,.15,4.5);W.hud();document.querySelector('#wToast').textContent='';report('benches','Two completed benches in the world, plus all five detailed tools/joints. Drag to look around. Select a tool above for an inspectable close-up.');
+ W.teleport(x+1.4,z+1.7);W.stow(true);W.give('knife_stone');W.give('pickaxe_stone');W.inventory.setHand('R','knife_stone');W.inventory.setHand('L','pickaxe_stone');W.player.firstPersonView=true;W.look(0,.15,4.5);W.hud();document.querySelector('#wToast').textContent='';report('benches','Two completed benches in the world, plus all five detailed tools/joints. Drag to look around. Select a tool above for an inspectable close-up.');
 }
 function pile(){reset();W.give('campfire');W.hold('campfire');W.useHeld();W.sim(.4);const f=W.state.structures.find(s=>s.type==='fire');W.give('fiber',3);W.give('hand_drill');W.inventory.setHand('R','hand_drill');W.inventory.setHand('L',null);W.inventory.selectHand('R');return f}
 function show(scene){try{

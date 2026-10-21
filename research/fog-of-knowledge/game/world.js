@@ -1608,7 +1608,7 @@ function inCrown(x,y,z){for(const ch of nearbyChunks(x,z,4))for(const t of ch.ob
   const r=(v==="conifer"?1.9:v==="palm"?2.2:2.3)*t.s,y0=t.y+(v==="conifer"?.8:v==="palm"?4:2.2)*t.s,y1=t.y+(v==="conifer"?5.6:v==="palm"?5.6:5.4)*t.s;
   if(y>y0&&y<y1&&Math.hypot(x-t.x,z-t.z)<r)return true}return false}
 let camDistNow=6;
-function firstPerson(){return !!player.zoom||player.camPitch<-.35}
+function firstPerson(){return !!player.firstPersonView||!!player.zoom||player.camPitch<-.35}
 function updateCamera(dt){
   const p=player,fp=firstPerson();
   if(p.model)p.model.visible=!fp;
