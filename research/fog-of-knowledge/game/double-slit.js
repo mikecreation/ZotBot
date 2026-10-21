@@ -1,8 +1,8 @@
-import {observedProfile,profileReady} from './slit-wave-field.js?v=3.27.0';
-import {createPhotonEvents,launchPhoton,arrivePhotons,discardPhotons} from './photon-events.js?v=3.27.0';
-import {photonHardware} from './photon-hardware.js?v=3.27.0';
-import {SLIT_DEFAULTS,slitSettings,slitDistribution,sampleSlit,evaluateSlit} from './double-slit-model.js?v=3.27.0';
-import {slitMarkup,drawSlit,drawProbe} from './double-slit-view.js?v=3.27.0';
+import {observedProfile,profileReady} from './slit-wave-field.js?v=3.28.0';
+import {createPhotonEvents,launchPhoton,arrivePhotons,discardPhotons} from './photon-events.js?v=3.28.0';
+import {photonHardware} from './photon-hardware.js?v=3.28.0';
+import {SLIT_DEFAULTS,slitSettings,slitDistribution,sampleSlit,evaluateSlit} from './double-slit-model.js?v=3.28.0';
+import {slitMarkup,drawSlit,drawProbe} from './double-slit-view.js?v=3.28.0';
 export function mountDoubleSlit(host,{stage=0,complete}){
  const state={settings:slitSettings(SLIT_DEFAULTS),dist:slitDistribution(SLIT_DEFAULTS),hits:[],bins:new Uint32Array(80),look:true,guide:true,previous:null,flash:0,probe:0,closeup:matchMedia('(max-width:650px)').matches};
  let running=false,speed=60,frame=0,last=0,nextEmission=0,draining=false,awarded=false,dead=false;state.events=createPhotonEvents();state.clock=0;state.profileTracker={};

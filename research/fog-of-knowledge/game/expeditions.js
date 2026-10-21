@@ -1,11 +1,11 @@
-import {mountDoubleSlit} from './double-slit.js?v=3.27.0';
-import {raftControls,logEditor,drawRaft} from './raft-view.js?v=3.27.0';
-import {KG_PER_LB} from './buoyancy.js?v=3.27.0';
-import {drawFoundation} from "./expedition-foundation-scenes.js?v=3.27.0";
-import {experimentArtwork,EXPEDITION_ART} from "./expedition-art.js?v=3.27.0";
-import {drawExtra} from "./expedition-extra-scenes.js?v=3.27.0";
-import {routeContract,routeMove} from "./expedition-extra-models.js?v=3.27.0";
-import {LABS,defaultControls,evaluateLab,searchContract} from './expedition-models.js?v=3.27.0';
+import {mountDoubleSlit} from './double-slit.js?v=3.28.0';
+import {raftControls,logEditor,drawRaft} from './raft-view.js?v=3.28.0';
+import {KG_PER_LB} from './buoyancy.js?v=3.28.0';
+import {drawFoundation} from "./expedition-foundation-scenes.js?v=3.28.0";
+import {experimentArtwork,EXPEDITION_ART} from "./expedition-art.js?v=3.28.0";
+import {drawExtra} from "./expedition-extra-scenes.js?v=3.28.0";
+import {routeContract,routeMove} from "./expedition-extra-models.js?v=3.28.0";
+import {LABS,defaultControls,evaluateLab,searchContract} from './expedition-models.js?v=3.28.0';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const controlReadout=(c,v)=>c[7]?c[7][v]:c[2]==="°C"?`${v} °C / ${(v*1.8+32).toFixed(1)} °F`:`${v} ${c[2]}`;
 const dot=(x,y,r=7,c='#ffd174')=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${c}"/>`;
@@ -105,8 +105,10 @@ if(selected.id==='search'){const n=search.values.length,a=60+search.low/n*680,b=
  function moveRoute(next){if(route.done)return;const moved=routeMove(route,route.path,next);if(!moved.valid){status('Choose an adjacent non-rock tile. No movement cost spent.');return}route.path=moved.path;route.cost=moved.cost;
  if(moved.finished||moved.cost>route.budget){route.done=true;const r={value:route.cost,success:!!moved.success,curve:route.path.map((tile,i)=>[i,tile]),detail:`Delivery cost ${route.cost}/${route.budget}. ${moved.success?'Message delivered.':'Budget exceeded; try a drier route.'}`};saveResult(r);searchMessage=r.detail;render();status((r.success?'CONTRACT COMPLETE · ':'TEST RESULT · ')+r.detail,r.success)}else{searchMessage=`Moved to tile ${next%8+1}, ${Math.floor(next/8)+1}. Route cost ${route.cost}/${route.budget}.`;render()}}
  function runTrial(){if(busy)return;busy=true;const mine=++token,r=context(),start=performance.now(),reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,duration=reduce?20:selected.id==='redundancy'?4000:selected.id==='raft'?3000:1500;root.querySelectorAll('input, select, .expControls button, [data-exp-next]').forEach(e=>e.disabled=true);status('Experiment running…');
-  const frame=now=>{if(mine!==token||root.hidden)return;const t=Math.min(1,(now-start)/duration);scene(r,t);if(t<1)raf=requestAnimationFrame(frame)};raf=requestAnimationFrame(frame);
-  timer=setTimeout(()=>{if(mine!==token||root.hidden)return;busy=false;result=r;saveResult(r);render();scene(r,1);status((r.success?'CONTRACT COMPLETE · ':'TEST RESULT · ')+r.detail,r.success)},duration+30);
+  let finished=false;
+  const finish=()=>{if(finished||mine!==token||root.hidden)return;finished=true;cancelAnimationFrame(raf);clearTimeout(timer);busy=false;result=r;saveResult(r);render();const sunk=selected.id==='raft'&&r.buoyancy.sinks;if(!sunk)scene(r,1);status((sunk?'RAFT SANK · Returned to the start for another release. ':r.success?'CONTRACT COMPLETE · ':'TEST RESULT · ')+r.detail,r.success)};
+  const frame=now=>{if(finished||mine!==token||root.hidden)return;const t=Math.min(1,(now-start)/duration);scene(r,t);const body=selected.id==='raft'&&r.buoyancy.sinks?root.querySelector('[data-raft-body]'):null;if(body&&body.getBBox().y>350){finish();return}if(t<1)raf=requestAnimationFrame(frame)};raf=requestAnimationFrame(frame);
+  timer=setTimeout(finish,duration+30);
  }
  function probe(){if(search.done||search.failed)return;const el=root.querySelector('[data-exp-probe]'),i=Math.trunc(Number(el.value))-1;if(!Number.isFinite(i)||i<search.low||i>search.high){status(`Choose an index inside ${search.low+1}–${search.high+1}.`);return}search.probes++;const value=search.values[i];
   if(value===search.target){search.done=true;const r={value:search.probes,success:search.probes<=search.budget,curve:[],detail:`Signal ${value} found in ${search.probes} probes (${search.budget} allowed).`};saveResult(r);searchMessage=r.detail;render();status('SIGNAL FOUND · '+r.detail,r.success);root.querySelector('[data-exp-search]').disabled=true;return}

@@ -1,6 +1,6 @@
 import * as T from '../vendor/three.module.min.js';
-import * as GFX from '../gfx.js?v=3.27.0';
-import {showScene} from './upgrades.js?v=3.27.0';
+import * as GFX from '../gfx.js?v=3.28.0';
+import {showScene} from './upgrades.js?v=3.28.0';
 export function runMovementSafetyTests(W){
   const results=[],test=(name,fn)=>{try{const ok=fn();results.push({group:'Movement safety',name,pass:ok===true,detail:ok===true?'':String(ok)})}catch(e){results.push({group:'Movement safety',name,pass:false,detail:e.stack})}};
   function queued(){
