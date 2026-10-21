@@ -1,5 +1,5 @@
-import {createExpeditions} from "./expeditions.js?v=3.15.0";
-import {GEAR_RECIPES,GEAR_STEPS,gearProblem,CLIMB_GUIDE} from "./gear-progression.js?v=3.15.0";
+import {createExpeditions} from "./expeditions.js?v=3.16.0";
+import {GEAR_RECIPES,GEAR_STEPS,gearProblem,CLIMB_GUIDE} from "./gear-progression.js?v=3.16.0";
 /* Fog of Knowledge: The Game — OPEN WORLD mode.
  * Real-time 3D world (three.js r160, vendored, MIT) with simple real physics:
  * gravity 9.81 m/s², friction-limited acceleration, quadratic air/water drag, Archimedes buoyancy,
@@ -9,21 +9,21 @@ import {GEAR_RECIPES,GEAR_STEPS,gearProblem,CLIMB_GUIDE} from "./gear-progressio
  * Discoveries happen by doing things in the world and reveal real atlas nodes.
  */
 import * as THREE from "./vendor/three.module.min.js";
-import {ITEMS,WORLD_DISCOVERIES,RECIPES} from "./world-data.js?v=3.15.0";
-import {walkPath} from "./walk-path.js?v=3.15.0";
-import {drillProblem,advanceDrill} from "./friction-fire.js?v=3.15.0";
-import {primitiveItem,workbenchMesh} from "./primitive-models.js?v=3.15.0";
-import * as GFX from "./gfx.js?v=3.15.0";
+import {ITEMS,WORLD_DISCOVERIES,RECIPES} from "./world-data.js?v=3.16.0";
+import {walkPath} from "./walk-path.js?v=3.16.0";
+import {drillProblem,advanceDrill} from "./friction-fire.js?v=3.16.0";
+import {primitiveItem,workbenchMesh} from "./primitive-models.js?v=3.16.0";
+import * as GFX from "./gfx.js?v=3.16.0";
 import * as AU from "./audio.js";
-import {ESSENTIAL_QUICKBAR,quickbarOrder} from "./quickbar.js?v=3.15.0";
+import {ESSENTIAL_QUICKBAR,quickbarOrder} from "./quickbar.js?v=3.16.0";
 import {temperature,temperatureDelta} from "./units.js";
 import {createBirds} from "./birds.js";
-import {fireSize,stepCombustion,addFuel,lightningPulse} from "./fire-model.js?v=3.15.0";
-import {ensureFuelBed,recordFuelPiece,stepFuelBed,fuelLayout} from "./fuel-bed.js?v=3.15.0";
-import {createFireBed,updateFireBed} from "./fire-visuals.js?v=3.15.0";
+import {fireSize,stepCombustion,addFuel,lightningPulse} from "./fire-model.js?v=3.16.0";
+import {ensureFuelBed,recordFuelPiece,stepFuelBed,fuelLayout} from "./fuel-bed.js?v=3.16.0";
+import {createFireBed,updateFireBed} from "./fire-visuals.js?v=3.16.0";
 import {CURIOSITY,OBJECTIVES} from "./content.js?v=3.8.3";
 import {createPets,PET_INFO,MAX_ACTIVE} from "./pets.js";
-import {createObserve,NOTES} from "./observe.js?v=3.15.0";
+import {createObserve,NOTES} from "./observe.js?v=3.16.0";
 let PETS=null,OBS=null,EX=null;
 const E=window.FogGameEngine,TREE=E.G;
 const $=s=>document.querySelector(s);
@@ -1832,7 +1832,7 @@ export function initWorld(){
   $("#wShowFps")&&($("#wShowFps").onchange=e=>{$("#wFps").hidden=!e.target.checked;try{localStorage.setItem("fog-of-knowledge:game:fps",e.target.checked?"1":"")}catch(_){}});
   try{if(localStorage.getItem("fog-of-knowledge:game:fps")){$("#wFps").hidden=false;$("#wShowFps").checked=true}}catch(_){}
   const vol=$("#wVol");if(vol){vol.value=Math.round(AU.volume*100);$("#wVolV").textContent=vol.value+"%";vol.oninput=()=>{AU.init();AU.setVolume(vol.value/100);$("#wVolV").textContent=vol.value+"%";}}
-  EX=createExpeditions({root:$("#wExpeditions"),state:()=>world,save,
+  EX=createExpeditions({root:$("#wExpeditions"),state:()=>world,save,atlasNode:id=>{const i=atlas?.index.get(id);return i===undefined?null:atlas.nodes[i]},
     open:()=>{stopMovement();for(const id of ["wInv","wJournal","wSettings","wHelp","wClimbHelp","wPopup","wChest","wCtx"])$("#"+id).hidden=true;paused=true;try{document.exitPointerLock?.()}catch(_){}},
     close:()=>{stopMovement();paused=false;clock.getDelta()},
     mastered:l=>{if(discover("exp_"+l.id,true)){AU.milestone("discovery","exp_"+l.id);toast(`Expedition mastered: ${l.name}. Atlas context mapped.`)}}});

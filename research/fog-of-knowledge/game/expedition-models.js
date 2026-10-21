@@ -1,4 +1,6 @@
-import {EXTRA_LABS,evaluateExtra} from "./expedition-extra-models.js?v=3.15.0";
+import {FOUNDATION_LABS,evaluateFoundation} from "./expedition-foundations.js?v=3.16.0";
+import {EXPERIMENT_TITLES} from "./expedition-titles.js?v=3.16.0";
+import {EXTRA_LABS,evaluateExtra} from "./expedition-extra-models.js?v=3.16.0";
 // Deterministic small educational models. Inputs use SI units unless labeled otherwise.
 const physics='https://openstax.org/books/university-physics-volume-1/pages/1-introduction';
 export const LABS=[
@@ -15,11 +17,12 @@ export const LABS=[
  {id:'ecology',name:'Lake guardian',theme:'Biology',goal:'Feed the camp for ten years without collapsing the fish population.',atlas:'field.ecology',source:'https://openstax.org/books/biology-2e/pages/45-3-environmental-limits-to-population-growth',principle:'This simplified logistic fish model uses dN/dt = 0.5N(1−N/200) − harvest. Maximum growth occurs near half the carrying capacity.',controls:[['harvest','Annual fish harvest','fish/year',0,40,1,35]],targets:[10,20,24],unit:'fish remaining',tip:'Start with 100 fish, carrying capacity 200. Meet the food quota and leave at least 80 fish after ten years. Real ecosystems are more complex.'},
  {id:'search',name:'Signal hunter',theme:'Computer science',goal:'Locate the hidden signal in a sorted archive with very few probes.',atlas:'method.nist.binarysearch',source:'https://www.nist.gov/dads/HTML/binarySearch.html',principle:'In sorted data, a comparison can discard an entire half. Binary search takes logarithmically many probes.',controls:[],targets:[63,127,255],unit:'probes',tip:'Probe near the middle of the remaining interval. Read HIGHER / LOWER before probing again.'}
 ];
-LABS.push(...EXTRA_LABS);
+LABS.push(...EXTRA_LABS,...FOUNDATION_LABS);
+for(const l of LABS)if(EXPERIMENT_TITLES[l.id])l.name=EXPERIMENT_TITLES[l.id];
 const G=9.81,rad=Math.PI/180;
 export function defaultControls(lab){return Object.fromEntries(lab.controls.map(c=>[c[0],c[6]]))}
 export function evaluateLab(id,p,stage=0){
- const l=LABS.find(l=>l.id===id);if(!l)throw Error('Unknown experiment');stage=Math.max(0,Math.min(2,Math.trunc(Number(stage)||0)));p={...p};for(const [k,,,lo,hi,,fallback]of l.controls)p[k]=Math.min(hi,Math.max(lo,Number.isFinite(Number(p[k]))?Number(p[k]):fallback));if(l.batch===2)return evaluateExtra(id,p,stage);const target=l.targets[stage],curve=[];let value,success=false,goal='',detail='';
+ const l=LABS.find(l=>l.id===id);if(!l)throw Error('Unknown experiment');stage=Math.max(0,Math.min(2,Math.trunc(Number(stage)||0)));p={...p};for(const [k,,,lo,hi,,fallback]of l.controls)p[k]=Math.min(hi,Math.max(lo,Number.isFinite(Number(p[k]))?Number(p[k]):fallback));if(l.batch===3)return evaluateFoundation(id,p,stage);if(l.batch===2)return evaluateExtra(id,p,stage);const target=l.targets[stage],curve=[];let value,success=false,goal='',detail='';
  switch(id){
  case 'trajectory':value=p.speed**2*Math.sin(2*p.angle*rad)/G;success=Math.abs(value-target)<=1;goal=`Land ${target} ± 1 m away`;for(let t=0;t<2*p.speed*Math.sin(p.angle*rad)/G;t+=.04)curve.push([p.speed*Math.cos(p.angle*rad)*t,p.speed*Math.sin(p.angle*rad)*t-G*t*t/2]);detail=`Range ${value.toFixed(2)} m. ${value<target?'Short of':'Beyond'} the target.`;break;
  case 'lever':value=p.force*p.arm;success=value>=target&&value<=target*1.15;goal=`Load torque ${target} N·m; safe maximum ${(target*1.15).toFixed(0)} N·m`;detail=`Effort torque ${value.toFixed(1)} N·m. ${value<target?'Not enough torque':value>target*1.15?'Too much: lighten the effort':'The load rises safely'}.`;break;

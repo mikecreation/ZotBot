@@ -1951,3 +1951,6 @@ window.addEventListener('message',async event=>{
     try{await window.FogAtlasState.restore(event.data.snapshot)}catch(error){console.warn('Preview view restoration failed',error)}
   }
 });
+
+// Experiment deep links select a verified existing graph node after normal boot.
+atlasBoot.then(()=>{const id=new URLSearchParams(location.search).get('node');if(!id)return;const n=nodeById.get(id);if(n)activateSearchResult(n)}).catch(()=>{});

@@ -1,0 +1,31 @@
+import {LABS,defaultControls,evaluateLab} from '../expedition-models.js';
+import {binaryEntropy,binomialTail} from '../expedition-foundations.js';
+import {foundationSolution} from './foundation-solutions.js';
+import {EXPEDITION_ART,experimentArtwork} from '../expedition-art.js';
+import fs from 'node:fs';
+const results=[];const check=(name,pass)=>results.push({name,pass:!!pass});
+for(const l of LABS.filter(l=>l.batch===3))for(let s=0;s<3;s++){const p={...defaultControls(l),...foundationSolution(l.id,s)},r=evaluateLab(l.id,p,s);check(`${l.id} contract ${s+1} solvable on actual control grid`,r.success&&l.controls.every(([k,,,lo,hi,step])=>p[k]>=lo&&p[k]<=hi&&Math.abs((p[k]-lo)/step-Math.round((p[k]-lo)/step))<1e-6));if(!r.success)console.log(l.id,s,p,r)}
+const n=JSON.parse(fs.readFileSync(new URL('../../data/knowledge.json',import.meta.url),'utf8')).nodes,ids=new Set(n.map(x=>x.id));
+check('all 42 experiment context links exist in graph',LABS.length===42&&LABS.every(l=>ids.has(l.atlas)));
+check('all 42 titles name an actual concept and relationship',LABS.every(l=>l.name.includes(':')&&l.name.length>30));
+check('all 42 games have unique apparatus art',LABS.every(l=>EXPEDITION_ART[l.id])&&new Set(LABS.map(l=>experimentArtwork(l.id))).size===42);
+check('Bayes low base rate defeats naive sensitivity guess',evaluateLab('bayes',{guess:90},0).success===false);
+check('four times sample gives half uncertainty',Math.abs(evaluateLab('sampling',{n:400},0).value/evaluateLab('sampling',{n:100},0).value-.5)<1e-10);
+check('confounding reverses the apparent sign',evaluateLab('confounding',{design:0,estimate:15},0).value>0&&evaluateLab('confounding',{design:1,estimate:-5},0).value<0);
+const e=evaluateLab('energy',{height:10,loss:30},0);check('energy conserved including friction heat',Math.abs(e.total-e.heat-e.kinetic)<1e-10);
+check('absolute-temperature engine bound',Math.abs(evaluateLab('carnot',{hot:126.85,cold:26.85},0).value-.25)<1e-12);
+check('four times diffusion duration doubles RMS distance',evaluateLab('diffusion',{d:1,time:40},0).value/evaluateLab('diffusion',{d:1,time:10},0).value===2);
+check('osmosis conserves impermeant solute',Math.abs(evaluateLab('osmosis',{outside:.5},0).value*.5-.2)<1e-12);
+check('large delayed gain can fail while modest gain stabilizes',!evaluateLab('feedback',{gain:1.5},2).success&&evaluateLab('feedback',{gain:.2},2).success);
+check('neutral selection retains initial proportion',Math.abs(evaluateLab('selection',{fitness:1},0).value-.1)<1e-10);
+check('no intervention leaves growing branching chain',evaluateLab('spread',{reduction:0},2).value===4);
+check('zero growth duration retains population',evaluateLab('growth',{time:0},0).value===100);
+check('entropy deterministic zero and fair bit one',binaryEntropy(0)===0&&binaryEntropy(1)===0&&binaryEntropy(.5)===1);
+// Exhaustive eight three-copy patterns independently sum majority-error probability.
+let err=0;for(let bits=0;bits<8;bits++){let flips=0;for(let i=0;i<3;i++)flips+=(bits>>i)&1;if(flips>=2)err+=.1**flips*.9**(3-flips)}check('repetition exact binomial agrees with exhaustive channel outcomes',Math.abs(err-binomialTail(3,.1))<1e-12);
+check('inverse-square doubling quarters irradiance',evaluateLab('inverse',{distance:4},0).value/evaluateLab('inverse',{distance:2},0).value===.25);
+check('doubling cube side halves area-volume ratio',evaluateLab('scaling',{side:4},0).value/evaluateLab('scaling',{side:2},0).value===.5);
+check('lower but positive carbon net flow still accumulates',evaluateLab('carbon',{emissions:5},0).value>400);
+check('largest prize is not greatest expectation',evaluateLab('expected',{choice:1},0).value<evaluateLab('expected',{choice:0},0).value);
+check('copying five reports does not multiply evidence',evaluateLab('replication',{n:5,independent:0},0).value===.05);
+const failed=results.filter(x=>!x.pass);console.log(JSON.stringify({passed:results.length-failed.length,total:results.length,failed},null,2));if(failed.length)process.exitCode=1;

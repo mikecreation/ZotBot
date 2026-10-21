@@ -5,7 +5,7 @@
 <iframe id="game" title="Live game sandbox" src="index.html?sandbox=crafting#world" allow="autoplay"></iframe>
 <script type="module">
 const frame=document.querySelector('#game'),status=document.querySelector('#status');
-frame.addEventListener('load',()=>{const s=frame.contentDocument.createElement('script');s.type='module';s.src='./showcase-scene.js?v=3.15.0';frame.contentDocument.body.append(s)});
+frame.addEventListener('load',()=>{const s=frame.contentDocument.createElement('script');s.type='module';s.src='./showcase-scene.js?v=3.16.0';frame.contentDocument.body.append(s)});
 document.querySelector('nav').addEventListener('click',e=>{const scene=e.target.dataset.scene;if(!scene)return;for(const b of document.querySelectorAll('[data-scene]'))b.setAttribute('aria-pressed',String(b===e.target));frame.contentWindow.postMessage({type:'crafting-showcase',scene},location.origin)});
 window.addEventListener('message',e=>{if(e.origin===location.origin&&e.source===frame.contentWindow&&e.data?.type==='crafting-showcase-status'){status.textContent=e.data.text;for(const b of document.querySelectorAll('[data-scene]'))b.setAttribute('aria-pressed',String(b.dataset.scene===e.data.scene))}});
 </script></html>
