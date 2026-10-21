@@ -13,3 +13,14 @@ Play: one photon, stream/pause, one/two slits, path detector, hide/reveal screen
 Sources: https://www.feynmanlectures.caltech.edu/III_01.html and https://www.feynmanlectures.caltech.edu/III_03.html; https://lecdem.physics.umd.edu/p/p2/1307-p2-11.html.
 
 Validation: 67 model checks (interference and diffraction zeros, symmetry, normalized distributions, sampler quantiles, geometry scaling, challenge conditions); 16 browser checks (catalog/link, single hit, all contracts, detector/viewing, geometry/probe, duplicate mastery protection, phone controls, minimize, raft-release location). Original 47 and foundational 75 model checks pass.
+
+
+## Apparatus and interaction update
+
+Send 1 photon interrupts streaming and schedules one finite illustrative sequence: heralded preparation, slit amplitudes, then one sampled screen detection. Arcs appear only during that sequence or streaming; an idle guide no longer loops. The sensor edge and front view highlight the same horizontal coordinate using a dashed view-mapping connector, not a photon trajectory. The front view has a pixel grid. Additional hardware diagrams show a pump/crystal source, herald avalanche photodiode, slit mask, path markers and position-sensitive single-photon sensor/readout. These are schematic components of an ideal apparatus, not a calibrated commercial instrument.
+
+For two paths, H/V polarization markers are one implementation of distinguishable records. For three or more, the simulator explicitly assumes an ideal distinct record per opening; two polarization states alone cannot label all paths. Up to sixteen nonoverlapping equal-width slits may be added/removed by tapping the mask or the main barrier. The intensity uses the squared modulus of the sum over all aperture phases, divided by aperture count (conditional normalization), or an incoherent sum with perfect path marking. Arbitrary positions change the pattern; the two-slit separation control restores a two-slit geometry. Width changes that would overlap apertures are rejected. Wave arcs are illustrative, not the calculated field.
+
+Hardware references: https://www.thorlabs.com/newgrouppage9.cfm?objectgroup_id=17247 (SPDC source), https://journals.aps.org/prper/abstract/10.1103/PhysRevPhysEducRes.13.020115 (polarization and which-path reasoning). Rare multi-pair events, losses and detection efficiency remain excluded.
+
+Seventeen further browser checks cover mass/diameter unit suffixes, exact inches conversion, canonical-size preservation, popup reopening, mobile field fit, fullscreen placement/expand/restore, hardware illustrations, finite single emission, stream interruption, and adding/removing a third aperture. Four additional model checks cover multi-slit coherent/incoherent limits, normalization and changed distributions.

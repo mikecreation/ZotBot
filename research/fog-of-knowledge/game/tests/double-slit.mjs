@@ -10,3 +10,6 @@ for(const setting of [p,{...p,detector:1},{...p,slits:1}]){const dist=D(setting)
 near(D({...p,separation:100}).spacing,2*D(p).spacing);near(D({...p,distance:3}).spacing,2*D(p).spacing);near(D({...p,wavelength:660}).spacing,1.2*D(p).spacing);
 assert.ok(!evaluateSlit({...p,detected:199},0).success);assert.ok(evaluateSlit({...p,detected:200},0).success);assert.ok(evaluateSlit({...p,detector:1,detected:200},1).success);assert.ok(evaluateSlit({...p,separation:100,detected:200},2).success);assert.ok(!evaluateSlit({...p,separation:100,detector:1,detected:200},2).success);checks+=5;
 console.log(`${checks} diffraction, probability, sampler and challenge checks passed`);
+
+const multi={...p,positions:[-200,0,200]};near(I(0,multi),3);near(I(0,{...multi,detector:1}),1);near(D(multi).pdf.reduce((a,b)=>a+b,0),1);assert.notDeepEqual(D(multi).pdf,D(p).pdf);
+console.log('4 additional arbitrary multi-slit amplitude checks passed');
