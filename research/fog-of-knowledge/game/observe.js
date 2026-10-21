@@ -1,4 +1,4 @@
-import {GEAR_STEPS} from "./gear-progression.js?v=3.13.0";
+import {GEAR_STEPS} from "./gear-progression.js?v=3.14.0";
 /* Fog of Knowledge: The Game: OBSERVE (F).
  * A close-up look at what you hold: the world blurs and pauses, the item sits large in your hands; drag to turn it,
  * wheel to zoom, the light follows your cursor so texture, sheen and weight show. Notes describe what a careful
@@ -31,8 +31,8 @@ export const NOTES={
   hide:["Supple on one side, furred on the other; it holds warmth.","Wind doesn't pass through it.","Clothes? A bag of air to blow on a fire?"],
   flake:["Razor edge where it split from the core.","Small but sharp — needs a handle to be useful.","Bind it to a stick?"],
   axe_stone:["The handle multiplies your swing; the edge focuses it onto a line.","Leverage + a hard edge = work.",""],
-  spear:["Long, balanced near the middle; the point leads in flight.","Kinetic energy ½mv² does the work when it lands.",""],
-  tally:["Notches in a row — each one stands for something.","Ten notches… then what?",""],
+  spear:["Stone-tipped hunting spear. Q throws it; click nearby wildlife to thrust. E recovers a thrown spear.","Kinetic energy ½mv² does the work when it lands.",""],
+  tally:["Reusable counting record: equip it and Q to carve one notch. J → Experiments shows your saved total.","Ten notches unlock Counting and measured throw records. Each notch represents one quantity you choose to count.",""],
   pot:["Rings when tapped. The fire turned soft clay into something like stone.","Holds water without softening.","Could it hold water over a fire?"],
   pot_water:["Water sloshes heavily — a litre weighs a kilogram.","Clear-ish, but who knows what lives in it?","Boil it?"],
   pot_clean:["Boiled — the bubbles carried off the air, and the heat killed what was living in it.","",""],

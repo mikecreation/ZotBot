@@ -1,8 +1,8 @@
 # Discovery expeditions
 
-Press L or use the Discovery Expeditions button; also available from Backpack. The portable experiment interface pauses the world and does not consume world inventory. Twelve authored model-based activities have three contracts each: projectile delivery, lever torque, raft freeboard, pendulum timing, friction braking, gravity-fed jet pressure, thermal insulation, refraction, Ohmic circuits, driven resonance, logistic fisheries and binary search.
+Press L or use the Discovery Expeditions button; also available from Backpack. The portable experiment interface pauses the world and does not consume world inventory. Twenty-four authored model-based activities have three contracts each. The original twelve cover projectile delivery, lever torque, raft freeboard, pendulum timing, friction braking, gravity-fed jet pressure, thermal insulation, refraction, Ohmic circuits, driven resonance, logistic fisheries and binary search.
 
-This update creates 36 playable contracts and 12 game mastery records, not 36 new canonical research claims. All twelve context links were checked against the current canonical knowledge graph. Multiple activities share a broad field context; those are context links, not claims that the atlas already contains the exact simulated apparatus. Canonical graph files are untouched.
+The two batches provide 72 playable contracts and 24 game mastery records, not new canonical research claims. All twelve context links were checked against the current canonical knowledge graph. Multiple activities share a broad field context; those are context links, not claims that the atlas already contains the exact simulated apparatus. Canonical graph files are untouched.
 
 ## Learning loop
 
@@ -23,3 +23,14 @@ Every activity includes a readable explanation and a source link to its relevant
 ## Checks
 
 Run `node game/tests/expedition-models.mjs` from the atlas directory for 47 model/solvability checks. Separate browser verification plays all 36 contracts, checks single mastery, pause/cancel, narrow-screen layout and saved progress after reload; cancellation/failure tests also exercise actual controls. Reports and screenshots are retained in the local GAME_UPGRADE_REVIEW audit directory.
+
+
+## Second batch
+
+Twelve additional expeditions add 36 contracts: ideal strong-acid/base equivalence; solute-conserving dilution; abstract limiting-reagent assembly; competitive Michaelis–Menten kinetics; Hardy–Weinberg genotype frequencies; a deliberately simplified limiting-factor garden; closed-sample exponential isotope decay; three-station S−P timing; Kepler orbital periods; complete Boolean truth tables; a clickable weighted-route maze; and coherent-wave interference.
+
+The map puzzle accepts actual clicks in responsive SVG coordinates. The route puzzle accepts only neighboring traversable cells, charges terrain cost on every move including backtracking, and rejects teleportation without consuming cost. Contracts permit two cost units beyond the calculated optimal path. Truth-table games use named gate selectors and check all four input combinations. Maze progress and failed paths use the same bounded notebook as the first batch. No mastery from the first batch is renamed or reset.
+
+New assumptions: titration uses a 0.1 mol/L ideal monoprotic strong acid/base at 25 °C / 77 °F, including autoionization; dilution treats volumes as additive; particle assembly uses an invented 2A + B → A₂B reaction solely to teach atom accounting; enzyme rates and concentrations are arbitrary model units. The genotype model assumes random mating and Hardy–Weinberg conditions, rather than guaranteeing individual offspring. Garden growth is the minimum of three supplied factors and is explicitly a teaching abstraction. The decay specimen has a hypothetical one-million-year half-life, known initial parent amount, and no leakage. Epicenters are flat two-dimensional examples with constant P/S speeds, not real earthquake solutions. Kepler units are AU, Earth years and solar masses, with negligible planet mass. Interference assumes coherent equal-amplitude monochromatic waves; cancellation at one location does not destroy energy.
+
+Source links are in expedition-extra-models.js. The principles are grounded in OpenStax Chemistry/Biology/University Physics, USGS earthquake/geologic-age explanations, NASA Kepler material and NIST DADS Boolean / Dijkstra entries. All new atlas context IDs were verified against the current graph. Run `node game/tests/expedition-extra-models.mjs` for 50 additional model, conservation, routing and contract-solvability checks. The original 47 model checks remain separate and still pass.

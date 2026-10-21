@@ -9,7 +9,20 @@ function block(g,x,y,z,w,h,d,mat){const m=new T.Mesh(new T.BoxGeometry(w,h,d),ma
 function wrap(g,x,y,z,axis='x',radius=.085){
   for(let i=-1;i<=1;i++){const m=new T.Mesh(new T.TorusGeometry(radius,.009,5,14),cord());m.position.set(x+(axis==='x'?i*.025:0),y+(axis==='y'?i*.025:0),z);m.rotation.y=axis==='x'?Math.PI/2:0;m.rotation.x=axis==='y'?Math.PI/2:0;g.add(m)}
 }
-export function primitiveItem(k){
+export function primitiveItem(k,notches=0){
+  if(k==='spear'||k==='tally'){
+    const g=new T.Group(),w=wood();g.name=k;
+    if(k==='spear'){
+      const shaft=new T.Mesh(new T.CylinderGeometry(.018,.025,1.65,10),w);shaft.position.y=.28;g.add(shaft);
+      const head=new T.Mesh(new T.ConeGeometry(.075,.3,4),new T.MeshStandardMaterial({color:0x737e88,roughness:.7,flatShading:true}));head.scale.z=.35;head.position.y=1.22;g.add(head);wrap(g,0,1.06,0,'y',.027);
+    }else{
+      block(g,0,0,0,.055,.42,.035,w);
+      const n=Math.min(20,Math.max(0,notches));
+      for(let i=0;i<n;i++){const mark=block(g,0,-.18+i*.018,.019,.044,.006,.005,new T.MeshStandardMaterial({color:0x38271b}));if(i%5===4)mark.rotation.z=.45}
+      g.userData.notches=notches;
+    }
+    g.traverse(m=>{if(m.isMesh)m.castShadow=true});return g;
+  }
   if(['needle_iron','iron_spike','hammer_stone','tongs','leather_gloves','climbing_gloves','leather','thread','bark'].includes(k)){
     const g=new T.Group(),metal=new T.MeshStandardMaterial({color:0x9a9fa5,metalness:.8,roughness:.4}),hide=new T.MeshStandardMaterial({color:0x885b39,roughness:.95});
     if(k.endsWith('gloves'))for(const side of [-1,1]){const x=side*.1;block(g,x,0,0,.14,.18,.045,hide);for(let i=0;i<4;i++)block(g,x+(i-1.5)*.03,.13,0,.024,.1,.035,hide);block(g,x+side*.08,.02,0,.05,.09,.04,hide);if(k==='climbing_gloves')for(let i=0;i<3;i++){const m=new T.Mesh(new T.ConeGeometry(.012,.07,6),metal);m.rotation.x=Math.PI/2;m.position.set(x+(i-1)*.04,0,.05);g.add(m)}}
