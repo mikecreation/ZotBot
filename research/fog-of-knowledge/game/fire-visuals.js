@@ -1,5 +1,5 @@
 import * as THREE from './vendor/three.module.min.js';
-import {INITIAL_FUEL_CAPACITY,ensureFuelBed,fuelLayout} from './fuel-bed.js?v=3.24.0';
+import {INITIAL_FUEL_CAPACITY,ensureFuelBed,fuelLayout} from './fuel-bed.js?v=3.25.0';
 let maps;
 const hash=n=>{const x=Math.sin(n*127.1+311.7)*43758.5453;return x-Math.floor(x)};
 function textures(){if(maps)return maps;

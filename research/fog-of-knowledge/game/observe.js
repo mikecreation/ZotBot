@@ -1,4 +1,4 @@
-import {GEAR_STEPS} from "./gear-progression.js?v=3.24.0";
+import {GEAR_STEPS} from "./gear-progression.js?v=3.25.0";
 /* Fog of Knowledge: The Game: OBSERVE (F).
  * A close-up look at what you hold: the world blurs and pauses, the item sits large in your hands; drag to turn it,
  * wheel to zoom, the light follows your cursor so texture, sheen and weight show. Notes describe what a careful

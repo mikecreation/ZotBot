@@ -1,5 +1,5 @@
-import {createExpeditions} from "./expeditions.js?v=3.24.0";
-import {GEAR_RECIPES,GEAR_STEPS,gearProblem,CLIMB_GUIDE} from "./gear-progression.js?v=3.24.0";
+import {createExpeditions} from "./expeditions.js?v=3.25.0";
+import {GEAR_RECIPES,GEAR_STEPS,gearProblem,CLIMB_GUIDE} from "./gear-progression.js?v=3.25.0";
 /* Fog of Knowledge: The Game — OPEN WORLD mode.
  * Real-time 3D world (three.js r160, vendored, MIT) with simple real physics:
  * gravity 9.81 m/s², friction-limited acceleration, quadratic air/water drag, Archimedes buoyancy,
@@ -9,21 +9,21 @@ import {GEAR_RECIPES,GEAR_STEPS,gearProblem,CLIMB_GUIDE} from "./gear-progressio
  * Discoveries happen by doing things in the world and reveal real atlas nodes.
  */
 import * as THREE from "./vendor/three.module.min.js";
-import {ITEMS,WORLD_DISCOVERIES,RECIPES} from "./world-data.js?v=3.24.0";
-import {walkPath} from "./walk-path.js?v=3.24.0";
-import {drillProblem,advanceDrill} from "./friction-fire.js?v=3.24.0";
-import {primitiveItem,workbenchMesh} from "./primitive-models.js?v=3.24.0";
-import * as GFX from "./gfx.js?v=3.24.0";
+import {ITEMS,WORLD_DISCOVERIES,RECIPES} from "./world-data.js?v=3.25.0";
+import {walkPath} from "./walk-path.js?v=3.25.0";
+import {drillProblem,advanceDrill} from "./friction-fire.js?v=3.25.0";
+import {primitiveItem,workbenchMesh} from "./primitive-models.js?v=3.25.0";
+import * as GFX from "./gfx.js?v=3.25.0";
 import * as AU from "./audio.js";
-import {ESSENTIAL_QUICKBAR,quickbarOrder} from "./quickbar.js?v=3.24.0";
+import {ESSENTIAL_QUICKBAR,quickbarOrder} from "./quickbar.js?v=3.25.0";
 import {temperature,temperatureDelta} from "./units.js";
 import {createBirds} from "./birds.js";
-import {fireSize,stepCombustion,addFuel,lightningPulse} from "./fire-model.js?v=3.24.0";
-import {ensureFuelBed,recordFuelPiece,stepFuelBed,fuelLayout} from "./fuel-bed.js?v=3.24.0";
-import {createFireBed,updateFireBed} from "./fire-visuals.js?v=3.24.0";
+import {fireSize,stepCombustion,addFuel,lightningPulse} from "./fire-model.js?v=3.25.0";
+import {ensureFuelBed,recordFuelPiece,stepFuelBed,fuelLayout} from "./fuel-bed.js?v=3.25.0";
+import {createFireBed,updateFireBed} from "./fire-visuals.js?v=3.25.0";
 import {CURIOSITY,OBJECTIVES} from "./content.js?v=3.8.3";
 import {createPets,PET_INFO,MAX_ACTIVE} from "./pets.js";
-import {createObserve,NOTES} from "./observe.js?v=3.24.0";
+import {createObserve,NOTES} from "./observe.js?v=3.25.0";
 let PETS=null,OBS=null,EX=null;
 const E=window.FogGameEngine,TREE=E.G;
 const $=s=>document.querySelector(s);

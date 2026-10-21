@@ -1,4 +1,4 @@
-import {gateTable,STATIONS} from './expedition-extra-models.js?v=3.24.0';
+import {gateTable,STATIONS} from './expedition-extra-models.js?v=3.25.0';
 const txt=(x,y,s,size=18)=>`<text x="${x}" y="${y}" fill="#d6e7e8" font-size="${size}" font-family="system-ui">${s}</text>`;
 const dot=(x,y,r,c)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${c}"/>`;
 const bar=(x,y,w,h,c)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="5" fill="${c}"/>`;

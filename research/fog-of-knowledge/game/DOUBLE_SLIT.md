@@ -39,3 +39,10 @@ Incoming amplitude correction: removed the moving dot between source and slit ma
 
 
 Slit-mask pointer correction: screen coordinates now transform through the SVG screen CTM inverse, accounting for aspect-ratio letterboxing, browser scaling and fullscreen. Clicks outside the rendered solid bar are ignored; no rounding shifts the opening. Seven browser assertions verify sub-pixel centering and same-point removal at 390/1500/1900 px and fullscreen.
+
+
+## Sensor probability explanation (supersedes outgoing arc animation)
+
+Removed the outgoing expanding arcs: their first geometric intersection with a screen is not the rule for selecting a photon absorption site. The display now shows a stationary sensor probability ribbon calculated from the exact same 800-bin distribution used for random detections. Tap the ribbon or front-view sensor to select a coordinate. Dashed aperture connectors identify the contributions evaluated there; they are explicitly labeled as contributions, not tracks. The always-open phase probe shows individual phases, head-to-tail coherent addition and relative intensity, including the diffraction envelope. All slit counts use the same shared slitAmplitudes calculation as the sampler. Perfect path records instead add probabilities. The preparation pulse and 1.4-second event schedule remain schematic playback, not a numerical wave evolution or detector absorption model. This change does not claim that the visual predicts individual hit positions or physical arrival times.
+
+Added 99 independent shared-model comparisons and three-slit reinforcement/cancellation checks. Browser checks cover sensor coordinate selection, visible explanation, one-event/one-hit accounting and desktop/mobile rendering.
