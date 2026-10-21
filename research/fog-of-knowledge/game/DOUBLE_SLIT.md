@@ -36,3 +36,6 @@ Verification: 655 timestamp, identity, exactly-once and accounting checks across
 
 
 Incoming amplitude correction: removed the moving dot between source and slit mask. Each event now has a broad coherent incoming amplitude front spanning all open apertures, followed by outgoing slit amplitudes; the localized dot appears only at detection. This is a schematic amplitude illustration, not a solved propagating wavefunction or a measured trajectory. Timing/accounting is unchanged. Canvas verification renders incoming, transmitted and localized-detection stages, checks illumination spans the aperture heights, and catches runtime errors. Reference: Feynman III chapters 1–3, especially the distinction between amplitudes and localized detection events.
+
+
+Slit-mask pointer correction: screen coordinates now transform through the SVG screen CTM inverse, accounting for aspect-ratio letterboxing, browser scaling and fullscreen. Clicks outside the rendered solid bar are ignored; no rounding shifts the opening. Seven browser assertions verify sub-pixel centering and same-point removal at 390/1500/1900 px and fullscreen.
