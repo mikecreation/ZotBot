@@ -1,8 +1,9 @@
-import {drawFoundation} from "./expedition-foundation-scenes.js?v=3.16.0";
-import {experimentArtwork,EXPEDITION_ART} from "./expedition-art.js?v=3.16.0";
-import {drawExtra} from "./expedition-extra-scenes.js?v=3.16.0";
-import {routeContract,routeMove} from "./expedition-extra-models.js?v=3.16.0";
-import {LABS,defaultControls,evaluateLab,searchContract} from './expedition-models.js?v=3.16.0';
+import {raftPose} from "./buoyancy.js?v=3.17.0";
+import {drawFoundation} from "./expedition-foundation-scenes.js?v=3.17.0";
+import {experimentArtwork,EXPEDITION_ART} from "./expedition-art.js?v=3.17.0";
+import {drawExtra} from "./expedition-extra-scenes.js?v=3.17.0";
+import {routeContract,routeMove} from "./expedition-extra-models.js?v=3.17.0";
+import {LABS,defaultControls,evaluateLab,searchContract} from './expedition-models.js?v=3.17.0';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const controlReadout=(c,v)=>c[7]?c[7][v]:c[2]==="°C"?`${v} °C / ${(v*1.8+32).toFixed(1)} °F`:`${v} ${c[2]}`;
 const dot=(x,y,r=7,c='#ffd174')=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${c}"/>`;
@@ -20,8 +21,13 @@ function draw(l,p,r,t,stage,old){
  }else if(l.id==='lever'){
   const a=Math.max(-.18,Math.min(.18,-(r.value/r.target-1)*.45))*t;s+=`<polygon points="380,270 420,270 400,190" fill="#ac9b7f"/><g transform="rotate(${a*180/Math.PI},400,190)">${line(400-p.arm*80,190,530,190,'#c89960',14)}<rect x="440" y="135" width="80" height="50" rx="8" fill="#aeb9b9"/>${text(400-p.arm*80,150,`${p.force} N ↓`)}${text(450,115,'Load')}</g>`+text(55,35,`Effort arm ${p.arm.toFixed(2)} m · load arm 1 m`)+meter(r.value,r.target*1.4,`${r.value.toFixed(0)} N·m / required ${r.target} N·m`);
  }else if(l.id==='raft'){
-  const top=175-(r.value/100)*80+(1-t)*-60;s+=`<rect x="0" y="185" width="800" height="165" fill="#14536c" opacity=".85"/>`;
-  for(let i=0;i<p.logs;i++)s+=`<rect x="${400-p.logs*21+i*42}" y="${top}" width="39" height="55" rx="18" fill="#b48652" stroke="#e6bd80" stroke-width="2"/>`;s+=`<rect x="355" y="${top-50}" width="90" height="46" rx="4" fill="#8aa1b2"/>`+text(365,top-20,`${r.target} kg`,'#071623',16)+path(Array.from({length:33},(_,i)=>[i*25,185+Math.sin(i*.9+t*12)*3]),'#7edce9')+text(40,40,`Rescue ferry · ${r.value.toFixed(1)}% freeboard`);
+  const b=r.buoyancy,pose=raftPose(b,t),cy=pose.centerY,R=pose.radius,first=400-(p.logs-1)*25,last=400+(p.logs-1)*25;
+  const label=b.sinks?(t===1?'SUNK · load exceeds maximum buoyancy':'OVERLOADED · will sink when released'):r.value<8?'FLOATS LOW · insufficient reserve':r.success?'FLOATS · safety margin met':'FLOATS · over timber budget';
+  s+=`<rect x="0" y="185" width="800" height="165" fill="#17445b"/>`+text(30,30,label,b.sinks?'#f0a49a':'#93deb8',17)+text(30,57,`Timber ${b.timberMass} kg + cargo ${r.target} kg = ${b.totalMass} kg total`,'#d6e6ec',15)+text(30,80,`Full-displacement support ${b.maxDisplacedMass} kg · added cargo capacity ${b.cargoCapacity} kg`,'#d6e6ec',15);
+  s+=`<g data-raft-body data-state="${b.sinks?'sinking':'floating'}" data-center-y="${cy}" data-equilibrium-y="${pose.equilibrium}" opacity="${pose.sunk?0:1}">`;
+  for(let i=0;i<p.logs;i++){const x=first+i*50;s+=`<circle cx="${x}" cy="${cy}" r="${R}" fill="#b48652" stroke="#e6bd80" stroke-width="2"/><circle cx="${x}" cy="${cy}" r="15" fill="none" stroke="#8c603c" stroke-width="1"/><circle cx="${x}" cy="${cy}" r="7" fill="none" stroke="#8c603c" stroke-width="1"/>`}
+  s+=line(first-R,cy-R+4,last+R,cy-R+4,'#beab7f',4)+`<rect x="360" y="${cy-R-43}" width="80" height="39" rx="4" fill="#99adbb"/>`+text(368,cy-R-18,`${r.target} kg`,'#142837',16)+`</g><rect x="0" y="185" width="800" height="165" fill="#297292" opacity=".3"/>`;
+  s+=line(0,185,800,185,'#8de0e7',2)+text(640,176,'WATERLINE','#a3dce5',12)+text(30,288,b.sinks?`Even fully submerged: ${b.totalMass-b.maxDisplacedMass} kg too heavy.`:`${(100*b.displacementFraction).toFixed(1)}% of log volume submerged · ${r.value.toFixed(1)}% displacement reserve`,'#d6e6ec',15)+text(30,314,'Each log: 60 kg timber · 0.10 m³ volume · 40 kg net cargo capacity','#d6e6ec',14);
  }else if(l.id==='pendulum'){
   const period=r.value,a=.22*Math.cos(2*Math.PI*t*6/period),len=80+p.length*45,x=400+Math.sin(a)*len,y=65+Math.cos(a)*len;s+=line(250,55,550,55,'#b89971',10)+line(400,65,x,y,'#d7e5e5',3)+dot(x,y,12+p.mass*2,'#ddb677')+text(40,36,`One period: ${period.toFixed(3)} s`)+text(40,320,'The mass changes. The ideal period does not.');
  }else if(l.id==='friction'){
