@@ -13,3 +13,12 @@ These are accelerated, illustrative crafting and combustion rules, not calibrate
 The friction mechanic deliberately uses wood against wood, not wood against flint. The National Park Service describes the wooden spindle and base producing an ember: https://www.nps.gov/articles/000/archaic-period-3-200-to-11-450-years-ago.htm . Its Forces & Tools teaching material explains hot friction dust forming a coal: https://www.nps.gov/teachers/classrooms/forces-tools.htm . Flint/pyrite remains the independent spark method.
 
 Verification: `tests/primitive-crafting.test.mjs` checks recipe dependencies, geometry, and friction rules; `tests/primitive-integration.js` exercises the real game mutators and input state in the isolated browser. Existing `tests/upgrades.js` covers hand selection, fuel persistence and 1,000-log rendering.
+
+
+## Cursor interaction and live showcase
+
+Hover the free mouse cursor over an object to see its name, distance and action; a locked pointer uses the screen crosshair. For distant loose items or resource deposits, E queues a land route and automatic pickup/mining on arrival. WASD, jumping or Esc cancels the route. Water, steep slopes and recorded obstacles are avoided; blocked routes stop with a message. Distant mineral deposits still require a pickaxe.
+
+Flint, stone flakes, sticks and pyrite are prioritized before other quickbar entries. The tutorial MINIMIZE button retains its page; H or ? reopens it.
+
+Open showcase.html for the live sandbox: both benches, all tool close-ups, joint geometry, friction ignition, burning logs, rain and cursor pickup. Its iframe uses a separate sandbox save key; normal world progress is not reset or overwritten.
