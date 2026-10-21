@@ -1,7 +1,7 @@
-import {buoyancyState} from "./buoyancy.js?v=3.17.0";
-import {FOUNDATION_LABS,evaluateFoundation} from "./expedition-foundations.js?v=3.17.0";
-import {EXPERIMENT_TITLES} from "./expedition-titles.js?v=3.17.0";
-import {EXTRA_LABS,evaluateExtra} from "./expedition-extra-models.js?v=3.17.0";
+import {buoyancyState} from "./buoyancy.js?v=3.18.0";
+import {FOUNDATION_LABS,evaluateFoundation} from "./expedition-foundations.js?v=3.18.0";
+import {EXPERIMENT_TITLES} from "./expedition-titles.js?v=3.18.0";
+import {EXTRA_LABS,evaluateExtra} from "./expedition-extra-models.js?v=3.18.0";
 // Deterministic small educational models. Inputs use SI units unless labeled otherwise.
 const physics='https://openstax.org/books/university-physics-volume-1/pages/1-introduction';
 export const LABS=[

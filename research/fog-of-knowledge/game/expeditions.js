@@ -1,16 +1,16 @@
-import {raftPose} from "./buoyancy.js?v=3.17.0";
-import {drawFoundation} from "./expedition-foundation-scenes.js?v=3.17.0";
-import {experimentArtwork,EXPEDITION_ART} from "./expedition-art.js?v=3.17.0";
-import {drawExtra} from "./expedition-extra-scenes.js?v=3.17.0";
-import {routeContract,routeMove} from "./expedition-extra-models.js?v=3.17.0";
-import {LABS,defaultControls,evaluateLab,searchContract} from './expedition-models.js?v=3.17.0';
+import {raftPose} from "./buoyancy.js?v=3.18.0";
+import {drawFoundation} from "./expedition-foundation-scenes.js?v=3.18.0";
+import {experimentArtwork,EXPEDITION_ART} from "./expedition-art.js?v=3.18.0";
+import {drawExtra} from "./expedition-extra-scenes.js?v=3.18.0";
+import {routeContract,routeMove} from "./expedition-extra-models.js?v=3.18.0";
+import {LABS,defaultControls,evaluateLab,searchContract} from './expedition-models.js?v=3.18.0';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const controlReadout=(c,v)=>c[7]?c[7][v]:c[2]==="°C"?`${v} °C / ${(v*1.8+32).toFixed(1)} °F`:`${v} ${c[2]}`;
 const dot=(x,y,r=7,c='#ffd174')=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${c}"/>`;
 const path=(pts,c='#79d9de',w=3)=>`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linejoin="round"/>`;
 const text=(x,y,s,c='#d6e6ec',size=18)=>`<text x="${x}" y="${y}" fill="${c}" font-size="${size}" font-family="system-ui">${esc(s)}</text>`;
 const line=(x1,y1,x2,y2,c='#718a9b',w=3)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${w}"/>`;
-function draw(l,p,r,t,stage,old){
+function draw(l,p,r,t,stage,old,preview=false){
  let s=`<defs><linearGradient id="expSky" x2="0" y2="1"><stop stop-color="#163245"/><stop offset="1" stop-color="#091a28"/></linearGradient></defs><rect width="800" height="350" rx="14" fill="url(#expSky)"/>`;
  if(l.batch===3)return s+drawFoundation(l,p,r,t,stage);
  if(l.batch===2)return s+drawExtra(l,p,r,t,stage);
@@ -21,13 +21,16 @@ function draw(l,p,r,t,stage,old){
  }else if(l.id==='lever'){
   const a=Math.max(-.18,Math.min(.18,-(r.value/r.target-1)*.45))*t;s+=`<polygon points="380,270 420,270 400,190" fill="#ac9b7f"/><g transform="rotate(${a*180/Math.PI},400,190)">${line(400-p.arm*80,190,530,190,'#c89960',14)}<rect x="440" y="135" width="80" height="50" rx="8" fill="#aeb9b9"/>${text(400-p.arm*80,150,`${p.force} N ↓`)}${text(450,115,'Load')}</g>`+text(55,35,`Effort arm ${p.arm.toFixed(2)} m · load arm 1 m`)+meter(r.value,r.target*1.4,`${r.value.toFixed(0)} N·m / required ${r.target} N·m`);
  }else if(l.id==='raft'){
-  const b=r.buoyancy,pose=raftPose(b,t),cy=pose.centerY,R=pose.radius,first=400-(p.logs-1)*25,last=400+(p.logs-1)*25;
+  const b=r.buoyancy,pose=raftPose(b,preview&&!b.sinks?1:t),cy=pose.centerY,R=pose.radius,first=310-(p.logs-1)*25,last=310+(p.logs-1)*25;
   const label=b.sinks?(t===1?'SUNK · load exceeds maximum buoyancy':'OVERLOADED · will sink when released'):r.value<8?'FLOATS LOW · insufficient reserve':r.success?'FLOATS · safety margin met':'FLOATS · over timber budget';
   s+=`<rect x="0" y="185" width="800" height="165" fill="#17445b"/>`+text(30,30,label,b.sinks?'#f0a49a':'#93deb8',17)+text(30,57,`Timber ${b.timberMass} kg + cargo ${r.target} kg = ${b.totalMass} kg total`,'#d6e6ec',15)+text(30,80,`Full-displacement support ${b.maxDisplacedMass} kg · added cargo capacity ${b.cargoCapacity} kg`,'#d6e6ec',15);
   s+=`<g data-raft-body data-state="${b.sinks?'sinking':'floating'}" data-center-y="${cy}" data-equilibrium-y="${pose.equilibrium}" opacity="${pose.sunk?0:1}">`;
   for(let i=0;i<p.logs;i++){const x=first+i*50;s+=`<circle cx="${x}" cy="${cy}" r="${R}" fill="#b48652" stroke="#e6bd80" stroke-width="2"/><circle cx="${x}" cy="${cy}" r="15" fill="none" stroke="#8c603c" stroke-width="1"/><circle cx="${x}" cy="${cy}" r="7" fill="none" stroke="#8c603c" stroke-width="1"/>`}
-  s+=line(first-R,cy-R+4,last+R,cy-R+4,'#beab7f',4)+`<rect x="360" y="${cy-R-43}" width="80" height="39" rx="4" fill="#99adbb"/>`+text(368,cy-R-18,`${r.target} kg`,'#142837',16)+`</g><rect x="0" y="185" width="800" height="165" fill="#297292" opacity=".3"/>`;
-  s+=line(0,185,800,185,'#8de0e7',2)+text(640,176,'WATERLINE','#a3dce5',12)+text(30,288,b.sinks?`Even fully submerged: ${b.totalMass-b.maxDisplacedMass} kg too heavy.`:`${(100*b.displacementFraction).toFixed(1)}% of log volume submerged · ${r.value.toFixed(1)}% displacement reserve`,'#d6e6ec',15)+text(30,314,'Each log: 60 kg timber · 0.10 m³ volume · 40 kg net cargo capacity','#d6e6ec',14);
+  s+=line(first-R,cy-R+4,last+R,cy-R+4,'#beab7f',4)+`<rect x="270" y="${cy-R-43}" width="80" height="39" rx="4" fill="#99adbb"/>`+text(278,cy-R-18,`${r.target} kg`,'#142837',16)+`</g><rect x="0" y="185" width="800" height="165" fill="#297292" opacity=".3"/>`;
+  s+=line(0,185,800,185,'#8de0e7',2)+text(30,259,'Blue line = water level','#a3dce5',12)+text(30,288,b.sinks?`Even fully submerged: ${b.totalMass-b.maxDisplacedMass} kg too heavy.`:`${(100*b.displacementFraction).toFixed(1)}% of log volume submerged · ${r.value.toFixed(1)}% displacement reserve`,'#d6e6ec',15)+text(30,314,b.sinks?'Each log adds 40 kg of net cargo capacity.':`Log height above water: ${b.heightFreeboardPercent.toFixed(1)}% of diameter`,'#d6e6ec',14);
+  if(!b.sinks){const zr=50,zc=185-zr+zr*b.depthRadii,zt=zc-zr;
+   s+=text(625,110,'DRAFT CLOSE-UP','#d6e6ec',12)+text(627,129,'one log · 2× view','#a1bdc7',11)+`<circle data-draft-closeup cx="690" cy="${zc}" r="${zr}" fill="#b48652" stroke="#e6bd80" stroke-width="2"/><circle cx="690" cy="${zc}" r="32" fill="none" stroke="#8c603c"/>`+`<defs><clipPath id="raftZoomWater"><circle cx="690" cy="${zc}" r="${zr}"/></clipPath></defs><rect x="635" y="185" width="110" height="95" fill="#297292" opacity=".35" clip-path="url(#raftZoomWater)"/>`+line(630,185,756,185,'#8de0e7',2)+line(755,zt,755,185,'#f2c97d',2)+line(749,zt,761,zt,'#f2c97d',2)+line(749,185,761,185,'#f2c97d',2)+text(622,338,`${b.heightFreeboardPercent.toFixed(1)}% above`,'#f2c97d',13);
+  }
  }else if(l.id==='pendulum'){
   const period=r.value,a=.22*Math.cos(2*Math.PI*t*6/period),len=80+p.length*45,x=400+Math.sin(a)*len,y=65+Math.cos(a)*len;s+=line(250,55,550,55,'#b89971',10)+line(400,65,x,y,'#d7e5e5',3)+dot(x,y,12+p.mass*2,'#ddb677')+text(40,36,`One period: ${period.toFixed(3)} s`)+text(40,320,'The mass changes. The ideal period does not.');
  }else if(l.id==='friction'){
@@ -68,7 +71,7 @@ export function createExpeditions(C){
  function scene(r,t){const el=root.querySelector('[data-exp-scene]');if(!el)return;
  if(selected.id==='routing'){el.innerHTML=`<div class="expRoute" role="group" aria-label="Weighted route map">${route.tiles.map((cost,i)=>`<button data-exp-tile="${i}" class="${cost<0?'rock':cost===4?'marsh':'dry'} ${route.path.includes(i)?'visited':''} ${route.path.at(-1)===i?'current':''}" ${cost<0||route.done?'disabled':''} aria-label="Tile ${i%8+1}, ${Math.floor(i/8)+1}: ${i===route.end?'destination':cost<0?'rock':cost===4?'marsh cost 4':'dry cost 1'}">${i===route.path.at(-1)?'●':i===route.end?'⚑':cost<0?'▰':cost}</button>`).join('')}</div>`;el.querySelectorAll('[data-exp-tile]').forEach(b=>b.onclick=()=>moveRoute(+b.dataset.expTile));return;}
 if(selected.id==='search'){const n=search.values.length,a=60+search.low/n*680,b=60+(search.high+1)/n*680;el.innerHTML=`<svg viewBox="0 0 800 350" role="img" aria-label="Remaining sorted search interval"><rect width="800" height="350" rx="14" fill="#102536"/><rect x="60" y="120" width="680" height="60" rx="6" fill="#243a48"/><rect x="${a}" y="120" width="${Math.max(0,b-a)}" height="60" fill="#77cec2"/>${text(60,65,`Find signal ${search.target}`)}${text(60,240,`Remaining indices ${search.low+1}–${search.high+1}`)}${text(60,280,`Probes ${search.probes} / ${search.budget}`)}</svg>`;return}
- const old=record().runs.filter(x=>x.stage===stage).at(-1);el.innerHTML=`<svg viewBox="0 0 800 350" role="img" aria-label="${esc(selected.name)} experiment">${draw(selected,params,r,t,stage,old)}</svg>`;if(selected.id==='seismic'){const svg=el.querySelector('svg');svg.style.cursor='crosshair';svg.onclick=e=>{if(busy)return;const point=svg.createSVGPoint();point.x=e.clientX;point.y=e.clientY;const q=point.matrixTransform(svg.getScreenCTM().inverse());for(const [key,value]of [['x',(q.x-400)/16],['y',(175-q.y)/16]]){const input=root.querySelector(`[data-exp-control="${key}"]`);input.value=String(Math.max(-8,Math.min(8,Math.round(value*10)/10)));input.dispatchEvent(new Event('input',{bubbles:true}))}}}}
+ const old=record().runs.filter(x=>x.stage===stage).at(-1);el.innerHTML=`<svg viewBox="0 0 800 350" role="img" aria-label="${esc(selected.name)} experiment">${draw(selected,params,r,t,stage,old,!busy&&t===0)}</svg>`;if(selected.id==='seismic'){const svg=el.querySelector('svg');svg.style.cursor='crosshair';svg.onclick=e=>{if(busy)return;const point=svg.createSVGPoint();point.x=e.clientX;point.y=e.clientY;const q=point.matrixTransform(svg.getScreenCTM().inverse());for(const [key,value]of [['x',(q.x-400)/16],['y',(175-q.y)/16]]){const input=root.querySelector(`[data-exp-control="${key}"]`);input.value=String(Math.max(-8,Math.min(8,Math.round(value*10)/10)));input.dispatchEvent(new Event('input',{bubbles:true}))}}}}
  function moveRoute(next){if(route.done)return;const moved=routeMove(route,route.path,next);if(!moved.valid){status('Choose an adjacent non-rock tile. No movement cost spent.');return}route.path=moved.path;route.cost=moved.cost;
  if(moved.finished||moved.cost>route.budget){route.done=true;const r={value:route.cost,success:!!moved.success,curve:route.path.map((tile,i)=>[i,tile]),detail:`Delivery cost ${route.cost}/${route.budget}. ${moved.success?'Message delivered.':'Budget exceeded; try a drier route.'}`};saveResult(r);searchMessage=r.detail;render();status((r.success?'CONTRACT COMPLETE · ':'TEST RESULT · ')+r.detail,r.success)}else{searchMessage=`Moved to tile ${next%8+1}, ${Math.floor(next/8)+1}. Route cost ${route.cost}/${route.budget}.`;render()}}
  function runTrial(){if(busy)return;busy=true;const mine=++token,r=context(),start=performance.now(),reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,duration=reduce?20:1500;root.querySelectorAll('input, select, [data-exp-run], [data-exp-next]').forEach(e=>e.disabled=true);status('Experiment running…');

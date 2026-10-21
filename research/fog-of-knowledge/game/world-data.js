@@ -1,5 +1,5 @@
-import {LABS} from "./expedition-models.js?v=3.17.0";
-import {GEAR_ITEMS,GEAR_RECIPES} from "./gear-progression.js?v=3.17.0";
+import {LABS} from "./expedition-models.js?v=3.18.0";
+import {GEAR_ITEMS,GEAR_RECIPES} from "./gear-progression.js?v=3.18.0";
 /* Fog of Knowledge: The Game — open-world content: items, hands-on discoveries, recipes.
  * Principle texts summarise well-established science/history; dates are approximate ("c.").
  * `tree` links to discoveries.js ids (which carry the verified atlas node ids); `atlas` adds direct atlas ids.

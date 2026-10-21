@@ -4,13 +4,13 @@
 <iframe id="game" src="../index.html?verification=1#world" allow="autoplay"></iframe><pre id="results"></pre>
 <script type="module">
 import {runSuite} from './suite.js';
-import {runUpgradeTests,showScene} from './upgrades.js?v=3.17.0';
+import {runUpgradeTests,showScene} from './upgrades.js?v=3.18.0';
 const frame=document.querySelector('#game'),status=document.querySelector('#status'),out=document.querySelector('#results');
 function get(){const W=frame.contentWindow.__fogWorld;if(!W)throw Error('Game is still loading');frame.contentDocument.querySelector('#wPlay').click();W.help.close();return W}
 document.querySelector('#run').onclick=async()=>{try{clearInterval(window.sceneStats);status.textContent='Running';await new Promise(r=>setTimeout(r,80));const W=get();
   // Suite uses the game document and constructors, so execute its imported runner
   // in that same iframe via an ordinary authored test module.
-  const module=frame.contentDocument.createElement('script');module.type='module';module.src='./tests/run-in-frame.js?v=3.17.0';frame.contentDocument.body.append(module);
+  const module=frame.contentDocument.createElement('script');module.type='module';module.src='./tests/run-in-frame.js?v=3.18.0';frame.contentDocument.body.append(module);
 }catch(e){status.textContent='ERROR';out.textContent=e.stack}};
 window.addEventListener('message',e=>{if(e.origin!==location.origin||e.source!==frame.contentWindow)return;if(e.data?.type==='fog-test-progress'){status.textContent=`${e.data.count} checked · ${e.data.last.name}`;return}if(e.data?.type!=='fog-test-results')return;const r=e.data.result;window.testResult=r;const fail=r.results.filter(t=>!t.pass);status.textContent=`${r.results.length-fail.length}/${r.results.length} passed`;out.textContent=JSON.stringify(r,null,2)});
 document.querySelector('#scene').onclick=()=>{try{const W=get();showScene(W);status.textContent='Hand/fire scene';clearInterval(window.sceneStats);window.sceneStats=setInterval(()=>out.textContent='Preview-only setup · '+JSON.stringify(W.stats()),1000)}catch(e){out.textContent=e.stack}};
