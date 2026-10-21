@@ -1,4 +1,5 @@
-import {GEAR_ITEMS,GEAR_RECIPES} from "./gear-progression.js?v=3.12.3";
+import {LABS} from "./expedition-models.js?v=3.13.0";
+import {GEAR_ITEMS,GEAR_RECIPES} from "./gear-progression.js?v=3.13.0";
 /* Fog of Knowledge: The Game — open-world content: items, hands-on discoveries, recipes.
  * Principle texts summarise well-established science/history; dates are approximate ("c.").
  * `tree` links to discoveries.js ids (which carry the verified atlas node ids); `atlas` adds direct atlas ids.
@@ -154,6 +155,8 @@ const RAW=[
  ["gastronomy","The chef",1,"Master five cooking discoveries (cooking over fire, browning, caramelisation, baking, stewing, fermentation, drying).","Cooking is applied chemistry and physics: heat transfer, phase changes, browning reactions, emulsions and microbes. Cooking may even have shaped us — cooked food releases more energy, which may have helped fuel larger human brains.",[],["field.chemistry","ology.physiology"]],
 ];
 export const WORLD_DISCOVERIES=RAW.map(r=>({id:r[0],name:r[1],age:r[2],how:r[3],principle:r[4],tree:r[5],atlas:r[6]}));
+// Sandbox mastery reveals atlas context, not a new scientific research claim.
+WORLD_DISCOVERIES.push(...LABS.map(l=>({id:"exp_"+l.id,name:l.name+" · experimental mastery",age:2,how:"Complete its three contracts in Discovery expeditions (L).",principle:l.principle,tree:[],atlas:[l.atlas]})));
 // recipe: item -> {needs discovery id or null, inputs}
 export const RECIPES=[
  {out:"knife_stone",req:null,in:{flake:1}},

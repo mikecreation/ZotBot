@@ -1,4 +1,5 @@
-import {GEAR_RECIPES,GEAR_STEPS,gearProblem,CLIMB_GUIDE} from "./gear-progression.js?v=3.12.3";
+import {createExpeditions} from "./expeditions.js?v=3.13.0";
+import {GEAR_RECIPES,GEAR_STEPS,gearProblem,CLIMB_GUIDE} from "./gear-progression.js?v=3.13.0";
 /* Fog of Knowledge: The Game — OPEN WORLD mode.
  * Real-time 3D world (three.js r160, vendored, MIT) with simple real physics:
  * gravity 9.81 m/s², friction-limited acceleration, quadratic air/water drag, Archimedes buoyancy,
@@ -8,22 +9,22 @@ import {GEAR_RECIPES,GEAR_STEPS,gearProblem,CLIMB_GUIDE} from "./gear-progressio
  * Discoveries happen by doing things in the world and reveal real atlas nodes.
  */
 import * as THREE from "./vendor/three.module.min.js";
-import {ITEMS,WORLD_DISCOVERIES,RECIPES} from "./world-data.js?v=3.12.3";
-import {walkPath} from "./walk-path.js?v=3.12.3";
-import {drillProblem,advanceDrill} from "./friction-fire.js?v=3.12.3";
-import {primitiveItem,workbenchMesh} from "./primitive-models.js?v=3.12.3";
-import * as GFX from "./gfx.js?v=3.12.3";
+import {ITEMS,WORLD_DISCOVERIES,RECIPES} from "./world-data.js?v=3.13.0";
+import {walkPath} from "./walk-path.js?v=3.13.0";
+import {drillProblem,advanceDrill} from "./friction-fire.js?v=3.13.0";
+import {primitiveItem,workbenchMesh} from "./primitive-models.js?v=3.13.0";
+import * as GFX from "./gfx.js?v=3.13.0";
 import * as AU from "./audio.js";
-import {ESSENTIAL_QUICKBAR,quickbarOrder} from "./quickbar.js?v=3.12.3";
+import {ESSENTIAL_QUICKBAR,quickbarOrder} from "./quickbar.js?v=3.13.0";
 import {temperature,temperatureDelta} from "./units.js";
 import {createBirds} from "./birds.js";
-import {fireSize,stepCombustion,addFuel,lightningPulse} from "./fire-model.js?v=3.12.3";
-import {ensureFuelBed,recordFuelPiece,stepFuelBed,fuelLayout} from "./fuel-bed.js?v=3.12.3";
-import {createFireBed,updateFireBed} from "./fire-visuals.js?v=3.12.3";
+import {fireSize,stepCombustion,addFuel,lightningPulse} from "./fire-model.js?v=3.13.0";
+import {ensureFuelBed,recordFuelPiece,stepFuelBed,fuelLayout} from "./fuel-bed.js?v=3.13.0";
+import {createFireBed,updateFireBed} from "./fire-visuals.js?v=3.13.0";
 import {CURIOSITY,OBJECTIVES} from "./content.js?v=3.8.3";
 import {createPets,PET_INFO,MAX_ACTIVE} from "./pets.js";
-import {createObserve,NOTES} from "./observe.js?v=3.12.3";
-let PETS=null,OBS=null;
+import {createObserve,NOTES} from "./observe.js?v=3.13.0";
+let PETS=null,OBS=null,EX=null;
 const E=window.FogGameEngine,TREE=E.G;
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -764,7 +765,7 @@ function makePlayer(w){
 }
 function groundMu(){const b=biomeAt(player.pos.x,player.pos.z,heightAt(player.pos.x,player.pos.z));return b==="snow"?.35:b==="beach"||b==="desert"?.6:.8} // friction coefficients
 function stepPlayer(dt){
-  const p=player,st=world.st;if(p.dead||document.hidden||["wInv","wJournal","wChest","wCtx","wSettings","wPopup","wHelp","wClimbHelp"].some(id=>$("#"+id)&&!$("#"+id).hidden)){stopMovement();return;}
+  const p=player,st=world.st;if(p.dead||document.hidden||["wInv","wJournal","wChest","wCtx","wSettings","wPopup","wHelp","wClimbHelp","wExpeditions"].some(id=>$("#"+id)&&!$("#"+id).hidden)){stopMovement();return;}
   const startX=p.pos.x,startZ=p.pos.z;p.moveSpeed=0;
   p.actCd=Math.max(0,p.actCd-dt);
   const f=forward(),r=new THREE.Vector3(-f.z,0,f.x);
@@ -1432,7 +1433,7 @@ function renderInventory(){
     return `<div class="rec${ok?" ok":" no"}"><b>${icon(r.out)} ${esc(ITEMS[r.out].name)}${r.n>1?` ×${r.n}`:""}</b><span>${Object.entries(r.in).map(([k,n])=>`<em class="${inv(k)>=n?"have":"miss"}">${n}× ${esc(ITEMS[k].name)}</em>`).join(" ")}${r.tool?` · needs ${esc(ITEMS[r.tool].name)} or better`:""}${r.tools?` · tools: ${r.tools.map(k=>esc(ITEMS[k].name)).join(", ")}`:""}${r.knife?" · needs a knife":""}${r.station?` · ${esc(gearProblem(r,inv,world.structures,player.pos)||"station ready")}`:""}${r.out.startsWith("workbench")?" · four supports + rectangular board top; housed joints, wedges & plant-fiber lashings (no nails)":r.out==="bench_joint"?" · carve shoulders and matching tongue; F inspects the joint":r.out==="hand_drill"?" · carve spindle + hearth; tinder needs 1 plant fiber per prepared fire":""}</span><button data-craft="${r.out}" ${ok?"":"disabled"}>CRAFT</button>${GEAR_STEPS[r.out]?`<details><summary>How it is made</summary><ol>${GEAR_STEPS[r.out].map(t=>`<li>${esc(t)}</li>`).join("")}</ol></details>`:""}</div>`}).join("")}).join("");
   const hands=[["L","left","LEFT HAND"],["R","held","RIGHT HAND"]].map(([sd,f,l])=>{const k=world[f];return `<div class="handBig${k?" full":""}" data-hand="${sd}" ${k?`data-k="${k}"`:""}><small>${l}</small>${k?`<i style="--c:${hex(k)}">${icon(k)}</i><em>${esc(ITEMS[k].name)}</em>`:"<em class=muted>drag an item here</em>"}</div>`}).join("");
   el.innerHTML=`<div class="pHead"><h3>BACKPACK <small class="cap">${used} / ${cap} slots · stacks of ${STACK}${world.inv.satchel?" · satchel +"+SATCHEL_SLOTS:""}</small></h3><button data-close>✕ (I)</button></div>
-  <button data-climb-guide>CLIMBING GLOVES · Materials & guide</button> <button data-climb-filter>${invChain?"SHOW ALL RECIPES":"CLIMBING CRAFT PATH"}</button>${assemblyCard()}<div class="invBar"><input id="wInvQ" placeholder="Search…" value="${esc(invQ)}" aria-label="Search inventory"><button data-isort="type">Sort: type</button><button data-isort="name">A–Z</button><button data-isort="count">Count</button>
+  <button data-open-expeditions>PLAY DISCOVERY EXPEDITIONS · L</button><button data-climb-guide>CLIMBING GLOVES · Materials & guide</button> <button data-climb-filter>${invChain?"SHOW ALL RECIPES":"CLIMBING CRAFT PATH"}</button>${assemblyCard()}<div class="invBar"><input id="wInvQ" placeholder="Search…" value="${esc(invQ)}" aria-label="Search inventory"><button data-isort="type">Sort: type</button><button data-isort="name">A–Z</button><button data-isort="count">Count</button>
   ${dropAllArm?`<span class="warnTxt">Drop everything on the ground?</span><button data-dropall="yes" class="danger">Yes, drop all</button><button data-dropall="no">Cancel</button>`:`<button data-dropall="arm" class="danger">Drop All Items</button>`}</div>
   <div class="hands">${hands}</div><div class="invCells">${grid}</div>
   <p class="muted">Click: equip selected hand (V switches) · right-click: more (hands, observe, use, drop…) · drag to rearrange, onto the hotbar or a hand. E pick up · F observe · R stow held item · I backpack.${world.worn?" Wearing: "+esc(ITEMS[world.worn].name)+".":""}</p>
@@ -1583,6 +1584,7 @@ function bindInput(container){
   canvasEl=renderer.domElement;
   window.addEventListener("keydown",e=>{
     if(!started)return;
+    if(EX?.isOpen&&(e.code==="Escape"||e.code==="KeyL")){EX.close();e.preventDefault();e.stopImmediatePropagation();return}
     if(e.code==="Escape"){stopMovement();if(!$("#wClimbHelp").hidden){closeClimbGuide();e.preventDefault();e.stopImmediatePropagation()}return}
     if(autoPickup&&!e.repeat&&!["ShiftLeft","ShiftRight","ControlLeft","ControlRight","AltLeft","AltRight","MetaLeft","MetaRight"].includes(e.code)){
       stopMovement();if(e.code==="KeyE"){e.preventDefault();e.stopImmediatePropagation()}
@@ -1595,7 +1597,8 @@ function bindInput(container){
   document.addEventListener("pointerlockchange",()=>{if(document.pointerLockElement!==canvasEl)stopMovement()});
   window.addEventListener("pointercancel",()=>stopMovement());
   window.addEventListener("keydown",e=>{
-    if(!started||$("#mode-world").hidden)return;if(["INPUT","SELECT","TEXTAREA"].includes(e.target.tagName)||e.target.isContentEditable)return;
+    if(!started||$("#mode-world").hidden||EX?.isOpen)return;if(["INPUT","SELECT","TEXTAREA"].includes(e.target.tagName)||e.target.isContentEditable)return;
+    if(e.code==="KeyL"){e.preventDefault();EX.open();return}
     if(helpIsOpen()){e.preventDefault();if(e.code==="ArrowRight"||e.code==="Enter"||e.code==="Space"||e.code==="KeyD")helpNav("next");else if(e.code==="ArrowLeft"||e.code==="KeyA")helpNav("back");else if(e.code==="Escape"||e.code==="KeyH")closeHelp();return}
     if(!$("#wPopup").hidden){if(e.code==="KeyE"||e.code==="KeyF"||e.code==="Enter"||e.code==="Space"||e.code==="Escape")closePopup();e.preventDefault();return}
     if(OBS&&OBS.isOpen){e.preventDefault();if(e.repeat)return;if(e.code==="KeyF"||e.code==="Escape")OBS.close();else if(e.code==="KeyP")PETS&&PETS.pet();else if(/^Digit[0-9]$/.test(e.code)){const k=hotbarItems()[(+e.code.slice(5)+9)%10];OBS.second(k)}return}
@@ -1729,6 +1732,7 @@ function stepWorld(dt){
 
 /* ---------------- boot ---------------- */
 function startWorld(w){
+  if(EX?.isOpen)EX.close();
   autoPickup=null;hovered=null;hoverAt=0;cursorAim.inside=false;
   clearDrill();
   titleMode=false;document.body.classList.remove("titleOn");$("#wTip").hidden=true;
@@ -1743,7 +1747,7 @@ function startWorld(w){
   for(const s of world.structures)structMesh(s);
   const drops=world.drops;world.drops=[];for(const d of drops){const dd=addDrop(d.item,d.x,d.y,d.z);if(d.n>1)dd.n=d.n}
   updateChunks(true);
-  started=true;paused=false;renderHotbar();renderHUD();AU.init();if(PETS)PETS.sync();
+  started=true;paused=false;$("#wExpLaunch").hidden=false;renderHotbar();renderHUD();AU.init();if(PETS)PETS.sync();
   if(atlas)onAtlas(atlas);
 }
 function newGame(seed){
@@ -1817,6 +1821,11 @@ export function initWorld(){
   $("#wShowFps")&&($("#wShowFps").onchange=e=>{$("#wFps").hidden=!e.target.checked;try{localStorage.setItem("fog-of-knowledge:game:fps",e.target.checked?"1":"")}catch(_){}});
   try{if(localStorage.getItem("fog-of-knowledge:game:fps")){$("#wFps").hidden=false;$("#wShowFps").checked=true}}catch(_){}
   const vol=$("#wVol");if(vol){vol.value=Math.round(AU.volume*100);$("#wVolV").textContent=vol.value+"%";vol.oninput=()=>{AU.init();AU.setVolume(vol.value/100);$("#wVolV").textContent=vol.value+"%";}}
+  EX=createExpeditions({root:$("#wExpeditions"),state:()=>world,save,
+    open:()=>{stopMovement();for(const id of ["wInv","wJournal","wSettings","wHelp","wClimbHelp","wPopup","wChest","wCtx"])$("#"+id).hidden=true;paused=true;try{document.exitPointerLock?.()}catch(_){}},
+    close:()=>{stopMovement();paused=false;clock.getDelta()},
+    mastered:l=>{if(discover("exp_"+l.id,true)){AU.milestone("discovery","exp_"+l.id);toast(`Expedition mastered: ${l.name}. Atlas context mapped.`)}}});
+  $("#wExpLaunch").onclick=()=>EX.open();document.addEventListener("click",e=>{if(e.target.closest("[data-open-expeditions]"))EX.open()});
   window.__openSettings=openSettings;
   tick();
   (window.__fogAtlasPromise||Promise.reject()).then(A=>{atlas=A;if(world&&started)onAtlas(A)}).catch(()=>{});
@@ -1837,6 +1846,7 @@ export function initWorld(){
     sim,scan,target:()=>{const t=findTarget();return t?{kind:t.kind,label:targetLabel(t),type:t.obj?.type||t.obj?.item||t.obj?.r?.type||t.obj?.kind}:null},respawn:()=>$("#wRespawn")?.click(),
     toasts:()=>toastLog.slice(),discLog:()=>discLog.slice(),hourOf:()=>hourOf(),sunElevation:()=>sunElevation(),airTemp:()=>airTemp(player.pos.x,player.pos.z,player.pos.y),shelterLevel:()=>shelterLevel(player.pos.x,player.pos.z),
     strike:(x,z)=>strike([x,z]),jupDir:()=>jupDir().toArray(),moonDir:()=>moonDirV().toArray(),firstPerson,save,crouch:v=>{player.crouch=!!v},sleepNow:()=>{const s=world.structures.find(o=>sleepable(o.type)&&Math.hypot(o.x-player.pos.x,o.z-player.pos.z)<4);return s?(sleep(s),true):false},
+    get expeditions(){return EX},
     recipes:()=>RECIPES.map(r=>({out:r.out,req:r.req,in:r.in,tool:r.tool||null,n:r.n||1})),discoveries:()=>WORLD_DISCOVERIES.map(d=>d.id),curiosity:()=>world.seenQ.slice(),objectives:()=>{const c=guideCtx();return OBJECTIVES.map(o=>({id:o[0],text:o[1],done:!!o[2](c)}))},
     audio:()=>({...AU.stats,volume:AU.volume}),
     spawn:(kind,x,z)=>{const a=addAnimal(kind,x,z);return a},
