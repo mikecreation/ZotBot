@@ -1,7 +1,7 @@
-import {createPhotonEvents,launchPhoton,arrivePhotons,discardPhotons} from './photon-events.js?v=3.22.0';
-import {photonHardware} from './photon-hardware.js?v=3.22.0';
-import {SLIT_DEFAULTS,slitSettings,slitDistribution,sampleSlit,evaluateSlit} from './double-slit-model.js?v=3.22.0';
-import {slitMarkup,drawSlit,drawProbe} from './double-slit-view.js?v=3.22.0';
+import {createPhotonEvents,launchPhoton,arrivePhotons,discardPhotons} from './photon-events.js?v=3.23.0';
+import {photonHardware} from './photon-hardware.js?v=3.23.0';
+import {SLIT_DEFAULTS,slitSettings,slitDistribution,sampleSlit,evaluateSlit} from './double-slit-model.js?v=3.23.0';
+import {slitMarkup,drawSlit,drawProbe} from './double-slit-view.js?v=3.23.0';
 export function mountDoubleSlit(host,{stage=0,complete}){
  const state={settings:slitSettings(SLIT_DEFAULTS),dist:slitDistribution(SLIT_DEFAULTS),hits:[],bins:new Uint32Array(80),look:true,guide:true,previous:null,flash:0,probe:0,closeup:matchMedia('(max-width:650px)').matches};
  let running=false,speed=60,frame=0,last=0,nextEmission=0,draining=false,awarded=false,dead=false;state.events=createPhotonEvents();state.clock=0;
@@ -17,12 +17,12 @@ export function mountDoubleSlit(host,{stage=0,complete}){
   if((running||state.singleShot||draining)&&!document.hidden){state.clock+=dt;
    if(running){while(nextEmission<=state.clock&&state.events.emitted-state.events.discarded<20000){launchPhoton(state.events,nextEmission,sample());nextEmission+=1000/speed}if(state.events.emitted-state.events.discarded>=20000){running=false;draining=true}}
    const arrivals=arrivePhotons(state.events,state.clock);arrivals.forEach(detect);if(draining&&!state.events.packets.length)draining=false;
-   if(state.singleShot){const age=state.clock-state.singleShot.start;if(arrivals.some(p=>p.id===state.singleShot.id)){state.singleShot=null;message('ONE emitted photon → ONE arriving packet → ONE recorded dot. The linked sensor views show the same location.')}else message(age<400?'1 · Source event: one signal photon is prepared.':age<950?'2 · This photon’s amplitude packet spreads through the open slits.':'3 · This same packet is reaching the position sensor.')}
+   if(state.singleShot){const age=state.clock-state.singleShot.start;if(arrivals.some(p=>p.id===state.singleShot.id)){state.singleShot=null;message('ONE emitted photon → ONE arriving packet → ONE recorded dot. The linked sensor views show the same location.')}else message(age<400?'1 · A single photon’s broad amplitude packet approaches all open slits.':age<950?'2 · This photon’s amplitude packet spreads through the open slits.':'3 · This same packet is reaching the position sensor.')}
    update();
   }
   draw(state.clock);frame=requestAnimationFrame(tick)
  }
- $('[data-q-one]').onclick=()=>{if(state.singleShot)return;running=false;draining=false;state.running=false;const removed=state.events.packets.length;discardPhotons(state.events);$('[data-q-play]').textContent='▶ Resume building pattern';state.singleShot=launchPhoton(state.events,state.clock,sample());state.flash=-10000;update();message(removed?`Single-step: ${removed} in-flight events discarded; existing dots kept. One new photon launched.`:'One new source event launched. Its dot will appear when this packet arrives.');draw(state.clock)};
+ $('[data-q-one]').onclick=()=>{if(state.singleShot)return;running=false;draining=false;state.running=false;const removed=state.events.packets.length;discardPhotons(state.events);$('[data-q-play]').textContent='▶ Resume building pattern';state.singleShot=launchPhoton(state.events,state.clock,sample());state.flash=-10000;update();message(removed?`Single-step: ${removed} in-flight events discarded; existing dots kept. One new photon launched.`:'One incoming amplitude packet launched—not a traveling particle dot. One detector dot will appear on arrival.');draw(state.clock)};
  $('[data-q-play]').onclick=()=>{running=!running;state.running=running;state.singleShot=null;if(running)nextEmission=state.clock+1000/speed;$('[data-q-play]').textContent=running?'Ⅱ Pause':'▶ Resume building pattern';message(running?'Each numbered source event has one packet and one later dot. High-rate packets overlap.':'Paused: in-flight packets and detections are frozen together.')};
  $('[data-q-speed]').onchange=e=>{speed=+e.target.value;nextEmission=state.clock+1000/speed};$('[data-q-clear]').onclick=clear;
  host.querySelectorAll('[data-q-mode]').forEach(b=>b.onclick=()=>{state.settings.slits=+b.dataset.qMode;delete state.settings.positions;change()});
