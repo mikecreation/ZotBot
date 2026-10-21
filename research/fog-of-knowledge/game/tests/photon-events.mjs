@@ -1,0 +1,5 @@
+import assert from 'node:assert/strict';
+import {createPhotonEvents,launchPhoton,arrivePhotons,discardPhotons,PHOTON_FLIGHT_MS} from '../photon-events.js';
+let checks=0;const invariant=e=>{assert.equal(e.emitted,e.detected+e.packets.length+e.discarded);checks++};
+for(const rate of [1,60,500]){const e=createPhotonEvents();for(let i=0;i<rate*2;i++)launchPhoton(e,(i+1)*1000/rate,{i:i%800,z:.5});invariant(e);assert.equal(arrivePhotons(e,PHOTON_FLIGHT_MS-1).length,0);checks++;let all=[];for(let now=1400;now<=3500;now+=10){all.push(...arrivePhotons(e,now));invariant(e)}assert.equal(all.length,rate*2);assert.equal(new Set(all.map(p=>p.id)).size,all.length);assert.ok(all.every(p=>Math.abs(p.arrival-p.start-1400)<1e-9));checks+=3;assert.equal(arrivePhotons(e,10000).length,0);checks++}
+const e=createPhotonEvents(),p=launchPhoton(e,0,{i:8,z:.2});assert.equal(arrivePhotons(e,1399).length,0);assert.deepEqual(arrivePhotons(e,1400),[p]);checks+=2;launchPhoton(e,2000,{i:3,z:.4});discardPhotons(e);invariant(e);assert.equal(arrivePhotons(e,10000).length,0);checks++;console.log(`${checks} event timing and conservation checks passed`);

@@ -1,5 +1,5 @@
-import {GEAR_RECIPES} from '../gear-progression.js?v=3.21.0';
-import {showScene} from './upgrades.js?v=3.21.0';
+import {GEAR_RECIPES} from '../gear-progression.js?v=3.22.0';
+import {showScene} from './upgrades.js?v=3.22.0';
 export function runGearTests(W){
  const results=[],test=(name,fn)=>{try{const v=fn();results.push({name,pass:v===true,detail:v===true?'':v})}catch(e){results.push({name,pass:false,detail:e.stack})}};
  const reset=()=>{showScene(W);W.clearStructs();W.clearDrops();W.clearAnimals();W.keysClear();W.state.inv={};W.state.order=[];W.state.held=W.state.left=null;W.closePopup();for(const id of ['wInv','wJournal','wChest','wCtx','wSettings','wHelp','wClimbHelp'])document.getElementById(id).hidden=true;W.player.onGround=true;W.state.st.tb=37;W.state.counters.climbGuideSeen=1};

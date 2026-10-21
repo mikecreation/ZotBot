@@ -24,3 +24,12 @@ For two paths, H/V polarization markers are one implementation of distinguishabl
 Hardware references: https://www.thorlabs.com/newgrouppage9.cfm?objectgroup_id=17247 (SPDC source), https://journals.aps.org/prper/abstract/10.1103/PhysRevPhysEducRes.13.020115 (polarization and which-path reasoning). Rare multi-pair events, losses and detection efficiency remain excluded.
 
 Seventeen further browser checks cover mass/diameter unit suffixes, exact inches conversion, canonical-size preservation, popup reopening, mobile field fit, fullscreen placement/expand/restore, hardware illustrations, finite single emission, stream interruption, and adding/removing a third aperture. Four additional model checks cover multi-slit coherent/incoherent limits, normalization and changed distributions.
+
+
+## Synchronized stream events
+
+Source events now own individual timestamped packets and a pre-sampled screen coordinate. Each packet is drawn at its own phase; only its arrival produces its one dot. There is no independent looping stream wave animation or separate rate-based dot generator. The same virtual playback clock drives emission, packet position and arrival. Pause freezes the clock, packet drawing and detector counts together. At high rates many packets overlap visually. Flight animation lasts an illustrative 1.4 playback seconds, not the physical photon time of flight. A packet's slit branches represent amplitudes of one event, not extra photons.
+
+Counters show emitted, in flight, detected and (when applicable) explicitly discarded packets. Entering single-step discards existing pending packets while retaining already-recorded dots, then launches one event. Changing geometry/clearing starts new accounting. Source-event IDs are retained on corresponding detections. A 20,000-event limit drains already-launched events before stopping.
+
+Verification: 655 timestamp, identity, exactly-once and accounting checks across 1/60/500 events/s; 7 browser checks for initial propagation delay, 60/s and 500/s conservation, paused clocks, single-step interruption, clearing and slow rate.
