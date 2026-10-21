@@ -7,25 +7,26 @@
  * Discoveries happen by doing things in the world and reveal real atlas nodes.
  */
 import * as THREE from "./vendor/three.module.min.js";
-import {ITEMS,WORLD_DISCOVERIES,RECIPES} from "./world-data.js?v=3.12.0";
-import {drillProblem,advanceDrill} from "./friction-fire.js?v=3.12.0";
-import {primitiveItem,workbenchMesh} from "./primitive-models.js?v=3.12.0";
-import * as GFX from "./gfx.js?v=3.12.0";
+import {ITEMS,WORLD_DISCOVERIES,RECIPES} from "./world-data.js?v=3.12.1";
+import {walkPath} from "./walk-path.js?v=3.12.1";
+import {drillProblem,advanceDrill} from "./friction-fire.js?v=3.12.1";
+import {primitiveItem,workbenchMesh} from "./primitive-models.js?v=3.12.1";
+import * as GFX from "./gfx.js?v=3.12.1";
 import * as AU from "./audio.js";
-import {ESSENTIAL_QUICKBAR,quickbarOrder} from "./quickbar.js?v=3.12.0";
+import {ESSENTIAL_QUICKBAR,quickbarOrder} from "./quickbar.js?v=3.12.1";
 import {temperature,temperatureDelta} from "./units.js";
 import {createBirds} from "./birds.js";
-import {fireSize,stepCombustion,addFuel,lightningPulse} from "./fire-model.js?v=3.12.0";
-import {ensureFuelBed,recordFuelPiece,stepFuelBed,fuelLayout} from "./fuel-bed.js?v=3.12.0";
-import {createFireBed,updateFireBed} from "./fire-visuals.js?v=3.12.0";
+import {fireSize,stepCombustion,addFuel,lightningPulse} from "./fire-model.js?v=3.12.1";
+import {ensureFuelBed,recordFuelPiece,stepFuelBed,fuelLayout} from "./fuel-bed.js?v=3.12.1";
+import {createFireBed,updateFireBed} from "./fire-visuals.js?v=3.12.1";
 import {CURIOSITY,OBJECTIVES} from "./content.js?v=3.8.3";
 import {createPets,PET_INFO,MAX_ACTIVE} from "./pets.js";
-import {createObserve,NOTES} from "./observe.js?v=3.12.0";
+import {createObserve,NOTES} from "./observe.js?v=3.12.1";
 let PETS=null,OBS=null;
 const E=window.FogGameEngine,TREE=E.G;
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const SAVE_KEY="fog-of-knowledge:game:world:v1";
+const SAVE_KEY="fog-of-knowledge:game:world:v1"+(new URLSearchParams(location.search).has("sandbox")?":sandbox-crafting":"");
 const G_ACC=9.81, RHO_AIR=1.225, RHO_WATER=1000, BODY_MASS=70, BODY_HEAT_CAP=70*3500;
 const GAME_SPEED=96;             // legacy constant (kept for reference); the clock now runs at gameSpeed()
 // Long days, short nights: on "Long" (default) a full cycle is ~30 real minutes — 06:00–18:12 daylight (incl. golden hour) takes ~24 min,
@@ -757,6 +758,17 @@ function stepPlayer(dt){
   const mv=new THREE.Vector3();
   if(keys.has("KeyW")||keys.has("ArrowUp"))mv.add(f);if(keys.has("KeyS")||keys.has("ArrowDown"))mv.sub(f);
   if(keys.has("KeyD")||keys.has("ArrowRight"))mv.add(r);if(keys.has("KeyA")||keys.has("ArrowLeft"))mv.sub(r);
+  if(mv.lengthSq()||keys.has("Space"))autoPickup=null;
+  if(autoPickup&&!p.swimming&&!p.raft){
+    const a=autoPickup,pt=pickupPoint(a.target);
+    if(!pt||a.target.kind==="res"&&a.target.obj.r.gone||a.target.kind==="drop"&&!world.drops.includes(a.target.obj)){autoPickup=null}
+    else if(Math.hypot(pt.x-p.pos.x,pt.z-p.pos.z)<1.7){autoPickup=null;interact(a.target)}
+    else{while(a.path.length&&Math.hypot(a.path[0].x-p.pos.x,a.path[0].z-p.pos.z)<.35)a.path.shift();
+      const next=a.path[0]||pt;mv.set(next.x-p.pos.x,0,next.z-p.pos.z);
+      if(p.pos.distanceToSquared(a.last)<.00003)a.stuck+=dt;else a.stuck=0;a.last.copy(p.pos);
+      if(a.stuck>2.5||heightAt(next.x,next.z)<.05){autoPickup=null;mv.set(0,0,0);toast("The pickup route is blocked. Move closer or choose another approach.")}
+    }
+  }
   if(mv.lengthSq())mv.normalize();
   const ground=heightAt(p.pos.x,p.pos.z);
   if(p.raft){
@@ -936,8 +948,53 @@ function onAtlas(A){atlas=A;for(const id of world.disc)applyKnowledge(WD.get(id)
 /* ---------------- interaction ---------------- */
 function frontPoint(r=1){const f=forward();return {x:player.pos.x+f.x*r,z:player.pos.z+f.z*r}}
 const STRUCT_R={workbench:1,workbench_bundle:1,pack:.3,kiln:.6,table:.6,hut:1.6,house:2,well:.5,chest:.3,rack:.4,wall:.8,pendulum:.4};
+const cursorAim={x:0,y:0,inside:false},hoverRay=new THREE.Raycaster(),hoverNDC=new THREE.Vector2();
+let hoverAt=0,hovered=null,autoPickup=null;
+const pickupPoint=t=>t?.kind==="drop"?t.obj.pos:t?.kind==="res"?t.obj.r:null;
+function cursorTarget(force=false){
+  if(!started||!player||paused)return null;
+  const locked=document.pointerLockElement===canvasEl;if(!locked&&!cursorAim.inside)return null;
+  if(!force&&performance.now()-hoverAt<100)return hovered;hoverAt=performance.now();hovered=null;
+  const rect=canvasEl.getBoundingClientRect();hoverNDC.set(locked?0:(cursorAim.x-rect.left)/rect.width*2-1,locked?0:1-(cursorAim.y-rect.top)/rect.height*2);hoverRay.setFromCamera(hoverNDC,camera);hoverRay.far=180;
+  const roots=[],meta=new Map();
+  for(const ch of chunks.values())if(ch.group?.visible){
+    for(const [mesh,kind] of [[ch.small,"res"],[ch.sticks,"res"],[ch.plants,"res"],[ch.boulders,"boulder"],...Object.values(ch.tr).map(m=>[m,"tree"]),...Object.values(ch.cr).map(m=>[m,"tree"])])if(mesh){roots.push(mesh);meta.set(mesh,{ch,kind})}
+    if(ch.terrain)roots.push(ch.terrain);if(ch.bushes)roots.push(ch.bushes);
+  }
+  for(const s of world.structures)if(s.obj){roots.push(s.obj);meta.set(s.obj,{kind:"struct",obj:s})}
+  for(const d of world.drops)if(!d.flying){roots.push(d.mesh);meta.set(d.mesh,{kind:"drop",obj:d})}
+  for(const hit of hoverRay.intersectObjects(roots,true)){
+    let root=hit.object;while(root&&!meta.has(root))root=root.parent;
+    const m=root&&meta.get(root);if(!m)break; // terrain and opaque scenery occlude objects behind them
+    if(m.kind==="res"){const r=m.ch.obj.res.find(r=>!r.gone&&r.mesh===hit.object&&r.slot===hit.instanceId);if(r)hovered={kind:"res",obj:{ch:m.ch,r}}}
+    else if(m.kind==="tree"){const t=m.ch.obj.trees.find(t=>!t.gone&&t.i===hit.instanceId);if(t)hovered={kind:"tree",obj:{ch:m.ch,t}}}
+    else if(m.kind==="boulder"){const b=m.ch.obj.boulders.find(b=>b.i===hit.instanceId);if(b)hovered={kind:"boulder",obj:{ch:m.ch,b}}}
+    else hovered={kind:m.kind,obj:m.obj};
+    if(hovered){hovered.point=hit.point;break}
+  }
+  return hovered;
+}
+function queuePickup(t){
+  if(t.kind!=="res"&&t.kind!=="drop")return false;const point=pickupPoint(t);
+  if(t.kind==="res"&&["copper_ore","tin_ore","iron_ore","quartz","lodestone","pyrite"].includes(t.obj.r.type)&&!bestPick()){toast("You need a pickaxe to mine this mineral deposit.");return true}
+  const obstacles=[];for(const ch of chunks.values())if(ch.group){for(const b of ch.obj.boulders)obstacles.push({x:b.x,z:b.z,r:b.s*.95});for(const tr of ch.obj.trees)if(!tr.gone)obstacles.push({x:tr.x,z:tr.z,r:.25})}
+  for(const s of world.structures)if(s.type==="wall"||s.type==="house")obstacles.push({x:s.x,z:s.z,r:structureRadius(s)});
+  const path=walkPath(player.pos,point,heightAt,slopeAt,obstacles);if(!path){toast("No clear land route to that item. Move closer or approach from another side.");return true}
+  autoPickup={target:t,path,last:player.pos.clone(),stuck:0};toast(`Walking to ${ITEMS[t.kind==="res"?t.obj.r.type:t.obj.item].name} · WASD cancels`);return true;
+}
+function updateHover(){
+  let tip=$("#wHover");if(!tip){tip=document.createElement("div");tip.id="wHover";tip.setAttribute("role","tooltip");tip.className="wHover";$("#mode-world").append(tip)}
+  const t=cursorTarget();if(!t||player.dead||!['wInv','wJournal','wChest','wCtx'].every(id=>$("#"+id).hidden)){tip.hidden=true;return}
+  const pt=pickupPoint(t)||t.point,d=Math.hypot(pt.x-player.pos.x,pt.z-player.pos.z),far=d>2.6;
+  const name=t.kind==="res"?ITEMS[t.obj.r.type].name:t.kind==="drop"?ITEMS[t.obj.item].name:t.kind==="tree"?"Tree":t.kind==="boulder"?"Boulder":Object.values(ITEMS).find(i=>i.place===t.obj.type)?.name||t.obj.type;
+  const action=far&&(t.kind==="res"||t.kind==="drop")?`E · walk over & ${t.kind==="res"&&["copper_ore","tin_ore","iron_ore","quartz","lodestone","pyrite"].includes(t.obj.r.type)?"mine (pickaxe required)":"pick up"}`:far?"Move closer to interact":targetLabel(t);
+  tip.textContent=`${name} · ${Math.round(d)} m\n${action}`;tip.hidden=false;
+  const rect=$("#mode-world").getBoundingClientRect(),locked=document.pointerLockElement===canvasEl;
+  tip.style.left=Math.max(8,Math.min(rect.width-300,(locked?rect.width/2:cursorAim.x-rect.left)+18))+"px";tip.style.top=Math.max(8,Math.min(rect.height-85,(locked?rect.height/2:cursorAim.y-rect.top)+18))+"px";
+}
 function structureRadius(s){return s.type==="fire"?fuelLayout(s).radius:STRUCT_R[s.type]??.2}
 function findTarget(){
+  const cursor=cursorTarget();if(cursor){const p=pickupPoint(cursor)||cursor.point;if(p&&Math.hypot(p.x-player.pos.x,p.z-player.pos.z)<=2.6)return cursor}
   const fp=frontPoint(.9),x=fp.x,z=fp.z;let best=null,bd=2.4;
   const cons=(kind,obj,d)=>{if(d<bd){bd=d;best={kind,obj}}};
   for(const d of world.drops)if(!d.flying)cons("drop",d,Math.hypot(d.pos.x-x,d.pos.z-z)+(d.floating?.3:0));
@@ -1044,8 +1101,10 @@ function targetLabel(t){
   return "";
 }
 function cropGrowth(s){const wellNear=structuresNear(s.x,s.z,12,"well").length>0;return clamp((world.gameTime-s.planted)/(20*3600)*(s.cold?.5:1)*(wellNear?1.6:1),0,1)}
-function interact(){
-  if(player.actCd>0||player.dead)return;const t=findTarget();if(!t)return;
+function interact(override=null){
+  if(player.actCd>0||player.dead)return;const aim=override||cursorTarget(true);
+  if(aim&&!override){const p=pickupPoint(aim)||aim.point;if(Math.hypot(p.x-player.pos.x,p.z-player.pos.z)>2.6){queuePickup(aim);return}}
+  const t=override||aim||findTarget();if(!t)return;
   if(t.kind==="drop"||t.kind==="res"){GFX.playOnce(player.model,"PickUp_Table",.6);AU.pickup()}
   if(t.kind==="pet"){PETS.pet(t.obj);return}
   if(t.kind==="drop"){const d=t.obj,n=d.n||1;if(!roomFor(d.item)&&!(d.item==="satchel"))return toast(`Your pack is full (${capacity()} slots). Drop something first.`);
@@ -1285,7 +1344,7 @@ function renderHUD(){
   if(player.readout){const sp=player.vel.length(),alt=player.pos.y;
     $("#wReadout").hidden=false;$("#wReadout").innerHTML=`speed ${sp.toFixed(2)} m/s · vertical ${player.vel.y.toFixed(2)} m/s<br>altitude ${alt.toFixed(1)} m · g = ${G_ACC} m/s²<br>air ${temperature(Ta.toFixed(1))} · body ${temperature(st.tb.toFixed(2))} · net heat ${Math.round(player.netW||0)} W<br>fire radiant ${Math.round(player.fireW||0)} W · wet ${Math.round(st.wet*100)}%<br>water boils at ${temperature((100-Math.max(0,alt)/285).toFixed(1))} here<br>your noise ${playerNoiseDb()} dB @1 m (−20·log₁₀ r)${inv("compass")?`<br>heading ${Math.round(((Math.atan2(-forward().x,-forward().z)*180/Math.PI)+360)%360)}°`:""}<br>biome ${biomeAt(player.pos.x,player.pos.z,heightAt(player.pos.x,player.pos.z))}`}
   else $("#wReadout").hidden=true;
-    {const t=findTarget(),action=handActionLabel(t),target=targetLabel(t);$("#wPrompt").textContent=player.dead?"":action?(target.startsWith("E ")?`${action} · ${target}`:action):target;}
+    {const cursor=cursorTarget(),t=cursor||findTarget(),pt=pickupPoint(cursor),distant=pt&&Math.hypot(pt.x-player.pos.x,pt.z-player.pos.z)>2.6,action=distant?"":handActionLabel(t),target=distant?`E walk to ${ITEMS[t.kind==="res"?t.obj.r.type:t.obj.item].name} & collect · WASD cancels`:targetLabel(t);$("#wPrompt").textContent=player.dead?"":action?(target.startsWith("E ")?`${action} · ${target}`:action):target;}
   renderObjectives();
 }
 function guideCtx(){return {has:hasD,inv,night:isNight(),hour:hourOf(),day:dayNum(),cold:(player.Ta??20)<10||world.st.tb<36.3,wet:world.st.wet>.5,sick:world.st.sick>0,sickCount:world.counters.sick,untreated:!!world.counters.untreated,
@@ -1463,11 +1522,11 @@ function helpIsOpen(){const el=$("#wHelp");return !!el&&!el.hidden}
 function renderHelp(){const el=$("#wHelp");if(!el)return;const P=helpPages(),p=P[helpPage];
   el.innerHTML=`<div class="helpCard" role="dialog" aria-label="How to play"><div class="hTop"><small>HOW TO PLAY · BASICS</small><span>${helpPage+1} / ${P.length}</span></div>
   <div class="hArt">${p.art}</div><h2>${esc(p.t)}</h2><p>${p.b}</p>
-  ${p.last?`<p class="hAgain">Reopen this anytime: press ${kb("H")} (Help) or the <b>?</b> button in the corner.</p>`:""}
+  <p class="hAgain">Minimize and reopen here anytime: press ${kb("H")} or the <b>?</b> button in the corner.</p>
   <div class="hDots">${P.map((_,i)=>`<i class="${i===helpPage?"on":""}"></i>`).join("")}</div>
-  <div class="hBtns"><button data-help="back" ${helpPage?"":"disabled"}>◀ Back</button>${p.last?`<button data-help="done" class="primary">Got it</button>`:`<button data-help="skip" class="ghost">Skip</button><button data-help="next" class="primary">Next ▶</button>`}</div></div>`}
-function openHelp(page=0){const el=$("#wHelp");if(!el)return;helpPage=page;if(el.hidden)helpWasPaused=paused;el.hidden=false;paused=true;keys.clear();try{document.exitPointerLock?.()}catch(_){}renderHelp()}
-function closeHelp(){const el=$("#wHelp");if(!el||el.hidden)return;el.hidden=true;paused=helpWasPaused&&!!(OBS&&OBS.isOpen);keys.clear();clock.getDelta();if(world)world.counters.helpSeen=1}
+  <div class="hBtns"><button data-help="back" ${helpPage?"":"disabled"}>◀ Back</button>${p.last?`<button data-help="done" class="primary">Got it</button>`:`<button data-help="minimize" class="ghost">MINIMIZE</button><button data-help="next" class="primary">Next ▶</button>`}</div></div>`}
+function openHelp(page=(world?.counters?.helpPage??helpPage)){const el=$("#wHelp");if(!el)return;helpPage=clamp(Number(page)||0,0,helpPages().length-1);if(el.hidden)helpWasPaused=paused;el.hidden=false;paused=true;keys.clear();try{document.exitPointerLock?.()}catch(_){}renderHelp()}
+function closeHelp(){const el=$("#wHelp");if(!el||el.hidden)return;el.hidden=true;paused=helpWasPaused&&!!(OBS&&OBS.isOpen);keys.clear();clock.getDelta();if(world){world.counters.helpSeen=1;world.counters.helpPage=helpPage}}
 function helpNav(a){const n=helpPages().length;if(a==="next"){if(helpPage<n-1){helpPage++;renderHelp()}else closeHelp()}else if(a==="back"){if(helpPage>0){helpPage--;renderHelp()}}else closeHelp()}
 // just-in-time tips for the basics, each shown once per world (can be turned off in settings)
 let tipT=1;
@@ -1487,9 +1546,9 @@ function bindInput(container){
     if(OBS&&OBS.isOpen){e.preventDefault();if(e.repeat)return;if(e.code==="KeyF"||e.code==="Escape")OBS.close();else if(e.code==="KeyP")PETS&&PETS.pet();else if(/^Digit[0-9]$/.test(e.code)){const k=hotbarItems()[(+e.code.slice(5)+9)%10];OBS.second(k)}return}
     if(e.code==="Tab"||e.code==="KeyK"||e.code==="KeyJ"){e.preventDefault();if(e.code==="KeyJ"){jTab="cur";$("#wJournal").hidden=true}togglePanel("#wJournal");return}
     if(e.code==="KeyI"){if($("#wInv").hidden)invCraftFor=null;togglePanel("#wInv");return}   // a fresh open clears any old "Craft with…" filter
-    if(e.code==="KeyH"){openHelp(0);return}
+    if(e.code==="KeyH"){openHelp();return}
     if(e.code==="KeyG"){player.readout=!player.readout;return}
-    if(e.code==="Escape"){if(!$("#wCtx").hidden){closeCtx();return}if(player.zoom){player.zoom=false;return}if($("#wInv").hidden&&$("#wJournal").hidden&&$("#wChest").hidden)window.__openSettings?.();else $("#wInv").hidden=$("#wJournal").hidden=$("#wChest").hidden=true;return}
+    if(e.code==="Escape"){autoPickup=null;if(!$("#wCtx").hidden){closeCtx();return}if(player.zoom){player.zoom=false;return}if($("#wInv").hidden&&$("#wJournal").hidden&&$("#wChest").hidden)window.__openSettings?.();else $("#wInv").hidden=$("#wJournal").hidden=$("#wChest").hidden=true;return}
     if(paused)return;
     if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.code))e.preventDefault();
     keys.add(e.code);
@@ -1507,6 +1566,9 @@ function bindInput(container){
   window.addEventListener("mousemove",e=>{if(!player)return;const locked=document.pointerLockElement===canvasEl;if(!locked&&!dragging)return;
     const dx=locked?e.movementX:e.clientX-lastX,dy=locked?e.movementY:e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;const k=player.zoom?.25:1;
     player.camYaw-=dx*.004*k;player.camPitch=clamp(player.camPitch+dy*.003*k,-1.45,1.25)});
+  canvasEl.tabIndex=0;canvasEl.addEventListener("pointerenter",()=>canvasEl.focus({preventScroll:true}));
+  canvasEl.addEventListener("pointermove",e=>{cursorAim.x=e.clientX;cursorAim.y=e.clientY;cursorAim.inside=true});
+  canvasEl.addEventListener("pointerleave",()=>{cursorAim.inside=false;hovered=null;hoverAt=0});
   canvasEl.addEventListener("wheel",e=>{e.preventDefault();player.camDist=clamp(player.camDist+Math.sign(e.deltaY)*.6,2.5,14)},{passive:false});
   document.addEventListener("click",e=>{
     if(!started||$("#mode-world").hidden)return;
@@ -1569,7 +1631,7 @@ function tick(){
   requestAnimationFrame(tick);
   const dt=Math.min(.05,clock.getDelta());
   if(started&&!paused&&!$("#mode-world").hidden&&!simming)stepWorld(dt);
-  if(started){updateCamera(dt);updateSky(dt);birds.update(clock.elapsedTime,player.pos,GFX.ENV.day,world.weather.amt)}
+  if(started){updateCamera(dt);updateSky(dt);birds.update(clock.elapsedTime,player.pos,GFX.ENV.day,world.weather.amt);updateHover()}
   else if(titleMode)stepTitle(dt);
   if(!simming){GFX.render(dt);frames++}
   fpsN++;fpsT+=clock.elapsedTime-fpsLast;fpsLast=clock.elapsedTime;if(fpsT>=1){fps=fpsN/fpsT;fpsN=0;fpsT=0;const fe=$("#wFps");if(fe&&!fe.hidden)fe.textContent=`${Math.round(fps)} fps · ${GFX.Q.label}`}
@@ -1609,6 +1671,7 @@ function stepWorld(dt){
 
 /* ---------------- boot ---------------- */
 function startWorld(w){
+  autoPickup=null;hovered=null;hoverAt=0;cursorAim.inside=false;
   clearDrill();
   titleMode=false;document.body.classList.remove("titleOn");$("#wTip").hidden=true;
   for(const s of world?.structures||[])if(s.obj)GFX.disposeGroup(s.obj);
@@ -1689,7 +1752,7 @@ export function initWorld(){
   // settings
   const openSettings=()=>{const el=$("#wSettings");el.hidden=!el.hidden;document.querySelectorAll("[data-q]").forEach(b=>b.classList.toggle("on",b.dataset.q===GFX.qName));if(!el.hidden){try{document.exitPointerLock?.()}catch(_){}}};
   $("#wGear")&&($("#wGear").onclick=openSettings);
-  $("#wHelpBtn")&&($("#wHelpBtn").onclick=()=>{if(started)openHelp(0)});$("#wHelpSet")&&($("#wHelpSet").onclick=()=>{$("#wSettings").hidden=true;openHelp(0)});
+  $("#wHelpBtn")&&($("#wHelpBtn").onclick=()=>{if(started)openHelp()});$("#wHelpSet")&&($("#wHelpSet").onclick=()=>{$("#wSettings").hidden=true;openHelp()});
   $("#wHelp")&&$("#wHelp").addEventListener("click",e=>{const b=e.target.closest("[data-help]");if(b)helpNav(b.dataset.help)});
   const tchk=$("#wTipsChk");if(tchk){tchk.checked=tipsOn();tchk.onchange=()=>localStorage.setItem(TIPS_KEY,tchk.checked?"1":"0")}$("#wTitleSettings")&&($("#wTitleSettings").onclick=openSettings);
   document.querySelectorAll("[data-q]").forEach(b=>b.onclick=()=>applyQuality(b.dataset.q));
@@ -1707,7 +1770,7 @@ export function initWorld(){
   const schk=$("#wSurvChk");if(schk){schk.checked=survivalMode;schk.onchange=()=>{setSurvival(schk.checked);toast(schk.checked?"Classic survival on: hunger, thirst, illness and injuries.":"Discovery mode: no hunger, illness or injuries — just you, the world and its puzzles.")}}
   const nchk=$("#wNeedyChk");if(nchk){nchk.checked=PETS.needyOn;nchk.onchange=()=>{PETS.needyOn=nchk.checked}}
   window.__fogWorld={help:{open:p=>openHelp(p||0),close:closeHelp,nav:helpNav,get isOpen(){return helpIsOpen()},get page(){return helpPage},pages:()=>helpPages().map(p=>p.t+" "+p.b.replace(/<[^>]+>/g,""))},tipsOn,get pets(){return PETS},updateSky:()=>updateSky(.016),stow,curiosityAll:()=>CURIOSITY.map(q=>q.q),throwSpeed:k=>throwSpeed(k),setSurvival,get survival(){return survivalMode},gameSpeed:t=>gameSpeed(t),setDayLen,get dayLen(){return dayLenPref},setWeatherPref,get weatherPref(){return weatherPref},rollWeather:()=>rollWeather(),migrateTime:w=>migrateTime(w),hud:()=>{renderHUD();renderObjectives();return {bars:$("#wBars").textContent,obj:$("#wObj").textContent}},cookbook:()=>COOKBOOK.map(c=>c[0]),duskNeedsFire:()=>duskNeedsFire(),fireHeatAt:(x,z)=>fireHeatAt(x,z),get lightningState(){return {remaining:flashT,strength:flashStrength,pulse:lightningPulse(flashT,flashStrength),pendingThunder:thunders.map(t=>({...t}))}},fireShadowBudget:reset=>{if(reset)Object.assign(fireFps,{on:true,low:0,high:0,ema:60});return {...fireFps}},envLight:()=>({sun:GFX.sun.intensity,hemi:GFX.hemi.intensity,moon:GFX.ENV.moonFrac,exposure:GFX.renderer?.toneMappingExposure,expMul:GFX.ENV.expMul,fills:fireFillLights.map(l=>({i:l.intensity,sh:l.castShadow})),lights:fireLights.map(l=>({i:+l.intensity.toFixed(2),y:l.position.y,d:+l.distance.toFixed(1),sh:l.castShadow}))}),moonPhase:t=>GFX.moonPhase(t),fireLight:(fuel,heat=1,type="fire",lit=true)=>{const r=fireLight({fuel,heat,type,lit});delete r.color;return r},get lux(){return world._luxAtPlayer||0},get exposure(){return GFX.renderer?.toneMappingExposure},setBright:v=>{brightBoost=clamp(v,0,.4)},inventory:{hotbarItems,essentialQuickbar:ESSENTIAL_QUICKBAR,get activeHand(){return activeHand},selectHand,toggleHand,withActiveHand,capacity,slotsUsed,roomFor,ordered,setHand,swapHands,dropItem,dropEverything,ctxActions,ctxDo,openCtx,sortInv,moveTo,STACK,BASE_SLOTS,handItems:()=>{const u=player.model.userData;return {R:u.held?.userData.k||null,L:u.heldL?.userData.k||null,Rbone:u.held?.parent?.name,Lbone:u.heldL?.parent?.name,Rpos:u.held?.getWorldPosition(new THREE.Vector3()),Lpos:u.heldL?.getWorldPosition(new THREE.Vector3())}}},get paused(){return paused},items:ITEMS,drop:(k,x,z)=>addDrop(k,x,heightAt(x,z)+.15,z),get obs(){return OBS},observeHeld,needyUI,curiousSpot,oreSpot,landmark,PET_INFO,MAX_ACTIVE,get state(){return world},get player(){return player},get animals(){return animals},discover:id=>discover(id),closePopup,
-    addFireFuel:feedFire,quickCarve,drill:()=>({active:!!drilling,progress:drilling?._drill?.progress||0,prop:!!drillProp}),give:(k,n)=>give(k,n),press:(code,ms)=>{keys.add(code);setTimeout(()=>keys.delete(code),ms)},keyEvent:code=>window.dispatchEvent(new KeyboardEvent("keydown",{code,bubbles:true})),keyDown:c=>keys.add(c),keyUp:c=>keys.delete(c),keysClear:()=>keys.clear(),
+    addFireFuel:feedFire,quickCarve,hover:()=>cursorTarget(true),autoPickup:()=>autoPickup?{remaining:autoPickup.path.length,item:autoPickup.target.kind==="res"?autoPickup.target.obj.r.type:autoPickup.target.obj.item}:null,drill:()=>({active:!!drilling,progress:drilling?._drill?.progress||0,prop:!!drillProp}),give:(k,n)=>give(k,n),press:(code,ms)=>{keys.add(code);setTimeout(()=>keys.delete(code),ms)},keyEvent:code=>window.dispatchEvent(new KeyboardEvent("keydown",{code,bubbles:true})),keyDown:c=>keys.add(c),keyUp:c=>keys.delete(c),keysClear:()=>keys.clear(),
     teleport:(x,z)=>{player.pos.set(x,heightAt(x,z),z);player.vel.set(0,0,0);updateChunks(true)},stats:()=>({pos:player&&player.pos.toArray().map(v=>+v.toFixed(2)),chunks:chunks.size,animals:animals.length,frames,
       revealed:world?.ks.revealed.length,disc:world?.disc.length,atlas:!!atlas,drawCalls:renderer.info.render.calls,tris:renderer.info.render.triangles,fps:+fps.toFixed(1),quality:GFX.qName,birds:{...birds.stats},human:!!player?.model?.userData?.mixer,audio:{...AU.stats}}),
     start:()=>$("#wPlay").click(),height:(x,z)=>heightAt(x,z),biome:(x,z)=>biomeAt(x,z,heightAt(x,z)),slope:(x,z)=>slopeAt(x,z),reseed:seed=>{const w=newWorld(seed);w.removed=[];w.burnt=[];startWorld(w)},newGame:seed=>newGame(seed),fps:()=>fps,quality:q=>{if(q)applyQuality(q);return GFX.qName},
