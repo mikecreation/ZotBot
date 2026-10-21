@@ -1,4 +1,4 @@
-import {EXTRA_LABS,evaluateExtra} from "./expedition-extra-models.js?v=3.14.0";
+import {EXTRA_LABS,evaluateExtra} from "./expedition-extra-models.js?v=3.15.0";
 // Deterministic small educational models. Inputs use SI units unless labeled otherwise.
 const physics='https://openstax.org/books/university-physics-volume-1/pages/1-introduction';
 export const LABS=[

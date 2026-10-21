@@ -305,3 +305,13 @@ body.titleOn .wHelpBtn{display:none}
 
 /* Context guidance appears once in the expiring notification feed. */
 .wPrompt{display:none!important}
+
+/* Apparatus illustrations are part of the catalog, including future expeditions. */
+.expBody{grid-template-columns:290px minmax(0,1fr)}
+.expCatalogLabel{font:600 10px system-ui;letter-spacing:.1em;color:#9cbfc6;padding:0 2px 10px}
+.expBody nav button{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:82px;padding:9px 10px}
+.expBody nav .expNavCopy{min-width:0;flex:1}
+.expBody nav .expNavCopy>span{font-size:13px;line-height:1.35;margin-bottom:5px}
+.expThumb{display:block;width:80px;height:61px;flex:none}
+.expBody nav button:focus-visible{outline:2px solid #f2c97d;outline-offset:2px}
+@media(max-width:850px){.expBody{grid-template-columns:minmax(0,1fr)}.expBody nav{max-height:110px;min-height:100px;box-sizing:border-box;align-items:stretch}.expCatalogLabel{display:none}.expBody nav button{min-width:245px;width:245px;min-height:80px}.expThumb{width:72px;height:55px}}
