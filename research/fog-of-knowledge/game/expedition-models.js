@@ -1,8 +1,8 @@
-import {DOUBLE_SLIT_LAB,evaluateSlit} from './double-slit-model.js?v=3.26.0';
-import {buoyancyState,simulateHeave} from "./buoyancy.js?v=3.26.0";
-import {FOUNDATION_LABS,evaluateFoundation} from "./expedition-foundations.js?v=3.26.0";
-import {EXPERIMENT_TITLES} from "./expedition-titles.js?v=3.26.0";
-import {EXTRA_LABS,evaluateExtra} from "./expedition-extra-models.js?v=3.26.0";
+import {DOUBLE_SLIT_LAB,evaluateSlit} from './double-slit-model.js?v=3.27.0';
+import {buoyancyState,simulateHeave} from "./buoyancy.js?v=3.27.0";
+import {FOUNDATION_LABS,evaluateFoundation} from "./expedition-foundations.js?v=3.27.0";
+import {EXPERIMENT_TITLES} from "./expedition-titles.js?v=3.27.0";
+import {EXTRA_LABS,evaluateExtra} from "./expedition-extra-models.js?v=3.27.0";
 // Deterministic small educational models. Inputs use SI units unless labeled otherwise.
 const physics='https://openstax.org/books/university-physics-volume-1/pages/1-introduction';
 export const LABS=[

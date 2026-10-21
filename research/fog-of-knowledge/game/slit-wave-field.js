@@ -1,4 +1,4 @@
-import {slitAmplitudes} from './double-slit-model.js?v=3.26.0';
+import {slitAmplitudes} from './double-slit-model.js?v=3.27.0';
 
 // A phase illustration of the scalar far-field approximation used by the lab.
 // Transverse scale expands toward the screen; the aperture is magnified.
@@ -40,3 +40,18 @@ export function paintWaveField(state,now){
 
 // A profile made only from actual detections, not a path or a probability guide.
 export function observedProfile(bins){return Array.from(bins,(_,i)=>(2*bins[i]+(bins[i-1]||0)+(bins[i+1]||0))/4)}
+
+// A teaching readiness rule, not a declaration of statistical completion.
+// Check every 250 dots: sufficient sample size, agreement with predicted CDF,
+// and two successive stable comparisons. The resulting curve uses counts only.
+export function profileReady(bins,expected,sample,tracker){
+ if(sample<250||sample%250)return false;
+ let sum=0,want=0,fit=0,drift=0;const cdf=[];
+ for(let i=0;i<bins.length;i++){
+  sum+=bins[i]/sample;for(let k=i*10;k<(i+1)*10;k++)want+=expected[k];
+  cdf.push(sum);fit=Math.max(fit,Math.abs(sum-want));
+  if(tracker.previous)drift=Math.max(drift,Math.abs(sum-tracker.previous[i]));
+ }
+ tracker.stable=sample>=2000&&tracker.previous&&fit<.04&&drift<.02?(tracker.stable||0)+1:0;
+ tracker.previous=cdf;return tracker.stable>=2;
+}

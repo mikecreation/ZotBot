@@ -1,6 +1,6 @@
 import * as T from './vendor/three.module.min.js';
-import * as GFX from './gfx.js?v=3.26.0';
-import {primitiveItem} from './primitive-models.js?v=3.26.0';
+import * as GFX from './gfx.js?v=3.27.0';
+import {primitiveItem} from './primitive-models.js?v=3.27.0';
 if(!new URLSearchParams(location.search).has('sandbox'))throw Error('Showcase requires a sandbox save');
 while(!window.__fogWorld)await new Promise(r=>setTimeout(r,100));
 const W=window.__fogWorld,exhibits=[];let finishTimer=null;
