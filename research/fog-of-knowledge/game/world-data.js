@@ -3,6 +3,12 @@
  * `tree` links to discoveries.js ids (which carry the verified atlas node ids); `atlas` adds direct atlas ids.
  */
 export const ITEMS={
+ knife_stone:{name:"Knapped stone knife",mass:.2,density:2200,r:.06,color:0x777a81,tool:"knife",power:.5,dur:60},
+ pickaxe_stone:{name:"Lashed stone pickaxe",mass:1.8,density:1800,r:.12,color:0x777a81,tool:"pickaxe",power:1,dur:70},
+ hand_drill:{name:"Hand-drill fire kit",mass:.7,density:600,r:.08,color:0x996a3c,tool:true},
+ bench_joint:{name:"Notched bench joint",mass:5,density:600,r:.15,color:0x996a3c},
+ workbench:{name:"Four-leg workbench kit",mass:35,density:600,r:.4,color:0x996a3c,place:"workbench"},
+ workbench_bundle:{name:"Bundled-leg workbench kit",mass:45,density:600,r:.4,color:0x996a3c,place:"workbench_bundle"},
  charcoal:{name:"Charcoal",mass:.05,density:220,r:.04,color:0x252529},
  ash:{name:"Wood ash",mass:.01,density:500,r:.035,color:0xaaa49a},
  stick:{name:"Stick",mass:.5,density:600,r:.05,color:0x8a6a3e},
@@ -149,8 +155,14 @@ const RAW=[
 export const WORLD_DISCOVERIES=RAW.map(r=>({id:r[0],name:r[1],age:r[2],how:r[3],principle:r[4],tree:r[5],atlas:r[6]}));
 // recipe: item -> {needs discovery id or null, inputs}
 export const RECIPES=[
+ {out:"knife_stone",req:null,in:{flake:1}},
+ {out:"hand_drill",req:null,in:{log:1},tool:"knife_stone"},
+ {out:"pickaxe_stone",req:null,in:{stone:2,stick:1,fiber:3},tool:"knife_stone"},
+ {out:"bench_joint",req:null,in:{log:1},tool:"knife_stone"},
+ {out:"workbench",req:null,in:{bench_joint:4,log:3,stick:4,fiber:8},tool:"knife_stone"},
+ {out:"workbench_bundle",req:null,in:{bench_joint:4,log:5,stick:12,fiber:12},tool:"knife_stone"},
  {out:"campfire",req:null,in:{stick:3}},
- {out:"axe_stone",req:"knapping",in:{flake:1,stick:1,fiber:1},cat:"tools"},
+ {out:"axe_stone",req:null,in:{flake:1,stone:1,stick:1,fiber:3},tool:"knife_stone",cat:"tools"},
  {out:"spear",req:"knapping",in:{flake:1,stick:2}},
  {out:"tally",req:"knapping",in:{stick:1,flake:1}},
  {out:"leanto",req:"knapping",in:{stick:6,fiber:3}},
@@ -184,7 +196,7 @@ export const RECIPES=[
  {out:"dough",req:"boiling",in:{grain:2,pot_clean:1},ret:"pot"},
  {out:"berry_mash",req:"ceramics",in:{berry_dark:4,pot:1}}
 ];
-const CAT={dough:"cooking",berry_mash:"cooking",satchel:"tools",campfire:"build",leanto:"build",hut:"build",house:"build",wall:"build",chest:"build",rack:"build",well:"build",kiln:"build",raft:"build",table:"science",torch:"build",
+const CAT={workbench:"build",workbench_bundle:"build",dough:"cooking",berry_mash:"cooking",satchel:"tools",campfire:"build",leanto:"build",hut:"build",house:"build",wall:"build",chest:"build",rack:"build",well:"build",kiln:"build",raft:"build",table:"science",torch:"build",
  axe_stone:"tools",axe_copper:"tools",axe_bronze:"tools",axe_iron:"tools",wheel:"tools",bellows:"tools",clothing:"tools",
  spear:"weapons",sling:"weapons",bow:"weapons",arrow:"weapons",
  tally:"science",tablet:"science",gnomon:"science",lens:"science",compass:"science",telescope:"science",pendulum:"science",prism:"science"};

@@ -605,6 +605,27 @@ function makeFallbackHuman(){
   const hand=new THREE.Group();hand.position.y=0;armR.add(hand);const handL=new THREE.Group();armL.add(handL);
   return {root,hips,armL,armR,legL,legR,hand,handL};
 }
+// Apply after the normal mixer: a two-bone reach keeps both real hands at the spindle.
+export function poseHandDrill(h,point,time){
+  const u=h.userData;u.held.visible=u.heldL.visible=false;h.updateMatrixWorld(true);
+  for(const [side,anchor] of [[1,u.held],[-1,u.heldL]]){
+    const hand=anchor.parent,lower=hand?.parent,upper=lower?.parent;
+    if(!u.mixer||!hand?.isBone||!lower?.isBone||!upper?.isBone){
+      const arm=side===1?u.fb.armR:u.fb.armL;arm.rotation.x=-1.1;arm.rotation.z=side*.35;continue;
+    }
+    const a=upper.getWorldPosition(new THREE.Vector3()),b=lower.getWorldPosition(new THREE.Vector3()),c=hand.getWorldPosition(new THREE.Vector3());
+    const target=point.clone();target.y+=.38+Math.sin(time*8)*.025;target.x+=side*.025;
+    const l1=a.distanceTo(b),l2=b.distanceTo(c),dir=target.clone().sub(a),d=Math.max(.001,Math.min(dir.length(),(l1+l2)*.98));dir.normalize();
+    const pole=new THREE.Vector3(side,-.2,0).applyAxisAngle(new THREE.Vector3(0,1,0),h.rotation.y);pole.addScaledVector(dir,-pole.dot(dir)).normalize();
+    const along=(l1*l1-l2*l2+d*d)/(2*d),elbow=a.clone().addScaledVector(dir,along).addScaledVector(pole,Math.sqrt(Math.max(0,l1*l1-along*along)));
+    for(const [bone,child,dest] of [[upper,lower,elbow],[lower,hand,a.clone().addScaledVector(dir,d)]]){
+      const pos=bone.getWorldPosition(new THREE.Vector3()),v=child.getWorldPosition(new THREE.Vector3()).sub(pos).normalize(),want=dest.clone().sub(pos).normalize();
+      const q=new THREE.Quaternion().setFromUnitVectors(v,want).multiply(bone.getWorldQuaternion(new THREE.Quaternion()));
+      bone.quaternion.copy(bone.parent.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(q));h.updateMatrixWorld(true);
+    }
+    hand.rotateY(Math.sin(time*32)*.35);
+  }
+}
 function animateFallback(u,speed,dt,swim,air,dead){const f=u.fb;u.phase+=dt*(2+speed*2.6);const sw=Math.min(1,speed/2.5)*.9;
   f.root.rotation.z=dead?Math.PI/2:0;
   if(swim){f.hips.rotation.x=1.2;f.armL.rotation.x=Math.sin(u.phase*1.4)*1.6-1.6;f.armR.rotation.x=-Math.sin(u.phase*1.4)*1.6-1.6;f.legL.rotation.x=Math.sin(u.phase*2)*.5;f.legR.rotation.x=-f.legL.rotation.x;f.hips.position.y=.45;return}
