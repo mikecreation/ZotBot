@@ -1,7 +1,7 @@
-import {createPhotonEvents,launchPhoton,arrivePhotons,discardPhotons} from './photon-events.js?v=3.25.0';
-import {photonHardware} from './photon-hardware.js?v=3.25.0';
-import {SLIT_DEFAULTS,slitSettings,slitDistribution,sampleSlit,evaluateSlit} from './double-slit-model.js?v=3.25.0';
-import {slitMarkup,drawSlit,drawProbe} from './double-slit-view.js?v=3.25.0';
+import {createPhotonEvents,launchPhoton,arrivePhotons,discardPhotons} from './photon-events.js?v=3.26.0';
+import {photonHardware} from './photon-hardware.js?v=3.26.0';
+import {SLIT_DEFAULTS,slitSettings,slitDistribution,sampleSlit,evaluateSlit} from './double-slit-model.js?v=3.26.0';
+import {slitMarkup,drawSlit,drawProbe} from './double-slit-view.js?v=3.26.0';
 export function mountDoubleSlit(host,{stage=0,complete}){
  const state={settings:slitSettings(SLIT_DEFAULTS),dist:slitDistribution(SLIT_DEFAULTS),hits:[],bins:new Uint32Array(80),look:true,guide:true,previous:null,flash:0,probe:0,closeup:matchMedia('(max-width:650px)').matches};
  let running=false,speed=60,frame=0,last=0,nextEmission=0,draining=false,awarded=false,dead=false;state.events=createPhotonEvents();state.clock=0;
@@ -10,7 +10,7 @@ export function mountDoubleSlit(host,{stage=0,complete}){
  function probe(y){state.probe=Math.max(-.02,Math.min(.02,y));$('[data-q-position]').value=state.probe*1000;$('[data-q-position-readout]').textContent=+(state.probe*1000).toFixed(2)+' mm';draw(performance.now())}
  $('[data-q-position]').oninput=e=>probe(+e.target.value/1000);$('[data-q-bright]').onclick=()=>probe(0);$('[data-q-dark]').onclick=()=>{let k=400;for(let i=401;i<600;i++)if(state.dist.pdf[i]<state.dist.pdf[k])k=i;probe(-.02+(k+.5)*.04/800)};
  function clear(){state.singleShot=null;state.events=createPhotonEvents();state.clock=0;draining=false;nextEmission=1000/speed;state.hits=[];state.bins.fill(0);update();draw(performance.now())}
- function change(){state.singleShot=null;state.previous={pdf:state.dist.pdf.slice()};state.settings=slitSettings(state.settings);state.dist=slitDistribution(state.settings);clear();const s=state.settings;$('[data-q-detector]').textContent='Path detector '+(s.detector?'ON':'OFF');$('[data-q-detector]').setAttribute('aria-pressed',!!s.detector);host.querySelectorAll('[data-q-mode]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.qMode===s.slits));message('New apparatus → fresh screen. Earlier dots are not rewritten. Dashed gold: previous prediction.');}
+ function change(){state.waveField=null;state.singleShot=null;state.previous={pdf:state.dist.pdf.slice()};state.settings=slitSettings(state.settings);state.dist=slitDistribution(state.settings);clear();const s=state.settings;$('[data-q-detector]').textContent='Path detector '+(s.detector?'ON':'OFF');$('[data-q-detector]').setAttribute('aria-pressed',!!s.detector);host.querySelectorAll('[data-q-mode]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.qMode===s.slits));message('New apparatus → fresh screen. Earlier dots are not rewritten. Dashed gold: previous prediction.');}
  const sample=()=>({i:sampleSlit(state.dist.cdf,Math.random()),z:(Math.random()+Math.random())/2});
  function detect(packet){const h={...packet.hit,id:packet.id};state.hits.push(h);state.bins[Math.min(79,Math.floor(h.i/10))]++;state.flash=state.clock}
  function tick(now){if(dead||!host.isConnected)return;const dt=Math.min(100,(now-last)||0);last=now;state.running=running;
@@ -29,6 +29,7 @@ export function mountDoubleSlit(host,{stage=0,complete}){
  $('[data-q-detector]').onclick=()=>{state.settings.detector=state.settings.detector?0:1;change();message(state.settings.detector?'A physical path record makes the alternatives distinguishable. No human needs to read it.':'No path record: the two amplitudes can interfere again. New photons build a fresh pattern.')};
  $('[data-q-look]').onclick=()=>{state.look=!state.look;$('[data-q-look]').setAttribute('aria-pressed',state.look);$('[data-q-look]').textContent='Human viewing: '+(state.look?'ON':'OFF');message(state.look?'You revealed the same recorded hits. Looking did not change their distribution.':'Look away. The apparatus is unchanged; detections keep accumulating.');draw(performance.now())};
  $('[data-q-guide]').onclick=()=>{state.guide=!state.guide;$('[data-q-guide]').setAttribute('aria-pressed',state.guide);$('[data-q-guide]').textContent='Probability guide: '+(state.guide?'ON':'OFF')};
+ $('[data-q-trace]').onclick=()=>{state.trace=state.trace===false;$('[data-q-trace]').textContent='Trace dot pattern: '+(state.trace?'ON':'OFF');$('[data-q-trace]').setAttribute('aria-pressed',state.trace);message('The gold line is made from accumulated dot counts. It is the pattern, not a photon trajectory.')};
  $('[data-q-compare]').onclick=()=>{state.previous={pdf:state.dist.pdf.slice()};message('Current prediction saved in dashed gold. Change the apparatus to compare.')};
  const edit=(key,v)=>{if(!Number.isFinite(v))return;if(key==='width'&&state.settings.positions?.some((x,i,a)=>i&&x-a[i-1]<v)){message('That width would overlap neighboring slits. Widen the gaps first.');return}if(key==='separation'){delete state.settings.positions;state.settings.slits=2}state.settings[key]=v;state.settings=slitSettings(state.settings);$(`[data-q-input="${key}"]`).value=state.settings[key];change()};
  host.querySelectorAll('[data-q-input]').forEach(el=>el.onchange=()=>edit(el.dataset.qInput,+el.value));
