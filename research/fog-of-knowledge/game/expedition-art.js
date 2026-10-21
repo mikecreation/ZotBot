@@ -8,6 +8,7 @@ const txt=(x,y,s,c=ink)=>`<text x="${x}" y="${y}" font-family="system-ui" font-s
 const wave=(y,c=blue,shift=0)=>path(`M8 ${y}q8 ${-12+shift} 16 0t16 0t16 0t16 0`,c);
 const flask=(x,y,c)=>path(`M${x+7} ${y}v12l-10 20q-2 4 3 4h22q5 0 3-4l-10-20V${y}`,ink)+rect(x+3,y+23,16,9,c,3)+line(x+5,y,x+17,y);
 export const EXPEDITION_ART={
+ 'double-slit':['Single photon detections build bright and dark interference bands behind two slits',dot(9,32,4,blue)+line(24,7,24,23,ink,3)+line(24,28,24,36,ink,3)+line(24,41,24,57,ink,3)+path('M29 20Q49 32 29 44M35 13Q62 32 35 51',blue)+[0,1,2,3,4].map(i=>rect(61+i*4,8,2,48,i%2?gold:blue)).join('')],
  trajectory:['Projectile flight into a landing target',line(5,49,77,49,wood,3)+path('M10 44Q33 0 66 43',blue)+dot(10,44,4)+rect(61,42,12,6,green)+line(67,29,67,42,gold)+path('M67 29h9l-3 5h-6',gold)],
  lever:['Lever, fulcrum and heavy stone load',path('M32 49l8-18 8 18Z',wood)+line(7,30,74,30,gold,4)+rect(53,15,18,13,ink)+line(14,8,14,24,blue)+path('M10 19l4 6 4-6',blue)+line(9,51,75,51)],
  raft:['Lashed log raft floating with cargo',rect(6,34,70,18,'#204d65')+wave(39)+[15,29,43,57].map(x=>rect(x,27,12,16,wood,5)).join('')+line(12,31,70,31,gold)+rect(30,14,25,13,ink)+path('M34 14v-4h17v4',gold)],

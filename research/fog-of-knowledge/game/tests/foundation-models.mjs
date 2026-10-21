@@ -6,9 +6,9 @@ import fs from 'node:fs';
 const results=[];const check=(name,pass)=>results.push({name,pass:!!pass});
 for(const l of LABS.filter(l=>l.batch===3))for(let s=0;s<3;s++){const p={...defaultControls(l),...foundationSolution(l.id,s)},r=evaluateLab(l.id,p,s);check(`${l.id} contract ${s+1} solvable on actual control grid`,r.success&&l.controls.every(([k,,,lo,hi,step])=>p[k]>=lo&&p[k]<=hi&&Math.abs((p[k]-lo)/step-Math.round((p[k]-lo)/step))<1e-6));if(!r.success)console.log(l.id,s,p,r)}
 const n=JSON.parse(fs.readFileSync(new URL('../../data/knowledge.json',import.meta.url),'utf8')).nodes,ids=new Set(n.map(x=>x.id));
-check('all 42 experiment context links exist in graph',LABS.length===42&&LABS.every(l=>ids.has(l.atlas)));
-check('all 42 titles name an actual concept and relationship',LABS.every(l=>l.name.includes(':')&&l.name.length>30));
-check('all 42 games have unique apparatus art',LABS.every(l=>EXPEDITION_ART[l.id])&&new Set(LABS.map(l=>experimentArtwork(l.id))).size===42);
+check('all catalog experiment context links exist in graph',LABS.length===43&&LABS.every(l=>ids.has(l.atlas)));
+check('all catalog titles name an actual concept and relationship',LABS.every(l=>l.name.includes(':')&&l.name.length>30));
+check('all catalog games have unique apparatus art',LABS.every(l=>EXPEDITION_ART[l.id])&&new Set(LABS.map(l=>experimentArtwork(l.id))).size===LABS.length);
 check('Bayes low base rate defeats naive sensitivity guess',evaluateLab('bayes',{guess:90},0).success===false);
 check('four times sample gives half uncertainty',Math.abs(evaluateLab('sampling',{n:400},0).value/evaluateLab('sampling',{n:100},0).value-.5)<1e-10);
 check('confounding reverses the apparent sign',evaluateLab('confounding',{design:0,estimate:15},0).value>0&&evaluateLab('confounding',{design:1,estimate:-5},0).value<0);
