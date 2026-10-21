@@ -1,6 +1,6 @@
-import {ensureFuelBed} from '../fuel-bed.js?v=3.12.1';
+import {ensureFuelBed} from '../fuel-bed.js?v=3.12.2';
 import * as THREE from "../vendor/three.module.min.js";
-import * as GFX from "../gfx.js?v=3.12.1";
+import * as GFX from "../gfx.js?v=3.12.2";
 export function runUpgradeTests(W){
   const results=[],test=(name,fn)=>{try{const r=fn();results.push({group:'Upgrades',name,pass:r===true,detail:r===true?'':String(r)})}catch(e){results.push({group:'Upgrades',name,pass:false,detail:e.stack})}};
   const fresh=()=>{W.help.close();W.reseed(20261019);W.help.close();W.closePopup();W.state.inv={};W.state.order=[];W.state.held=W.state.left=null;W.clearAnimals();W.clearStructs();for(const id of ['wInv','wJournal','wCtx','wChest'])document.getElementById(id).hidden=true};

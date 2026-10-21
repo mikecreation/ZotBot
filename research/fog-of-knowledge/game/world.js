@@ -7,21 +7,21 @@
  * Discoveries happen by doing things in the world and reveal real atlas nodes.
  */
 import * as THREE from "./vendor/three.module.min.js";
-import {ITEMS,WORLD_DISCOVERIES,RECIPES} from "./world-data.js?v=3.12.1";
-import {walkPath} from "./walk-path.js?v=3.12.1";
-import {drillProblem,advanceDrill} from "./friction-fire.js?v=3.12.1";
-import {primitiveItem,workbenchMesh} from "./primitive-models.js?v=3.12.1";
-import * as GFX from "./gfx.js?v=3.12.1";
+import {ITEMS,WORLD_DISCOVERIES,RECIPES} from "./world-data.js?v=3.12.2";
+import {walkPath} from "./walk-path.js?v=3.12.2";
+import {drillProblem,advanceDrill} from "./friction-fire.js?v=3.12.2";
+import {primitiveItem,workbenchMesh} from "./primitive-models.js?v=3.12.2";
+import * as GFX from "./gfx.js?v=3.12.2";
 import * as AU from "./audio.js";
-import {ESSENTIAL_QUICKBAR,quickbarOrder} from "./quickbar.js?v=3.12.1";
+import {ESSENTIAL_QUICKBAR,quickbarOrder} from "./quickbar.js?v=3.12.2";
 import {temperature,temperatureDelta} from "./units.js";
 import {createBirds} from "./birds.js";
-import {fireSize,stepCombustion,addFuel,lightningPulse} from "./fire-model.js?v=3.12.1";
-import {ensureFuelBed,recordFuelPiece,stepFuelBed,fuelLayout} from "./fuel-bed.js?v=3.12.1";
-import {createFireBed,updateFireBed} from "./fire-visuals.js?v=3.12.1";
+import {fireSize,stepCombustion,addFuel,lightningPulse} from "./fire-model.js?v=3.12.2";
+import {ensureFuelBed,recordFuelPiece,stepFuelBed,fuelLayout} from "./fuel-bed.js?v=3.12.2";
+import {createFireBed,updateFireBed} from "./fire-visuals.js?v=3.12.2";
 import {CURIOSITY,OBJECTIVES} from "./content.js?v=3.8.3";
 import {createPets,PET_INFO,MAX_ACTIVE} from "./pets.js";
-import {createObserve,NOTES} from "./observe.js?v=3.12.1";
+import {createObserve,NOTES} from "./observe.js?v=3.12.2";
 let PETS=null,OBS=null;
 const E=window.FogGameEngine,TREE=E.G;
 const $=s=>document.querySelector(s);
@@ -752,21 +752,22 @@ function makePlayer(w){
 }
 function groundMu(){const b=biomeAt(player.pos.x,player.pos.z,heightAt(player.pos.x,player.pos.z));return b==="snow"?.35:b==="beach"||b==="desert"?.6:.8} // friction coefficients
 function stepPlayer(dt){
-  const p=player,st=world.st;if(p.dead)return;
+  const p=player,st=world.st;if(p.dead||document.hidden||["wInv","wJournal","wChest","wCtx","wSettings","wPopup","wHelp"].some(id=>$("#"+id)&&!$("#"+id).hidden)){stopMovement();return;}
   p.actCd=Math.max(0,p.actCd-dt);
   const f=forward(),r=new THREE.Vector3(-f.z,0,f.x);
   const mv=new THREE.Vector3();
   if(keys.has("KeyW")||keys.has("ArrowUp"))mv.add(f);if(keys.has("KeyS")||keys.has("ArrowDown"))mv.sub(f);
   if(keys.has("KeyD")||keys.has("ArrowRight"))mv.add(r);if(keys.has("KeyA")||keys.has("ArrowLeft"))mv.sub(r);
-  if(mv.lengthSq()||keys.has("Space"))autoPickup=null;
+  if(["KeyW","KeyA","KeyS","KeyD","ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Space"].some(k=>keys.has(k))&&autoPickup)stopMovement(false);
   if(autoPickup&&!p.swimming&&!p.raft){
     const a=autoPickup,pt=pickupPoint(a.target);
-    if(!pt||a.target.kind==="res"&&a.target.obj.r.gone||a.target.kind==="drop"&&!world.drops.includes(a.target.obj)){autoPickup=null}
-    else if(Math.hypot(pt.x-p.pos.x,pt.z-p.pos.z)<1.7){autoPickup=null;interact(a.target)}
+    if(!pt||a.target.kind==="res"&&a.target.obj.r.gone||a.target.kind==="drop"&&!world.drops.includes(a.target.obj)){stopMovement(false)}
+    else if(Math.hypot(pt.x-p.pos.x,pt.z-p.pos.z)<1.7){stopMovement(false);interact(a.target)}
     else{while(a.path.length&&Math.hypot(a.path[0].x-p.pos.x,a.path[0].z-p.pos.z)<.35)a.path.shift();
       const next=a.path[0]||pt;mv.set(next.x-p.pos.x,0,next.z-p.pos.z);
       if(p.pos.distanceToSquared(a.last)<.00003)a.stuck+=dt;else a.stuck=0;a.last.copy(p.pos);
-      if(a.stuck>2.5||heightAt(next.x,next.z)<.05){autoPickup=null;mv.set(0,0,0);toast("The pickup route is blocked. Move closer or choose another approach.")}
+      a.elapsed+=dt;
+      if(a.stuck>2.5||a.elapsed>120||heightAt(next.x,next.z)<.05){stopMovement();mv.set(0,0,0);toast("Automatic walking stopped: the route is blocked or taking too long. Choose another approach.")}
     }
   }
   if(mv.lengthSq())mv.normalize();
@@ -950,6 +951,15 @@ function frontPoint(r=1){const f=forward();return {x:player.pos.x+f.x*r,z:player
 const STRUCT_R={workbench:1,workbench_bundle:1,pack:.3,kiln:.6,table:.6,hut:1.6,house:2,well:.5,chest:.3,rack:.4,wall:.8,pendulum:.4};
 const cursorAim={x:0,y:0,inside:false},hoverRay=new THREE.Raycaster(),hoverNDC=new THREE.Vector2();
 let hoverAt=0,hovered=null,autoPickup=null;
+// Clear route, stale input and horizontal inertia together, before modal handlers.
+function stopMovement(clearKeys=true){
+  const wasWalking=!!autoPickup;autoPickup=null;
+  if(clearKeys)keys.clear();
+  if(player?.vel){player.vel.x=0;player.vel.z=0}
+  dragging=false;if(canvasEl)canvasEl._down=null;
+  const button=$("#wStopWalk");if(button)button.hidden=true;
+  return wasWalking;
+}
 const pickupPoint=t=>t?.kind==="drop"?t.obj.pos:t?.kind==="res"?t.obj.r:null;
 function cursorTarget(force=false){
   if(!started||!player||paused)return null;
@@ -980,7 +990,7 @@ function queuePickup(t){
   const obstacles=[];for(const ch of chunks.values())if(ch.group){for(const b of ch.obj.boulders)obstacles.push({x:b.x,z:b.z,r:b.s*.95});for(const tr of ch.obj.trees)if(!tr.gone)obstacles.push({x:tr.x,z:tr.z,r:.25})}
   for(const s of world.structures)if(s.type==="wall"||s.type==="house")obstacles.push({x:s.x,z:s.z,r:structureRadius(s)});
   const path=walkPath(player.pos,point,heightAt,slopeAt,obstacles);if(!path){toast("No clear land route to that item. Move closer or approach from another side.");return true}
-  autoPickup={target:t,path,last:player.pos.clone(),stuck:0};toast(`Walking to ${ITEMS[t.kind==="res"?t.obj.r.type:t.obj.item].name} · WASD cancels`);return true;
+  autoPickup={target:t,path,last:player.pos.clone(),stuck:0,elapsed:0};$("#wStopWalk").hidden=false;toast(`Walking to ${ITEMS[t.kind==="res"?t.obj.r.type:t.obj.item].name} · E / Esc / WASD / STOP cancels`);return true;
 }
 function updateHover(){
   let tip=$("#wHover");if(!tip){tip=document.createElement("div");tip.id="wHover";tip.setAttribute("role","tooltip");tip.className="wHover";$("#mode-world").append(tip)}
@@ -1456,7 +1466,7 @@ function renderJournal(){
     `<p class="muted">${PETS?PETS.activeCount():0} / ${MAX_ACTIVE} following · behaviours noticed: ${(world.counters.behav||[]).length}</p>`}
   el.innerHTML=`<div class="pHead"><h3>KNOWLEDGE JOURNAL</h3><button data-close>✕ (Tab)</button></div><div class="jTabs">${[["disc",`Discoveries ${world.disc.length}/${WORLD_DISCOVERIES.length}`],["cur",`Curiosity ${world.seenQ.length}`],["exp","Experiments"],["know","Your Knowledge"],["tree","Discovery tree"],["cook",`Cookbook ${COOKBOOK.filter(c=>hasD(c[0])).length}/${COOKBOOK.length}`],["pets",`Companions ${world.pets.length}`]].map(([k,l])=>`<button data-jtab="${k}" class="${k===jTab?"on":""}">${l}</button>`).join("")}</div><div class="jBody">${body}</div>`;
 }
-function togglePanel(id){const el=$(id);el.hidden=!el.hidden;if(!el.hidden){try{document.exitPointerLock?.()}catch(_){}if(id==="#wInv")renderInventory();else renderJournal()}}
+function togglePanel(id){stopMovement();const el=$(id);el.hidden=!el.hidden;if(!el.hidden){try{document.exitPointerLock?.()}catch(_){}if(id==="#wInv")renderInventory();else renderJournal()}}
 
 /* ---------------- input ---------------- */
 let dragging=false,lastX=0,lastY=0,canvasEl;
@@ -1525,7 +1535,7 @@ function renderHelp(){const el=$("#wHelp");if(!el)return;const P=helpPages(),p=P
   <p class="hAgain">Minimize and reopen here anytime: press ${kb("H")} or the <b>?</b> button in the corner.</p>
   <div class="hDots">${P.map((_,i)=>`<i class="${i===helpPage?"on":""}"></i>`).join("")}</div>
   <div class="hBtns"><button data-help="back" ${helpPage?"":"disabled"}>◀ Back</button>${p.last?`<button data-help="done" class="primary">Got it</button>`:`<button data-help="minimize" class="ghost">MINIMIZE</button><button data-help="next" class="primary">Next ▶</button>`}</div></div>`}
-function openHelp(page=(world?.counters?.helpPage??helpPage)){const el=$("#wHelp");if(!el)return;helpPage=clamp(Number(page)||0,0,helpPages().length-1);if(el.hidden)helpWasPaused=paused;el.hidden=false;paused=true;keys.clear();try{document.exitPointerLock?.()}catch(_){}renderHelp()}
+function openHelp(page=(world?.counters?.helpPage??helpPage)){stopMovement();const el=$("#wHelp");if(!el)return;helpPage=clamp(Number(page)||0,0,helpPages().length-1);if(el.hidden)helpWasPaused=paused;el.hidden=false;paused=true;keys.clear();try{document.exitPointerLock?.()}catch(_){}renderHelp()}
 function closeHelp(){const el=$("#wHelp");if(!el||el.hidden)return;el.hidden=true;paused=helpWasPaused&&!!(OBS&&OBS.isOpen);keys.clear();clock.getDelta();if(world){world.counters.helpSeen=1;world.counters.helpPage=helpPage}}
 function helpNav(a){const n=helpPages().length;if(a==="next"){if(helpPage<n-1){helpPage++;renderHelp()}else closeHelp()}else if(a==="back"){if(helpPage>0){helpPage--;renderHelp()}}else closeHelp()}
 // just-in-time tips for the basics, each shown once per world (can be turned off in settings)
@@ -1539,6 +1549,18 @@ function stepTips(dt){tipT-=dt;if(tipT>0||helpIsOpen())return;tipT=.5;const P=pl
 }
 function bindInput(container){
   canvasEl=renderer.domElement;
+  window.addEventListener("keydown",e=>{
+    if(!started)return;
+    if(e.code==="Escape"){stopMovement();return}
+    if(autoPickup&&!e.repeat&&!["ShiftLeft","ShiftRight","ControlLeft","ControlRight","AltLeft","AltRight","MetaLeft","MetaRight"].includes(e.code)){
+      stopMovement();if(e.code==="KeyE"){e.preventDefault();e.stopImmediatePropagation()}
+    }
+  },true);
+  $("#wStopWalk").onclick=()=>stopMovement();
+  document.addEventListener("pointerdown",e=>{if(e.target!==canvasEl)stopMovement()},true);
+  document.addEventListener("focusin",e=>{if(e.target!==canvasEl)stopMovement()});
+  document.addEventListener("pointerlockchange",()=>{if(document.pointerLockElement!==canvasEl)stopMovement()});
+  window.addEventListener("pointercancel",()=>stopMovement());
   window.addEventListener("keydown",e=>{
     if(!started||$("#mode-world").hidden)return;if(["INPUT","SELECT","TEXTAREA"].includes(e.target.tagName)||e.target.isContentEditable)return;
     if(helpIsOpen()){e.preventDefault();if(e.code==="ArrowRight"||e.code==="Enter"||e.code==="Space"||e.code==="KeyD")helpNav("next");else if(e.code==="ArrowLeft"||e.code==="KeyA")helpNav("back");else if(e.code==="Escape"||e.code==="KeyH")closeHelp();return}
@@ -1558,9 +1580,10 @@ function bindInput(container){
     if(e.code==="KeyC"||e.code==="ControlLeft"){player.crouch=!player.crouch&&!player.swimming;toast(player.crouch?"Crouching: slow and quiet. Animals hear you less.":"Standing up.")}
     if(/^Digit[0-9]$/.test(e.code)){const i=(+e.code.slice(5)+9)%10,k=hotbarItems()[i];if(k){setHand(e.shiftKey?"L":activeHand,k)}}
   });
-  window.addEventListener("keyup",e=>keys.delete(e.code));
-  window.addEventListener("blur",()=>keys.clear());
-  canvasEl.addEventListener("mousedown",e=>{dragging=true;lastX=e.clientX;lastY=e.clientY;canvasEl._down=[e.clientX,e.clientY,document.pointerLockElement===canvasEl]});
+  window.addEventListener("keyup",e=>keys.delete(e.code),true);
+  window.addEventListener("blur",()=>stopMovement());
+  window.addEventListener("focus",()=>stopMovement());
+  canvasEl.addEventListener("mousedown",e=>{if(autoPickup){stopMovement();e.preventDefault();return}dragging=true;lastX=e.clientX;lastY=e.clientY;canvasEl._down=[e.clientX,e.clientY,document.pointerLockElement===canvasEl]});
   window.addEventListener("mouseup",e=>{dragging=false;if(!canvasEl._down)return;if(paused){canvasEl._down=null;return;}const moved=Math.hypot(e.clientX-canvasEl._down[0],e.clientY-canvasEl._down[1]);const wasLocked=canvasEl._down[2];canvasEl._down=null;
     if(e.target!==canvasEl)return;if(document.pointerLockElement===canvasEl){if(e.button===0&&wasLocked)withActiveHand(useHeld)}else if(moved<4&&e.button===0){try{canvasEl.requestPointerLock?.()}catch(_){}}});
   window.addEventListener("mousemove",e=>{if(!player)return;const locked=document.pointerLockElement===canvasEl;if(!locked&&!dragging)return;
@@ -1568,7 +1591,7 @@ function bindInput(container){
     player.camYaw-=dx*.004*k;player.camPitch=clamp(player.camPitch+dy*.003*k,-1.45,1.25)});
   canvasEl.tabIndex=0;canvasEl.addEventListener("pointerenter",()=>canvasEl.focus({preventScroll:true}));
   canvasEl.addEventListener("pointermove",e=>{cursorAim.x=e.clientX;cursorAim.y=e.clientY;cursorAim.inside=true});
-  canvasEl.addEventListener("pointerleave",()=>{cursorAim.inside=false;hovered=null;hoverAt=0});
+  canvasEl.addEventListener("pointerleave",()=>{stopMovement();cursorAim.inside=false;hovered=null;hoverAt=0});
   canvasEl.addEventListener("wheel",e=>{e.preventDefault();player.camDist=clamp(player.camDist+Math.sign(e.deltaY)*.6,2.5,14)},{passive:false});
   document.addEventListener("click",e=>{
     if(!started||$("#mode-world").hidden)return;
@@ -1750,7 +1773,7 @@ export function initWorld(){
   if(saved){$("#wPlay").textContent="CONTINUE";$("#wContinue").hidden=true}
   beginTitle(saved||newWorld(1234));
   // settings
-  const openSettings=()=>{const el=$("#wSettings");el.hidden=!el.hidden;document.querySelectorAll("[data-q]").forEach(b=>b.classList.toggle("on",b.dataset.q===GFX.qName));if(!el.hidden){try{document.exitPointerLock?.()}catch(_){}}};
+  const openSettings=()=>{stopMovement();const el=$("#wSettings");el.hidden=!el.hidden;document.querySelectorAll("[data-q]").forEach(b=>b.classList.toggle("on",b.dataset.q===GFX.qName));if(!el.hidden){try{document.exitPointerLock?.()}catch(_){}}};
   $("#wGear")&&($("#wGear").onclick=openSettings);
   $("#wHelpBtn")&&($("#wHelpBtn").onclick=()=>{if(started)openHelp()});$("#wHelpSet")&&($("#wHelpSet").onclick=()=>{$("#wSettings").hidden=true;openHelp()});
   $("#wHelp")&&$("#wHelp").addEventListener("click",e=>{const b=e.target.closest("[data-help]");if(b)helpNav(b.dataset.help)});
@@ -1763,7 +1786,7 @@ export function initWorld(){
   tick();
   (window.__fogAtlasPromise||Promise.reject()).then(A=>{atlas=A;if(world&&started)onAtlas(A)}).catch(()=>{});
   window.addEventListener("beforeunload",()=>{if(started&&world)save()});
-  document.addEventListener("visibilitychange",()=>{if(document.hidden&&started&&world)save()});
+  document.addEventListener("visibilitychange",()=>{stopMovement();if(document.hidden&&started&&world)save()});
   // debug / test hook (used by the headless verification and the automated playtests)
   const br=$("#wBright");if(br){br.value=Math.round(brightBoost*100);$("#wBrightV").textContent="+"+br.value+"%";br.oninput=()=>{brightBoost=clamp(br.value/100,0,.4);$("#wBrightV").textContent="+"+br.value+"%";try{localStorage.setItem("fog-of-knowledge:game:bright",String(brightBoost))}catch(_){}}}
   const dl=$("#wDayLen");if(dl){dl.value=dayLenPref;dl.onchange=()=>setDayLen(dl.value)}const wp=$("#wWeatherSel");if(wp){wp.value=weatherPref;wp.onchange=()=>setWeatherPref(wp.value)}

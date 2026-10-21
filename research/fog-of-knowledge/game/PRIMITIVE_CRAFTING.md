@@ -22,3 +22,6 @@ Hover the free mouse cursor over an object to see its name, distance and action;
 Flint, stone flakes, sticks and pyrite are prioritized before other quickbar entries. The tutorial MINIMIZE button retains its page; H or ? reopens it.
 
 Open showcase.html for the live sandbox: both benches, all tool close-ups, joint geometry, friction ignition, burning logs, rain and cursor pickup. Its iframe uses a separate sandbox save key; normal world progress is not reset or overwritten.
+
+
+Automatic walking has a visible STOP WALKING button. Tap E again, press Esc or a movement key, or click the world to cancel immediately. Opening menus, leaving the canvas, releasing pointer lock, switching tabs or losing focus clears the route, held keys and horizontal movement together. A route also stops when blocked or after a two-minute safety limit. Cancellation runs before popup/help/observation key handlers so a modal cannot swallow it. Movement is suspended while game panels are open.
