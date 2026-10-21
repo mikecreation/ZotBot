@@ -32,7 +32,7 @@ export const NOTES={
   flake:["Razor edge where it split from the core.","Small but sharp — needs a handle to be useful.","Bind it to a stick?"],
   axe_stone:["The handle multiplies your swing; the edge focuses it onto a line.","Leverage + a hard edge = work.",""],
   spear:["Stone-tipped hunting spear. Q throws it; click nearby wildlife to thrust. E recovers a thrown spear.","Kinetic energy ½mv² does the work when it lands.",""],
-  tally:["Reusable counting record: equip it and Q to carve one notch. J → Experiments shows your saved total.","Ten notches unlock Counting and measured throw records. Each notch represents one quantity you choose to count.",""],
+  tally:["Reusable counting record: equip it and Q to carve one notch. Tab → Experiments shows your saved total.","Ten notches unlock Counting and measured throw records. Each notch represents one quantity you choose to count.",""],
   pot:["Rings when tapped. The fire turned soft clay into something like stone.","Holds water without softening.","Could it hold water over a fire?"],
   pot_water:["Water sloshes heavily — a litre weighs a kilogram.","Clear-ish, but who knows what lives in it?","Boil it?"],
   pot_clean:["Boiled — the bubbles carried off the air, and the heat killed what was living in it.","",""],

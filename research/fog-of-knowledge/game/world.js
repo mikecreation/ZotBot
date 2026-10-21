@@ -1102,7 +1102,7 @@ function handFireAction(k,other,t=findTarget()){
 }
 function handActionLabel(t){const left=activeHand==="L",k=left?world.left:world.held,a=handFireAction(k,left?world.held:world.left,t);let text=a?.text||"";
   if(k==="log")text+=(text?" · ":"")+"B carve fire-drill kit (knife required)";
-  if(k==="tally")text=`Q carve a counting notch · ${world.counters.tally} recorded · J experiments shows your record`;
+  if(k==="tally")text=`Q carve a counting notch · ${world.counters.tally} recorded · Tab → Experiments shows your record`;
   if(k==="spear")text="Q throw spear · click nearby wildlife to thrust · E recover thrown spear";
   if(k==="flake")text="B shape stone knife · flake becomes the blade";
   if(ITEMS[k]?.tool==="knife")text="B carve notched joint (1 log) · I craft axe, pickaxe or workbench";
@@ -1244,7 +1244,7 @@ function useHeld(){
   if(k==="seeds"){if(player.swimming)return;let wet=structuresNear(player.pos.x,player.pos.z,12,"well").length>0;for(let a=0;a<16&&!wet;a++)for(const r of [6,12,18])if(heightAt(player.pos.x+Math.cos(a/16*6.283)*r,player.pos.z+Math.sin(a/16*6.283)*r)<0)wet=true;
     if(!wet)return toast("These seeds need water nearby to grow — plant within ~18 m of water, or next to a well.");
     take("seeds");place("crop",{planted:world.gameTime,cold:airTemp(player.pos.x,player.pos.z,player.pos.y)<8});toast("Planted. Crops need water, light and warmth — about a day to grow.");return}
-  if(k==="tally"){world.counters.tally++;AU.chop();renderHotbar();toast(`Tally: ${world.counters.tally} notches recorded.${world.counters.tally===1?" Q adds one; J → Experiments keeps your count. Ten notches unlock measured throw records.":""}`);if(world.counters.tally>=10)discover("counting");return}
+  if(k==="tally"){world.counters.tally++;AU.chop();renderHotbar();toast(`Tally: ${world.counters.tally} notches recorded.${world.counters.tally===1?" Q adds one; Tab → Experiments keeps your count. Ten notches unlock measured throw records.":""}`);if(world.counters.tally>=10)discover("counting");return}
   if(k==="tablet"){if(!hasD("counting"))return toast("You have nothing to record yet — learn to count first.");toast("You press counted marks into the wet clay.");discover("writing");return}
   if(k==="gnomon"){take("gnomon");place("gnomon",{planted:world.gameTime});toast("Shadow stick planted. Watch its shadow over the next hour of daylight.");return}
   if(k==="lodestone"){const near=nearbyChunks(player.pos.x,player.pos.z,4).some(ch=>ch.obj.res.some(r=>!r.gone&&r.type==="iron_ore"&&Math.hypot(r.x-player.pos.x,r.z-player.pos.z)<3));
@@ -1303,7 +1303,7 @@ function craft(out){
   toast(`Crafted ${r.n>1?r.n+"× ":""}${ITEMS[out].name}.${ITEMS[out].place?" Press Q to place it.":""}`);
   if(out==="clothing"){take("clothing");world.worn="clothing";toast("You wear the hide clothing.");discover("clothing")}
   if(out==="wheel")discover("wheel");
-  if(out==="tally")toast("Tally stick: a reusable counting record. Equip it and Q to carve a notch; J → Experiments shows the saved total. Ten notches unlock measured throw records.");
+  if(out==="tally")toast("Tally stick: a reusable counting record. Equip it and Q to carve a notch; Tab → Experiments shows the saved total. Ten notches unlock measured throw records.");
   if(out==="spear")toast("Spear ready: Q throws it; click nearby wildlife to thrust. Recover the thrown spear with E.");
   if(out==="knife_stone")toast("Stone knife ready. Hold a log + B for a fire-drill kit; hold the knife + B to carve a notched bench joint. I shows the axe and pickaxe recipes.");
   if(out==="hand_drill")toast("Hand drill carved: spindle + notched hearth board. Stow your other hand, carry plant fiber and HOLD Q beside a dry firewood pile.");
