@@ -6,7 +6,7 @@
 <title>Fog of Knowledge: The Game</title>
 <meta name="description" content="An open world with real physical laws: explore as one human and discover your way out of the Fog of Knowledge.">
 <style>html,body{background:#02040a}</style>
-<link rel="stylesheet" href="game.css?v=3.6.0">
+<link rel="stylesheet" href="game.css?v=3.28.0">
 </head>
 <body>
 <header class="gTop">
@@ -19,7 +19,7 @@
     <button role="tab" data-mode="explore" aria-selected="false">FOG EXPLORER</button>
     <button role="tab" data-mode="daily" aria-selected="false">DAILY EXPEDITION</button>
   </nav>
-  <a class="gBack" href="../index.html">← Back to atlas</a>
+  <a class="gBack" href="/fog-of-knowledge/">← Back to atlas</a>
 </header>
 <main id="app">
   <!-- OPEN WORLD -->
@@ -35,7 +35,7 @@
       <div id="wHands" class="wHands"></div>
       <div id="wObj" class="wObj"></div>
       <div id="wThought" class="wThought" hidden></div>
-      <div class="wKeys">WASD move · Shift run · C crouch (quiet) · Space jump/swim · mouse look (drag up to see the sky) · E interact/pick up/sleep/pet · F observe held item · Q / click use, throw, shoot, eat, drink · P pet companion · 1–0 right hand (Shift: left) · right-click item menu · R stow held item (Shift+R both) · I backpack &amp; crafting · Tab journal · J curiosity · H help · G physics readout · Esc settings</div>
+      <div class="wKeys">WASD move · Shift run · C crouch (quiet) · Space jump/swim · mouse look (drag up to see the sky) · E interact/pick up/sleep/pet · F observe held item · Q / click use, throw, shoot, eat, drink · P pet companion · V select hand · 1–0 equip selected hand (Shift: left) · X swap objects · right-click item menu · R stow held item (Shift+R both) · I backpack &amp; crafting · Tab journal · J curiosity · H help · G physics readout · Esc settings</div>
     </div>
     <div id="wInv" class="wPanel" hidden></div>
     <div id="wJournal" class="wPanel wide" hidden></div>
@@ -48,6 +48,10 @@
     <div id="wDeath" class="wOverlay" hidden></div>
     <button id="wGear" class="wGear" title="Settings (Esc)">⚙</button>
     <button id="wHelpBtn" class="wGear wHelpBtn" title="How to play (H)">?</button>
+    <button id="wStopWalk" class="wStopWalk" hidden title="Cancel automatic walking immediately">STOP WALKING · E / Esc</button>
+    <div id="wClimbHelp" class="wOverlay help" hidden></div>
+    <button id="wExpLaunch" class="wExpLaunch" hidden title="Discovery expeditions (L)">DISCOVERY EXPEDITIONS <b>L</b></button>
+    <div id="wExpeditions" class="expOverlay" hidden></div>
     <div id="wHelp" class="wOverlay help" hidden></div>
     <div id="wFps" class="wFps" hidden></div>
     <div id="wSettings" class="wPanel settings" hidden>
@@ -66,7 +70,7 @@
       <label class="chk"><input type="checkbox" id="wTipsChk" checked> Just-in-time tips <small>(short one-time hints for the basics, like placing a firewood pile)</small></label>
       <label class="chk"><input type="checkbox" id="wNeedyChk" checked> Needy pets <small>(companions sometimes interrupt focused work and ask to be petted — never a penalty)</small></label>
       <h4>CONTROLS</h4>
-      <table class="keys"><tr><td>W A S D</td><td>move (Shift run, C crouch = quiet)</td></tr><tr><td>Space</td><td>jump / swim up</td></tr><tr><td>E</td><td>interact · pick up · gather · sleep · pet</td></tr><tr><td>F</td><td>observe the held item up close (F / Esc to put away; press another number to hold a second item)</td></tr><tr><td>Q / click</td><td>use · throw · shoot · eat · drink · place</td></tr><tr><td>P</td><td>pet the nearest companion</td></tr><tr><td>1–0</td><td>hotbar item to right hand (Shift+1–0: left hand)</td></tr><tr><td>Right-click</td><td>item menu: hands · observe · use · drop 1 / X / all</td></tr><tr><td>R · Shift+R</td><td>stow the held item back in your backpack · stow both hands</td></tr><tr><td>I · Tab · J</td><td>backpack &amp; crafting · journal · curiosity</td></tr><tr><td>H</td><td>how to play (help)</td></tr><tr><td>G</td><td>physics readout</td></tr><tr><td>Esc</td><td>settings</td></tr></table>
+      <table class="keys"><tr><td>W A S D</td><td>move (Shift run, C crouch = quiet)</td></tr><tr><td>Space</td><td>jump / swim up</td></tr><tr><td>E</td><td>interact · pick up · gather · sleep · pet</td></tr><tr><td>F</td><td>observe the held item up close (F / Esc to put away; press another number to hold a second item)</td></tr><tr><td>Q / click</td><td>use selected hand · 3 sticks: build firewood pile · held wood: add fuel · flint + pyrite: light fire</td></tr><tr><td>V · X</td><td>select other hand · swap held objects</td></tr><tr><td>P</td><td>pet the nearest companion</td></tr><tr><td>1–0</td><td>hotbar item to selected hand (Shift+1–0: left hand)</td></tr><tr><td>Right-click</td><td>item menu: hands · observe · use · drop 1 / X / all</td></tr><tr><td>R · Shift+R</td><td>stow the held item back in your backpack · stow both hands</td></tr><tr><td>I · Tab · J</td><td>backpack &amp; crafting · journal · curiosity</td></tr><tr><td>H</td><td>how to play (help)</td></tr><tr><td>G</td><td>physics readout</td></tr><tr><td>Esc</td><td>settings</td></tr></table>
       <h4>CREDITS</h4>
       <p class="muted small">3D engine: three.js r160 and its examples addons (Sky, Water, GLTFLoader, post-processing) — MIT, © 2010-2023 three.js authors. Water normal map from the three.js examples (MIT).<br>
       Human model and animations: <b>Universal Animation Library</b> by Quaternius — CC0 1.0 (public domain), quaternius.com. Clothing, animals, trees, terrain, sky, clouds and effects are procedural.<br>
@@ -118,11 +122,13 @@
     <div class="gCol gRight atlasNeed" hidden><div class="card"><h3>Your trail</h3><ol id="dyTrail" class="trail"></ol></div></div>
   </section>
 </main>
-<script src="discoveries.js?v=3.6.0" defer></script>
-<script src="engine.js?v=3.6.0" defer></script>
-<script src="game.js?v=3.6.0" defer></script>
+<script src="discoveries.js?v=3.28.0" defer></script>
+<script src="engine.js?v=3.28.0" defer></script>
+<script src="game.js?v=3.28.0" defer></script>
 <script type="module">
-import {initWorld} from "./world.js?v=3.6.0";
+import {initWorld} from "./world.js?v=3.28.0";
+import {setVolume} from "./audio.js";
+if(new URLSearchParams(location.search).get("verification")==="1")setVolume(0);
 initWorld();
 </script>
 </body>

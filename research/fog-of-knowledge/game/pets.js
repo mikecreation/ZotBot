@@ -84,7 +84,13 @@ export function createPets(C){
     C.toast(`${PET_INFO[kind].emoji} ${d.name} the ${PET_INFO[kind].label.toLowerCase()} has befriended you! ${d.active?"It will follow you.":`You already have ${MAX_ACTIVE} companions following — ${d.name} will wait at your camp. Swap who follows in the journal (Companions tab).`} Rename it there too.`);
     C.discover("companion");W().counters.befriended=(W().counters.befriended||0)+1;return d}
   function uniqueName(n){let k=n,i=2;while(pets().some(p=>p.name===k))k=n+" "+(i++);return k}
-  function sound(e,what){const k=e.kind,A=C.AU;if(e.pos.distanceTo(P().pos)>30)return;
+  let lastPassiveVoice=-Infinity;
+  function sound(e,what){const k=e.kind,A=C.AU;if(e.pos.distanceTo(P().pos)>18)return;
+    const now=performance.now()/1000,interactive=what==="pet";
+    // No synthetic whining from passive mood/need changes. Real interaction may
+    // still produce a purr; ambient animal voices are sparse across all pets.
+    if(what==="sad")return;
+    if(!interactive){if(now-lastPassiveVoice<25)return;lastPassiveVoice=now}
     if(k==="cat")(what==="happy"||what==="pet"?A.purr:what==="sleep"?A.purr:A.meow)();
     else if(k==="frenchie")(what==="sleep"?A.snore:what==="sad"?A.whine:what==="happy"?A.boof:A.snort)();
     else if(k==="squirrel")A.chirp();else if(k==="crow")A.caw();else if(k==="dog")(what==="sad"?A.whine:A.boof)()}

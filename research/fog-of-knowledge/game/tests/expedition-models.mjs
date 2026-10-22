@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import {LABS,defaultControls,evaluateLab,searchContract} from '../expedition-models.js';
+const tests=[];function test(name,fn){try{fn();tests.push({name,pass:true})}catch(e){tests.push({name,pass:false,error:e.message})}}
+const near=(a,b,t=1e-7)=>assert.ok(Math.abs(a-b)<t,`${a} != ${b}`);
+const solve=(id,k)=>{const target=LABS.find(l=>l.id===id).targets[k];switch(id){case'trajectory':return{angle:45,speed:Math.sqrt(target*9.81)};case'lever':return{force:150,arm:target/150};case'raft':return{logs:[4,6,9][k]};case'pendulum':return{length:9.81*(target/2/Math.PI)**2,mass:2};case'friction':return{speed:10,mu:100/(2*9.81*target)};case'pressure':return{head:(target/2)**2};case'thermal':return{thickness:[1,2,4][k]};case'optics':return{incidence:Math.asin(1.2*Math.sin(target*Math.PI/180))*180/Math.PI,index:1.2};case'circuit':return{voltage:6,resistance:6/target};case'resonance':return{frequency:[1,1.5,2][k],damping:.07};case'ecology':return{harvest:target}}};
+for(const l of LABS.filter(l=>!l.batch&&l.id!=='search'))for(let k=0;k<3;k++)test(`${l.id} contract ${k+1} is solvable`,()=>assert.ok(evaluateLab(l.id,solve(l.id,k),k).success));
+test('projectile speed squared and complementary angles',()=>{near(evaluateLab('trajectory',{speed:20,angle:30}).value/evaluateLab('trajectory',{speed:10,angle:30}).value,4);near(evaluateLab('trajectory',{speed:10,angle:30}).value,evaluateLab('trajectory',{speed:10,angle:60}).value)});
+test('lever trades effort for arm length',()=>near(evaluateLab('lever',{force:50,arm:4}).value,evaluateLab('lever',{force:100,arm:2}).value));
+test('pendulum mass cancels; length changes period',()=>{near(evaluateLab('pendulum',{length:1,mass:.2}).value,evaluateLab('pendulum',{length:1,mass:5}).value);near(evaluateLab('pendulum',{length:2,mass:1}).value/evaluateLab('pendulum',{length:1,mass:1}).value,Math.sqrt(2))});
+test('more logs raise freeboard under the same load',()=>assert.ok(evaluateLab('raft',{logs:5}).value>evaluateLab('raft',{logs:3}).value));
+test('friction deceleration and pressure head scale correctly',()=>{near(evaluateLab('friction',{speed:10,mu:.2}).value/evaluateLab('friction',{speed:10,mu:.4}).value,2);near(evaluateLab('pressure',{head:4}).value/evaluateLab('pressure',{head:1}).value,2)});
+test('insulation retains heat within ambient / initial limits',()=>{const a=evaluateLab('thermal',{thickness:0}).value,b=evaluateLab('thermal',{thickness:5}).value;assert.ok(a>10&&b<90&&b>a)});
+test('Snell law bends toward normal for higher index',()=>assert.ok(evaluateLab('optics',{incidence:45,index:1.8}).value<evaluateLab('optics',{incidence:45,index:1.2}).value));
+test('Ohm current and power budget are enforced separately',()=>{near(evaluateLab('circuit',{voltage:12,resistance:120}).value,.1);assert.equal(evaluateLab('circuit',{voltage:24,resistance:240},2).success,false)});
+test('resonance is limited by damping',()=>assert.ok(evaluateLab('resonance',{frequency:1,damping:.1}).value>evaluateLab('resonance',{frequency:1,damping:.3}).value));
+test('overharvesting depletes lake; viable catch succeeds',()=>{assert.ok(evaluateLab('ecology',{harvest:35}).value<1);assert.ok(evaluateLab('ecology',{harvest:24},2).success)});
+for(let k=0;k<3;k++)test(`binary search contract ${k+1}`,()=>{const c=searchContract(k);let lo=0,hi=c.values.length-1,n=0,found=false;while(lo<=hi){n++;const m=Math.floor((lo+hi)/2);if(c.values[m]===c.target){found=true;break}if(c.values[m]<c.target)lo=m+1;else hi=m-1}assert.ok(found&&n<=c.budget)});
+test('invalid slider values cannot create NaN experiment output',()=>{for(const l of LABS.filter(l=>!l.batch&&l.id!=='search')){const p=Object.fromEntries(l.controls.map(c=>[c[0],NaN]));assert.ok(Number.isFinite(evaluateLab(l.id,p).value))}});
+console.log(JSON.stringify({passed:tests.filter(t=>t.pass).length,total:tests.length,failed:tests.filter(t=>!t.pass)},null,2));if(tests.some(t=>!t.pass))process.exitCode=1;
+export {solve};

@@ -1,3 +1,4 @@
+import {GEAR_STEPS} from "./gear-progression.js?v=3.28.0";
 /* Fog of Knowledge: The Game: OBSERVE (F).
  * A close-up look at what you hold: the world blurs and pauses, the item sits large in your hands; drag to turn it,
  * wheel to zoom, the light follows your cursor so texture, sheen and weight show. Notes describe what a careful
@@ -6,6 +7,13 @@
 import * as THREE from "./vendor/three.module.min.js";
 // what a real person would notice; the last note is the "question" that points somewhere
 export const NOTES={
+ knife_stone:["A sharp flaked-stone edge with an unsharpened heel for the grip.","Suitable fine-grained stone fractures sharply; not every rock can be knapped.","Use it to shape handles, a fire spindle and housed wooden joints. Hold it and B to notch a log."],
+ axe_stone:["A stone cutting head sits in a shaped wooden handle.","Twisted plant-fiber bindings grip the head and reinforce the handle.","Chop trees with E. An axe cuts wood; a pickaxe breaks mineral deposits."],
+ pickaxe_stone:["A pointed stone head is lashed across a shaped wooden handle.","Concentrated impacts break brittle rock; this primitive head wears with use.","E mines boulders and mineral deposits. It is not a tree-cutting axe."],
+ hand_drill:["A thin wooden spindle fits the shallow socket of a notched hearth board.","Both palms rotate the spindle: wood friction makes hot dust and then an ember, not flint sparks.","Stow the other hand, gather plant fiber and hold Q beside a dry firewood pile. The ember lights the tinder."],
+ bench_joint:["The open notch has two shoulders and a flat bearing surface; the mating tongue seats inside.","The shoulders carry load. A wooden wedge and plant-fiber bindings resist separation.","F: rotate this cutaway joint. Four joints make the corner frame of a nail-free workbench."],
+ workbench:["Four corner legs support a rectangular top made from split boards.","Housed joints, wooden wedges and twisted plant-fiber lashings connect the frame without nails.","Q places it. E opens crafting at the bench."],
+ workbench_bundle:["Four corner supports each bundle three wooden poles for thicker legs.","Cross rails, visible notches, wedges and lashings tie the rectangular board top to the supports.","Q places it. E opens crafting at the bench."],
   stick:["Light for its size; grain lines run its whole length.","Bends a little, then snaps along the grain.","Would it float?"],
   log:["Heavy, but you can lift it. Bark peels in strips; rings show inside.","Long and stiff — it could pry something heavy.","Would something this big float, too?"],
   stone:["Dense and cold; it fits the palm — a natural hammer.","Rounded by water, perhaps.","What happens if you strike flint with it?"],
@@ -23,8 +31,8 @@ export const NOTES={
   hide:["Supple on one side, furred on the other; it holds warmth.","Wind doesn't pass through it.","Clothes? A bag of air to blow on a fire?"],
   flake:["Razor edge where it split from the core.","Small but sharp — needs a handle to be useful.","Bind it to a stick?"],
   axe_stone:["The handle multiplies your swing; the edge focuses it onto a line.","Leverage + a hard edge = work.",""],
-  spear:["Long, balanced near the middle; the point leads in flight.","Kinetic energy ½mv² does the work when it lands.",""],
-  tally:["Notches in a row — each one stands for something.","Ten notches… then what?",""],
+  spear:["Stone-tipped hunting spear. Q throws it; click nearby wildlife to thrust. E recovers a thrown spear.","Kinetic energy ½mv² does the work when it lands.",""],
+  tally:["Reusable counting record: equip it and Q to carve one notch. Tab → Experiments shows your saved total.","Ten notches unlock Counting and measured throw records. Each notch represents one quantity you choose to count.",""],
   pot:["Rings when tapped. The fire turned soft clay into something like stone.","Holds water without softening.","Could it hold water over a fire?"],
   pot_water:["Water sloshes heavily — a litre weighs a kilogram.","Clear-ish, but who knows what lives in it?","Boil it?"],
   pot_clean:["Boiled — the bubbles carried off the air, and the heat killed what was living in it.","",""],
@@ -69,6 +77,7 @@ export const WONDERS={shell:"wonder_shell",feather:"wonder_feather",snow:"wonder
 const LOOK={pyrite:{metal:.9,rough:.28},copper:{metal:.85,rough:.35},bronze:{metal:.85,rough:.32},tin:{metal:.8,rough:.3},iron:{metal:.6,rough:.7},flint:{rough:.32},quartz:{glass:1},glass:{glass:1},lens:{glass:1},prism:{glass:1},clay:{rough:1},pot:{rough:.7},lodestone:{metal:.4,rough:.5},shell:{rough:.25}};
 export function comboFor(a,b){for(const c of COMBOS){const hit=(x,y)=>c.a.includes(x)&&c.b.includes(y??null);if(hit(a,b)||(b&&hit(b,a)))return c}return null}
 
+for(const [k,steps] of Object.entries(GEAR_STEPS))NOTES[k]=steps;
 export function createObserve(C){
   let el=null,rnd=null,scene,cam,key,group,items=[],open=false,rotX=.35,rotY=.6,zoom=1,drag=null,timer=0,comboDone=false,lastT=0,raf=0,needyPaw=0;
   function build(){

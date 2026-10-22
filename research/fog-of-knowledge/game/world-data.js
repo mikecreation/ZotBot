@@ -1,8 +1,19 @@
+import {LABS} from "./expedition-models.js?v=3.28.0";
+import {GEAR_ITEMS,GEAR_RECIPES} from "./gear-progression.js?v=3.28.0";
+import {SHIP_ITEMS,SHIP_RECIPES,SHIP_DISCOVERIES} from "./ship-progression.js?v=3.28.0";
 /* Fog of Knowledge: The Game — open-world content: items, hands-on discoveries, recipes.
  * Principle texts summarise well-established science/history; dates are approximate ("c.").
  * `tree` links to discoveries.js ids (which carry the verified atlas node ids); `atlas` adds direct atlas ids.
  */
 export const ITEMS={
+ knife_stone:{name:"Knapped stone knife",mass:.2,density:2200,r:.06,color:0x777a81,tool:"knife",power:.5,dur:60},
+ pickaxe_stone:{name:"Lashed stone pickaxe",mass:1.8,density:1800,r:.12,color:0x777a81,tool:"pickaxe",power:1,dur:70},
+ hand_drill:{name:"Hand-drill fire kit",mass:.7,density:600,r:.08,color:0x996a3c,tool:true},
+ bench_joint:{name:"Notched bench joint",mass:5,density:600,r:.15,color:0x996a3c},
+ workbench:{name:"Four-leg workbench kit",mass:35,density:600,r:.4,color:0x996a3c,place:"workbench"},
+ workbench_bundle:{name:"Bundled-leg workbench kit",mass:45,density:600,r:.4,color:0x996a3c,place:"workbench_bundle"},
+ charcoal:{name:"Charcoal",mass:.05,density:220,r:.04,color:0x252529},
+ ash:{name:"Wood ash",mass:.01,density:500,r:.035,color:0xaaa49a},
  stick:{name:"Stick",mass:.5,density:600,r:.05,color:0x8a6a3e},
  log:{name:"Log",mass:5,density:600,r:.14,color:0x6e4f2c},
  stone:{name:"Stone",mass:.6,density:2600,r:.06,color:0x8d8a86},
@@ -85,8 +96,8 @@ const RAW=[
  ["fire","Fire making",0,"Strike flint against pyrite next to a firewood pile.","Combustion needs fuel, oxygen and heat — the 'fire triangle'. Striking flint against pyrite (iron sulfide) shears off tiny particles that oxidise so fast they glow as sparks, hot enough to ignite dry tinder.",["fire"],[]],
  ["combustion","The fire triangle",0,"Watch a fire die from lack of fuel or from rain.","A fire stops when any side of the triangle is removed: no fuel left, oxygen cut off, or the fuel cooled below its ignition temperature. Water both cools the fuel and smothers it — evaporating water absorbs a lot of heat.",["cause"],[]],
  ["warmth","Heat transfer",0,"Warm your body back up beside a fire while cold.","Heat flows from hot to cold by conduction, convection and radiation. Radiant heat from a small source spreads over a sphere, so its intensity falls roughly with the inverse square of distance: twice as far, a quarter of the warmth.",["fire"],["field.thermodynamics"]],
- ["evaporative","Evaporative cooling",0,"Be soaked through while the air is cold.","Evaporating water absorbs latent heat (about 2.26 MJ per kg at 100 °C, even more when cooler) from your skin, and water conducts heat about 25 times better than air. Wet clothing loses most of its insulation — which is why being wet and cold is so dangerous.",[],[]],
- ["cooking","Cooking",0,"Cook something beside a burning fire (Q): roast hazelnuts, bake dough or cook meat.","Heat denatures proteins and kills most food-borne bacteria and parasites (thorough cooking above about 70 °C). Cooked food is also easier to chew and digest, freeing energy.",["cooking"],[]],
+ ["evaporative","Evaporative cooling",0,"Be soaked through while the air is cold.","Evaporating water absorbs latent heat (about 2.26 MJ per kg at 100 °C / 212.0 °F, even more when cooler) from your skin, and water conducts heat about 25 times better than air. Wet clothing loses most of its insulation — which is why being wet and cold is so dangerous.",[],[]],
+ ["cooking","Cooking",0,"Cook something beside a burning fire (Q): roast hazelnuts, bake dough or cook meat.","Heat denatures proteins and kills most food-borne bacteria and parasites (thorough cooking above about 70 °C / 158.0 °F). Cooked food is also easier to chew and digest, freeing energy.",["cooking"],[]],
  ["gravity","Falling bodies",0,"Drop or throw things and watch them fall — five times.","Near Earth's surface every object accelerates downward at about 9.81 m/s², whatever its mass, as long as air resistance is small. Galileo showed this experimentally in the early 1600s; a dense stone and a light stick only differ because air drags harder on the stick.",[],["physical.classical-mechanics"]],
  ["impact","Energy of impact",0,"Survive a hard fall (land at more than 6.5 m/s, a drop of about 2 m or more).","A body falling from height h reaches a speed v = √(2gh); its kinetic energy ½mv² must be absorbed when it stops. Falling from 5 m means arriving at about 9.9 m/s.",[],[]],
  ["motion","Projectile motion",2,"Once you can count, measure five throws (journal → Experiments).","Without air drag a projectile follows a parabola: horizontal speed stays constant while gravity changes vertical speed. On level ground the range is R = v²·sin(2θ)/g, longest near 45°. Newton's laws of motion (1687) explain this exactly; real throws fall short because of drag.",["newton"],[]],
@@ -101,17 +112,17 @@ const RAW=[
  ["astronomy","The night sky",2,"Study the stars on three different nights (drag the view up until you look at the sky).","Stars keep fixed patterns, but each night they rise about 4 minutes earlier, because the Earth spins once relative to the stars in 23 h 56 min (a sidereal day). Watching this cycle let early farmers keep calendars.",["calendar"],[]],
  ["counting","Counting",0,"Carve ten notches into a tally stick (hold it, Q).","Tally marks record quantities one-to-one; notched bones possibly used for counting date back tens of thousands of years. Counting is the root of arithmetic.",["counting"],[]],
  ["lever","The lever",0,"Move a boulder using a log as a lever (hold log, Q at boulder).","Archimedes' law of the lever: effort × effort-arm = load × load-arm. A long lever lets a small force move a heavy weight by trading distance for force.",["mechanics"],[]],
- ["ceramics","Ceramics",1,"Fire clay in a burning fire (hold clay, Q at fire).","Heating clay above roughly 600 °C drives out chemically bound water and fuses its particles, turning it irreversibly into ceramic. Fired pottery appears in East Asia about 20,000 years ago.",["pottery"],[]],
- ["boiling","Boiling water",1,"Boil a pot of water on a fire.","Water boils when its vapour pressure equals the surrounding air pressure — 100 °C at sea level. Boiling for a minute kills most disease-causing microbes.",["herbal"],[]],
- ["pressure","Air pressure & altitude",1,"Boil water at two places at least 150 m apart in altitude and compare the boiling points.","Air pressure falls with altitude, so water boils at a lower temperature — about 1 °C lower for every 300 m or so (about 97 °C at 1000 m). Food therefore cooks more slowly high in the mountains. (This island's peaks are only a few hundred metres high, so the difference you measure is small but real.)",[],[]],
+ ["ceramics","Ceramics",1,"Fire clay in a burning fire (hold clay, Q at fire).","Heating clay above roughly 600 °C / 1,112.0 °F drives out chemically bound water and fuses its particles, turning it irreversibly into ceramic. Fired pottery appears in East Asia about 20,000 years ago.",["pottery"],[]],
+ ["boiling","Boiling water",1,"Boil a pot of water on a fire.","Water boils when its vapour pressure equals the surrounding air pressure — 100 °C / 212.0 °F at sea level. Boiling for a minute kills most disease-causing microbes.",["herbal"],[]],
+ ["pressure","Air pressure & altitude",1,"Boil water at two places at least 150 m apart in altitude and compare the boiling points.","Air pressure falls with altitude, so water boils at a lower temperature — about 1 °C / 1.8 °F lower for every 300 m or so (about 97 °C / 206.6 °F at 1000 m). Food therefore cooks more slowly high in the mountains. (This island's peaks are only a few hundred metres high, so the difference you measure is small but real.)",[],[]],
  ["agriculture","Agriculture",1,"Plant seeds near water (Q), wait, and harvest the crop (E).","Plants build their bodies from carbon dioxide and water using sunlight (photosynthesis); they need water, light and nutrients in the soil. Farming began in the Fertile Crescent about 11,500 years ago.",["agriculture"],[]],
- ["kiln","Kilns",1,"Build and light a clay kiln.","An enclosed furnace loses far less heat than an open fire and draws air through its fuel, so it reaches higher temperatures (around 1000 °C or more) than an open wood fire.",["pottery"],[]],
- ["smelting","Smelting",1,"Put copper ore into a lit kiln (hold ore, Q at kiln).","Heated with charcoal, copper ore is chemically reduced: carbon monoxide strips oxygen away, leaving metallic copper. Copper smelting began around 5000 BCE; copper melts at 1085 °C.",["copper"],[]],
+ ["kiln","Kilns",1,"Build and light a clay kiln.","An enclosed furnace loses far less heat than an open fire and draws air through its fuel, so it reaches higher temperatures (around 1000 °C / 1,832.0 °F or more) than an open wood fire.",["pottery"],[]],
+ ["smelting","Smelting",1,"Put copper ore into a lit kiln (hold ore, Q at kiln).","Heated with charcoal, copper ore is chemically reduced: carbon monoxide strips oxygen away, leaving metallic copper. Copper smelting began around 5000 BCE; copper melts at 1085 °C / 1,985.0 °F.",["copper"],[]],
  ["bronze","Bronze",2,"Smelt tin, then put copper and tin together into a lit kiln.","An alloy of about 88 % copper and 12 % tin is much harder than either metal alone because the different-sized atoms resist slipping past one another. Bronze working spread around 3300 BCE.",["bronze"],[]],
  ["writing","Writing",2,"Inscribe a clay tablet (hold it, Q).","Writing stores language outside memory. Sumerian cuneiform, pressed into clay with a reed stylus, appears around 3200 BCE, first for accounts and counting.",["writing"],[]],
  ["wheel","The wheel",2,"Carve a wheel from a log with a bronze axe (craft it).","A wheel turning on an axle replaces sliding friction with much smaller rolling resistance. Wheels appear around 3500 BCE.",["wheel"],[]],
- ["iron","Iron",3,"Fit bellows to a lit kiln and put iron ore in.","Iron needs about 1200 °C to be reduced in a bloomery furnace; bellows force extra oxygen into the fire, raising its temperature. The iron forms a spongy 'bloom' that is hammered into tools. Iron working spread widely after about 1200 BCE.",["iron"],[]],
- ["glass","Glass",2,"Put sand into a lit kiln.","Silica sand mixed with a flux (plant ash or natron) melts at around 1000 °C and cools into glass, a solid without a crystal lattice. Glass beads were made in Mesopotamia by about 2500 BCE.",[],[]],
+ ["iron","Iron",3,"Fit bellows to a lit kiln and put iron ore in.","Iron needs about 1200 °C / 2,192.0 °F to be reduced in a bloomery furnace; bellows force extra oxygen into the fire, raising its temperature. The iron forms a spongy 'bloom' that is hammered into tools. Iron working spread widely after about 1200 BCE.",["iron"],[]],
+ ["glass","Glass",2,"Put sand into a lit kiln.","Silica sand mixed with a flux (plant ash or natron) melts at around 1000 °C / 1,832.0 °F and cools into glass, a solid without a crystal lattice. Glass beads were made in Mesopotamia by about 2500 BCE.",[],[]],
  ["optics","Optics",5,"Focus sunlight through a lens onto a firewood pile.","Light bends (refracts) when it passes between air and glass or crystal. A convex lens brings parallel rays of sunlight to a focus, concentrating enough energy to ignite tinder. Ibn al-Haytham's Book of Optics (c. 1021) studied light experimentally.",["optics"],[]],
  ["magnetism","Magnetism",3,"Hold lodestone next to iron ore.","Lodestone is naturally magnetised magnetite. It attracts iron, as ancient Greek and Chinese writers recorded.",[],["field.electromagnetism"]],
  ["compass","Compass",5,"Use a water compass (lodestone floating in a pot of water).","A magnetised piece free to turn lines up with Earth's magnetic field and points roughly north–south. Compasses were described in China by Shen Kuo in 1088.",["compass"],[]],
@@ -120,7 +131,7 @@ const RAW=[
  ["freefall","Timing a fall",6,"Once you can count, throw a stone from a hilltop or cliff so it lands at least 6 m below you, and time the fall.","A falling body covers y = v₀t + ½gt²: the distance grows with the square of the time. From the measured drop and the time you can solve for g, which comes out close to 9.81 m/s² (a little less, because of air drag). Galileo used inclined planes to slow this down enough to time it.",[],["physical.newtonian-mechanics"]],
  ["prism","The spectrum of light",6,"Hold a glass prism in direct sunlight (Q).","White sunlight is a mixture of colours. Glass bends (refracts) short-wavelength violet light more than long-wavelength red, so a prism fans sunlight out into a spectrum. Isaac Newton showed in 1666 that a second prism can recombine the colours into white. Spectroscopy later revealed what the stars are made of.",["optics"],["physical.spectroscopy"]],
  ["galilean","Moons of Jupiter",6,"At night, find the bright wandering 'star' — the planet Jupiter — and look at it through a telescope.","In January 1610 Galileo saw four small 'stars' in a line beside Jupiter that moved from night to night: moons orbiting Jupiter (Io, Europa, Ganymede, Callisto). It was direct evidence that not everything circles the Earth, supporting the Copernican Sun-centred model.",["telescope","heliocentric"],["field.astronomy"]],
- ["lightning","Lightning & thunder",0,"Live through a thunderstorm and notice the delay between the flash and the thunder.","Lightning heats air to about 30,000 °C in microseconds, making it expand explosively — that shock wave is thunder. Light arrives almost instantly (300,000 km/s) but sound travels only about 343 m/s, so every 3 seconds of delay is about 1 km of distance.",[],["ology.meteorology","field.electromagnetism"]],
+ ["lightning","Lightning & thunder",0,"Live through a thunderstorm and notice the delay between the flash and the thunder.","Lightning heats air to about 30,000 °C / 54,032.0 °F in microseconds, making it expand explosively — that shock wave is thunder. Light arrives almost instantly (300,000 km/s) but sound travels only about 343 m/s, so every 3 seconds of delay is about 1 km of distance.",[],["ology.meteorology","field.electromagnetism"]],
  ["dog","Domestication",0,"By your fire, crouch (C) holding food (roasted nuts, flatbread or meat) until a wary wolf comes close, then offer it twice (Q).","Wolves that tolerated people near camps got scraps; over generations, tamer wolves became dogs. Genetics and archaeology put the domestication of the dog at least 15,000 years ago, long before farming. Dogs guard camps and help hunters.",["dog"],["ology.zoology"]],
  ["drying","Food preservation",1,"Dry dark berries (or meat) on a drying rack: Q to hang them, wait about 4 hours, E to collect.","Microbes that spoil food need water. Drying lowers the 'water activity' of meat until bacteria and moulds cannot grow, so dried meat keeps for months. Salting, smoking and fermenting work on similar principles.",[],["field.microbiology"]],
  ["groundwater","Groundwater & wells",1,"Dig a well low enough to reach the water table and draw water from it.","Rain soaks into the ground and fills the pores of rock and soil below the water table. Water drawn from a well has been filtered through sand and soil, so it carries far fewer germs than a river or pond. Wells over 8,000 years old are known from Cyprus and Israel.",["irrigation"],["ology.hydrology"]],
@@ -137,18 +148,27 @@ const RAW=[
  ["wonder_feather","Wonder: the feather",0,"Observe a feather.","Feather vanes are held together by tiny hooked barbules that zip like Velcro; birds re-zip them when preening. Feathers evolved from dinosaur scales and first served for warmth.",[],["ology.ornithology"]],
  ["wonder_snow","Wonder: the snowflake",0,"Observe a handful of snow in the cold.","Water molecules freeze into a hexagonal lattice because of the 104.5° angle of the H–O–H bond, so snow crystals grow six arms. Each takes its own path through the cloud, so no two are alike.",[],["ology.glaciology","ology.meteorology"]],
  ["wonder_leaf","Wonder: leaf veins",0,"Observe a leaf.","Leaf veins form a branching network that carries water in and sugars out; the green comes from chlorophyll absorbing red and blue light and reflecting green.",[],["ology.photobiology"]],
- ["maillard","Browning (Maillard reaction)",0,"Roast hazelnuts at a burning fire (hold nuts, Q at the fire).","Above about 140 °C, sugars and amino acids in food react and form hundreds of new flavour and aroma molecules plus brown pigments (melanoidins). Louis-Camille Maillard described it in 1912; it is why roasted, toasted and seared food tastes so different from boiled.",[],["field.chemistry"]],
+ ["maillard","Browning (Maillard reaction)",0,"Roast hazelnuts at a burning fire (hold nuts, Q at the fire).","Above about 140 °C / 284.0 °F, sugars and amino acids in food react and form hundreds of new flavour and aroma molecules plus brown pigments (melanoidins). Louis-Camille Maillard described it in 1912; it is why roasted, toasted and seared food tastes so different from boiled.",[],["field.chemistry"]],
  ["caramel","Caramelisation",0,"Hold a pot of boiled water at a fire with at least 3 dark berries in your pack.","Heated sugars break down and recombine into caramel compounds — brown colour and toffee-like flavour. Cooking fruit also drives off water and frees pectin, which sets into a jelly as it cools: jam is preserved by its high sugar concentration.",[],["field.chemistry"]],
  ["baking","Baking bread",1,"Knead grain and boiled water into dough (crafting), then bake it at a fire (Q).","Heat makes starch granules swell and gelatinise while steam puffs the dough and the crust browns. Flatbreads were baked on hot stones more than 14,000 years ago — before farming began.",[],["field.chemistry"]],
  ["stew","Stewing & simmering",1,"Hold a pot of boiled water at a fire with hazelnuts (or meat) and grain or seeds in your pack.","Water cannot get hotter than its boiling point, so a simmering pot cooks gently and evenly by convection. Long, moist heat turns tough collagen into soft gelatin and pulls flavour into the broth.",[],["field.thermodynamics"]],
  ["fermentation","Fermentation",1,"Mash dark berries in an empty pot (crafting), wait about a day, then taste or observe it.","Wild yeasts on berry skins eat the sugars and release carbon dioxide and alcohol; bacteria can turn alcohol into vinegar. Fermentation preserved food long before anyone knew microbes existed (Pasteur showed it was alive in the 1850s).",[],["ology.mycology","field.microbiology"]],
  ["gastronomy","The chef",1,"Master five cooking discoveries (cooking over fire, browning, caramelisation, baking, stewing, fermentation, drying).","Cooking is applied chemistry and physics: heat transfer, phase changes, browning reactions, emulsions and microbes. Cooking may even have shaped us — cooked food releases more energy, which may have helped fuel larger human brains.",[],["field.chemistry","ology.physiology"]],
 ];
+RAW.push(...SHIP_DISCOVERIES);
 export const WORLD_DISCOVERIES=RAW.map(r=>({id:r[0],name:r[1],age:r[2],how:r[3],principle:r[4],tree:r[5],atlas:r[6]}));
+// Sandbox mastery reveals atlas context, not a new scientific research claim.
+WORLD_DISCOVERIES.push(...LABS.map(l=>({id:"exp_"+l.id,name:l.name+" · experimental mastery",age:2,how:"Complete its three contracts in Discovery expeditions (L).",principle:l.principle,tree:[],atlas:[l.atlas]})));
 // recipe: item -> {needs discovery id or null, inputs}
 export const RECIPES=[
+ {out:"knife_stone",req:null,in:{flake:1}},
+ {out:"hand_drill",req:null,in:{log:1},tool:"knife_stone"},
+ {out:"pickaxe_stone",req:null,in:{stone:2,stick:1,fiber:3},tool:"knife_stone"},
+ {out:"bench_joint",req:null,in:{log:1},tool:"knife_stone"},
+ {out:"workbench",req:null,in:{bench_joint:4,log:3,stick:4,fiber:8},tool:"knife_stone"},
+ {out:"workbench_bundle",req:null,in:{bench_joint:4,log:5,stick:12,fiber:12},tool:"knife_stone"},
  {out:"campfire",req:null,in:{stick:3}},
- {out:"axe_stone",req:"knapping",in:{flake:1,stick:1,fiber:1},cat:"tools"},
+ {out:"axe_stone",req:null,in:{flake:1,stone:1,stick:1,fiber:3},tool:"knife_stone",cat:"tools"},
  {out:"spear",req:"knapping",in:{flake:1,stick:2}},
  {out:"tally",req:"knapping",in:{stick:1,flake:1}},
  {out:"leanto",req:"knapping",in:{stick:6,fiber:3}},
@@ -159,7 +179,7 @@ export const RECIPES=[
  {out:"kiln",req:"ceramics",in:{clay:4,stone:4}},
  {out:"tablet",req:"counting",in:{clay:1}},
  {out:"lens",req:"glass",in:{quartz:1,sand:1}},
- {out:"bellows",req:"bronze",in:{fiber:4,log:1,clay:1}},
+ {out:"bellows",req:null,in:{hide:2,fiber:4,log:1,clay:1}},
  {out:"axe_bronze",req:"bronze",in:{bronze:1,stick:1}},
  {out:"wheel",req:"bronze",in:{log:1},tool:"axe_bronze"},
  {out:"axe_iron",req:"iron",in:{iron:1,stick:1}},
@@ -182,8 +202,12 @@ export const RECIPES=[
  {out:"dough",req:"boiling",in:{grain:2,pot_clean:1},ret:"pot"},
  {out:"berry_mash",req:"ceramics",in:{berry_dark:4,pot:1}}
 ];
-const CAT={dough:"cooking",berry_mash:"cooking",satchel:"tools",campfire:"build",leanto:"build",hut:"build",house:"build",wall:"build",chest:"build",rack:"build",well:"build",kiln:"build",raft:"build",table:"science",torch:"build",
+Object.assign(ITEMS,GEAR_ITEMS);
+RECIPES.push(...GEAR_RECIPES.map(r=>({req:null,...r})));
+Object.assign(ITEMS,SHIP_ITEMS);RECIPES.push(...SHIP_RECIPES.map(r=>({...r})));
+const CAT={workbench:"build",workbench_bundle:"build",dough:"cooking",berry_mash:"cooking",satchel:"tools",campfire:"build",leanto:"build",hut:"build",house:"build",wall:"build",chest:"build",rack:"build",well:"build",kiln:"build",raft:"build",table:"science",torch:"build",
  axe_stone:"tools",axe_copper:"tools",axe_bronze:"tools",axe_iron:"tools",wheel:"tools",bellows:"tools",clothing:"tools",
  spear:"weapons",sling:"weapons",bow:"weapons",arrow:"weapons",
  tally:"science",tablet:"science",gnomon:"science",lens:"science",compass:"science",telescope:"science",pendulum:"science",prism:"science"};
+for(const r of SHIP_RECIPES)CAT[r.out]="ships";
 for(const r of RECIPES)r.cat=CAT[r.out]||"tools";
