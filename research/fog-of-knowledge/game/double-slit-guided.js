@@ -1,9 +1,9 @@
 // Guided "Eureka" double-slit lab: an additional mode beside the classic lab.
 // Geometry and statistics live in double-slit-guided-model.js; the drawn screen line is,
 // point for point, the model intensity seen on the detector and in the histogram below it.
-import {mountDoubleSlit} from './double-slit.js?v=3.28.0';
-import {SLIT_DEFAULTS,DOUBLE_SLIT_LAB,slitSettings,slitDistribution,sampleSlit} from './double-slit-model.js?v=3.28.0';
-import {WINDOW_MM,GUIDE_LAYOUT,guidedGeometry,slitWaveAt,screenPattern,mmToX,measuredSpacing,predictedSpacingMm} from './double-slit-guided-model.js?v=3.28.0';
+import {mountDoubleSlit} from './double-slit.js?v=3.29.0';
+import {SLIT_DEFAULTS,DOUBLE_SLIT_LAB,slitSettings,slitDistribution,sampleSlit} from './double-slit-model.js?v=3.29.0';
+import {WINDOW_MM,GUIDE_LAYOUT,guidedGeometry,slitWaveAt,screenPattern,mmToX,measuredSpacing,predictedSpacingMm} from './double-slit-guided-model.js?v=3.29.0';
 const L_=GUIDE_LAYOUT;
 // Guided mode always uses symmetric slits; drop any stored custom positions so 'slits' is honoured.
 const S=o=>{const {positions,...r}=o;return slitSettings(r)};

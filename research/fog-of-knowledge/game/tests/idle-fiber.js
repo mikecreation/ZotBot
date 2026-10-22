@@ -1,4 +1,4 @@
-import * as GFX from '../gfx.js?v=3.28.0';
+import * as GFX from '../gfx.js?v=3.29.0';
 import * as T from '../vendor/three.module.min.js';
 export async function runIdleFiberTests(W){
  await GFX.loadHuman();await Promise.resolve();

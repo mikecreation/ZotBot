@@ -1,7 +1,7 @@
 // Pure geometry/statistics for the guided double-slit lab (no DOM). Physics from double-slit-model.js.
 // Wave view: paraxial (Fresnel) wavefronts from each slit with magnified wavelength and angles, scaled
 // so the phase difference at the drawn screen line equals the model's phase difference exactly.
-import {slitSettings,slitAmplitudes,sampleSlit} from './double-slit-model.js?v=3.28.0';
+import {slitSettings,slitAmplitudes,sampleSlit} from './double-slit-model.js?v=3.29.0';
 export const WINDOW_MM=20; // detector half-width, matches the model's +/-20 mm window
 export const GUIDE_LAYOUT={W:960,x0:40,x1:920,srcY:16,barY:84,scrY:300,detY:328,detH:118,hisY:476,hisH:120,H:640};
 const L_=GUIDE_LAYOUT,PX_PER_M=(L_.x1-L_.x0)/(2*WINDOW_MM/1000);

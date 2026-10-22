@@ -5,9 +5,10 @@
  * Quaternius "Universal Animation Library" (CC0), see ./assets/CREDITS.txt. */
 import * as THREE from "./vendor/three.module.min.js";
 import {Sky} from "./vendor/addons/objects/Sky.js";
-import {Ocean,OCEAN_QUALITY} from "./ocean.js?v=3.28.0";
+import {Ocean,OCEAN_QUALITY} from "./ocean.js?v=3.29.0";
 import {GLTFLoader} from "./vendor/addons/loaders/GLTFLoader.js";
 import {mergeGeometries,mergeVertices} from "./vendor/addons/utils/BufferGeometryUtils.js";
+import * as VEG from "./vegetation.js?v=3.29.0";
 import {clone as cloneSkinned} from "./vendor/addons/utils/SkeletonUtils.js";
 import {loadRealHuman,dressRealHuman,realGrip,wantClassicHuman,initRealHands,poseRealHands} from "./human-real.js";
 import {EffectComposer} from "./vendor/addons/postprocessing/EffectComposer.js";
@@ -20,9 +21,9 @@ import {FXAAShader} from "./vendor/addons/shaders/FXAAShader.js";
 
 /* ---------------- quality presets ---------------- */
 export const QUALITY={
-  low:  {label:"Low",  pr:1,   shadows:0,    post:false,bloom:false,aa:"none",ocean:"low",   grass:0,    grassR:0,flowers:0,  clouds:true, fireShadow:false,particles:.5},
-  high: {label:"High", pr:1.25,shadows:2048, post:true, bloom:true, aa:"fxaa",ocean:"med", grass:9000, grassR:1,flowers:140,clouds:true, fireShadow:1,fireShadowMap:256,particles:1},
-  ultra:{label:"Ultra",pr:2,   shadows:4096, post:true, bloom:true, aa:"smaa",ocean:"high",grass:18000,grassR:1,flowers:260,clouds:true, fireShadow:2,fireShadowMap:512,particles:1.4}
+  low:  {label:"Low",  pr:1,   shadows:0,    post:false,bloom:false,aa:"none",ocean:"low",   grass:0,    grassR:0,flowers:0,  impD:1,  clouds:true, fireShadow:false,particles:.5},
+  high: {label:"High", pr:1.25,shadows:2048, post:true, bloom:true, aa:"fxaa",ocean:"med", grass:9000, grassR:1,flowers:140,impD:2,clouds:true, fireShadow:1,fireShadowMap:256,particles:1},
+  ultra:{label:"Ultra",pr:2,   shadows:4096, post:true, bloom:true, aa:"smaa",ocean:"high",grass:18000,grassR:1,flowers:260,impD:3,clouds:true, fireShadow:2,fireShadowMap:512,particles:1.4}
 };
 const QKEY="fog-of-knowledge:game:quality";
 export function loadQualityPref(){try{const q=localStorage.getItem(QKEY);if(QUALITY[q])return q}catch(_){}return "high"}
@@ -380,7 +381,10 @@ export function initMaterials(){
   MAT.flower=new THREE.MeshStandardMaterial({vertexColors:false,roughness:.6,emissive:0x111111});MAT.flower.onBeforeCompile=grassPatch;
   MAT.trunk=MAT.bark;MAT.crown=MAT.leaf;
   buildGeometries();
+  if(!/[?&]veg=0/.test(location.search))VEG.initVegetation({GEO,MAT,U,GRASS_LIGHTS});
 }
+export function impostor(ty){return renderer?VEG.impostor(ty,renderer):null}
+export const vegStats=()=>VEG.stats&&VEG.stats();
 function buildGeometries(){
   const bark=(c,x,y,z)=>{const n=vn3(x*9,y*3,z*9);c.setRGB(lin(.30+.1*n),lin(.21+.06*n),lin(.14+.04*n))};
   // pine
@@ -444,8 +448,9 @@ export function buildGrass(cx,cz,size,sample,seed){
   let k=0;const x0=cx*size,z0=cz*size;
   for(let i=0;i<n;i++){const x=x0+r()*size,z=z0+r()*size,s=sample(x,z),t=BIOME_GRASS[s.biome];
     if(!t||s.h<.5||s.slope>.7)continue;
-    const sc=.45+r()*.5;_m4.compose(_p3.set(x,s.h-.03,z),_q4.setFromAxisAngle(_up,r()*6.283),_s3.set(sc,sc*(.7+r()*.6),sc));m.setMatrixAt(k,_m4);
-    const v=.85+r()*.3;c.setRGB(t[0]*v,t[1]*v,t[2]*v*(.9+r()*.2));m.setColorAt(k,c);k++;}
+    const pn=.5+.25*Math.sin(x*.11+Math.sin(z*.07)*2)+.25*Math.sin(z*.13+Math.sin(x*.05)*2.3),dry=.5+.5*Math.sin(x*.031+z*.017+Math.sin(z*.05)*1.7);
+    const sc=(.5+.6*pn)*(.8+r()*.35);_m4.compose(_p3.set(x,s.h-.03,z),_q4.identity(),_s3.set(sc,sc,sc));m.setMatrixAt(k,_m4);
+    const v=.85+r()*.3,dr=dry*dry*.35;c.setRGB(t[0]*v*(1+dr*.6),t[1]*v*(1-dr*.1),t[2]*v*(.9+r()*.2)*(1-dr*.5));m.setColorAt(k,c);k++;}
   m.count=k;m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true;m.receiveShadow=true;m.frustumCulled=true;m.computeBoundingSphere();
   const g=new THREE.Group();g.add(m);MIRROR_HIDE.add(g);
   return g;

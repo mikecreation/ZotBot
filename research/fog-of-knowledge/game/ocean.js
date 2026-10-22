@@ -6,7 +6,7 @@
  *  crest subsurface glow and per-channel Beer–Lambert absorption over the terrain (two blend passes: ×T then +radiance),
  *  camera-following clipmap rings with geomorphing and distance-faded detail. */
 import * as THREE from "./vendor/three.module.min.js";
-import {DEFAULT_OCEAN,cascadeBands,initialSpectrum,makeSpectrum,makeWaveSampler,LOOP_T,G} from "./ocean-spectrum.js?v=3.28.0";
+import {DEFAULT_OCEAN,cascadeBands,initialSpectrum,makeSpectrum,makeWaveSampler,LOOP_T,G} from "./ocean-spectrum.js?v=3.29.0";
 
 export const OCEAN_QUALITY={
   low:{label:"Low",N:64,s0:1,R:48,levels:6,envSize:64,envEvery:12},

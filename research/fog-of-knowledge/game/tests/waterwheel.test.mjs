@@ -1,9 +1,9 @@
 // Water wheel: flow-driven physics, cam trip-hammer geometry, recipes/stages and the procedural model.
 import assert from "node:assert/strict";
-import * as W from "../waterwheel.js?v=3.28.0";
-import * as P from "../woodland-progression.js?v=3.28.0";
-import {ITEMS,RECIPES,WORLD_DISCOVERIES} from "../world-data.js?v=3.28.0";
-import {buildWoodland,setWoodStage,animateWaterwheel,woodTriangles} from "../woodland-buildings.js?v=3.28.0";
+import * as W from "../waterwheel.js?v=3.29.0";
+import * as P from "../woodland-progression.js?v=3.29.0";
+import {ITEMS,RECIPES,WORLD_DISCOVERIES} from "../world-data.js?v=3.29.0";
+import {buildWoodland,setWoodStage,animateWaterwheel,woodTriangles} from "../woodland-buildings.js?v=3.29.0";
 
 let n=0;const ok=(name,fn)=>{fn();n++;console.log("ok -",name)};
 const near=(a,b,e,m)=>assert.ok(Math.abs(a-b)<=e,`${m||""} ${a} vs ${b}`);

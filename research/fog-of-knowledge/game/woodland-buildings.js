@@ -9,8 +9,8 @@
  * Local frame: +z is the front (door), y up from the site's ground level; sizes are metres.
  */
 import * as T from "./vendor/three.module.min.js";
-import {HUT,HOUSE,HUT_STAGES,HOUSE_STAGES,WHEELSITE} from "./woodland-progression.js?v=3.28.0";
-import {WHEEL} from "./waterwheel.js?v=3.28.0";
+import {HUT,HOUSE,HUT_STAGES,HOUSE_STAGES,WHEELSITE} from "./woodland-progression.js?v=3.29.0";
+import {WHEEL} from "./waterwheel.js?v=3.29.0";
 
 /* ---------------- deterministic noise ---------------- */
 function rng(seed){let s=(seed*2654435761)>>>0||1;return()=>(s=(Math.imul(s,1664525)+1013904223)>>>0)/4294967296}

@@ -6,7 +6,7 @@
  * rigging (shrouds, ratlines, stays, braces) → sails (canvas + pennant). */
 import * as THREE from "./vendor/three.module.min.js";
 import {mergeGeometries} from "./vendor/addons/utils/BufferGeometryUtils.js";
-import {HULL,RAMPS,RAMP_W,levelY,sheerY,keelY,halfBreadth,MASTS} from "./ship-physics.js?v=3.28.0";
+import {HULL,RAMPS,RAMP_W,levelY,sheerY,keelY,halfBreadth,MASTS} from "./ship-physics.js?v=3.29.0";
 
 export const STAGE_PARTS=["keel","hull","deck","masts","rigging","sails"];
 const TAU=Math.PI*2;

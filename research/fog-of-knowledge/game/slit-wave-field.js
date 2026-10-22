@@ -1,4 +1,4 @@
-import {slitAmplitudes} from './double-slit-model.js?v=3.28.0';
+import {slitAmplitudes} from './double-slit-model.js?v=3.29.0';
 
 // A phase illustration of the scalar far-field approximation used by the lab.
 // Transverse scale expands toward the screen; the aperture is magnified.

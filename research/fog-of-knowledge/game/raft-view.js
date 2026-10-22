@@ -1,4 +1,4 @@
-import {massText,KG_PER_LB} from './buoyancy.js?v=3.28.0';
+import {massText,KG_PER_LB} from './buoyancy.js?v=3.29.0';
 export function raftControls(p,unit,step,index){
  const value=kg=>+(unit==='lb'?kg/KG_PER_LB:kg).toFixed(2);
  const row=(name,key,v,min,max,inc)=>`<label class="expNumber">${name}<span class="expStepper"><button type="button" data-adjust="${key}" data-direction="-1" aria-label="Decrease ${name}">−</button><input aria-label="${name}" data-raft-input="${key}" type="number" inputmode="decimal" min="${min}" max="${max}" step="${inc}" value="${v}"><button type="button" data-adjust="${key}" data-direction="1" aria-label="Increase ${name}">+</button></span></label>`;
