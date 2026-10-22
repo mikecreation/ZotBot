@@ -13,7 +13,7 @@ export const REAL_HUMAN_TEX="assets/human-real/";
 export const REAL_HUMAN_PARTS=Object.freeze({
   Body:{kind:"skin",map:"skin.jpg",normal:"skin_n.jpg",rough:"skin_r.jpg",detail:"skin_detail_n.jpg"},
   Eyes:{kind:"eye",map:"eye.webp",alphaTest:.5},
-  Eyebrows:{kind:"card",map:"brow.webp",color:0x84705f,alphaTest:.04},
+  Eyebrows:{kind:"card",map:"brow.webp",color:0x7a6556,alphaTest:.28,solid:true},
   Eyelashes:{kind:"card",map:"lash.webp",color:0x2a1c14,alphaTest:.04},
   Hair:{kind:"hair",map:"hair.webp",normal:"hair_n.jpg",color:0xc4b09c,alphaTest:.5},
   Beard:{kind:"beard",map:"beard.webp",alpha:"beard_mask.jpg",color:0xd0c0b0,alphaTest:.5},
@@ -65,13 +65,13 @@ function buildMaterials(){
       m=new THREE.MeshPhysicalMaterial({map:tex(p.map),normalMap:tex(p.normal,false),roughnessMap:tex(p.rough,false),roughness:1,
         specularIntensity:.55});m.onBeforeCompile=sh=>skinPatch(sh,detail);m.customProgramCacheKey=()=>"fk-skin2"}
     else if(p.kind==="eye")m=new THREE.MeshPhysicalMaterial({map:tex(p.map),color:new THREE.Color(1.22,1.18,1.16),roughness:.3,clearcoat:1,clearcoatRoughness:.03,specularIntensity:1,envMapIntensity:.6,alphaTest:p.alphaTest}); // wet cornea; its texels are alpha 0
-    else if(p.kind==="card")m=new THREE.MeshStandardMaterial({map:tex(p.map),color:p.color,roughness:.85,alphaTest:p.alphaTest,transparent:true,depthWrite:false,side:THREE.DoubleSide}); // soft, blended strands
+    else if(p.kind==="card")m=new THREE.MeshStandardMaterial({map:tex(p.map),color:p.color,roughness:.85,alphaTest:p.alphaTest,transparent:!p.solid,depthWrite:!!p.solid,side:THREE.DoubleSide}); // blended strands (brows: solid cut-out so they read)
     else if(p.kind==="hair"){
-      m=new THREE.MeshPhysicalMaterial({map:tex(p.map),normalMap:tex(p.normal,false),color:p.color,roughness:.6,anisotropy:.75,anisotropyRotation:Math.PI/2,specularIntensity:.38,alphaTest:p.alphaTest,side:THREE.DoubleSide});
+      m=new THREE.MeshPhysicalMaterial({map:tex(p.map),normalMap:tex(p.normal,false),color:p.color,roughness:.6,anisotropy:.75,anisotropyRotation:Math.PI/2,specularIntensity:.3,alphaTest:p.alphaTest,side:THREE.DoubleSide});
       const fuzz=strandNoise();
       // soft fringe (blended, no depth write) + two fuzzy shells for volume
-      m.userData.extra=[new THREE.MeshStandardMaterial({map:m.map,color:p.color,roughness:.55,transparent:true,alphaTest:.06,depthWrite:false,side:THREE.DoubleSide})];
-      for(const [off,a] of [[.004,.5]]){const s=new THREE.MeshStandardMaterial({map:m.map,alphaMap:fuzz,color:new THREE.Color(p.color).multiplyScalar(1.08),roughness:.6,alphaTest:a,side:THREE.DoubleSide});
+      m.userData.extra=[new THREE.MeshStandardMaterial({map:m.map,color:p.color,roughness:.75,transparent:true,alphaTest:.06,depthWrite:false,side:THREE.DoubleSide})];
+      for(const [off,a] of [[.004,.5]]){const s=new THREE.MeshStandardMaterial({map:m.map,alphaMap:fuzz,color:new THREE.Color(p.color).multiplyScalar(1.08),normalMap:m.normalMap,roughness:.82,alphaTest:a,side:THREE.DoubleSide});
         s.onBeforeCompile=shellPatch(off);s.customProgramCacheKey=()=>"fk-shell"+off;m.userData.extra.push(s)}}
     else if(p.kind==="beard"){const st=tex(p.map);st.repeat.set(36,36);
       m=new THREE.MeshStandardMaterial({map:st,alphaMap:tex(p.alpha,false),color:p.color,roughness:.7,alphaTest:p.alphaTest})}
