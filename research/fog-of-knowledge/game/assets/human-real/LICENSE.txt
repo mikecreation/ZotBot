@@ -1,0 +1,26 @@
+assets/human-real.gltf.json and assets/human-real/* - realistic player character
+====================================================================================
+
+License: CC0 1.0 Universal (public domain dedication) - https://creativecommons.org/publicdomain/zero/1.0/
+
+Sources (all CC0):
+* Body, face, eyes, eyebrows (eyebrow009), eyelashes (eyelashes01), hair (short02) and the
+  skin texture (young_caucasian_male, re-tinted + painted stubble) are MakeHuman assets generated
+  with MPFB2 2.0.18 for Blender (https://github.com/makehumancommunity/mpfb2) and the
+  "makehuman_system_assets" pack (https://static.makehumancommunity.org/assets/assetpacks/makehuman_system_assets.html,
+  every asset in the pack is listed as CC0; each .mhclo/.mhmat file carries the header
+  "This asset was explicitly released as CC0 in september 2020").
+  MPFB's LICENSE.md: "These assets have been released under CC0 1.0 Universal" and
+  "the MakeHuman team makes no claim whatsoever over output such as exports to files".
+  (MPFB's GPLv3 covers only its program code, none of which is included here.)
+* Skeleton and the 14 animation clips: Quaternius "Universal Animation Library" (CC0), the same
+  ones as assets/human.gltf.json - see ../LICENSE-Quaternius-UAL-CC0.txt.
+* Clothing (hide tunic, fringed hide skirt, belt, fur mantle, leg/foot wraps, wrist wraps) and
+  its textures (leather, fur, wraps, skin pore detail) were generated procedurally for this
+  project (Blender + numpy scripts) and are dedicated to the public domain under CC0 as well.
+
+How it was built: MPFB2 male (age ~33, muscular), game_engine rig posed into the UAL T-pose and
+applied as rest pose; the UAL skeleton's joints were moved onto the MakeHuman joints keeping the
+UAL bone rotations, weights renamed bone-for-bone (pelvis->DEF-hips, upperarm_l->DEF-upper_arm.L,
+...), so the classic clips play unchanged. Exported from Blender 4.2 glTF exporter; buffer
+embedded as a data URI (.json extension so the Nemesis atlas proxy serves it).

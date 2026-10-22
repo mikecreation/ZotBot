@@ -9,6 +9,7 @@ import {Ocean,OCEAN_QUALITY} from "./ocean.js?v=3.28.0";
 import {GLTFLoader} from "./vendor/addons/loaders/GLTFLoader.js";
 import {mergeGeometries,mergeVertices} from "./vendor/addons/utils/BufferGeometryUtils.js";
 import {clone as cloneSkinned} from "./vendor/addons/utils/SkeletonUtils.js";
+import {loadRealHuman,dressRealHuman,realGrip,wantClassicHuman} from "./human-real.js";
 import {EffectComposer} from "./vendor/addons/postprocessing/EffectComposer.js";
 import {RenderPass} from "./vendor/addons/postprocessing/RenderPass.js";
 import {UnrealBloomPass} from "./vendor/addons/postprocessing/UnrealBloomPass.js";
@@ -531,7 +532,9 @@ export const FX={
 
 /* ---------------- human: Quaternius UAL mannequin (CC0), dressed by shader ---------------- */
 let humanAsset=null,humanPromise=null;
-export function loadHuman(){if(!humanPromise)humanPromise=new Promise(res=>{new GLTFLoader().load("assets/human.gltf.json",g=>{humanAsset=g;res(g)},undefined,e=>{console.warn("Human model unavailable, using procedural fallback:",e&&e.message);res(null)})});return humanPromise}
+function loadClassicHuman(){return new Promise(res=>{new GLTFLoader().load("assets/human.gltf.json",g=>res(g),undefined,e=>{console.warn("Human model unavailable, using procedural fallback:",e&&e.message);res(null)})})}
+// realistic MakeHuman character (human-real.js) by default; ?char=classic or a failed load keeps the UAL mannequin
+export function loadHuman(){if(!humanPromise)humanPromise=(wantClassicHuman()?loadClassicHuman():loadRealHuman().catch(e=>{console.warn("Realistic human unavailable, using classic mannequin:",e&&e.message);return loadClassicHuman()})).then(g=>humanAsset=g);return humanPromise}
 const DRESS={skin:new THREE.Color(0xc68c64),hair:new THREE.Color(0x2a1a10),tunic:new THREE.Color(0x6b7449),trousers:new THREE.Color(0x4a3a2a),belt:new THREE.Color(0x2c1d12),boots:new THREE.Color(0x30221a)};
 function dressedMaterial(){
   const m=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.78,metalness:0});
@@ -562,12 +565,12 @@ export function makeHuman(){
   return g;
 }
 function attachHuman(g,asset){
-  const u=g.userData,model=cloneSkinned(asset.scene);model.scale.setScalar(1.75/1.83);
-  model.traverse(o=>{if(o.isMesh){o.material=_dressMat();o.castShadow=true;o.receiveShadow=true;o.frustumCulled=false}});
+  const u=g.userData,real=!!asset.userData?.real,model=cloneSkinned(asset.scene),sc=real?1:1.75/1.83;model.scale.setScalar(sc);u.real=real;
+  if(real)dressRealHuman(model);else model.traverse(o=>{if(o.isMesh){o.material=_dressMat();o.castShadow=true;o.receiveShadow=true;o.frustumCulled=false}});
   const hand=model.getObjectByName("DEF-handR")||model.getObjectByName("DEF-hand.R");
-  if(hand){u.held.removeFromParent();hand.add(u.held);u.held.position.set(0,.09,.04);u.held.scale.setScalar(1/(1.75/1.83))}
+  if(hand){u.held.removeFromParent();hand.add(u.held);u.held.position.copy(real?realGrip(hand):new THREE.Vector3(0,.09,.04));u.held.scale.setScalar(1/sc)}
   const handL=model.getObjectByName("DEF-handL")||model.getObjectByName("DEF-hand.L");
-  if(handL){u.heldL.removeFromParent();handL.add(u.heldL);u.heldL.position.set(0,.09,.04);u.heldL.scale.setScalar(1/(1.75/1.83))}
+  if(handL){u.heldL.removeFromParent();handL.add(u.heldL);u.heldL.position.copy(real?realGrip(handL):new THREE.Vector3(0,.09,.04));u.heldL.scale.setScalar(1/sc)}
   u.handBones={R:hand?.name||null,L:handL?.name||null};
   g.remove(u.fb.root);g.add(model);u.inner=model;
   u.mixer=new THREE.AnimationMixer(model);
