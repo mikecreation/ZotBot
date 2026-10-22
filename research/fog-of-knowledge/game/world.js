@@ -1956,7 +1956,7 @@ const WOOD_DEBUG={
   fire(i=0,lit=true,fuel=3){const s=this.site(i),f=s&&woodHearth(s);if(!f)return null;f.fuel=fuel;f.lit=lit;f.heat=lit?1:0;f.temp=lit?800:15;f.wet=0;return true},
   stand(i=0,lx=0,lz=0,yaw){const s=this.site(i);if(!s)return;const [x,z]=wWorld(s,lx,lz);player.pos.set(x,groundAt(x,z),z);player.vel.set(0,0,0);if(yaw!=null){player.camYaw=yaw+(s.ry||0);player.yaw=player.camYaw+Math.PI}},
   cam(i,p,t){this._cam=p?{i,p,t}:null},
-  info(i=0){const s=this.site(i);if(!s)return null;return {type:s.type,stage:s.stage,got:{...s.got},open:s.open,tris:s._wood?WOOD.woodTriangles(s._wood):0,remaining:remainingOf(s),hearth:!!woodHearth(s),segs:woodSegs(s).length}},
+  info(i=0){const s=this.site(i);if(!s)return null;return {type:s.type,stage:s.stage,got:{...s.got},open:s.open,tris:s._wood?WOOD.woodTriangles(s._wood):0,remaining:remainingOf(s),hearth:!!woodHearth(s),fire:(f=>f&&{lit:f.lit,heat:+(f.heat||0).toFixed(2),fuel:+(f.fuel||0).toFixed(2),wet:+(f.wet||0).toFixed(2),light:fireLights.map(l=>+l.intensity.toFixed(2)),fill:fireFillLights.map(l=>+l.intensity.toFixed(2))})(woodHearth(s)),spill:woodDay?+woodDay.intensity.toFixed(2):0,segs:woodSegs(s).length}},
 };
 function woodCam(){const c=WOOD_DEBUG._cam,s=WOOD_DEBUG.site(c.i||0);if(!s)return false;const W=([x,y,z])=>{const [wx,wz]=wWorld(s,x,z);return [wx,s.y+y,wz]};
   camera.position.set(...W(c.p));camera.lookAt(...W(c.t));if(player.model)player.model.visible=c.showPlayer!==false;if(Math.abs(camera.fov-(c.fov||62))>.01){camera.fov=c.fov||62;camera.updateProjectionMatrix()}return true}
