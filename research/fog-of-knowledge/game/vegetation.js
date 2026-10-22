@@ -90,47 +90,51 @@ class GB{constructor(){this.p=[];this.n=[];this.c=[];this.uv=[];this.w=[];this.t
 /* recursive branching (space-colonisation-free L-system style): each branch is a gnarled polyline; children spawn
    along it with golden-angle phyllotaxis, shortening with height (gives cone/oval silhouettes) */
 function grow(sp,seed){const R=rng(seed),out=[];
-  const rec=(o,dir,len,rad,depth,ph,w0,wl)=>{const n=sp.seg[depth],pts=[o.clone()],rr=[rad],ws=[w0];let p=o.clone();const d=dir.clone();
+  const rec=(o,dir,len,rad,depth,ph,w0,wl,pr)=>{const n=sp.seg[depth],pts=[o.clone()],rr=[rad],ws=[w0];let p=o.clone();const d=dir.clone();
+    if(pr){ // collar: start buried at the parent's axis, flare out where it leaves the bark, then taper into the branch
+      pts[0]=o.clone().addScaledVector(dir,-pr*.85);rr[0]=Math.min(pr*.92,rad*1.9);
+      pts.push(o.clone().addScaledVector(dir,pr*.35));rr.push(rad*1.3);ws.push(w0);
+      pts.push(o.clone().addScaledVector(dir,pr*.35+Math.max(rad*2.5,.06)));rr.push(rad*1.04);ws.push(w0+wl*.04);p=pts[2].clone()}
     for(let i=1;i<=n;i++){d.x+=(R()-.5)*sp.gnarl[depth];d.z+=(R()-.5)*sp.gnarl[depth];d.y+=sp.trop[depth];d.normalize();p=p.clone().addScaledVector(d,len/n);pts.push(p);
       rr.push(rad*(1-(i/n)*sp.taper[depth]));ws.push(w0+wl*(i/n))}
     const b={pts,rr,ws,depth,ph};out.push(b);
-    if(depth<sp.depth){const k=sp.kids[depth];
-      for(let j=0;j<k;j++){const t=sp.kStart[depth]+(1-sp.kStart[depth])*Math.min(.98,(j+R()*.6)/k),fi=t*n,i0=Math.min(n-1,Math.floor(fi)),f=fi-i0;
+    if(depth<sp.depth){const k=sp.kids[depth],o0=pts.length-1-n;
+      for(let j=0;j<k;j++){const t=sp.kStart[depth]+(1-sp.kStart[depth])*Math.min(.98,(j+R()*.6)/k),fi=t*n,i0=o0+Math.min(n-1,Math.floor(fi)),f=fi-(i0-o0);
         const at=pts[i0].clone().lerp(pts[i0+1],f),ar=rr[i0]+(rr[i0+1]-rr[i0])*f,aw=ws[i0]+(ws[i0+1]-ws[i0])*f;
         const pd=pts[i0+1].clone().sub(pts[i0]).normalize(),az=j*2.39996+R()*.7;
         const perp=new V3(1,0,0);if(Math.abs(pd.x)>.9)perp.set(0,0,1);perp.cross(pd).normalize().applyAxisAngle(pd,az);
         const ang=sp.angle[depth]*(.8+R()*.4),cd=pd.clone().multiplyScalar(Math.cos(ang)).addScaledVector(perp,Math.sin(ang)).normalize();
         const cl=len*sp.lenR[depth]*(1-sp.lenFall[depth]*t)*(.75+R()*.5);
-        rec(at,cd,cl,Math.max(sp.minR,ar*sp.radR[depth]),depth+1,depth===0?R()*6.28:ph,aw,cl*sp.flex[depth])}}};
+        rec(at,cd,cl,Math.max(sp.minR,ar*sp.radR[depth]),depth+1,depth===0?R()*6.28:ph,aw,cl*sp.flex[depth],ar)}}};
   rec(new V3(0,-.3,0),new V3(0,1,0),sp.H,sp.R0,0,0,0,sp.flex0);return out}
 
 function tubes(gb,branches,H,col,sides){const tmp=new V3(),nrm=new V3(),bin=new V3(),tan=new V3();
-  for(const b of branches){const S=sides[Math.min(b.depth,sides.length-1)],base=gb.p.length/3,P=b.pts,ur=Math.max(1,Math.round(b.rr[0]*2*Math.PI/.4));
+  for(const b of branches){const S=sides[Math.min(b.depth,sides.length-1)],base=gb.p.length/3,P=b.pts,ur=Math.max(1,Math.round(b.rr[Math.min(1,b.rr.length-1)]*2*Math.PI/.35));
     let ref=new V3(1,0,0),vacc=0;
     for(let i=0;i<P.length;i++){tan.copy(i<P.length-1?P[i+1]:P[i]).sub(i<P.length-1?P[i]:P[i-1]).normalize();
       if(i>0)vacc+=P[i].distanceTo(P[i-1]);
       bin.crossVectors(tan,ref);if(bin.lengthSq()<1e-4){ref.set(0,0,1);bin.crossVectors(tan,ref)}bin.normalize();nrm.crossVectors(bin,tan).normalize();ref.copy(nrm);
-      const r=b.rr[i]*(i===0&&b.depth===0?1.25:1),ao=b.depth===0?.55+.45*Math.min(1,P[i].y/2.2):.85;
+      const r=b.rr[i]*(i===0&&b.depth===0?1.25:1),ao=.72+.28*Math.min(1,Math.max(0,P[i].y)/2.2);
       const c={r:col.r*ao,g:col.g*ao,b:col.b*ao};
       for(let s=0;s<=S;s++){const a=s/S*Math.PI*2;tmp.copy(nrm).multiplyScalar(Math.cos(a)).addScaledVector(bin,Math.sin(a));
         gb.v(P[i].clone().addScaledVector(tmp,r),tmp,c,s/S*ur,vacc/.9,[b.ws[i],b.ph,Math.max(0,P[i].y)/H],0)}}
-    for(let i=0;i<P.length-1;i++)for(let s=0;s<S;s++){const a=base+i*(S+1)+s,bb=a+S+1;gb.i.push(a,bb,a+1,a+1,bb,bb+1)}}}
+    for(let i=0;i<P.length-1;i++)for(let s=0;s<S;s++){const a=base+i*(S+1)+s,bb=a+S+1;gb.i.push(a,a+1,bb,a+1,bb+1,bb)}}}
 
-function card(gb,c,ax,ay,w,h,tile,nrm,col,wind,anchorBottom){const [u0,v0]=TILE[tile],base=gb.p.length/3;
+function card(gb,c,ax,ay,w,h,tile,nrm,col,wind,anchorBottom,nf){const [u0,v0]=TILE[tile],base=gb.p.length/3;
   const corners=anchorBottom?[[-.5,0],[.5,0],[.5,1],[-.5,1]]:[[-.5,-.5],[.5,-.5],[.5,.5],[-.5,.5]];
-  for(const [sx,sy] of corners){const p=c.clone().addScaledVector(ax,sx*w).addScaledVector(ay,sy*h);gb.v(p,nrm,col,u0+(sx+.5)*.5,v0+(anchorBottom?sy:(sy+.5))*.5,wind,1)}
+  for(const [sx,sy] of corners){const p=c.clone().addScaledVector(ax,sx*w).addScaledVector(ay,sy*h);gb.v(p,nf?nf(p):nrm,col,u0+(sx+.5)*.5,v0+(anchorBottom?sy:(sy+.5))*.5,wind,1)}
   gb.i.push(base,base+1,base+2,base,base+2,base+3)}
 
 const SPECS={
   broad:{H:3.6,R0:.24,depth:3,seg:[6,4,3,2],gnarl:[.12,.35,.5,.6],trop:[0,.1,.1,.05],taper:[.45,.6,.7,.8],kids:[5,4,3],kStart:[.52,.2,.25],angle:[.85,.75,.7],
-    lenR:[.72,.6,.55],lenFall:[.5,.4,.3],radR:[.55,.6,.65],minR:.012,flex0:.0,flex:[.10,.16,.2],leafDepth:2,leafPer:3,leaf:[.8,.8],tile:0,leafAll:true},
+    lenR:[.72,.6,.55],lenFall:[.5,.4,.3],radR:[.55,.6,.65],minR:.012,flex0:.0,flex:[.10,.16,.2],leafDepth:2,leafPer:3,leaf:[.85,.85],tile:0,leafAll:true},
   conifer:{H:6.2,R0:.2,depth:1,seg:[8,3],gnarl:[.03,.15],trop:[0,-.06],taper:[.92,.8],kids:[26],kStart:[.24],angle:[1.45],lenR:[.42],lenFall:[.92],radR:[.35],minR:.015,flex0:.0,flex:[.14],leafDepth:1,leafPer:5,leaf:[1.5,1.1],tile:1},
   dead:{H:3.6,R0:.22,depth:2,seg:[6,4,3],gnarl:[.18,.5,.6],trop:[0,.05,.02],taper:[.6,.7,.8],kids:[5,3],kStart:[.4,.3],angle:[.9,.8],lenR:[.6,.55],lenFall:[.4,.3],radR:[.5,.55],minR:.015,flex0:0,flex:[.06,.1]}
 };
 function treeGeo(type){const sp=SPECS[type],R=rng(type.length*991+7);
   const br=grow(sp,type==="broad"?4242:type==="conifer"?1717:913);
   let H=0;for(const b of br)for(const p of b.pts)H=Math.max(H,p.y);
-  const barkCol=type==="conifer"?srgb(.46,.34,.27):type==="dead"?srgb(.52,.49,.45):srgb(.47,.42,.36);
+  const barkCol=type==="conifer"?srgb(.6,.47,.38):type==="dead"?srgb(.6,.57,.52):srgb(.62,.56,.48);
   const tg=new GB();tubes(tg,br,H,barkCol,type==="conifer"?[7,3]:[7,5,3,3]);
   let crown=null;
   if(sp.leaf){const cg=new GB();const ctr=new V3(0,type==="conifer"?H*.5:H*.72,0),tmp=new V3(),ax=new V3(),ay=new V3(),nm=new V3();
@@ -144,13 +148,18 @@ function treeGeo(type){const sp=SPECS[type],R=rng(type.length*991+7);
             const az=ay.clone().multiplyScalar(.93).add(new V3(0,.37,0)).normalize(),pos=c.clone().addScaledVector(ax,sp.leaf[0]*.35*f);
             card(cg,pos,ax.clone().multiplyScalar(f),az,sp.leaf[0],sp.leaf[1]*f,1,nm,col,w,false);
             if(k===0)card(cg,pos,ax.clone().multiplyScalar(f),new V3(0,1,0).addScaledVector(ay,.3).normalize(),sp.leaf[0],sp.leaf[1]*.7*f,1,nm,col,w,false);
-          }else{ // broadleaf clusters: random orientation biased to face outward, normals spherical from crown centre
-            nm.copy(c).sub(ctr).normalize();tmp.set(R()-.5,R()-.5,R()-.5).normalize();
-            ax.crossVectors(nm,tmp).normalize();ay.crossVectors(nm,ax).normalize();if(ay.y<0)ay.negate();
-            const out=Math.min(1,c.distanceTo(ctr)/(H*.45)),sh=.55+.45*out+R()*.12,col={r:sh,g:sh*(.97+R()*.06),b:sh*.95};
-            const s=sp.leaf[0]*(.8+R()*.4),pos=c.clone().addScaledVector(nm,.15);
-            const nn=nm.clone().multiplyScalar(.85).add(new V3(0,.25,0)).normalize();
-            card(cg,pos,ax,ay,s,s,sp.tile,nn,col,[b.ws[i]+.05,b.ph,c.y/H],false)}}}}
+          }else{ // broadleaf: a cluster of 3 crossed small cards scattered in 3D around the twig, bent normals = mix of
+                 // cluster-sphere and crown-sphere normals so it shades like a soft volume from any angle
+            if(k>=sp.leafPer-1&&i<P.length-1)continue;
+            const cc=c.clone().add(new V3(R()-.5,R()-.5,R()-.5).multiplyScalar(.35));
+            nm.copy(cc).sub(ctr).normalize();
+            const out=Math.min(1,cc.distanceTo(ctr)/(H*.45)),fl=R(),w=[b.ws[i]+.05,fl*6.283,cc.y/H];
+            const nf=p=>{const a=p.clone().sub(cc).normalize(),q=p.clone().sub(ctr).normalize();return a.multiplyScalar(.55).addScaledVector(q,.6).add(new V3(0,.18,0)).normalize()};
+            for(let q=0;q<3;q++){tmp.set(R()-.5,R()-.5,R()-.5).normalize();
+              const base=q===0?nm:q===1?new V3(0,1,0):tmp.clone().cross(nm).normalize();
+              ax.crossVectors(base,tmp).normalize();ay.crossVectors(base,ax).normalize();if(ay.y<0)ay.negate();
+              const sh=.6+.4*out+R()*.12,col={r:sh,g:sh*(.96+R()*.08),b:sh*.95},sz=sp.leaf[0]*(.5+R()*.25);
+              card(cg,cc.clone().addScaledVector(nm,.06*q),ax,ay,sz,sz,sp.tile,nm,col,w,false,nf)}}}}}
     crown=cg.geo()}
   return {trunk:tg.geo(),crown,H}}
 
@@ -208,10 +217,14 @@ function windVertex(sh,leaf){sh.uniforms.uTime=CTX.U.time;sh.uniforms.uWind=CTX.
   float main=hn*hn*str*(.22+.07*sin(uTime*.9+ip.x*.07+ip.z*.05));
   transformed.xz+=VG_WDIR*main*position.y*.12;
   transformed.y-=main*main*position.y*.004;
-  float ph=aWind.y+ip.x*.13+ip.z*.11;                    // primary branch sway (shared by its twigs and leaves)
+  float ph=ip.x*.13+ip.z*.11+dot(position,vec3(.45,.25,.55));   // spatially smooth phase: child branches move with their parent at the collar
   vec3 sway=vec3(sin(uTime*1.9+ph),.45*sin(uTime*2.6+ph*1.3),cos(uTime*1.6+ph))*aWind.x*str*.55;
   transformed+=sway;
-  ${leaf?`float fl=sin(uTime*7.3+dot(position,vec3(3.1,2.3,4.7))+ph)*.5+sin(uTime*11.+position.y*5.)*.25;transformed+=normal*fl*.05*str*aTransl;`:""}`);
+  ${leaf?`float lp=aWind.y;   // per-cluster random phase: each cluster flutters on its own, faster in gusts
+  float fq=6.5+2.5*fract(lp*7.13);
+  float fl=sin(uTime*fq+lp+dot(position,vec3(2.1,1.7,2.9)))*.6+sin(uTime*fq*1.73+lp*2.)*.3;
+  vec3 tw=vec3(sin(uTime*fq*.8+lp*3.),0.,cos(uTime*fq*.9+lp*5.));
+  transformed+=(normal*fl*.06+tw*.025)*(.25+str)*aTransl;`:""}`);
   sh.fragmentShader="varying float vTransl;\n"+sh.fragmentShader}
 function leafMaterial(map){const m=new THREE.MeshStandardMaterial({vertexColors:true,map,alphaTest:.42,side:THREE.DoubleSide,roughness:.72,metalness:0});
   m.onBeforeCompile=sh=>{windVertex(sh,true);sh.fragmentShader=sh.fragmentShader.replace("#include <lights_fragment_begin>",TRANSL(.9))
@@ -221,7 +234,8 @@ function leafMaterial(map){const m=new THREE.MeshStandardMaterial({vertexColors:
 export function initVegetation(ctx){CTX=ctx;const {GEO,MAT,U}=ctx;
   const bark=barkTextures(),atlas=leafAtlas();CTX.atlas=atlas;CTX.bark=bark;
   MAT.treeBark=new THREE.MeshStandardMaterial({vertexColors:true,map:bark.color,normalMap:bark.normal,normalScale:new THREE.Vector2(1.6,1.6),roughness:.95});
-  MAT.treeBark.onBeforeCompile=sh=>windVertex(sh,false);MAT.treeBark.customProgramCacheKey=()=>"vgbark";
+  MAT.treeBark.onBeforeCompile=sh=>{windVertex(sh,false);   // skylight under the canopy: a trunk in crown shade still reads as brown bark, not a black pole
+    sh.fragmentShader=sh.fragmentShader.replace("#include <aomap_fragment>","#include <aomap_fragment>\n reflectedLight.indirectDiffuse*=1.9;")};MAT.treeBark.customProgramCacheKey=()=>"vgbark";
   MAT.treeLeaf=leafMaterial(atlas);
   const br=treeGeo("broad"),co=treeGeo("conifer"),de=treeGeo("dead"),pa=palmGeo();
   GEO.broadTrunk=br.trunk;GEO.broadCrown=br.crown;GEO.pineTrunk=co.trunk;GEO.pineCrown=co.crown;GEO.deadTrunk=de.trunk;GEO.palmTrunk=pa.trunk;GEO.palmCrown=pa.crown;
