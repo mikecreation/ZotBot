@@ -101,9 +101,9 @@ export function loadRealHuman(url=REAL_HUMAN_URL){return new Promise((res,rej)=>
 const FINGERS=["f_index","f_middle","f_ring","f_pinky"];
 // degrees about local X for joints 1..3; thumb uses [x,z] per joint
 export const HAND_POSES=({
-  relaxed:{f_index:[14,24,14],f_middle:[18,30,17],f_ring:[22,35,19],f_pinky:[26,34,19],thumb:[[6,-8],[10,0],[16,0]]},
-  // solved offline in the build viewer so each finger's joints lie on a circle round a ~34 mm handle
-  grip:{f_index:[25,53,51],f_middle:[45,73,61],f_ring:[48,62,55],f_pinky:[58,50,40],thumb:[[25,-5],[0,0],[14,0]],
+  relaxed:{f_index:[6,24,14],f_middle:[18,30,17],f_ring:[22,35,19],f_pinky:[26,34,19],thumb:[[6,-8],[10,0],[16,0]]},
+  // re-solved in-page against the stone-tool hafts (axe ~31 mm, knife ~28 mm): every finger joint clears the wood, tips just touch
+  grip:{f_index:[9,60,65],f_middle:[46,81,68],f_ring:[49,68,63],f_pinky:[36,50,47],thumb:[[27,-1],[-10,1],[-10,-1]],
     handle:{c:[-.0283,.1063,-.0058],axis:[-.0053,.4034,.915],below:.055}}  // right-hand space; the left hand mirrors x
 });
 const _q=new THREE.Quaternion(),_qi=new THREE.Quaternion(),_e=new THREE.Euler(),_Y=new THREE.Vector3(0,1,0),_v=new THREE.Vector3();
@@ -134,7 +134,7 @@ const _b=new THREE.Box3(),_m=new THREE.Matrix4(),_bb=new THREE.Box3();
 function seatItem(h){const a=h.anchor,it=a.children[0];h.item=it;it.updateMatrixWorld(true);_b.makeEmpty();
   _m.copy(a.matrixWorld).invert();
   it.traverse(o=>{if(!o.isMesh||!o.geometry)return;if(!o.geometry.boundingBox)o.geometry.computeBoundingBox();_bb.copy(o.geometry.boundingBox).applyMatrix4(new THREE.Matrix4().multiplyMatrices(_m,o.matrixWorld));_b.union(_bb)});
-  if(_b.isEmpty())return;const lo=_b.min.y,len=_b.max.y-lo,from=Math.min(GRIP_FROM_END,len*.3);
+  if(_b.isEmpty())return;const lo=_b.min.y,len=_b.max.y-lo,from=it.userData.grip!=null?it.userData.grip*it.scale.y:Math.min(GRIP_FROM_END,len*.3); // tools name their own grip point
   a.position.copy(h.gripCentre).addScaledVector(h.axis,-(lo+from))}
 /** Call right after mixer.update(dt). Each hand blends independently to grip while its anchor has an item. */
 export function poseRealHands(u,dt){const rig=u.handRig;if(!rig)return;const k=1-Math.exp(-dt*10);

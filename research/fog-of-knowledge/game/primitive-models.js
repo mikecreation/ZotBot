@@ -1,4 +1,5 @@
 import * as T from './vendor/three.module.min.js';
+import {buildTool,TOOL_KINDS} from './stone-tools.js';
 let grain;
 const wood=()=>{
   if(!grain){const data=new Uint8Array(64*64*4);for(let y=0;y<64;y++)for(let x=0;x<64;x++){const i=(x+y*64)*4,v=185+Math.sin(x*.8+Math.sin(y*.12)*1.8)*25+Math.sin(x*2.3+y*.04)*12;data[i]=v;data[i+1]=v*.92;data[i+2]=v*.78;data[i+3]=255}grain=new T.DataTexture(data,64,64);grain.wrapS=grain.wrapT=T.RepeatWrapping;grain.magFilter=T.LinearFilter;grain.needsUpdate=true}
@@ -10,6 +11,8 @@ function wrap(g,x,y,z,axis='x',radius=.085){
   for(let i=-1;i<=1;i++){const m=new T.Mesh(new T.TorusGeometry(radius,.009,5,14),cord());m.position.set(x+(axis==='x'?i*.025:0),y+(axis==='y'?i*.025:0),z);m.rotation.y=axis==='x'?Math.PI/2:0;m.rotation.x=axis==='y'?Math.PI/2:0;g.add(m)}
 }
 export function primitiveItem(k,notches=0){
+  // hand tools: realistic knapped / hafted / lashed models (stone-tools.js), shared geometry per kind
+  if(TOOL_KINDS.includes(k))return buildTool(k);
   if(k==='spear'||k==='tally'){
     const g=new T.Group(),w=wood();g.name=k;
     if(k==='spear'){

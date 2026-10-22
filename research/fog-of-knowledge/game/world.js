@@ -462,7 +462,20 @@ function useTool(k,cost){const it=ITEMS[k];if(!it||!it.dur)return;if(world.dur[k
 const STICKY=new Set(["stick","log","spear","arrow"]);
 function itemMesh(k){const detailed=primitiveItem(k,k==="tally"?world?.counters.tally||0:0);if(detailed)return detailed;const it=ITEMS[k];const st=STICKY.has(k);const m=new THREE.Mesh(st?GEO.stick:GEO.small,st?MAT.bark:new THREE.MeshStandardMaterial({color:it.color,roughness:.75}));m.castShadow=true;
   const s=k==="log"?1.4:k==="spear"?1.8:k==="stick"?.9:k==="arrow"?.8:Math.max(.06,it.r*1.4);m.scale.set(s,k==="log"?3.5:k==="arrow"?.45:st?1:s,k==="log"?3.5:k==="arrow"?.45:st?1:s);return m}
-function addDrop(item,x,y,z,vel){const d={item,pos:new THREE.Vector3(x,y,z),vel:vel?vel.clone():new THREE.Vector3(),mesh:itemMesh(item),flying:!!vel,t:0};d.mesh.position.copy(d.pos);scene.add(d.mesh);world.drops.push(d);return d}
+function addDrop(item,x,y,z,vel){const d={item,pos:new THREE.Vector3(x,y,z),vel:vel?vel.clone():new THREE.Vector3(),mesh:itemMesh(item),flying:!!vel,t:0};d.mesh.position.copy(d.pos);scene.add(d.mesh);world.drops.push(d);if(!vel)layFlat(d);return d}
+// hafted tools rest on a flat face of the head with the handle on the ground (instead of standing on their butt)
+const _lfB=new THREE.Box3(),_lfQ=new THREE.Quaternion(),_lfY=new THREE.Vector3(0,1,0);
+function layFlat(d){const m=d.mesh;if(!m.userData.lieFlat||d.floating)return;const g=heightAt(d.pos.x,d.pos.z);if(d.pos.y<0&&g<0)return;
+  const yaw=((d.pos.x*12.9898+d.pos.z*78.233)%6.283);m.quaternion.setFromAxisAngle(_lfY,yaw).multiply(_lfQ.setFromAxisAngle(new THREE.Vector3(1,0,0),-Math.PI/2));
+  m.position.set(d.pos.x,0,d.pos.z);m.updateMatrixWorld(true);_lfB.setFromObject(m);
+  // rest on the rendered (2 m triangle-grid) ground under the whole footprint, not only the analytic height at the centre, so thin tools never sink
+  // the mesh is planar per triangle, so the max over a footprint grid plus the terrain vertices inside it bounds it closely
+  let top=g;const st=CHUNK/32;for(let a=0;a<=5;a++)for(let b=0;b<=5;b++)top=Math.max(top,groundSurfaceAt(lerp(_lfB.min.x,_lfB.max.x,a/5),lerp(_lfB.min.z,_lfB.max.z,b/5)));
+  for(let x=Math.ceil(_lfB.min.x/st)*st;x<=_lfB.max.x;x+=st)for(let z=Math.ceil(_lfB.min.z/st)*st;z<=_lfB.max.z;z+=st)top=Math.max(top,heightAt(x,z));
+  m.position.y=top-_lfB.min.y+.004;d.pos.y=m.position.y}
+/* height of the near-LOD terrain mesh (triangles a,d,b / b,d,e of buildTerrain) rather than the smooth heightAt it samples */
+function groundSurfaceAt(x,z){const st=CHUNK/32,fx=x/st,fz=z/st,i=Math.floor(fx),j=Math.floor(fz),u=fx-i,v=fz-j,X=i*st,Z=j*st;
+  const b=heightAt(X+st,Z),c=heightAt(X,Z+st);return u+v<=1?heightAt(X,Z)*(1-u-v)+b*u+c*v:heightAt(X+st,Z+st)*(u+v-1)+b*(1-v)+c*(1-u)}
 function throwSpeed(k){return Math.min(20,Math.sqrt(2*90/ITEMS[k].mass))} // ~90 J from a human arm
 function launchItem(k,v){
   const dir=aimDir(),o=player.pos.clone().add(new THREE.Vector3(0,player.crouch?1.1:1.55,0)).addScaledVector(new THREE.Vector3(dir.x,0,dir.z).normalize(),.4);
@@ -508,6 +521,7 @@ function stepDrops(dt){
   }
 }
 function onLanded(d){
+  layFlat(d);
   world.counters.falls++;if(world.counters.falls>=5)discover("gravity");
   if(d.launch&&d.vy0!=null){
     const R=Math.hypot(d.pos.x-d.launch.x,d.pos.z-d.launch.z),pred=d.v0*d.v0*Math.sin(2*d.theta)/G_ACC,dh=d.launch.y-d.pos.y;
@@ -1432,7 +1446,7 @@ const ICON={plank:"🪵",rope:"🪢",sailcloth:"🏳",pitch:"⚫",trenail:"📍"
 const icon=k=>ICON[k]||"•";
 const hex=k=>"#"+ITEMS[k].color.toString(16).padStart(6,"0");
 function handMesh(anchor,k){if(!anchor)return;const revision=k==="tally"?world.counters.tally:0;if(anchor.userData.k===k&&anchor.userData.revision===revision)return;anchor.userData.revision=revision;while(anchor.children.length){const c=anchor.children[0];anchor.remove(c)}anchor.userData.k=k||null;if(!k)return;
-  const m=itemMesh(k);m.castShadow=true;const bs=new THREE.Box3().setFromObject(m),sz=bs.getSize(new THREE.Vector3()),mx=Math.max(sz.x,sz.y,sz.z);const limit=k==="spear"?1.95:.45;if(mx>limit)m.scale.multiplyScalar(limit/mx);m.position.set(0,.02,0);m.userData.item=k;anchor.add(m)}
+  const m=itemMesh(k);m.castShadow=true;if(!m.userData.trueScale){const bs=new THREE.Box3().setFromObject(m),sz=bs.getSize(new THREE.Vector3()),mx=Math.max(sz.x,sz.y,sz.z);const limit=k==="spear"?1.95:.45;if(mx>limit)m.scale.multiplyScalar(limit/mx)}m.position.set(0,m.userData.trueScale?0:.02,0);m.userData.item=k;anchor.add(m)}
 function renderHotbar(){
   const el=$("#wHotbar");if(!el||!world)return;const ks=hotbarItems();
   if(world.held&&!world.inv[world.held])world.held=ks.find(x=>x!==world.left)||null;if(world.left&&!world.inv[world.left])world.left=null;
