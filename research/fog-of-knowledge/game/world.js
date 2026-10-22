@@ -68,7 +68,7 @@ const clamp=(v,a,b)=>v<a?a:v>b?b:v, lerp=(a,b,t)=>a+(b-a)*t;
 
 /* ---------------- world definition ---------------- */
 let N1,N2,N3,N4,N5;
-function initNoise(seed){N1=makeNoise(seed);N2=makeNoise(seed^0x9e3779b9);N3=makeNoise(seed^0x85ebca6b);N4=makeNoise(seed^0xc2b2ae35);N5=makeNoise(seed^0x27d4eb2f)}
+function initNoise(seed){N1=makeNoise(seed);N2=makeNoise(seed^0x9e3779b9);N3=makeNoise(seed^0x85ebca6b);N4=makeNoise(seed^0xc2b2ae35);N5=makeNoise(seed^0x27d4eb2f);GFX.setWaterTerrain?.(heightAt)}
 function fbm(n,x,z,oct){let a=1,f=1,s=0,w=0;for(let i=0;i<oct;i++){s+=a*n(x*f,z*f);w+=a;a*=.5;f*=2.03}return s/w}
 function heightAt(x,z){
   const cont=fbm(N1,x*.0006,z*.0006,4)+.18;
@@ -476,7 +476,7 @@ function fireWeapon(k){const it=ITEMS[k];if(!inv(it.ammo))return toast(`You need
 function aimDir(){const p=clamp(-player.camPitch+(player.camPitch<-.35?0:.32),-1.2,1.5),y=player.camYaw;return new THREE.Vector3(-Math.sin(y)*Math.cos(p),Math.sin(p),-Math.cos(y)*Math.cos(p)).normalize()}
 function stepDrops(dt){
   for(const d of world.drops){
-    if(!d.flying){if(d.floating){d.t+=dt;d.pos.y=Math.sin(d.t*2)*.03-.02;d.mesh.position.copy(d.pos);d.mesh.rotation.y+=dt*.2}continue}
+    if(!d.flying){if(d.floating){d.t+=dt;d.gy??=heightAt(d.pos.x,d.pos.z);d.pos.y=GFX.waveHeight(d.pos.x,d.pos.z,d.gy)+Math.sin(d.t*2)*.015-.02;d.mesh.position.copy(d.pos);d.mesh.rotation.y+=dt*.2}continue}
     const it=ITEMS[d.item];d.t+=dt;
     const ground=heightAt(d.pos.x,d.pos.z),inWater=d.pos.y<0&&ground<0;if(inWater&&!d.splashed){d.splashed=true;GFX.FX.splash(d.pos.x,d.pos.z,14);if(d.pos.distanceTo(player.pos)<40)AU.splash(false)}
     const vol=it.mass/it.density,area=Math.PI*it.r*it.r*(STICKY.has(d.item)?2:1);
@@ -788,9 +788,9 @@ function stepPlayer(dt){
   const ground=heightAt(p.pos.x,p.pos.z);
   if(p.raft){
     const s=p.raft,sp=3.2,nx=s.x+mv.x*sp*dt,nz=s.z+mv.z*sp*dt;
-    if(heightAt(nx,nz)<-.25){world.counters.raftDist+=Math.hypot(nx-s.x,nz-s.z);s.x=nx;s.z=nz;s.obj.position.set(s.x,.02+Math.sin(performance.now()/600)*.03,s.z);if(world.counters.raftDist>10)discover("raft")}
+    if(heightAt(nx,nz)<-.25){world.counters.raftDist+=Math.hypot(nx-s.x,nz-s.z);s.x=nx;s.z=nz;s.obj.position.x=s.x;s.obj.position.z=s.z;if(world.counters.raftDist>10)discover("raft")}
     else if(mv.lengthSq()){p.raft=null;p.pos.set(nx,heightAt(nx,nz),nz);toast("You stepped ashore.");return}
-    p.pos.set(s.x,.12,s.z);p.vel.set(mv.x*sp,0,mv.z*sp);p.moveSpeed=mv.length()*sp;p.onGround=true;p.swimming=false;if(mv.lengthSq())p.yaw=Math.atan2(mv.x,mv.z);return;
+    p.pos.set(s.x,s.obj.position.y+.1,s.z);p.vel.set(mv.x*sp,0,mv.z*sp);p.moveSpeed=mv.length()*sp;p.onGround=true;p.swimming=false;if(mv.lengthSq())p.yaw=Math.atan2(mv.x,mv.z);return;
   }
   const depth=-p.pos.y;p.swimming=ground<-.6&&p.pos.y<-.55;if(p.swimming)p.crouch=false;
   p.climbing=false;
@@ -1709,11 +1709,16 @@ function tick(){
     AU.ambience({wind:clamp(.2+Math.max(0,P.y)/180+world.weather.amt*.5+(world.weather.kind==="storm"||world.weather.kind==="drystorm"?.3:0)+(snapNow()?.2:0),0,1),waves:wv,rain:isRaining()?world.weather.amt:0,night:isNight(),biome:biomeAt(P.x,P.z,P.y),fire:clamp(fireHeatAt(P.x,P.z)/120,0,1),under:camera.position.y<0,paused:paused||$("#mode-world").hidden,slow:!!(OBS&&OBS.isOpen)})}
 }
 const _v1=new THREE.Vector3();
+// rafts ride the FFT ocean: heave from the CPU wave sum (swell + strongest wind waves), pitch/roll from its slope across the deck
+function bobRafts(){for(const s of world.structures){if(s.type!=="raft"||!s.obj)continue;const g=s.gy??=heightAt(s.x,s.z);if(player.raft===s)s.gy=heightAt(s.x,s.z);
+  const W=(dx,dz)=>GFX.waveHeight(s.x+dx,s.z+dz,s.gy),c=W(0,0),e=.9,sx=(W(e,0)-W(-e,0))/(2*e),sz=(W(0,e)-W(0,-e))/(2*e);
+  const o=s.obj;o.position.y=.02+c;const k=Math.min(1,.15/Math.max(.15,Math.hypot(sx,sz)));o.rotation.x=lerp(o.rotation.x,sz*k*.8,.2);o.rotation.z=lerp(o.rotation.z,-sx*k*.8,.2)}}
 function stepWorld(dt){
   const dtg=dt*gameSpeed();
   world.gameTime+=dtg;
   stepWeather(dtg);stepPlayer(dt);stepSurvival(dt);stepDrill(dt);stepDrops(dt);stepFires(dt,dtg);stepBurning(dt);stepLightning(dt);spawnAnimals(dt);updateAnimals(dt);if(PETS)PETS.update(dt);stepPendulums(dt);stepCuriosity(dt);stepTips(dt);
-  const p=player;p.model.position.copy(p.pos);if(p.raft)p.model.position.y=.12;p.model.rotation.y=p.yaw;
+  bobRafts();
+  const p=player;p.model.position.copy(p.pos);if(p.raft)p.model.position.y=p.raft.obj.position.y+.1;p.model.rotation.y=p.yaw;
   animateHuman(p.model,(p.moveSpeed||0)*(p.crouch?1.6:1),dt,p.swimming,!p.onGround&&!p.swimming&&p.pos.y>heightAt(p.pos.x,p.pos.z)+.25,p.dead);
   GFX.fitClimbingGloves(p.model,inv("climbing_gloves")>0);
   if(p.climbing)GFX.poseClimbing(p.model,clock.elapsedTime);
@@ -1851,7 +1856,7 @@ export function initWorld(){
     addFireFuel:feedFire,quickCarve,hover:()=>cursorTarget(true),autoPickup:()=>autoPickup?{remaining:autoPickup.path.length,item:autoPickup.target.kind==="res"?autoPickup.target.obj.r.type:autoPickup.target.obj.item}:null,drill:()=>({active:!!drilling,progress:drilling?._drill?.progress||0,prop:!!drillProp}),give:(k,n)=>give(k,n),press:(code,ms)=>{keys.add(code);setTimeout(()=>keys.delete(code),ms)},keyEvent:code=>window.dispatchEvent(new KeyboardEvent("keydown",{code,bubbles:true})),keyDown:c=>keys.add(c),keyUp:c=>keys.delete(c),keysClear:()=>keys.clear(),
     teleport:(x,z)=>{player.pos.set(x,heightAt(x,z),z);player.vel.set(0,0,0);updateChunks(true)},stats:()=>({pos:player&&player.pos.toArray().map(v=>+v.toFixed(2)),chunks:chunks.size,animals:animals.length,frames,
       revealed:world?.ks.revealed.length,disc:world?.disc.length,atlas:!!atlas,drawCalls:renderer.info.render.calls,tris:renderer.info.render.triangles,fps:+fps.toFixed(1),quality:GFX.qName,birds:{...birds.stats},human:!!player?.model?.userData?.mixer,audio:{...AU.stats}}),
-    start:()=>$("#wPlay").click(),height:(x,z)=>heightAt(x,z),biome:(x,z)=>biomeAt(x,z,heightAt(x,z)),slope:(x,z)=>slopeAt(x,z),reseed:seed=>{const w=newWorld(seed);w.removed=[];w.burnt=[];startWorld(w)},newGame:seed=>newGame(seed),fps:()=>fps,quality:q=>{if(q)applyQuality(q);return GFX.qName},
+    start:()=>$("#wPlay").click(),height:(x,z)=>heightAt(x,z),biome:(x,z)=>biomeAt(x,z,heightAt(x,z)),slope:(x,z)=>slopeAt(x,z),reseed:seed=>{const w=newWorld(seed);w.removed=[];w.burnt=[];startWorld(w)},newGame:seed=>newGame(seed),fps:()=>fps,quality:q=>{if(q)applyQuality(q);return GFX.qName},ocean:q=>{if(q)GFX.setWaterQuality(q);return GFX.oceanStats()},waveHeight:(x,z)=>GFX.waveHeight(x,z,heightAt(x,z)),
     setHour:h=>{world.gameTime=Math.floor(world.gameTime/86400)*86400+h*3600},setWeather:(kind,amt)=>{world.weather.kind=kind;world.weather.amt=amt??(kind==="rain"||kind==="storm"?1:0);world.weather.t=9e9;world.weather.next=kind},
     look:(yaw,pitch,dist)=>{player.camYaw=yaw;if(pitch!==undefined)player.camPitch=pitch;if(dist!==undefined)player.camDist=dist},throwHeld,useHeld,interact,craft,eat,hold:k=>{if(world&&world.inv[k]){world.held=k;renderHotbar();return true}return false},
     sim,scan,target:()=>{const t=findTarget();return t?{kind:t.kind,label:targetLabel(t),type:t.obj?.type||t.obj?.item||t.obj?.r?.type||t.obj?.kind}:null},respawn:()=>$("#wRespawn")?.click(),

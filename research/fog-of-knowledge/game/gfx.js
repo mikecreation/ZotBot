@@ -1,11 +1,11 @@
 /* Fog of Knowledge: The Game — graphics layer (v2).
- * PBR lighting, Preetham sky, reflective water, clouds, terrain/vegetation shaders,
+ * PBR lighting, Preetham sky, FFT ocean (ocean.js), clouds, terrain/vegetation shaders,
  * animated glTF human, procedural animals, particles and post-processing.
  * three.js r160 + addons are vendored under ./vendor (MIT). Human model and animations:
  * Quaternius "Universal Animation Library" (CC0), see ./assets/CREDITS.txt. */
 import * as THREE from "./vendor/three.module.min.js";
 import {Sky} from "./vendor/addons/objects/Sky.js";
-import {Water} from "./vendor/addons/objects/Water.js";
+import {Ocean,OCEAN_QUALITY} from "./ocean.js?v=3.28.0";
 import {GLTFLoader} from "./vendor/addons/loaders/GLTFLoader.js";
 import {mergeGeometries,mergeVertices} from "./vendor/addons/utils/BufferGeometryUtils.js";
 import {clone as cloneSkinned} from "./vendor/addons/utils/SkeletonUtils.js";
@@ -19,9 +19,9 @@ import {FXAAShader} from "./vendor/addons/shaders/FXAAShader.js";
 
 /* ---------------- quality presets ---------------- */
 export const QUALITY={
-  low:  {label:"Low",  pr:1,   shadows:0,    post:false,bloom:false,aa:"none",water:"simple",reflect:0,   grass:0,    grassR:0,flowers:0,  clouds:true, fireShadow:false,particles:.5},
-  high: {label:"High", pr:1.25,shadows:2048, post:true, bloom:true, aa:"fxaa",water:"mirror",reflect:512, grass:9000, grassR:1,flowers:140,clouds:true, fireShadow:1,fireShadowMap:256,particles:1},
-  ultra:{label:"Ultra",pr:2,   shadows:4096, post:true, bloom:true, aa:"smaa",water:"mirror",reflect:1024,grass:18000,grassR:1,flowers:260,clouds:true, fireShadow:2,fireShadowMap:512,particles:1.4}
+  low:  {label:"Low",  pr:1,   shadows:0,    post:false,bloom:false,aa:"none",ocean:"low",   grass:0,    grassR:0,flowers:0,  clouds:true, fireShadow:false,particles:.5},
+  high: {label:"High", pr:1.25,shadows:2048, post:true, bloom:true, aa:"fxaa",ocean:"med", grass:9000, grassR:1,flowers:140,clouds:true, fireShadow:1,fireShadowMap:256,particles:1},
+  ultra:{label:"Ultra",pr:2,   shadows:4096, post:true, bloom:true, aa:"smaa",ocean:"high",grass:18000,grassR:1,flowers:260,clouds:true, fireShadow:2,fireShadowMap:512,particles:1.4}
 };
 const QKEY="fog-of-knowledge:game:quality";
 export function loadQualityPref(){try{const q=localStorage.getItem(QKEY);if(QUALITY[q])return q}catch(_){}return "high"}
@@ -66,7 +66,7 @@ float fk_fbm(vec2 p){float s=0.,a=.5;for(int i=0;i<4;i++){s+=a*fk_vn(p);p=p*2.03
 `;
 
 /* ---------------- renderer / scene / post ---------------- */
-export let renderer,scene,camera,composer,sun,hemi,sky,water,waterSimple,clouds,stars,moonMesh,moonGlow,rainLines,snowPts,bloomPass;
+export let renderer,scene,camera,composer,sun,hemi,sky,water,ocean,clouds,stars,moonMesh,moonGlow,rainLines,snowPts,bloomPass;
 let container,renderPass,outputPass,aaPass,gradePass,lightningLight;
 export function initGfx(el,q){
   container=el;
@@ -107,9 +107,9 @@ export function initGfx(el,q){
   moonGlow=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTexture(),color:0x9fb6ff,transparent:true,opacity:.5,depthWrite:false,fog:false,blending:THREE.AdditiveBlending}));moonGlow.scale.setScalar(140);moonGlow.renderOrder=-8;scene.add(moonGlow);
   // clouds layer
   clouds=makeClouds();scene.add(clouds);
-  // water: simple + mirror (swapped by quality)
-  waterSimple=new THREE.Mesh(new THREE.PlaneGeometry(2600,2600),new THREE.MeshStandardMaterial({color:0x1c5a72,roughness:.08,metalness:.1,transparent:true,opacity:.82}));
-  waterSimple.rotation.x=-Math.PI/2;
+  // water: FFT ocean (ocean.js). Sky, stars, moon and clouds also live on layer 1 so the ocean's cube camera reflects them.
+  for(const o of [sky,stars,moonMesh,moonGlow,clouds])o.layers.enable(1);
+  ocean=new Ocean(renderer,scene,{quality:waterQualityName(QUALITY[q]?.ocean)});water=ocean.group;
   // precipitation
   rainLines=makeRain();scene.add(rainLines);snowPts=makeSnow();scene.add(snowPts);
   FX.init();
@@ -118,7 +118,13 @@ export function initGfx(el,q){
 }
 export function resize(){const w=container.clientWidth,h=container.clientHeight;if(!w||!h)return;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();if(composer){composer.setSize(w,h);updateAA()}FX.resize()}
 function updateAA(){const w=container.clientWidth,h=container.clientHeight,pr=renderer.getPixelRatio();if(aaPass&&aaPass.material&&aaPass.material.uniforms.resolution)aaPass.material.uniforms.resolution.value.set(1/(w*pr),1/(h*pr))}
-let waterNormals=null;
+// water quality follows the graphics preset (Low→low, High→medium, Ultra→high); ?water=low|med|high overrides it
+function waterQualityName(fromPreset){let o=null;try{o=new URLSearchParams(location.search).get("water")}catch(_){}return OCEAN_QUALITY[o]?o:OCEAN_QUALITY[fromPreset]?fromPreset:"med"}
+export function setWaterQuality(name){if(ocean&&OCEAN_QUALITY[name])ocean.setQuality(name);return ocean?.qName}
+export function setWaterTerrain(fn){if(ocean)ocean.setTerrainSampler(fn)}
+/** CPU wave height (m above sea level 0) for floating objects; ground = terrain height there (waves die out in shallows) */
+export function waveHeight(x,z,ground){return ocean?ocean.heightAt(x,z,ground):0}
+export function oceanStats(){return ocean?{quality:ocean.qName,N:ocean.N,time:+ocean.time.toFixed(2),cascades:ocean.L.slice()}:null}
 export function setQuality(name){
   qName=QUALITY[name]?name:"high";Q=QUALITY[qName];
   renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,Q.pr));
@@ -129,15 +135,7 @@ export function setQuality(name){
   sun.shadow.mapSize.set(Q.shadows||512,Q.shadows||512);
   scene.traverse(o=>{if(o.material){const m=Array.isArray(o.material)?o.material:[o.material];m.forEach(x=>x.needsUpdate=true)}});
   // water
-  if(water){scene.remove(water);if(water!==waterSimple){water.material.dispose();water.geometry.dispose()}}
-  if(Q.water==="mirror"){
-    if(!waterNormals){waterNormals=new THREE.TextureLoader().load("vendor/waternormals.jpg");waterNormals.wrapS=waterNormals.wrapT=THREE.RepeatWrapping}
-    water=new Water(new THREE.PlaneGeometry(2600,2600),{textureWidth:Q.reflect,textureHeight:Q.reflect,waterNormals,sunDirection:new THREE.Vector3(0,1,0),sunColor:0xfff2d0,waterColor:0x0a3444,distortionScale:2.6,fog:true,alpha:.86});
-    water.material.transparent=true;water.material.uniforms.size.value=3.2;
-    const ob=water.onBeforeRender.bind(water);
-    water.onBeforeRender=(r,s,c)=>{const hidden=[];for(const o of MIRROR_HIDE)if(o.visible){o.visible=false;hidden.push(o)}ob(r,s,c);for(const o of hidden)o.visible=true};
-  }else water=waterSimple;
-  water.rotation.x=-Math.PI/2;water.renderOrder=2;scene.add(water);
+  if(ocean)ocean.setQuality(waterQualityName(Q.ocean));
   // post-processing chain: render → bloom → tone map/sRGB → AA → grade/vignette
   if(composer){composer.dispose?.();composer=null}
   composer=new EffectComposer(renderer);
@@ -151,7 +149,7 @@ export function setQuality(name){
   composer.setSize(container.clientWidth,container.clientHeight);updateAA();
   FX.resize();
 }
-export const MIRROR_HIDE=new Set();   // objects skipped in the water reflection pass (grass, particles)
+export const MIRROR_HIDE=new Set();   // legacy: objects that were skipped by the old planar mirror (the FFT ocean reflects only the sky layer)
 const GradeShader={uniforms:{tDiffuse:{value:null},uVig:{value:.32},uTint:{value:new THREE.Vector3(1,1,1)},uUnder:{value:0}},
   vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
   fragmentShader:`uniform sampler2D tDiffuse;uniform float uVig;uniform vec3 uTint;uniform float uUnder;varying vec2 vUv;
@@ -160,9 +158,12 @@ const GradeShader={uniforms:{tDiffuse:{value:null},uVig:{value:.32},uTint:{value
   col=mix(col,col*vec3(.35,.75,.85)+vec3(0.,.04,.06),uUnder);
   gl_FragColor=vec4(col*v,c.a);}`};
 export function setUnderwater(k){if(gradePass)gradePass.uniforms.uUnder.value=k}
+const _oSun=new THREE.Color(),_oAmb=new THREE.Color();
 export function render(dt){
   U.time.value+=dt;
-  if(water&&water.material.uniforms&&water.material.uniforms.time)water.material.uniforms.time.value+=dt*.6;
+  if(ocean){_oSun.copy(sun.color).multiplyScalar(sun.intensity*(.3+.7*ENV.day));   // moonlight on water stays a faint glitter: nights are meant to be dark
+    _oAmb.copy(hemi.color).multiplyScalar(hemi.intensity);
+    ocean.update({dt,camera,sunDir:ENV.lightDir,sunColor:_oSun,ambient:_oAmb,fog:scene.fog})}
   if(clouds)clouds.material.uniforms.uTime.value+=dt;
   FX.update(dt);
   composer.render(dt);
@@ -264,10 +265,7 @@ export function updateEnvironment(o){
   const cu=clouds.material.uniforms;cu.uCover.value=.4+cloudy*.2+amt*.35;cu.uFog.value.copy(ENV.fogColor);
   cu.uLit.value.copy(sun.color).multiplyScalar(.35+1.25*day).lerp(C.rainFog,amt*.6);cu.uShade.value.copy(ENV.fogColor).multiplyScalar(.55+.2*day);cu.uLit.value.addScalar(flash*1.7);cu.uShade.value.addScalar(flash*.7);
   clouds.position.set(o.cam.x,270,o.cam.z);
-  // water tint
-  if(water.material.uniforms){const wu=water.material.uniforms;wu.sunDirection.value.copy(ENV.lightDir);wu.sunColor.value.copy(sun.color).multiplyScalar(Math.min(1,sun.intensity/3));wu.waterColor.value.copy(C.wNight).lerp(C.wDay,day)}
-  else water.material.color.copy(C.wNight).lerp(new THREE.Color(0x1c5a72),day);
-  water.position.set(Math.round(o.pos.x/8)*8,0,Math.round(o.pos.z/8)*8);
+  // water: the ocean (ocean.js) is lit from sun/moon/hemi/fog in render(); nothing to tint here
   // precipitation
   const prec=amt>.15;rainLines.visible=prec&&!o.snow;snowPts.visible=prec&&o.snow;
   if(rainLines.visible){rainLines.material.opacity=.15+.3*amt;stepPrecip(rainLines,o.dt,o.cam,13,2)}
@@ -333,7 +331,7 @@ function terrainPatch(sh){sh.uniforms.uTime=U.time;sh.uniforms.uWet=U.wet;
     // wet sand band, underwater darkening
     float tWet=smoothstep(.6,-.05,vTW.y);
     base*=1.-.38*tWet;
-    base=mix(base,vec3(.03,.13,.15),smoothstep(-.4,-7.,vTW.y)*.85);
+    base=mix(base,vec3(.05,.12,.12),smoothstep(-.4,-7.,vTW.y)*.3);   // the ocean's Beer–Lambert pass does the real depth tint
     // shoreline foam
     float wave=.07*sin(uTime*1.4+n2*6.28+tp.x*.05);
     float fo=(1.-smoothstep(0.,.2,abs(vTW.y-.06-wave)))*smoothstep(.45,.75,fk_vn(tp*1.3+vec2(uTime*.25,0.)));
