@@ -20,7 +20,7 @@ import {ITEMS,WORLD_DISCOVERIES,RECIPES} from "./world-data.js?v=3.29.0";
 import {walkPath} from "./walk-path.js?v=3.29.0";
 import {drillProblem,advanceDrill} from "./friction-fire.js?v=3.29.0";
 import {primitiveItem,workbenchMesh} from "./primitive-models.js?v=3.29.0";
-import * as GFX from "./gfx.js?v=3.29.0";
+import * as GFX from "./gfx.js?v=3.31.2";
 import * as AXE from "./axe.js?v=3.29.1";
 import * as AU from "./audio.js";
 import {ESSENTIAL_QUICKBAR,quickbarOrder} from "./quickbar.js?v=3.29.0";

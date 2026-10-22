@@ -68,7 +68,7 @@ float fk_fbm(vec2 p){float s=0.,a=.5;for(int i=0;i<4;i++){s+=a*fk_vn(p);p=p*2.03
 `;
 
 /* ---------------- renderer / scene / post ---------------- */
-export let renderer,scene,camera,composer,sun,hemi,sky,water,ocean,clouds,stars,moonMesh,moonGlow,rainLines,snowPts,bloomPass;
+export let renderer,scene,camera,composer,sun,hemi,sky,water,ocean,clouds,stars,moonMesh,moonGlow,rainLines,snowPts,bloomPass,milkyWay,meteors,auroraMesh,rainbowMesh;
 let container,renderPass,outputPass,aaPass,gradePass,lightningLight;
 export function initGfx(el,q){
   container=el;
@@ -101,16 +101,18 @@ export function initGfx(el,q){
       retColor += vec3(.62,.75,1.) * flash * .75;
       gl_FragColor = vec4( retColor, 1.0 );`);
   scene.add(sky);
-  // stars + moon
-  const sp=[],sc2=[],r=rng(7);for(let i=0;i<2600;i++){const u=r()*2-1,a=r()*Math.PI*2,s=Math.sqrt(1-u*u);sp.push(Math.cos(a)*s*900,Math.abs(u)*900+20,Math.sin(a)*s*900);const t=r();sc2.push(.75+t*.25,.8+t*.15,1);}
-  const sg=new THREE.BufferGeometry();sg.setAttribute("position",new THREE.Float32BufferAttribute(sp,3));sg.setAttribute("color",new THREE.Float32BufferAttribute(sc2,3));
-  stars=new THREE.Points(sg,new THREE.PointsMaterial({size:1.8,sizeAttenuation:false,vertexColors:true,transparent:true,opacity:0,fog:false,depthWrite:false}));stars.renderOrder=-9;scene.add(stars);
-  moonMesh=new THREE.Mesh(new THREE.SphereGeometry(14,24,16),new THREE.MeshBasicMaterial({color:new THREE.Color(2.2,2.3,2.5),fog:false,transparent:true}));moonMesh.renderOrder=-8;scene.add(moonMesh);
-  moonGlow=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTexture(),color:0x9fb6ff,transparent:true,opacity:.5,depthWrite:false,fog:false,blending:THREE.AdditiveBlending}));moonGlow.scale.setScalar(140);moonGlow.renderOrder=-8;scene.add(moonGlow);
+  // stars + milky way + moon (JOB 2 SKY) — spectral colours, magnitudes, twinkle; MW band; phased moon
+  stars=makeStarfield();scene.add(stars);
+  milkyWay=makeMilkyWay();scene.add(milkyWay);
+  meteors=makeMeteors();scene.add(meteors);
+  auroraMesh=makeAurora();scene.add(auroraMesh);
+  rainbowMesh=makeRainbow();scene.add(rainbowMesh);
+  moonMesh=makeMoon();scene.add(moonMesh);
+  moonGlow=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTexture(),color:0xc8d6ff,transparent:true,opacity:.55,depthWrite:false,fog:false,blending:THREE.AdditiveBlending}));moonGlow.scale.setScalar(160);moonGlow.renderOrder=-8;scene.add(moonGlow);
   // clouds layer
   clouds=makeClouds();scene.add(clouds);
   // water: FFT ocean (ocean.js). Sky, stars, moon and clouds also live on layer 1 so the ocean's cube camera reflects them.
-  for(const o of [sky,stars,moonMesh,moonGlow,clouds])o.layers.enable(1);
+  for(const o of [sky,stars,milkyWay,meteors,auroraMesh,moonMesh,moonGlow,clouds])o.layers.enable(1);
   ocean=new Ocean(renderer,scene,{quality:waterQualityName(QUALITY[q]?.ocean)});water=ocean.group;
   // precipitation
   rainLines=makeRain();scene.add(rainLines);snowPts=makeSnow();scene.add(snowPts);
@@ -212,13 +214,174 @@ function stepPrecip(o,dt,cam,fall,drift){const p=o.geometry.attributes.position,
   p.needsUpdate=true;o.position.copy(cam)}
 
 /* ---------------- environment: sun, moon, sky, fog, light ---------------- */
-const C={dayFog:new THREE.Color(0xa9c6e2),duskFog:new THREE.Color(0xd8a27c),nightFog:new THREE.Color(0x0b1424),rainFog:new THREE.Color(0x7d8894),
+const C={dayFog:new THREE.Color(0xa9c6e2),duskFog:new THREE.Color(0xe8a878),nightFog:new THREE.Color(0x0b1424),rainFog:new THREE.Color(0x7d8894),
   sunNoon:new THREE.Color(0xfff3e0),sunGold:new THREE.Color(0xffa860),moon:new THREE.Color(0x9db4ff),
   hemiDay:new THREE.Color(0xbcd6ff),hemiNight:new THREE.Color(0x2a3c66),gDay:new THREE.Color(0x5a4c38),gNight:new THREE.Color(0x0e1218),
   wDay:new THREE.Color(0x0a3444),wNight:new THREE.Color(0x02080e)};
 const _c1=new THREE.Color(),_v=new THREE.Vector3(),_tgt=new THREE.Vector3();
 export const ENV={fogColor:new THREE.Color(),day:1,lightDir:new THREE.Vector3(0,1,0),moonFrac:.5,moonPhase:0,expMul:1,night:0};
 // moon phase from the game calendar: synodic month 29.53 days; illuminated fraction f = (1 − cos 2π·phase)/2
+/* ---- JOB 2 SKY helpers: dense starfield, Milky Way, meteors, moon phases, aurora, rainbow ---- */
+function makeStarfield(){
+  // ~9k stars: spectral OBAFGKM colours + magnitude sizes; custom shader for scintillation
+  const N=9000,sp=new Float32Array(N*3),sc=new Float32Array(N*3),sm=new Float32Array(N),r=rng(7);
+  // approximate blackbody → RGB (very coarse) by spectral class mix
+  const SPEC=[[.62,.72,1.],[.72,.82,1.],[.85,.9,1.],[1.,.98,.92],[1.,.9,.7],[1.,.78,.55],[1.,.62,.42]];
+  for(let i=0;i<N;i++){
+    // denser toward a galactic plane (band across sky) + isotropic field
+    let u,a;
+    if(r()<.55){ // Milky-Way-biased halo stars still in starfield
+      const lon=r()*Math.PI*2, lat=(r()-.5)*.55; // thin band
+      const cl=Math.cos(lat); u=Math.sin(lat); a=lon;
+      sp[i*3]=Math.cos(a)*cl*900; sp[i*3+1]=Math.abs(u)*900+30; sp[i*3+2]=Math.sin(a)*cl*900;
+    }else{
+      u=r()*2-1;a=r()*Math.PI*2;const s=Math.sqrt(1-u*u);
+      sp[i*3]=Math.cos(a)*s*900;sp[i*3+1]=Math.abs(u)*900+20;sp[i*3+2]=Math.sin(a)*s*900;
+    }
+    // magnitude: few bright, many faint (power law)
+    const mag=Math.pow(r(),2.4); // 0=bright .. 1=faint
+    sm[i]=mag;
+    const spc=SPEC[Math.min(6,Math.floor(r()*r()*7))]; // bias cooler/common
+    const bright=1.15-mag*.85;
+    sc[i*3]=spc[0]*bright; sc[i*3+1]=spc[1]*bright; sc[i*3+2]=spc[2]*bright;
+  }
+  const sg=new THREE.BufferGeometry();
+  sg.setAttribute("position",new THREE.BufferAttribute(sp,3));
+  sg.setAttribute("color",new THREE.BufferAttribute(sc,3));
+  sg.setAttribute("aMag",new THREE.BufferAttribute(sm,1));
+  const mat=new THREE.ShaderMaterial({
+    transparent:true,depthWrite:false,fog:false,blending:THREE.AdditiveBlending,
+    uniforms:{uOpacity:{value:0},uTime:{value:0},uSize:{value:4.2}},
+    vertexShader:`attribute float aMag; attribute vec3 color; varying vec3 vC; varying float vTw;
+      uniform float uSize; uniform float uTime;
+      void main(){vC=color; float seed=fract(sin(dot(position.xy,vec2(12.9898,78.233)))*43758.5453);
+        vTw=.72+.28*sin(uTime*(1.6+seed*3.5)+seed*6.28); // scintillation
+        vec4 mv=modelViewMatrix*vec4(position,1.); gl_Position=projectionMatrix*mv;
+        gl_PointSize=uSize*(1.15-aMag*.9)*vTw; }`,
+    fragmentShader:`varying vec3 vC; varying float vTw; uniform float uOpacity;
+      void main(){vec2 p=gl_PointCoord-.5; float d=dot(p,p); if(d>.25)discard;
+        float a=smoothstep(.45,.0,d); gl_FragColor=vec4(vC*vTw*1.35, a*uOpacity); }`
+  });
+  const pts=new THREE.Points(sg,mat); pts.renderOrder=-9; return pts;
+}
+function makeMilkyWay(){
+  // dense star-cloud band + soft dust glow as additive points along a great-circle plane
+  const N=18000,sp=new Float32Array(N*3),sc=new Float32Array(N*3),r=rng(11);
+  // galactic plane tilted ~60° for a dramatic band across the night sky
+  const tilt=.95;
+  for(let i=0;i<N;i++){
+    const lon=r()*Math.PI*2;
+    // concentration: sech-like toward plane + bulge toward center
+    const lat=Math.tan((r()-.5)*1.2)*.22; // thin
+    const bulge=Math.exp(-((lon-Math.PI)*(lon-Math.PI))*1.1)*.55;
+    const cl=Math.cos(lat), sl=Math.sin(lat);
+    let x=Math.cos(lon)*cl, y=sl, z=Math.sin(lon)*cl;
+    // tilt
+    const y2=y*Math.cos(tilt)-z*Math.sin(tilt), z2=y*Math.sin(tilt)+z*Math.cos(tilt);
+    const R=880+r()*40;
+    sp[i*3]=x*R; sp[i*3+1]=Math.abs(y2)*R+40; sp[i*3+2]=z2*R;
+    const dust=.45+bulge*.7+r()*.2;
+    sc[i*3]=.55*dust+r()*.15; sc[i*3+1]=.58*dust+r()*.12; sc[i*3+2]=.85*dust+r()*.1;
+  }
+  const sg=new THREE.BufferGeometry();
+  sg.setAttribute("position",new THREE.BufferAttribute(sp,3));
+  sg.setAttribute("color",new THREE.BufferAttribute(sc,3));
+  const mat=new THREE.PointsMaterial({size:1.35,sizeAttenuation:false,vertexColors:true,transparent:true,opacity:0,fog:false,depthWrite:false,blending:THREE.AdditiveBlending});
+  const pts=new THREE.Points(sg,mat); pts.renderOrder=-9.5; return pts;
+}
+function makeMeteors(){
+  const M=6, pos=new Float32Array(M*2*3), col=new Float32Array(M*2*3);
+  const sg=new THREE.BufferGeometry();
+  sg.setAttribute("position",new THREE.BufferAttribute(pos,3));
+  sg.setAttribute("color",new THREE.BufferAttribute(col,3));
+  const mat=new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:0,fog:false,depthWrite:false,blending:THREE.AdditiveBlending});
+  const lines=new THREE.LineSegments(sg,mat); lines.renderOrder=-8; lines.userData={slots:Array.from({length:M},()=>({t:-1,life:0}))}; return lines;
+}
+function stepMeteors(dt,cam,nightAmt){
+  if(!meteors||nightAmt<.2){if(meteors)meteors.material.opacity=0;return}
+  const slots=meteors.userData.slots, pos=meteors.geometry.attributes.position.array, col=meteors.geometry.attributes.color.array;
+  // spawn
+  if(Math.random()<dt*.12*nightAmt){const i=slots.findIndex(s=>s.t<0); if(i>=0){
+    const a=Math.random()*Math.PI*2, el=.25+Math.random()*.55, R=700;
+    const dir=new THREE.Vector3(Math.cos(a)*Math.cos(el),Math.sin(el),Math.sin(a)*Math.cos(el));
+    const start=dir.clone().multiplyScalar(R);
+    const vel=new THREE.Vector3(-dir.z,.15-Math.random()*.4,dir.x).normalize().multiplyScalar(180+Math.random()*220);
+    slots[i]={t:0,life:.35+.45*Math.random(),start,vel,hue:Math.random()};
+  }}
+  for(let i=0;i<slots.length;i++){
+    const s=slots[i], i6=i*6;
+    if(s.t<0){pos[i6]=pos[i6+3]=0;pos[i6+1]=pos[i6+4]=-999;pos[i6+2]=pos[i6+5]=0;continue}
+    s.t+=dt; const u=s.t/s.life;
+    if(u>=1){s.t=-1;continue}
+    const p0=s.start.clone().addScaledVector(s.vel,s.t);
+    const p1=s.start.clone().addScaledVector(s.vel,Math.max(0,s.t-.08));
+    pos[i6]=p0.x;pos[i6+1]=p0.y;pos[i6+2]=p0.z; pos[i6+3]=p1.x;pos[i6+4]=p1.y;pos[i6+5]=p1.z;
+    const a=(1-u)*(1-u); const c=[1.,.9+s.hue*.1,.75];
+    for(let k=0;k<2;k++){col[i*6+k*3]=c[0]*a;col[i*6+k*3+1]=c[1]*a;col[i*6+k*3+2]=c[2]*a}
+  }
+  meteors.geometry.attributes.position.needsUpdate=true;
+  meteors.geometry.attributes.color.needsUpdate=true;
+  meteors.position.copy(cam); meteors.material.opacity=nightAmt;
+}
+function makeMoon(){
+  const mat=new THREE.ShaderMaterial({
+    fog:false,transparent:true,depthWrite:false,
+    uniforms:{uPhase:{value:0},uOpacity:{value:1},uSunDir:{value:new THREE.Vector3(1,0,0)}},
+    vertexShader:`varying vec3 vN; varying vec3 vP; void main(){vN=normalize(normalMatrix*normal); vP=position; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+    fragmentShader:`uniform float uPhase; uniform float uOpacity; uniform vec3 uSunDir; varying vec3 vN; varying vec3 vP;
+      // crater-ish noise
+      float hash(vec3 p){return fract(sin(dot(p,vec3(127.1,311.7,74.7)))*43758.5453);}
+      void main(){
+        vec3 n=normalize(vN);
+        // terminator from phase (0=new .. 0.5=full .. 1=new): light from +X in moon space, rotated by phase
+        float ang=uPhase*6.2831853; vec3 L=normalize(vec3(cos(ang),0.,sin(ang)));
+        float ndl=dot(normalize(vP),L);
+        float lit=smoothstep(-.08,.12,ndl);
+        float cr=hash(normalize(vP)*8.); cr*=hash(normalize(vP)*18.);
+        vec3 albedo=mix(vec3(.55,.53,.5),vec3(.78,.76,.72),cr);
+        vec3 dark=albedo*.06;
+        vec3 col=mix(dark,albedo*1.15,lit);
+        // earthshine on dark side
+        col=mix(col,albedo*.18, (1.-lit)*.35);
+        float a=uOpacity*(.55+.45*lit);
+        gl_FragColor=vec4(col*1.6, a);
+      }`
+  });
+  const m=new THREE.Mesh(new THREE.SphereGeometry(16,32,24),mat); m.renderOrder=-8; return m;
+}
+function makeAurora(){
+  const g=new THREE.PlaneGeometry(900,220,64,16);
+  const mat=new THREE.ShaderMaterial({
+    transparent:true,depthWrite:false,fog:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,
+    uniforms:{uOpacity:{value:0},uTime:{value:0}},
+    vertexShader:`varying vec2 vUv; uniform float uTime;
+      void main(){vUv=uv; vec3 p=position; p.y+=sin(uv.x*6.28+uTime*.4)*18.+sin(uv.x*14.+uTime*.7)*8.;
+        gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}`,
+    fragmentShader:`varying vec2 vUv; uniform float uOpacity; uniform float uTime;
+      void main(){float w=smoothstep(0.,.15,vUv.y)*smoothstep(1.,.55,vUv.y);
+        float bands=.5+.5*sin(vUv.x*18.+uTime*.6); bands*=.5+.5*sin(vUv.x*7.-uTime*.35);
+        vec3 c=mix(vec3(.05,.9,.35),vec3(.2,.45,1.),vUv.x+bands*.2);
+        float a=w*bands*uOpacity*.55; if(a<.01)discard; gl_FragColor=vec4(c,a);}`
+  });
+  const m=new THREE.Mesh(g,mat); m.renderOrder=-7; m.rotation.x=-.2; m.visible=false; return m;
+}
+function makeRainbow(){
+  // half-torus arc
+  const g=new THREE.TorusGeometry(280,14,8,64,Math.PI);
+  const mat=new THREE.ShaderMaterial({
+    transparent:true,depthWrite:false,fog:false,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,
+    uniforms:{uOpacity:{value:0}},
+    vertexShader:`varying float vV; void main(){vV=uv.y; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+    fragmentShader:`varying float vV; uniform float uOpacity;
+      void main(){float t=vV; vec3 c=mix(vec3(1.,.2,.15),vec3(1.,.85,.1),smoothstep(0.,.35,t));
+        c=mix(c,vec3(.2,1.,.35),smoothstep(.3,.55,t)); c=mix(c,vec3(.2,.45,1.),smoothstep(.5,.75,t));
+        c=mix(c,vec3(.55,.2,.9),smoothstep(.7,1.,t));
+        float a=uOpacity*smoothstep(0.,.1,t)*smoothstep(1.,.9,t)*.45; gl_FragColor=vec4(c,a);}`
+  });
+  const m=new THREE.Mesh(g,mat); m.renderOrder=-6; m.rotation.z=Math.PI; m.visible=false; return m;
+}
+
+
 export function moonPhase(gameTime){const ph=((gameTime/86400+11)/29.53)%1;return {phase:ph,frac:(1-Math.cos(2*Math.PI*ph))/2}}
 export function updateEnvironment(o){
   // o: {sunDir, el, amt, kind, pos (player), cam, snow, gameTime, dt, under}
@@ -241,28 +404,48 @@ export function updateEnvironment(o){
   const su=sky.material.uniforms;su.sunPosition.value.copy(sunDir);su.fogCol.value.copy(ENV.fogColor);
   su.flash.value=flash;su.nightAmt.value=1-sm(-.16,.06,el);su.overcast.value=Math.min(.92,amt*.85+cloudy*.35)*(.3+.7*day);
   su.overcastCol.value.copy(C.rainFog).multiplyScalar(.35+.65*day);
-  su.rayleigh.value=2.4+1.2*gold;su.turbidity.value=2.2+7*amt;
+  su.rayleigh.value=2.4+2.0*gold;su.turbidity.value=2.2+3.5*gold+7*amt; // richer PBR sunsets
   sky.position.copy(o.cam);
   // key light: sun by day, moon by night (bluish, dim)
   const moonDir=_v.copy(sunDir).multiplyScalar(-1);
   const useSun=el>-.04;ENV.lightDir.copy(useSun?sunDir:moonDir);
   if(ENV.lightDir.y<.08){ENV.lightDir.y=.08;ENV.lightDir.normalize()}
-  if(useSun){sun.color.copy(C.sunNoon).lerp(C.sunGold,gold);sun.intensity=4.2*sm(-.04,.22,el)*(1-.7*amt)*(1-.3*cloudy)}
-  // night: moonlight only (faint, phase-dependent: full moon ≈ 0.25 lux), starlight minimal; no exposure boost
+  if(useSun){sun.color.copy(C.sunNoon).lerp(C.sunGold,Math.min(1,gold*1.25));sun.intensity=(4.2+.8*gold)*sm(-.04,.22,el)*(1-.7*amt)*(1-.3*cloudy)}
+  // night: softer phase-dependent moonlight on land/water + starlight fill (see hemi/exposure below)
   const mp=moonPhase(o.gameTime||0);ENV.moonFrac=mp.frac;ENV.moonPhase=mp.phase;ENV.night=1-day;
-  if(!useSun){sun.color.copy(C.moon);sun.intensity=(.006+.15*mp.frac)*sm(-.04,.3,moonDir.y)*(1-.85*amt)}
+  if(!useSun){sun.color.copy(C.moon);sun.intensity=(.05+.42*mp.frac)*sm(-.04,.3,moonDir.y)*(1-.65*amt)}
   U.sunDir.value.copy(ENV.lightDir);
   // shadow camera follows the player, snapped to texels to avoid shimmering
   const ts=140/(Q.shadows||512);_tgt.set(Math.round(o.pos.x/ts)*ts,o.pos.y,Math.round(o.pos.z/ts)*ts);
   sun.target.position.copy(_tgt);sun.position.copy(_tgt).addScaledVector(ENV.lightDir,200);
-  hemi.color.copy(C.hemiNight).lerp(C.hemiDay,day);hemi.groundColor.copy(C.gNight).lerp(C.gDay,day);hemi.intensity=(.035+.07*mp.frac*sm(-.04,.3,moonDir.y)*(1-.8*amt))*(1-day)+1.3*day;
-  renderer.toneMappingExposure=.62*ENV.expMul; // eye adaptation + optional brightness slider (world.js); never an automatic night boost
+  hemi.color.copy(C.hemiNight).lerp(C.hemiDay,day);hemi.groundColor.copy(C.gNight).lerp(C.gDay,day);
+  // night: stronger fill so grass/trees stay readable (moon + starlight), not pure silhouettes
+  const moonVis=sm(-.04,.3,moonDir.y)*(1-.75*amt);
+  hemi.intensity=(.12+.28*mp.frac*moonVis+.06)*(1-day)+1.3*day;
+  // soft night exposure lift (still respects world.js brightBoost via expMul)
+  const nightLift=.62+(.55+.35*mp.frac)*(1-day)*(1-amt*.5);
+  renderer.toneMappingExposure=nightLift*ENV.expMul;
   hemi.intensity+=flash*2.5;
   scene.fog.color.lerp(new THREE.Color(.65,.76,.95),flash*.6);
-  // stars & moon
-  stars.material.opacity=(1-day)*(1-amt*.9)*(1-cloudy*.5);stars.position.copy(o.cam);stars.rotation.y=o.gameTime/86164*2*Math.PI;stars.visible=stars.material.opacity>.01;
+  // softer night fog so terrain doesn't crush to black
+  if(day<.35&&!o.under) scene.fog.density*=(.42+.35*day);
+  // stars & milky way & meteors
+  const nightAmt=(1-day)*(1-amt*.75)*(1-cloudy*.35);
+  if(stars.material.uniforms){stars.material.uniforms.uOpacity.value=nightAmt;stars.material.uniforms.uTime.value=(o.gameTime||0)*.15}
+  else stars.material.opacity=nightAmt;
+  stars.position.copy(o.cam);stars.rotation.y=(o.gameTime||0)/86164*2*Math.PI;stars.visible=nightAmt>.01;
+  if(milkyWay){milkyWay.material.opacity=Math.min(1,nightAmt*1.15);milkyWay.position.copy(o.cam);milkyWay.rotation.y=stars.rotation.y;milkyWay.visible=nightAmt>.02}
+  stepMeteors(o.dt||.016,o.cam,nightAmt);
+  // moon phases + glow
   moonMesh.position.copy(o.cam).addScaledVector(moonDir,820);moonGlow.position.copy(moonMesh.position);
-  moonMesh.visible=moonGlow.visible=moonDir.y>-.08;moonGlow.material.opacity=.45*(1-day*.8)*(1-amt)*(.15+.85*mp.frac);moonMesh.material.opacity=(1-amt*.85)*(.2+.8*mp.frac);
+  moonMesh.visible=moonGlow.visible=moonDir.y>-.08;
+  moonGlow.material.opacity=.55*(1-day*.8)*(1-amt)*(.2+.8*mp.frac);
+  if(moonMesh.material.uniforms){moonMesh.material.uniforms.uPhase.value=mp.phase;moonMesh.material.uniforms.uOpacity.value=(1-amt*.7)*(.35+.65*mp.frac);moonMesh.material.uniforms.uSunDir.value.copy(sunDir);moonMesh.lookAt(o.cam)}
+  else moonMesh.material.opacity=(1-amt*.85)*(.2+.8*mp.frac);
+  // aurora (clear dark nights)
+  if(auroraMesh){const ao=nightAmt*(1-amt)*sm(-.1,.05,el)*.55*(.4+.6*mp.frac);auroraMesh.material.uniforms.uOpacity.value=ao;auroraMesh.material.uniforms.uTime.value=(o.gameTime||0)*.2;auroraMesh.visible=ao>.04;auroraMesh.position.set(o.cam.x,o.cam.y+220,o.cam.z)}
+  // rainbow after rain when sun is out
+  if(rainbowMesh){const ro=day*sm(.05,.35,el)*sm(.15,.55,amt)*(amt>.05?1:0)*.7;rainbowMesh.material.uniforms.uOpacity.value=ro;rainbowMesh.visible=ro>.05;rainbowMesh.position.set(o.cam.x-sunDir.x*200,o.cam.y+40,o.cam.z-sunDir.z*200);rainbowMesh.lookAt(o.cam.x+sunDir.x,o.cam.y,o.cam.z+sunDir.z)}
   // clouds
   const cu=clouds.material.uniforms;cu.uCover.value=.4+cloudy*.2+amt*.35;cu.uFog.value.copy(ENV.fogColor);
   cu.uLit.value.copy(sun.color).multiplyScalar(.35+1.25*day).lerp(C.rainFog,amt*.6);cu.uShade.value.copy(ENV.fogColor).multiplyScalar(.55+.2*day);cu.uLit.value.addScalar(flash*1.7);cu.uShade.value.addScalar(flash*.7);
