@@ -514,7 +514,8 @@ function stepDrops(dt){
       if(it.density<RHO_WATER&&Math.abs(d.vel.y)<.3&&d.pos.y>-it.r*2){d.flying=false;d.floating=true;
         if(d.item==="stick"||d.item==="log")discover("buoyancy");else toast(`${it.name} floats: it is less dense than water.`)}
       if(d.pos.y<=ground+.05){d.flying=false;d.pos.y=ground+.05;if(it.density>RHO_WATER&&d.thrown)toast(`${it.name} sank (${it.density} kg/m³ > 1000 kg/m³).`)}}
-    d.pos.addScaledVector(d.vel,dt);
+    const px=d.pos.x,pz=d.pos.z;d.pos.addScaledVector(d.vel,dt);
+    if(woodWallHit(px,pz,d.pos.x,d.pos.z,d.pos.y)){d.pos.x=px;d.pos.z=pz;d.vel.x*=-.25;d.vel.z*=-.25}   // log walls stop thrown and dropped items
     if(d.thrown&&d.launch){const tt=nearestTree(d.pos.x,d.pos.z,.75);if(tt&&d.pos.y<tt.t.y+2.6*tt.t.s&&d.pos.y>tt.t.y-.2){const ke=.5*it.mass*sp*sp,dist=Math.hypot(d.pos.x-d.launch.x,d.pos.z-d.launch.z);d.vel.multiplyScalar(-.15);d.thrown=false;AU.hit(false);
         toast(`Thunk! The ${it.name.toLowerCase()} strikes the trunk ${dist.toFixed(1)} m away with ${Math.round(ke)} J (½mv², v ≈ ${sp.toFixed(1)} m/s).`);if(dist>=8)discover("hunting");else toast("A hit! Try again from at least 8 m.")}}
     if(d.thrown&&SURV())for(const a of animals){if(a.dead||a.kind==="dog")continue;if(d.pos.distanceTo(a.pos.clone().setY(a.pos.y+.7*a.sp.size))<.55+a.sp.size*.4){
@@ -1901,6 +1902,9 @@ function placeWoodland(type,o={}){const f=forward(),ry=o.ry??Math.atan2(-f.x,-f.
 function clearWoodPlot(s){const fp=wFootprint(s.type);for(const ch of nearbyChunks(s.x,s.z,6))for(const r of ch.obj.res){if(r.gone)continue;const [lx,lz]=wLocal(s,r.x,r.z);
   if(lx>fp.x0-.3&&lx<fp.x1+.3&&lz>fp.z0-.3&&lz<fp.z1+.3){r.gone=true;if(r.mesh){r.mesh.setMatrixAt(r.slot,ZERO);r.mesh.instanceMatrix.needsUpdate=true}world.removed.add(ch.key+"|r"+r.i)}}}
 function woodSegs(s){if(s._seg)return s._seg;s._seg=wWallSegs(s.type,s.stage||0,s.open||0).map(([a,b,c,d])=>[...wWorld(s,a,b),...wWorld(s,c,d)]);return s._seg}
+function woodWallHit(ax,az,bx,bz,y){const X=(p,q,r)=>(q[0]-p[0])*(r[1]-p[1])-(q[1]-p[1])*(r[0]-p[0]);
+  for(const s of world.structures){if(!isWoodland(s.type)||(s.stage||0)<2||Math.abs(s.x-bx)>7||Math.abs(s.z-bz)>7||y>s.y+(s.type==="woodhut"?2.2:3.2)||y<s.y-.5)continue;
+    for(const g of woodSegs(s)){const P=[ax,az],Q=[bx,bz],A=[g[0],g[1]],B=[g[2],g[3]];if(X(P,Q,A)*X(P,Q,B)<=0&&X(A,B,P)*X(A,B,Q)<=0&&(X(A,B,P)!==0||X(A,B,Q)!==0))return true}}return false}
 function segDist(x,z,[ax,az,bx,bz]){const dx=bx-ax,dz=bz-az,l2=dx*dx+dz*dz||1e-9,t=clamp(((x-ax)*dx+(z-az)*dz)/l2,0,1);return Math.hypot(x-ax-dx*t,z-az-dz*t)}
 function woodDist(s,x,z){const segs=woodSegs(s);if(segs.length)return Math.min(...segs.map(g=>segDist(x,z,g)))-.15;
   const fp=wFootprint(s.type),[lx,lz]=wLocal(s,x,z);return Math.hypot(Math.max(0,fp.x0-lx,lx-fp.x1),Math.max(0,fp.z0-lz,lz-fp.z1))}

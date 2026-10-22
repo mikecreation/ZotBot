@@ -300,9 +300,9 @@ export function buildHouse(opt={}){const H=HOUSE,B=new Builder(opt.seed??2311,ho
  B.stage=1;
  const wallLog=(W,y,cS,cE,r)=>{// cut the log around openings
   let segs=[[cS,cE]];for(const op of W.openings){const ov=Math.min(y+r,op.y1)-Math.max(y-r,op.y0);if(ov<=.05)continue;const out=[];for(const [a,b] of segs){if(op.c1<=a||op.c0>=b){out.push([a,b]);continue}if(op.c0>a)out.push([a,op.c0]);if(op.c1<b)out.push([op.c1,b])}segs=out}
-  for(const [a,b] of segs){if(b-a<.12)continue;B.log(W.pt(a,y,0),W.pt(b,y+(B.rnd()-.5)*.02,0),r,{bend:.01+.015*B.rnd(),sag:(b-a)>2?.02+.025*B.rnd():.005,taper:.08,bump:.09,tint:logTint()})}return segs};
+  for(const [a,b] of segs){if(b-a<.12)continue;B.log(W.pt(a,y,0),W.pt(b,y+(B.rnd()-.5)*.02,0),r,{bend:.01+.015*B.rnd(),sag:(b-a)>2?.012+.016*B.rnd():.004,taper:.08,bump:.09,tint:logTint()})}return segs};
  const logTint=()=>{const v=.92+.34*B.r(),w=B.r();return w<.22?[v*.97,v*.94,v*.9]:w<.4?[v*1.1,v*.92,v*.76]:[v*1.04,v*.96,v*.84]};
- const chinks=[],chink=(W,y,a,b)=>{if(b-a>=.15)chinks.push([W,y,a,b])},chinkNow=(W,y,a,b)=>{const sd=B.r()*100;B.grid(B.bin("cob"),5,Math.max(3,Math.ceil((b-a)/.25)),(i,j,u,t)=>{const c=mix(a,b,t),th=-u*6.283,rr=.07*(1+.35*(n3(c*4,y,sd)-.5));return W.pt(c,y+Math.sin(th)*rr*.62,.1+Math.cos(th)*rr*.5)},(u,t)=>[u,t*(b-a)/.6],()=>[.98,.92,.82],{wrapU:true})};
+ const chinks=[],chink=(W,y,a,b)=>{if(b-a>=.15)chinks.push([W,y,a,b])},chinkNow=(W,y,a,b)=>{const sd=B.r()*100;B.grid(B.bin("cob"),5,Math.max(3,Math.ceil((b-a)/.25)),(i,j,u,t)=>{const c=mix(a,b,t),th=-u*6.283,rr=.078*(1+.35*(n3(c*4,y,sd)-.5));return W.pt(c,y-Math.sin(Math.PI*t)*.012+Math.sin(th)*rr*.62,.112+Math.cos(th)*rr*.5)},(u,t)=>[u,t*(b-a)/.6],()=>[1.6,1.46,1.22],{wrapU:true})};
  const fbLogs=[],sdLogs=[];for(let k=0;k<H.courses;k++)fbLogs.push(base+.16+k*cr);for(let k=0;k<6;k++)sdLogs.push(base+.15+.16+k*cr);
  for(let k=0;k<H.courses;k++){for(const name of ["front","back"]){const W=WALLS[name],o=.38+B.rnd()*.2;const r=.145+B.rnd()*.05;const sg=wallLog(W,fbLogs[k],-hx-o,hx+.38+B.rnd()*.2,r);if(k>0)for(const [a,b] of sg)chink(W,fbLogs[k]-cr/2,Math.max(a,-hx+.1),Math.min(b,hx-.1))}
   if(k<6)for(const name of ["left","right"]){const W=WALLS[name],o=.38+B.rnd()*.2;const r=.145+B.rnd()*.05;const sg=wallLog(W,sdLogs[k],-hz-o,hz+.38+B.rnd()*.2,r);if(k>0)for(const [a,b] of sg)chink(W,sdLogs[k]-cr/2,Math.max(a,-hz+.1),Math.min(b,hz-.1))}
@@ -310,6 +310,7 @@ export function buildHouse(opt={}){const H=HOUSE,B=new Builder(opt.seed??2311,ho
  // log gables (shortened courses under the roof line) on both side walls
  for(let k=0;k<6;k++){const y=base+.15+.16+(6+k)*cr,r=.14+B.rnd()*.02,Lz=(4.1-y-r*.7)/.687;if(Lz<.32)break;for(const name of ["left","right"]){const W=WALLS[name];wallLog(W,y,-Lz,Lz,r);chink(W,y-cr/2,-Lz+.1,Lz-.1)}B.part()}
  // door jambs: split-log posts pegged to the cut log ends
+ B.log([D.x0-.2,D.top+.1,hz+.21],[D.x1+.2,D.top+.11,hz+.21],.08,{mat:"wood",taper:.02,bend:.006,tint:[1.3,1.18,1.02]});
  for(const x of [D.x0,D.x1]){B.log([x+(x===D.x0?.06:-.06),FL+.16,hz],[x+(x===D.x0?.06:-.06),D.top+.02,hz],.085,{taper:.02,mat:"wood",bend:.01});for(const yy of [.8,1.6])B.log([x,yy,hz-.2],[x,yy,hz+.2],.018,{mat:"wood",caps:"end"})}
  B.part();
  // ---- stage 2: interior cob plaster + round clay windows ----
@@ -335,6 +336,8 @@ export function buildHouse(opt={}){const H=HOUSE,B=new Builder(opt.seed??2311,ho
    // exterior clay panel filling the cut in the logs
    const sq2=th=>{const cs2=Math.cos(th),sn=Math.sin(th);return Math.min(.38/Math.max(1e-3,Math.abs(cs2)),.5/Math.max(1e-3,Math.abs(sn)))};
    B.grid(B.bin("cob"),N,5,(i,j,u,v)=>{const th=u*6.283,rr=mix(sq2(th),h.r*1.25,v),c=h.cc+Math.cos(th)*rr,y=h.yy+Math.sin(th)*rr;return W.pt(c,y,.1+.02*(n3(c*5,y*5,sd+7)-.5)-.03*v)},(u,v)=>[u*3,v],()=>[.86,.82,.76],{wrapU:true,flip:true,ao:1});
+   // split-log sill and header on the outside so the window reads from the yard
+   B.log(W.pt(h.cc-.5,h.yy-.5,.2),W.pt(h.cc+.5,h.yy-.5,.21),.06,{mat:"wood",taper:.02,bend:.004,tint:[1.3,1.18,1.02]});B.log(W.pt(h.cc-.46,h.yy+.5,.19),W.pt(h.cc+.46,h.yy+.5,.19),.05,{mat:"wood",taper:.02,bend:.004,tint:[1.25,1.14,1]});
    // stick ring (octagon of short sticks lashed at the corners) on the outside; sunburst sticks inside
    const ring=[];for(let k=0;k<8;k++){const a=k/8*6.283+.2,rr=h.r*1.32;ring.push([h.cc+Math.cos(a)*rr,h.yy+Math.sin(a)*rr])}
    for(let k=0;k<8;k++){const a=ring[k],b=ring[(k+1)%8],ex=.05;const dx=b[0]-a[0],dy=b[1]-a[1],l=Math.hypot(dx,dy);B.log(W.pt(a[0]-dx/l*ex,a[1]-dy/l*ex,.13),W.pt(b[0]+dx/l*ex,b[1]+dy/l*ex,.13),.017,{tone:"stick",bend:.004});
