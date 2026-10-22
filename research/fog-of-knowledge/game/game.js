@@ -10,7 +10,15 @@ let A=null,ex=null,day=null,dayPair=null;
 const atlasPromise=window.__fogAtlasPromise=(async()=>{const a=await loadAtlasLater();return a})();
 
 /* ---------- data (same files + same validation as the atlas viewer) ---------- */
-async function fetchAtlasJSON(name){const r=await fetch(`../data/${name}.json`);if(!r.ok)throw Error("Atlas data unavailable: "+name);return r.json()}
+// Nemesis serves SHA-pinned builds (/fog-of-knowledge/<sha>/...) by proxying raw.githubusercontent.com
+// with a 10 MB per-file safety limit, so the large atlas files (atlas-display ~13.5 MB, knowledge ~49 MB)
+// come back 502 there. When the relative fetch fails on such a URL, read the same commit's file straight
+// from GitHub (public repo, CORS-enabled) so the HUD still links discoveries to atlas nodes.
+const ATLAS_REPO="https://raw.githubusercontent.com/mikecreation/ZotBot";
+function pinnedAtlasURL(name){const m=location.pathname.match(/\/fog-of-knowledge\/([0-9a-f]{40})\//);return m?`${ATLAS_REPO}/${m[1]}/research/fog-of-knowledge/data/${name}.json`:null}
+async function fetchAtlasJSON(name){let r=null;try{r=await fetch(`../data/${name}.json`)}catch(_){}
+  if(!r||!r.ok){const alt=pinnedAtlasURL(name);if(alt){try{r=await fetch(alt,{mode:"cors"})}catch(_){}}}
+  if(!r||!r.ok)throw Error("Atlas data unavailable: "+name);return r.json()}
 function validAtlasDisplay(display,nav){
   return display?.protocol==="fog-atlas-display/1"&&display.schema_version===1&&nav?.protocol==="fog-atlas-navigation/1"&&
     /^[0-9a-f]{64}$/.test(display.input_sha256)&&display.input_sha256===nav.input_sha256&&Array.isArray(display.nodes)&&display.nodes.length===nav.counts?.canonical;
