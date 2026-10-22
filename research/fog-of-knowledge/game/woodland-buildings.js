@@ -557,14 +557,14 @@ export function buildWaterwheel(opt={}){const S=WHEELSITE,WH=WHEEL,seed=opt.seed
   return h};
  const LB=[-1.5];{let y=.12+RB.rnd(0,.18);while(y<4.8){LB.push(y);y+=RB.r()<.3?RB.rnd(.2,.35):RB.rnd(.5,1.15)}LB.push(7)}
  const layerOf=y=>{let i=0;while(i<LB.length-2&&y>=LB[i+1])i++;return i};
- const LOFF=LB.map(()=>RB.rnd(-.07,.07)),LTONE=LB.map(()=>Math.floor(RB.r()*4)),LAMP=LB.map(()=>RB.r()<.4?RB.rnd(.1,.35):RB.rnd(.6,1.2));
+ const LOFF=LB.map(()=>RB.rnd(-.025,.025)),LTONE=LB.map(()=>Math.floor(RB.r()*4)),LAMP=LB.map(()=>RB.r()<.45?RB.rnd(.05,.2):RB.rnd(.35,.8));
  const JT=[];{let s=RB.rnd(.1,.5);while(s<PER-.35){JT.push(s);s+=RB.rnd(.45,1.05)}}
  const blockOff=(i,s)=>{let j=0;while(j<JT.length&&JT[j]<=s)j++;return (h3(i,j%JT.length,7,seed)-.5)*.2*LAMP[i]};
  const dispAt=(s,y,x,z,nz,gy)=>{const i=layerOf(y),b0=LB[i],b1=LB[i+1],t=(y-b0)/(b1-b0);
   const prof=t<.12?mix(-.08,-.01,t/.12):t<.85?mix(-.01,.03,(t-.12)/.73):mix(.03,-.02,(t-.85)/.15);let cj=0;
   for(const j of JT){const q=Math.abs(s-j),hj=h3(i,Math.round(j*13),11,seed);if(q<.05&&hj<.6)cj=Math.min(cj,-(.05+.14*hj)*(1-q/.05))}
   const fall=nz>.3?Math.exp(-(((x+4.45)/.5)**2))*nz:0;   // the fall has scooped a recess and left an overhanging lip
-  const d=prof*LAMP[i]+cj+LOFF[i]+blockOff(i,s)+.3*(n3(x*.45,y*.32,z*.45,seed+3)-.5)*2+.12*Math.abs(n3(x*1.5,y*1.2,z*1.5,seed+6)-.5)*2+.045*(n3(x*2.6,y*2.6,z*2.6,seed+4)-.5)*2
+  const d=prof*LAMP[i]+cj+LOFF[i]+blockOff(i,s)+.3*(n3(x*.45,y*.32,z*.45,seed+3)-.5)*2+.3*(n3(s*.6,y*.16,.7,seed+12)-.5)*2+.12*Math.abs(n3(x*1.5,y*1.2,z*1.5,seed+6)-.5)*2+.045*(n3(x*2.6,y*2.6,z*2.6,seed+4)-.5)*2
    -.2*fall*sstep(.1,1.1,y)+.12*fall*sstep(2.9,3.3,y)+.12*Math.max(0,1-y/3.8)+.22*sstep(.4,-.35,y-gy);
   return [d,prof*LAMP[i]+cj]};
  const frontAt=(x,y)=>{let best=null;for(let i=0;i<NT;i+=2){const p=TB[i];if(p[1]<CL.cz+.3)continue;if(!best||Math.abs(p[0]-x)<Math.abs(best[0]-x))best=[p[0],p[1],p[2]]}
@@ -573,7 +573,7 @@ export function buildWaterwheel(opt={}){const S=WHEELSITE,WH=WHEEL,seed=opt.seed
  const wetAt=(x,y,z)=>{let w=0;if(z>CL.cz+.4)for(const st of STREAMS){const lat=Math.abs(x-st.x)/(st.w*1.5+.1+.12*n3(x*3,y*2,z*3,seed+21));if(y<st.lip+.08)w=Math.max(w,(1-sstep(.55,1,lat))*Math.min(1,.4+st.q))}
   const pd=Math.hypot((x-POOL.x)/(POOL.rx+.6),(z-POOL.z)/(POOL.rz+.7));w=Math.max(w,(1-sstep(.6,1,pd))*(1-sstep(.4,1.5,y-g(x,z))));
   if(Math.hypot((x+4.45)/.9,z/.75)<1&&y>3.2)w=Math.max(w,.6);return w};
- const PAL=[[.6,.57,.52],[.68,.61,.5],[.53,.54,.55],[.64,.54,.45]],MOSS=[.34,.45,.17];
+ const PAL=[[.72,.68,.62],[.78,.71,.6],[.66,.66,.66],[.74,.65,.55]],MOSS=[.34,.45,.17];
  const RBr=RB.bin("rock"),RBw=RB.bin("rockwet");
  const rockTri=(A,Bv,C,hint)=>{const p0=A.p,p1=Bv.p,p2=C.p,ux=p1[0]-p0[0],uy=p1[1]-p0[1],uz=p1[2]-p0[2],vx=p2[0]-p0[0],vy=p2[1]-p0[1],vz=p2[2]-p0[2];
   let n=[uy*vz-uz*vy,uz*vx-ux*vz,ux*vy-uy*vx];const l=Math.hypot(...n);if(l<1e-7)return;n=n.map(q=>q/l);let V=[A,Bv,C];
