@@ -3,6 +3,8 @@ import {GEAR_RECIPES,GEAR_STEPS,gearProblem,CLIMB_GUIDE} from "./gear-progressio
 import * as GAL from "./galleon.js?v=3.28.0";
 import {HULL,stepShip,newShipState,deckStep,deckY,shipToWorld,worldToShip,pointOfSail,clampDeck,fwdOf,localX} from "./ship-physics.js?v=3.28.0";
 import {SHIP_STAGES,SHIP_STEPS,deliver,remaining,stageFrac,shipProblem} from "./ship-progression.js?v=3.28.0";
+import * as WOOD from "./woodland-buildings.js?v=3.28.0";
+import {HOUSE as WHOUSE,STAGES as WSTAGES,isWoodland,remainingOf,stageFracOf,deliverStage,stageProblem,isComplete,stageTotalsOf,toLocal as wLocal,toWorld as wWorld,footprint as wFootprint,floorRect as wFloorRect,insideVolume as wInside,wallSegs as wWallSegs,partAt as wPartAt} from "./woodland-progression.js?v=3.28.0";
 Object.assign(GEAR_STEPS,SHIP_STEPS);
 /* Fog of Knowledge: The Game — OPEN WORLD mode.
  * Real-time 3D world (three.js r160, vendored, MIT) with simple real physics:
@@ -157,6 +159,11 @@ function genObjects(cx,cz){
     if(h>.5&&(b==="grass"||b==="forest")&&slopeAt(x,z)<.7)
       res.push({type:"fiber",flower:true,x,y:h,z,i:res.length});
   }
+  // woodland building materials — another independent appended stream: river mud on low banks, moss and bark in woods, long grass and feathers in meadows
+  const rw=mulberry(hash3(world.seed,cx-524287,cz+65537));
+  for(let k=0;k<18;k++){const x=x0+rw()*CHUNK,z=z0+rw()*CHUNK,u=rw(),h=heightAt(x,z),b=biomeAt(x,z,h);if(h<.08||b==="snow"||b==="rock"||slopeAt(x,z)>.75)continue;
+    const type=h<2.3&&b!=="desert"?(u<.8?"mud":null):b==="forest"?(u<.42?"moss":u<.72?"bark":u<.84?"thatch":u<.9?"feather":null):b==="grass"?(u<.55?"thatch":u<.7?"feather":u<.78?"moss":null):null;
+    if(type)res.push({type,x,y:h,z,i:res.length,wood:true})}
   return {trees,res,boulders};
 }
 const BI={water:0,beach:1,desert:2,snow:3,rock:4,forest:5,grass:6},BN=Object.keys(BI);
@@ -180,11 +187,11 @@ function buildTerrain(cx,cz,res){
   g.computeBoundingSphere();
   const m=new THREE.Mesh(g,MAT.terrain);m.receiveShadow=true;m.castShadow=res>16;m.userData.grid=grid;return m;
 }
-function grassSampler(ch){const G=ch.terrain&&ch.terrain.userData.grid;if(!G)return null;const x0=ch.cx*CHUNK,z0=ch.cz*CHUNK,R=G.res+1,clearings=world.structures.filter(s=>s.type==="fire"&&s.x>x0-2&&s.x<x0+CHUNK+2&&s.z>z0-2&&s.z<z0+CHUNK+2);
+function grassSampler(ch){const G=ch.terrain&&ch.terrain.userData.grid;if(!G)return null;const x0=ch.cx*CHUNK,z0=ch.cz*CHUNK,R=G.res+1,clearings=world.structures.filter(s=>(s.type==="fire"||isWoodland(s.type))&&s.x>x0-5&&s.x<x0+CHUNK+5&&s.z>z0-5&&s.z<z0+CHUNK+5);
   return (x,z)=>{const fx=clamp((x-x0)/G.step,0,G.res-.001),fz=clamp((z-z0)/G.step,0,G.res-.001),i=Math.floor(fx),j=Math.floor(fz),u=fx-i,v=fz-j;
     const a=G.h[j*R+i],b=G.h[j*R+i+1],c=G.h[(j+1)*R+i],d=G.h[(j+1)*R+i+1];
     const h=(a*(1-u)+b*u)*(1-v)+(c*(1-u)+d*u)*v,sl=Math.max(Math.abs(b-a),Math.abs(c-a),Math.abs(d-b))/G.step;
-    return {h,biome:clearings.some(s=>Math.hypot(s.x-x,s.z-z)<(s._clearRadius||1.1))?"rock":BN[G.b[Math.round(fz)*R+Math.round(fx)]],slope:sl}}}
+    return {h,biome:clearings.some(s=>Math.hypot(s.x-x,s.z-z)<(WOOD_CLEAR[s.type]||s._clearRadius||1.1))?"rock":BN[G.b[Math.round(fz)*R+Math.round(fx)]],slope:sl}}}
 const _m=new THREE.Matrix4(),_q=new THREE.Quaternion(),_s=new THREE.Vector3(),_p=new THREE.Vector3(),_e=new THREE.Euler(),_c=new THREE.Color();
 const ZERO=new THREE.Matrix4().makeScale(0,0,0);
 function setInst(mesh,i,x,y,z,sx,sy,sz,ry=0,rx=0){_e.set(rx,ry,0);_q.setFromEuler(_e);_p.set(x,y,z);_s.set(sx,sy,sz);_m.compose(_p,_q,_s);mesh.setMatrixAt(i,_m)}
@@ -199,16 +206,16 @@ function buildObjects(ch){
   o.trees.forEach(t=>refreshTree(ch,t,true));
   ch.boulders=new THREE.InstancedMesh(GEO.boulder,MAT.rock,Math.max(1,o.boulders.length));ch.boulders.count=o.boulders.length;
   o.boulders.forEach(b=>{const mv=world.moved[key+"|"+b.i];if(mv){b.x=mv[0];b.z=mv[1];b.y=heightAt(b.x,b.z)}setInst(ch.boulders,b.i,b.x,b.y+b.s*.35,b.z,b.s*1.2,b.s*.8,b.s,b.i);const v=.85+(b.i*37%10)/40;_c.setRGB(v,v,v*.97);ch.boulders.setColorAt(b.i,_c)});
-  const smalls=o.res.filter(r=>!r.flower&&!["stick","fiber","seeds","berry_red","berry_dark"].includes(r.type));
-  const sticks=o.res.filter(r=>r.type==="stick"),plants=o.res.filter(r=>!r.flower&&["fiber","seeds","berry_red","berry_dark"].includes(r.type)),flowers=o.res.filter(r=>r.flower);
+  const smalls=o.res.filter(r=>!r.flower&&!["stick","fiber","seeds","berry_red","berry_dark","thatch","moss"].includes(r.type));
+  const sticks=o.res.filter(r=>r.type==="stick"),plants=o.res.filter(r=>!r.flower&&["fiber","seeds","berry_red","berry_dark","thatch","moss"].includes(r.type)),flowers=o.res.filter(r=>r.flower);
   ch.small=new THREE.InstancedMesh(GEO.small,MAT.rock,Math.max(1,smalls.length));ch.small.count=smalls.length;
   ch.sticks=new THREE.InstancedMesh(GEO.stick,MAT.bark,Math.max(1,sticks.length));ch.sticks.count=sticks.length;
   ch.plants=new THREE.InstancedMesh(GEO.tuft,MAT.leaf,Math.max(1,plants.length));ch.plants.count=plants.length;
   ch.flowers=new THREE.InstancedMesh(GEO.flower,MAT.flower,Math.max(1,flowers.length));ch.flowers.count=flowers.length;
   flowers.forEach((r,j)=>{r.mesh=ch.flowers;r.slot=j;setInst(ch.flowers,j,r.x,r.y-.02,r.z,1.3,1.5+(r.i%5)*.12,1.3,r.i);_c.setHex([0xffffff,0xffd84a,0xb48cff,0xff6a7a,0x8ac8ff][r.i%5]);ch.flowers.setColorAt(j,_c)});
-  smalls.forEach((r,j)=>{r.mesh=ch.small;r.slot=j;const s=r.marvel?.11:r.type==="clay"?.28:r.type==="sand"?.3:.17;setInst(ch.small,j,r.x,r.y+s*.4,r.z,s,s*.7,s,r.i);_c.setHex(ITEMS[r.type].color);ch.small.setColorAt(j,_c)});
+  smalls.forEach((r,j)=>{r.mesh=ch.small;r.slot=j;const s=r.marvel||r.type==="feather"?.11:r.type==="clay"?.28:r.type==="sand"?.3:r.type==="mud"?.34:r.type==="bark"?.22:.17,fl=r.type==="mud"?.28:r.type==="bark"?.35:.7;setInst(ch.small,j,r.x,r.y+s*.4*fl/.7,r.z,s,s*fl,s*(r.type==="bark"?1.6:1),r.i);_c.setHex(ITEMS[r.type].color);ch.small.setColorAt(j,_c)});
   sticks.forEach((r,j)=>{r.mesh=ch.sticks;r.slot=j;setInst(ch.sticks,j,r.x,r.y+.05,r.z,.9,1,1,r.i)});
-  plants.forEach((r,j)=>{r.mesh=ch.plants;r.slot=j;const berry=r.type.startsWith("berry");setInst(ch.plants,j,r.x,r.y-.05,r.z,berry?.55:.32,berry?.5:.42,berry?.55:.32,r.i);_c.setHex(berry?(r.type==="berry_red"?0xc04848:0x5a5ac0):r.type==="seeds"?0xd8c46a:0x9ccc5a);ch.plants.setColorAt(j,_c)});
+  plants.forEach((r,j)=>{r.mesh=ch.plants;r.slot=j;const berry=r.type.startsWith("berry"),th=r.type==="thatch",mo=r.type==="moss";setInst(ch.plants,j,r.x,r.y-.05,r.z,berry?.55:th?.42:mo?.5:.32,berry?.5:th?.75:mo?.16:.42,berry?.55:th?.42:mo?.5:.32,r.i);_c.setHex(berry?(r.type==="berry_red"?0xc04848:0x5a5ac0):r.type==="seeds"?0xd8c46a:th?0xc8b066:mo?0x5f8a34:0x9ccc5a);ch.plants.setColorAt(j,_c)});
   for(const r of o.res)if(world.removed.has(key+"|r"+r.i)){r.gone=true;r.mesh.setMatrixAt(r.slot,ZERO)}
   // decorative bushes (visual only, own random stream)
   const rd=mulberry(hash3(world.seed,ch.cx+31337,ch.cz-4242)),bl=[];
@@ -564,8 +571,8 @@ function structMesh(s){
   if(s.type==="workbench"||s.type==="workbench_bundle")g.add(workbenchMesh(s.type==="workbench_bundle"));
   if(s.type==="fire"||s.type==="kiln"){
     if(s.type==="kiln"){const d=new THREE.Mesh(new THREE.SphereGeometry(.9,20,10,0,Math.PI*2,0,Math.PI/2),stdMat(0x9c5a3c,.95));d.castShadow=d.receiveShadow=true;g.add(d);const hole=box(.45,.4,.2,0x1a0d08,.2);hole.position.z=.82;g.add(hole)}
-    else{clearFireGrass(s);const wood=createFireBed(s,heightAt);s.wood=wood;g.add(wood);
-      for(let i=0;i<9;i++){const r=new THREE.Mesh(GEO.small,MAT.stone);r.scale.set(.13,.09,.11);r.position.set(Math.cos(i/9*6.283)*.5,.04,Math.sin(i/9*6.283)*.5);g.add(r)}}
+    else{clearFireGrass(s);const wood=createFireBed(s,s.hearth?()=>s.y:heightAt);s.wood=wood;g.add(wood);
+      if(!s.hearth)for(let i=0;i<9;i++){const r=new THREE.Mesh(GEO.small,MAT.stone);r.scale.set(.13,.09,.11);r.position.set(Math.cos(i/9*6.283)*.5,.04,Math.sin(i/9*6.283)*.5);g.add(r)}}
     const f=GFX.makeFlame(s.type==="kiln");f.visible=false;if(s.type==="kiln")f.position.z=.8;g.add(f);s.flame=f;
     if(s.type==="fire"){const bed=new THREE.Mesh(new THREE.CylinderGeometry(.47,.53,.035,18),new THREE.MeshStandardMaterial({color:0x373739,roughness:1,emissive:0}));bed.position.y=.025;bed.receiveShadow=true;g.add(bed);s.residue=bed}
   }else if(s.type==="torch"){g.add(cyl(.035,.045,1.35,0x5a3e22,.67,6));g.add(cyl(.07,.055,.2,0x2a1a10,1.38,7));const f=GFX.makeFlame(false);f.position.y=1.42;f.visible=false;g.add(f);s.flame=f}
@@ -591,6 +598,7 @@ function structMesh(s){
   else if(s.type==="crop"){for(let i=0;i<5;i++){const t=new THREE.Mesh(GEO.tuft,new THREE.MeshStandardMaterial({color:0x7fb04a,roughness:.8}));t.scale.setScalar(.4);t.position.set((i%3-1)*.35,0,(Math.floor(i/3)-.5)*.4);g.add(t)}}
   else if(s.type==="pack"){const m=new THREE.Mesh(new THREE.SphereGeometry(.28,12,8),stdMat(0x6b4a2e,.95));m.scale.set(1.2,.75,1);m.position.y=.2;m.castShadow=true;g.add(m);const k=box(.1,.14,.1,0x3a2414,.42);g.add(k)}
   else if(s.type==="shipyard")shipyardMesh(s,g);
+  else if(isWoodland(s.type))woodMesh(s,g);
   else if(s.type==="ship"){const gal=GAL.buildGalleon({});s._gal=gal;g.add(gal)}
   else if(s.type==="gnomon"){g.add(box(.05,1,.05,0xa07a4a,.5));const sh=box(.04,.01,1,0x1a1a1a,.01);sh.geometry.translate(0,0,-.5);g.add(sh);s.shadow=sh}
   g.position.set(s.x,s.y,s.z);g.rotation.y=s.ry||0;scene.add(g);s.obj=g;if(s.type==="rack")updateRack(s);return g;
@@ -598,6 +606,7 @@ function structMesh(s){
 const PLACE_DIST={hut:3.6,house:4.2,well:2.2,wall:2,chest:1.5,rack:1.8,pendulum:2,torch:1.4};
 function place(type,extra={}){
   if(type==="shipyard")return placeShipyard();
+  if(isWoodland(type))return placeWoodland(type);
   const f=forward(),pd=PLACE_DIST[type]||1.8;let x=player.pos.x+f.x*pd,z=player.pos.z+f.z*pd;
   if(type==="raft"){let ok=false;for(let r=1.5;r<9&&!ok;r+=.5){const tx=player.pos.x+f.x*r,tz=player.pos.z+f.z*r;if(heightAt(tx,tz)<-.4){x=tx;z=tz;ok=true}}if(!ok){toast("Rafts must be launched on water — face open water.");return null}}
   else if(heightAt(x,z)<0){toast("You can't build in the water.");return null}
@@ -611,13 +620,13 @@ function place(type,extra={}){
   world.structures.push(s);structMesh(s);AU.place();return s;
 }
 function structuresNear(x,z,r,type){return world.structures.filter(s=>(!type||s.type===type)&&Math.hypot(s.x-x,s.z-z)<r)}
-function shelterLevel(x,z){let lv=0;for(const s of world.structures){if(s.type!=="house"&&s.type!=="hut"&&s.type!=="leanto")continue;const d=Math.hypot(s.x-x,s.z-z);
+function shelterLevel(x,z){let lv=0;for(const s of world.structures){if(isWoodland(s.type)){const roofed=(s.stage||0)>=(s.type==="woodhut"?3:5);if(!roofed||Math.abs(s.x-x)>5||Math.abs(s.z-z)>5)continue;const [lx,lz]=wLocal(s,x,z),fp=wFootprint(s.type);if(lx>fp.x0&&lx<fp.x1&&lz>fp.z0&&lz<fp.z1)lv=Math.max(lv,isComplete(s)?3:2);continue}if(s.type!=="house"&&s.type!=="hut"&&s.type!=="leanto")continue;const d=Math.hypot(s.x-x,s.z-z);
   if(s.type==="house"&&d<2.1)lv=Math.max(lv,3);else if(s.type==="hut"&&d<2)lv=Math.max(lv,2);else if(s.type==="leanto"&&d<2.6)lv=Math.max(lv,1)}return lv}
 function sheltered(x,z){return shelterLevel(x,z)>0}
-function structSegs(s){if(s._seg)return s._seg;const c=Math.cos(s.ry||0),sn=Math.sin(s.ry||0),W=(lx,lz)=>[s.x+lx*c+lz*sn,s.z-lx*sn+lz*c];
+function structSegs(s){if(isWoodland(s.type))return woodSegs(s);if(s._seg)return s._seg;const c=Math.cos(s.ry||0),sn=Math.sin(s.ry||0),W=(lx,lz)=>[s.x+lx*c+lz*sn,s.z-lx*sn+lz*c];
   const segs=s.type==="wall"?[[-1.65,0,1.65,0]]:s.type==="house"?[[-2.2,-2.2,2.2,-2.2],[-2.2,-2.2,-2.2,2.2],[2.2,-2.2,2.2,2.2],[-2.2,2.2,-.6,2.2],[.6,2.2,2.2,2.2]]:[];
   s._seg=segs.map(([a,b,c2,d])=>[...W(a,b),...W(c2,d)]);return s._seg}
-function collide(pos,rad){let hit=false;for(const s of world.structures){if(s.type!=="wall"&&s.type!=="house")continue;if(Math.abs(s.x-pos.x)>6||Math.abs(s.z-pos.z)>6)continue;
+function collide(pos,rad){let hit=false;for(const s of world.structures){if(s.type!=="wall"&&s.type!=="house"&&!isWoodland(s.type))continue;if(Math.abs(s.x-pos.x)>6||Math.abs(s.z-pos.z)>6)continue;
   for(const [ax,az,bx,bz] of structSegs(s)){const dx=bx-ax,dz=bz-az,l2=dx*dx+dz*dz,t=clamp(((pos.x-ax)*dx+(pos.z-az)*dz)/l2,0,1),cx=ax+dx*t,cz=az+dz*t,ex=pos.x-cx,ez=pos.z-cz,d=Math.hypot(ex,ez),r=rad+.18;
     if(d<r){hit=true;if(d<1e-4){pos.x+=r;continue}pos.x=cx+ex/d*r;pos.z=cz+ez/d*r}}}return hit}
 // Discovery mode (default): no hunger, thirst, illness or injuries — setbacks instead of damage. Classic survival is an opt-in setting.
@@ -653,10 +662,13 @@ function stepFires(dt,dtg){
       const target=s.type==="kiln"?(s.bellows?1300:1150):s.type==="torch"?600:850;
       s.temp=lerp(s.temp,target*s.heat,Math.min(1,dt*.15));
       // spread to dry trees (needs oxygen & dry fuel)
-      if(s.type==="fire"&&!raining&&s.heat>.8&&Math.random()<dt*.01){const t=nearestTree(s.x,s.z,3.2);if(t&&!t.t.burnt&&!t.t.burning&&biomeAt(t.t.x,t.t.z,t.t.y)!=="snow")igniteTree(t)}
+      if(s.type==="fire"&&!s.hearth&&!raining&&s.heat>.8&&Math.random()<dt*.01){const t=nearestTree(s.x,s.z,3.2);if(t&&!t.t.burnt&&!t.t.burning&&biomeAt(t.t.x,t.t.z,t.t.y)!=="snow")igniteTree(t)}
     }else{s.temp=lerp(s.temp,airTemp(s.x,s.z,s.y),Math.min(1,dt*.05));s.heat=Math.max(0,s.heat)}
     if(s.flame){s.flame.visible=s.lit;if(s.lit){const k=(.6+.4*s.heat+Math.sin(performance.now()/220+s.x)*.035)*(s.type==="torch"?.38:s.type==="fire"?Math.pow(fireSize(s),.8):1);const pile=s.type==="fire"?fuelLayout(s):null,width=pile?Math.max(Math.pow(fireSize(s),.68),pile.radius*1.8):1,height=pile?Math.max(fireSize(s)*1.18,pile.height+1.2):1,base=s.type==="fire"?(.6+.4*s.heat):k;s.flame.scale.set(base*width,base*height,base*width);if(pile)pile.surfaceMass=s.fuel;GFX.animateFlame(s.flame,performance.now()/1000,s.heat,pile?pile.height/(base*height):0,pile,s.wood?.userData.support);
-      if(near<(s.type==="torch"?60:120))GFX.FX.fire("s"+s.x.toFixed(1)+s.z.toFixed(1),s.x,s.y+(s.type==="kiln"?.9:s.type==="torch"?1.45:.1),s.z,s.heat,dt,s.type==="kiln"?.45:s.type==="torch"?.28:Math.pow(fireSize(s),.85),.25+.65*(s.wet||0)+.55*(1-s.heat))}}
+      if(near<(s.type==="torch"?60:120))GFX.FX.fire("s"+s.x.toFixed(1)+s.z.toFixed(1),s.x,s.y+(s.type==="kiln"?.9:s.type==="torch"?1.45:.1),s.z,s.heat,dt,s.type==="kiln"?.45:s.type==="torch"?.28:Math.min(s.hearth?.7:9,Math.pow(fireSize(s),.85)),s.hearth?0:.25+.65*(s.wet||0)+.55*(1-s.heat),s.hearth?.25:1);
+      if(s.hearth&&near<220){ // the chimney draws the smoke up and out: warm flue gas is lighter than the room air (stack effect)
+        for(let n=GFX.FX.rate("ch"+s.hearthOf,4+5*s.heat+4*(s.wet||0),dt);n>0;n--)GFX.FX.emit(GFX.FX.alpha,{t:"smoke",x:s.sx+(Math.random()-.5)*.25,y:s.sy,z:s.sz+(Math.random()-.5)*.25,vx:(Math.random()-.5)*.25,vy:1.1+Math.random()*.6,vz:(Math.random()-.5)*.25,life:5+Math.random()*3,s:.45+Math.random()*.35});
+        if(near<14&&s.heat>.5)discover("stack_effect")}}}
   }
   // the 4 nearest glowing fires get physically-scaled point lights (inverse-square decay); nearest 1 (High) / 2 (Ultra) cast flickering shadows
   const glow=world.structures.filter(s=>(s.lit||s.heat>.03)&&s.type!=="pack").sort((a,b)=>Math.hypot(a.x-P.x,a.z-P.z)-Math.hypot(b.x-P.x,b.z-P.z)).slice(0,4);
@@ -671,7 +683,8 @@ function stepFires(dt,dtg){
     if(l.castShadow!==want){l.castShadow=want;if(want){const m=Math.max(512,GFX.Q.fireShadowMap||256);l.shadow.mapSize.set(m,m);l.shadow.map?.dispose();l.shadow.map=null}}
     if(l.castShadow)l.shadow.needsUpdate=!l.shadow.map||(fireShFrame+i)%2===0;   // cube shadows re-render every other frame (6 faces each): halves their cost, flicker still reads
     if(L){const fl=1+.05*Math.sin(tt*9.3+i)+.035*Math.sin(tt*21.7+i*3)+.02*Math.sin(tt*37+i*5);
-      l.position.set(s.x+.04*Math.sin(tt*13+i),s.y+(s.type==="torch"?1.6:s.type==="kiln"?1:Math.max(.9+.55*Math.min(4,fireSize(s)),fuelLayout(s).height+.8)),s.z+.04*Math.cos(tt*11+i));
+      if(s.hearth)l.position.set(s.x+s.hdx*.62+.03*Math.sin(tt*13+i),s.y+.62,s.z+s.hdz*.62+.03*Math.cos(tt*11+i));   // light leaves through the firebox mouth
+      else l.position.set(s.x+.04*Math.sin(tt*13+i),s.y+(s.type==="torch"?1.6:s.type==="kiln"?1:Math.max(.9+.55*Math.min(4,fireSize(s)),fuelLayout(s).height+.8)),s.z+.04*Math.cos(tt*11+i));
       l.intensity=L.scene*fl*(1-.7*GFX.ENV.day)*(i===0&&s.type==="fire"?.55:1);l.distance=Math.max(4,L.rUse*3.2);l.shadow.camera.far=l.distance;l.color.copy(L.color);
       const d=Math.max(.5,l.position.distanceTo(P));eAtPlayer+=L.cd/(d*d)}else{l.intensity=0}});
   // Approximate the broad emitting flame and nearby ground bounce without
@@ -679,7 +692,8 @@ function stepFires(dt,dtg){
   while(fireFillLights.length<2){const l=new THREE.PointLight(0xffa45c,0,20,2);scene.add(l);fireFillLights.push(l)}
   const closest=glow[0],fill=closest?.type==="fire"?fireLight(closest):null;
   fireFillLights.forEach((l,i)=>{if(!fill){l.intensity=0;return}const pile=fuelLayout(closest),spread=Math.max(.45+.35*Math.sqrt(fireSize(closest)),pile.radius*.55),a=i*Math.PI+.6;
-    l.position.set(closest.x+Math.cos(a)*spread,closest.y+Math.max(.7+.22*fireSize(closest),pile.height*.6+.5),closest.z+Math.sin(a)*spread);
+    if(closest.hearth){const sd=i?.75:-.75;l.position.set(closest.x+closest.hdx*1.25-closest.hdz*sd,closest.y+.5,closest.z+closest.hdz*1.25+closest.hdx*sd)}   // warm bounce off the hearth apron and floor
+    else l.position.set(closest.x+Math.cos(a)*spread,closest.y+Math.max(.7+.22*fireSize(closest),pile.height*.6+.5),closest.z+Math.sin(a)*spread);
     l.intensity=fill.scene*.225*(1-.7*GFX.ENV.day);l.distance=Math.max(6,fill.rUse*3.5);l.color.copy(fill.color);
   });
   world._luxAtPlayer=eAtPlayer;
@@ -851,7 +865,7 @@ function stepPlayer(dt){
     if(gh<p.pos.y-2.2&&gh>-1.2){p.vel.x=0;p.vel.z=0;if(!p.edgeT||performance.now()-p.edgeT>4000){p.edgeT=performance.now();toast(`A sheer ${Math.round(p.pos.y-gh)} m drop! Falls over ~3 m hurt. Jump (Space) to go over the edge on purpose.`)}}}}
   p.pos.addScaledVector(p.vel,dt);
   if(p.pos.y<-.2&&ground<0)st.wet=Math.max(st.wet,.8);
-  const g=heightAt(p.pos.x,p.pos.z);
+  const g=groundAt(p.pos.x,p.pos.z);
   if(!p.swimming&&p.pos.y<=g){
     const impact=-p.vel.y;if(impact>3.2)GFX.FX.dust(p.pos.x,g,p.pos.z,Math.min(30,impact*3));
     if(impact>6.5){AU.hit(true);world.counters.maxImpact=Math.max(world.counters.maxImpact||0,+impact.toFixed(1))}
@@ -993,7 +1007,7 @@ function onAtlas(A){atlas=A;for(const id of world.disc)applyKnowledge(WD.get(id)
 
 /* ---------------- interaction ---------------- */
 function frontPoint(r=1){const f=forward();return {x:player.pos.x+f.x*r,z:player.pos.z+f.z*r}}
-const STRUCT_R={workbench:1,workbench_bundle:1,pack:.3,kiln:.6,table:.6,hut:1.6,house:2,well:.5,chest:.3,rack:.4,wall:.8,pendulum:.4};
+const STRUCT_R={woodhut:2.2,foresthouse:3.4,workbench:1,workbench_bundle:1,pack:.3,kiln:.6,table:.6,hut:1.6,house:2,well:.5,chest:.3,rack:.4,wall:.8,pendulum:.4};
 const cursorAim={x:0,y:0,inside:false},hoverRay=new THREE.Raycaster(),hoverNDC=new THREE.Vector2();
 let hoverAt=0,hovered=null,autoPickup=null;
 // Clear route, stale input and horizontal inertia together, before modal handlers.
@@ -1034,7 +1048,7 @@ function queuePickup(t){
   if(t.kind!=="res"&&t.kind!=="drop")return false;const point=pickupPoint(t);
   if(t.kind==="res"&&["copper_ore","tin_ore","iron_ore","quartz","lodestone","pyrite"].includes(t.obj.r.type)&&!bestPick()){toast("You need a pickaxe to mine this mineral deposit.");return true}
   const obstacles=[];for(const ch of chunks.values())if(ch.group){for(const b of ch.obj.boulders)obstacles.push({x:b.x,z:b.z,r:b.s*.95});for(const tr of ch.obj.trees)if(!tr.gone)obstacles.push({x:tr.x,z:tr.z,r:.25})}
-  for(const s of world.structures)if(s.type==="wall"||s.type==="house")obstacles.push({x:s.x,z:s.z,r:structureRadius(s)});
+  for(const s of world.structures)if(s.type==="wall"||s.type==="house"||isWoodland(s.type))obstacles.push({x:s.x,z:s.z,r:structureRadius(s)});
   const path=walkPath(player.pos,point,heightAt,slopeAt,obstacles);if(!path){toast("No clear land route to that item. Move closer or approach from another side.");return true}
   autoPickup={target:t,path,last:player.pos.clone(),stuck:0,elapsed:0};$("#wStopWalk").hidden=false;toast(`Walking to ${ITEMS[t.kind==="res"?t.obj.r.type:t.obj.item].name} · E / Esc / WASD / STOP cancels`);return true;
 }
@@ -1042,7 +1056,7 @@ function updateHover(){
   let tip=$("#wHover");if(!tip){tip=document.createElement("div");tip.id="wHover";tip.setAttribute("role","tooltip");tip.className="wHover";$("#mode-world").append(tip)}
   const t=cursorTarget();if(!t||player.dead||!['wInv','wJournal','wChest','wCtx'].every(id=>$("#"+id).hidden)){tip.hidden=true;return}
   const pt=pickupPoint(t)||t.point,d=Math.hypot(pt.x-player.pos.x,pt.z-player.pos.z),far=d>2.6;
-  const name=t.kind==="res"?(t.obj.r.flower?"Wildflower stem / Plant fiber":ITEMS[t.obj.r.type].name):t.kind==="drop"?ITEMS[t.obj.item].name:t.kind==="tree"?"Tree":t.kind==="boulder"?"Boulder":t.obj.type==="ship"?"Galleon":t.obj.type==="shipyard"?`Shipyard · galleon ${Math.round(((t.obj.stage||0)+stageFrac(t.obj))/6*100)}% built`:Object.values(ITEMS).find(i=>i.place===t.obj.type)?.name||t.obj.type;
+  const name=t.kind==="res"?(t.obj.r.flower?"Wildflower stem / Plant fiber":ITEMS[t.obj.r.type].name):t.kind==="drop"?ITEMS[t.obj.item].name:t.kind==="tree"?"Tree":t.kind==="boulder"?"Boulder":t.obj.type==="ship"?"Galleon":t.obj.type==="shipyard"?`Shipyard · galleon ${Math.round(((t.obj.stage||0)+stageFrac(t.obj))/6*100)}% built`:isWoodland(t.obj.type)?(isComplete(t.obj)?woodName(t.obj):`${woodName(t.obj)} · ${Math.round(((t.obj.stage||0)+stageFracOf(t.obj))/WSTAGES[t.obj.type].length*100)}% built`):t.obj.hearth?"Hearth (clay firebox, stone chimney)":Object.values(ITEMS).find(i=>i.place===t.obj.type)?.name||t.obj.type;
   const action=far&&(t.kind==="res"||t.kind==="drop")?`E · walk over & ${t.kind==="res"&&["copper_ore","tin_ore","iron_ore","quartz","lodestone","pyrite"].includes(t.obj.r.type)?"mine (pickaxe required)":"pick up"}`:far?"Move closer to interact":targetLabel(t);
   tip.textContent=`${name} · ${Math.round(d)} m\n${action}`;tip.hidden=false;
   const rect=$("#mode-world").getBoundingClientRect(),locked=document.pointerLockElement===canvasEl;
@@ -1050,7 +1064,9 @@ function updateHover(){
 }
 function structureRadius(s){return s.type==="fire"?fuelLayout(s).radius:STRUCT_R[s.type]??.2}
 function findTarget(){
-  const cursor=cursorTarget();if(cursor){const p=pickupPoint(cursor)||cursor.point;if(p&&Math.hypot(p.x-player.pos.x,p.z-player.pos.z)<=2.6)return cursor}
+  const cursor=cursorTarget();if(cursor){const p=pickupPoint(cursor)||cursor.point;if(p&&Math.hypot(p.x-player.pos.x,p.z-player.pos.z)<=2.6){
+    if(cursor.kind==="struct"&&isWoodland(cursor.obj.type)&&p){const h=woodHearth(cursor.obj);if(h&&Math.hypot(h.x-p.x,h.z-p.z)<.95&&p.y<h.y+1.1)return {kind:"struct",obj:h,point:p}}
+    return cursor}}
   const fp=frontPoint(.9),x=fp.x,z=fp.z;let best=null,bd=2.4;
   const cons=(kind,obj,d)=>{if(d<bd){bd=d;best={kind,obj}}};
   for(const d of world.drops)if(!d.flying)cons("drop",d,Math.hypot(d.pos.x-x,d.pos.z-z)+(d.floating?.3:0));
@@ -1061,11 +1077,11 @@ function findTarget(){
   }
   if(PETS){const pt=PETS.target(x,z);if(pt)cons("pet",pt.e,pt.d)}
   for(const a of animals)if(!a.dead)cons("animal",a,Math.hypot(a.pos.x-x,a.pos.z-z)-.25-a.sp.size*.4+(a.kind==="dog"?1.2:0)); // the dog never hides what you're reaching for
-  for(const s of world.structures)if((s.type!=="raft"||!player.raft)&&s!==player.ship)cons("struct",s,s.type==="ship"||s.type==="shipyard"?hullDist(s,x,z)+.3:Math.hypot(s.x-x,s.z-z)-structureRadius(s));
+  for(const s of world.structures)if((s.type!=="raft"||!player.raft)&&s!==player.ship)cons("struct",s,s.type==="ship"||s.type==="shipyard"?hullDist(s,x,z)+.3:isWoodland(s.type)?woodDist(s,x,z):s.hearth?Math.hypot(s.x-x,s.z-z)-.35:Math.hypot(s.x-x,s.z-z)-structureRadius(s));
   if(!best&&(heightAt(x,z)<0||player.swimming))best={kind:"water"};
   return best;
 }
-const sleepable=t=>t==="leanto"||t==="hut"||t==="house";
+const sleepable=t=>t==="leanto"||t==="hut"||t==="house"||t==="woodhut"||t==="foresthouse";
 function feedFire(s,kg,kind){if(s.type==="fire")recordFuelPiece(s,kg,kind);addFuel(s,kg)}
 const HAND_FUEL={stick:.5,log:5,charcoal:.08};
 function fireSiteError(){
@@ -1151,6 +1167,7 @@ function targetLabel(t){
   if(s.type==="ship")return "E  climb aboard the galleon";
   if(s.type==="shipyard"){const k0=s.stage||0;if(k0>=SHIP_STAGES.length)return "Galleon complete · E  launch it down the slipway";const st=SHIP_STAGES[k0];return `Stage ${k0+1}/6 · ${st.name} · E deliver: ${needText(remaining(s))}`}
   if(s.type==="crop")return cropGrowth(s)>=1?"E  harvest crop":`Crop ${Math.round(cropGrowth(s)*100)}% grown`;
+  if(isWoodland(s.type))return woodLabel(s,t);
   if(sleepable(s.type))return `${{leanto:"Lean-to",hut:"Hut",house:"Stone house"}[s.type]} · E sleep until dawn (at night)`;
   if(s.type==="gnomon")return "Shadow stick";
   if(s.type==="pack")return `E  recover your belongings (${Object.values(s.items||{}).reduce((a,b)=>a+b,0)} items)`;
@@ -1173,7 +1190,7 @@ function interact(override=null){
     const fit=Math.min(n,roomFor(d.item)||n);scene.remove(d.mesh);world.drops.splice(world.drops.indexOf(d),1);give(d.item,fit);if(fit<n){const r=addDrop(d.item,d.pos.x,d.pos.y,d.pos.z);r.n=n-fit}stowMsg(d.item,fit);return}
   if(t.kind==="res"){const {ch,r}=t.obj;if(r.gone)return;if(!roomFor(r.type))return toast("Your backpack is full. Make room before gathering.");const ore=["copper_ore","tin_ore","iron_ore","quartz","lodestone","pyrite"].includes(r.type);if(ore&&!bestPick())return toast("This mineral deposit needs a pickaxe. Craft a stone knife, then lash a stone head to a handle with plant fiber (I).");if(ore){useTool(bestPick(),1);AU.chop()}
     r.gone=true;r.mesh.setMatrixAt(r.slot,ZERO);r.mesh.instanceMatrix.needsUpdate=true;world.removed.add(ch.key+"|r"+r.i);
-    const n=r.type==="stick"?2:1;give(r.type,n);if(r.type==="fiber"&&Math.random()<.4)give("seeds");stowMsg(r.type,n);return}
+    const n=r.type==="stick"||r.type==="thatch"||r.type==="moss"?2:1;give(r.type,n);if(r.type==="fiber"&&Math.random()<.4)give("seeds");stowMsg(r.type,n);return}
   if(t.kind==="tree"){const {ch,t:tr}=t.obj;if(tr.burning)return toast("Too hot — it's burning!");const ax=bestAxe();
     if(ax){player.actCd=.3;tr.hits=(tr.hits||0)+ITEMS[ax].power;useTool(ax,1);AU.chop();GFX.playOnce(player.model,"Punch_Cross",.4);
       if(tr.hits>=6){tr.gone=true;world.removed.add(ch.key+"|t"+tr.i);refreshTree(ch,tr);give("log",tr.burnt?1:2);give("stick",2);toast("Timber! Logs gathered.")}else toast(`Chop… ${Math.min(99,Math.round(tr.hits/6*100))}%`)}
@@ -1190,6 +1207,7 @@ function interact(override=null){
   if(BURN.has(s.type)){if(s.type!=="torch"&&take("log")){feedFire(s,5,"log");toast("Added a log (5 kg).")}else if(take("stick")){feedFire(s,.5,"stick");toast(`Added a stick (0.5 kg${s.type==="torch"?" ≈ 4 hours of torchlight":""}).`)}else if(take("charcoal")){feedFire(s,.08,"charcoal");toast("Added charcoal from a previous fire.")}else toast("No firewood left in your Backpack. Gather more logs or sticks (E); the fire can take more.");AU.place();return}
   if(s.type==="pack"){for(const k in s.items)give(k,s.items[k]);scene.remove(s.obj);world.structures.splice(world.structures.indexOf(s),1);AU.pickup();toast("You recover your belongings.");renderHotbar();return}
   if(s.type==="shipyard"){player.actCd=.3;return shipyardWork(s)}
+  if(isWoodland(s.type)){player.actCd=.3;return woodWork(s,t)}
   if(s.type==="ship")return boardShip(s);
   if(s.type==="raft"){player.raft=s;toast("You board the raft. Move with WASD; walk into land to step ashore.");return}
   if(s.type==="table")return study(s);
@@ -1284,6 +1302,7 @@ function useHeld(){
   if(it.place){take(k);const p=place(it.place);if(!p){give(k);return}
     if(it.place==="leanto"||it.place==="hut"||it.place==="house"){world.camp=[p.x,p.z];toast(`${ITEMS[k].name.replace(" kit","")} built. This is your camp now: you'll wake here if you die. E inside to sleep at night.`);if(it.place==="leanto")discover("shelter");if(it.place==="house")discover("masonry")}
     else if(it.place==="torch"){const src=world.structures.find(o=>o!==p&&o.lit&&Math.hypot(o.x-p.x,o.z-p.z)<8);if(src){p.lit=true;p.heat=.4;AU.ignite();toast("You light the torch from the fire. Wolves avoid its light.")}else toast("Torch placed. Light it with flint + pyrite (Q), or place it near a fire.")}
+    else if(isWoodland(it.place)){}
     else if(it.place==="raft")toast("Raft launched. E to board.");else if(it.place==="table")toast("Study table ready. E to study.");
     else if(it.place==="well")toast(`You dig down about ${Math.max(1,Math.round(heightAt(p.x,p.z)))} m and water seeps in from the ground. E to drink, Q with a pot to fill it.`);
     else if(it.place==="pendulum")toast("Pendulum frame built. E to start timing ten swings; Q to change the length.");
@@ -1361,7 +1380,7 @@ function study(table){
 function sleep(s){
   const h=hourOf();if(!(h>=19||h<5))return toast("You can only sleep through the night (after 19:00).");
   if(animals.some(a=>a.kind==="wolf"&&!a.dead&&!a.calm&&a.pos.distanceTo(player.pos)<30))return toast("Wolves are prowling close by — too dangerous to sleep.");
-  const hrs=h>=19?24-h+6.5:6.5-h,st=world.st,lv=Math.max(shelterLevel(player.pos.x,player.pos.z),{leanto:1,hut:2,house:3}[s.type]||1);
+  const hrs=h>=19?24-h+6.5:6.5-h,st=world.st,lv=Math.max(shelterLevel(player.pos.x,player.pos.z),{leanto:1,hut:2,house:3,woodhut:2,foresthouse:3}[s.type]||1);
   const warmFire=world.structures.some(o=>o.lit&&o.type!=="torch"&&Math.hypot(o.x-player.pos.x,o.z-player.pos.z)<6&&o.fuel>hrs*.6);
   for(const o of world.structures)if(o.lit){o.fuel-=hrs*(o.type==="torch"?.125:o.type==="kiln"?1.3:1);if(o.fuel<=0){o.fuel=0;o.lit=false;o.heat=0}}
   world.gameTime+=hrs*3600;st.hunger=Math.max(0,st.hunger-hrs*2.4);st.thirst=Math.max(0,st.thirst-hrs*3);st.stamina=100;st.wet=0;
@@ -1439,7 +1458,7 @@ function stepCuriosity(dt){thoughtT-=dt;thoughtShowT-=dt;const el=$("#wThought")
   const since=(world.counters.lastThought??-1e9),now=world.gameTime;if(now-since<(world.seenQ.length<4?1800:3600))return;
   const c=guideCtx();const q=CURIOSITY.find(q=>!world.seenQ.includes(q.id)&&!hasD(q.ans)&&q.when(c));if(!q)return;
   world.seenQ.push(q.id);world.counters.lastThought=now;if(el){el.innerHTML=`<small>CURIOSITY · press J for your journal</small>${esc(q.q)}`;el.hidden=false;thoughtShowT=11}}
-const ICON={plank:"🪵",rope:"🪢",sailcloth:"🏳",pitch:"⚫",trenail:"📍",mast_spar:"🎋",shipyard:"⚓",bark:"🪵",thread:"🧵",leather:"🟫",hammer_stone:"🔨",tongs:"🗜",needle_iron:"🪡",iron_spike:"📌",leather_gloves:"🧤",climbing_gloves:"🧤",knife_copper:"🔪",knife_bronze:"🔪",knife_iron:"🔪",knife_stone:"🔪",pickaxe_stone:"⛏",hand_drill:"🪵",bench_joint:"🧩",workbench:"🛠",workbench_bundle:"🛠",charcoal:"◼",ash:"◻",berries_dried:"🍇",nuts_roasted:"🌰",jam:"🍯",dough:"🫓",flatbread:"🫓",stew:"🍲",berry_mash:"🍷",stick:"🥢",log:"🪵",stone:"🪨",flint:"🔪",pyrite:"✨",clay:"🟫",fiber:"🌾",berry_red:"🍒",berry_dark:"🫐",seeds:"🌱",grain:"🌾",meat_raw:"🥩",meat_dried:"🥓",meat_cooked:"🍖",hide:"🟤",flake:"🔺",
+const ICON={mud:"🟤",moss:"🌿",thatch:"🌾",cordage:"🪢",cob:"🧱",woodhut_site:"🛖",house_site:"🏡",plank:"🪵",rope:"🪢",sailcloth:"🏳",pitch:"⚫",trenail:"📍",mast_spar:"🎋",shipyard:"⚓",bark:"🪵",thread:"🧵",leather:"🟫",hammer_stone:"🔨",tongs:"🗜",needle_iron:"🪡",iron_spike:"📌",leather_gloves:"🧤",climbing_gloves:"🧤",knife_copper:"🔪",knife_bronze:"🔪",knife_iron:"🔪",knife_stone:"🔪",pickaxe_stone:"⛏",hand_drill:"🪵",bench_joint:"🧩",workbench:"🛠",workbench_bundle:"🛠",charcoal:"◼",ash:"◻",berries_dried:"🍇",nuts_roasted:"🌰",jam:"🍯",dough:"🫓",flatbread:"🫓",stew:"🍲",berry_mash:"🍷",stick:"🥢",log:"🪵",stone:"🪨",flint:"🔪",pyrite:"✨",clay:"🟫",fiber:"🌾",berry_red:"🍒",berry_dark:"🫐",seeds:"🌱",grain:"🌾",meat_raw:"🥩",meat_dried:"🥓",meat_cooked:"🍖",hide:"🟤",flake:"🔺",
   axe_stone:"🪓",axe_copper:"🪓",axe_bronze:"🪓",axe_iron:"🪓",spear:"🔱",tally:"🧮",clothing:"🧥",pot:"🏺",pot_water:"💧",pot_clean:"♨️",copper_ore:"🟢",tin_ore:"⚪",iron_ore:"🔴",copper:"🟠",tin:"🔘",bronze:"🥉",iron:"⚫",
   quartz:"💎",sand:"⏳",glass:"🔷",lens:"🔍",lodestone:"🧲",tablet:"📜",gnomon:"🕐",bellows:"🪗",wheel:"☸️",telescope:"🔭",compass:"🧭",campfire:"🔥",leanto:"⛺",kiln:"🏭",raft:"🛶",table:"📚",sling:"🪃",bow:"🏹",arrow:"➶",
   prism:"🌈",torch:"🕯️",hut:"🛖",house:"🏠",chest:"🧰",rack:"🪜",well:"🪣",wall:"🧱",pendulum:"⏱️",shell:"🐚",feather:"🪶",leaf:"🍃",snow:"❄️",nuts:"🌰",satchel:"🎒"};
@@ -1469,7 +1488,7 @@ function renderInventory(){
     return `<div class="cell${k===world.held?" on":""}${k===world.left?" onL":""}" data-k="${k}" draggable="true"><i style="--c:${hex(k)}">${icon(k)}</i><b>${n}</b>${k===world.held?"<s>R</s>":""}${k===world.left?"<s class=l>L</s>":""}${du!=null?`<u style="width:${Math.round(du*100)}%"></u>`:""}</div>`}).join("");
   const chain=new Set([...GEAR_RECIPES.map(r=>r.out),"knife_stone","pickaxe_stone","campfire","kiln","bellows"]);
   const avail=RECIPES.filter(r=>(!invChain||chain.has(r.out))&&(!r.req||hasD(r.req))&&(!invCraftFor||r.in[invCraftFor])),locked=RECIPES.length-RECIPES.filter(r=>!r.req||hasD(r.req)).length;
-  const rec=Object.keys(CAT_NAMES).map(cat=>{const list=avail.filter(r=>r.cat===cat);if(!list.length)return "";return `<h4>${CAT_NAMES[cat]}</h4>`+(cat==="ships"?shipPlanHtml():"")+list.map(r=>{const ok=Object.entries(r.in).every(([k,n])=>inv(k)>=n)&&(!r.tool||craftTool(r.tool))&&!gearProblem(r,inv,world.structures,player.pos)&&!shipProblem(r,inv);
+  const rec=Object.keys(CAT_NAMES).map(cat=>{const list=avail.filter(r=>r.cat===cat);if(!list.length)return "";return `<h4>${CAT_NAMES[cat]}</h4>`+(cat==="ships"?shipPlanHtml():cat==="build"?woodPlanHtml():"")+list.map(r=>{const ok=Object.entries(r.in).every(([k,n])=>inv(k)>=n)&&(!r.tool||craftTool(r.tool))&&!gearProblem(r,inv,world.structures,player.pos)&&!shipProblem(r,inv);
     return `<div class="rec${ok?" ok":" no"}"><b>${icon(r.out)} ${esc(ITEMS[r.out].name)}${r.n>1?` ×${r.n}`:""}</b><span>${["tally","spear"].includes(r.out)?esc(NOTES[r.out][0])+"<br>":""}${Object.entries(r.in).map(([k,n])=>`<em class="${inv(k)>=n?"have":"miss"}">${n}× ${esc(ITEMS[k].name)}</em>`).join(" ")}${r.tool?` · needs ${esc(ITEMS[r.tool].name)} or better`:""}${r.tools?` · tools: ${r.tools.map(k=>esc(ITEMS[k].name)).join(", ")}`:""}${r.knife?" · needs a knife":""}${r.axe?" · needs an axe":""}${r.station?` · ${esc(gearProblem(r,inv,world.structures,player.pos)||"station ready")}`:""}${r.out.startsWith("workbench")?" · four supports + rectangular board top; housed joints, wedges & plant-fiber lashings (no nails)":r.out==="bench_joint"?" · carve shoulders and matching tongue; F inspects the joint":r.out==="hand_drill"?" · carve spindle + hearth; tinder needs 1 plant fiber per prepared fire":""}</span><button data-craft="${r.out}" ${ok?"":"disabled"}>CRAFT</button>${GEAR_STEPS[r.out]?`<details><summary>How it is made</summary><ol>${GEAR_STEPS[r.out].map(t=>`<li>${esc(t)}</li>`).join("")}</ol></details>`:""}</div>`}).join("")}).join("");
   const hands=[["L","left","LEFT HAND"],["R","held","RIGHT HAND"]].map(([sd,f,l])=>{const k=world[f];return `<div class="handBig${k?" full":""}" data-hand="${sd}" ${k?`data-k="${k}"`:""}><small>${l}</small>${k?`<i style="--c:${hex(k)}">${icon(k)}</i><em>${esc(ITEMS[k].name)}</em>`:"<em class=muted>drag an item here</em>"}</div>`}).join("");
   el.innerHTML=`<div class="pHead"><h3>BACKPACK <small class="cap">${used} / ${cap} slots · stacks of ${STACK}${world.inv.satchel?" · satchel +"+SATCHEL_SLOTS:""}</small></h3><button data-close>✕ (I)</button></div>
@@ -1710,6 +1729,7 @@ let camDistNow=6;
 function firstPerson(){return !!player.firstPersonView||!!player.zoom||player.camPitch<-.35}
 function updateCamera(dt){
   if(SHIP_DEBUG._cam&&shipCam())return;
+  if(WOOD_DEBUG._cam&&woodCam())return;
   const p=player,fp=firstPerson();
   if(p.model)p.model.visible=!fp;
   if(fp){ // first person: look at the sky (drag the view up) or through the telescope
@@ -1719,7 +1739,8 @@ function updateCamera(dt){
     const pitch=Math.max(-.35,p.camPitch),t=camTarget.set(p.pos.x,p.pos.y+(p.swimming?.3:p.crouch?1.1:1.6),p.pos.z);
     const sy=Math.sin(p.camYaw)*Math.cos(pitch),cy=Math.cos(p.camYaw)*Math.cos(pitch),sp=Math.sin(pitch);
     let d=p.camDist;while(d>1.6&&inCrown(t.x+sy*d,t.y+sp*d,t.z+cy*d))d-=.5;
-    camDistNow=d<camDistNow?d:lerp(camDistNow,d,Math.min(1,dt*3));
+    const wb=woodInside(t.x,t.y,t.z);if(wb){const L=k=>{const [lx,lz]=wLocal(wb,t.x+sy*k,t.z+cy*k);return wInside(wb.type,lx,t.y+sp*k-wb.y,lz,wb.stage||0)};while(d>.3&&!L(d))d-=.1;d=Math.max(.3,d)}   // indoors the camera stays inside the walls
+    camDistNow=d<camDistNow?d:lerp(camDistNow,d,Math.min(1,dt*3));if(p.model&&camDistNow<.75)p.model.visible=false;
     camera.position.set(t.x+sy*camDistNow,t.y+sp*camDistNow,t.z+cy*camDistNow);
     const gh=Math.max(heightAt(camera.position.x,camera.position.z),p.swimming?-9:0)+.5;if(camera.position.y<gh)camera.position.y=gh;
     camera.lookAt(t);
@@ -1851,13 +1872,101 @@ const SHIP_DEBUG={
 function shipCam(){const c=SHIP_DEBUG._cam,s=world.structures.find(o=>o.type==="ship")||world.structures.find(o=>o.type==="shipyard");if(!s)return false;
   const y0=s.type==="ship"?s.ship.y:s.y+s.keelH,cs=Math.cos(s.ry),sn=Math.sin(s.ry),W=([x,y,z])=>[s.x+x*cs+z*sn,y0+y,s.z-x*sn+z*cs];
   camera.position.set(...W(c.p));camera.lookAt(...W(c.t));if(player.model)player.model.visible=true;return true}
+/* ---------------- woodland buildings: hand-made hut and forest house, built in stages like the galleon ---------------- */
+const WOOD_CLEAR={woodhut:2.5,foresthouse:4.4};
+const woodName=s=>s.type==="woodhut"?"Woodland hut":"Forest house";
+function woodSeed(s){return (Math.abs(Math.round(s.x*13.1+s.z*7.7))%100000)+11}
+function woodMesh(s,g){const gAt=(lx,lz)=>{const [x,z]=wWorld(s,lx,lz);return heightAt(x,z)-s.y};
+  const root=WOOD.buildWoodland(s.type,{seed:woodSeed(s),ground:gAt});s._wood=root;g.add(root);s._seg=null;
+  WOOD.setWoodStage(root,s.stage||0,stageFracOf(s));WOOD.setDoor(root,s.open||0);clearFireGrass(s,WOOD_CLEAR[s.type])}
+function woodPlot(type,x,z,ry){const fp=wFootprint(type),s0={x,z,ry};let hi=-1e9,lo=1e9;
+  for(let i=0;i<=6;i++)for(let j=0;j<=6;j++){const [wx,wz]=wWorld(s0,fp.x0+(fp.x1-fp.x0)*i/6,fp.z0+(fp.z1-fp.z0)*j/6),h=heightAt(wx,wz);hi=Math.max(hi,h);lo=Math.min(lo,h)}
+  return {hi,lo,fp}}
+function placeWoodland(type,o={}){const f=forward(),ry=o.ry??Math.atan2(-f.x,-f.z),pd=type==="woodhut"?4.4:6.4;
+  const x=o.x??player.pos.x+f.x*pd,z=o.z??player.pos.z+f.z*pd,{hi,lo,fp}=woodPlot(type,x,z,ry),s0={x,z,ry};
+  if(!o.force){
+    if(lo<.15){toast("Too close to the water for a dry floor — build a little further up the bank.");return null}
+    if(hi-lo>(type==="woodhut"?.9:1.3)){toast(`The ground falls ${(hi-lo).toFixed(1)} m across the plot. Find flatter ground for the ${type==="woodhut"?"hut":"house"}.`);return null}
+    const inPlot=(px,pz,m)=>{const [lx,lz]=wLocal(s0,px,pz);return lx>fp.x0-m&&lx<fp.x1+m&&lz>fp.z0-m&&lz<fp.z1+m};
+    for(const ch of nearbyChunks(x,z,6)){for(const t of ch.obj.trees)if(!t.gone&&inPlot(t.x,t.z,.35)){toast("A tree stands inside the plot. Fell it with an axe first (its logs are building timber), or face a clearer spot.");return null}
+      for(const b of ch.obj.boulders)if(inPlot(b.x,b.z,b.s*.8)){toast("A boulder sits in the plot. Face another spot or move along a little.");return null}}
+    for(const st of world.structures)if(st.type!=="pack"&&!st.hearth&&inPlot(st.x,st.z,.6)){toast("Something you built is in the way. Pick a clear plot.");return null}
+  }
+  const s={type,x,y:hi+(type==="woodhut"?.03:0),z,ry,stage:0,got:{},open:0};world.structures.push(s);structMesh(s);AU.place();clearWoodPlot(s);
+  if(!o.quiet)toast(type==="woodhut"?"Hut plot staked out with a cord line. E at the plot to deliver each stage: frame, wattle walls, thatch roof, then daub.":"House plot laid out: corner pegs, a cord line and a scratched hearth mark. E at the plot to deliver each of the 6 stages.");
+  return s}
+/* loose sticks, stones and flowers inside the plot are swept aside when it is staked out (remembered like pickups) */
+function clearWoodPlot(s){const fp=wFootprint(s.type);for(const ch of nearbyChunks(s.x,s.z,6))for(const r of ch.obj.res){if(r.gone)continue;const [lx,lz]=wLocal(s,r.x,r.z);
+  if(lx>fp.x0-.3&&lx<fp.x1+.3&&lz>fp.z0-.3&&lz<fp.z1+.3){r.gone=true;if(r.mesh){r.mesh.setMatrixAt(r.slot,ZERO);r.mesh.instanceMatrix.needsUpdate=true}world.removed.add(ch.key+"|r"+r.i)}}}
+function woodSegs(s){if(s._seg)return s._seg;s._seg=wWallSegs(s.type,s.stage||0,s.open||0).map(([a,b,c,d])=>[...wWorld(s,a,b),...wWorld(s,c,d)]);return s._seg}
+function segDist(x,z,[ax,az,bx,bz]){const dx=bx-ax,dz=bz-az,l2=dx*dx+dz*dz||1e-9,t=clamp(((x-ax)*dx+(z-az)*dz)/l2,0,1);return Math.hypot(x-ax-dx*t,z-az-dz*t)}
+function woodDist(s,x,z){const segs=woodSegs(s);if(segs.length)return Math.min(...segs.map(g=>segDist(x,z,g)))-.15;
+  const fp=wFootprint(s.type),[lx,lz]=wLocal(s,x,z);return Math.hypot(Math.max(0,fp.x0-lx,lx-fp.x1),Math.max(0,fp.z0-lz,lz-fp.z1))}
+/** standing height: terrain, or a woodland building's floor */
+function groundAt(x,z){let g=heightAt(x,z);for(const s of world.structures){if(!isWoodland(s.type)||(s.stage||0)<1||Math.abs(s.x-x)>5||Math.abs(s.z-z)>5)continue;
+  const [lx,lz]=wLocal(s,x,z),r=wFloorRect(s.type);if(lx>r.x0&&lx<r.x1&&lz>r.z0&&lz<r.z1)g=Math.max(g,s.y+r.y)}return g}
+function woodInside(x,y,z){for(const s of world.structures){if(!isWoodland(s.type)||(s.stage||0)<2||Math.abs(s.x-x)>5||Math.abs(s.z-z)>5)continue;const [lx,lz]=wLocal(s,x,z);if(wInside(s.type,lx,y-s.y,lz,s.stage||0))return s}return null}
+function woodPart(s,t){const pt=t?.point||frontPoint(.9),[lx,lz]=wLocal(s,pt.x,pt.z),ly=(pt.y??player.pos.y+1)-s.y;return wPartAt(s.type,s.stage||0,lx,ly,lz)}
+function woodHearth(s){return s.wid&&world.structures.find(o=>o.hearth&&o.hearthOf===s.wid)}
+function makeHearth(s){if(woodHearth(s))return woodHearth(s);s.wid=s.wid||Math.random().toString(36).slice(2,9);const H=WHOUSE.hearth,[x,z]=wWorld(s,H.fire[0],H.fire[2]),[sx,sz]=wWorld(s,-3.55,0);
+  const f={type:"fire",x,y:s.y+H.fire[1],z,ry:s.ry,fuel:1.5,lit:false,heat:0,temp:15,hearth:true,hearthOf:s.wid,hdx:Math.cos(s.ry),hdz:-Math.sin(s.ry),sx,sy:s.y+WHOUSE.chimney.top+.15,sz};
+  world.structures.push(f);structMesh(f);return f}
+function woodLabel(s,t){const S=WSTAGES[s.type],k0=s.stage||0;
+  if(k0<S.length){const st=S[k0],pr=stageProblem(s,inv);return `${woodName(s)} · stage ${k0+1}/${S.length} · ${st.name} · E deliver: ${needText(remainingOf(s))}${pr?" · "+pr:""}`}
+  const part=woodPart(s,t);if(part==="door")return `Plank door on a pole hinge · E ${s.open>.5?"close":"open"} it`;
+  if(part==="bed")return `${s.type==="woodhut"?"Grass-and-moss bed":"Mud bench-bed with fur and feathers"} · E sleep until dawn (at night)`;
+  return s.type==="woodhut"?"Woodland hut · E sleep inside (at night)":`Forest house · walk in through the door · lay sticks in the hearth and light it`}
+function woodWork(s,t){
+  if(isComplete(s)){const part=woodPart(s,t);
+    if(part==="door"){s.doorTarget=s.open>.5?0:1;AU.place();toast(s.doorTarget?"You lift the wooden latch and the plank door swings in on its pole hinge.":"You pull the door shut; the latch bar drops into its wooden catch.");return}
+    if(part==="bed"||s.type==="woodhut")return sleep(s);
+    return toast("Forest house: E at the door to open it, E at the bed to sleep. Feed the hearth with sticks or logs.")}
+  const pr=stageProblem(s,inv);if(pr)return toast(pr);
+  const S=WSTAGES[s.type],st=S[s.stage||0],res=deliverStage(s,inv,(k,n)=>take(k,n)),dk=Object.entries(res.delivered);
+  if(res.completed){AU.place();GFX.FX.dust(s.x,s.y+1,s.z,20);s._seg=null;const id=res.completed;
+    if(s.type==="woodhut"&&id==="daub"){discover("wattle_daub");discover("shelter");world.camp=[s.x,s.z]}
+    if(s.type==="foresthouse"){if(id==="cob")discover("cob");if(id==="hearth")makeHearth(s);if(res.done){discover("masonry");world.camp=[s.x,s.z]}}
+    toast(`${woodName(s)} · ${st.name} complete.`+(res.done?(s.type==="woodhut"?" The hut is finished: walk in through the doorway; E inside to sleep. This is your camp now.":" The house is finished. Open the door (E), lay a fire in the hearth — the chimney draws the smoke up and out. This is your camp now."):` Next: ${S[s.stage].name} — needs ${needText(remainingOf(s))}.`))}
+  else if(dk.length){AU.pickup();toast(`Delivered ${dk.map(([k,n])=>n+"× "+ITEMS[k].name).join(", ")}. ${st.name} still needs ${needText(remainingOf(s))}.`)}
+  else toast(`${woodName(s)} · stage ${(s.stage||0)+1}/${S.length} · ${st.name}: needs ${needText(remainingOf(s))}. ${st.note||""}`);
+  WOOD.setWoodStage(s._wood,s.stage,stageFracOf(s));renderHotbar();save()}
+let woodDay=null;   // soft sky light spilling in through the doorway and round windows (no shadow; one persistent light so shaders never recompile)
+const WOOD_SPILL={woodhut:[0,1,.6,7],foresthouse:[.6,1.7,1.2,15]};
+function stepWoodland(dt){const cp=camera.position;
+  if(!woodDay){woodDay=new THREE.PointLight(0xdbe6ff,0,7,2);scene.add(woodDay)}
+  let best=null,bd=14;for(const s of world.structures){if(!isWoodland(s.type)||!s._wood||(s.stage||0)<(s.type==="woodhut"?3:5))continue;const d=Math.hypot(cp.x-s.x,cp.z-s.z);if(d<bd){bd=d;best=s}}
+  if(best){const [lx,ly,lz,k]=WOOD_SPILL[best.type],[x,z]=wWorld(best,lx,lz);woodDay.position.set(x,best.y+ly,z);woodDay.intensity=k*GFX.ENV.day*(best.type==="foresthouse"?.55+.45*(best.open||0):1)*clamp((14-bd)/5,0,1)}else woodDay.intensity=0;
+  for(const s of world.structures){if(!isWoodland(s.type)||!s._wood)continue;
+  if(s.doorTarget!=null&&Math.abs((s.open||0)-s.doorTarget)>1e-3){const d=s.doorTarget-(s.open||0);s.open=(s.open||0)+Math.sign(d)*Math.min(Math.abs(d),dt*1.4);WOOD.setDoor(s._wood,s.open);s._seg=null}
+  WOOD.woodLOD(s._wood,Math.hypot(cp.x-s.x,cp.z-s.z))}}
+function woodPlanHtml(){const cur=t=>{let best=null,bd=1e9;for(const s of world.structures)if(s.type===t){const d=Math.hypot(s.x-player.pos.x,s.z-player.pos.z);if(d<bd){bd=d;best=s}}return best};
+  return ["woodhut","foresthouse"].map(type=>{const site=cur(type),k=site?site.stage||0:-1,S=WSTAGES[type],locked=type==="foresthouse"&&!hasD("wattle_daub");
+    return `<div class="shipPlan" style="margin:.2em 0 .6em;padding:.5em .7em;border:1px solid rgba(255,255,255,.14);border-radius:8px;background:rgba(90,110,60,.12);font-size:.92em"><b>${type==="woodhut"?"WOODLAND HUT · lashed A-frame, wattle, thatch & daub, 4 stages":"FOREST HOUSE · notched round logs on fieldstone, cob, hearth & sod roof, 6 stages"}</b> <small class="muted">(${locked?"unlocks with Wattle & daub — finish a hut first":"craft the plot kit, Q on flat clear ground, then E at the plot to deliver each stage"})</small><ol style="margin:.3em 0 0 1.2em;padding:0">${S.map((st,i)=>`<li style="${i<k?"opacity:.55;text-decoration:line-through":i===k?"color:#ffd27a":""}">${esc(st.name)} — ${Object.entries(st.need).map(([kk,n])=>`<em class="${inv(kk)>=n?"have":"miss"}">${n}× ${esc(ITEMS[kk].name)}</em>`).join(" ")}${st.axe?" · axe":""}${i===k&&site?` <b>← now (${esc(needText(remainingOf(site)))} left)</b>`:""}</li>`).join("")}</ol></div>`}).join("")}
+const WOOD_DEBUG={
+  treeGap(x,z,r=14){const t=nearestTree(x,z,r);return t?+t.d.toFixed(2):r},
+  unlock(){for(const d of ["knapping","shelter","fire","wattle_daub","ceramics","clothing"])discover(d,true)},
+  materials(type="foresthouse"){const t=stageTotalsOf(type);for(const k in t)world.inv[k]=(world.inv[k]||0)+t[k];world.inv.axe_stone=(world.inv.axe_stone||0)+1;renderHotbar();return t},
+  place(type="foresthouse",o={}){return !!placeWoodland(type,{force:true,quiet:true,...o})},
+  sites:()=>world.structures.filter(s=>isWoodland(s.type)),
+  site(i=0){return this.sites()[i]||null},
+  deliver(i=0){const s=this.site(i);if(s)woodWork(s);return s&&{stage:s.stage,got:{...s.got}}},
+  set(i=0,stage=0,frac=0){const s=this.site(i);if(!s)return null;s.stage=stage;s.got={};const st=WSTAGES[s.type][stage];if(st&&frac>0)for(const k in st.need)s.got[k]=Math.floor(st.need[k]*frac);
+    if(s.type==="foresthouse"&&stage>=4)makeHearth(s);WOOD.setWoodStage(s._wood,stage,stageFracOf(s));s._seg=null;return s.stage},
+  door(i=0,open=1,instant=true){const s=this.site(i);if(!s)return;s.doorTarget=open;if(instant){s.open=open;WOOD.setDoor(s._wood,open);s._seg=null}},
+  fire(i=0,lit=true,fuel=3){const s=this.site(i),f=s&&woodHearth(s);if(!f)return null;f.fuel=fuel;f.lit=lit;f.heat=lit?1:0;f.temp=lit?800:15;f.wet=0;return true},
+  stand(i=0,lx=0,lz=0,yaw){const s=this.site(i);if(!s)return;const [x,z]=wWorld(s,lx,lz);player.pos.set(x,groundAt(x,z),z);player.vel.set(0,0,0);if(yaw!=null){player.camYaw=yaw+(s.ry||0);player.yaw=player.camYaw+Math.PI}},
+  cam(i,p,t){this._cam=p?{i,p,t}:null},
+  info(i=0){const s=this.site(i);if(!s)return null;return {type:s.type,stage:s.stage,got:{...s.got},open:s.open,tris:s._wood?WOOD.woodTriangles(s._wood):0,remaining:remainingOf(s),hearth:!!woodHearth(s),segs:woodSegs(s).length}},
+};
+function woodCam(){const c=WOOD_DEBUG._cam,s=WOOD_DEBUG.site(c.i||0);if(!s)return false;const W=([x,y,z])=>{const [wx,wz]=wWorld(s,x,z);return [wx,s.y+y,wz]};
+  camera.position.set(...W(c.p));camera.lookAt(...W(c.t));if(player.model)player.model.visible=c.showPlayer!==false;if(Math.abs(camera.fov-(c.fov||62))>.01){camera.fov=c.fov||62;camera.updateProjectionMatrix()}return true}
 function stepWorld(dt){
   const dtg=dt*gameSpeed();
   world.gameTime+=dtg;
   stepWeather(dtg);stepPlayer(dt);stepSurvival(dt);stepDrill(dt);stepDrops(dt);stepFires(dt,dtg);stepBurning(dt);stepLightning(dt);spawnAnimals(dt);updateAnimals(dt);if(PETS)PETS.update(dt);stepPendulums(dt);stepCuriosity(dt);stepTips(dt);
-  bobRafts();stepShips(dt);
+  bobRafts();stepShips(dt);stepWoodland(dt);
   const p=player;p.model.position.copy(p.pos);if(p.raft)p.model.position.y=p.raft.obj.position.y+.1;p.model.rotation.y=p.yaw;
-  animateHuman(p.model,(p.moveSpeed||0)*(p.crouch?1.6:1),dt,p.swimming,!p.onGround&&!p.swimming&&p.pos.y>heightAt(p.pos.x,p.pos.z)+.25,p.dead);
+  animateHuman(p.model,(p.moveSpeed||0)*(p.crouch?1.6:1),dt,p.swimming,!p.onGround&&!p.swimming&&p.pos.y>groundAt(p.pos.x,p.pos.z)+.25,p.dead);
   GFX.fitClimbingGloves(p.model,inv("climbing_gloves")>0);
   if(p.climbing)GFX.poseClimbing(p.model,clock.elapsedTime);
   p.model.scale.y=drilling?.72:p.crouch?.72:1;
@@ -2013,7 +2122,7 @@ export function initWorld(){
       let hi=-1e9,lo=1e9;for(let r=0;r<=1000;r+=25)for(let a=0;a<32;a++){const h=heightAt(x+Math.cos(a/32*6.283)*r,z+Math.sin(a/32*6.283)*r);if(h>0){hi=Math.max(hi,h);lo=Math.min(lo,h)}}
       for(const k in out)out[k]=Math.round(out[k]);return {res:out,boulder:Math.round(boulder),tree:Math.round(tree),water,relief1km:Math.round(hi-lo),hi:Math.round(hi)}},
     clearStructs:()=>{for(const o of world.structures)o.obj&&scene.remove(o.obj);world.structures.length=0;player.raft=null;player.ship=null;player.helm=false},
-    ship:SHIP_DEBUG,
+    ship:SHIP_DEBUG,woodland:WOOD_DEBUG,
     clearDrops:()=>{for(const d of world.drops)scene.remove(d.mesh);world.drops.length=0},
     clearAnimals:kind=>{for(let i=animals.length-1;i>=0;i--)if(!kind||animals[i].kind===kind){scene.remove(animals[i].g);animals.splice(i,1)}},
     fireAt:()=>fireHeatAt(player.pos.x,player.pos.z),noise:()=>playerNoiseDb?playerNoiseDb():null};

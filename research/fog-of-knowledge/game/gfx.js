@@ -503,9 +503,9 @@ export const FX={
   resize(){const h=container.clientHeight*renderer.getPixelRatio();for(const s of this.sys)s.pts.material.uniforms.uScale.value=h/(2*Math.tan(camera.fov*Math.PI/360))},
   emit(s,o){if(!s.free.length)return;const i=s.free.pop();s.live.push({i,...o,age:0})},
   rate(key,perSec,dt){const a=(this.acc.get(key)||0)+perSec*dt*Q.particles;const n=Math.floor(a);this.acc.set(key,a-n);return n},
-  fire(key,x,y,z,heat,dt,big=1,smoke=1){
+  fire(key,x,y,z,heat,dt,big=1,smoke=1,emb=1){
     for(let k=this.rate(key+"f",10*heat*big,dt);k>0;k--)this.emit(this.add,{t:"flame",x:x+(Math.random()-.5)*.35*big,y:y+.05,z:z+(Math.random()-.5)*.35*big,vx:(Math.random()-.5)*.2,vy:1.1+Math.random()*1.1,vz:(Math.random()-.5)*.2,life:.45+Math.random()*.4,s:(.12+Math.random()*.16)*big});
-    for(let k=this.rate(key+"e",6*heat,dt);k>0;k--)this.emit(this.add,{t:"ember",x,y:y+.3,z,vx:(Math.random()-.5)*.6,vy:1.5+Math.random()*2,vz:(Math.random()-.5)*.6,life:1.4+Math.random()*1.4,s:.06});
+    for(let k=this.rate(key+"e",6*heat*emb,dt);k>0;k--)this.emit(this.add,{t:"ember",x,y:y+.3,z,vx:(Math.random()-.5)*.6*emb,vy:1.5+Math.random()*2,vz:(Math.random()-.5)*.6*emb,life:(1.4+Math.random()*1.4)*(emb<1?.45:1),s:.06});
     for(let k=this.rate(key+"s",7*heat*big*smoke,dt);k>0;k--)this.emit(this.alpha,{t:"smoke",x:x+(Math.random()-.5)*.3,y:y+.9*big,z:z+(Math.random()-.5)*.3,vx:.25+(Math.random()-.5)*.2,vy:.7+Math.random()*.5,vz:(Math.random()-.5)*.2,life:3+Math.random()*2.5,s:.5*big});
   },
   sparks(x,y,z,n=24){for(let i=0;i<n*Q.particles;i++){const a=Math.random()*6.283,u=Math.random()*2-1,sp=2+Math.random()*4,q=Math.sqrt(1-u*u);this.emit(this.add,{t:"spark",x,y,z,vx:Math.cos(a)*q*sp,vy:Math.abs(u)*sp+1,vz:Math.sin(a)*q*sp,life:.25+Math.random()*.45,s:.05,g:1})}},
