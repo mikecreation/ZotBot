@@ -1,5 +1,6 @@
 import {LABS} from "./expedition-models.js?v=3.28.0";
 import {GEAR_ITEMS,GEAR_RECIPES} from "./gear-progression.js?v=3.28.0";
+import {SHIP_ITEMS,SHIP_RECIPES,SHIP_DISCOVERIES} from "./ship-progression.js?v=3.28.0";
 /* Fog of Knowledge: The Game — open-world content: items, hands-on discoveries, recipes.
  * Principle texts summarise well-established science/history; dates are approximate ("c.").
  * `tree` links to discoveries.js ids (which carry the verified atlas node ids); `atlas` adds direct atlas ids.
@@ -154,6 +155,7 @@ const RAW=[
  ["fermentation","Fermentation",1,"Mash dark berries in an empty pot (crafting), wait about a day, then taste or observe it.","Wild yeasts on berry skins eat the sugars and release carbon dioxide and alcohol; bacteria can turn alcohol into vinegar. Fermentation preserved food long before anyone knew microbes existed (Pasteur showed it was alive in the 1850s).",[],["ology.mycology","field.microbiology"]],
  ["gastronomy","The chef",1,"Master five cooking discoveries (cooking over fire, browning, caramelisation, baking, stewing, fermentation, drying).","Cooking is applied chemistry and physics: heat transfer, phase changes, browning reactions, emulsions and microbes. Cooking may even have shaped us — cooked food releases more energy, which may have helped fuel larger human brains.",[],["field.chemistry","ology.physiology"]],
 ];
+RAW.push(...SHIP_DISCOVERIES);
 export const WORLD_DISCOVERIES=RAW.map(r=>({id:r[0],name:r[1],age:r[2],how:r[3],principle:r[4],tree:r[5],atlas:r[6]}));
 // Sandbox mastery reveals atlas context, not a new scientific research claim.
 WORLD_DISCOVERIES.push(...LABS.map(l=>({id:"exp_"+l.id,name:l.name+" · experimental mastery",age:2,how:"Complete its three contracts in Discovery expeditions (L).",principle:l.principle,tree:[],atlas:[l.atlas]})));
@@ -202,8 +204,10 @@ export const RECIPES=[
 ];
 Object.assign(ITEMS,GEAR_ITEMS);
 RECIPES.push(...GEAR_RECIPES.map(r=>({req:null,...r})));
+Object.assign(ITEMS,SHIP_ITEMS);RECIPES.push(...SHIP_RECIPES.map(r=>({...r})));
 const CAT={workbench:"build",workbench_bundle:"build",dough:"cooking",berry_mash:"cooking",satchel:"tools",campfire:"build",leanto:"build",hut:"build",house:"build",wall:"build",chest:"build",rack:"build",well:"build",kiln:"build",raft:"build",table:"science",torch:"build",
  axe_stone:"tools",axe_copper:"tools",axe_bronze:"tools",axe_iron:"tools",wheel:"tools",bellows:"tools",clothing:"tools",
  spear:"weapons",sling:"weapons",bow:"weapons",arrow:"weapons",
  tally:"science",tablet:"science",gnomon:"science",lens:"science",compass:"science",telescope:"science",pendulum:"science",prism:"science"};
+for(const r of SHIP_RECIPES)CAT[r.out]="ships";
 for(const r of RECIPES)r.cat=CAT[r.out]||"tools";

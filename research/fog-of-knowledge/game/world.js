@@ -1,5 +1,9 @@
 import {createExpeditions} from "./expeditions.js?v=3.28.0";
 import {GEAR_RECIPES,GEAR_STEPS,gearProblem,CLIMB_GUIDE} from "./gear-progression.js?v=3.28.0";
+import * as GAL from "./galleon.js?v=3.28.0";
+import {HULL,stepShip,newShipState,deckStep,deckY,shipToWorld,worldToShip,pointOfSail,clampDeck,fwdOf,localX} from "./ship-physics.js?v=3.28.0";
+import {SHIP_STAGES,SHIP_STEPS,deliver,remaining,stageFrac,shipProblem} from "./ship-progression.js?v=3.28.0";
+Object.assign(GEAR_STEPS,SHIP_STEPS);
 /* Fog of Knowledge: The Game — OPEN WORLD mode.
  * Real-time 3D world (three.js r160, vendored, MIT) with simple real physics:
  * gravity 9.81 m/s², friction-limited acceleration, quadratic air/water drag, Archimedes buoyancy,
@@ -572,11 +576,14 @@ function structMesh(s){
   else if(s.type==="table"){g.add(box(1.4,.08,.8,0x7a5a34,.8));for(const [x,z] of [[-.6,-.3],[.6,-.3],[-.6,.3],[.6,.3]]){const l=box(.08,.8,.08,0x6b4a2b,.4);l.position.set(x,0,z);g.add(l)}const t=box(.3,.05,.22,0xb67a52,.87);g.add(t)}
   else if(s.type==="crop"){for(let i=0;i<5;i++){const t=new THREE.Mesh(GEO.tuft,new THREE.MeshStandardMaterial({color:0x7fb04a,roughness:.8}));t.scale.setScalar(.4);t.position.set((i%3-1)*.35,0,(Math.floor(i/3)-.5)*.4);g.add(t)}}
   else if(s.type==="pack"){const m=new THREE.Mesh(new THREE.SphereGeometry(.28,12,8),stdMat(0x6b4a2e,.95));m.scale.set(1.2,.75,1);m.position.y=.2;m.castShadow=true;g.add(m);const k=box(.1,.14,.1,0x3a2414,.42);g.add(k)}
+  else if(s.type==="shipyard")shipyardMesh(s,g);
+  else if(s.type==="ship"){const gal=GAL.buildGalleon({});s._gal=gal;g.add(gal)}
   else if(s.type==="gnomon"){g.add(box(.05,1,.05,0xa07a4a,.5));const sh=box(.04,.01,1,0x1a1a1a,.01);sh.geometry.translate(0,0,-.5);g.add(sh);s.shadow=sh}
   g.position.set(s.x,s.y,s.z);g.rotation.y=s.ry||0;scene.add(g);s.obj=g;if(s.type==="rack")updateRack(s);return g;
 }
 const PLACE_DIST={hut:3.6,house:4.2,well:2.2,wall:2,chest:1.5,rack:1.8,pendulum:2,torch:1.4};
 function place(type,extra={}){
+  if(type==="shipyard")return placeShipyard();
   const f=forward(),pd=PLACE_DIST[type]||1.8;let x=player.pos.x+f.x*pd,z=player.pos.z+f.z*pd;
   if(type==="raft"){let ok=false;for(let r=1.5;r<9&&!ok;r+=.5){const tx=player.pos.x+f.x*r,tz=player.pos.z+f.z*r;if(heightAt(tx,tz)<-.4){x=tx;z=tz;ok=true}}if(!ok){toast("Rafts must be launched on water — face open water.");return null}}
   else if(heightAt(x,z)<0){toast("You can't build in the water.");return null}
@@ -773,7 +780,7 @@ function stepPlayer(dt){
   if(keys.has("KeyW")||keys.has("ArrowUp"))mv.add(f);if(keys.has("KeyS")||keys.has("ArrowDown"))mv.sub(f);
   if(keys.has("KeyD")||keys.has("ArrowRight"))mv.add(r);if(keys.has("KeyA")||keys.has("ArrowLeft"))mv.sub(r);
   if(["KeyW","KeyA","KeyS","KeyD","ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Space"].some(k=>keys.has(k))&&autoPickup)stopMovement(false);
-  if(autoPickup&&!p.swimming&&!p.raft){
+  if(autoPickup&&!p.swimming&&!p.raft&&!p.ship){
     const a=autoPickup,pt=pickupPoint(a.target);
     if(!pt||a.target.kind==="res"&&a.target.obj.r.gone||a.target.kind==="drop"&&!world.drops.includes(a.target.obj)){stopMovement(false)}
     else if(Math.hypot(pt.x-p.pos.x,pt.z-p.pos.z)<1.7){stopMovement(false);interact(a.target)}
@@ -785,6 +792,7 @@ function stepPlayer(dt){
     }
   }
   if(mv.lengthSq())mv.normalize();
+  if(p.ship){if(autoPickup)stopMovement(false);stepOnShip(dt,mv);return}
   const ground=heightAt(p.pos.x,p.pos.z);
   if(p.raft){
     const s=p.raft,sp=3.2,nx=s.x+mv.x*sp*dt,nz=s.z+mv.z*sp*dt;
@@ -919,7 +927,7 @@ function respawn(){
     const pk={type:"pack",x,y:heightAt(x,z),z,ry:0,items:{...world.inv}};world.structures.push(pk);structMesh(pk)}
   const keep=world.worn;world.inv={};if(keep)world.worn=keep;world.held=null;world.left=null;world.order=[];world.dur={};
   Object.assign(world.st,{health:70,hunger:60,thirst:60,stamina:100,tb:37,wet:0,sick:0,sprain:0});
-  player.dead=false;player.raft=null;player.vel.set(0,0,0);player.pos.set(world.camp[0],heightAt(world.camp[0],world.camp[1])+.2,world.camp[1]);
+  player.dead=false;player.raft=null;player.ship=null;player.helm=false;player.deck=null;player.vel.set(0,0,0);player.pos.set(world.camp[0],heightAt(world.camp[0],world.camp[1])+.2,world.camp[1]);
   for(let i=animals.length-1;i>=0;i--)if(animals[i].kind==="wolf"&&animals[i].pos.distanceTo(player.pos)<60){scene.remove(animals[i].g);animals.splice(i,1)}
   $("#wDeath").hidden=true;renderHotbar();save();
 }
@@ -1020,7 +1028,7 @@ function updateHover(){
   let tip=$("#wHover");if(!tip){tip=document.createElement("div");tip.id="wHover";tip.setAttribute("role","tooltip");tip.className="wHover";$("#mode-world").append(tip)}
   const t=cursorTarget();if(!t||player.dead||!['wInv','wJournal','wChest','wCtx'].every(id=>$("#"+id).hidden)){tip.hidden=true;return}
   const pt=pickupPoint(t)||t.point,d=Math.hypot(pt.x-player.pos.x,pt.z-player.pos.z),far=d>2.6;
-  const name=t.kind==="res"?(t.obj.r.flower?"Wildflower stem / Plant fiber":ITEMS[t.obj.r.type].name):t.kind==="drop"?ITEMS[t.obj.item].name:t.kind==="tree"?"Tree":t.kind==="boulder"?"Boulder":Object.values(ITEMS).find(i=>i.place===t.obj.type)?.name||t.obj.type;
+  const name=t.kind==="res"?(t.obj.r.flower?"Wildflower stem / Plant fiber":ITEMS[t.obj.r.type].name):t.kind==="drop"?ITEMS[t.obj.item].name:t.kind==="tree"?"Tree":t.kind==="boulder"?"Boulder":t.obj.type==="ship"?"Galleon":t.obj.type==="shipyard"?`Shipyard · galleon ${Math.round(((t.obj.stage||0)+stageFrac(t.obj))/6*100)}% built`:Object.values(ITEMS).find(i=>i.place===t.obj.type)?.name||t.obj.type;
   const action=far&&(t.kind==="res"||t.kind==="drop")?`E · walk over & ${t.kind==="res"&&["copper_ore","tin_ore","iron_ore","quartz","lodestone","pyrite"].includes(t.obj.r.type)?"mine (pickaxe required)":"pick up"}`:far?"Move closer to interact":targetLabel(t);
   tip.textContent=`${name} · ${Math.round(d)} m\n${action}`;tip.hidden=false;
   const rect=$("#mode-world").getBoundingClientRect(),locked=document.pointerLockElement===canvasEl;
@@ -1039,7 +1047,7 @@ function findTarget(){
   }
   if(PETS){const pt=PETS.target(x,z);if(pt)cons("pet",pt.e,pt.d)}
   for(const a of animals)if(!a.dead)cons("animal",a,Math.hypot(a.pos.x-x,a.pos.z-z)-.25-a.sp.size*.4+(a.kind==="dog"?1.2:0)); // the dog never hides what you're reaching for
-  for(const s of world.structures)if(s.type!=="raft"||!player.raft)cons("struct",s,Math.hypot(s.x-x,s.z-z)-structureRadius(s));
+  for(const s of world.structures)if((s.type!=="raft"||!player.raft)&&s!==player.ship)cons("struct",s,s.type==="ship"||s.type==="shipyard"?hullDist(s,x,z)+.3:Math.hypot(s.x-x,s.z-z)-structureRadius(s));
   if(!best&&(heightAt(x,z)<0||player.swimming))best={kind:"water"};
   return best;
 }
@@ -1126,6 +1134,8 @@ function targetLabel(t){
   if(s.type==="table")return "E  study (1 hour)";
   if(s.type==="workbench"||s.type==="workbench_bundle")return "E workbench · four supports, notched joints, wedges & plant-fiber lashings";
   if(s.type==="raft")return "E  board raft";
+  if(s.type==="ship")return "E  climb aboard the galleon";
+  if(s.type==="shipyard"){const k0=s.stage||0;if(k0>=SHIP_STAGES.length)return "Galleon complete · E  launch it down the slipway";const st=SHIP_STAGES[k0];return `Stage ${k0+1}/6 · ${st.name} · E deliver: ${needText(remaining(s))}`}
   if(s.type==="crop")return cropGrowth(s)>=1?"E  harvest crop":`Crop ${Math.round(cropGrowth(s)*100)}% grown`;
   if(sleepable(s.type))return `${{leanto:"Lean-to",hut:"Hut",house:"Stone house"}[s.type]} · E sleep until dawn (at night)`;
   if(s.type==="gnomon")return "Shadow stick";
@@ -1139,7 +1149,8 @@ function targetLabel(t){
 }
 function cropGrowth(s){const wellNear=structuresNear(s.x,s.z,12,"well").length>0;return clamp((world.gameTime-s.planted)/(20*3600)*(s.cold?.5:1)*(wellNear?1.6:1),0,1)}
 function interact(override=null){
-  if(player.actCd>0||player.dead)return;const aim=override||cursorTarget(true);
+  if(player.actCd>0||player.dead)return;
+  if(player.ship){player.actCd=.25;return shipE()}const aim=override||cursorTarget(true);
   if(aim&&!override){const p=pickupPoint(aim)||aim.point;if(Math.hypot(p.x-player.pos.x,p.z-player.pos.z)>2.6){queuePickup(aim);return}}
   const t=override||aim||findTarget();if(!t)return;
   if(t.kind==="drop"||t.kind==="res"){GFX.playOnce(player.model,"PickUp_Table",.6);AU.pickup()}
@@ -1164,6 +1175,8 @@ function interact(override=null){
     toast(collected?"Collected cooled fire remains. Unburned wood stays here.":"Your Backpack is full. Make room for the fire remains.");return}
   if(BURN.has(s.type)){if(s.type!=="torch"&&take("log")){feedFire(s,5,"log");toast("Added a log (5 kg).")}else if(take("stick")){feedFire(s,.5,"stick");toast(`Added a stick (0.5 kg${s.type==="torch"?" ≈ 4 hours of torchlight":""}).`)}else if(take("charcoal")){feedFire(s,.08,"charcoal");toast("Added charcoal from a previous fire.")}else toast("No firewood left in your Backpack. Gather more logs or sticks (E); the fire can take more.");AU.place();return}
   if(s.type==="pack"){for(const k in s.items)give(k,s.items[k]);scene.remove(s.obj);world.structures.splice(world.structures.indexOf(s),1);AU.pickup();toast("You recover your belongings.");renderHotbar();return}
+  if(s.type==="shipyard"){player.actCd=.3;return shipyardWork(s)}
+  if(s.type==="ship")return boardShip(s);
   if(s.type==="raft"){player.raft=s;toast("You board the raft. Move with WASD; walk into land to step ashore.");return}
   if(s.type==="table")return study(s);
   if(s.type==="workbench"||s.type==="workbench_bundle"){invCraftFor=null;$("#wInv").hidden=false;renderInventory();toast("Workbench: four corner supports carry split boards. Housed notches locate the frame; wooden wedges and twisted plant-fiber lashings hold it together. No nails.");return}
@@ -1296,7 +1309,7 @@ function eat(){
 function craft(out){
   const r=RECIPES.find(x=>x.out===out);if(!r)return false;
   if(r.req&&!hasD(r.req))return false;if(r.tool&&!craftTool(r.tool)){toast(`You need a ${ITEMS[r.tool].name}.`);return false}
-  const problem=gearProblem(r,inv,world.structures,player.pos);if(problem){toast(problem);return false}
+  const problem=gearProblem(r,inv,world.structures,player.pos)||shipProblem(r,inv);if(problem){toast(problem);return false}
   for(const k in r.in)if(inv(k)<r.in[k]){toast("Missing ingredients.");return false}
   for(const k in r.in)take(k,r.in[k]);if(r.ret)give(r.ret);if(out==="berry_mash")world.counters.mashT=world.gameTime;give(out,r.n||1);setHand(activeHand,out);AU.craft();if(PETS)PETS.distract("craft");
   world.counters.crafted=(world.counters.crafted||0)+1;
@@ -1308,7 +1321,8 @@ function craft(out){
   if(out==="knife_stone")toast("Stone knife ready. Hold a log + B for a fire-drill kit; hold the knife + B to carve a notched bench joint. I shows the axe and pickaxe recipes.");
   if(out==="hand_drill")toast("Hand drill carved: spindle + notched hearth board. Stow your other hand, carry plant fiber and HOLD Q beside a dry firewood pile.");
   if(out==="bench_joint")toast("Notched joint carved. F inspects the open shoulders and matching tongue. Four joints make a workbench frame (I).");
-  if(r.tool)useTool(craftTool(r.tool),3);
+  if(r.tool)useTool(craftTool(r.tool),3);if(r.axe&&bestAxe())useTool(bestAxe(),2);
+  if(out==="shipyard")toast("Shipyard kit ready. Stand on a beach facing open sea and press Q to lay out the slipway.");
   if(r.unlock)discover(r.unlock);if(out==="pot")discover("ceramics");
   if(out==="climbing_gloves"){stow(true);toast("Climbing gloves equipped. Walk uphill to climb; your hands grip steep ground.")}
   if(GEAR_STEPS[out]){craftStory=out;GFX.playOnce(player.model,"Interact",.9)}
@@ -1411,7 +1425,7 @@ function stepCuriosity(dt){thoughtT-=dt;thoughtShowT-=dt;const el=$("#wThought")
   const since=(world.counters.lastThought??-1e9),now=world.gameTime;if(now-since<(world.seenQ.length<4?1800:3600))return;
   const c=guideCtx();const q=CURIOSITY.find(q=>!world.seenQ.includes(q.id)&&!hasD(q.ans)&&q.when(c));if(!q)return;
   world.seenQ.push(q.id);world.counters.lastThought=now;if(el){el.innerHTML=`<small>CURIOSITY · press J for your journal</small>${esc(q.q)}`;el.hidden=false;thoughtShowT=11}}
-const ICON={bark:"🪵",thread:"🧵",leather:"🟫",hammer_stone:"🔨",tongs:"🗜",needle_iron:"🪡",iron_spike:"📌",leather_gloves:"🧤",climbing_gloves:"🧤",knife_copper:"🔪",knife_bronze:"🔪",knife_iron:"🔪",knife_stone:"🔪",pickaxe_stone:"⛏",hand_drill:"🪵",bench_joint:"🧩",workbench:"🛠",workbench_bundle:"🛠",charcoal:"◼",ash:"◻",berries_dried:"🍇",nuts_roasted:"🌰",jam:"🍯",dough:"🫓",flatbread:"🫓",stew:"🍲",berry_mash:"🍷",stick:"🥢",log:"🪵",stone:"🪨",flint:"🔪",pyrite:"✨",clay:"🟫",fiber:"🌾",berry_red:"🍒",berry_dark:"🫐",seeds:"🌱",grain:"🌾",meat_raw:"🥩",meat_dried:"🥓",meat_cooked:"🍖",hide:"🟤",flake:"🔺",
+const ICON={plank:"🪵",rope:"🪢",sailcloth:"🏳",pitch:"⚫",trenail:"📍",mast_spar:"🎋",shipyard:"⚓",bark:"🪵",thread:"🧵",leather:"🟫",hammer_stone:"🔨",tongs:"🗜",needle_iron:"🪡",iron_spike:"📌",leather_gloves:"🧤",climbing_gloves:"🧤",knife_copper:"🔪",knife_bronze:"🔪",knife_iron:"🔪",knife_stone:"🔪",pickaxe_stone:"⛏",hand_drill:"🪵",bench_joint:"🧩",workbench:"🛠",workbench_bundle:"🛠",charcoal:"◼",ash:"◻",berries_dried:"🍇",nuts_roasted:"🌰",jam:"🍯",dough:"🫓",flatbread:"🫓",stew:"🍲",berry_mash:"🍷",stick:"🥢",log:"🪵",stone:"🪨",flint:"🔪",pyrite:"✨",clay:"🟫",fiber:"🌾",berry_red:"🍒",berry_dark:"🫐",seeds:"🌱",grain:"🌾",meat_raw:"🥩",meat_dried:"🥓",meat_cooked:"🍖",hide:"🟤",flake:"🔺",
   axe_stone:"🪓",axe_copper:"🪓",axe_bronze:"🪓",axe_iron:"🪓",spear:"🔱",tally:"🧮",clothing:"🧥",pot:"🏺",pot_water:"💧",pot_clean:"♨️",copper_ore:"🟢",tin_ore:"⚪",iron_ore:"🔴",copper:"🟠",tin:"🔘",bronze:"🥉",iron:"⚫",
   quartz:"💎",sand:"⏳",glass:"🔷",lens:"🔍",lodestone:"🧲",tablet:"📜",gnomon:"🕐",bellows:"🪗",wheel:"☸️",telescope:"🔭",compass:"🧭",campfire:"🔥",leanto:"⛺",kiln:"🏭",raft:"🛶",table:"📚",sling:"🪃",bow:"🏹",arrow:"➶",
   prism:"🌈",torch:"🕯️",hut:"🛖",house:"🏠",chest:"🧰",rack:"🪜",well:"🪣",wall:"🧱",pendulum:"⏱️",shell:"🐚",feather:"🪶",leaf:"🍃",snow:"❄️",nuts:"🌰",satchel:"🎒"};
@@ -1426,7 +1440,8 @@ function renderHotbar(){
   const h=$("#wHands");if(h)h.innerHTML=[["L","left","LEFT HAND"],["R","held","RIGHT HAND"]].map(([sd,f,label])=>{const k=world[f],selected=activeHand===sd;return `<button type="button" class="hand${k?" full":""}${selected?" selected":""}" aria-pressed="${selected}" title="Select ${label.toLowerCase()} (V)" data-select-hand="${sd}" data-hand="${sd}" ${k?`data-k="${k}"`:""}><small>${label}</small>${k?`<i style="--c:${hex(k)}">${icon(k)}</i><em>${esc(ITEMS[k].name)}</em>`:"<em class=muted>empty</em>"}<b class="stowK">${selected?"SELECTED · 1–0 · R stow":"Click to select"}</b></button>`}).join("")+`<button class="handToggle" data-toggle-hand title="Switch selected hand (V)">V ⇄<small>Switch hand</small></button>`;
   const u=player?.model?.userData;if(u){handMesh(u.held,world.held);handMesh(u.heldL,world.left)}
 }
-const CAT_NAMES={cooking:"COOKING & KITCHEN",build:"BUILDING & CAMP",tools:"TOOLS & GEAR",weapons:"HUNTING & DEFENCE",science:"SCIENCE & RECORDS"};
+const CAT_NAMES={cooking:"COOKING & KITCHEN",build:"BUILDING & CAMP",ships:"SHIPBUILDING & SAILING",tools:"TOOLS & GEAR",weapons:"HUNTING & DEFENCE",science:"SCIENCE & RECORDS"};
+const shipPlanHtml=()=>{const yard=world.structures.find(s=>s.type==="shipyard"),cur=yard?yard.stage||0:-1;return `<div class="shipPlan" style="margin:.2em 0 .6em;padding:.5em .7em;border:1px solid rgba(255,255,255,.14);border-radius:8px;background:rgba(120,90,50,.12);font-size:.92em"><b>GALLEON · 28 m three-master, built at a shipyard in 6 stages</b> <small class="muted">(craft the kit, Q at a beach facing the sea, then E at the slipway to deliver each stage)</small><ol style="margin:.3em 0 0 1.2em;padding:0">${SHIP_STAGES.map((st,i)=>`<li style="${i<cur?"opacity:.55;text-decoration:line-through":i===cur?"color:#ffd27a":""}">${esc(st.name)} — ${Object.entries(st.need).map(([k,n])=>`<em class="${inv(k)>=n?"have":"miss"}">${n}× ${esc(ITEMS[k].name)}</em>`).join(" ")}${i===cur&&yard?` <b>← now (${esc(needText(remaining(yard)))} left)</b>`:""}</li>`).join("")}</ol></div>`};
 let invQ="",invSort="",invCraftFor=null,dropAllArm=false,craftStory=null,invChain=false;
 function assemblyCard(){if(!craftStory)return "";const r=RECIPES.find(r=>r.out===craftStory),steps=GEAR_STEPS[craftStory];return `<section class="craftAssembly"><h4>ASSEMBLY · ${esc(ITEMS[craftStory].name)}</h4><div class="assemblyParts">${Object.keys(r.in).map(k=>`<span>${icon(k)} ${esc(ITEMS[k].name)}</span>`).join("<b> + </b>")}<b> → </b><strong>${icon(craftStory)} ${esc(ITEMS[craftStory].name)}</strong></div><ol>${steps.map(t=>`<li>${esc(t)}</li>`).join("")}</ol><small>Materials and tools come from your inventory; no hand juggling. Process time is compressed.</small></section>`}
 function itemTip(k){const it=ITEMS[k],n=NOTES[k]||[],seen=(world.observed||[]).includes(k);
@@ -1440,8 +1455,8 @@ function renderInventory(){
     return `<div class="cell${k===world.held?" on":""}${k===world.left?" onL":""}" data-k="${k}" draggable="true"><i style="--c:${hex(k)}">${icon(k)}</i><b>${n}</b>${k===world.held?"<s>R</s>":""}${k===world.left?"<s class=l>L</s>":""}${du!=null?`<u style="width:${Math.round(du*100)}%"></u>`:""}</div>`}).join("");
   const chain=new Set([...GEAR_RECIPES.map(r=>r.out),"knife_stone","pickaxe_stone","campfire","kiln","bellows"]);
   const avail=RECIPES.filter(r=>(!invChain||chain.has(r.out))&&(!r.req||hasD(r.req))&&(!invCraftFor||r.in[invCraftFor])),locked=RECIPES.length-RECIPES.filter(r=>!r.req||hasD(r.req)).length;
-  const rec=Object.keys(CAT_NAMES).map(cat=>{const list=avail.filter(r=>r.cat===cat);if(!list.length)return "";return `<h4>${CAT_NAMES[cat]}</h4>`+list.map(r=>{const ok=Object.entries(r.in).every(([k,n])=>inv(k)>=n)&&(!r.tool||craftTool(r.tool))&&!gearProblem(r,inv,world.structures,player.pos);
-    return `<div class="rec${ok?" ok":" no"}"><b>${icon(r.out)} ${esc(ITEMS[r.out].name)}${r.n>1?` ×${r.n}`:""}</b><span>${["tally","spear"].includes(r.out)?esc(NOTES[r.out][0])+"<br>":""}${Object.entries(r.in).map(([k,n])=>`<em class="${inv(k)>=n?"have":"miss"}">${n}× ${esc(ITEMS[k].name)}</em>`).join(" ")}${r.tool?` · needs ${esc(ITEMS[r.tool].name)} or better`:""}${r.tools?` · tools: ${r.tools.map(k=>esc(ITEMS[k].name)).join(", ")}`:""}${r.knife?" · needs a knife":""}${r.station?` · ${esc(gearProblem(r,inv,world.structures,player.pos)||"station ready")}`:""}${r.out.startsWith("workbench")?" · four supports + rectangular board top; housed joints, wedges & plant-fiber lashings (no nails)":r.out==="bench_joint"?" · carve shoulders and matching tongue; F inspects the joint":r.out==="hand_drill"?" · carve spindle + hearth; tinder needs 1 plant fiber per prepared fire":""}</span><button data-craft="${r.out}" ${ok?"":"disabled"}>CRAFT</button>${GEAR_STEPS[r.out]?`<details><summary>How it is made</summary><ol>${GEAR_STEPS[r.out].map(t=>`<li>${esc(t)}</li>`).join("")}</ol></details>`:""}</div>`}).join("")}).join("");
+  const rec=Object.keys(CAT_NAMES).map(cat=>{const list=avail.filter(r=>r.cat===cat);if(!list.length)return "";return `<h4>${CAT_NAMES[cat]}</h4>`+(cat==="ships"?shipPlanHtml():"")+list.map(r=>{const ok=Object.entries(r.in).every(([k,n])=>inv(k)>=n)&&(!r.tool||craftTool(r.tool))&&!gearProblem(r,inv,world.structures,player.pos)&&!shipProblem(r,inv);
+    return `<div class="rec${ok?" ok":" no"}"><b>${icon(r.out)} ${esc(ITEMS[r.out].name)}${r.n>1?` ×${r.n}`:""}</b><span>${["tally","spear"].includes(r.out)?esc(NOTES[r.out][0])+"<br>":""}${Object.entries(r.in).map(([k,n])=>`<em class="${inv(k)>=n?"have":"miss"}">${n}× ${esc(ITEMS[k].name)}</em>`).join(" ")}${r.tool?` · needs ${esc(ITEMS[r.tool].name)} or better`:""}${r.tools?` · tools: ${r.tools.map(k=>esc(ITEMS[k].name)).join(", ")}`:""}${r.knife?" · needs a knife":""}${r.axe?" · needs an axe":""}${r.station?` · ${esc(gearProblem(r,inv,world.structures,player.pos)||"station ready")}`:""}${r.out.startsWith("workbench")?" · four supports + rectangular board top; housed joints, wedges & plant-fiber lashings (no nails)":r.out==="bench_joint"?" · carve shoulders and matching tongue; F inspects the joint":r.out==="hand_drill"?" · carve spindle + hearth; tinder needs 1 plant fiber per prepared fire":""}</span><button data-craft="${r.out}" ${ok?"":"disabled"}>CRAFT</button>${GEAR_STEPS[r.out]?`<details><summary>How it is made</summary><ol>${GEAR_STEPS[r.out].map(t=>`<li>${esc(t)}</li>`).join("")}</ol></details>`:""}</div>`}).join("")}).join("");
   const hands=[["L","left","LEFT HAND"],["R","held","RIGHT HAND"]].map(([sd,f,l])=>{const k=world[f];return `<div class="handBig${k?" full":""}" data-hand="${sd}" ${k?`data-k="${k}"`:""}><small>${l}</small>${k?`<i style="--c:${hex(k)}">${icon(k)}</i><em>${esc(ITEMS[k].name)}</em>`:"<em class=muted>drag an item here</em>"}</div>`}).join("");
   el.innerHTML=`<div class="pHead"><h3>BACKPACK <small class="cap">${used} / ${cap} slots · stacks of ${STACK}${world.inv.satchel?" · satchel +"+SATCHEL_SLOTS:""}</small></h3><button data-close>✕ (I)</button></div>
   <button data-open-expeditions>PLAY DISCOVERY EXPEDITIONS · L</button><button data-climb-guide>CLIMBING GLOVES · Materials & guide</button> <button data-climb-filter>${invChain?"SHOW ALL RECIPES":"CLIMBING CRAFT PATH"}</button>${assemblyCard()}<div class="invBar"><input id="wInvQ" placeholder="Search…" value="${esc(invQ)}" aria-label="Search inventory"><button data-isort="type">Sort: type</button><button data-isort="name">A–Z</button><button data-isort="count">Count</button>
@@ -1639,7 +1654,7 @@ function bindInput(container){
   canvasEl.tabIndex=0;canvasEl.addEventListener("pointerenter",()=>canvasEl.focus({preventScroll:true}));
   canvasEl.addEventListener("pointermove",e=>{cursorAim.x=e.clientX;cursorAim.y=e.clientY;cursorAim.inside=true});
   canvasEl.addEventListener("pointerleave",()=>{stopMovement();cursorAim.inside=false;hovered=null;hoverAt=0});
-  canvasEl.addEventListener("wheel",e=>{e.preventDefault();player.camDist=clamp(player.camDist+Math.sign(e.deltaY)*.6,2.5,14)},{passive:false});
+  canvasEl.addEventListener("wheel",e=>{e.preventDefault();player.camDist=clamp(player.camDist+Math.sign(e.deltaY)*(player.ship?1.5:.6),2.5,player.ship?48:14)},{passive:false});
   document.addEventListener("click",e=>{
     if(!started||$("#mode-world").hidden)return;
     const hs=e.target.closest("[data-select-hand]");if(hs){selectHand(hs.dataset.selectHand);return}
@@ -1680,6 +1695,7 @@ function inCrown(x,y,z){for(const ch of nearbyChunks(x,z,4))for(const t of ch.ob
 let camDistNow=6;
 function firstPerson(){return !!player.firstPersonView||!!player.zoom||player.camPitch<-.35}
 function updateCamera(dt){
+  if(SHIP_DEBUG._cam&&shipCam())return;
   const p=player,fp=firstPerson();
   if(p.model)p.model.visible=!fp;
   if(fp){ // first person: look at the sky (drag the view up) or through the telescope
@@ -1713,11 +1729,119 @@ const _v1=new THREE.Vector3();
 function bobRafts(){for(const s of world.structures){if(s.type!=="raft"||!s.obj)continue;const g=s.gy??=heightAt(s.x,s.z);if(player.raft===s)s.gy=heightAt(s.x,s.z);
   const W=(dx,dz)=>GFX.waveHeight(s.x+dx,s.z+dz,s.gy),c=W(0,0),e=.9,sx=(W(e,0)-W(-e,0))/(2*e),sz=(W(0,e)-W(0,-e))/(2*e);
   const o=s.obj;o.position.y=.02+c;const k=Math.min(1,.15/Math.max(.15,Math.hypot(sx,sz)));o.rotation.x=lerp(o.rotation.x,sz*k*.8,.2);o.rotation.z=lerp(o.rotation.z,-sx*k*.8,.2)}}
+/* ---------------- galleon: shipyard, launch, deck walking, helm, sailing ---------------- */
+const SHIPS_V=new THREE.Vector3();
+const needText=r=>Object.entries(r).map(([k,n])=>`${n}× ${ITEMS[k].name}`).join(", ")||"nothing";
+const shipLocal=(s,x,z)=>{const c=Math.cos(s.ry||0),sn=Math.sin(s.ry||0),dx=x-s.x,dz=z-s.z;return [dx*c-dz*sn,dx*sn+dz*c]};
+/** distance from (x,z) to a galleon's deck footprint (0 inside). */
+function hullDist(s,x,z){const [lx,lz]=shipLocal(s,x,z),ox=Math.max(0,Math.abs(lx)-HULL.beam/2-.2),oz=Math.max(0,HULL.sternZ-lz,lz-HULL.bowZ);return Math.hypot(ox,oz)}
+function windNow(){const t=world.gameTime/3600;if(world.windOverride)return world.windOverride;if(world.windBase==null)world.windBase=Math.random()*Math.PI*2;
+  const wx=world.weather||{},gust=(wx.kind==="storm"?7:wx.kind==="rain"?2.5:0)*(wx.amt||0);
+  return {dir:world.windBase+.55*Math.sin(t*.13)+.25*Math.sin(t*.41+1),speed:clamp(6.5+2.2*Math.sin(t*.27+2)+gust,2.5,16)}}
+/** sea centre clear enough for the hull: depth under bow, stern, both sides and centre. */
+function shipClear(x,z,psi,margin=.8){const [fx,fz]=fwdOf(psi),[rx,rz]=localX(psi),need=HULL.draft+margin;
+  for(const [lx,lz] of [[0,0],[0,HULL.bowZ+1],[0,HULL.sternZ-1],[-HULL.beam/2-.5,0],[HULL.beam/2+.5,0],[-3,8],[3,8],[-3,-8],[3,-8]])if(-heightAt(x+rx*lx+fx*lz,z+rz*lx+fz*lz)<need)return false;return true}
+function findLaunch(x,z,psi,maxD=140){const [fx,fz]=fwdOf(psi);for(let d=0;d<=maxD;d+=2){const cx=x+fx*d,cz=z+fz*d;if(shipClear(cx,cz,psi))return {x:cx,z:cz,d}}return null}
+function placeShipyard(){const f=forward(),psi=Math.atan2(f.x,f.z),[fx,fz]=fwdOf(psi);
+  if(player.swimming||heightAt(player.pos.x,player.pos.z)<-.2){toast("Build the shipyard on the shore, standing on dry land and facing the sea.");return null}
+  const x=player.pos.x+fx*(-HULL.sternZ+3),z=player.pos.z+fz*(-HULL.sternZ+3);
+  if(!findLaunch(x,z,psi,90)){toast("A slipway needs deep water ahead: stand at the shore and face open sea (at least 4 m deep within about 90 m).");return null}
+  const c=Math.cos(psi),sn=Math.sin(psi);let hi=-1e9,lo=1e9;
+  for(let lz=HULL.sternZ;lz<=HULL.bowZ;lz+=1.5)for(const lx of [-4,0,4]){const h=heightAt(x+lx*c+lz*sn,z-lx*sn+lz*c);hi=Math.max(hi,h);lo=Math.min(lo,h)}
+  if(hi>14){toast("The ground under the slipway rises too steeply. Pick a flatter beach.");return null}
+  const s={type:"shipyard",x,y:Math.max(0,hi),z,ry:psi,stage:0,got:{},keelH:.9};world.structures.push(s);structMesh(s);AU.place();
+  toast("Shipyard laid out: a slipway sloping to the sea, with keel blocks and staging. Bring materials and press E at the shipyard to build each stage.");return s}
+function shipyardMesh(s,g){const gal=GAL.buildGalleon({});s._gal=gal;const c=Math.cos(s.ry),sn=Math.sin(s.ry);
+  const gAt=(lx,lz)=>heightAt(s.x+lx*c+lz*sn,s.z-lx*sn+lz*c)-s.y;gal.position.y=s.keelH;g.add(gal);g.add(GAL.buildSlipway(gAt,s.keelH));GAL.setStage(gal,s.stage||0,stageFrac(s));GAL.animateGalleon(gal,0,0,0,0)}
+function shipyardWork(s){
+  if((s.stage||0)>=SHIP_STAGES.length)return launchShip(s);
+  const st=SHIP_STAGES[s.stage||0],res=deliver(s,inv,(k,n)=>take(k,n)),dk=Object.entries(res.delivered);
+  if(res.completed){AU.place();GFX.FX.dust(s.x,s.y+4,s.z,24);toast(`Stage ${s.stage}/6 complete: ${st.name}.`+(res.done?" The galleon is finished — press E at the shipyard to launch it.":` Next: ${SHIP_STAGES[s.stage].name} — needs ${needText(remaining(s))}.`))}
+  else if(dk.length){AU.pickup();toast(`Delivered ${dk.map(([k,n])=>n+"× "+ITEMS[k].name).join(", ")}. ${st.name} still needs ${needText(remaining(s))}.`)}
+  else toast(`Stage ${(s.stage||0)+1}/6 · ${st.name}: needs ${needText(remaining(s))}. ${st.note}`);
+  GAL.setStage(s._gal,s.stage,stageFrac(s));renderHotbar();save()}
+function launchShip(s){const c=findLaunch(s.x,s.z,s.ry);if(!c)return toast("The water in front of the slipway is too shallow to float the galleon.");
+  scene.remove(s.obj);world.structures.splice(world.structures.indexOf(s),1);
+  const ship={type:"ship",x:c.x,y:0,z:c.z,ry:s.ry,ship:newShipState(c.x,c.z,s.ry)};ship.ship.y=GFX.waveHeight(c.x,c.z,heightAt(c.x,c.z))-HULL.draft;
+  world.structures.push(ship);structMesh(ship);GFX.FX.splash(c.x,c.z,80);AU.splash?.(true);
+  toast("The galleon slides down the ways and floats! Swim or wade out and press E at its side to climb aboard.");discover("shipbuilding");save();return ship}
+function boardShip(s){const S=s.ship,[lx,lz]=worldToShip(S,player.pos.x,player.pos.z);let [x,z]=clampDeck(lx,lz);if(Math.abs(deckY(z,x)-HULL.mainDeck)>.1&&Math.abs(lx)>2){x=clampDeck(lx,0)[0];z=0}
+  player.ship=s;player.deck={x,z};player.helm=false;player.raft=null;player.swimming=false;player._camDist=player.camDist;
+  toast("Aboard the galleon. WASD walks the deck (it pitches and rolls with the sea). Climb to the wheel on the quarterdeck (aft) and press E to take the helm; E elsewhere leaves the ship.");placeOnDeck()}
+function nearHelm(){const d=player.deck;return d&&Math.hypot(d.x-HULL.helm.x,d.z-HULL.helm.z)<2.2&&Math.abs(deckY(d.z,d.x)-HULL.quarterDeck)<.3}
+function takeHelm(on){const p=player;p.helm=on;if(on){p._camDist=p.camDist;p.camDist=Math.max(p.camDist,24);p.camPitch=Math.max(p.camPitch,.28);
+    toast("At the helm. W/S: set or take in sail · A/D: rudder · watch the wind arrow — you cannot sail straight into the wind. E: leave the wheel.")}
+  else{p.camDist=p._camDist||8;toast("You let go of the wheel.")}}
+function leaveShip(){const p=player,s=p.ship;if(!s)return;let best=null;
+  for(let r=3;r<=16&&!best;r+=1.5)for(let a=0;a<24;a++){const x=p.pos.x+Math.cos(a/24*6.283)*r,z=p.pos.z+Math.sin(a/24*6.283)*r;if(heightAt(x,z)>.15&&hullDist(s,x,z)>.5){best=[x,z];break}}
+  p.ship=null;p.helm=false;p.camDist=Math.min(p._camDist||8,14);
+  if(best){p.pos.set(best[0],heightAt(best[0],best[1]),best[1]);toast("You climb down and step ashore.")}
+  else{const S=s.ship,side=p.deck.x>=0?1:-1,[x,,z]=shipToWorld(S,side*(HULL.beam/2+2),0,clamp(p.deck.z,-6,6));p.pos.set(x,-.7,z);p.vel.set(0,0,0);toast("You climb down the side into the water. Swim back and press E at the hull to board again.")}
+  p.deck=null}
+function shipE(){if(player.helm)return takeHelm(false);if(nearHelm())return takeHelm(true);leaveShip()}
+function placeOnDeck(){const p=player,s=p.ship;if(!s||!p.deck)return;const S=s.ship,d=p.deck,[x,y,z]=shipToWorld(S,d.x,deckY(d.z,d.x),d.z);p.pos.set(x,y,z);p.yaw=S.psi+(p.deckYaw||0)}
+function stepOnShip(dt,mv){const p=player,S=p.ship.ship;
+  const k=c=>keys.has(c);
+  if(p.helm){S.ctl={sail:(k("KeyW")||k("ArrowUp")?1:0)-(k("KeyS")||k("ArrowDown")?1:0),rudder:(k("KeyD")||k("ArrowRight")?1:0)-(k("KeyA")||k("ArrowLeft")?1:0)};
+    p.deck.x=HULL.helm.x;p.deck.z=HULL.helm.z-.75;p.deckYaw=0;p.moveSpeed=0}
+  else{S.ctl={sail:0,rudder:0};const [rx,rz]=localX(S.psi),[fx,fz]=fwdOf(S.psi),lx=mv.x*rx+mv.z*rz,lz=mv.x*fx+mv.z*fz,sp=2.6;
+    [p.deck.x,p.deck.z]=deckStep(p.deck.x,p.deck.z,p.deck.x+lx*sp*dt,p.deck.z+lz*sp*dt);p.moveSpeed=Math.hypot(lx,lz)*sp;if(lx||lz)p.deckYaw=Math.atan2(lx,lz)}
+  p.onGround=true;p.swimming=false;p.vel.set(0,0,0);p.fall=0;placeOnDeck()}
+function stepShips(dt){const W=windNow(),t=clock.elapsedTime;
+  for(const s of world.structures){
+    if(s.type==="shipyard"&&s._gal){GAL.animateGalleon(s._gal,t,0,0,0);continue}
+    if(s.type!=="ship"||!s.obj)continue;const S=s.ship;
+    stepShip(S,dt,{wave:(x,z)=>GFX.waveHeight(x,z,heightAt(x,z)),ground:heightAt,windDir:W.dir,windSpeed:W.speed},S.ctl||{});
+    if(player.ship!==s)S.ctl={sail:-1,rudder:0}; // nobody at the helm: the crew takes in sail
+    s.x=S.x;s.z=S.z;s.ry=S.psi;const o=s.obj;o.position.set(S.x,S.y,S.z);o.rotation.set(-S.pitch,S.psi,S.roll,"YXZ");
+    const fill=clamp(S.drive*1.15,0,1)*(.55+.45*Math.min(1,W.speed/8)),luff=clamp((.3-S.drive)/.3,0,1);
+    GAL.animateGalleon(s._gal,t,S.sail,fill,luff);
+    if(S.grounded&&!s._gw){s._gw=true;if(player.ship===s)toast("Shoal water ahead — the keel would touch bottom. Turn back toward deeper water.")}else if(!S.grounded)s._gw=false;
+    if(S.u>.8&&(s._wk=(s._wk||0)-dt)<0){s._wk=.12/Math.min(2,S.u/2);const [bx,,bz]=shipToWorld(S,0,0,HULL.bowZ+.5),[px,,pz]=shipToWorld(S,-HULL.beam/2,0,4),[qx,,qz]=shipToWorld(S,HULL.beam/2,0,4),[sx,,sz]=shipToWorld(S,0,0,HULL.sternZ-1.5);
+      const n=Math.min(6,1+S.u);GFX.FX.splash(bx,bz,n);GFX.FX.splash(px,pz,n*.5);GFX.FX.splash(qx,qz,n*.5);GFX.FX.splash(sx,sz,n*.7)}
+    if(player.ship===s){world.counters.sailDist=(world.counters.sailDist||0)+S.u*dt*(S.sail>.2?1:0);if(world.counters.sailDist>150)discover("sailing")}
+  }
+  if(player.ship)placeOnDeck();updateShipHud(W)}
+function updateShipHud(W){let el=$("#wShipHud");const p=player;
+  if(!p.ship){if(el)el.hidden=true;return}
+  if(!el){el=document.createElement("div");el.id="wShipHud";el.style.cssText="position:absolute;left:50%;top:70px;transform:translateX(-50%);background:rgba(8,14,22,.78);color:#eaf2f8;font:13px/1.45 system-ui,sans-serif;padding:9px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.15);pointer-events:none;z-index:40;text-align:center;min-width:340px;box-shadow:0 6px 24px rgba(0,0,0,.35)";$("#mode-world").append(el)}
+  el.hidden=false;const S=p.ship.ship,rel=-(W.dir-S.psi)*180/Math.PI,kn=S.u*1.944,bar=v=>`<span style="display:inline-block;width:90px;height:9px;border-radius:5px;background:rgba(255,255,255,.18);vertical-align:middle;overflow:hidden"><i style="display:block;height:100%;width:${Math.round(v*100)}%;background:#f3dfae"></i></span>`;
+  const rud=S.rudder>.05?"▶ starboard":S.rudder<-.05?"◀ port":"amidships";
+  el.innerHTML=`<b style="letter-spacing:.08em">⛵ GALLEON${p.helm?" · AT THE HELM":" · ON DECK"}</b><br>`+
+    `<svg width="20" height="20" viewBox="-10 -10 20 20" style="vertical-align:middle;transform:rotate(${rel.toFixed(0)}deg)"><title>wind blows toward (bow = up)</title><path d="M0 -9 L6 2 L1.5 0.5 L1.5 9 L-1.5 9 L-1.5 0.5 L-6 2 Z" fill="#8fd3ff"/></svg> Wind ${W.speed.toFixed(1)} m/s · ${pointOfSail(S.alpha||0)} · drive ${Math.round((S.drive||0)*100)}%<br>`+
+    `Sails ${bar(S.sailSet)} ${Math.round(S.sailSet*100)}% · Speed ${kn.toFixed(1)} kn · Rudder ${rud}`+
+    (p.helm?`<br><small style="opacity:.8">W/S sails · A/D rudder · E leave the wheel · mouse wheel zoom</small>`:`<br><small style="opacity:.8">WASD walk the deck · E at the wheel (quarterdeck, aft) to steer · E elsewhere to leave the ship</small>`)+
+    (S.grounded?`<br><b style="color:#ffb36b">Shoal water ahead!</b>`:"")}
+/* debug / fast-test hooks: window.__fogWorld.ship.* (see SHIP.md) */
+const SHIP_DEBUG={
+  unlock(){for(const d of ["buoyancy","raft","fire","clothing","knapping"])discover(d,true)},
+  materials(){this.unlock();const t={log:20,stick:16,fiber:40,axe_stone:1,knife_stone:1};for(const k in t)give(k,t[k]);renderHotbar();return {...world.inv}},
+  kit(){this.unlock();const t={shipyard:1,log:3,trenail:28,plank:20,pitch:2,mast_spar:3,rope:7,sailcloth:3};for(const k in t)give(k,t[k]);renderHotbar();return t},
+  yard:()=>world.structures.find(s=>s.type==="shipyard")||null,
+  placeYard(){if(!inv("shipyard"))give("shipyard");take("shipyard");const s=placeShipyard();if(!s)give("shipyard");return !!s},
+  deliver(){const s=this.yard();if(s)shipyardWork(s);return s&&{stage:s.stage,got:{...s.got}}},
+  advance(n=1){const s=this.yard();if(!s)return null;s.stage=Math.min(SHIP_STAGES.length,(s.stage||0)+n);s.got={};GAL.setStage(s._gal,s.stage,0);return s.stage},
+  launch(){const s=this.yard();return s?!!launchShip(s):false},
+  spawn(){const f=forward(),psi=Math.atan2(f.x,f.z),c=findLaunch(player.pos.x,player.pos.z,psi,400);if(!c)return null;const s={type:"ship",x:c.x,y:0,z:c.z,ry:psi,ship:newShipState(c.x,c.z,psi)};world.structures.push(s);structMesh(s);return {x:c.x,z:c.z}},
+  ship:()=>world.structures.find(s=>s.type==="ship")||null,
+  board(){const s=this.ship();if(s){boardShip(s);return true}return false},
+  helm(on=true){if(!player.ship&&!this.board())return false;player.deck={x:HULL.helm.x,z:HULL.helm.z-.75};placeOnDeck();takeHelm(on);return true},
+  deck(x,z){if(player.ship){player.deck={x,z};placeOnDeck()}},
+  leave:()=>leaveShip(),
+  sails(v){const s=this.ship();if(s){s.ship.sailSet=v;s.ship.sail=v}},
+  wind(dir,speed){world.windOverride=dir==null?null:{dir,speed:speed??8}},
+  cam(p,t){this._cam=p?{p,t}:null},
+  state(){const s=this.ship();return s&&{...s.ship,aboard:player.ship===s,helm:!!player.helm,deck:player.deck&&{...player.deck},wind:windNow()}},
+};
+/* debug camera relative to the galleon or shipyard (heading only, so it does not roll with the ship) — used for proof shots */
+function shipCam(){const c=SHIP_DEBUG._cam,s=world.structures.find(o=>o.type==="ship")||world.structures.find(o=>o.type==="shipyard");if(!s)return false;
+  const y0=s.type==="ship"?s.ship.y:s.y+s.keelH,cs=Math.cos(s.ry),sn=Math.sin(s.ry),W=([x,y,z])=>[s.x+x*cs+z*sn,y0+y,s.z-x*sn+z*cs];
+  camera.position.set(...W(c.p));camera.lookAt(...W(c.t));if(player.model)player.model.visible=true;return true}
 function stepWorld(dt){
   const dtg=dt*gameSpeed();
   world.gameTime+=dtg;
   stepWeather(dtg);stepPlayer(dt);stepSurvival(dt);stepDrill(dt);stepDrops(dt);stepFires(dt,dtg);stepBurning(dt);stepLightning(dt);spawnAnimals(dt);updateAnimals(dt);if(PETS)PETS.update(dt);stepPendulums(dt);stepCuriosity(dt);stepTips(dt);
-  bobRafts();
+  bobRafts();stepShips(dt);
   const p=player;p.model.position.copy(p.pos);if(p.raft)p.model.position.y=p.raft.obj.position.y+.1;p.model.rotation.y=p.yaw;
   animateHuman(p.model,(p.moveSpeed||0)*(p.crouch?1.6:1),dt,p.swimming,!p.onGround&&!p.swimming&&p.pos.y>heightAt(p.pos.x,p.pos.z)+.25,p.dead);
   GFX.fitClimbingGloves(p.model,inv("climbing_gloves")>0);
@@ -1874,7 +1998,8 @@ export function initWorld(){
       for(let r=2;r<R&&water>1e8;r+=3)for(let a=0;a<48;a++){const xx=x+Math.cos(a/48*6.283)*r,zz=z+Math.sin(a/48*6.283)*r;if(heightAt(xx,zz)<-.4){water=r;break}}
       let hi=-1e9,lo=1e9;for(let r=0;r<=1000;r+=25)for(let a=0;a<32;a++){const h=heightAt(x+Math.cos(a/32*6.283)*r,z+Math.sin(a/32*6.283)*r);if(h>0){hi=Math.max(hi,h);lo=Math.min(lo,h)}}
       for(const k in out)out[k]=Math.round(out[k]);return {res:out,boulder:Math.round(boulder),tree:Math.round(tree),water,relief1km:Math.round(hi-lo),hi:Math.round(hi)}},
-    clearStructs:()=>{for(const o of world.structures)o.obj&&scene.remove(o.obj);world.structures.length=0;player.raft=null},
+    clearStructs:()=>{for(const o of world.structures)o.obj&&scene.remove(o.obj);world.structures.length=0;player.raft=null;player.ship=null;player.helm=false},
+    ship:SHIP_DEBUG,
     clearDrops:()=>{for(const d of world.drops)scene.remove(d.mesh);world.drops.length=0},
     clearAnimals:kind=>{for(let i=animals.length-1;i>=0;i--)if(!kind||animals[i].kind===kind){scene.remove(animals[i].g);animals.splice(i,1)}},
     fireAt:()=>fireHeatAt(player.pos.x,player.pos.z),noise:()=>playerNoiseDb?playerNoiseDb():null};
