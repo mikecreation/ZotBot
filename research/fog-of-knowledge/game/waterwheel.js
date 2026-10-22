@@ -6,19 +6,41 @@
  *   torque  τ_in = m g R (2/π) η,  m = min(ρ Q π / ω, m_cap)   N·m    (water held in the loaded half)
  *   load    τ_load = τ0·sign(ω) + k·ω                           N·m    (hammer + bearing friction)
  *   steady  ω* = (−τ0 + √(τ0² + 4 k P)) / (2k)                  rad/s
+ * Gearing: a 40-peg pit wheel on the axle meshes with an 8-stave lantern pinion, so the millstone turns
+ * n = 40/8 = 5× faster than the wheel with 1/5 of the torque. A load at the stone (friction τs0, grinding
+ * drag ks·ωs) reflects to the axle as n·τs0 and n²·ks — so the faster stone is also the heavier load.
+ *   loads L = {hammer, mill, grinding}: τ0 = τ_bearing + [τ_hammer] + [n·τs0],  k = k_bearing + [k_hammer] + [n²·(ks + ks_grind)]
  */
 export const WHEEL={R:1.6,width:.6,cx:0,cy:1.85,spokes:8,buckets:24,lugs:3,axleR:.14,
  flumeY:3.55,head:3.3,eff:.7,Q0:.03,rho:1000,g:9.81,mcap:150,I:2000,tau0:300,k:1070,
  lugR:.30,lugPhase:.873,
- hammer:{pivot:[.88,2.08],tail:.28,head:[2.28,.82],drop:.23,rise:.417,fall:.47}};
+ hammer:{pivot:[.88,2.08],tail:.28,head:[2.28,.82],drop:.23,rise:.417,fall:.47,tau0:120,k:420},
+ gear:{pegs:40,staves:8},
+ mill:{tau0:15,k:4,kGrind:18,per:400}};
+/* default load (no L): bearings + the trip-hammer, as before the mill was added */
+export const HAMMER_ONLY={hammer:true,mill:false,grinding:false};
+export const gearRatio=(W=WHEEL)=>W.gear.pegs/W.gear.staves;
+/* effective {tau0,k} at the axle for a set of loads */
+export function loadParams(L=HAMMER_ONLY,W=WHEEL){const n=gearRatio(W),M=W.mill;let tau0=W.tau0-W.hammer.tau0,k=W.k-W.hammer.k;
+ if(L.hammer!==false){tau0+=W.hammer.tau0;k+=W.hammer.k}
+ if(L.mill){tau0+=n*M.tau0;k+=n*n*(M.k+(L.grinding?M.kGrind:0))}return {tau0,k}}
+const withLoad=(W,L)=>{if(!L)return W;const p=loadParams(L,W);return {...W,tau0:p.tau0,k:p.k}};
+/* millstone speed and the torque on its shaft (ideal gearing) */
+export const stoneOmega=(omega,W=WHEEL)=>omega*gearRatio(W);
+export const stoneRpm=(omega,W=WHEEL)=>stoneOmega(omega,W)*60/(2*Math.PI);
+export function stoneTorque(omega,L={hammer:true,mill:true,grinding:true},W=WHEEL){const n=gearRatio(W),M=W.mill;return M.tau0+(M.k+(L.grinding?M.kGrind:0))*omega*n}
+/* flour made per second (units of flour) at a given wheel speed: one unit per `per` stone revolutions·minute⁻¹·s */
+export function flourRate(omega,W=WHEEL){return Math.max(0,stoneRpm(omega,W))/W.mill.per}
 export function flowOf(gate=1,rain=0,W=WHEEL){return W.Q0*(1+1.5*Math.max(0,Math.min(1,rain)))*Math.max(0,Math.min(1,gate))}
 export function powerOf(Q,W=WHEEL){return W.rho*W.g*Q*W.head*W.eff}
 export function torqueIn(Q,omega,W=WHEEL){if(Q<=0)return 0;const m=Math.min(W.rho*Q*Math.PI/Math.max(Math.abs(omega),.05),W.mcap);return m*W.g*W.R*(2/Math.PI)*W.eff}
-export function loadTorque(omega,W=WHEEL){return (omega>1e-4?W.tau0:omega<-1e-4?-W.tau0:0)+W.k*omega}
-export function steadyOmega(Q,W=WHEEL){const P=powerOf(Q,W);if(P<=0)return 0;return Math.max(0,(-W.tau0+Math.sqrt(W.tau0*W.tau0+4*W.k*P))/(2*W.k))}
+export function loadTorque(omega,W=WHEEL,L){W=withLoad(W,L);return (omega>1e-4?W.tau0:omega<-1e-4?-W.tau0:0)+W.k*omega}
+/* steady speed: water power balances τ0·ω + k·ω²; under heavy load the buckets overfill (mass capped at mcap) and the drive torque is constant */
+export function steadyOmega(Q,W=WHEEL,L){W=withLoad(W,L);const P=powerOf(Q,W);if(P<=0)return 0;let w=Math.max(0,(-W.tau0+Math.sqrt(W.tau0*W.tau0+4*W.k*P))/(2*W.k));
+ if(w<W.rho*Q*Math.PI/W.mcap)w=Math.max(0,(W.mcap*W.g*W.R*(2/Math.PI)*W.eff-W.tau0)/W.k);return w}
 export const rpm=omega=>omega*60/(2*Math.PI);
 /* integrate the wheel one step: st = {omega, angle, strikes}; returns the number of hammer strikes this step */
-export function stepWheel(st,dt,Q,W=WHEEL){st.omega=st.omega||0;st.angle=st.angle||0;let hits=0;const n=Math.max(1,Math.ceil(dt/.02)),h=dt/n;
+export function stepWheel(st,dt,Q,W=WHEEL,L){W=withLoad(W,L);st.omega=st.omega||0;st.angle=st.angle||0;let hits=0;const n=Math.max(1,Math.ceil(dt/.02)),h=dt/n;
  for(let i=0;i<n;i++){const tin=torqueIn(Q,st.omega,W);let net=tin-W.k*st.omega;
   // static friction: a stopped wheel starts only when the water torque beats τ0
   if(st.omega<=1e-4&&tin<=W.tau0){st.omega=0;continue}net-=W.tau0;

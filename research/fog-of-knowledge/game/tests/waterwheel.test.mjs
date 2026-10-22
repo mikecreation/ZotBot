@@ -44,19 +44,43 @@ ok("physics constants agree with the built site geometry",()=>{
 });
 ok("recipe, stages, materials and discoveries",()=>{
   const r=RECIPES.find(r=>r.out==="waterwheel_site");assert.ok(r);assert.equal(r.cat,"build");assert.equal(r.req,"wattle_daub");assert.equal(ITEMS.waterwheel_site.place,"waterwheel");
-  const S=P.STAGES.waterwheel;assert.equal(S.length,6);const all=new Set();for(const st of S)for(const k in st.need){assert.ok(ITEMS[k],k);all.add(k)}
+  const S=P.STAGES.waterwheel;assert.equal(S.length,7);assert.equal(S[6].id,"mill");for(const k of ["plank","trenail","log","millstone","cordage"])assert.ok(S[6].need[k],k);const all=new Set();for(const st of S)for(const k in st.need){assert.ok(ITEMS[k],k);all.add(k)}
   for(const k of ["log","plank","trenail","cordage","stone","clay"])assert.ok(all.has(k),k);
-  for(const id of ["water_power","rotational_motion","cam_lever"])assert.ok(WORLD_DISCOVERIES.find(d=>d.id===id),id);
+  for(const id of ["water_power","rotational_motion","cam_lever","gear_ratio","millstones"])assert.ok(WORLD_DISCOVERIES.find(d=>d.id===id),id);
   assert.equal(P.isDwelling("waterwheel"),false);assert.equal(P.floorRect("waterwheel"),null);
 });
 ok("model builds, stages reveal in order and water shows only when it should",()=>{
   const root=buildWoodland("waterwheel");const u=root.userData;assert.ok(u.wheel&&u.helve&&u.gate&&u.water);
-  const tris=woodTriangles(root);assert.ok(tris>5000&&tris<80000,`tris ${tris}`);
-  let prev=-1;for(let k=0;k<=6;k++){setWoodStage(root,k);const v=woodTriangles(root,true);assert.ok(v>=prev,`stage ${k}`);prev=v}
+  const tris=woodTriangles(root);assert.ok(tris>5000&&tris<140000,`tris ${tris}`);
+  let prev=-1;for(let k=0;k<=7;k++){setWoodStage(root,k);const v=woodTriangles(root,true);assert.ok(v>=prev,`stage ${k}`);prev=v}
   const vis=k=>u.water[k].visible;
   animateWaterwheel(root,.1,{stage:1,gate:1});assert.ok(!vis(3)&&!vis(4)&&!vis(5),"no flume yet");
   animateWaterwheel(root,.1,{stage:3,gate:1});assert.ok(vis(3)&&vis(4)&&!vis(5),"spills past the empty axle");
   animateWaterwheel(root,.1,{stage:6,gate:1,angle:1,omega:.8,helve:.5});assert.ok(vis(3)&&!vis(4)&&vis(5),"fills buckets");near(u.wheel.rotation.z,-1,1e-9);near(u.helve.rotation.z,.5,1e-9);
   animateWaterwheel(root,.1,{stage:6,gate:0});assert.ok(!vis(3)&&!vis(5),"gate shut");
+  animateWaterwheel(root,.1,{stage:7,gate:1,angle:2,omega:.6,stoneAngle:10});assert.ok(vis(6),"tail foam at the paddles");near(u.runner.rotation.y,10,1e-9);
+  setWoodStage(root,6);assert.ok(!u.stages[6].some(g=>g.visible),"mill hidden before stage 7");setWoodStage(root,7);assert.ok(u.stages[6].every(g=>g.visible),"mill shown");
+});
+ok("gearing: 40-peg pit wheel on 8-stave lantern, stone 5x faster, load reflected through the ratio",()=>{
+  const n=W.gearRatio();assert.equal(n,5);near(W.stoneRpm(1),W.rpm(1)*5,1e-9);
+  const q=W.flowOf(1),a=W.steadyOmega(q),b=W.steadyOmega(q,W.WHEEL,{hammer:true,mill:true,grinding:false}),c=W.steadyOmega(q,W.WHEEL,{hammer:true,mill:true,grinding:true}),d=W.steadyOmega(q,W.WHEEL,{hammer:false,mill:true,grinding:true});
+  assert.ok(c<b&&b<a,`${a} ${b} ${c}`);assert.ok(d>c,"lifting the hammer frees power for the stones");near(a,W.steadyOmega(q,W.WHEEL,W.HAMMER_ONLY),1e-12,"default = hammer only");
+  const sr=W.stoneRpm(c);assert.ok(sr>15&&sr<40,`stone rpm ${sr}`);const fr=W.flourRate(c);assert.ok(1/fr>8&&1/fr<30,`s per flour ${1/fr}`);
+  // power balance at the stones: wheel-side mill torque = n * stone torque
+  const Lp=W.loadParams({hammer:false,mill:true,grinding:true}),L0=W.loadParams({hammer:false,mill:false});near((Lp.tau0-L0.tau0)+(Lp.k-L0.k)*c,n*W.stoneTorque(c,{grinding:true}),1e-6);
+  const st={};for(let i=0;i<1800;i++)W.stepWheel(st,1/30,q,W.WHEEL,{hammer:true,mill:true,grinding:true});near(st.omega,c,c*.03);
+});
+ok("mill geometry: pit-wheel pegs reach the lantern, stones on the shaft, flour items and recipes",()=>{
+  const M=P.WHEELSITE.mill;
+  assert.ok(M.pit.z-M.pit.peg<=M.lantern.z+M.lantern.r&&M.pit.z-M.pit.peg>=M.lantern.z-M.lantern.r,"pegs reach into the lantern");
+  near(P.WHEELSITE.wheel.y+M.pit.R,(M.lantern.y0+M.lantern.y1)/2,.03,"peg top meets the lantern staves");
+  assert.ok(M.stone.bed[1]<M.stone.run[0]&&M.stone.bed[0]>=M.floor,"runner above bed above floor");assert.ok(P.WHEELSITE.axle.z0<M.pit.z,"axle passes the pit wheel");
+  for(const k of ["millstone","flour","bread_dough","bread"])assert.ok(ITEMS[k],k);assert.ok(ITEMS.bread.food>ITEMS.flatbread.food,"bread beats flatbread");
+  const ms=RECIPES.find(r=>r.out==="millstone");assert.equal(ms.tool,"hammer_stone");const bd=RECIPES.find(r=>r.out==="bread_dough");assert.equal(bd.in.flour,2);assert.deepEqual(P.MILL_INPUTS,{grain:1,seeds:3});
+  const [mx,mz]=[M.lantern.x,M.lantern.z];
+  assert.equal(P.partAt("waterwheel",7,mx,3.2,mz),"mill");assert.equal(P.partAt("waterwheel",7,...[P.WHEELSITE.hammer.mortar[0],.6,P.WHEELSITE.hammer.mortar[1]]),"hammer");
+  assert.ok(P.wallSegs("waterwheel",7).length>P.wallSegs("waterwheel",6).length,"mill frame collides");
+  // hammer moved behind the wheel: the hero side (+z) of the wheel is clear
+  assert.ok(P.WHEELSITE.hammer.z+.5<-W.WHEEL.width/2,"hammer behind the wheel");
 });
 console.log(`waterwheel: ${n} checks passed`);

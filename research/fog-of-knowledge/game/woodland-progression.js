@@ -6,7 +6,8 @@
  *                 stone chimney hearth, sod roof, split-plank door on a wooden pole hinge, mud bed.
  *   waterwheel  : spring-fed overshot water wheel — stone footings and tailrace, a split-log flume
  *                 on trestles with a sluice gate, axle on A-frame bearings, pegged spokes, rims and
- *                 buckets, and cam lugs on the axle that work a trip-hammer over a stone mortar.
+ *                 buckets, cam lugs on the axle that work a trip-hammer over a stone mortar, and a pegged
+ *                 pit wheel driving a lantern pinion that turns a pair of millstones (grain → flour).
  * Layout numbers are in the building's local frame (metres): +z is the front (door side),
  * y is up from the site's ground level s.y. world.js and woodland-buildings.js share them.
  */
@@ -21,6 +22,10 @@ export const WOOD_ITEMS={
  woodhut_site:{name:"Woodland hut — staked site & cord",mass:2,density:600,r:.2,color:0x8a6a44,place:"woodhut"},
  house_site:{name:"Forest house — staked site & plan",mass:3,density:600,r:.2,color:0x8a6a44,place:"foresthouse"},
  waterwheel_site:{name:"Water wheel — staked site & spring line",mass:3,density:600,r:.2,color:0x7a6a50,place:"waterwheel"},
+ millstone:{name:"Millstone (pecked & dressed)",mass:9,density:2500,r:.16,color:0x8d8a82},
+ flour:{name:"Stone-ground flour",mass:.5,density:600,r:.05,color:0xece2c8},
+ bread_dough:{name:"Bread dough (milled flour)",mass:.8,density:1100,r:.07,color:0xf2e6c4},
+ bread:{name:"Bread loaf",mass:.6,density:350,r:.08,color:0xb7803e,food:48,hot:true},
 };
 export const WOOD_RECIPES=[
  {out:"cordage",req:null,in:{fiber:3},n:2,cat:"tools"},
@@ -29,7 +34,13 @@ export const WOOD_RECIPES=[
  {out:"mud",req:null,in:{clay:1,pot_water:1},n:3,ret:"pot",cat:"build"},
  {out:"house_site",req:"wattle_daub",in:{stick:6,cordage:2,stone:2},cat:"build"},
  {out:"waterwheel_site",req:"wattle_daub",in:{stick:6,cordage:3,stone:2},cat:"build"},
+ // a millstone is pecked round and flat from a big stone with a hafted hammerstone, then dressed with furrows
+ {out:"millstone",req:"water_power",in:{stone:3},tool:"hammer_stone",cat:"build"},
+ // milled flour makes a better dough than crushed grain: more of it, and a real risen loaf
+ {out:"bread_dough",req:"millstones",in:{flour:2,pot_clean:1},n:2,ret:"pot",cat:"cooking"},
 ];
+/* what a millstone pair turns into flour: input item -> units needed per unit of flour */
+export const MILL_INPUTS={grain:1,seeds:3};
 /* stages: id, name, need (items), note (what you are doing), axe = needs an axe in the pack */
 export const HUT_STAGES=[
  {id:"frame",name:"A-frame & ridge pole",need:{log:2,stick:4,cordage:2,stone:4},axe:true,note:"Two bipods of poles lashed at the crotch carry a ridge pole; sill stones pin the feet."},
@@ -52,6 +63,7 @@ export const WHEEL_STAGES=[
  {id:"spokes",name:"Spokes & rims",need:{plank:8,trenail:12,cordage:2},axe:true,note:"Two rings of eight split-plank spokes are mortised into the axle and pegged to segmented plank rims."},
  {id:"buckets",name:"Sole boards & buckets",need:{plank:10,trenail:16},note:"Twenty-four angled buckets are pegged between the rims; they catch the falling water and hold it on the down-going side."},
  {id:"hammer",name:"Cam lugs, trip-hammer & mortar",need:{log:2,stone:4,cordage:2,trenail:4},note:"Three lugs pegged through the axle press the tail of a pivoted helve; each time one slips off, the heavy head drops into a stone mortar to crush grain."},
+ {id:"mill",name:"Gearing & millstones",need:{plank:6,trenail:10,log:2,millstone:2,cordage:2},axe:true,note:"A pegged pit wheel on the axle drives a lantern pinion; its upright shaft turns the runner stone over the bed stone in a small mill frame with a hopper, shoe and flour spout."},
 ];
 export const STAGES={woodhut:HUT_STAGES,foresthouse:HOUSE_STAGES,waterwheel:WHEEL_STAGES};
 export const WOOD_TYPES=["woodhut","foresthouse","waterwheel"];
@@ -83,11 +95,14 @@ export const HOUSE={hx:2.8,hz:2.3,logR:.16,course:.3,courses:7,base:.4,floor:.22
 export function toLocal(s,x,z){const dx=x-s.x,dz=z-s.z,c=Math.cos(s.ry||0),n=Math.sin(s.ry||0);return [dx*c-dz*n,dx*n+dz*c]}
 export function toWorld(s,lx,lz){const c=Math.cos(s.ry||0),n=Math.sin(s.ry||0);return [s.x+lx*c+lz*n,s.z-lx*n+lz*c]}
 /* footprint used for placement checks, shelter and the floor (local rect) */
-/* water wheel site (local frame; +x is downstream, +z is the hammer side) */
-export const WHEELSITE={rock:{x0:-6.0,x1:-3.85,z0:-1.7,z1:1.5,top:4.1},spring:{x0:-4.85,x1:-4.05,z0:-.38,z1:.38,y:3.7},gate:-3.85,
- flume:{x0:-3.85,x1:.25,y:3.55,w:.36},trestles:[-2.85,-1.3],wheel:{x:0,y:1.85,R:1.6,w:.6},axle:{z0:-1.05,z1:2.05,r:.14},bearings:[-.75,.75,1.95],
- lugs:{z:1.55,r:.30},hammer:{z:1.55,pivot:[.88,2.08],head:2.28,mortar:[2.28,1.55]},race:{x0:-1.9,x1:5.6,hw:.5},brook:{z:-1.35},pole:[-3.25,.75]};
-export function footprint(type){if(type==="waterwheel")return {x0:-6.2,x1:3.6,z0:-2.1,z1:2.4};return type==="woodhut"?{x0:-1.85,x1:1.85,z0:-1.95,z1:1.95}:{x0:-4.1,x1:3.5,z0:-2.9,z1:2.9}}
+/* water wheel site (local frame; +x is downstream, +z is the open approach side with the waterfall,
+ * −z is the machinery side: cam lugs + trip-hammer, then the pit wheel, lantern pinion and millstones) */
+export const WHEELSITE={rock:{x0:-6.3,x1:-3.85,z0:-1.85,z1:1.55,top:4.3},spring:{x0:-4.85,x1:-4.05,z0:-.38,z1:.38,y:3.7},gate:-3.85,
+ flume:{x0:-3.85,x1:.25,y:3.55,w:.36},trestles:[-2.85,-1.3],wheel:{x:0,y:1.85,R:1.6,w:.6},axle:{z0:-2.82,z1:1.0,r:.14},bearings:[.75,-.75,-2.66],
+ mill:{pit:{z:-2.15,R:.85,pegs:40,peg:.18},lantern:{x:0,z:-2.45,r:.17,staves:8,y0:2.56,y1:2.84},bridge:2.38,floor:3.05,stone:{R:.5,bed:[3.07,3.21],run:[3.23,3.37]},
+  posts:[[-.9,-1.95],[.9,-1.95],[-.9,-3.05],[.9,-3.05]],hopper:[.18,-2.45],ladder:[1.25,-2.5],trough:[.78,-2.2]},
+ lugs:{z:-1.3,r:.30},hammer:{z:-1.3,pivot:[.88,2.08],head:2.28,mortar:[2.28,-1.3]},race:{x0:-1.9,x1:5.6,hw:.5},brook:{z:-1.35},pole:[-3.25,.75]};
+export function footprint(type){if(type==="waterwheel")return {x0:-6.5,x1:3.6,z0:-3.4,z1:2.7};return type==="woodhut"?{x0:-1.85,x1:1.85,z0:-1.95,z1:1.95}:{x0:-4.1,x1:3.5,z0:-2.9,z1:2.9}}
 /* floor rectangle: inside it the ground is the building's floor */
 export function floorRect(type){if(type==="waterwheel")return null;return type==="woodhut"?{x0:-1.6,x1:1.6,z0:-1.7,z1:1.7,y:HUT.floor}:{x0:-2.66,x1:2.66,z0:-2.16,z1:2.16,y:HOUSE.floor}}
 /* is a local point inside the enclosed volume (camera clamp) */
@@ -100,10 +115,12 @@ export function insideVolume(type,lx,ly,lz,stage){
 export function wallSegs(type,stage,open){
  const S=[];if(type==="waterwheel"){const W=WHEELSITE,K=W.rock,rect=(x0,z0,x1,z1)=>S.push([x0,z0,x1,z0],[x1,z0,x1,z1],[x1,z1,x0,z1],[x0,z1,x0,z0]);
   rect(K.x0,K.z0,K.x1,K.z1);                                  // the spring outcrop is always there
-  if(stage>=1)for(const z of [-.75,.75])rect(-.75,z-.12,.75,z+.12);   // bearing footings
+  if(stage>=1){for(const z of [-.75,.75])rect(-.75,z-.12,.75,z+.12);rect(-.3,W.bearings[2]-.12,.3,W.bearings[2]+.12)}   // bearing footings
   if(stage>=2)for(const x of W.trestles)rect(x-.12,-.42,x+.12,.42);
   if(stage>=4)rect(-W.wheel.R,-W.wheel.w*.5-.05,W.wheel.R,W.wheel.w*.5+.05);
-  if(stage>=6){const [mx,mz]=W.hammer.mortar;rect(mx-.42,mz-.4,mx+.42,mz+.4);rect(.76,1.24,1.0,1.86)}
+  if(stage>=6){const [mx,mz]=W.hammer.mortar,hz=W.hammer.z;rect(mx-.42,mz-.4,mx+.42,mz+.4);rect(.76,hz-.31,1.0,hz+.31)}
+  if(stage>=7){const M=W.mill;for(const [x,z] of M.posts.concat([[-.9,M.lantern.z],[.9,M.lantern.z]]))rect(x-.09,z-.09,x+.09,z+.09);rect(.84,-2.2,1.06,-1.98);
+   const [lx,lz]=M.ladder;rect(lx-.06,lz-.3,lx+.3,lz+.3)}
   return S}
  if(type==="woodhut"){const H=HUT,w=1.05;
   if(stage>=2){S.push([-w,-H.hz+.1,-w,H.hz-.05],[w,-H.hz+.1,w,H.hz-.05],[-w,-H.hz+.1,w,-H.hz+.1])}
@@ -120,7 +137,9 @@ export function wallSegs(type,stage,open){
 export function partAt(type,stage,lx,ly,lz){
  if(type==="foresthouse"&&stage>=6){const H=HOUSE,D=H.door;if(lx>D.x0-.35&&lx<D.x1+.35&&Math.abs(lz-H.hz)<1.3&&ly<D.top+.5)return "door";
   const B=H.bed;if(lx>B.x0-.4&&lx<B.x1+.2&&lz>B.z0-.2&&lz<B.z1+.6)return "bed"}
- if(type==="waterwheel"){const P=WHEELSITE.pole;if(stage>=2&&Math.hypot(lx-P[0],lz-P[1])<1.4)return "gate";return "site"}
+ if(type==="waterwheel"){const W=WHEELSITE,P=W.pole;if(stage>=2&&Math.hypot(lx-P[0],lz-P[1])<1.4)return "gate";
+  if(stage>=7&&lz<-1.75&&Math.hypot(lx-W.mill.lantern.x,lz-W.mill.lantern.z)<2.3)return "mill";
+  if(stage>=6&&Math.hypot(lx-W.hammer.mortar[0],lz-W.hammer.mortar[1])<1.25)return "hammer";return "site"}
  if(type==="woodhut"&&stage>=4&&Math.abs(lx)<1.4&&Math.abs(lz)<1.6)return "bed";
  return "site"}
 
@@ -131,6 +150,8 @@ export const WOOD_DISCOVERIES=[
  ["water_power","Water power (energy conversion)",1,"Open the sluice on a finished water wheel.","Water held high has gravitational potential energy m·g·h. Falling through the 3.3 m head of an overshot wheel, 30 litres a second carry about 1 kW (ρ·g·Q·H); the buckets turn roughly 70 % of it into the rotating axle's mechanical work, the rest is lost to spill, splash and friction. Mills like this ground grain from Roman times onward.",["machines"],[]],
  ["rotational_motion","Rotational motion & torque",1,"Watch a water wheel turn under load.","Water weight on the down-going side pushes at a lever arm up to the wheel radius, giving a torque τ = r·F. The wheel speeds up until the bearing friction and hammer load balance that torque; its heavy rim stores kinetic energy ½·I·ω², smoothing out each blow. More water means more torque and a faster wheel.",["machines"],[]],
  ["cam_lever","Cam & lever (mechanical advantage)",1,"Let the water wheel drive its trip-hammer.","A cam turns steady rotation into a lift-and-drop. The helve is a first-class lever: a lug presses its short tail, and the long arm (1.4 m against 0.6 m) lifts the head about 2.3 times as far — trading force for distance (work in = work out). Released at the top, the head falls freely and delivers its potential energy as one sharp blow.",["machines"],[]],
+ ["gear_ratio","Gear ratio: torque vs speed",1,"Turn millstones from the water wheel's pit wheel.","The axle's pit wheel carries 40 pegs; they mesh with a lantern pinion of 8 staves, so each turn of the wheel spins the pinion and its upright shaft 40 ÷ 8 = 5 times. Power is conserved (minus friction): P = τ·ω, so five times the speed means one fifth of the torque. A slow, strong wheel becomes a fast, lighter-turning millstone — gearing trades torque for speed (or back again).",["machines"],[]],
+ ["millstones","Millstones & grinding",1,"Grind grain into flour at the water mill.","Grain drops from the hopper down a shaking shoe into the eye of the turning runner stone. Furrows cut in both faces shear the kernels between the runner and the fixed bed stone and carry the meal outward, so flour spills from the rim. Finer flour comes from a closer gap and a steadier speed; ground flour makes a dough that rises into bread instead of flat cakes.",["machines"],[]],
 ];
 /* gatherable placement rules for the new woodland stream (pure; used by world.js and tests) */
 export const WOOD_GATHER={

@@ -99,7 +99,15 @@ export function woodTextures(){if(TEX)return TEX;
  const cord=makeTex(64,64,(u,v,o)=>{const t=fract((u+v)*3),h=Math.pow(Math.sin(t*Math.PI),.6)*.8+.2*pn(u*32,v*32,32,32,95);o[0]=120+70*h;o[1]=100+60*h;o[2]=66+44*h;o[3]=h},{normal:4});
  // water: soft downstream streaks and foam flecks (scrolled along v by the water wheel)
  const water=makeTex(64,256,(u,v,o)=>{const s=fb(u,v,2,8,3,31),st=pn(u*8,v*2,8,2,33),fl=sstep(.7,.85,fb(u,v,8,24,2,35)),c=.62+.3*s+.22*sstep(.55,.8,st)+.35*fl;o[0]=170*c;o[1]=205*c;o[2]=220*c;o[3]=s*.6+st*.4},{normal:1.6});
- return TEX={bark,wood,end,cob,stone,thatch,sod,grass,moss,fur,feather,cord,water}}
+ // cliff rock: bedding laminae, speckle, pitting and a voronoi crack net (height drives the normal map)
+ const rock=makeTex(256,256,(u,v,o)=>{const b=fb(u,v,4,4,4,51),f=fb(u,v,16,16,3,53),lam=.5+.5*Math.sin((v*14+b*3.2)*6.283),[f1,f2]=voronoi(u,v,3,57),cr=sstep(.035,0,f2-f1)*sstep(.35,.65,fb(u,v,3,3,2,58)),pit=sstep(.74,.9,fb(u,v,24,24,2,59)),c=.74+.22*b+.16*(f-.5)+.06*lam-.32*cr-.14*pit;
+  o[0]=226*c;o[1]=219*c;o[2]=206*c;o[3]=b*.5+f*.3+lam*.1-cr*.45-pit*.2},{normal:2.4});
+ // falling water: long streaks with gaps (alpha), white aerated clots; foam: bubbly cells; pool: ring ripples; mist: soft sprite
+ const fall=makeTex(64,256,(u,v,o)=>{const st=fb(u,v,6,2,3,61),st2=pn(u*16,v*3,16,3,63),fo=sstep(.6,.8,fb(u,v,8,16,3,65)),c=.78+.16*st+.26*fo;o[0]=205*c;o[1]=224*c;o[2]=234*c;o[4]=255*Math.min(1,.3+.55*sstep(.3,.75,st*.6+st2*.5)+.5*fo);o[3]=st*.5+fo*.3},{alpha:true,normal:1.2});
+ const foam=makeTex(128,128,(u,v,o)=>{const [f1,f2]=voronoi(u,v,10,71),[g1,g2]=voronoi(u,v,23,73),b=fb(u,v,4,4,3,75),bub=sstep(.02,.09,f2-f1)*.6+sstep(.03,.1,g2-g1)*.4;o[0]=238;o[1]=242;o[2]=246;o[4]=255*sstep(.25,.65,b)*(.45+.55*bub);o[3]=bub},{alpha:true,normal:.8});
+ const pool=makeTex(64,128,(u,v,o)=>{const r=Math.sin((v*6+.08*Math.sin(u*6.283*3))*6.283),b=fb(u,v,4,8,3,81),c=.62+.22*b;o[0]=118*c;o[1]=156*c;o[2]=164*c;o[3]=r*.5+.5+b*.3},{normal:2.5});
+ const mist=makeTex(64,64,(u,v,o)=>{const d=Math.hypot(u-.5,v-.5)*2;o[0]=o[1]=o[2]=255;o[4]=255*Math.pow(Math.max(0,1-d),2)},{alpha:true});
+ return TEX={bark,wood,end,cob,stone,thatch,sod,grass,moss,fur,feather,cord,water,rock,fall,foam,pool,mist}}
 
 /* ---------------- materials (shared) ---------------- */
 // indirect-only ambient occlusion from the per-vertex `ao` attribute
@@ -113,6 +121,12 @@ export function woodMaterials(){if(MATS)return MATS;const t=woodTextures(),S=(na
   stone:S("stone",t.stone,{rough:.9,ns:1}),thatch:S("thatch",t.thatch,{side:T.DoubleSide,ns:1.2}),sod:S("sod",t.sod,{side:T.DoubleSide}),grass:S("grass",t.grass,{side:T.DoubleSide,alphaTest:.5,rough:.9}),
   moss:S("moss",t.moss,{side:T.DoubleSide,ns:1.3}),fur:S("fur",t.fur,{side:T.DoubleSide,ns:1.2}),feather:S("feather",t.feather,{side:T.DoubleSide,alphaTest:.5,rough:.8}),cord:S("cord",t.cord,{rough:.9,side:T.DoubleSide})};
  MATS.water=new T.MeshStandardMaterial({name:"fk-wood-water",map:t.water.map,normalMap:t.water.nrm,normalScale:new T.Vector2(.6,.6),roughness:.12,metalness:0,vertexColors:true,transparent:true,opacity:.8,depthWrite:false,side:T.DoubleSide});
+ MATS.rock=S("rock",t.rock,{rough:.93,ns:1.15});MATS.rockwet=S("rockwet",t.rock,{rough:.32,ns:1.35,color:0xd8dcdc});
+ // transparent water with per-vertex opacity carried in the `ao` attribute
+ const WM=(name,tx,o)=>{const m=new T.MeshStandardMaterial({name:"fk-wood-"+name,map:tx.map.clone(),normalMap:tx.nrm||null,normalScale:new T.Vector2(o.ns,o.ns),roughness:o.rough,metalness:0,vertexColors:true,transparent:true,depthWrite:false,side:T.DoubleSide,emissive:new T.Color(o.em||0)});m.map.needsUpdate=true;
+  m.onBeforeCompile=sh=>{sh.vertexShader=sh.vertexShader.replace("#include <common>","#include <common>\nattribute float ao;\nvarying float vWA;").replace("#include <begin_vertex>","#include <begin_vertex>\n\tvWA=ao;");
+   sh.fragmentShader=sh.fragmentShader.replace("#include <common>","#include <common>\nvarying float vWA;").replace("#include <alphamap_fragment>","#include <alphamap_fragment>\n\tdiffuseColor.a*=vWA;")};m.customProgramCacheKey=()=>"fk-wood-alpha";return m};
+ MATS.fall=WM("fall",t.fall,{ns:.5,rough:.22,em:0x1c2428});MATS.foam=WM("foam",t.foam,{ns:.4,rough:.6,em:0x30363a});MATS.pool=WM("pool",t.pool,{ns:.9,rough:.06});
  return MATS}
 
 /* ---------------- geometry accumulation ---------------- */
@@ -521,53 +535,131 @@ function waterTube(B,pts,wa,wb,tint){const bin=B.bin("water",false,false),n=pts.
 function waterRibbon(B,pts,w,tint,mat="water"){const bin=B.bin(mat,false,mat!=="water"),n=pts.length,L=[0];for(let i=1;i<n;i++)L.push(L[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][2]-pts[i-1][2]));
  B.grid(bin,2,n-1,(i,j,u)=>{const p=pts[j],a=pts[Math.max(0,j-1)],b=pts[Math.min(n-1,j+1)],tx=b[0]-a[0],tz=b[2]-a[2],l=Math.hypot(tx,tz)||1,ww=(typeof w==="function"?w(j/(n-1)):w)*(u-.5);
   return [p[0]-tz/l*ww,p[1]+(mat==="water"?0:-.015)*Math.abs(u-.5)*0,p[2]+tx/l*ww]},(u,v,i,j)=>[u*.8,L[j]/1.1],()=>tint,{noAO:mat==="water",ao:mat==="water"?1:undefined})}
-let SPRAY_MAT=null;
+let SPRAY_MAT=null,MIST_MAT=null;
 export function buildWaterwheel(opt={}){const S=WHEELSITE,WH=WHEEL,seed=opt.seed??3301,g=opt.ground||ZERO,root=new T.Group();root.name="waterwheel";root.userData={type:"waterwheel",proxies:[]};
- const B=new Builder(seed,wheelAO),RB=new Builder(seed+1,wheelAO),WB=new Builder(seed+2,()=>.95),HB=new Builder(seed+3,()=>.95),GB=new Builder(seed+4,()=>.95),AQ=new Builder(seed+5,()=>1);
+ const B=new Builder(seed,wheelAO),RB=new Builder(seed+1,wheelAO),WB=new Builder(seed+2,()=>.95),HB=new Builder(seed+3,()=>.95),GB=new Builder(seed+4,()=>.95),AQ=new Builder(seed+5,()=>1),MB=new Builder(seed+6,()=>.95);
  const K=S.rock,FL=S.flume,R=WH.R,hw=WH.width/2,HM=WH.hammer,[hpx,hpy]=HM.pivot,hz=S.hammer.z;
  const TONES=[[1.02,1,.98],[1.12,1.02,.86],[.8,.78,.76],[1.15,.98,.8],[.92,.98,.88],[1.06,.9,.78],[1.2,1.15,1.06],[.86,.84,.8]],stoneTint=(b,k=1)=>{const t=TONES[Math.floor(b.r()*TONES.length)],q=(.82+.3*b.r())*k;return [t[0]*q,t[1]*q,t[2]*q]};
  const wet=t=>[t[0]*.6,t[1]*.6,t[2]*.58],wood=b=>b.tint(),fy=x=>FL.y+.16+.05*(FL.x1-x)/(FL.x1-FL.x0);   // flume axis height (falls 5 cm to the wheel)
- // ---------- spring outcrop (always there): stacked boulders, ledges, grass ----------
- {// a weathered outcrop: big bedded blocks at the foot, smaller ones stepping in toward the spring on top,
-  // each course offset like rough bond, with random bedding tilt, size and squareness
-  const cx=(K.x0+K.x1)/2,cz=(K.z0+K.z1)/2,hx0=(K.x1-K.x0)/2,hz0=(K.z1-K.z0)/2;let y=0,k=0;
-  while(y<K.top-.35){const f=y/K.top,hx=hx0*(1-.28*f),hz=hz0*(1-.2*f),sz=mix(.95,.5,f),h=sz*RB.rnd(.62,.85),per=2*(hx+hz),n=Math.max(6,Math.round(per/(sz*1.35))),ph=RB.r();
-   for(let i=0;i<n;i++){const t=((i+ph+(k%2)*.5)/n)%1,L=t*per;let x,z,nx,nz;
-    if(L<2*hx){x=cx-hx+L;z=cz+hz;nx=0;nz=1}else if(L<2*hx+2*hz){x=cx+hx;z=cz+hz-(L-2*hx);nx=1;nz=0}else if(L<4*hx+2*hz){x=cx+hx-(L-2*hx-2*hz);z=cz-hz;nx=0;nz=-1}else{x=cx-hx;z=cz-hz+(L-4*hx-2*hz);nx=-1;nz=0}
-    const s=sz*RB.rnd(.75,1.25),in_=RB.rnd(-.12,.08)+s*.35;x-=nx*in_;z-=nz*in_;if(z>K.z1-.4&&Math.abs(x+4.3)<.36&&y>.4)z-=.25;   // the fall cuts a notch in the front face
-    const yy=y<.2?g(x,z)+h*.45:y+h*.5+RB.rnd(-.07,.07);RB.stone(x,yy,z,s*RB.rnd(.85,1.1),h*.52,s*RB.rnd(.7,.95),(nx?Math.PI/2:0)+RB.rnd(-.35,.35),{tint:stoneTint(RB,mix(.82,1.02,f)),nu:9,nv:6,box:RB.rnd(.3,.55)})}
-   // fill the core so no gap shows through
-   RB.stone(cx,y+h*.5,cz,hx*.8,h*.55,hz*.8,RB.rnd(0,.3),{tint:stoneTint(RB,.75),nu:7,nv:5,box:.3});
-   y+=h*.9;k++;RB.part()}
-  // capping slabs around the spring hollow, moss-tinted
-  for(let i=0;i<9;i++){const a=i/9*6.283+RB.rnd(-.2,.2),rr=RB.rnd(1.0,1.45),x=-4.45+Math.cos(a)*rr*.8,z=Math.sin(a)*rr*.95;if(x<K.x0+.3||x>K.x1-.15||Math.abs(z)>hz0-.15)continue;
-   RB.stone(x,K.top-.22+RB.rnd(-.05,.05),z,RB.rnd(.35,.55),RB.rnd(.12,.2),RB.rnd(.3,.45),RB.rnd(0,3),{tint:[.82,.9,.7].map(q=>q*RB.rnd(.85,1.05)),nu:8,nv:5,box:.4})}
-  RB.part()
-  // spring hollow lip, the front lip the overflow spills from, and a few fallen stones in the pool below
-  for(let k=0;k<7;k++){const a=k/7*6.283,x=-4.45+Math.cos(a)*.62,z=Math.sin(a)*.55;RB.stone(x,3.42,z,.26,.16,.22,a,{tint:stoneTint(RB)})}
-  RB.stone(-4.3,3.34,1.6,.3,.1,.22,.3,{tint:stoneTint(RB,.85)});
-  for(let k=0;k<6;k++){const a=k/6*6.283,x=-4.3+Math.cos(a)*.55,z=2.2+Math.sin(a)*.42;RB.stone(x,g(x,z)+.04,z,.2,.12,.17,a,{tint:stoneTint(RB,.9)})}
-  // brook from the fall pool down to the head of the tailrace, edged with pebbles
-  const brook=[];for(let i=0;i<=12;i++){const t=i/12,x=mix(-4.25,S.race.x0,t),z=mix(2.2,0,t*t*(3-2*t))+.12*Math.sin(t*7);brook.push([x,g(x,z)+.04,z])}
-  for(let i=1;i<brook.length;i+=1)for(const sg of [-1,1]){const [x,,z]=brook[i],[px,,pz]=brook[i-1],tx=x-px,tz=z-pz,l=Math.hypot(tx,tz)||1,ox=x-tz/l*.36*sg,oz=z+tx/l*.36*sg;RB.stone(ox,g(ox,oz)+.03,oz,RB.rnd(.1,.18),RB.rnd(.06,.1),RB.rnd(.1,.16),RB.rnd(0,3),{tint:stoneTint(RB,.85),nu:6,nv:4})}
-  for(let k=0;k<60;k++){const a=RB.rnd(0,6.283),rr=RB.rnd(.1,.6),onTop=k<14,x=onTop?RB.rnd(K.x0+.4,K.x1-.4):(a<3.14?K.x1+rr*.6:K.x0-rr*.5)+RB.rnd(-.2,.2),z=onTop?RB.rnd(K.z0+.3,K.z1-.3):RB.rnd(K.z0-.3,K.z1+.4);
-   if(onTop&&Math.hypot(x+4.45,z)<.8)continue;const y=onTop?3.55+RB.rnd(-.1,.1):g(x,z)-.02;RB.card("grass",[x,y,z],RB.rnd(.25,.45),RB.rnd(.2,.42),RB.rnd(0,3),RB.rnd(-.25,.25),[.8+.3*RB.r(),.9+.2*RB.r(),.7],{ao:1})}
+ // ---------- natural rock cliff (always there): one jointed, bedded crag that grows out of the ground ----------
+ // A superellipse footprint is pushed in/out per strata layer and per joint block (flat-shaded, so every
+ // facet reads as a broken face); vertical joints are cut as V cracks; the base flares into the ground
+ // and is sunk below it, then boulders, moss and grass hide the contact. The waterfall's streams are
+ // known up front so the rock under them is dark, wet and glossy.
+ const STREAMS=[{x:-4.36,w:.22,q:1,v0:.8},{x:-4.66,w:.1,q:.45,v0:.5},{x:-4.1,w:.055,q:.25,v0:.32},{x:-4.9,w:.035,q:.12,v0:.1}];
+ const CL={cx:-5.07,cz:-.15,hx:1.22,hz:1.7,p:3.2},POOL={x:-4.42,z:2.12,rx:.95,rz:.62};
+ const NT=1440,TB=[];{let sa=0,pv=null;for(let i=0;i<=NT;i++){const th=i/NT*6.283185,c=Math.cos(th),sn=Math.sin(th),e=2/CL.p,x=CL.cx+CL.hx*Math.sign(c)*Math.pow(Math.abs(c),e),z=CL.cz+CL.hz*Math.sign(sn)*Math.pow(Math.abs(sn),e);if(pv)sa+=Math.hypot(x-pv[0],z-pv[1]);TB.push([x,z,sa]);pv=[x,z]}}
+ const PER=TB[NT][2];
+ const fpt=s=>{s=((s%PER)+PER)%PER;let lo=0,hi=NT;while(hi-lo>1){const m=(lo+hi)>>1;if(TB[m][2]<=s)lo=m;else hi=m}const a=TB[lo],b=TB[hi],t=(s-a[2])/((b[2]-a[2])||1),tx=b[0]-a[0],tz=b[1]-a[1],l=Math.hypot(tx,tz)||1;return [mix(a[0],b[0],t),mix(a[1],b[1],t),tz/l,-tx/l]};
+ const topH=(x,z)=>{let h=3.46+.85*sstep(-4.5,-6.2,x)+.3*sstep(.1,-1.7,z)*sstep(-4.3,-5.5,x)+.14*(n3(x*1.3,z*1.3,.5,seed)-.5)+.06*(n3(x*4,z*4,1.5,seed)-.5);
+  h=mix(3.36,h,sstep(.85,1.35,Math.hypot((x+4.45)/.72,z/.6)));                                   // spring basin
+  if(z>.25)h=mix(Math.min(h,3.39-.02*(z-.25)),h,sstep(.55,1.3,Math.abs(x+4.36)/.24));              // overflow runnel to the lip
+  return h};
+ const LB=[-1.5];{let y=.12+RB.rnd(0,.18);while(y<4.8){LB.push(y);y+=RB.r()<.3?RB.rnd(.2,.35):RB.rnd(.5,1.15)}LB.push(7)}
+ const layerOf=y=>{let i=0;while(i<LB.length-2&&y>=LB[i+1])i++;return i};
+ const LOFF=LB.map(()=>RB.rnd(-.07,.07)),LTONE=LB.map(()=>Math.floor(RB.r()*4)),LAMP=LB.map(()=>RB.r()<.4?RB.rnd(.1,.35):RB.rnd(.6,1.2));
+ const JT=[];{let s=RB.rnd(.1,.5);while(s<PER-.35){JT.push(s);s+=RB.rnd(.45,1.05)}}
+ const blockOff=(i,s)=>{let j=0;while(j<JT.length&&JT[j]<=s)j++;return (h3(i,j%JT.length,7,seed)-.5)*.2*LAMP[i]};
+ const dispAt=(s,y,x,z,nz,gy)=>{const i=layerOf(y),b0=LB[i],b1=LB[i+1],t=(y-b0)/(b1-b0);
+  const prof=t<.12?mix(-.08,-.01,t/.12):t<.85?mix(-.01,.03,(t-.12)/.73):mix(.03,-.02,(t-.85)/.15);let cj=0;
+  for(const j of JT){const q=Math.abs(s-j),hj=h3(i,Math.round(j*13),11,seed);if(q<.05&&hj<.6)cj=Math.min(cj,-(.05+.14*hj)*(1-q/.05))}
+  const fall=nz>.3?Math.exp(-(((x+4.45)/.5)**2))*nz:0;   // the fall has scooped a recess and left an overhanging lip
+  const d=prof*LAMP[i]+cj+LOFF[i]+blockOff(i,s)+.3*(n3(x*.45,y*.32,z*.45,seed+3)-.5)*2+.12*Math.abs(n3(x*1.5,y*1.2,z*1.5,seed+6)-.5)*2+.045*(n3(x*2.6,y*2.6,z*2.6,seed+4)-.5)*2
+   -.2*fall*sstep(.1,1.1,y)+.12*fall*sstep(2.9,3.3,y)+.12*Math.max(0,1-y/3.8)+.22*sstep(.4,-.35,y-gy);
+  return [d,prof*LAMP[i]+cj]};
+ const frontAt=(x,y)=>{let best=null;for(let i=0;i<NT;i+=2){const p=TB[i];if(p[1]<CL.cz+.3)continue;if(!best||Math.abs(p[0]-x)<Math.abs(best[0]-x))best=[p[0],p[1],p[2]]}
+  const f=fpt(best[2]),gy=g(f[0],f[1]),[d]=dispAt(best[2],y,f[0],f[1],f[3],gy);return {z:f[1]+f[3]*d,s:best[2],top:topH(f[0]-f[2]*.06,f[1]-f[3]*.06)}};
+ for(const st of STREAMS){const F=frontAt(st.x,3);st.lip=F.top;st.zl=frontAt(st.x,F.top-.03).z}
+ const wetAt=(x,y,z)=>{let w=0;if(z>CL.cz+.4)for(const st of STREAMS){const lat=Math.abs(x-st.x)/(st.w*1.5+.1+.12*n3(x*3,y*2,z*3,seed+21));if(y<st.lip+.08)w=Math.max(w,(1-sstep(.55,1,lat))*Math.min(1,.4+st.q))}
+  const pd=Math.hypot((x-POOL.x)/(POOL.rx+.6),(z-POOL.z)/(POOL.rz+.7));w=Math.max(w,(1-sstep(.6,1,pd))*(1-sstep(.4,1.5,y-g(x,z))));
+  if(Math.hypot((x+4.45)/.9,z/.75)<1&&y>3.2)w=Math.max(w,.6);return w};
+ const PAL=[[.6,.57,.52],[.68,.61,.5],[.53,.54,.55],[.64,.54,.45]],MOSS=[.34,.45,.17];
+ const RBr=RB.bin("rock"),RBw=RB.bin("rockwet");
+ const rockTri=(A,Bv,C,hint)=>{const p0=A.p,p1=Bv.p,p2=C.p,ux=p1[0]-p0[0],uy=p1[1]-p0[1],uz=p1[2]-p0[2],vx=p2[0]-p0[0],vy=p2[1]-p0[1],vz=p2[2]-p0[2];
+  let n=[uy*vz-uz*vy,uz*vx-ux*vz,ux*vy-uy*vx];const l=Math.hypot(...n);if(l<1e-7)return;n=n.map(q=>q/l);let V=[A,Bv,C];
+  if(n[0]*hint[0]+n[1]*hint[1]+n[2]*hint[2]<0){n=n.map(q=>-q);V=[A,C,Bv]}
+  const top=Math.abs(n[1])>.72,cx=(p0[0]+p1[0]+p2[0])/3,cy=(p0[1]+p1[1]+p2[1])/3,cz=(p0[2]+p1[2]+p2[2])/3,wet=wetAt(cx,cy,cz),bin=wet>.42?RBw:RBr;
+  for(const q of V){const [x,y,z]=q.p,gy=g(x,z),pal=PAL[LTONE[q.layer??layerOf(y)]],lo=.82+.36*n3(x*.9,y*.9,z*.9,seed+9),fine=.92+.16*n3(x*5,y*5,z*5,seed+10);
+   let c=pal.map(v=>v*lo*fine*1.25);const streak=sstep(.6,.82,n3(x*4.5,y*.32,z*4.5,seed+13))*(1-sstep(.4,.9,n[1]));c=c.map(v=>v*(1-.22*streak));
+   const lich=sstep(.7,.85,n3(x*2.2,y*2.2,z*2.2,seed+15))*(1-wet)*sstep(1.5,2.5,y-gy);c=mix3(c,[.78,.76,.6],.45*lich);
+   const moss=Math.min(1,sstep(.45,.85,n[1])*(.35+.65*n3(x*1.7,y*1.7,z*1.7,seed+11))+.7*(1-sstep(.1,.45,y-gy))*n3(x*2,y,z*2,seed+12)+.5*wet*sstep(.5,.8,n3(x*3,y*3,z*3,seed+14)));
+   c=mix3(c,MOSS.map(v=>v*(.8+.4*n3(x*3,y*3,z*3,seed+16))),moss*.85);
+   const cr=.72+.28*sstep(-.1,0,q.prof??0);c=c.map(v=>v*cr*(1-.5*wet));c[2]*=1+.08*wet;
+   const uv=top||q.s==null?[x/1.3,z/1.3]:[q.s/1.3,y/1.3],ao=(.55+.45*sstep(-.1,0,q.prof??0))*(.8+.2*sstep(0,.5,y-gy));bin.v(q.p,n,uv,c,ao)}};
+ const mix3=(a,b,t)=>[mix(a[0],b[0],t),mix(a[1],b[1],t),mix(a[2],b[2],t)];
+ {// side: columns along the footprint (extra pairs at the joints for crisp cracks), rows bracketing every bedding plane
+  const cols=[];for(let s=0;s<PER;s+=.095)cols.push(s);for(const j of JT)cols.push(j-.03,j,j+.03);cols.sort((a,b)=>a-b);cols.push(PER);
+  const rows=[-9];for(let i=1;i<LB.length-1;i++){const b0=LB[i],b1=LB[i+1],th=b1-b0;rows.push(b0+.012,b0+.12*th,b0+.5*th,b0+.85*th,b1-.012)}
+  const grid=cols.map(s=>{const [fx,fz,nx,nz]=fpt(s),gy=g(fx,fz),H=topH(fx-nx*.06,fz-nz*.06);let capped=false;
+   return rows.map((y0,j)=>{let y=j===0?gy-.55:Math.max(gy-.55,y0),bev=0;if(y>=H){y=H;bev=-.07;capped=true}
+    const [d,prof]=dispAt(s,y,fx,fz,nz,gy);return {p:[fx+nx*(d+bev),y,fz+nz*(d+bev)],s,prof,layer:layerOf(y),n:[nx,0,nz]}}).concat([{top:true}])});
+  for(let i=0;i+1<grid.length;i++)for(let j=0;j+1<rows.length;j++){const a=grid[i][j],b=grid[i+1][j],c=grid[i+1][j+1],d=grid[i][j+1];if(a.p[1]===d.p[1]&&b.p[1]===c.p[1]&&j>0)continue;const h=[a.n[0],0,a.n[2]];rockTri(a,b,c,h);rockTri(a,c,d,h)}
   RB.part();
-  // water that is always flowing: spring pool, overflow runnel, the fall down the rock face, its pool, the brook and tailrace
-  AQ.stage=0;const race=[];for(let i=0;i<=16;i++){const x=mix(S.race.x0,S.race.x1,i/16),z=.08*Math.sin(i*.9);race.push([x,g(x,z)+.04,z])}
-  waterRibbon(AQ,brook.concat(race.slice(1)),t=>t<.4?.5:.78,[.62,.78,.86]);AQ.part();
-  AQ.stage=1;{const pts=[];for(let i=0;i<=14;i++){const tm=i/14*.85,x=-4.3+.05*Math.sin(i),y=3.42-4.9*tm*tm,z=1.72+.5*tm;pts.push([x,Math.max(g(x,z)+.02,y),z])}
-   waterTube(AQ,pts,t=>.2+.08*t,t=>.035+.05*t,[1.18,1.24,1.26]);
-   waterRibbon(AQ,[[-4.45,3.58,.3],[-4.42,3.56,.7],[-4.35,3.5,1.1],[-4.32,3.46,1.45],[-4.3,3.43,1.72]],.24,[.8,.95,1]);
-   const pool=[];for(let i=0;i<=6;i++){const z=1.9+i*.1;pool.push([-4.3,g(-4.3,z)+.05,z])}waterRibbon(AQ,pool,t=>.9-.3*Math.abs(t-.5)*2,[.62,.78,.86])}AQ.part();
-  AQ.stage=2;{const pts=[];for(let i=0;i<=6;i++){const x=mix(S.spring.x0+.04,S.spring.x1-.04,i/6);pts.push([x,3.66,0])}waterRibbon(AQ,pts,.68,[.5,.68,.8])}AQ.part();
-  // flume water, the spout onto the wheel top, and the long spout to the race before the wheel is hung
-  AQ.stage=3;{const pts=[];for(let i=0;i<=10;i++){const x=mix(S.gate+.05,FL.x1+.02,i/10);pts.push([x,fy(x)-.1,0])}waterRibbon(AQ,pts,.25,[.75,.9,1])}AQ.part();
-  AQ.stage=4;{const pts=[];for(let i=0;i<=14;i++){const tm=i/14*.86,x=FL.x1+1.2*tm,y=FL.y+.06-4.9*tm*tm;pts.push([x,Math.max(g(x,0)+.03,y),0])}waterTube(AQ,pts,.11,t=>.04+.03*t,[1.1,1.18,1.22])}AQ.part();
-  AQ.stage=5;{const pts=[];for(let i=0;i<=8;i++){const tm=i/8*.2,x=FL.x1+1.2*tm,y=FL.y+.06-4.9*tm*tm;pts.push([x,y,0])}waterTube(AQ,pts,.12,.045,[1.1,1.18,1.22]);
-   // water carried round in the buckets and dumped at the bottom into the race
-   const dump=[];for(let i=0;i<=8;i++){const a=-.25-i/8*1.05,x=Math.cos(a)*(R-.12)+.02,y=WH.cy+Math.sin(a)*(R-.12);dump.push([x,y,0])}
-   for(let i=0;i<=5;i++){const x=dump[8][0]+.08*i,y=mix(dump[8][1],g(x,0)+.04,i/5);dump.push([x,y,0])}waterTube(AQ,dump,.2,.03,[1.02,1.12,1.18])}AQ.part()}
+  // cap: rings stepping in from the top edge, heights from topH (basin, runnel, back rise), mossy where flat
+  const ring0=grid.map(col=>col[rows.length-1]),RINGS=[.9,.74,.55,.35,.15],CX=-5.0,CZ=-.15,rings=[ring0];
+  for(const f of RINGS)rings.push(cols.map(s=>{const [fx,fz]=fpt(s),x=CX+(fx-CX)*f,z=CZ+(fz-CZ)*f;return {p:[x,topH(x,z)+.05*(n3(x*3,z*3,2,seed+5)-.5),z],prof:0,layer:LB.length-2}}));
+  const cen={p:[CX,topH(CX,CZ),CZ],prof:0,layer:LB.length-2};rings.push(cols.map(()=>cen));
+  for(let k=0;k+1<rings.length;k++)for(let i=0;i+1<cols.length;i++){const a=rings[k][i],b=rings[k][i+1],c=rings[k+1][i+1],d=rings[k+1][i];rockTri(a,b,c,[0,1,0]);rockTri(a,c,d,[0,1,0])}
+  RB.part()}
+ // angular boulders from the same rock: fallen blocks at the foot, wet ones round the plunge pool
+ const boulder=(cx,cz,r,sink=.35)=>{const sd=Math.floor(RB.r()*1e5),nu=7,nv=5,gy=g(cx,cz),cy=gy+r*(.55-sink),sq=RB.rnd(.55,.8),yaw=RB.rnd(0,6.28),lay=Math.floor(RB.r()*(LB.length-1));
+  const P=(i,j)=>{const th=i/nu*6.283+yaw,ph=j/nv*Math.PI,dx=Math.sin(ph)*Math.cos(th),dy=Math.cos(ph),dz=Math.sin(ph)*Math.sin(th),k=1+.42*(n3(dx*1.3+sd%31,dy*1.3,dz*1.3,sd)-.5);
+   return {p:[cx+dx*r*k*1.15,Math.max(cy+dy*r*k*sq,gy-.2),cz+dz*r*k],prof:-.03*(1-Math.abs(dy)),layer:lay}};
+  const G=[];for(let i=0;i<=nu;i++){G.push([]);for(let j=0;j<=nv;j++)G[i].push(i===nu?G[0][j]:P(i,j))}
+  for(let i=0;i<nu;i++)for(let j=0;j<nv;j++){const a=G[i][j],b=G[i+1][j],c=G[i+1][j+1],d=G[i][j+1],m=[(a.p[0]+c.p[0])/2-cx,(a.p[1]+c.p[1])/2-cy,(a.p[2]+c.p[2])/2-cz];rockTri(a,b,c,m);rockTri(a,c,d,m)}};
+ for(let k=0;k<22;k++){const s=RB.rnd(0,PER),[fx,fz,nx,nz]=fpt(s);if(nx>.6&&Math.abs(fz)<.5)continue;const r=RB.rnd(.16,.42),o=RB.rnd(.15,.55)+r;boulder(fx+nx*o,fz+nz*o,r)}
+ for(let k=0;k<9;k++){const a=k/9*6.283+RB.rnd(-.2,.2);if(Math.sin(a)>.75)continue;boulder(POOL.x+Math.cos(a)*(POOL.rx+.12),POOL.z+Math.sin(a)*(POOL.rz+.1),RB.rnd(.13,.27),.5)}
+ RB.part();
+ // plants: grass on ledges and the top, tufts in joints, a fringe round the foot and the pool
+ const tuft=(x,y,z,big)=>RB.card("grass",[x,y,z],big?RB.rnd(.3,.5):RB.rnd(.16,.3),big?RB.rnd(.25,.45):RB.rnd(.12,.26),RB.rnd(0,3),RB.rnd(-.3,.3),[.72+.25*RB.r(),.85+.2*RB.r(),.62],{ao:1});
+ for(let k=0;k<70;k++){const s=RB.rnd(0,PER),[fx,fz,nx,nz]=fpt(s),gy=g(fx,fz),i=1+Math.floor(RB.r()*(LB.length-3)),y=LB[i]-.015,H=topH(fx,fz);if(y>H-.1||y<gy+.15)continue;
+  if(wetAt(fx,y,fz)>.5&&RB.r()<.6)continue;const [d]=dispAt(s,y,fx,fz,nz,gy);tuft(fx+nx*(d-.03),y,fz+nz*(d-.03),false)}
+ for(const j of JT){if(RB.r()<.4)continue;const [fx,fz,nx,nz]=fpt(j),gy=g(fx,fz),y=RB.rnd(gy+.4,topH(fx,fz)-.3),[d]=dispAt(j,y,fx,fz,nz,gy);tuft(fx+nx*(d-.04),y,fz+nz*(d-.04),false)}
+ for(let k=0;k<40;k++){const f=RB.rnd(.2,.92),[fx,fz]=fpt(RB.rnd(0,PER)),x=-5+(fx+5)*f,z=-.15+(fz+.15)*f;if(Math.hypot((x+4.45)/.85,z/.7)<1||(z>.2&&Math.abs(x+4.36)<.3))continue;tuft(x,topH(x,z)-.02,z,true)}
+ for(let k=0;k<60;k++){const s=RB.rnd(0,PER),[fx,fz,nx,nz]=fpt(s),o=RB.rnd(.25,1.1),x=fx+nx*o,z=fz+nz*o;if(Math.hypot((x-POOL.x)/POOL.rx,(z-POOL.z)/POOL.rz)<1.1||(nx>.6&&Math.abs(z)<.5))continue;tuft(x,g(x,z)-.02,z,true)}
+ for(let k=0;k<16;k++){const a=RB.rnd(0,6.283),x=POOL.x+Math.cos(a)*(POOL.rx+.3),z=POOL.z+Math.sin(a)*(POOL.rz+.3);tuft(x,g(x,z)-.02,z,true)}
+ RB.part();
+ // brook from the plunge pool down to the head of the tailrace, edged with pebbles
+ const brook=[];for(let i=0;i<=12;i++){const t=i/12,x=mix(POOL.x+.75,S.race.x0,t),z=mix(POOL.z-.1,0,t*t*(3-2*t))+.1*Math.sin(t*7);brook.push([x,g(x,z)+.04,z])}
+ for(let i=1;i<brook.length;i+=1)for(const sg of [-1,1]){const [x,,z]=brook[i],[px,,pz]=brook[i-1],tx=x-px,tz=z-pz,l=Math.hypot(tx,tz)||1,ox=x-tz/l*.36*sg,oz=z+tx/l*.36*sg;RB.stone(ox,g(ox,oz)+.03,oz,RB.rnd(.1,.18),RB.rnd(.06,.1),RB.rnd(.1,.16),RB.rnd(0,3),{tint:stoneTint(RB,.7),nu:6,nv:4})}
+ RB.part();
+ // ---------- water that is always flowing: spring basin, overflow runnel, the uneven streams of the fall, plunge pool, brook, race ----------
+ const strand=(mat,pts,wf,tf,af,cf,nu=6)=>{const bin=AQ.bin(mat,false,false),n=pts.length,L=[0];for(let i=1;i<n;i++)L.push(L[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1],pts[i][2]-pts[i-1][2]));
+  const fr=pts.map((p,i)=>{const a=pts[Math.max(0,i-1)],b=pts[Math.min(n-1,i+1)];let t=[b[0]-a[0],b[1]-a[1],b[2]-a[2]];const tl=Math.hypot(...t)||1;t=t.map(q=>q/tl);
+   let sd=cross3(t,[0,1,0]);let sl=Math.hypot(...sd);if(sl<1e-3){sd=[1,0,0];sl=1}sd=sd.map(q=>q/sl);const nn=cross3(sd,t);return {t,sd,nn}});
+  const V=(i,k)=>{const u=L[i]/L[n-1],th=k/nu*6.283,w=wf(u),h=tf(u),F=fr[i],c=Math.cos(th),s=Math.sin(th),p=pts[i];
+   return [[p[0]+F.sd[0]*c*w+F.nn[0]*s*h,p[1]+F.sd[1]*c*w+F.nn[1]*s*h,p[2]+F.sd[2]*c*w+F.nn[2]*s*h],[F.sd[0]*c+F.nn[0]*s,F.sd[1]*c+F.nn[1]*s,F.sd[2]*c+F.nn[2]*s],[k/nu*Math.max(1,w*5),L[i]*.8],cf(u),af(u,c)]};
+  for(let i=0;i+1<n;i++)for(let k=0;k<nu;k++){const a=V(i,k),b=V(i,k+1),c=V(i+1,k+1),d=V(i+1,k);bin.v(...a);bin.v(...b);bin.v(...c);bin.v(...a);bin.v(...c);bin.v(...d)}};
+ const disc=(mat,cx,cz,rx,rz,y,af,cf,nu=28,nv=5,r0=0)=>{const bin=AQ.bin(mat,false,false);const V=(i,j)=>{const a=i/nu*6.283,r=mix(r0,1,j/nv),x=cx+Math.cos(a)*rx*r*(1+.06*Math.sin(a*3+1)),z=cz+Math.sin(a)*rz*r*(1+.06*Math.sin(a*5));return [[x,y(x,z),z],[0,1,0],[i/nu*4,r*2.2],cf(r,a),af(r,a)]};
+  for(let i=0;i<nu;i++)for(let j=0;j<nv;j++){const a=V(i,j),b=V(i+1,j),c=V(i+1,j+1),d=V(i,j+1);bin.v(...a);bin.v(...c);bin.v(...b);bin.v(...a);bin.v(...d);bin.v(...c)}};
+ AQ.stage=0;const race=[];for(let i=0;i<=16;i++){const x=mix(S.race.x0,S.race.x1,i/16),z=.08*Math.sin(i*.9);race.push([x,g(x,z)+.04,z])}
+ waterRibbon(AQ,brook.concat(race.slice(1)),t=>t<.4?.5:.78,[.62,.78,.86]);
+ const poolY=(x,z)=>g(x,z)+.05;
+ disc("pool",POOL.x,POOL.z,POOL.rx,POOL.rz,poolY,(r)=>.92-.3*r,()=>[.55,.72,.74]);
+ disc("pool",-4.45,0,.6,.5,()=>3.41,(r)=>.9-.25*r,()=>[.5,.66,.7],20,3);
+ strand("fall",[[-4.42,3.41,.35],[-4.4,3.395,.75],[-4.37,3.39,1.1],[-4.36,STREAMS[0].lip+.01,STREAMS[0].zl-.02]],()=>.17,()=>.02,()=>.8,()=>[.8,.92,1],5);
+ for(const st of STREAMS){const pts=[],y0=st.lip-.02,yb=poolY(st.x,POOL.z)+.02,N=22;let z=st.zl;
+  for(let i=0;i<=N;i++){const y=mix(y0,yb,i/N),t=Math.sqrt(Math.max(0,(y0-y)/4.9)),zf=st.zl+st.v0*t,zc=frontAt(st.x,y).z+.04+st.w*.25;z=Math.max(zf,zc,z-.02);pts.push([st.x+.025*Math.sin(i*1.3+st.x*7)*st.q,y,z])}
+  const wob=st.x*17;
+  strand("fall",pts,u=>st.w*(1+.7*u)*(1+.18*Math.sin(u*9+wob)),u=>.012+.045*u*st.q,(u,c)=>Math.min(1,(.55+.4*st.q)*(1-.25*u)+.3*sstep(.6,1,u))*(.7+.3*Math.abs(c)),u=>mix3([.82,.92,1],[1.25,1.28,1.3],sstep(.15,.9,u)),7);
+  if(st.q>.3)strand("fall",pts.map(p=>[p[0],p[1],p[2]+.01]),u=>st.w*(1.5+1.3*u),u=>.03+.08*u,u=>.22*sstep(0,.3,u),()=>[1.2,1.24,1.28],6);
+  const e=pts[N];disc("foam",e[0],e[2]+.02,st.w*2.6+.12,st.w*2+.1,poolY,(r)=>(.95-.6*r)*Math.min(1,.5+st.q),()=>[1.1,1.12,1.15],14,3)}
+ disc("foam",POOL.x+.1,POOL.z+.1,POOL.rx*.85,POOL.rz*.8,(x,z)=>poolY(x,z)+.004,(r,a)=>.35*sstep(.35,.7,r)*(1-sstep(.85,1,r)),()=>[1,1.02,1.05],24,4,.3);
+ AQ.part();
+ AQ.stage=1;AQ.part();
+ AQ.stage=2;{const pts=[];for(let i=0;i<=6;i++){const x=mix(S.spring.x0+.04,S.spring.x1-.04,i/6);pts.push([x,3.66,0])}waterRibbon(AQ,pts,.68,[.5,.68,.8])}AQ.part();
+ // flume water, the spout onto the wheel top, and the long spout to the race before the wheel is hung
+ AQ.stage=3;{const pts=[];for(let i=0;i<=10;i++){const x=mix(S.gate+.05,FL.x1+.02,i/10);pts.push([x,fy(x)-.1,0])}waterRibbon(AQ,pts,.25,[.75,.9,1])}AQ.part();
+ AQ.stage=4;{const pts=[];for(let i=0;i<=14;i++){const tm=i/14*.86,x=FL.x1+1.2*tm,y=FL.y+.06-4.9*tm*tm;pts.push([x,Math.max(g(x,0)+.03,y),0])}strand("fall",pts,u=>.1+.05*u,u=>.04+.03*u,u=>.85,u=>mix3([.85,.95,1],[1.2,1.25,1.28],u))}AQ.part();
+ AQ.stage=5;{const pts=[];for(let i=0;i<=8;i++){const tm=i/8*.2,x=FL.x1+1.2*tm,y=FL.y+.06-4.9*tm*tm;pts.push([x,y,0])}strand("fall",pts,()=>.12,()=>.045,()=>.85,()=>[.95,1.05,1.1]);
+  // water carried round in the buckets and dumped at the bottom into the race
+  const dump=[];for(let i=0;i<=8;i++){const a=-.25-i/8*1.05,x=Math.cos(a)*(R-.12)+.02,y=WH.cy+Math.sin(a)*(R-.12);dump.push([x,y,0])}
+  for(let i=0;i<=5;i++){const x=dump[8][0]+.08*i,y=mix(dump[8][1],g(x,0)+.04,i/5);dump.push([x,y,0])}strand("fall",dump,()=>.2,()=>.03,u=>.5+.4*u,u=>mix3([.9,1,1.05],[1.2,1.24,1.28],u))}AQ.part();
+ // churned white water where the buckets empty and the paddles beat the race, fading downstream
+ AQ.stage=6;{const pts=[];for(let i=0;i<=14;i++){const x=mix(-.5,3.4,i/14),z=.08*Math.sin((x-S.race.x0)/(S.race.x1-S.race.x0)*16*.9);pts.push([x,g(x,z)+.065,z])}
+  const bin=AQ.bin("foam",false,false);for(let i=0;i<14;i++)for(let k=0;k<4;k++){const V=(ii,kk)=>{const p=pts[ii],u=ii/14,w=.36*(1+.3*u),zz=p[2]+mix(-w,w,kk/4);return [[p[0],p[1],zz],[0,1,0],[kk/4*1.4,p[0]*.7],[1.1,1.12,1.15],Math.max(0,(1-u)**1.4*(1-Math.abs(kk/2-1)**3*.7))*.95]};
+   const a=V(i,k),b=V(i,k+1),c=V(i+1,k+1),d=V(i+1,k);bin.v(...a);bin.v(...c);bin.v(...b);bin.v(...a);bin.v(...d);bin.v(...c)}
+  disc("foam",.85,0,.55,.33,(x,z)=>g(x,z)+.07,r=>.9-.5*r,()=>[1.15,1.15,1.18],16,3)}AQ.part();
  // ---------- stage 0: footings & tailrace ----------
  B.stage=0;
  {const race=[];for(let i=0;i<=16;i++){const x=mix(S.race.x0-.1,S.race.x1,i/16),z=.08*Math.sin(i*.9);race.push([x,g(x,z)+.02,z])}waterRibbon(B,race,1.02,[.78,.66,.55],"cob");B.part();
@@ -646,38 +738,94 @@ export function buildWaterwheel(opt={}){const S=WHEELSITE,WH=WHEEL,seed=opt.seed
  HB.stage=5;HB.log([-tailL-.04,0,0],[armL+.12,0,0],.075,{bend:.01});slab(HB,"wood",[-tailL+.1,.075,0],[.14,0,0],[0,0,.07],.012,[.75,.7,.62]);
  HB.log([armL,.12,0],[armL,HM.head[1]-hpy+.4,0],.055,{mat:"wood",nu:8,bend:0});HB.log([armL,HM.head[1]-hpy+.48,0],[armL,HM.head[1]-hpy,0],.13,{mat:"wood",nu:12,bend:0,bump:.06,taper:.12,caps:"end"});HB.lash([armL,HM.head[1]-hpy+.44,0],[0,1,0],.13,3,{rc:.012});HB.lash([armL,0,0],[0,1,0],.13,4,{rc:.012});
  HB.log([armL-.05,.08,-.14],[armL-.05,.08,.14],.018,{mat:"wood",bend:0});HB.part();
+ // ---------- stage 6: pit wheel, lantern pinion, millstones in an open mill frame ----------
+ {const M=S.mill,PW=M.pit,LN=M.lantern,ST=M.stone,FLR=M.floor,[lx,lz]=[LN.x,LN.z],wt=()=>wood(B);
+  // pit wheel: a pegged face wheel keyed to the axle (turns with the wheel group)
+  WB.stage=6;{const z0=PW.z-.04,z1=PW.z+.04,ri=.62,ro=PW.R+.07,bw=WB.bin("wood"),tn=WB.tint(),nu=40;
+   for(const z of [z0,z1])WB.grid(bw,nu,1,(i,j,u,v)=>{const a=u*6.283,r=mix(ri,ro,v);return [Math.cos(a)*r,Math.sin(a)*r,z]},(u,v)=>[u*5,v*.3],()=>tn,{flip:z===z1});
+   for(const r of [ri,ro])WB.grid(bw,nu,1,(i,j,u,v)=>{const a=u*6.283;return [Math.cos(a)*r,Math.sin(a)*r,mix(z0,z1,v)]},(u,v)=>[u*5,v*.1],()=>tn.map(q=>q*.85),{flip:r===ri});
+   for(let k=0;k<4;k++){const a=k*Math.PI/4;slab(WB,"wood",[0,0,PW.z],[Math.cos(a)*ri,Math.sin(a)*ri,0],[-Math.sin(a)*.07,Math.cos(a)*.07,0],.035,tn.map(q=>q*.92))}
+   for(let k=0;k<PW.pegs;k++){const a=Math.PI/2+k/PW.pegs*6.283,x=Math.cos(a)*PW.R,y=Math.sin(a)*PW.R;WB.log([x,y,z0+.01],[x,y,z0-PW.peg],.024,{mat:"wood",bend:0,nu:6,caps:"end"})}
+   WB.lash([0,0,PW.z+.12],[0,0,1],WH.axleR+.006,3,{rc:.01});WB.part()}
+  // frame: four corner posts carry the floor and the roof; two short posts carry the bridge beam under the pinion
+  B.stage=6;for(const [x,z] of M.posts){B.log([x,g(x,z)-.05,z],[x,4.62+(z>-2.5?.08:-.12),z],.08,{tone:"stick",bend:.01});B.stone(x,g(x,z)+.03,z,.17,.08,.15,B.rnd(0,3),{tint:stoneTint(B)})}
+  for(const x of [-.9,.9]){B.log([x,g(x,lz)-.05,lz],[x,M.bridge+.06,lz],.07,{tone:"stick"});B.stone(x,g(x,lz)+.03,lz,.15,.07,.13,0,{tint:stoneTint(B)})}
+  B.log([-1.0,M.bridge,lz],[1.0,M.bridge,lz],.075,{bend:.005});slab(B,"wood",[lx,M.bridge+.08,lz],[.09,0,0],[0,0,.09],.012,wt().map(q=>q*.7));B.part();
+  for(const x of [-.9,.9])B.log([x,FLR-.1,-1.85],[x,FLR-.1,-3.15],.075,{});for(const z of [-1.95,-3.05])B.log([-1.02,FLR-.18,z],[1.02,FLR-.18,z],.065,{});
+  for(let k=0;k<8;k++){const z=mix(-1.92,-3.08,(k+.5)/8);slab(B,"wood",[0,FLR-.015,z+B.rnd(-.01,.01)],[1.0,0,B.rnd(-.01,.01)],[0,0,.068],.015,wt())}B.part();
+  // bed stone (fixed), a low board tun round it, hopper on a horse, the shoe, flour spout and meal trough
+  const disk=(bb,cx,cz,r0,r1,y0,y1,tint,ns=36)=>{bb.grid(bb.bin("stone"),ns,1,(i,j,u,v)=>{const a=u*6.283,r=mix(r0,r1,v);return [cx+Math.cos(a)*r,y1+.006*(1-v),cz+Math.sin(a)*r]},(u,v)=>[.5+Math.cos(u*6.283)*mix(r0,r1,v)*.8,.5+Math.sin(u*6.283)*mix(r0,r1,v)*.8],(u,v)=>tint.map(q=>q*(.9+.15*Math.sin(u*6.283*6)*(v>.2?1:0))),{});
+   bb.grid(bb.bin("stone"),ns,2,(i,j,u,v)=>{const a=u*6.283;return [cx+Math.cos(a)*r1,mix(y0,y1,v),cz+Math.sin(a)*r1]},(u,v)=>[u*3,v*.25],()=>tint.map(q=>q*.86),{wrapU:true,flip:true})};
+  disk(B,lx,lz,.07,ST.R,ST.bed[0],ST.bed[1],[.72,.7,.66]);
+  {const n=14,bw=B.bin("wood"),tn=wt();B.grid(bw,n,1,(i,j,u,v)=>{const a=u*6.283;return [lx+Math.cos(a)*.6,mix(FLR,ST.bed[1]+.04,v),lz+Math.sin(a)*.6]},(u,v)=>[u*4,v*.3],()=>tn,{wrapU:true});
+   B.grid(bw,n,1,(i,j,u,v)=>{const a=u*6.283,r=mix(.6,.52,v);return [lx+Math.cos(a)*r,ST.bed[1]+.04,lz+Math.sin(a)*r]},(u,v)=>[u*4,v*.1],()=>tn.map(q=>q*.8),{flip:true})}
+  {const [hx,hz]=M.hopper,y0=3.72,y1=4.12,b0=.08,b1=.29,bw=B.bin("wood"),tn=wt();
+   for(const [ax,az] of [[1,0],[-1,0],[0,1],[0,-1]])B.grid(bw,1,1,(i,j,u,v)=>{const b=mix(b0,b1,v),s=mix(-b,b,u),y=mix(y0,y1,v);return ax?[hx+ax*b,y,hz+s*ax]:[hx-s*az,y,hz+az*b]},(u,v)=>[u*.6,v*.4],()=>tn.map(q=>q*(ax?1:.9)));
+   B.grid(B.bin("thatch"),2,2,(i,j,u,v)=>[hx+mix(-.25,.25,u),y1-.06+.03*Math.sin(u*3)*Math.sin(v*3),hz+mix(-.25,.25,v)],(u,v)=>[u*.4,v*.4],()=>[1.05,.95,.62]);
+   for(const [dx,dz] of [[-.34,-.34],[.34,-.34],[-.34,.34],[.34,.34]])B.log([hx+dx*1.1,FLR,hz+dz*1.1],[hx+dx*.85,y1-.05,hz+dz*.85],.025,{mat:"wood",bend:0});
+   for(const dz of [-.3,.3])B.log([hx-.35,y0+.08,hz+dz],[hx+.35,y0+.08,hz+dz],.02,{mat:"wood",bend:0});
+   slab(B,"wood",[(hx+lx)/2,(y0+ST.run[1]+.06)/2,lz],[(lx-hx)/2+.02,(ST.run[1]+.06-y0)/2,0],[0,0,.06],.01,tn.map(q=>q*.85));
+   B.log([hx-.02,y0-.02,hz],[hx-.04,ST.run[1]+.12,hz+.03],.008,{mat:"cord",caps:false})}
+  {const tn=wt(),sx=lx+.6;slab(B,"wood",[sx+.1,FLR+.12,lz+.2],[.12,-.06,0],[0,0,.05],.01,tn);
+   const [tx,tz]=M.trough;slab(B,"wood",[tx+.06,FLR+.04,tz],[.17,0,0],[0,0,.13],.012,tn.map(q=>q*.8));for(const dz of [-.13,.13])slab(B,"wood",[tx+.06,FLR+.1,tz+dz],[.17,0,0],[0,.06,0],.01,tn);
+   B.grid(B.bin("cob"),8,3,(i,j,u,v)=>{const a=u*6.283,r=.12*(1-v);return [tx+.06+Math.cos(a)*r*1.2,FLR+.06+.07*Math.sqrt(1-(1-v)**2),tz+Math.sin(a)*r*.8]},(u,v)=>[u,v*.3],()=>[1.45,1.4,1.3],{wrapU:true})}
+  B.part();
+  // ladder up to the floor, and a lean-to bark roof over the stones
+  {const [lx2,lz2]=M.ladder,top=FLR+.25,lb=lx2+.42;for(const dz of [-.22,.22])B.log([lb,g(lb,lz2+dz)-.03,lz2+dz],[lx2-.3,top+.3,lz2+dz],.035,{tone:"stick",bend:.01});
+   for(let k=1;k<=9;k++){const t=k/10,x=mix(lb,lx2-.3,t),y=mix(g(lb,lz2),top+.3,t);B.log([x,y,lz2-.24],[x,y,lz2+.24],.018,{mat:"wood",bend:0,nu:5})}B.part()}
+  {const yF=4.68,yB=4.42,zF=-1.72,zB=-3.28;for(const x of [-1.08,-.36,.36,1.08])B.log([x,yF,zF],[x,yB,zB],.04,{tone:"stick",bend:.01});
+   for(let k=0;k<6;k++){const x0=mix(-1.15,1.15,k/6),x1=mix(-1.15,1.15,(k+1)/6)+.06;B.grid(B.bin("bark"),2,4,(i,j,u,v)=>[mix(x0,x1,u),mix(yF,yB,v)+.05+.025*Math.sin(u*3.14),mix(zF,zB,v)],(u,v)=>[u*.6,v*1.6],()=>B.tint().map(q=>q*.85));B.grid(B.bin("bark"),1,2,(i,j,u,v)=>[mix(x0,x1,u),mix(yF,yB,v)+.03,mix(zF,zB,v)],(u,v)=>[u*.6,v*1.6],()=>B.tint().map(q=>q*.6),{flip:true})}
+   B.grid(B.bin("thatch"),8,1,(i,j,u,v)=>[mix(-1.2,1.2,u),yF+.1+.06*v,mix(zF+.05,zF-.25,v)],(u,v)=>[u*3,v],()=>[.6,.55,.42],{flip:true});B.part()}
+  // runner stone, pinion and shaft turn together (stone group)
+  MB.stage=6;{const lb=MB.bin("wood"),tn=MB.tint();
+   for(const y of [LN.y0,LN.y1])MB.grid(lb,16,1,(i,j,u,v)=>{const a=u*6.283,r=mix(.04,LN.r+.045,v);return [Math.cos(a)*r,y+.018,Math.sin(a)*r]},(u,v)=>[u*2,v*.3],()=>tn,{});
+   for(const y of [LN.y0,LN.y1])MB.grid(lb,16,1,(i,j,u,v)=>{const a=u*6.283;return [Math.cos(a)*(LN.r+.045),mix(y-.018,y+.018,v),Math.sin(a)*(LN.r+.045)]},(u,v)=>[u*2,v*.1],()=>tn.map(q=>q*.8),{wrapU:true});
+   for(let j=0;j<LN.staves;j++){const a=(j+.5)/LN.staves*6.283;MB.log([Math.sin(a)*LN.r,LN.y0,Math.cos(a)*LN.r],[Math.sin(a)*LN.r,LN.y1,Math.cos(a)*LN.r],.022,{mat:"wood",bend:0,nu:6,caps:false})}
+   MB.log([0,M.bridge+.08,0],[0,ST.run[0]+.02,0],.055,{mat:"wood",bend:0,nu:8});
+   disk(MB,0,0,.08,ST.R-.01,ST.run[0],ST.run[1],[.86,.83,.78],40);
+   MB.log([-.075,ST.run[1]+.015,0],[.075,ST.run[1]+.015,0],.022,{mat:"wood",bend:0,nu:5});MB.log([0,ST.run[1],0],[0,ST.run[1]+.2,0],.016,{mat:"wood",bend:0,nu:5});
+   for(let k=0;k<3;k++){const a=k*2.09+.4;MB.stone(Math.cos(a)*.33,ST.run[1]+.005,Math.sin(a)*.33,.06,.012,.035,a,{tint:[1.05,1.02,.95],nu:6,nv:3})}MB.part()}
+ }
  // ---------- site (before any stage): stakes, cord line and the marked wheel pit ----------
- B.stage=6;{const pts=[[-3.6,-.9],[3.2,-.9],[3.2,1.9],[-3.6,1.9]];for(const [x,z] of pts)B.log([x,g(x,z)-.05,z],[x,g(x,z)+.6,z],.025,{tone:"stick"});
+ B.stage=7;{const pts=[[-3.6,-3.3],[3.2,-3.3],[3.2,2.1],[-3.6,2.1]];for(const [x,z] of pts)B.log([x,g(x,z)-.05,z],[x,g(x,z)+.6,z],.025,{tone:"stick"});
   for(let i=0;i<4;i++){const a=pts[i],b=pts[(i+1)%4];B.log([a[0],g(a[0],a[1])+.5,a[1]],[b[0],g(b[0],b[1])+.5,b[1]],.005,{mat:"cord",caps:false,bend:.02})}
   for(let k=0;k<12;k++){const a=k/12*6.283,x=Math.cos(a)*R,z=0;B.log([x,g(x,z)-.03,z+(k%2?.3:-.3)],[x,g(x,z)+.25,z+(k%2?.3:-.3)],.015,{tone:"stick"})}
   for(const x of S.trestles)B.stone(x,g(x,0)+.04,0,.12,.06,.1,0,{tint:[.9,.88,.84]});B.part()}
+ const runner=new T.Group();runner.name="runner";runner.position.set(S.mill.lantern.x,0,S.mill.lantern.z);root.add(runner);const ms=MB.finish(runner);for(const grp of ms)for(const m of grp.children)m.castShadow=true;
  const st=B.finish(root),ws=WB.finish(wheel),hs=HB.finish(helve),gate=new T.Group();gate.name="gate";gate.position.set(S.gate,0,0);root.add(gate);const gs=GB.finish(gate);
  const base=new T.Group();base.name="base";root.add(base);RB.finish(base);
  const waterG=new T.Group();waterG.name="water";root.add(waterG);const wq=AQ.finish(waterG);for(const grp of wq)for(const m of grp.children){m.castShadow=false;m.renderOrder=2}
  for(const grp of ws.concat(hs))for(const m of grp.children)m.castShadow=true;
- root.userData.stages=[0,1,2,3,4,5].map(i=>[st[i],ws[i],hs[i],gs[i]].filter(x=>x&&x.children.length));root.userData.site=st[6];
- root.userData.wheel=wheel;root.userData.helve=helve;root.userData.gate=gate;root.userData.water=wq;for(const k of [3,4,5])if(wq[k])wq[k].visible=false;
+ root.userData.stages=[0,1,2,3,4,5,6].map(i=>[st[i],ws[i],hs[i],gs[i],ms[i]].filter(x=>x&&x.children.length));root.userData.site=st[7];
+ root.userData.wheel=wheel;root.userData.runner=runner;root.userData.helve=helve;root.userData.gate=gate;root.userData.water=wq;for(const k of [2,3,4,5,6])if(wq[k])wq[k].visible=false;
  // spray: one small Points cloud (not a mesh; no shadow) fed at the spout, the fall and where the buckets empty
- if(!SPRAY_MAT)SPRAY_MAT=new T.PointsMaterial({color:0xeaf6ff,size:.055,transparent:true,opacity:.6,depthWrite:false,sizeAttenuation:true});
+ if(!SPRAY_MAT){const mt=woodTextures().mist.map;SPRAY_MAT=new T.PointsMaterial({color:0xeaf6ff,map:mt,size:.07,transparent:true,opacity:.75,depthWrite:false,sizeAttenuation:true});
+  MIST_MAT=new T.PointsMaterial({color:0xf4f8fa,map:mt,size:.85,transparent:true,opacity:.16,depthWrite:false,sizeAttenuation:true})}
  const N=160,pg=new T.BufferGeometry(),pa=new Float32Array(N*3).fill(-100);pg.setAttribute("position",new T.BufferAttribute(pa,3));pg.boundingSphere=new T.Sphere(new T.Vector3(-1,2,0),9);
  const spray=new T.Points(pg,SPRAY_MAT);spray.name="spray";spray.frustumCulled=true;root.add(spray);
  root.userData.spray={pts:spray,vel:new Float32Array(N*3),life:new Float32Array(N),next:0,acc:[0,0,0],
-  fall:[-4.3,g(-4.3,2.1)+.08,2.1],ground:[FL.x1+1.0,g(FL.x1+1.0,0)+.06,0],top:[FL.x1+.2,WH.cy+R-.05,0],dump:[.95,g(.95,0)+.08,0],rng:rng(seed+77)};
+  fall:STREAMS.filter(q=>q.q>.2).map(q=>[q.x,g(q.x,POOL.z)+.08,POOL.z-.15]),ground:[FL.x1+1.0,g(FL.x1+1.0,0)+.06,0],top:[FL.x1+.2,WH.cy+R-.05,0],dump:[.95,g(.95,0)+.08,0],rng:rng(seed+77)};
  // proxies: always the rock; then footings, flume, wheel, hammer as they are built
  proxy(root,-1,(K.x0+K.x1)/2,K.top/2,(K.z0+K.z1)/2,K.x1-K.x0,K.top,K.z1-K.z0);proxy(root,-1,-1,.15,.4,6,.3,3.6);
  proxy(root,1,(FL.x0+FL.x1)/2,FL.y,0,FL.x1-FL.x0,.4,.45);proxy(root,1,S.pole[0],.9,S.pole[1],.6,1.8,.6);
- proxy(root,3,0,WH.cy,0,2*R,2*R,WH.width+.1);proxy(root,5,(hpx+HM.head[0])/2,1.4,hz,2.6,1.6,.8);
+ proxy(root,3,0,WH.cy,0,2*R,2*R,WH.width+.1);proxy(root,5,(hpx+HM.head[0])/2,1.4,hz,2.6,1.6,.8);proxy(root,6,0,1.6,-2.5,2.0,3.2,1.3);
+ {const NM=48,mg=new T.BufferGeometry(),ma=new Float32Array(NM*3).fill(-100);mg.setAttribute("position",new T.BufferAttribute(ma,3));mg.boundingSphere=new T.Sphere(new T.Vector3(POOL.x,1,POOL.z),4);
+  const mist=new T.Points(mg,MIST_MAT);mist.name="mist";mist.renderOrder=3;root.add(mist);root.userData.mist={pts:mist,vel:new Float32Array(NM*3),life:new Float32Array(NM),next:0,acc:0,src:[POOL.x,g(POOL.x,POOL.z)+.15,POOL.z],rx:POOL.rx*.6,rz:POOL.rz*.5}}
  return root}
 /* per-frame motion: angle (rad, clockwise seen from the hammer side), helve (rad, + lifts the head), gate 0..1, t = clock (s) */
 export function animateWaterwheel(root,dt,o={}){const u=root.userData;if(u.type!=="waterwheel")return;
- const stage=o.stage??u.stage??0,gate=Math.max(0,Math.min(1,o.gate??0));u.wheel.rotation.z=-(o.angle||0);u.helve.rotation.z=o.helve||0;u.gate.position.y=gate*.24;
- const flowing=stage>=2&&gate>.05,hung=stage>=5,W=u.water;if(W[3])W[3].visible=flowing;if(W[4])W[4].visible=flowing&&!hung;if(W[5])W[5].visible=flowing&&hung;
+ const stage=o.stage??u.stage??0,gate=Math.max(0,Math.min(1,o.gate??0));u.wheel.rotation.z=-(o.angle||0);u.helve.rotation.z=o.helve||0;if(u.runner)u.runner.rotation.y=(o.stoneAngle??(o.angle||0)*5);u.gate.position.y=gate*.24;
+ const flowing=stage>=2&&gate>.05,hung=stage>=5,W=u.water;if(W[3])W[3].visible=flowing;if(W[4])W[4].visible=flowing&&!hung;if(W[5])W[5].visible=flowing&&hung;if(W[2])W[2].visible=stage>=2;if(W[6])W[6].visible=flowing&&hung&&Math.abs(o.omega||0)>.05;
  for(const k of [3,4,5])if(W[k])W[k].scale.set(1,1,.55+.45*gate);
  const M=woodMaterials().water,off=-(((o.t||0)*.9)%1);M.map.offset.y=off;if(M.normalMap)M.normalMap.offset.y=off;
+ {const MM=woodMaterials(),tt=o.t||0;MM.fall.map.offset.y=-((tt*1.7)%1);MM.foam.map.offset.set((tt*.03)%1,-((tt*.25)%1));MM.pool.map.offset.y=-((tt*.18)%1)}
+ const Mi=u.mist;if(Mi&&o.spray!==false){const p=Mi.pts.geometry.attributes.position.array,N=Mi.life.length;Mi.acc+=(flowing&&hung?14:9)*dt;
+  while(Mi.acc>=1){Mi.acc-=1;const i=Mi.next;Mi.next=(i+1)%N;Mi.life[i]=2+Math.random()*1.5;p[i*3]=Mi.src[0]+(Math.random()-.5)*2*Mi.rx;p[i*3+1]=Mi.src[1];p[i*3+2]=Mi.src[2]+(Math.random()-.5)*2*Mi.rz;Mi.vel[i*3]=.05+Math.random()*.15;Mi.vel[i*3+1]=.15+Math.random()*.25;Mi.vel[i*3+2]=.1+Math.random()*.2}
+  for(let i=0;i<N;i++){if(Mi.life[i]<=0)continue;Mi.life[i]-=dt;if(Mi.life[i]<=0){p[i*3+1]=-100;continue}p[i*3]+=Mi.vel[i*3]*dt;p[i*3+1]+=Mi.vel[i*3+1]*dt;p[i*3+2]+=Mi.vel[i*3+2]*dt}Mi.pts.geometry.attributes.position.needsUpdate=true}
  const S=u.spray;if(!S||o.spray===false)return;const p=S.pts.geometry.attributes.position.array,N=S.life.length,r=S.rng,flow=o.flow??1;
  const emit=(src,rate,k,spread,up)=>{S.acc[k]+=rate*dt;while(S.acc[k]>=1){S.acc[k]-=1;const i=S.next;S.next=(i+1)%N;S.life[i]=.45+.45*r();
    p[i*3]=src[0]+(r()-.5)*spread;p[i*3+1]=src[1];p[i*3+2]=src[2]+(r()-.5)*spread;const a=r()*6.283,h=.4+r()*.9;S.vel[i*3]=Math.cos(a)*h+(k===1?.5:0);S.vel[i*3+1]=up*(.6+r());S.vel[i*3+2]=Math.sin(a)*h}};
- emit(S.fall,40,0,.35,1.6);if(flowing)emit(hung?S.top:S.ground,70*gate*flow,1,.22,hung?1.1:1.8);if(flowing&&hung&&Math.abs(o.omega||0)>.05)emit(S.dump,45*gate*flow,2,.4,1.2);
+ for(const f of S.fall)emit(f,40/S.fall.length,0,.3,1.6);if(flowing)emit(hung?S.top:S.ground,70*gate*flow,1,.22,hung?1.1:1.8);if(flowing&&hung&&Math.abs(o.omega||0)>.05)emit(S.dump,45*gate*flow,2,.4,1.2);
  for(let i=0;i<N;i++){if(S.life[i]<=0)continue;S.life[i]-=dt;if(S.life[i]<=0){p[i*3+1]=-100;continue}S.vel[i*3+1]-=9.8*dt;p[i*3]+=S.vel[i*3]*dt;p[i*3+1]+=S.vel[i*3+1]*dt;p[i*3+2]+=S.vel[i*3+2]*dt}
  S.pts.geometry.attributes.position.needsUpdate=true}
 
