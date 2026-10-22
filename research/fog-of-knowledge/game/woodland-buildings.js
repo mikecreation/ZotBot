@@ -100,8 +100,8 @@ export function woodTextures(){if(TEX)return TEX;
  // water: soft downstream streaks and foam flecks (scrolled along v by the water wheel)
  const water=makeTex(64,256,(u,v,o)=>{const s=fb(u,v,2,8,3,31),st=pn(u*8,v*2,8,2,33),fl=sstep(.7,.85,fb(u,v,8,24,2,35)),c=.62+.3*s+.22*sstep(.55,.8,st)+.35*fl;o[0]=170*c;o[1]=205*c;o[2]=220*c;o[3]=s*.6+st*.4},{normal:1.6});
  // cliff rock: bedding laminae, speckle, pitting and a voronoi crack net (height drives the normal map)
- const rock=makeTex(256,256,(u,v,o)=>{const b=fb(u,v,4,4,4,51),f=fb(u,v,16,16,3,53),lam=.5+.5*Math.sin((v*14+b*3.2)*6.283),[f1,f2]=voronoi(u,v,3,57),cr=sstep(.035,0,f2-f1)*sstep(.35,.65,fb(u,v,3,3,2,58)),pit=sstep(.74,.9,fb(u,v,24,24,2,59)),c=.74+.22*b+.16*(f-.5)+.06*lam-.32*cr-.14*pit;
-  o[0]=226*c;o[1]=219*c;o[2]=206*c;o[3]=b*.5+f*.3+lam*.1-cr*.45-pit*.2},{normal:2.4});
+ const rock=makeTex(256,256,(u,v,o)=>{const b=fb(u,v,4,4,4,51),f=fb(u,v,16,16,3,53),lam=.5+.5*Math.sin((v*14+b*3.2)*6.283),[f1,f2]=voronoi(u,v,3,57),cr=sstep(.035,0,f2-f1)*sstep(.35,.65,fb(u,v,3,3,2,58)),pit=sstep(.74,.9,fb(u,v,24,24,2,59)),c=.74+.22*b+.16*(f-.5)+.06*lam-.22*cr-.1*pit+.08;
+  o[0]=Math.min(255,250*c);o[1]=Math.min(255,243*c);o[2]=Math.min(255,230*c);o[3]=b*.5+f*.3+lam*.1-cr*.45-pit*.2},{normal:2.4});
  // falling water: long streaks with gaps (alpha), white aerated clots; foam: bubbly cells; pool: ring ripples; mist: soft sprite
  const fall=makeTex(64,256,(u,v,o)=>{const st=fb(u,v,6,2,3,61),st2=pn(u*16,v*3,16,3,63),fo=sstep(.6,.8,fb(u,v,8,16,3,65)),c=.78+.16*st+.26*fo;o[0]=205*c;o[1]=224*c;o[2]=234*c;o[4]=255*Math.min(1,.3+.55*sstep(.3,.75,st*.6+st2*.5)+.5*fo);o[3]=st*.5+fo*.3},{alpha:true,normal:1.2});
  const foam=makeTex(128,128,(u,v,o)=>{const [f1,f2]=voronoi(u,v,10,71),[g1,g2]=voronoi(u,v,23,73),b=fb(u,v,4,4,3,75),bub=sstep(.02,.09,f2-f1)*.6+sstep(.03,.1,g2-g1)*.4;o[0]=238;o[1]=242;o[2]=246;o[4]=255*sstep(.25,.65,b)*(.45+.55*bub);o[3]=bub},{alpha:true,normal:.8});
@@ -551,18 +551,18 @@ export function buildWaterwheel(opt={}){const S=WHEELSITE,WH=WHEEL,seed=opt.seed
  const NT=1440,TB=[];{let sa=0,pv=null;for(let i=0;i<=NT;i++){const th=i/NT*6.283185,c=Math.cos(th),sn=Math.sin(th),e=2/CL.p,x=CL.cx+CL.hx*Math.sign(c)*Math.pow(Math.abs(c),e),z=CL.cz+CL.hz*Math.sign(sn)*Math.pow(Math.abs(sn),e);if(pv)sa+=Math.hypot(x-pv[0],z-pv[1]);TB.push([x,z,sa]);pv=[x,z]}}
  const PER=TB[NT][2];
  const fpt=s=>{s=((s%PER)+PER)%PER;let lo=0,hi=NT;while(hi-lo>1){const m=(lo+hi)>>1;if(TB[m][2]<=s)lo=m;else hi=m}const a=TB[lo],b=TB[hi],t=(s-a[2])/((b[2]-a[2])||1),tx=b[0]-a[0],tz=b[1]-a[1],l=Math.hypot(tx,tz)||1;return [mix(a[0],b[0],t),mix(a[1],b[1],t),tz/l,-tx/l]};
- const topH=(x,z)=>{let h=3.46+.85*sstep(-4.5,-6.2,x)+.3*sstep(.1,-1.7,z)*sstep(-4.3,-5.5,x)+.14*(n3(x*1.3,z*1.3,.5,seed)-.5)+.06*(n3(x*4,z*4,1.5,seed)-.5);
+ const topH=(x,z)=>{let h=3.46+.85*sstep(-4.5,-6.2,x)+.3*sstep(.1,-1.7,z)*sstep(-4.3,-5.5,x)+.3*(n3(x*1.1,z*1.1,.5,seed)-.5)+.06*(n3(x*4,z*4,1.5,seed)-.5);
   h=mix(3.36,h,sstep(.85,1.35,Math.hypot((x+4.45)/.72,z/.6)));                                   // spring basin
   if(z>.25)h=mix(Math.min(h,3.39-.02*(z-.25)),h,sstep(.55,1.3,Math.abs(x+4.36)/.24));              // overflow runnel to the lip
   return h};
- const LB=[-1.5];{let y=.12+RB.rnd(0,.18);while(y<4.8){LB.push(y);y+=RB.r()<.3?RB.rnd(.2,.35):RB.rnd(.5,1.15)}LB.push(7)}
+ const LB=[-1.5];{let y=.12+RB.rnd(0,.18);while(y<4.8){LB.push(y);y+=RB.r()<.2?RB.rnd(.3,.5):RB.rnd(.9,1.7)}LB.push(7)}
  const layerOf=y=>{let i=0;while(i<LB.length-2&&y>=LB[i+1])i++;return i};
  const LOFF=LB.map(()=>RB.rnd(-.025,.025)),LTONE=LB.map(()=>Math.floor(RB.r()*4)),LAMP=LB.map(()=>RB.r()<.45?RB.rnd(.05,.2):RB.rnd(.35,.8));
  const JT=[];{let s=RB.rnd(.1,.5);while(s<PER-.35){JT.push(s);s+=RB.rnd(.45,1.05)}}
- const blockOff=(i,s)=>{let j=0;while(j<JT.length&&JT[j]<=s)j++;return (h3(i,j%JT.length,7,seed)-.5)*.2*LAMP[i]};
+ const blockOff=(i,s)=>{let j=0;while(j<JT.length&&JT[j]<=s)j++;return (h3(0,j%JT.length,8,seed)-.5)*.26+(h3(i,j%JT.length,7,seed)-.5)*.08*LAMP[i]};
  const dispAt=(s,y,x,z,nz,gy)=>{const i=layerOf(y),b0=LB[i],b1=LB[i+1],t=(y-b0)/(b1-b0);
   const prof=t<.12?mix(-.08,-.01,t/.12):t<.85?mix(-.01,.03,(t-.12)/.73):mix(.03,-.02,(t-.85)/.15);let cj=0;
-  for(const j of JT){const q=Math.abs(s-j),hj=h3(i,Math.round(j*13),11,seed);if(q<.05&&hj<.6)cj=Math.min(cj,-(.05+.14*hj)*(1-q/.05))}
+  for(const j of JT){const q=Math.abs(s-j),hj=h3(0,Math.round(j*13),11,seed),hl=h3(i,Math.round(j*13),12,seed);if(q<.06&&hj<.75&&hl<.85)cj=Math.min(cj,-(.08+.16*hj)*(1-q/.06))}
   const fall=nz>.3?Math.exp(-(((x+4.45)/.5)**2))*nz:0;   // the fall has scooped a recess and left an overhanging lip
   const d=prof*LAMP[i]+cj+LOFF[i]+blockOff(i,s)+.3*(n3(x*.45,y*.32,z*.45,seed+3)-.5)*2+.3*(n3(s*.6,y*.16,.7,seed+12)-.5)*2+.12*Math.abs(n3(x*1.5,y*1.2,z*1.5,seed+6)-.5)*2+.045*(n3(x*2.6,y*2.6,z*2.6,seed+4)-.5)*2
    -.2*fall*sstep(.1,1.1,y)+.12*fall*sstep(2.9,3.3,y)+.12*Math.max(0,1-y/3.8)+.22*sstep(.4,-.35,y-gy);
@@ -573,7 +573,7 @@ export function buildWaterwheel(opt={}){const S=WHEELSITE,WH=WHEEL,seed=opt.seed
  const wetAt=(x,y,z)=>{let w=0;if(z>CL.cz+.4)for(const st of STREAMS){const lat=Math.abs(x-st.x)/(st.w*1.5+.1+.12*n3(x*3,y*2,z*3,seed+21));if(y<st.lip+.08)w=Math.max(w,(1-sstep(.55,1,lat))*Math.min(1,.4+st.q))}
   const pd=Math.hypot((x-POOL.x)/(POOL.rx+.6),(z-POOL.z)/(POOL.rz+.7));w=Math.max(w,(1-sstep(.6,1,pd))*(1-sstep(.4,1.5,y-g(x,z))));
   if(Math.hypot((x+4.45)/.9,z/.75)<1&&y>3.2)w=Math.max(w,.6);return w};
- const PAL=[[.72,.68,.62],[.78,.71,.6],[.66,.66,.66],[.74,.65,.55]],MOSS=[.34,.45,.17];
+ const PAL=[[.8,.77,.71],[.82,.78,.7],[.79,.78,.76],[.81,.76,.69]],MOSS=[.34,.45,.17];
  const RBr=RB.bin("rock"),RBw=RB.bin("rockwet");
  const rockTri=(A,Bv,C,hint)=>{const p0=A.p,p1=Bv.p,p2=C.p,ux=p1[0]-p0[0],uy=p1[1]-p0[1],uz=p1[2]-p0[2],vx=p2[0]-p0[0],vy=p2[1]-p0[1],vz=p2[2]-p0[2];
   let n=[uy*vz-uz*vy,uz*vx-ux*vz,ux*vy-uy*vx];const l=Math.hypot(...n);if(l<1e-7)return;n=n.map(q=>q/l);let V=[A,Bv,C];
