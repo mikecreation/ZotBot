@@ -266,7 +266,7 @@ export function buildGalleon(opts={}){
   return root;
 }
 /** show the parts of a ship under construction. stage = number of completed stages (0..6); frac = progress inside the current stage. */
-export function setStage(root,stage,frac=0){const {parts}=root.userData;root.userData.stage=stage;
+export function setStage(root,stage,frac=0){const {parts}=root.userData;const sf=Math.round(frac*64)/64;if(root.userData._ss===stage&&root.userData._sf===sf)return;root.userData._ss=stage;root.userData._sf=sf;root.userData.stage=stage;
   STAGE_PARTS.forEach((k,i)=>{parts[k].visible=i<stage||(i===stage&&frac>0&&k==="hull")});
   const pl=parts.hull.getObjectByName("planking");if(pl){const n=pl.geometry.index.count,show=stage>1?1:stage===1?Math.max(.04,frac):1;pl.geometry.setDrawRange(0,Math.floor(n*show/3)*3)}
   const fr=parts.keel.getObjectByName("frames");if(fr)fr.visible=stage<3; // frames hidden behind planking once decked

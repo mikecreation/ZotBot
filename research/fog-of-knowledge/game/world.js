@@ -456,6 +456,10 @@ function give(k,n=1){if(!ITEMS[k]||n<=0)return 0;const fit=Math.min(n,roomFor(k)
   if(fit<n&&player){const f=forward();dropSpawn(k,n-fit,f);toast(`Your pack is full (${capacity()} slots) â€” ${n-fit}Ã— ${ITEMS[k].name} fell at your feet.`)}
   renderHotbar();return fit}
 function take(k,n=1){if(inv(k)<n)return false;world.inv[k]-=n;if(world.inv[k]===1&&world.held===k&&world.left===k)world.held=null;if(world.inv[k]<=0){delete world.inv[k];if(world.left===k)world.left=null;if(world.held===k)world.held=ordered().find(x=>x!==world.left)||null}renderHotbar();return true}
+/* DEV creative: building delivers never deplete; stock stays topped so spam-E works without toggling DEV */
+function takeBuild(k,n=1){if(world&&world.devMode){world.inv[k]=Math.max(world.inv[k]||0,20,n);renderHotbar();return true}return take(k,n)}
+let _saveDeb=null;function saveDebounced(ms=2000){if(_saveDeb)return;_saveDeb=setTimeout(()=>{_saveDeb=null;save()},ms)}
+function saveNow(){if(_saveDeb){clearTimeout(_saveDeb);_saveDeb=null}save()}
 function setHand(side,k){if(k&&!inv(k))return false;const other=side==="L"?"held":"left",me=side==="L"?"left":"held";if(k&&world[other]===k&&inv(k)<2)world[other]=null;world[me]=k||null;renderHotbar();renderInventory();return true}
 function stowMsg(k,n){toast(`+${n} ${ITEMS[k].name} â†’ Backpack (I)`);const C=world.counters;if(!C.tipPickup&&tipsOn()){C.tipPickup=1;toast("ðŸ’¡ Everything you pick up goes into your Backpack â€” press I to open it. V switches hands; 1â€“0 equips the selected hand; R puts its item back (Shift+R: both hands); right-click an item for more.")}}
 function stow(both){const field=activeHand==="L"?"left":"held",had=(both?[world.held,world.left]:[world[field]]).filter(Boolean);if(!had.length)return toast("Your hands are already empty.");world[field]=null;if(both)world.held=world.left=null;renderHotbar();renderInventory();AU.pickup?.();toast(`Stowed ${had.map(k=>ITEMS[k].name).join(" and ")} in your Backpack.`);return true}
@@ -1815,11 +1819,11 @@ function placeRaftSite(){const f=forward();let x=player.pos.x,z=player.pos.z,ok=
 function refreshRaftMesh(s){if(s.obj){scene.remove(s.obj);s.obj=null}structMesh(s)}
 function raftSiteWork(s){
   if((s.stage||0)>=RAFT_STAGES.length)return finishRaftSite(s);
-  const st=RAFT_STAGES[s.stage||0],res=deliverRaft(s,inv,(k,n)=>take(k,n)),dk=Object.entries(res.delivered);
+  const st=RAFT_STAGES[s.stage||0],res=deliverRaft(s,inv,(k,n)=>takeBuild(k,n)),dk=Object.entries(res.delivered);
   if(res.completed){AU.place();GFX.FX.dust(s.x,.4,s.z,16);const msg=res.done?" Press E to finish and board.":(" Next: "+RAFT_STAGES[s.stage].name+" - needs "+raftNeedText(raftRemaining(s))+".");toast("Stage "+s.stage+"/"+RAFT_STAGES.length+" complete: "+st.name+"."+msg);refreshRaftMesh(s);if(res.done)return finishRaftSite(s)}
   else if(dk.length){AU.pickup();toast("Delivered "+dk.map(([k,n])=>n+"x "+ITEMS[k].name).join(", ")+". "+st.name+" still needs "+raftNeedText(raftRemaining(s))+".");refreshRaftMesh(s)}
   else toast("Stage "+((s.stage||0)+1)+"/"+RAFT_STAGES.length+" - "+st.name+": needs "+raftNeedText(raftRemaining(s))+". "+st.note);
-  renderHotbar();save()}
+  renderHotbar();res.completed?saveNow():saveDebounced()}
 function finishRaftSite(s){s.type="raft";s.stage=RAFT_STAGES.length;s.got={};refreshRaftMesh(s);AU.place();GFX.FX.splash(s.x,s.z,40);
   toast("Raft finished! Press E to lie on it and paddle.");save();return s}
 const RAFT_DEBUG={
@@ -1864,11 +1868,11 @@ function shipyardMesh(s,g){const gal=GAL.buildGalleon({});s._gal=gal;const c=Mat
   const gAt=(lx,lz)=>heightAt(s.x+lx*c+lz*sn,s.z-lx*sn+lz*c)-s.y;gal.position.y=s.keelH;g.add(gal);g.add(GAL.buildSlipway(gAt,s.keelH));GAL.setStage(gal,s.stage||0,stageFrac(s));GAL.animateGalleon(gal,0,0,0,0)}
 function shipyardWork(s){
   if((s.stage||0)>=SHIP_STAGES.length)return launchShip(s);
-  const st=SHIP_STAGES[s.stage||0],res=deliver(s,inv,(k,n)=>take(k,n)),dk=Object.entries(res.delivered);
+  const st=SHIP_STAGES[s.stage||0],res=deliver(s,inv,(k,n)=>takeBuild(k,n)),dk=Object.entries(res.delivered);
   if(res.completed){AU.place();GFX.FX.dust(s.x,s.y+4,s.z,24);toast(`Stage ${s.stage}/6 complete: ${st.name}.`+(res.done?" The galleon is finished â€” press E at the shipyard to launch it.":` Next: ${SHIP_STAGES[s.stage].name} â€” needs ${needText(remaining(s))}.`))}
   else if(dk.length){AU.pickup();toast(`Delivered ${dk.map(([k,n])=>n+"Ã— "+ITEMS[k].name).join(", ")}. ${st.name} still needs ${needText(remaining(s))}.`)}
   else toast(`Stage ${(s.stage||0)+1}/6 Â· ${st.name}: needs ${needText(remaining(s))}. ${st.note}`);
-  GAL.setStage(s._gal,s.stage,stageFrac(s));renderHotbar();save()}
+  GAL.setStage(s._gal,s.stage,stageFrac(s));renderHotbar();res.completed?saveNow():saveDebounced()}
 function launchShip(s){const c=findLaunch(s.x,s.z,s.ry);if(!c)return toast("The water in front of the slipway is too shallow to float the galleon.");
   scene.remove(s.obj);world.structures.splice(world.structures.indexOf(s),1);
   const ship={type:"ship",x:c.x,y:0,z:c.z,ry:s.ry,ship:newShipState(c.x,c.z,s.ry)};ship.ship.y=GFX.waveHeight(c.x,c.z,heightAt(c.x,c.z))-HULL.draft;
@@ -1898,7 +1902,7 @@ function stepOnShip(dt,mv){const p=player,S=p.ship.ship;
   p.onGround=true;p.swimming=false;p.vel.set(0,0,0);p.fall=0;placeOnDeck()}
 function stepShips(dt){const W=windNow(),t=clock.elapsedTime;
   for(const s of world.structures){
-    if(s.type==="shipyard"&&s._gal){GAL.animateGalleon(s._gal,t,0,0,0);continue}
+    if(s.type==="shipyard"&&s._gal){continue} /* skip sail/flag anim on slipway — sails hidden until launch */
     if(s.type!=="ship"||!s.obj)continue;const S=s.ship;
     stepShip(S,dt,{wave:(x,z)=>GFX.waveHeight(x,z,heightAt(x,z)),ground:heightAt,windDir:W.dir,windSpeed:W.speed},S.ctl||{});
     if(player.ship!==s)S.ctl={sail:-1,rudder:0}; // nobody at the helm: the crew takes in sail
@@ -2026,7 +2030,7 @@ function woodWork(s,t){
     if(part==="bed"||s.type==="woodhut")return sleep(s);
     return toast("Forest house: E at the door to open it, E at the bed to sleep. Feed the hearth with sticks or logs.")}
   const pr=stageProblem(s,inv);if(pr)return toast(pr);
-  const S=WSTAGES[s.type],st=S[s.stage||0],res=deliverStage(s,inv,(k,n)=>take(k,n)),dk=Object.entries(res.delivered);
+  const S=WSTAGES[s.type],st=S[s.stage||0],res=deliverStage(s,inv,(k,n)=>takeBuild(k,n)),dk=Object.entries(res.delivered);
   if(res.completed){AU.place();GFX.FX.dust(s.x,s.y+1,s.z,20);s._seg=null;const id=res.completed;
     if(s.type==="woodhut"&&id==="daub"){discover("wattle_daub");discover("shelter");world.camp=[s.x,s.z]}
     if(s.type==="waterwheel"&&res.done)world.camp=world.camp||[s.x,s.z];
@@ -2034,7 +2038,7 @@ function woodWork(s,t){
     toast(`${woodName(s)} Â· ${st.name} complete.`+(res.done?(s.type==="waterwheel"?" The wheel turns: water from the flume fills the buckets on the down-going side, their weight drives the axle, and three cam lugs trip the hammer into the mortar. E at the gate pole to open or shut the sluice.":s.type==="woodhut"?" The hut is finished: walk in through the doorway; E inside to sleep. This is your camp now.":" The house is finished. Open the door (E), lay a fire in the hearth â€” the chimney draws the smoke up and out. This is your camp now."):` Next: ${S[s.stage].name} â€” needs ${needText(remainingOf(s))}.`))}
   else if(dk.length){AU.pickup();toast(`Delivered ${dk.map(([k,n])=>n+"Ã— "+ITEMS[k].name).join(", ")}. ${st.name} still needs ${needText(remainingOf(s))}.`)}
   else toast(`${woodName(s)} Â· stage ${(s.stage||0)+1}/${S.length} Â· ${st.name}: needs ${needText(remainingOf(s))}. ${st.note||""}`);
-  WOOD.setWoodStage(s._wood,s.stage,stageFracOf(s));renderHotbar();save()}
+  WOOD.setWoodStage(s._wood,s.stage,stageFracOf(s));renderHotbar();res.completed?saveNow():saveDebounced()}
 function woodDoorMoving(){for(const s of world.structures)if(s.doorTarget!=null&&Math.abs((s.open||0)-s.doorTarget)>1e-3)return true;return false}
 let woodDay=null;   // soft sky light spilling in through the doorway and round windows (no shadow; one persistent light so shaders never recompile)
 const WOOD_SPILL={woodhut:[0,1,.6,7],foresthouse:[-.2,2.2,.4,9]};
@@ -2051,7 +2055,7 @@ function stepWoodland(dt){const cp=camera.position;
    mostly in shadow, so the instance count is thinned (instances are in random order, so a shorter count thins evenly, with no pop of whole patches). */
 let grassF=1;
 function grassThin(cp){const hut=woodInside(cp.x,cp.y,cp.z),night=GFX.ENV.night||0;
-  let f=(1-.3*clamp((night-.5)*2,0,1));if(hut&&(hut.stage||0)>=2)f*=hut.type==="foresthouse"?(.12+.33*(hut.open||0)):.5;
+  let f=(1-.3*clamp((night-.5)*2,0,1));for(const sy of world.structures)if(sy.type==="shipyard"&&(sy.stage||0)<SHIP_STAGES.length&&Math.hypot(cp.x-sy.x,cp.z-sy.z)<45){f*=.4;break}if(hut&&(hut.stage||0)>=2)f*=hut.type==="foresthouse"?(.12+.33*(hut.open||0)):.5;
   grassF+=(f-grassF)*.25;if(Math.abs(f-grassF)<.01)grassF=f;
   for(const ch of chunks.values())if(ch.grass)for(const m of ch.grass.children)if(m.isInstancedMesh){const full=m.userData.full??(m.userData.full=m.count);m.count=Math.max(1,Math.round(full*grassF))}}
 function woodPlanHtml(){const cur=t=>{let best=null,bd=1e9;for(const s of world.structures)if(s.type===t){const d=Math.hypot(s.x-player.pos.x,s.z-player.pos.z);if(d<bd){bd=d;best=s}}return best};
