@@ -4,6 +4,9 @@
  *   woodhut     : lashed A-frame hut — pole frame, wattle, bark + thatch roof, daubed gables.
  *   foresthouse : fieldstone + saddle-notched round-log house, cob plaster, round clay windows,
  *                 stone chimney hearth, sod roof, split-plank door on a wooden pole hinge, mud bed.
+ *   waterwheel  : spring-fed overshot water wheel — stone footings and tailrace, a split-log flume
+ *                 on trestles with a sluice gate, axle on A-frame bearings, pegged spokes, rims and
+ *                 buckets, and cam lugs on the axle that work a trip-hammer over a stone mortar.
  * Layout numbers are in the building's local frame (metres): +z is the front (door side),
  * y is up from the site's ground level s.y. world.js and woodland-buildings.js share them.
  */
@@ -17,6 +20,7 @@ export const WOOD_ITEMS={
  cob:{name:"Cob (mud, straw & sand)",mass:1.5,density:1700,r:.1,color:0x9c7a52},
  woodhut_site:{name:"Woodland hut — staked site & cord",mass:2,density:600,r:.2,color:0x8a6a44,place:"woodhut"},
  house_site:{name:"Forest house — staked site & plan",mass:3,density:600,r:.2,color:0x8a6a44,place:"foresthouse"},
+ waterwheel_site:{name:"Water wheel — staked site & spring line",mass:3,density:600,r:.2,color:0x7a6a50,place:"waterwheel"},
 };
 export const WOOD_RECIPES=[
  {out:"cordage",req:null,in:{fiber:3},n:2,cat:"tools"},
@@ -24,6 +28,7 @@ export const WOOD_RECIPES=[
  {out:"woodhut_site",req:null,in:{stick:4,cordage:1},cat:"build"},
  {out:"mud",req:null,in:{clay:1,pot_water:1},n:3,ret:"pot",cat:"build"},
  {out:"house_site",req:"wattle_daub",in:{stick:6,cordage:2,stone:2},cat:"build"},
+ {out:"waterwheel_site",req:"wattle_daub",in:{stick:6,cordage:3,stone:2},cat:"build"},
 ];
 /* stages: id, name, need (items), note (what you are doing), axe = needs an axe in the pack */
 export const HUT_STAGES=[
@@ -40,9 +45,19 @@ export const HOUSE_STAGES=[
  {id:"roof",name:"Log rafters, bark & sod roof",need:{log:6,bark:8,thatch:6,mud:4},axe:true,note:"Rafters and a stick ceiling carry overlapping bark; sod on top insulates and sheds rain."},
  {id:"fitout",name:"Door, mud bed & shelves",need:{log:2,cordage:2,cob:4,feather:4,moss:4},axe:true,note:"Split planks on a wooden pole hinge with a drop latch; a cob bench-bed topped with moss, grass and feathers."},
 ];
-export const STAGES={woodhut:HUT_STAGES,foresthouse:HOUSE_STAGES};
-export const WOOD_TYPES=["woodhut","foresthouse"];
-export const isWoodland=t=>t==="woodhut"||t==="foresthouse";
+export const WHEEL_STAGES=[
+ {id:"footings",name:"Stone footings & tailrace",need:{stone:12,clay:2},note:"Fieldstone pads for the bearings and trestles; a clay-lined, stone-edged channel carries spent water away below the wheel."},
+ {id:"flume",name:"Spring box, sluice & split-log flume",need:{log:4,plank:4,clay:2,stone:4},axe:true,note:"A plank box catches the spring; a sliding sluice board lets water into a hollowed split-log flume on two trestles. Clay seals the joints."},
+ {id:"axle",name:"Axle & bearings",need:{log:2,trenail:6,stone:2},note:"A straight log axle rests in greased wooden bearing blocks on pegged A-frames standing on the footings."},
+ {id:"spokes",name:"Spokes & rims",need:{plank:8,trenail:12,cordage:2},axe:true,note:"Two rings of eight split-plank spokes are mortised into the axle and pegged to segmented plank rims."},
+ {id:"buckets",name:"Sole boards & buckets",need:{plank:10,trenail:16},note:"Twenty-four angled buckets are pegged between the rims; they catch the falling water and hold it on the down-going side."},
+ {id:"hammer",name:"Cam lugs, trip-hammer & mortar",need:{log:2,stone:4,cordage:2,trenail:4},note:"Three lugs pegged through the axle press the tail of a pivoted helve; each time one slips off, the heavy head drops into a stone mortar to crush grain."},
+];
+export const STAGES={woodhut:HUT_STAGES,foresthouse:HOUSE_STAGES,waterwheel:WHEEL_STAGES};
+export const WOOD_TYPES=["woodhut","foresthouse","waterwheel"];
+export const isWoodland=t=>t==="woodhut"||t==="foresthouse"||t==="waterwheel";
+/* buildings that enclose a room (shelter, sleeping, fire light spill); the wheel is open machinery */
+export const isDwelling=t=>t==="woodhut"||t==="foresthouse";
 export function stagesOf(s){return STAGES[s.type]||[]}
 export function remainingOf(s){const st=stagesOf(s)[s.stage||0];if(!st)return {};const out={};for(const k in st.need){const n=st.need[k]-((s.got||{})[k]||0);if(n>0)out[k]=n}return out}
 export function stageFracOf(s){const st=stagesOf(s)[s.stage||0];if(!st)return 1;let need=0,got=0;for(const k in st.need){need+=st.need[k];got+=Math.min(st.need[k],(s.got||{})[k]||0)}return need?got/need:1}
@@ -68,17 +83,29 @@ export const HOUSE={hx:2.8,hz:2.3,logR:.16,course:.3,courses:7,base:.4,floor:.22
 export function toLocal(s,x,z){const dx=x-s.x,dz=z-s.z,c=Math.cos(s.ry||0),n=Math.sin(s.ry||0);return [dx*c-dz*n,dx*n+dz*c]}
 export function toWorld(s,lx,lz){const c=Math.cos(s.ry||0),n=Math.sin(s.ry||0);return [s.x+lx*c+lz*n,s.z-lx*n+lz*c]}
 /* footprint used for placement checks, shelter and the floor (local rect) */
-export function footprint(type){return type==="woodhut"?{x0:-1.85,x1:1.85,z0:-1.95,z1:1.95}:{x0:-4.1,x1:3.5,z0:-2.9,z1:2.9}}
+/* water wheel site (local frame; +x is downstream, +z is the hammer side) */
+export const WHEELSITE={rock:{x0:-6.0,x1:-3.85,z0:-1.7,z1:1.5,top:4.1},spring:{x0:-4.85,x1:-4.05,z0:-.38,z1:.38,y:3.7},gate:-3.85,
+ flume:{x0:-3.85,x1:.25,y:3.55,w:.36},trestles:[-2.85,-1.3],wheel:{x:0,y:1.85,R:1.6,w:.6},axle:{z0:-1.05,z1:2.05,r:.14},bearings:[-.75,.75,1.95],
+ lugs:{z:1.55,r:.30},hammer:{z:1.55,pivot:[.88,2.08],head:2.28,mortar:[2.28,1.55]},race:{x0:-1.9,x1:5.6,hw:.5},brook:{z:-1.35},pole:[-3.25,.75]};
+export function footprint(type){if(type==="waterwheel")return {x0:-6.2,x1:3.6,z0:-2.1,z1:2.4};return type==="woodhut"?{x0:-1.85,x1:1.85,z0:-1.95,z1:1.95}:{x0:-4.1,x1:3.5,z0:-2.9,z1:2.9}}
 /* floor rectangle: inside it the ground is the building's floor */
-export function floorRect(type){return type==="woodhut"?{x0:-1.6,x1:1.6,z0:-1.7,z1:1.7,y:HUT.floor}:{x0:-2.66,x1:2.66,z0:-2.16,z1:2.16,y:HOUSE.floor}}
+export function floorRect(type){if(type==="waterwheel")return null;return type==="woodhut"?{x0:-1.6,x1:1.6,z0:-1.7,z1:1.7,y:HUT.floor}:{x0:-2.66,x1:2.66,z0:-2.16,z1:2.16,y:HOUSE.floor}}
 /* is a local point inside the enclosed volume (camera clamp) */
 export function insideVolume(type,lx,ly,lz,stage){
+ if(type==="waterwheel")return false;
  if(type==="woodhut"){if(Math.abs(lz)>HUT.hz-.12)return false;return ly>.05&&ly<HUT.ridge*(1-Math.abs(lx)/HUT.hx)-.14}
  const H=HOUSE;if(Math.abs(lx)>H.hx-.24||Math.abs(lz)>H.hz-.24||ly<H.floor+.05)return false;
  const roof=stage>=5?H.plate+(H.ridge-H.plate)*(1-Math.abs(lz)/(H.hz+H.ovZ))-.2:H.plate-.15;return ly<Math.min(roof,H.plate-.12)}
 /* collision segments [x0,z0,x1,z1] in local coords for the built stage; open = door open fraction */
 export function wallSegs(type,stage,open){
- const S=[];if(type==="woodhut"){const H=HUT,w=1.05;
+ const S=[];if(type==="waterwheel"){const W=WHEELSITE,K=W.rock,rect=(x0,z0,x1,z1)=>S.push([x0,z0,x1,z0],[x1,z0,x1,z1],[x1,z1,x0,z1],[x0,z1,x0,z0]);
+  rect(K.x0,K.z0,K.x1,K.z1);                                  // the spring outcrop is always there
+  if(stage>=1)for(const z of [-.75,.75])rect(-.75,z-.12,.75,z+.12);   // bearing footings
+  if(stage>=2)for(const x of W.trestles)rect(x-.12,-.42,x+.12,.42);
+  if(stage>=4)rect(-W.wheel.R,-W.wheel.w*.5-.05,W.wheel.R,W.wheel.w*.5+.05);
+  if(stage>=6){const [mx,mz]=W.hammer.mortar;rect(mx-.42,mz-.4,mx+.42,mz+.4);rect(.76,1.24,1.0,1.86)}
+  return S}
+ if(type==="woodhut"){const H=HUT,w=1.05;
   if(stage>=2){S.push([-w,-H.hz+.1,-w,H.hz-.05],[w,-H.hz+.1,w,H.hz-.05],[-w,-H.hz+.1,w,-H.hz+.1])}
   if(stage>=4){S.push([-w,H.hz-.05,-H.door,H.hz-.05],[H.door,H.hz-.05,w,H.hz-.05])}
   return S}
@@ -93,6 +120,7 @@ export function wallSegs(type,stage,open){
 export function partAt(type,stage,lx,ly,lz){
  if(type==="foresthouse"&&stage>=6){const H=HOUSE,D=H.door;if(lx>D.x0-.35&&lx<D.x1+.35&&Math.abs(lz-H.hz)<1.3&&ly<D.top+.5)return "door";
   const B=H.bed;if(lx>B.x0-.4&&lx<B.x1+.2&&lz>B.z0-.2&&lz<B.z1+.6)return "bed"}
+ if(type==="waterwheel"){const P=WHEELSITE.pole;if(stage>=2&&Math.hypot(lx-P[0],lz-P[1])<1.4)return "gate";return "site"}
  if(type==="woodhut"&&stage>=4&&Math.abs(lx)<1.4&&Math.abs(lz)<1.6)return "bed";
  return "site"}
 
@@ -100,6 +128,9 @@ export const WOOD_DISCOVERIES=[
  ["wattle_daub","Wattle & daub",0,"Finish the daub stage of a woodland hut.","Thin rods woven between stakes (wattle) make a springy lattice; wet clay-rich mud with straw or dung (daub) pressed into it dries into a wall that blocks wind and sheds rain. The straw fibres resist cracking as the mud shrinks. People built this way for at least 6,000 years.",["shelters"],[]],
  ["cob","Cob walls",1,"Plaster the forest house with cob.","Cob is subsoil clay, sand and straw kneaded with water. Clay binds, sand gives body and limits shrinkage, straw ties it together in tension. Layered and hand-smoothed, it sets hard without any firing and can stand for centuries if it has 'good boots and a good hat' — a stone base and a roof overhang.",["shelters"],[]],
  ["stack_effect","Chimney draft (stack effect)",1,"Light a fire in the forest house hearth.","Hot flue gas is less dense than the outside air, so a column of it weighs less: the pressure difference is about g·h·(ρ_outside − ρ_inside). A 4 m flue at 200 °C / 392.0 °F pulls with roughly 19 Pa — enough to draw smoke up and out while fresh air feeds the fire through the room.",["fire"],["field.thermodynamics"]],
+ ["water_power","Water power (energy conversion)",1,"Open the sluice on a finished water wheel.","Water held high has gravitational potential energy m·g·h. Falling through the 3.3 m head of an overshot wheel, 30 litres a second carry about 1 kW (ρ·g·Q·H); the buckets turn roughly 70 % of it into the rotating axle's mechanical work, the rest is lost to spill, splash and friction. Mills like this ground grain from Roman times onward.",["machines"],[]],
+ ["rotational_motion","Rotational motion & torque",1,"Watch a water wheel turn under load.","Water weight on the down-going side pushes at a lever arm up to the wheel radius, giving a torque τ = r·F. The wheel speeds up until the bearing friction and hammer load balance that torque; its heavy rim stores kinetic energy ½·I·ω², smoothing out each blow. More water means more torque and a faster wheel.",["machines"],[]],
+ ["cam_lever","Cam & lever (mechanical advantage)",1,"Let the water wheel drive its trip-hammer.","A cam turns steady rotation into a lift-and-drop. The helve is a first-class lever: a lug presses its short tail, and the long arm (1.4 m against 0.6 m) lifts the head about 2.3 times as far — trading force for distance (work in = work out). Released at the top, the head falls freely and delivers its potential energy as one sharp blow.",["machines"],[]],
 ];
 /* gatherable placement rules for the new woodland stream (pure; used by world.js and tests) */
 export const WOOD_GATHER={
