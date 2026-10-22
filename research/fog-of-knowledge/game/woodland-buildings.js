@@ -50,7 +50,7 @@ export function woodTextures(){if(TEX)return TEX;
  // bark: vertical plates split by fissures, horizontal breaks, fine fibres, lichen patches
  const bark=makeTex(256,512,(u,v,o)=>{const w=u*9+.55*fb(u,v,2,2,3,1),f=fract(w),plate=Math.pow(Math.sin(Math.PI*f),.42),brk=pn(u*9,v*7,9,7,3),
    fine=fb(u,v,32,64,2,5),hh=plate*(.72+.28*brk)*(1-.55*sstep(.66,.74,pn(u*18,v*11,18,11,8)))*.75+.25*fine,lich=sstep(.6,.74,fb(u,v,3,6,3,9))*sstep(.45,.7,hh);
-   o[0]=mix(38,116,hh)+lich*28;o[1]=mix(31,99,hh)+lich*38;o[2]=mix(26,82,hh)+lich*22;o[3]=hh},{normal:3.2});
+   o[0]=mix(74,184,hh)+lich*24;o[1]=mix(54,142,hh)+lich*32;o[2]=mix(36,98,hh)+lich*16;o[3]=hh},{normal:4});
  // peeled / split wood: fibres along v, growth streaks, a few knots, weathering
  const wood=makeTex(128,512,(u,v,o)=>{const ww=u+.04*fb(u,v,2,1,2,3),g=.3*Math.pow(.5+.5*Math.sin(ww*Math.PI*2*11+3*pn(u*8,v*2,8,2,4)),4)+.45*fb(u,v,64,2,3,5)+.25*pn(u*128,v*24,128,24,9),
    knot=sstep(.86,.92,pn(u*3,v*10,3,10,12)),wea=fb(u,v,2,4,2,7);const g2=g*(1-.6*knot);
@@ -73,7 +73,7 @@ export function woodTextures(){if(TEX)return TEX;
    R*=1-.5*crack;G*=1-.5*crack;B*=1-.5*crack;o[0]=R+fine*8;o[1]=G+fine*7;o[2]=B+fine*5;o[3]=.45*base+.3*smear+.18*s+.35*p-.7*crack+.06*fine},{normal:3});
  // fieldstone: granite speckle with lichen
  const stone=makeTex(256,256,(u,v,o)=>{const g=fb(u,v,8,8,4,31),sp=pn(u*128,v*128,128,128,32),dk=sp>.78?.55:sp<.12?1.25:1,li=sstep(.64,.75,fb(u,v,4,4,3,33));
-   const c=mix(108,170,g)*dk;o[0]=c+li*20;o[1]=c+li*34;o[2]=c*.97+li*6;o[3]=g*.7+sp*.3},{normal:2.5});
+   const c=mix(108,170,g)*dk;o[0]=c*1.05+li*18;o[1]=c*.99+li*30;o[2]=c*.86+li*6;o[3]=g*.7+sp*.3},{normal:2.5});
  // thatch: dense straw strands along v, gold to weathered grey
  const thatch=makeTex(256,512,(u,v,o)=>{const sx=u*128+2*pn(u*4,v*2,4,2,41),st=pn(sx,v*4,128,4,42),st2=pn(u*256,v*8,256,8,43),wea=fb(u,v,3,3,3,44),gap=sstep(.25,.05,st)*.6;
    const hh=st*.6+st2*.4-gap;o[0]=mix(178,214,st)*(1-gap)-wea*58;o[1]=mix(146,184,st)*(1-gap)-wea*58;o[2]=mix(82,108,st)*(1-gap)-wea*36;o[3]=hh},{normal:3});
@@ -139,10 +139,10 @@ class Builder{
  log(a,b,r,o={}){const mat=o.mat||"bark",bin=this.bin(mat,o.fine,o.shadow),d=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],len=Math.hypot(...d);if(len<1e-4)return;d[0]/=len;d[1]/=len;d[2]/=len;
   const up=Math.abs(d[1])<.9?[0,1,0]:[1,0,0];let e1=[up[1]*d[2]-up[2]*d[1],up[2]*d[0]-up[0]*d[2],up[0]*d[1]-up[1]*d[0]];const l1=Math.hypot(...e1);e1=e1.map(x=>x/l1);
   const e2=[d[1]*e1[2]-d[2]*e1[1],d[2]*e1[0]-d[0]*e1[2],d[0]*e1[1]-d[1]*e1[0]];
-  const sd=o.seed??Math.floor(this.r()*1e6),nu=o.nu||(r>.1?12:r>.05?9:r>.025?7:5),nv=Math.max(2,Math.ceil(len/(o.step||(r>.05?.21:.32)))),ba=this.r()*6.283,bend=o.bend??len*.012*(.5+this.r()),
+  const sd=o.seed??Math.floor(this.r()*1e6),nu=o.nu||(r>.1?12:r>.05?9:r>.025?7:5),nv=Math.max(2,Math.ceil(len/(o.step||(r>.05?.21:.32)))),ba=o.ba??this.r()*6.283,bend=o.bend??len*.012*(.5+this.r()),
    bx=Math.cos(ba),by=Math.sin(ba),taper=o.taper??.1,tint=o.tint||this.tint(o.tone),bump=o.bump??.07,uc=Math.max(1,Math.round(2*Math.PI*r/.4)),vo=this.r()*7;
   const R=(t,th)=>r*(1+taper*(.5-t))*(1+bump*(n3(Math.cos(th)*1.3+sd%97,Math.sin(th)*1.3,t*len*2.2,sd)-.5)*2+.12*Math.max(0,n3(Math.cos(th)*2.5,Math.sin(th)*2.5,t*len*3,sd+5)-.78)*4);
-  const C=t=>{const s=Math.sin(Math.PI*t)*bend;return [a[0]+d[0]*len*t+(e1[0]*bx+e2[0]*by)*s,a[1]+d[1]*len*t+(e1[1]*bx+e2[1]*by)*s,a[2]+d[2]*len*t+(e1[2]*bx+e2[2]*by)*s]};
+  const sag=o.sag||0,C=t=>{const s=Math.sin(Math.PI*t)*bend;return [a[0]+d[0]*len*t+(e1[0]*bx+e2[0]*by)*s,a[1]+d[1]*len*t+(e1[1]*bx+e2[1]*by)*s-Math.sin(Math.PI*t)*sag,a[2]+d[2]*len*t+(e1[2]*bx+e2[2]*by)*s]};
   const P=(i,j,u,t)=>{const th=u*6.283,rr=R(t,th),c=C(t),cs=Math.cos(th),sn=Math.sin(th);return [c[0]+(e1[0]*cs+e2[0]*sn)*rr,c[1]+(e1[1]*cs+e2[1]*sn)*rr,c[2]+(e1[2]*cs+e2[2]*sn)*rr]};
   this.grid(bin,nu,nv,P,(u,t)=>[u*uc,t*len/.9+vo],()=>tint,{wrapU:true,ao:o.ao});
   if(o.caps===false)return;const eb=this.bin(o.capMat||"end",o.fine,o.shadow),cuts=[[0,-1],[1,1]];
@@ -271,6 +271,9 @@ function houseAO(x,y,z){const H=HOUSE;
  let a=1-.3*Math.exp(-Math.max(0,y)/.35);if(Math.abs(z)>H.hz-.05&&y>H.plate-.5&&y<houseRoofY(z)+.05&&Math.abs(x)<H.hx+H.ovX)a*=.72;return a}
 export function buildHouse(opt={}){const H=HOUSE,B=new Builder(opt.seed??2311,houseAO),root=new T.Group();root.name="foresthouse";root.userData={type:"foresthouse",proxies:[]};const g=opt.ground||ZERO;
  const hx=H.hx,hz=H.hz,base=H.base,FL=H.floor,cr=H.course,D=H.door,HE=H.hearth,CH=H.chimney;
+ // lowest ground under the plot: footings start below it so the downhill side never floats
+ const gLo=(()=>{let m=0;for(let i=0;i<=12;i++)for(let j=0;j<=12;j++)m=Math.min(m,g(mix(-4.2,3.6,i/12),mix(-3,3,j/12)));return m})(),yFoot=Math.min(-.55,gLo-.3);
+ const STONE_TONES=[[1.02,1,.98],[1.18,1,.78],[.72,.7,.7],[1.2,.96,.72],[.92,1,.86],[1.08,.86,.72],[1.22,1.16,1.06],[.86,.82,.78]],stoneTint=()=>{const t=STONE_TONES[Math.floor(B.r()*STONE_TONES.length)],k=.85+.3*B.r();return [t[0]*k,t[1]*k,t[2]*k]};
  // wall descriptors: c = along-wall coordinate, point(c,y,off) with off>0 = outward
  const WALLS={front:{pt:(c,y,o)=>[c,y,hz+o],len:hx,openings:[{c0:D.x0,c1:D.x1,y0:-1,y1:D.top,kind:"door"},{c0:H.windows[0].c-.34,c1:H.windows[0].c+.34,y0:H.windows[0].y-.34,y1:H.windows[0].y+.34,kind:"win",w:H.windows[0]}]},
   back:{pt:(c,y,o)=>[-c,y,-hz-o],len:hx,openings:[]},
@@ -278,27 +281,31 @@ export function buildHouse(opt={}){const H=HOUSE,B=new Builder(opt.seed??2311,ho
   left:{pt:(c,y,o)=>[-hx-o,y,c],len:hz,openings:[{c0:HE.z0,c1:HE.z1,y0:-1,y1:HE.top-.04,kind:"hearth"}]}};
  // ---- stage 0: fieldstone foundation + packed clay floor ----
  B.stage=0;
- for(const [name,W] of Object.entries(WALLS)){const top=name==="front"||name==="back"?base:base+.15,c0=-W.len-.3,c1=W.len+.3;let y=-.55;
+ for(const [name,W] of Object.entries(WALLS)){const top=name==="front"||name==="back"?base:base+.15,c0=-W.len-.3,c1=W.len+.3;let y=yFoot;
   while(y<top-.02){const hgt=Math.min(top-y,.13+B.rnd()*.12);let c=c0-B.rnd()*.2;
-   while(c<c1){const l=.26+B.rnd()*.3,cc=Math.min(c1,c+l/2);const gp=W.pt(cc,0,0),gr=g(gp[0],gp[2]);
+   while(c<c1){const big=B.rnd()<.22,l=(big?.5:.22)+B.rnd()*(big?.3:.26),cc=Math.min(c1,c+l/2);const gp=W.pt(cc,0,0),gr=g(gp[0],gp[2]);
     const skip=name==="left"&&cc>HE.z0-.05&&cc<HE.z1+.05;
-    if(!skip&&y+hgt>gr-.12){const p=W.pt(cc,y+hgt/2,(B.rnd()-.5)*.04);const flat=y+hgt>=top-.01;B.stone(p[0],flat?y+hgt*.42:y+hgt/2,p[2],l/2*1.05,hgt/2*(flat?.85:1.1),.24+.03*B.rnd(),name==="front"||name==="back"?0:Math.PI/2+(B.rnd()-.5)*.1,{box:.45})}
+    if(!skip&&y+hgt>gr-.12){const p=W.pt(cc,y+hgt/2,(B.rnd()-.5)*.04);const flat=y+hgt>=top-.01;B.stone(p[0],flat?y+hgt*.42:y+hgt/2,p[2],l/2*1.05,hgt/2*(flat?.85:1.1+(big?.25:0)),.24+.05*B.rnd(),name==="front"||name==="back"?0:Math.PI/2+(B.rnd()-.5)*.1,{box:.45,tint:stoneTint()})}
     c+=l}
    y+=hgt}
+  // mud mortar packed behind and between the stones (shows in every joint)
+  {const sd=B.r()*100;B.grid(B.bin("cob"),Math.ceil((c1-c0)/.3),3,(i,j,u,v)=>{const c=mix(c0,c1,u),yy=mix(yFoot,top-.03,v);return W.pt(c,yy,.17+.02*n3(c*3,yy*3,sd))},(u,v)=>[u*(c1-c0)/.8,v*(top-yFoot)/.8],(u,v)=>{const w=.58+.1*n3(u*9,v*3,sd+1);return [w,w*.86,w*.7]},{noAO:true})}
   B.part()}
  {const sd=B.r()*100,rx=2.66,rz=2.16;B.grid(B.bin("cob"),26,22,(i,j,u,v)=>{const x=mix(-rx,rx,u),z=mix(-rz,rz,v);return [x,FL+.012*n3(x*2,z*2,sd)+.006*n3(x*7,z*7,sd+1),z]},(u,v)=>[u*rx*2/1.1,v*rz*2/1.1],(u,v)=>{const w=.5+.12*n3(u*7,v*7,sd+2);return [w,w*.9,w*.8]},{});}
  // door threshold & front step
- {const tg=g((D.x0+D.x1)/2,hz+.7);B.stone((D.x0+D.x1)/2,base-.06,hz+.02,.5,.07,.24,0,{box:.35});if(tg<FL-.15)B.stone((D.x0+D.x1)/2+.05,(tg+base-.1)/2-.05,hz+.62,.48,Math.max(.08,(base-.1-tg)/2+.04),.3,.08,{box:.4})}
+ {const tg=g((D.x0+D.x1)/2,hz+.7);B.stone((D.x0+D.x1)/2,base-.06,hz+.02,.5,.07,.24,0,{box:.35});const rise=base-.08-tg;if(rise>.12){const n=Math.min(3,Math.ceil(rise/.2));for(let k=0;k<n;k++){const z=hz+.36+.3*(n-1-k),gz=g((D.x0+D.x1)/2,z),topk=tg+(k+1)*rise/n,bot=Math.min(gz,tg)-.08;
+   for(const sx of [-1,1])B.stone((D.x0+D.x1)/2+sx*(.22+.03*B.rnd())+(B.rnd()-.5)*.04,(topk+bot)/2,z+(B.rnd()-.5)*.05,.25-.02*k+.04*B.rnd(),(topk-bot)/2,.18+.03*B.rnd(),(B.rnd()-.5)*.3,{box:.18,tint:stoneTint()})}}}
  B.part();
  // ---- stage 1: saddle-notched log walls ----
  B.stage=1;
  const wallLog=(W,y,cS,cE,r)=>{// cut the log around openings
   let segs=[[cS,cE]];for(const op of W.openings){const ov=Math.min(y+r,op.y1)-Math.max(y-r,op.y0);if(ov<=.05)continue;const out=[];for(const [a,b] of segs){if(op.c1<=a||op.c0>=b){out.push([a,b]);continue}if(op.c0>a)out.push([a,op.c0]);if(op.c1<b)out.push([op.c1,b])}segs=out}
-  for(const [a,b] of segs){if(b-a<.12)continue;B.log(W.pt(a,y,0),W.pt(b,y+(B.rnd()-.5)*.02,0),r,{bend:.02+.02*B.rnd(),taper:.06})}return segs};
- const chink=(W,y,a,b)=>{if(b-a<.15)return;const sd=B.r()*100;B.grid(B.bin("cob"),5,Math.max(3,Math.ceil((b-a)/.25)),(i,j,u,t)=>{const c=mix(a,b,t),th=u*6.283,rr=.045*(1+.3*(n3(c*4,y,sd)-.5));return W.pt(c,y+Math.sin(th)*rr*.6,.07+Math.cos(th)*rr*.5)},(u,t)=>[u,t*(b-a)/.6],()=>[.78,.76,.7],{wrapU:true})};
+  for(const [a,b] of segs){if(b-a<.12)continue;B.log(W.pt(a,y,0),W.pt(b,y+(B.rnd()-.5)*.02,0),r,{bend:.01+.015*B.rnd(),sag:(b-a)>2?.02+.025*B.rnd():.005,taper:.08,bump:.09,tint:logTint()})}return segs};
+ const logTint=()=>{const v=.92+.34*B.r(),w=B.r();return w<.22?[v*.97,v*.94,v*.9]:w<.4?[v*1.1,v*.92,v*.76]:[v*1.04,v*.96,v*.84]};
+ const chinks=[],chink=(W,y,a,b)=>{if(b-a>=.15)chinks.push([W,y,a,b])},chinkNow=(W,y,a,b)=>{const sd=B.r()*100;B.grid(B.bin("cob"),5,Math.max(3,Math.ceil((b-a)/.25)),(i,j,u,t)=>{const c=mix(a,b,t),th=-u*6.283,rr=.07*(1+.35*(n3(c*4,y,sd)-.5));return W.pt(c,y+Math.sin(th)*rr*.62,.1+Math.cos(th)*rr*.5)},(u,t)=>[u,t*(b-a)/.6],()=>[.98,.92,.82],{wrapU:true})};
  const fbLogs=[],sdLogs=[];for(let k=0;k<H.courses;k++)fbLogs.push(base+.16+k*cr);for(let k=0;k<6;k++)sdLogs.push(base+.15+.16+k*cr);
- for(let k=0;k<H.courses;k++){for(const name of ["front","back"]){const W=WALLS[name],o=.34+B.rnd()*.08;const r=.15+B.rnd()*.03;const sg=wallLog(W,fbLogs[k],-hx-o,hx+o+(B.rnd()-.5)*.08,r);if(k>0)for(const [a,b] of sg)chink(W,fbLogs[k]-cr/2,Math.max(a,-hx+.1),Math.min(b,hx-.1))}
-  if(k<6)for(const name of ["left","right"]){const W=WALLS[name],o=.34+B.rnd()*.08;const r=.15+B.rnd()*.03;const sg=wallLog(W,sdLogs[k],-hz-o,hz+o,r);if(k>0)for(const [a,b] of sg)chink(W,sdLogs[k]-cr/2,Math.max(a,-hz+.1),Math.min(b,hz-.1))}
+ for(let k=0;k<H.courses;k++){for(const name of ["front","back"]){const W=WALLS[name],o=.38+B.rnd()*.2;const r=.145+B.rnd()*.05;const sg=wallLog(W,fbLogs[k],-hx-o,hx+.38+B.rnd()*.2,r);if(k>0)for(const [a,b] of sg)chink(W,fbLogs[k]-cr/2,Math.max(a,-hx+.1),Math.min(b,hx-.1))}
+  if(k<6)for(const name of ["left","right"]){const W=WALLS[name],o=.38+B.rnd()*.2;const r=.145+B.rnd()*.05;const sg=wallLog(W,sdLogs[k],-hz-o,hz+.38+B.rnd()*.2,r);if(k>0)for(const [a,b] of sg)chink(W,sdLogs[k]-cr/2,Math.max(a,-hz+.1),Math.min(b,hz-.1))}
   B.part()}
  // log gables (shortened courses under the roof line) on both side walls
  for(let k=0;k<6;k++){const y=base+.15+.16+(6+k)*cr,r=.14+B.rnd()*.02,Lz=(4.1-y-r*.7)/.687;if(Lz<.32)break;for(const name of ["left","right"]){const W=WALLS[name];wallLog(W,y,-Lz,Lz,r);chink(W,y-cr/2,-Lz+.1,Lz-.1)}B.part()}
@@ -307,6 +314,8 @@ export function buildHouse(opt={}){const H=HOUSE,B=new Builder(opt.seed??2311,ho
  B.part();
  // ---- stage 2: interior cob plaster + round clay windows ----
  B.stage=2;
+ // exterior cob chinking between the logs goes in with the cob stage, so the plaster stage reads from outside
+ for(let k=0;k<chinks.length;k++){chinkNow(...chinks[k]);if(k%12===11)B.part()}B.part();
  const PL=.6,plasterTop=c=>2.2+.06*(n3(c*2.2,0,7)-.5);
  const wallInner=(name,c,y,sd)=>{const W=WALLS[name],lump=.014*(n3(c*2.6,y*2.6,sd)-.5)+.006*(n3(c*8,y*8,sd+1)-.5);// rounded fillets in the corners and at the floor
    const cornerD=W.len-.2-Math.abs(c),fil=cornerD<.2?.06*Math.pow(1-cornerD/.2,2):0,flo=y<FL+.18?.05*Math.pow(1-(y-FL)/.18,2):0;return W.pt(c,y,-(.2+fil+flo)+lump)};
@@ -355,9 +364,9 @@ export function buildHouse(opt={}){const H=HOUSE,B=new Builder(opt.seed??2311,ho
   B.log([-2.34,1.5,-1.0],[-2.34,1.5,1.0],.11,{bend:.01,mat:"wood"});B.part()}
  {const sd=B.r()*100,xs=(y)=>y<2.0?[CH.x0,CH.x1,CH.z0,CH.z1]:y<2.5?[mix(CH.x0,-3.88,(y-2)/.5),mix(CH.x1,-3.22,(y-2)/.5),mix(CH.z0,-.38,(y-2)/.5),mix(CH.z1,.38,(y-2)/.5)]:[-3.88,-3.22,-.38,.38];
   // mortar core
-  const core=(face)=>{B.grid(B.bin("cob"),6,30,(i,j,u,v)=>{const y=mix(-.4,CH.top-.05,v),[x0,x1,z0,z1]=xs(y),e=.05;if(face==="x0")return [x0+e,y,mix(z1-e,z0+e,u)];if(face==="z0")return [mix(x0+e,x1-e,u),y,z0+e];if(face==="z1")return [mix(x1-e,x0+e,u),y,z1-e];return [x1-e,y,mix(z0+e,z1-e,u)]},(u,v)=>[u,v*4],()=>[.7,.68,.64],{})};
+  const core=(face)=>{B.grid(B.bin("cob"),6,30,(i,j,u,v)=>{const y=mix(yFoot,CH.top-.05,v),[x0,x1,z0,z1]=xs(y),e=.05;if(face==="x0")return [x0+e,y,mix(z1-e,z0+e,u)];if(face==="z0")return [mix(x0+e,x1-e,u),y,z0+e];if(face==="z1")return [mix(x1-e,x0+e,u),y,z1-e];return [x1-e,y,mix(z0+e,z1-e,u)]},(u,v)=>[u,v*4],()=>[.7,.68,.64],{})};
   for(const f of ["x0","z0","z1","x1"])core(f);
-  let y=-.4,row=0;while(y<CH.top-.02){const hh=Math.min(CH.top-y,.12+B.rnd()*.1),ym=y+hh/2,[x0,x1,z0,z1]=xs(ym);
+  let y=yFoot,row=0;while(y<CH.top-.02){const hh=Math.min(CH.top-y,.12+B.rnd()*.1),ym=y+hh/2,[x0,x1,z0,z1]=xs(ym);
    const faces=[["x0",z1,z0,c=>[x0,c],Math.PI/2],["z0",x0,x1,c=>[c,z0],0],["z1",x1,x0,c=>[c,z1],0]];if(ym>2.0)faces.push(["x1",z0,z1,c=>[x1,c],Math.PI/2]);
    for(const [f,a,b,P,yaw] of faces){const dir=Math.sign(b-a),len=Math.abs(b-a);let c=(B.rnd()*.15)*(row%2?1:.3);
     while(c<len){const l=Math.min(len-c,.18+B.rnd()*.24);if(l<.08)break;const cc=a+dir*(c+l/2),[px,pz]=P(cc),gr=g(px,pz);
@@ -379,7 +388,7 @@ export function buildHouse(opt={}){const H=HOUSE,B=new Builder(opt.seed??2311,ho
  const ySod=z=>4.1-.687*Math.sqrt(z*z+.05)+.687*Math.sqrt(.05);
  {const sd=B.r()*100,nX=Math.ceil((XR-XL)/.18),nZ=34;
   B.grid(B.bin("bark"),nX,nZ,(i,j,u,v)=>{const x=mix(XL-.06,XR+.06,u),z=mix(-ZE-.04,ZE+.04,v);return [x,ySod(z)+.06+.008*n3(x*3,z*3,sd),z]},(u,v)=>[u*(XR-XL)/.6,v*2*ZE/.9],(u,v)=>{const w=.8+.3*n3(u*12,v*8,sd+1);return [w,w*.95,w*.9]},{});
-  const sodT=(x,z)=>{const e=Math.min(1,(ZE-Math.abs(z))/.12,(x-XL)/.12,(XR-x)/.12);return .07+.17*Math.max(0,e)+.045*(n3(x*1.7,z*1.7,sd+2)-.5)+.02*(n3(x*6,z*6,sd+3)-.5)};
+  const sodT=(x,z)=>{const e=Math.min(1,(ZE-Math.abs(z))/.12,(x-XL)/.12,(XR-x)/.12);return .14+.12*Math.max(0,e)+.05*(n3(x*1.7,z*1.7,sd+2)-.5)+.02*(n3(x*6,z*6,sd+3)-.5)};
   B.grid(B.bin("sod"),Math.ceil((XR-XL)/.12),44,(i,j,u,v)=>{const x=mix(XL,XR,u),z=mix(-ZE,ZE,v);return [x,ySod(z)+.07+sodT(x,z),z]},(u,v)=>[u*(XR-XL)/1.2,v*2*ZE/1.2],(u,v)=>{const w=.85+.25*n3(u*10,v*6,sd+4);return [w,w,w*.95]},{ao:1,noAO:true});
   // soil edges of the sod (eaves and verges)
   for(const sg of [-1,1])B.grid(B.bin("sod"),Math.ceil((XR-XL)/.15),1,(i,j,u,v)=>{const x=mix(XL,XR,u),z=sg*ZE;return [x,ySod(z)+.06+v*(.07+sodT(x,z)),z+sg*.01]},(u,v)=>[u*(XR-XL)/.4,v*.3],()=>[.42,.36,.3],{flip:sg<0,noAO:true});
@@ -389,9 +398,16 @@ export function buildHouse(opt={}){const H=HOUSE,B=new Builder(opt.seed??2311,ho
   for(const sg of [-1,1]){const z=sg*(ZE-.08);B.log([XL-.05,ySod(z)+.17,z],[XR+.05,ySod(z)+.17,z],.085,{bend:.03});for(let x=XL+.3;x<XR;x+=.95)B.log([x,ySod(z)+.06,z-sg*.05],[x,ySod(z)+.26,z+sg*.03],.02,{tone:"stick"})}
   B.part();
   // grass cards: denser and taller along the ridge and the edges
-  const gc=Math.round((XR-XL)*2*ZE*42);for(let k=0;k<gc;k++){const x=mix(XL+.05,XR-.05,B.r()),z=mix(-ZE+.05,ZE-.05,B.r()),edge=Math.min(ZE-Math.abs(z),x-XL,XR-x),rid=Math.abs(z)<.4?1:0;
+  const gc=Math.round((XR-XL)*2*ZE*70);for(let k=0;k<gc;k++){const x=mix(XL+.05,XR-.05,B.r()),z=mix(-ZE+.05,ZE-.05,B.r()),edge=Math.min(ZE-Math.abs(z),x-XL,XR-x),rid=Math.abs(z)<.4?1:0;
    if(n3(x*1.3,z*1.3,sd+9)<.25&&B.r()<.6)continue;const h=(.12+.2*B.r())*(1+.5*rid+(edge<.3?.4:0)),dry=B.r()<.18;const tint=dry?[1.15,.95,.55]:[.55+.3*B.r(),.75+.3*B.r(),.4+.15*B.r()];
    B.card("grass",[x,ySod(z)+.07+sodT(x,z)-.03,z],.14+.1*B.r(),h,B.r()*6.28,(B.r()-.5)*.6,tint,{ao:1})}
+  // turf overhang: long grass and moss tufts hanging over the eaves and verges
+  {const hang=(x,z,ox,oz)=>{const phi=Math.atan2(oz,ox),h=.2+.22*B.r(),dry=B.r()<.15,tint=dry?[1.1,.92,.55]:B.r()<.3?[.42+.15*B.r(),.55+.2*B.r(),.28]:[.6+.3*B.r(),.8+.25*B.r(),.42+.12*B.r()];
+    B.card("grass",[x,ySod(z)+.06+sodT(x,z)*.8,z],.16+.12*B.r(),h,phi-.7+(B.r()-.5)*.5,1.3+.7*B.r(),tint,{ao:1})};
+   for(const sg of [-1,1])for(let x=XL;x<XR;x+=.07+.05*B.r())hang(x,sg*(ZE-.03),0,sg);
+   for(const [x,sg] of [[XL+.03,-1],[XR-.03,1]])for(let z=-ZE;z<ZE;z+=.08+.05*B.r())hang(x,z,sg,0);
+   for(let k=0;k<160;k++){const ed=B.r()<.5,sg=B.r()<.5?-1:1,x=ed?mix(XL,XR,B.r()):(sg<0?XL+.1:XR-.1),z=ed?sg*(ZE-.12):mix(-ZE,ZE,B.r());
+    B.card("moss",[x,ySod(z)+.05+sodT(x,z),z],.22+.18*B.r(),.08+.06*B.r(),B.r()*6.28,1.35,[.65+.2*B.r(),.8+.2*B.r(),.5],{ao:1,n:1})}}
   // a few yellow and white wildflowers
   for(let k=0;k<70;k++){const x=mix(XL+.2,XR-.2,B.r()),z=mix(-ZE+.2,ZE-.2,B.r());B.card("grass",[x,ySod(z)+.07+sodT(x,z)-.02,z],.07,.18+.1*B.r(),B.r()*6.28,.1,B.r()<.5?[1.6,1.4,.4]:[1.7,1.7,1.6],{ao:1,n:1})}
   B.part()}
@@ -429,6 +445,15 @@ export function buildHouse(opt={}){const H=HOUSE,B=new Builder(opt.seed??2311,ho
    for(let k=0;k<6;k++)B.card("grass",[x+(B.r()-.5)*.1,H.plate-.95,z+(B.r()-.5)*.1],.12,.35,B.r()*6,3.0,[.6,.75,.35],{n:1,shadow:false})}
   B.log([-1.55,FL,1.0],[-1.55,FL+.42,1.0],.2,{taper:0,bend:0,bump:.04});
   for(let k=0;k<7;k++){const row=k<4?0:1,x=-2.35+(row?.08:0)+(B.rnd()-.5)*.03,z=-1.55+(k%4)*.16-row*.08+(B.rnd()-.5)*.03,y=FL+.07+row*.13;B.log([x-.28,y,z],[x+.28,y+(B.rnd()-.5)*.03,z],.065+B.rnd()*.015,{bend:.01})}
+  B.part()}
+ // outside: split-log woodpile under the right eave, a chopping stump with a split log, stepping stones down from the door
+ {const wx=hx+.62,z0=-2.15,z1=-.95;let row=0;for(let y=0;y<.85;y+=.15,row++){for(let z=z0+(row%2)*.07;z<z1-.05;z+=.15){const gy=g(wx,z)+.07+y,rr=.06+.025*B.rnd(),L=.42+.08*B.rnd(),jx=(B.rnd()-.5)*.06;
+   B.log([wx-L/2+jx,gy,z],[wx+L/2+jx,gy+(B.rnd()-.5)*.02,z+(B.rnd()-.5)*.03],rr,{bend:.005,taper:.04,nu:7,tint:logTint(),fine:true,shadow:true})}}
+  for(const z of [z0-.08,z1+.08])B.log([wx,g(wx,z)-.05,z],[wx+(B.rnd()-.5)*.05,g(wx,z)+.95,z],.035,{tone:"stick",fine:true});B.part()
+  const sx=hx+1.25,sz=hz+1.05,sg=g(sx,sz);B.log([sx,sg-.1,sz],[sx,sg+.42,sz],.27,{taper:.1,bend:0,bump:.1,caps:"end"});
+  B.log([sx+.42,g(sx+.42,sz+.15)+.07,sz+.15],[sx+.85,g(sx+.85,sz+.35)+.08,sz+.35],.085,{bend:.01,tint:logTint()});
+  for(let k=0;k<26;k++){const a=B.r()*6.283,rd=.35+.55*B.r(),x=sx+Math.cos(a)*rd,z=sz+Math.sin(a)*rd;B.card("wood",[x,g(x,z)+.012,z],.06+.05*B.r(),.03+.03*B.r(),B.r()*6.28,1.45,[.95,.9,.8],{n:1,up:true,ao:1})}
+  const px=(D.x0+D.x1)/2;for(let k=0;k<6;k++){const z=hz+1.15+k*.55+(B.rnd()-.5)*.08,x=px+.12*Math.sin(k*1.3)+(B.rnd()-.5)*.1,gz=g(x,z);B.stone(x,gz+.005,z,.2+.06*B.rnd(),.05,.17+.05*B.rnd(),B.rnd()*3,{box:.35,tint:stoneTint()})}
   B.part()}
  // site markers
  B.stage=6;for(const [x,z] of [[-hx,-hz],[hx,-hz],[hx,hz],[-hx,hz]])B.log([x,g(x,z)-.05,z],[x,g(x,z)+.6,z],.025,{tone:"stick"});

@@ -86,7 +86,8 @@ export function wallSegs(type,stage,open){
  S.push([-x,-z,x,-z],[-x,-z,-x,z],[x,-z,x,z],[-x,z,H.door.x0,z],[H.door.x1,z,x,z]);
  const C=H.chimney;S.push([C.x0,C.z0,C.x1,C.z0],[C.x0,C.z1,C.x1,C.z1],[C.x0,C.z0,C.x0,C.z1]);
  if(stage>=6){const a=(open||0)*1.75,L=H.door.x1-H.door.x0,ex=H.door.x0+Math.cos(a)*L,ez=z-Math.sin(a)*L;S.push([H.door.x0,z,ex,ez]);
-  const B=H.bed;S.push([B.x0,B.z1,B.x1,B.z1],[B.x0,B.z0,B.x0,B.z1])}
+  const B=H.bed;S.push([B.x0,B.z1,B.x1,B.z1],[B.x0,B.z0,B.x0,B.z1]);
+  S.push([H.hx+.4,-2.2,H.hx+.4,-.9],[H.hx+.85,-2.2,H.hx+.85,-.9],[H.hx+1.05,H.hz+1.05,H.hx+1.45,H.hz+1.05])}   // woodpile and chopping stump outside
  return S}
 /* where E at a point means "door", "bed" or "site" */
 export function partAt(type,stage,lx,ly,lz){

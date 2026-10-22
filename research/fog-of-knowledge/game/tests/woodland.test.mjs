@@ -60,4 +60,13 @@ for(const type of P.WOOD_TYPES){
     if(type==="foresthouse"){setDoor(root,1);const piv=root.userData.door;assert.ok(piv&&Math.abs(piv.rotation.y-1.75)<1e-6)}
   });
 }
+ok("forest house sits into sloped ground, cob chinking reads from outside, floor rect is raised for drops",()=>{
+  const slope=(x,z)=>-.16*(x+4.1)-.06*(z+2.9);   // the plot's high corner is y=0 and the far corner ~1.6 m lower
+  const root=buildWoodland("foresthouse",{seed:9,ground:slope}),H=P.HOUSE,st=root.userData.stages;
+  let lo=1e9;st[0].traverse(m=>{if(!m.isMesh||m.material.name!=="fk-wood-stone")return;const a=m.geometry.attributes.position.array;for(let i=1;i<a.length;i+=3)lo=Math.min(lo,a[i])});
+  assert.ok(lo<slope(3.5,2.9)-.1,`footing bottom ${lo.toFixed(2)} reaches below the downhill ground ${slope(3.5,2.9).toFixed(2)}`);
+  const outside=(k)=>{let n=0;st[k].traverse(m=>{if(!m.isMesh||m.material.name!=="fk-wood-cob")return;const a=m.geometry.attributes.position.array;for(let i=0;i<a.length;i+=3)if(Math.abs(a[i+2])>H.hz+.05&&Math.abs(a[i+2])<H.hz+.2&&a[i+1]>H.base+.2)n++});return n};
+  assert.equal(outside(1),0,"the log stage has no exterior plaster yet");assert.ok(outside(2)>2000,`cob stage adds exterior chinking (${outside(2)} verts)`);
+  const r=P.floorRect("foresthouse");assert.ok(r.y>0&&r.x1>2&&r.z1>2);
+});
 console.log(`woodland: ${n} checks passed`);
