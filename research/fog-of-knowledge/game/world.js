@@ -564,7 +564,7 @@ function setPendLen(s){const a=s.arm;if(!a)return;a.userData.str.scale.y=s.L;a.u
 function updateRack(s){if(!s.obj)return;s.obj.userData.strips?.forEach((m,i)=>{m.visible=i<s.meat.length;if(m.visible)m.material.color.setHex(world.gameTime-s.meat[i]>=4*3600?0x6b3a24:0xb53a3a)})}
 function clearFireGrass(s,radius=1.1){
   for(const ch of chunks.values()){if(!ch.grass||Math.abs((ch.cx+.5)*CHUNK-s.x)>CHUNK||Math.abs((ch.cz+.5)*CHUNK-s.z)>CHUNK)continue;
-    ch.grass.traverse(m=>{if(!m.isInstancedMesh)return;let changed=false;for(let i=0;i<m.count;i++){m.getMatrixAt(i,_m);const e=_m.elements;if(Math.hypot(e[12]-s.x,e[14]-s.z)<radius){m.setMatrixAt(i,ZERO);changed=true}}if(changed)m.instanceMatrix.needsUpdate=true});
+    ch.grass.traverse(m=>{if(!m.isInstancedMesh)return;let changed=false;const nAll=m.userData.full??m.count;for(let i=0;i<nAll;i++){m.getMatrixAt(i,_m);const e=_m.elements;if(Math.hypot(e[12]-s.x,e[14]-s.z)<radius){m.setMatrixAt(i,ZERO);changed=true}}if(changed)m.instanceMatrix.needsUpdate=true});
   }
 }
 function structMesh(s){
@@ -1945,9 +1945,17 @@ function stepWoodland(dt){const cp=camera.position;
   if(!woodDay){woodDay=new THREE.PointLight(0xdbe6ff,0,7,2);scene.add(woodDay)}
   let best=null,bd=14;for(const s of world.structures){if(!isWoodland(s.type)||!s._wood||(s.stage||0)<(s.type==="woodhut"?3:5))continue;const d=Math.hypot(cp.x-s.x,cp.z-s.z);if(d<bd){bd=d;best=s}}
   if(best){const [lx,ly,lz,k]=WOOD_SPILL[best.type],[x,z]=wWorld(best,lx,lz);woodDay.position.set(x,best.y+ly,z);woodDay.intensity=k*GFX.ENV.day*(best.type==="foresthouse"?.55+.45*(best.open||0):1)*clamp((14-bd)/5,0,1)}else woodDay.intensity=0;
+  grassThin(cp);
   for(const s of world.structures){if(!isWoodland(s.type)||!s._wood)continue;
   if(s.doorTarget!=null&&Math.abs((s.open||0)-s.doorTarget)>1e-3){const d=s.doorTarget-(s.open||0);s.open=(s.open||0)+Math.sign(d)*Math.min(Math.abs(d),dt*1.4);WOOD.setDoor(s._wood,s.open);s._seg=null}
   WOOD.woodLOD(s._wood,Math.hypot(cp.x-s.x,cp.z-s.z))}}
+/* Grass is the largest draw (≈270k blade vertices per chunk). Inside a log house the walls hide almost all of it, and at night it is
+   mostly in shadow, so the instance count is thinned (instances are in random order, so a shorter count thins evenly, with no pop of whole patches). */
+let grassF=1;
+function grassThin(cp){const hut=woodInside(cp.x,cp.y,cp.z),night=GFX.ENV.night||0;
+  let f=(1-.3*clamp((night-.5)*2,0,1));if(hut&&(hut.stage||0)>=2)f*=hut.type==="foresthouse"?(.12+.33*(hut.open||0)):.5;
+  grassF+=(f-grassF)*.25;if(Math.abs(f-grassF)<.01)grassF=f;
+  for(const ch of chunks.values())if(ch.grass)for(const m of ch.grass.children)if(m.isInstancedMesh){const full=m.userData.full??(m.userData.full=m.count);m.count=Math.max(1,Math.round(full*grassF))}}
 function woodPlanHtml(){const cur=t=>{let best=null,bd=1e9;for(const s of world.structures)if(s.type===t){const d=Math.hypot(s.x-player.pos.x,s.z-player.pos.z);if(d<bd){bd=d;best=s}}return best};
   return ["woodhut","foresthouse"].map(type=>{const site=cur(type),k=site?site.stage||0:-1,S=WSTAGES[type],locked=type==="foresthouse"&&!hasD("wattle_daub");
     return `<div class="shipPlan" style="margin:.2em 0 .6em;padding:.5em .7em;border:1px solid rgba(255,255,255,.14);border-radius:8px;background:rgba(90,110,60,.12);font-size:.92em"><b>${type==="woodhut"?"WOODLAND HUT · lashed A-frame, wattle, thatch & daub, 4 stages":"FOREST HOUSE · notched round logs on fieldstone, cob, hearth & sod roof, 6 stages"}</b> <small class="muted">(${locked?"unlocks with Wattle & daub — finish a hut first":"craft the plot kit, Q on flat clear ground, then E at the plot to deliver each stage"})</small><ol style="margin:.3em 0 0 1.2em;padding:0">${S.map((st,i)=>`<li style="${i<k?"opacity:.55;text-decoration:line-through":i===k?"color:#ffd27a":""}">${esc(st.name)} — ${Object.entries(st.need).map(([kk,n])=>`<em class="${inv(kk)>=n?"have":"miss"}">${n}× ${esc(ITEMS[kk].name)}</em>`).join(" ")}${st.axe?" · axe":""}${i===k&&site?` <b>← now (${esc(needText(remainingOf(site)))} left)</b>`:""}</li>`).join("")}</ol></div>`}).join("")}
@@ -1969,6 +1977,8 @@ const WOOD_DEBUG={
   q(k,v){GFX.Q[k]=v},
   prof(what,on){const set=(o,v)=>{if(o)o.visible=v};if(what==="lights")fireLights.forEach(l=>l.visible=on);else if(what==="fills")fireFillLights.forEach(l=>l.visible=on);else if(what==="spill")set(woodDay,on);
     else if(what==="shadow")GFX.Q.fireShadow=on?1:0;else if(what==="grass"){for(const ch of chunks.values())for(const k in ch)if(ch[k]?.isInstancedMesh||k==="grass")set(ch[k],on)}
+    else if(what==="gonly"){for(const ch of chunks.values())set(ch.grass,on)}else if(what==="inst"){for(const ch of chunks.values())for(const k in ch)if(ch[k]?.isInstancedMesh)set(ch[k],on)}
+    else if(what==="trees"){for(const ch of chunks.values())for(const k of ["tr","cr"])if(ch[k])for(const t in ch[k])set(ch[k][t],on)}else if(what==="terrain"){for(const ch of chunks.values())set(ch.terrain,on)}
     else if(what==="bloom"){if(GFX.bloomPass)GFX.bloomPass.enabled=on}else if(what==="flame"){scene.traverse(o=>{if(o.isMesh&&o.material?.uniforms?.uBedMap)o.visible=on})}
        else if(what==="sod"){for(const s of this.sites())s._wood?.traverse(o=>{if(o.isMesh&&/sod|grass|moss/.test(o.name))o.visible=on})}
     return GFX.renderer.info.render.calls},
