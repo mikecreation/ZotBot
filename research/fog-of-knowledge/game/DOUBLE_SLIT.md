@@ -63,3 +63,12 @@ The front-view count curve no longer appears from the first photon or changes on
 ## Automatic stability trigger (supersedes manual snapshot control)
 
 There is no draw/redraw button. Every 250 arrivals, compare the observed binned cumulative distribution with the predicted CDF and the preceding observed CDF. After at least 2,000 dots, two successive checks must have prediction deviation below 0.04 and observed change below 0.02. Then capture exactly one observed-count profile automatically; subsequent dots do not alter it. A quadratic interpolation rounds the count-profile corners without substituting the predicted curve. Geometry changes and Clear reset the stability tracker and snapshot. These thresholds are a pedagogical heuristic, not a proof of convergence. Added 24 deterministic readiness checks across slit counts/path marking, including rejection of concentrated data inconsistent with the prediction.
+
+## Guided Eureka mode (additional; Classic lab unchanged and default)
+
+Open with L -> Double slit, then the **Guided Eureka** tab above the lab (Classic lab stays the default tab).
+Files: `double-slit-guided.js` (UI, mode switch) and `double-slit-guided-model.js` (pure geometry/statistics); test `tests/slit-guided.mjs`.
+
+Sequence: 1 Predict (draw a hit distribution under the detector) -> 2 Fire (single photons, slow then faster; prediction overlaid) -> 3 Reveal (top-down wave view fades in above the face-on detector; dashed lines link bright bands to dot piles; Eureka panel) -> 4 Twist (orthogonal H/V which-path markers: P = |psi1|^2 + |psi2|^2, fringes vanish; second Eureka) -> 5 One slit. Steps are clickable, skippable and replayable.
+
+Physics: hits are sampled from `slitDistribution` of `double-slit-model.js`. The wave view uses paraxial (Fresnel) wavefronts from each slit with a magnified drawn wavelength chosen so the phase difference along the drawn screen line equals the model phase exactly; the screen line, detector and histogram share one linear +/-20 mm axis. With the default 200 um separation the two single-slit envelopes overlap almost completely, so the which-path pattern is one broad hump, not two bumps behind the slits. Fringe spacing readout compares the measured spacing (from counts only) with lambda*L/d.
