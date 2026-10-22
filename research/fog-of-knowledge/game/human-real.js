@@ -37,8 +37,10 @@ export function skinPatch(sh){const chunk=THREE.ShaderChunk.lights_physical_pars
 
 let mats=null;
 function buildMaterials(){
-  const tl=new THREE.TextureLoader(),cache={};
-  const tex=(f,srgb=true,rep=1)=>{const k=f+rep;if(cache[k])return cache[k];const t=tl.load(REAL_HUMAN_TEX+f);t.flipY=false;t.wrapS=t.wrapT=THREE.RepeatWrapping;
+  const il=new THREE.ImageLoader(),cache={};
+  // Retry: the local dev server can drop connections for a few seconds while it restarts.
+  const fetchInto=(t,url,n)=>il.load(url,img=>{t.image=img;t.needsUpdate=true},undefined,()=>{if(n>0)setTimeout(()=>fetchInto(t,url,n-1),1500);else console.warn("human-real: texture failed",url)});
+  const tex=(f,srgb=true,rep=1)=>{const k=f+rep;if(cache[k])return cache[k];const t=new THREE.Texture();fetchInto(t,REAL_HUMAN_TEX+f,40);t.flipY=false;t.wrapS=t.wrapT=THREE.RepeatWrapping;
     t.colorSpace=srgb?THREE.SRGBColorSpace:THREE.NoColorSpace;t.anisotropy=8;if(rep!==1)t.repeat.set(rep,rep);return cache[k]=t};
   const out={};
   for(const [name,p] of Object.entries(REAL_HUMAN_PARTS)){
