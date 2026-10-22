@@ -102,7 +102,7 @@ function biomeAt(x,z,h){
   if(m>.04)return "forest";
   return "grass";
 }
-const BIOME_COL={water:0x5a5240,beach:0xdccb8f,desert:0xd2b479,snow:0xeef3f7,rock:0x7c766d,forest:0x3c6a2b,grass:0x6a9a3e};
+const BIOME_COL={water:0x5a5240,beach:0xdccb8f,desert:0xd2b479,snow:0xeef3f7,rock:0x7c766d,forest:0x3c6a2b,grass:0x6e9f3c};
 function slopeAt(x,z){const e=1.5;return Math.hypot(heightAt(x+e,z)-heightAt(x-e,z),heightAt(x,z+e)-heightAt(x,z-e))/(2*e)}
 
 /* ---------------- three.js scene ---------------- */
@@ -444,7 +444,7 @@ function withActiveHand(action){if(activeHand!=="L")return action();const r=worl
  try{return action()}finally{const l=world.held;world.held=world.left;world.left=l;renderHotbar()}}
 
 function inv(k){return world.inv[k]||0}
-const capacity=()=>BASE_SLOTS+(world&&world.inv.satchel?SATCHEL_SLOTS:0);
+const capacity=()=>{const b=BASE_SLOTS+(world&&world.inv.satchel?SATCHEL_SLOTS:0);return world?.devMode?Math.max(b,Object.keys(ITEMS).length+8):b};
 const slotsUsed=()=>Object.values(world.inv).reduce((a,n)=>a+Math.ceil(n/STACK),0);
 function roomFor(k){const c=inv(k),free=(capacity()-slotsUsed())*STACK+(c?Math.ceil(c/STACK)*STACK-c:0);return Math.max(0,free)}
 function ordered(){const o=(world.order||(world.order=[])).filter((k,i,a)=>world.inv[k]&&a.indexOf(k)===i);for(const k of Object.keys(world.inv))if(!o.includes(k))o.push(k);world.order=o;return o}
@@ -469,8 +469,7 @@ function bestKnife(){return ["knife_iron","knife_bronze","knife_copper","knife_s
 function craftTool(k){return k==="knife_stone"?bestKnife():inv(k)?k:null}
 function bestPick(){return inv("pickaxe_stone")?"pickaxe_stone":null}
 function hasAxe(){const a=bestAxe();return a?ITEMS[a].power:0}
-function useTool(k,cost){const it=ITEMS[k];if(!it||!it.dur)return;if(world.dur[k]==null)world.dur[k]=it.dur;world.dur[k]-=cost;
-  if(world.dur[k]<=0){delete world.dur[k];take(k);toast(`Your ${it.name.toLowerCase()} broke!${inv(k)?" You take out a spare.":""}`);AU.hit(false)}}
+function useTool(k,cost){/* durability disabled: tools never break or disappear */} 
 const STICKY=new Set(["stick","log","spear","arrow"]);
 function itemMesh(k){const detailed=primitiveItem(k,k==="tally"?world?.counters.tally||0:0);if(detailed)return detailed;const it=ITEMS[k];const st=STICKY.has(k);const m=new THREE.Mesh(st?GEO.stick:GEO.small,st?MAT.bark:new THREE.MeshStandardMaterial({color:it.color,roughness:.75}));m.castShadow=true;
   const s=k==="log"?1.4:k==="spear"?1.8:k==="stick"?.9:k==="arrow"?.8:Math.max(.06,it.r*1.4);m.scale.set(s,k==="log"?3.5:k==="arrow"?.45:st?1:s,k==="log"?3.5:k==="arrow"?.45:st?1:s);return m}
@@ -1494,7 +1493,7 @@ function handMesh(anchor,k){if(!anchor)return;const revision=k==="tally"?world.c
 function renderHotbar(){
   const el=$("#wHotbar");if(!el||!world)return;const ks=hotbarItems();
   if(world.held&&!world.inv[world.held])world.held=ks.find(x=>x!==world.left)||null;if(world.left&&!world.inv[world.left])world.left=null;
-  el.innerHTML=ks.slice(0,10).map((k,i)=>{const it=ITEMS[k],du=it.dur&&world.dur[k]!=null?world.dur[k]/it.dur:null;return `<div class="slot${k===world.held?" on":""}${k===world.left?" onL":""}" data-k="${k}" data-hot="${i}" title="${esc(it.name)}${ESSENTIAL_QUICKBAR.includes(k)?" · essential quickbar item":""}" draggable="true">${ESSENTIAL_QUICKBAR.includes(k)?"<small class=essentialPin>◆</small>":""}<i style="--c:${hex(k)}">${icon(k)}</i><span>${i<9?i+1:0}</span><b>${world.inv[k]}</b><em>${esc(it.name)}</em>${du!=null?`<u style="width:${Math.round(du*100)}%"></u>`:""}</div>`}).join("")||`<div class="muted">Empty hands — press E to pick things up.</div>`;
+  el.innerHTML=ks.slice(0,10).map((k,i)=>{const it=ITEMS[k];return `<div class="slot${k===world.held?" on":""}${k===world.left?" onL":""}" data-k="${k}" data-hot="${i}" title="${esc(it.name)}${ESSENTIAL_QUICKBAR.includes(k)?" · essential quickbar item":""}" draggable="true">${ESSENTIAL_QUICKBAR.includes(k)?"<small class=essentialPin>◆</small>":""}<i style="--c:${hex(k)}">${icon(k)}</i><span>${i<9?i+1:0}</span><b>${world.inv[k]}</b><em>${esc(it.name)}</em></div>`}).join("")||`<div class="muted">Empty hands — press E to pick things up.</div>`;
   const h=$("#wHands");if(h)h.innerHTML=[["L","left","LEFT HAND"],["R","held","RIGHT HAND"]].map(([sd,f,label])=>{const k=world[f],selected=activeHand===sd;return `<button type="button" class="hand${k?" full":""}${selected?" selected":""}" aria-pressed="${selected}" title="Select ${label.toLowerCase()} (V)" data-select-hand="${sd}" data-hand="${sd}" ${k?`data-k="${k}"`:""}><small>${label}</small>${k?`<i style="--c:${hex(k)}">${icon(k)}</i><em>${esc(ITEMS[k].name)}</em>`:"<em class=muted>empty</em>"}<b class="stowK">${selected?"SELECTED · 1–0 · R stow":"Click to select"}</b></button>`}).join("")+`<button class="handToggle" data-toggle-hand title="Switch selected hand (V)">V ⇄<small>Switch hand</small></button>`;
   const u=player?.model?.userData;if(u){handMesh(u.held,world.held);handMesh(u.heldL,world.left)}
 }
@@ -1509,8 +1508,8 @@ function renderInventory(){
   let ks=ordered();if(invQ)ks=ks.filter(k=>ITEMS[k].name.toLowerCase().includes(invQ));
   const cells=[];for(const k of ks){let n=world.inv[k];while(n>0){const c=Math.min(STACK,n);cells.push([k,c]);n-=c}}
   const cap=capacity(),used=slotsUsed();while(cells.length<(invQ?cells.length:cap))cells.push(null);
-  const grid=cells.map(c=>{if(!c)return `<div class="cell empty"></div>`;const [k,n]=c,it=ITEMS[k],du=it.dur&&world.dur[k]!=null?world.dur[k]/it.dur:null;
-    return `<div class="cell${k===world.held?" on":""}${k===world.left?" onL":""}" data-k="${k}" draggable="true"><i style="--c:${hex(k)}">${icon(k)}</i><b>${n}</b>${k===world.held?"<s>R</s>":""}${k===world.left?"<s class=l>L</s>":""}${du!=null?`<u style="width:${Math.round(du*100)}%"></u>`:""}</div>`}).join("");
+  const grid=cells.map(c=>{if(!c)return `<div class="cell empty"></div>`;const [k,n]=c,it=ITEMS[k];
+    return `<div class="cell${k===world.held?" on":""}${k===world.left?" onL":""}" data-k="${k}" draggable="true"><i style="--c:${hex(k)}">${icon(k)}</i><b>${n}</b>${k===world.held?"<s>R</s>":""}${k===world.left?"<s class=l>L</s>":""}</div>`}).join("");
   const chain=new Set([...GEAR_RECIPES.map(r=>r.out),"knife_stone","pickaxe_stone","campfire","kiln","bellows"]);
   const avail=RECIPES.filter(r=>(!invChain||chain.has(r.out))&&(!r.req||hasD(r.req))&&(!invCraftFor||r.in[invCraftFor])),locked=RECIPES.length-RECIPES.filter(r=>!r.req||hasD(r.req)).length;
   const rec=Object.keys(CAT_NAMES).map(cat=>{const list=avail.filter(r=>r.cat===cat);if(!list.length)return "";return `<h4>${CAT_NAMES[cat]}</h4>`+(cat==="ships"?shipPlanHtml():cat==="build"?woodPlanHtml():"")+list.map(r=>{const ok=Object.entries(r.in).every(([k,n])=>inv(k)>=n)&&(!r.tool||craftTool(r.tool))&&!gearProblem(r,inv,world.structures,player.pos)&&!shipProblem(r,inv);
@@ -1876,6 +1875,30 @@ function updateShipHud(W){let el=$("#wShipHud");const p=player;
     (p.helm?`<br><small style="opacity:.8">W/S sails · A/D rudder · E leave the wheel · mouse wheel zoom</small>`:`<br><small style="opacity:.8">WASD walk the deck · E at the wheel (quarterdeck, aft) to steer · E elsewhere to leave the ship</small>`)+
     (S.grounded?`<br><b style="color:#ffb36b">Shoal water ahead!</b>`:"")}
 /* debug / fast-test hooks: window.__fogWorld.ship.* (see SHIP.md) */
+
+const DEV_MODE={
+  get active(){return !!(world&&world.devMode)},
+  grant(){
+    if(!world)return false;
+    world.devMode=true;
+    world.inv.satchel=Math.max(world.inv.satchel||0,1);
+    for(const d of WORLD_DISCOVERIES)discover(d.id,true);
+    for(const k of Object.keys(ITEMS))world.inv[k]=Math.max(world.inv[k]||0,20);
+    // keep tools non-breaking (useTool already no-op); clear any broken-state dur
+    world.dur={};
+    if(!world.order)world.order=[];
+    for(const k of Object.keys(ITEMS))if(!world.order.includes(k))world.order.push(k);
+    renderHotbar();renderInventory();
+    toast("DEV ON — full creative inventory + all discoveries unlocked. Tools never break.");
+    return true;
+  },
+  toggle(){
+    if(!world)return false;
+    if(world.devMode){world.devMode=false;toast("DEV off — inventory kept.");return false}
+    this.grant();return true;
+  }
+};
+
 const SHIP_DEBUG={
   unlock(){for(const d of ["buoyancy","raft","fire","clothing","knapping"])discover(d,true)},
   materials(){this.unlock();const t={log:20,stick:16,fiber:40,axe_stone:1,knife_stone:1};for(const k in t)give(k,t[k]);renderHotbar();return {...world.inv}},
@@ -2191,7 +2214,7 @@ export function initWorld(){
     addFireFuel:feedFire,quickCarve,hover:()=>cursorTarget(true),autoPickup:()=>autoPickup?{remaining:autoPickup.path.length,item:autoPickup.target.kind==="res"?autoPickup.target.obj.r.type:autoPickup.target.obj.item}:null,drill:()=>({active:!!drilling,progress:drilling?._drill?.progress||0,prop:!!drillProp}),give:(k,n)=>give(k,n),press:(code,ms)=>{keys.add(code);setTimeout(()=>keys.delete(code),ms)},keyEvent:code=>window.dispatchEvent(new KeyboardEvent("keydown",{code,bubbles:true})),keyDown:c=>keys.add(c),keyUp:c=>keys.delete(c),keysClear:()=>keys.clear(),
     chopTest:(n,f)=>chopTest(n,f),axeFreeze:v=>AXE.setFreeze(v),axeDbg:()=>JSON.stringify(AXE.dbg,(k,v)=>typeof v==="number"?+v.toFixed(3):v),cine:(o)=>{if(o&&o.hidePlayer!==undefined)CINE.hidePlayer=o.hidePlayer;if(o===false||o===undefined){CINE.on=false;if(player.model)player.model.visible=true;return CINE}CINE.on=true;if(o.pos)CINE.pos.fromArray(o.pos);if(o.tgt)CINE.tgt.fromArray(o.tgt);if(o.fov)CINE.fov=o.fov;return CINE},teleport:(x,z)=>{player.pos.set(x,heightAt(x,z),z);player.vel.set(0,0,0);updateChunks(true)},stats:()=>({pos:player&&player.pos.toArray().map(v=>+v.toFixed(2)),chunks:chunks.size,animals:animals.length,frames,
       revealed:world?.ks.revealed.length,disc:world?.disc.length,atlas:!!atlas,drawCalls:renderer.info.render.calls,tris:renderer.info.render.triangles,fps:+fps.toFixed(1),quality:GFX.qName,birds:{...birds.stats},human:!!player?.model?.userData?.mixer,audio:{...AU.stats}}),
-    start:()=>$("#wPlay").click(),height:(x,z)=>heightAt(x,z),biome:(x,z)=>biomeAt(x,z,heightAt(x,z)),slope:(x,z)=>slopeAt(x,z),reseed:seed=>{const w=newWorld(seed);w.removed=[];w.burnt=[];startWorld(w)},newGame:seed=>newGame(seed),fps:()=>fps,quality:q=>{if(q)applyQuality(q);return GFX.qName},ocean:q=>{if(q)GFX.setWaterQuality(q);return GFX.oceanStats()},waveHeight:(x,z)=>GFX.waveHeight(x,z,heightAt(x,z)),
+    start:()=>$("#wPlay").click(),height:(x,z)=>heightAt(x,z),nearTree:(x,z,r=20)=>{const t=nearestTree(x,z,r);return t?{x:t.t.x,z:t.t.z,y:t.t.y,s:t.t.s,gone:!!t.t.gone}:null},biome:(x,z)=>biomeAt(x,z,heightAt(x,z)),slope:(x,z)=>slopeAt(x,z),reseed:seed=>{const w=newWorld(seed);w.removed=[];w.burnt=[];startWorld(w)},newGame:seed=>newGame(seed),fps:()=>fps,quality:q=>{if(q)applyQuality(q);return GFX.qName},ocean:q=>{if(q)GFX.setWaterQuality(q);return GFX.oceanStats()},waveHeight:(x,z)=>GFX.waveHeight(x,z,heightAt(x,z)),
     setHour:h=>{world.gameTime=Math.floor(world.gameTime/86400)*86400+h*3600},setWeather:(kind,amt)=>{world.weather.kind=kind;world.weather.amt=amt??(kind==="rain"||kind==="storm"?1:0);world.weather.t=9e9;world.weather.next=kind},
     look:(yaw,pitch,dist)=>{player.camYaw=yaw;if(pitch!==undefined)player.camPitch=pitch;if(dist!==undefined)player.camDist=dist},throwHeld,useHeld,interact,craft,eat,hold:k=>{if(world&&world.inv[k]){world.held=k;renderHotbar();return true}return false},
     sim,scan,target:()=>{const t=findTarget();return t?{kind:t.kind,label:targetLabel(t),type:t.obj?.type||t.obj?.item||t.obj?.r?.type||t.obj?.kind}:null},respawn:()=>$("#wRespawn")?.click(),
@@ -2210,7 +2233,7 @@ export function initWorld(){
       let hi=-1e9,lo=1e9;for(let r=0;r<=1000;r+=25)for(let a=0;a<32;a++){const h=heightAt(x+Math.cos(a/32*6.283)*r,z+Math.sin(a/32*6.283)*r);if(h>0){hi=Math.max(hi,h);lo=Math.min(lo,h)}}
       for(const k in out)out[k]=Math.round(out[k]);return {res:out,boulder:Math.round(boulder),tree:Math.round(tree),water,relief1km:Math.round(hi-lo),hi:Math.round(hi)}},
     clearStructs:()=>{for(const o of world.structures)o.obj&&scene.remove(o.obj);world.structures.length=0;player.raft=null;player.ship=null;player.helm=false},
-    ship:SHIP_DEBUG,woodland:WOOD_DEBUG,
+    dev:DEV_MODE,ship:SHIP_DEBUG,woodland:WOOD_DEBUG,
     clearDrops:()=>{for(const d of world.drops)scene.remove(d.mesh);world.drops.length=0},
     clearAnimals:kind=>{for(let i=animals.length-1;i>=0;i--)if(!kind||animals[i].kind===kind){scene.remove(animals[i].g);animals.splice(i,1)}},
     fireAt:()=>fireHeatAt(player.pos.x,player.pos.z),noise:()=>playerNoiseDb?playerNoiseDb():null};

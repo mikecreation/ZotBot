@@ -128,6 +128,7 @@ function setMode(m){document.querySelectorAll(".gTabs button").forEach(b=>b.setA
   try{history.replaceState(null,"","#"+m)}catch(_){}}
 function boot(){
   document.querySelectorAll(".gTabs button").forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+  const db=$("#devModeBtn");if(db)db.onclick=()=>{const W=window.__fogWorld;if(!W?.dev){alert("Start Open World first.");return}const on=W.dev.toggle();db.setAttribute("aria-pressed",String(!!on));db.textContent=on?"DEV ON":"DEV"};
   const m=(location.hash||"#world").slice(1);setMode(["world","explore","daily"].includes(m)?m:"world");
   atlasPromise.then(a=>{A=a;layout();
     ex=loadEx();exMap=makeMap($("#exMap"),$("#exHover"),()=>[...ex.revealed].filter(id=>A.index.has(id)));

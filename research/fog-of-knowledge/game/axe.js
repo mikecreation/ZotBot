@@ -9,7 +9,7 @@ const notches=new Map();   // key -> {slot,mesh,mat,c,n,axis,R,depth,h0,t}
 let swing=null,falling=[],chips=null,chipV=[],chipN=0,stopT=0;
 const NOTCH_GLSL=`uniform vec4 uNotchA[${MAXN}];uniform vec4 uNotchB[${MAXN}];varying vec3 vNW;
 bool inNotch(vec3 p){for(int i=0;i<${MAXN};i++){vec4 a=uNotchA[i],b=uNotchB[i];if(b.w<.5)continue;vec3 d=p-a.xyz;
- float q=-(d.x*b.x+d.z*b.y),k=1.-q/max(a.w,1e-3);if(q>-.03&&q<a.w&&length(d.xz)<1.2&&d.y<b.z*k&&d.y>-b.z*.55*k)return true;}return false;}
+ float q=-(d.x*b.x+d.z*b.y),k=1.-q/max(a.w,1e-3);if(q>-.03&&q<a.w&&length(d.xz)<a.w*1.05&&d.y<b.z*k&&d.y>-b.z*.55*k)return true;}return false;}
 `;
 function patchBark(m){if(!m||m.userData.notch)return;m.userData.notch=1;const prev=m.onBeforeCompile,pk=m.customProgramCacheKey?.bind(m);
   m.onBeforeCompile=(sh,r)=>{prev&&prev.call(m,sh,r);sh.uniforms.uNotchA={value:NA};sh.uniforms.uNotchB={value:NB};
@@ -32,19 +32,20 @@ export function initAxe(ctx){C=ctx;ctx.renderer.localClippingEnabled=true;patchB
 export const busy=()=>!!swing;
 export const hitStop=()=>stopT>0;
 /* --- notch --- */
-function notchMat(n){const m=new THREE.MeshStandardMaterial({map:WOOD,roughness:.9,side:THREE.DoubleSide,emissive:0x8a6a44,emissiveMap:WOOD,emissiveIntensity:1.1});
+function notchMat(n){const m=new THREE.MeshStandardMaterial({map:WOOD,roughness:.9,side:THREE.DoubleSide,emissive:0x8a6a44,emissiveMap:WOOD,emissiveIntensity:.55});
   m.onBeforeCompile=sh=>{sh.uniforms.uAx={value:n.axis};sh.uniforms.uR={value:n.R};
     sh.vertexShader="varying vec3 vNW2;\n"+sh.vertexShader.replace("#include <project_vertex>","#include <project_vertex>\nvNW2=(modelMatrix*vec4(transformed,1.)).xyz;");
     sh.fragmentShader="uniform vec3 uAx;uniform float uR;varying vec3 vNW2;\n"+sh.fragmentShader.replace("#include <map_fragment>",`#include <map_fragment>
      float rr=length(vNW2.xz-uAx.xz),jag=fract(sin(dot(floor(vNW2*vec3(60.,90.,60.)),vec3(12.9898,78.233,37.719)))*43758.5453);
-     if(rr>uR+.004)discard;
+     if(rr>uR-.002)discard;
      float rim=smoothstep(uR-.035-jag*.02,uR-.005,rr);diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.23,.15,.09)*(.7+.6*jag),rim);
      totalEmissiveRadiance*=1.-rim;
      diffuseColor.rgb*=.9+.1*jag;`)};
   m.customProgramCacheKey=()=>"notchface";return m}
-function notchGeo(n){const W=n.R+.06,d=n.depth,hu=n.h0,hl=n.h0*.55,g=new THREE.BufferGeometry();
-  // notch frame: x=lateral, y=up, z=outward normal; faces run from the bark (z=0) to the vertex (z=-d)
-  const P=[-W,hu,0, W,hu,0, W,0,-d, -W,0,-d,  -W,-hl,0, W,-hl,0, W,0,-d, -W,0,-d];
+function notchGeo(n){const R=n.R,d=Math.min(n.depth,R*.92),hu=n.h0,hl=n.h0*.55,g=new THREE.BufferGeometry();
+  // Clip to trunk cylinder: local z=0 is bark (outward), z=-d is inward. Inside iff x^2+(z+R)^2 <= R^2.
+  const mx=z=>Math.sqrt(Math.max(0,-2*R*z-z*z))*.9;const z0=-.006,z1=-d,x0=mx(z0),x1=mx(z1);
+  const P=[-x0,hu,z0, x0,hu,z0, x1,0,z1, -x1,0,z1,  -x0,-hl,z0, x0,-hl,z0, x1,0,z1, -x1,0,z1];
   g.setAttribute("position",new THREE.Float32BufferAttribute(P,3));
   g.setAttribute("uv",new THREE.Float32BufferAttribute([0,0,2,0,2,1,0,1, 0,0,2,0,2,1,0,1],2));g.setIndex([0,2,1,0,3,2,4,5,6,4,6,7]);g.computeVertexNormals();return g}
 function placeNotch(n){const z=new V3(n.n.x,0,n.n.z).normalize(),x=new V3().crossVectors(UP,z);n.mesh.matrix.makeBasis(x,UP,z).setPosition(n.c);n.mesh.matrixAutoUpdate=false;n.mesh.matrixWorldNeedsUpdate=true}

@@ -83,8 +83,8 @@ export function initGfx(el,q){
   camera=new THREE.PerspectiveCamera(62,el.clientWidth/el.clientHeight,.1,1500);
   hemi=new THREE.HemisphereLight(0xbcd6ff,0x4f4434,1.1);scene.add(hemi);
   sun=new THREE.DirectionalLight(0xfff0d8,3.2);scene.add(sun);scene.add(sun.target);
-  const sc=sun.shadow.camera;sc.left=-70;sc.right=70;sc.top=70;sc.bottom=-70;sc.near=1;sc.far=420;
-  sun.shadow.bias=-.0004;sun.shadow.normalBias=.04;
+  const sc=sun.shadow.camera;sc.left=-90;sc.right=90;sc.top=90;sc.bottom=-90;sc.near=1;sc.far=480;
+  sun.shadow.bias=-.00035;sun.shadow.normalBias=.035;sun.shadow.radius=2;
   lightningLight=new THREE.DirectionalLight(0xdceaff,0);scene.add(lightningLight);scene.add(lightningLight.target);
   // sky (Preetham) with night, overcast and horizon blending added
   sky=new Sky();sky.scale.setScalar(1200);sky.renderOrder=-10;
@@ -322,9 +322,15 @@ function terrainPatch(sh){sh.uniforms.uTime=U.time;sh.uniforms.uWet=U.wet;
     vec2 tp=vTW.xz;
     float n1=fk_vn(tp*.31),n2=fk_vn(tp*1.9+7.),n3=fk_fbm(tp*.045),n4=fk_vn(tp*6.5);
     float slope=1.-clamp(vTN.y,0.,1.);
-    vec3 base=diffuseColor.rgb*(.78+.34*n1+.12*n2+.08*n4)*(.88+.24*n3);
-    // grass ↔ dry patches
-    base=mix(base,base*vec3(1.18,1.05,.72),smoothstep(.55,.8,n3)*step(.0,base.g-base.r)*.6);
+    vec3 base=diffuseColor.rgb*(.78+.34*n1+.12*n2+.08*n4)*(.88+.18*n3);
+    // short-grass underlayer (Tsushima-inspired): fine vertical fiber streaks + mixed light blades, not spongy moss
+    float fiber=max(fk_vn(vec2(tp.x*52.,tp.y*2.8)),fk_vn(vec2(tp.x*2.4+9.,tp.y*58.)));
+    float tuft=fk_vn(tp*16.);
+    vec3 soil=vec3(.20,.16,.09),shortG=vec3(.32,.50,.17),tipG=vec3(.52,.66,.24);
+    vec3 gcol=mix(soil,shortG,.58+.32*tuft);gcol=mix(gcol,tipG,smoothstep(.5,.92,fiber)*.5);
+    base=mix(base,gcol*(.88+.18*n1),step(0.,base.g-base.r*.75)*.85);
+    // dry straw patches
+    base=mix(base,base*vec3(1.16,1.04,.7),smoothstep(.6,.85,n3)*step(.0,base.g-base.r)*.45);
     // rock on steep slopes (triplanar-ish noise using y)
     float rn=fk_vn(vec2(vTW.x+vTW.z,vTW.y)*.9)*.6+fk_vn(tp*3.1)*.4;
     vec3 rock=vec3(.26,.245,.225)*(.7+.6*rn);
@@ -351,7 +357,7 @@ function terrainPatch(sh){sh.uniforms.uTime=U.time;sh.uniforms.uWet=U.wet;
     roughnessFactor=mix(roughnessFactor,.32,tWet*(1.-smoothstep(-.3,-1.,vTW.y)));roughnessFactor=mix(roughnessFactor,.55,sn);roughnessFactor=mix(roughnessFactor,.4,uWet*(1.-sn));`)
    .replace("#include <normal_fragment_maps>",`#include <normal_fragment_maps>
     float closeDetail=1.-smoothstep(18.,55.,distance(vTW,cameraPosition));
-    float relief=fk_vn(vTW.xz*7.)*.035+fk_vn(vTW.xz*23.)*.008;
+    float relief=fk_vn(vTW.xz*22.)*.014+fk_vn(vTW.xz*60.)*.005;
     vec3 q0=dFdx(vViewPosition),q1=dFdy(vViewPosition);
     vec3 surfR=cross(q1,normal),surfS=cross(normal,q0);
     normal=normalize(normal-(surfR*dFdx(relief)+surfS*dFdy(relief))*closeDetail/max(abs(dot(q0,surfR)),.0001));`)}

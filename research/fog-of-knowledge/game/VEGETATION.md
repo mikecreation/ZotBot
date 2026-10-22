@@ -20,3 +20,24 @@
 - Ben Golus, "Anti-aliased Alpha Test: The Esoteric Alpha To Coverage" (2017).
 - Ryan Brucks, "Octahedral Impostors" (2018), background reading; we use simpler baked cross-quad impostors.
 - Two-bone analytic IK (law of cosines with a pole vector), as in standard game animation references (e.g. "Two Bone IK", theorangeduck.com).
+
+
+## Tree mesh rebuild (branch junctions + continuous trunks)
+Research applied (no third-party assets; our own implementation):
+- **Weber & Penn** (SIGGRAPH 1995): recursive stem levels, relative length/radius, base flare, tropism.
+- **SpeedTree Branch Intersections**: "welding" — child sits on parent skin (bottom ring projected onto parent cylinder); weld distance + spread form the collar/web; light-seam reduction blends child normals toward parent surface normals over the weld. We do **not** boolean-fuse into one watertight mesh (same practical reason SpeedTree cites for games).
+- **Lluch et al.** / Unity discussions: soft junction transitions; NormalThief-style normal blending at the collar.
+- **SpeedTree UV**: Relative V (keep aspect) so bark texel density matches circumference; continuous V along arc length avoids horizontal "stacked log" UV rings.
+- **Branch collar anatomy**: flared attachment thicker than the free branch, tapering quickly into the limb.
+
+Implementation notes:
+- Trunk: 12–14 rings, power-curve taper, 9–10 radial sides, continuous UVs — reads as one bole, not stacked segments.
+- Each twig gets a unique random `radMul` in a natural range; thicker near the trunk via parent radius at the attach point.
+- Weld rings (4) flare from ~parent radius down to branch radius; first-ring verts lerp onto the parent cylinder; normals blend with the parent surface.
+
+## Ground cover (short grass, not moss)
+- **Ghost of Tsushima** (Wohllaib, GDC 2021): terrain material + dense procedural blades; short grass can fold verts for denser near-ground cover.
+- Terrain albedo retuned: anisotropic high-frequency fiber noise (vertical streaks) mixed with soil flecks and lighter blade tips — not spongy moss FBM. Grass clumps add a ring of tiny short under-blades.
+
+## Tools
+- Durability consumption disabled in play (`useTool` no-op); green durability bars hidden. Tools never break or disappear.

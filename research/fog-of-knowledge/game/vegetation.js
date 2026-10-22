@@ -87,37 +87,64 @@ class GB{constructor(){this.p=[];this.n=[];this.c=[];this.uv=[];this.w=[];this.t
     g.setAttribute("color",new THREE.Float32BufferAttribute(this.c,3));g.setAttribute("uv",new THREE.Float32BufferAttribute(this.uv,2));g.setAttribute("aWind",new THREE.Float32BufferAttribute(this.w,3));
     g.setAttribute("aTransl",new THREE.Float32BufferAttribute(this.tr,1));g.setIndex(this.i);g.computeBoundingSphere();g.computeBoundingBox();return g}}
 
-/* recursive branching (space-colonisation-free L-system style): each branch is a gnarled polyline; children spawn
-   along it with golden-angle phyllotaxis, shortening with height (gives cone/oval silhouettes) */
+/* recursive branching (Weber & Penn / SpeedTree style). Trunk is one continuous tapered
+   tube (many rings, smooth radius curve — no stacked-log seams). Child branches use SpeedTree
+   "welding": they sit on the parent skin with a flared collar (spread→radius over weld rings),
+   unique random radius per twig, continuous bark UVs/normals. See VEGETATION.md. */
 function grow(sp,seed){const R=rng(seed),out=[];
-  const rec=(o,dir,len,rad,depth,ph,w0,wl,pr)=>{const n=sp.seg[depth],pts=[o.clone()],rr=[rad],ws=[w0];let p=o.clone();const d=dir.clone();
-    if(pr){ // collar: start buried at the parent's axis, flare out where it leaves the bark, then taper into the branch
-      pts[0]=o.clone().addScaledVector(dir,-pr*.85);rr[0]=Math.min(pr*.92,rad*1.9);
-      pts.push(o.clone().addScaledVector(dir,pr*.35));rr.push(rad*1.3);ws.push(w0);
-      pts.push(o.clone().addScaledVector(dir,pr*.35+Math.max(rad*2.5,.06)));rr.push(rad*1.04);ws.push(w0+wl*.04);p=pts[2].clone()}
-    for(let i=1;i<=n;i++){d.x+=(R()-.5)*sp.gnarl[depth];d.z+=(R()-.5)*sp.gnarl[depth];d.y+=sp.trop[depth];d.normalize();p=p.clone().addScaledVector(d,len/n);pts.push(p);
-      rr.push(rad*(1-(i/n)*sp.taper[depth]));ws.push(w0+wl*(i/n))}
-    const b={pts,rr,ws,depth,ph};out.push(b);
-    if(depth<sp.depth){const k=sp.kids[depth],o0=pts.length-1-n;
-      for(let j=0;j<k;j++){const t=sp.kStart[depth]+(1-sp.kStart[depth])*Math.min(.98,(j+R()*.6)/k),fi=t*n,i0=o0+Math.min(n-1,Math.floor(fi)),f=fi-(i0-o0);
+  const rec=(o,dir,len,rad,depth,ph,w0,wl,pr)=>{const n=sp.seg[depth],pts=[],rr=[],ws=[];let p,d=dir.clone().normalize();
+    if(pr!=null){ // SpeedTree weld: start on parent skin, flare collar, then taper
+      const weldN=4,weldLen=Math.max(rad*3.8,pr*.75),spread=Math.min(pr*.9,rad*2.7);
+      const start=o.clone().addScaledVector(d,pr*.08); // sit just on/into the bark
+      for(let i=0;i<=weldN;i++){const t=i/weldN,e=t*t*(3-2*t); // smoothstep
+        pts.push(start.clone().addScaledVector(d,t*weldLen));
+        // flare: spread at t=0 → rad at t=1 (slight overshoot mid-collar for organic web)
+        rr.push(spread*(1-e)*(1-e)+rad*(1.18*e*(1-e)*2+e*e));
+        ws.push(w0)}
+      p=pts[pts.length-1].clone();
+      for(let i=1;i<=n;i++){d.x+=(R()-.5)*sp.gnarl[depth];d.z+=(R()-.5)*sp.gnarl[depth];d.y+=sp.trop[depth];d.normalize();
+        p=p.clone().addScaledVector(d,len/n);pts.push(p);
+        const tip=Math.pow(i/n,1.1)*sp.taper[depth];rr.push(Math.max(sp.minR*.6,rad*(1-tip)));ws.push(w0+wl*(i/n))}
+    }else{ // trunk: dense rings + power taper (reads as one continuous bole, not stacked logs)
+      pts.push(o.clone());rr.push(rad*1.32);ws.push(w0);p=o.clone();
+      for(let i=1;i<=n;i++){d.x+=(R()-.5)*sp.gnarl[depth];d.z+=(R()-.5)*sp.gnarl[depth];d.y+=sp.trop[depth];d.normalize();
+        p=p.clone().addScaledVector(d,len/n);pts.push(p);
+        const t=i/n,tip=Math.pow(t,1.2)*sp.taper[depth];
+        rr.push(rad*(1-tip)*(1+(R()-.5)*.03));ws.push(w0+wl*t)}
+    }
+    const b={pts,rr,ws,depth,ph,weld:pr!=null?{pr,o:o.clone(),d:dir.clone().normalize()}:null};out.push(b);
+    if(depth<sp.depth){const k=sp.kids[depth],o0=pr!=null?4:0; // kids spawn past the collar
+      for(let j=0;j<k;j++){const t=sp.kStart[depth]+(1-sp.kStart[depth])*Math.min(.98,(j+R()*.6)/k);
+        const fi=t*(pts.length-1-o0),i0=o0+Math.min(pts.length-2-o0,Math.floor(fi)),f=fi-(i0-o0);
         const at=pts[i0].clone().lerp(pts[i0+1],f),ar=rr[i0]+(rr[i0+1]-rr[i0])*f,aw=ws[i0]+(ws[i0+1]-ws[i0])*f;
         const pd=pts[i0+1].clone().sub(pts[i0]).normalize(),az=j*2.39996+R()*.7;
         const perp=new V3(1,0,0);if(Math.abs(pd.x)>.9)perp.set(0,0,1);perp.cross(pd).normalize().applyAxisAngle(pd,az);
         const ang=sp.angle[depth]*(.8+R()*.4),cd=pd.clone().multiplyScalar(Math.cos(ang)).addScaledVector(perp,Math.sin(ang)).normalize();
         const cl=len*sp.lenR[depth]*(1-sp.lenFall[depth]*t)*(.75+R()*.5);
-        rec(at,cd,cl,Math.max(sp.minR,ar*sp.radR[depth]),depth+1,depth===0?R()*6.28:ph,aw,cl*sp.flex[depth],ar)}}};
-  rec(new V3(0,-.3,0),new V3(0,1,0),sp.H,sp.R0,0,0,0,sp.flex0);return out}
+        // unique random radius per twig (natural range), thicker near trunk via ar
+        const radMul=sp.radR[depth]*(.5+R()*.95);
+        rec(at,cd,cl,Math.max(sp.minR,ar*radMul),depth+1,depth===0?R()*6.28:ph,aw,cl*sp.flex[depth],ar)}}};
+  rec(new V3(0,-.3,0),new V3(0,1,0),sp.H,sp.R0,0,0,0,sp.flex0,null);return out}
 
-function tubes(gb,branches,H,col,sides){const tmp=new V3(),nrm=new V3(),bin=new V3(),tan=new V3();
-  for(const b of branches){const S=sides[Math.min(b.depth,sides.length-1)],base=gb.p.length/3,P=b.pts,ur=Math.max(1,Math.round(b.rr[Math.min(1,b.rr.length-1)]*2*Math.PI/.35));
+function tubes(gb,branches,H,col,sides){const tmp=new V3(),nrm=new V3(),bin=new V3(),tan=new V3(),wpos=new V3();
+  for(const b of branches){const S=sides[Math.min(b.depth,sides.length-1)],base=gb.p.length/3,P=b.pts;
+    // continuous bark UVs: U tiles by circumference (texel density), V = arc length keeping aspect (SpeedTree Relative)
+    const rRef=b.rr[Math.min(1,b.rr.length-1)],uTiles=Math.max(.5,rRef*2*Math.PI/.42),vScale=uTiles/(2*Math.PI*Math.max(rRef,.01));
     let ref=new V3(1,0,0),vacc=0;
+    const weldN=b.weld?4:0,pr=b.weld?b.weld.pr:0,po=b.weld?b.weld.o:null;
     for(let i=0;i<P.length;i++){tan.copy(i<P.length-1?P[i+1]:P[i]).sub(i<P.length-1?P[i]:P[i-1]).normalize();
       if(i>0)vacc+=P[i].distanceTo(P[i-1]);
       bin.crossVectors(tan,ref);if(bin.lengthSq()<1e-4){ref.set(0,0,1);bin.crossVectors(tan,ref)}bin.normalize();nrm.crossVectors(bin,tan).normalize();ref.copy(nrm);
-      const r=b.rr[i]*(i===0&&b.depth===0?1.25:1),ao=.72+.28*Math.min(1,Math.max(0,P[i].y)/2.2);
-      const c={r:col.r*ao,g:col.g*ao,b:col.b*ao};
-      for(let s=0;s<=S;s++){const a=s/S*Math.PI*2;tmp.copy(nrm).multiplyScalar(Math.cos(a)).addScaledVector(bin,Math.sin(a));
-        gb.v(P[i].clone().addScaledVector(tmp,r),tmp,c,s/S*ur,vacc/.9,[b.ws[i],b.ph,Math.max(0,P[i].y)/H],0)}}
+      const r=b.rr[i],ao=.72+.28*Math.min(1,Math.max(0,P[i].y)/2.2),c={r:col.r*ao,g:col.g*ao,b:col.b*ao};
+      const wt=weldN?Math.min(1,i/weldN):1; // 0 at collar → 1 past weld
+      for(let s=0;s<=S;s++){const a=s/S*Math.PI*2;tmp.copy(nrm).multiplyScalar(Math.cos(a)).addScaledVector(bin,Math.sin(a)).normalize();
+        wpos.copy(P[i]).addScaledVector(tmp,r);
+        let nn=tmp.clone();
+        if(b.weld&&i<=weldN&&po){ // project toward parent cylinder skin; blend normals (SpeedTree light-seam reduction)
+          const ax=po,to=wpos.clone().sub(ax);to.y=0; // parent axis ~ vertical at attach for weld
+          const flat=to.length();if(flat>1e-5){to.multiplyScalar(1/flat);const onSkin=ax.clone().addScaledVector(to,pr);onSkin.y=wpos.y;
+            const e=wt*wt*(3-2*wt);wpos.lerpVectors(onSkin,wpos,e);nn.lerpVectors(to,tmp,e).normalize()}}
+        gb.v(wpos.clone(),nn,c,(s/S)*uTiles,vacc*vScale,[b.ws[i],b.ph,Math.max(0,P[i].y)/H],0)}}
     for(let i=0;i<P.length-1;i++)for(let s=0;s<S;s++){const a=base+i*(S+1)+s,bb=a+S+1;gb.i.push(a,a+1,bb,a+1,bb+1,bb)}}}
 
 function card(gb,c,ax,ay,w,h,tile,nrm,col,wind,anchorBottom,nf){const [u0,v0]=TILE[tile],base=gb.p.length/3;
@@ -126,16 +153,16 @@ function card(gb,c,ax,ay,w,h,tile,nrm,col,wind,anchorBottom,nf){const [u0,v0]=TI
   gb.i.push(base,base+1,base+2,base,base+2,base+3)}
 
 const SPECS={
-  broad:{H:3.6,R0:.24,depth:3,seg:[6,4,3,2],gnarl:[.12,.35,.5,.6],trop:[0,.1,.1,.05],taper:[.45,.6,.7,.8],kids:[5,4,3],kStart:[.52,.2,.25],angle:[.85,.75,.7],
-    lenR:[.72,.6,.55],lenFall:[.5,.4,.3],radR:[.55,.6,.65],minR:.012,flex0:.0,flex:[.10,.16,.2],leafDepth:2,leafPer:3,leaf:[.85,.85],tile:0,leafAll:true},
-  conifer:{H:6.2,R0:.2,depth:1,seg:[8,3],gnarl:[.03,.15],trop:[0,-.06],taper:[.92,.8],kids:[26],kStart:[.24],angle:[1.45],lenR:[.42],lenFall:[.92],radR:[.35],minR:.015,flex0:.0,flex:[.14],leafDepth:1,leafPer:5,leaf:[1.5,1.1],tile:1},
-  dead:{H:3.6,R0:.22,depth:2,seg:[6,4,3],gnarl:[.18,.5,.6],trop:[0,.05,.02],taper:[.6,.7,.8],kids:[5,3],kStart:[.4,.3],angle:[.9,.8],lenR:[.6,.55],lenFall:[.4,.3],radR:[.5,.55],minR:.015,flex0:0,flex:[.06,.1]}
+  broad:{H:3.6,R0:.24,depth:3,seg:[14,5,4,3],gnarl:[.08,.32,.48,.55],trop:[0,.1,.1,.05],taper:[.42,.58,.68,.78],kids:[5,4,3],kStart:[.48,.18,.22],angle:[.85,.75,.7],
+    lenR:[.72,.6,.55],lenFall:[.5,.4,.3],radR:[.55,.58,.62],minR:.01,flex0:.0,flex:[.10,.16,.2],leafDepth:2,leafPer:3,leaf:[.85,.85],tile:0,leafAll:true},
+  conifer:{H:6.2,R0:.2,depth:1,seg:[14,4],gnarl:[.02,.14],trop:[0,-.06],taper:[.9,.78],kids:[26],kStart:[.22],angle:[1.45],lenR:[.42],lenFall:[.92],radR:[.32],minR:.012,flex0:.0,flex:[.14],leafDepth:1,leafPer:5,leaf:[1.5,1.1],tile:1},
+  dead:{H:3.6,R0:.22,depth:2,seg:[12,5,3],gnarl:[.14,.45,.55],trop:[0,.05,.02],taper:[.55,.65,.75],kids:[5,3],kStart:[.38,.28],angle:[.9,.8],lenR:[.6,.55],lenFall:[.4,.3],radR:[.48,.52],minR:.012,flex0:0,flex:[.06,.1]}
 };
 function treeGeo(type){const sp=SPECS[type],R=rng(type.length*991+7);
   const br=grow(sp,type==="broad"?4242:type==="conifer"?1717:913);
   let H=0;for(const b of br)for(const p of b.pts)H=Math.max(H,p.y);
   const barkCol=type==="conifer"?srgb(.6,.47,.38):type==="dead"?srgb(.6,.57,.52):srgb(.62,.56,.48);
-  const tg=new GB();tubes(tg,br,H,barkCol,type==="conifer"?[7,3]:[7,5,3,3]);
+  const tg=new GB();tubes(tg,br,H,barkCol,type==="conifer"?[9,4]:[10,6,4,3]);
   let crown=null;
   if(sp.leaf){const cg=new GB();const ctr=new V3(0,type==="conifer"?H*.5:H*.72,0),tmp=new V3(),ax=new V3(),ay=new V3(),nm=new V3();
     for(const b of br){if(b.depth<sp.leafDepth)continue;const P=b.pts;
@@ -181,10 +208,11 @@ function shrubGeo(){const R=rng(55),g=new GB(),ctr=new V3(0,.55,0),nm=new V3(),t
 
 /* grass clump: 7 blades x 6 levels, positions computed in the vertex shader (Bezier per blade) */
 function grassGeo(){const R=rng(5),B=7,L=6,p=[],bl=[],rt=[],col=[],idx=[];
-  for(let b=0;b<B;b++){const r=b===0?0:.06+R()*.2,a=R()*6.283,bx=Math.cos(a)*r,bz=Math.sin(a)*r,face=R()*6.283,hm=.36+R()*.36,rnd=R(),base=p.length/3;
-    for(let l=0;l<L;l++){const t=l/(L-1);for(const s of [-1,1]){p.push(bx+s*.02,t*hm*.6,bz);bl.push(t,s,b,rnd);rt.push(bx,bz,face,hm);
+  // tall expressive blades + a ring of tiny short under-blades (Tsushima-style dense ground cover)
+  for(let b=0;b<B+5;b++){const short=b>=B,r=b===0?0:(short?.04+R()*.14:.06+R()*.2),a=R()*6.283,bx=Math.cos(a)*r,bz=Math.sin(a)*r,face=R()*6.283,hm=short?.07+R()*.1:.36+R()*.36,rnd=R(),base=p.length/3,Lv=short?3:L;
+    for(let l=0;l<Lv;l++){const t=l/(Lv-1);for(const s of [-1,1]){p.push(bx+s*.02,t*hm*.6,bz);bl.push(t,s,b,rnd);rt.push(bx,bz,face,hm);
       const dry=rnd>.8?1:0;col.push(...[.20+t*.26+dry*.16,.34+t*.32+dry*.06,.10+t*.10].map(v=>Math.pow(v,2.2)*1.6))}}
-    for(let l=0;l<L-1;l++){const a=base+l*2;idx.push(a,a+1,a+2,a+1,a+3,a+2)}}
+    for(let l=0;l<Lv-1;l++){const a=base+l*2;idx.push(a,a+1,a+2,a+1,a+3,a+2)}}
   const g=new THREE.BufferGeometry();g.setAttribute("position",new THREE.Float32BufferAttribute(p,3));g.setAttribute("normal",new THREE.Float32BufferAttribute(p.map((v,i)=>i%3===1?1:0),3));
   g.setAttribute("aBlade",new THREE.Float32BufferAttribute(bl,4));g.setAttribute("aRoot",new THREE.Float32BufferAttribute(rt,4));g.setAttribute("color",new THREE.Float32BufferAttribute(col,3));
   g.setIndex(idx);g.boundingSphere=new THREE.Sphere(new V3(0,.4,0),1.2);return g}
