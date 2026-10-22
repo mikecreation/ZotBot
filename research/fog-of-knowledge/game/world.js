@@ -1931,7 +1931,7 @@ function woodWork(s,t){
   else toast(`${woodName(s)} · stage ${(s.stage||0)+1}/${S.length} · ${st.name}: needs ${needText(remainingOf(s))}. ${st.note||""}`);
   WOOD.setWoodStage(s._wood,s.stage,stageFracOf(s));renderHotbar();save()}
 let woodDay=null;   // soft sky light spilling in through the doorway and round windows (no shadow; one persistent light so shaders never recompile)
-const WOOD_SPILL={woodhut:[0,1,.6,7],foresthouse:[.6,1.7,1.2,15]};
+const WOOD_SPILL={woodhut:[0,1,.6,7],foresthouse:[-.2,2.2,.4,9]};
 function stepWoodland(dt){const cp=camera.position;
   if(!woodDay){woodDay=new THREE.PointLight(0xdbe6ff,0,7,2);scene.add(woodDay)}
   let best=null,bd=14;for(const s of world.structures){if(!isWoodland(s.type)||!s._wood||(s.stage||0)<(s.type==="woodhut"?3:5))continue;const d=Math.hypot(cp.x-s.x,cp.z-s.z);if(d<bd){bd=d;best=s}}
