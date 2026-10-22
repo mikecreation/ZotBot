@@ -679,12 +679,14 @@ function stepFires(dt,dtg){
   const rdt=Math.max(1e-3,tt-(fireFps.t||tt-.016));fireFps.t=tt;fireFps.ema+=(1/rdt-fireFps.ema)*Math.min(1,rdt*2);
   if(fireFps.ema<55)fireFps.low+=rdt;else fireFps.low=0;if(fireFps.ema>75)fireFps.high+=rdt;else fireFps.high=0;
   if(fireFps.low>2.5)fireFps.on=false;if(fireFps.high>6)fireFps.on=true;
-  const nSh=(fireFps.on&&GFX.ENV.night>.6)?(GFX.Q.fireShadow||0):0;
+  // Toggling castShadow changes NUM_POINT_LIGHT_SHADOWS and recompiles every lit shader (a visible hitch, and it made the fps budget oscillate).
+  // So the shadow-casting set only depends on quality and which fires are near; the budget / daylight just freezes the cube maps instead.
+  const nSh=GFX.Q.fireShadow||0,shLive=fireFps.on&&GFX.ENV.night>.6;
   fireLights.forEach((l,i)=>{const s=glow[i];const L=s&&fireLight(s);const want=!!L&&i<nSh&&s.type!=="torch"&&Math.hypot(s.x-P.x,s.z-P.z)<35;
     const msz=s?.hearth?256:Math.max(512,GFX.Q.fireShadowMap||256);
     if(l.castShadow!==want||(want&&l.shadow.mapSize.x!==msz)){l.castShadow=want;if(want){l.shadow.mapSize.set(msz,msz);l.shadow.map?.dispose();l.shadow.map=null}}
     // open fires: cube shadows every other frame. A hearth sits in static walls: its light holds still (flicker is intensity only) and the cube map refreshes every 30 frames (it is static geometry), or every frame while the door moves
-    if(l.castShadow){const hk=s.hearth?(woodDoorMoving()?1:(GFX.Q._hk||30)):2;l.shadow.needsUpdate=!l.shadow.map||l._sk!==s||(fireShFrame+i)%hk===0;l._sk=s}   // cube shadows re-render every other frame (6 faces each): halves their cost, flicker still reads
+    if(l.castShadow){const hk=s.hearth?(woodDoorMoving()?1:(GFX.Q._hk||30)):2;l.shadow.needsUpdate=!l.shadow.map||l._sk!==s||(shLive&&(fireShFrame+i)%hk===0)||(!shLive&&(fireShFrame+i)%240===0);l._sk=s}   // cube shadows re-render every other frame (6 faces each): halves their cost, flicker still reads
     if(L){const fl=1+.05*Math.sin(tt*9.3+i)+.035*Math.sin(tt*21.7+i*3)+.02*Math.sin(tt*37+i*5);
       if(s.hearth)l.position.set(s.x+s.hdx*.62,s.y+.62,s.z+s.hdz*.62);   // light leaves through the firebox mouth
       else l.position.set(s.x+.04*Math.sin(tt*13+i),s.y+(s.type==="torch"?1.6:s.type==="kiln"?1:Math.max(.9+.55*Math.min(4,fireSize(s)),fuelLayout(s).height+.8)),s.z+.04*Math.cos(tt*11+i));
@@ -1965,6 +1967,11 @@ const WOOD_DEBUG={
   cam(i,p,t){this._cam=p?{i,p,t}:null},
   rinfo(){const r=GFX.renderer.info.render;return {calls:r.calls,tris:r.triangles,sh:fireLights.filter(l=>l.castShadow).length,lit:fireLights.filter(l=>l.intensity>0).length,q:{fs:GFX.Q.fireShadow,fsm:GFX.Q.fireShadowMap}}},
   q(k,v){GFX.Q[k]=v},
+  prof(what,on){const set=(o,v)=>{if(o)o.visible=v};if(what==="lights")fireLights.forEach(l=>l.visible=on);else if(what==="fills")fireFillLights.forEach(l=>l.visible=on);else if(what==="spill")set(woodDay,on);
+    else if(what==="shadow")GFX.Q.fireShadow=on?1:0;else if(what==="grass"){for(const ch of chunks.values())for(const k in ch)if(ch[k]?.isInstancedMesh||k==="grass")set(ch[k],on)}
+    else if(what==="bloom"){if(GFX.bloomPass)GFX.bloomPass.enabled=on}else if(what==="flame"){scene.traverse(o=>{if(o.isMesh&&o.material?.uniforms?.uBedMap)o.visible=on})}
+       else if(what==="sod"){for(const s of this.sites())s._wood?.traverse(o=>{if(o.isMesh&&/sod|grass|moss/.test(o.name))o.visible=on})}
+    return GFX.renderer.info.render.calls},
   vis(i,on,fine){const s=this.site(i);if(!s?._wood)return;if(fine==null)s._wood.visible=on;else s._wood.traverse(o=>{if(o.isMesh&&o.userData.fine)o.visible=on})},
   dropHere(k="stone",n=3){give(k,n);return dropItem(k,n)},
   drops(){return world.drops.slice(-8).map(d=>({item:d.item,flying:d.flying,y:+d.pos.y.toFixed(3),terrain:+heightAt(d.pos.x,d.pos.z).toFixed(3),floor:+groundAt(d.pos.x,d.pos.z).toFixed(3),local:world.structures.filter(o=>isWoodland(o.type)&&Math.hypot(o.x-d.pos.x,o.z-d.pos.z)<6).map(o=>[o.type,...wLocal(o,d.pos.x,d.pos.z).map(v=>+v.toFixed(2)),+(o.y).toFixed(2),o.stage])}))},

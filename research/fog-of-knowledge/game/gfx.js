@@ -309,7 +309,11 @@ function grassPatch(sh){sh.uniforms.uTime=U.time;sh.uniforms.uWind=U.wind;sh.uni
    transformed.z+=hh*.35*cos(ph*.9)*uWind;
    float dc=distance(ip.xz,cameraPosition.xz);
    transformed*=1.-smoothstep(uFar*.6,uFar,dc);`);
-  sh.fragmentShader=sh.fragmentShader.replace("#include <normal_fragment_begin>","#include <normal_fragment_begin>\n normal=normalize((viewMatrix*vec4(0.,1.,0.,0.)).xyz);")}
+  sh.fragmentShader=sh.fragmentShader.replace("#include <normal_fragment_begin>","#include <normal_fragment_begin>\n normal=normalize((viewMatrix*vec4(0.,1.,0.,0.)).xyz);")
+   .replace("#include <lights_fragment_begin>",GRASS_LIGHTS)}
+/* grass blades are the biggest fragment cost at night: each one ran the PBR loop for every fire, fill and doorway light.
+   Only the first GRASS_PL point lights (shadow casters sort first, then the nearest fires) light the grass; the rest are skipped at compile time. */
+const GRASS_PL=2,GRASS_LIGHTS=THREE.ShaderChunk.lights_fragment_begin.replace(/(for \( int i = 0; i < NUM_POINT_LIGHTS; i \+\+ \) \{)([\s\S]*?)(\n\t\}\n\t#pragma unroll_loop_end)/,`$1\n#if UNROLLED_LOOP_INDEX < ${GRASS_PL}$2\n#endif$3`);
 function terrainPatch(sh){sh.uniforms.uTime=U.time;sh.uniforms.uWet=U.wet;
   sh.vertexShader="varying vec3 vTW;varying vec3 vTN;\n"+sh.vertexShader.replace("#include <begin_vertex>","#include <begin_vertex>\n vTW=(modelMatrix*vec4(transformed,1.)).xyz; vTN=normalize(mat3(modelMatrix)*objectNormal);");
   sh.fragmentShader="varying vec3 vTW;varying vec3 vTN;uniform float uWet;uniform float uTime;\n"+NOISE_GLSL+sh.fragmentShader
