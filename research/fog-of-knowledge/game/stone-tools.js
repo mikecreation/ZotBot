@@ -229,9 +229,9 @@ function axeParts(k){const metal=metalOf(k),pick=k==="pickaxe_stone",len=pick?.5
   return {parts:[[h.geo,"wood"],[head,metal||"flint"],[cords,"cord"]],grip:.075}}
 function knifeParts(k){const metal=metalOf(k),hl=.098;
   const h=haftGeometry({len:hl,seed:metal?23:19,sides:14,rings:14,oval:.76,facets:6,bend:.002,bark:.15,r:s=>.0138+.0012*Math.sin(s*Math.PI)-(s<.06?.002*(1-s/.06):0),cap:.006,capB:.006,clear:[[.058,hl]]});
-  const blade=knappedGeometry({L:.064,W:.0158,widen:-.18,nPos:1.55,nNeg:2.6,bend:.025,H:metal?.0024:.0052,Htaper:.15,q:metal?.7:.5,seed:metal?3:41,segs:84,rings:12,
+  const blade=knappedGeometry({L:.057,W:.0158,widen:-.18,nPos:1.55,nNeg:2.6,bend:.025,H:metal?.0024:.0052,Htaper:.15,q:metal?.7:.5,seed:metal?3:41,segs:84,rings:12,
     rotZ:Math.PI/2,scars:[8,7],retouchScars:[42,36],retouch:36,cortex:.35,cortexAt:(x)=>1-T.MathUtils.smoothstep(x,-.03,0),metal:!!metal,retouchSpan:th=>Math.cos(th)>-.55?1:0});
-  blade.translate(-.0012,hl+.05,0);
+  blade.translate(-.0012,hl+.043,0);
   const rc=.0013,cords=merge([whipping(h,.06,hl-.004,rc),whipping(h,.008,.03,rc*.9)]);
   return {parts:[[h.geo,"wood"],[blade,metal||"flint"],[cords,"cord"]],grip:.05}}
 function spearParts(){const len=1.62,y0=-.545;
