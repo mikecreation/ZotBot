@@ -36,4 +36,4 @@ export function helveAngle(angle,W=WHEEL){const {tail}=hammerLever(W);return Mat
 /* how high the hammer head rises at the top of the lift (m) */
 export function headLift(W=WHEEL){const {arm,tail}=hammerLever(W);return arm*W.hammer.drop/tail}
 /* flow from the gate and the weather; rain swells the spring */
-export function rainOf(weather){if(!weather)return 0;const k=weather.kind||"";return /storm/.test(k)?1:/rain/.test(k)?Math.max(.4,weather.amt??.7):0}
+export function rainOf(weather){if(!weather)return 0;const k=weather.kind||"";return k==="storm"?1:k==="rain"?Math.max(.4,weather.amt??.7):0}

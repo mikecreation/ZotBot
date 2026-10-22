@@ -4,7 +4,8 @@ import * as GAL from "./galleon.js?v=3.28.0";
 import {HULL,stepShip,newShipState,deckStep,deckY,shipToWorld,worldToShip,pointOfSail,clampDeck,fwdOf,localX} from "./ship-physics.js?v=3.28.0";
 import {SHIP_STAGES,SHIP_STEPS,deliver,remaining,stageFrac,shipProblem} from "./ship-progression.js?v=3.28.0";
 import * as WOOD from "./woodland-buildings.js?v=3.28.0";
-import {HOUSE as WHOUSE,STAGES as WSTAGES,isWoodland,remainingOf,stageFracOf,deliverStage,stageProblem,isComplete,stageTotalsOf,toLocal as wLocal,toWorld as wWorld,footprint as wFootprint,floorRect as wFloorRect,insideVolume as wInside,wallSegs as wWallSegs,partAt as wPartAt} from "./woodland-progression.js?v=3.28.0";
+import {HOUSE as WHOUSE,STAGES as WSTAGES,isWoodland,remainingOf,stageFracOf,deliverStage,stageProblem,isComplete,stageTotalsOf,toLocal as wLocal,toWorld as wWorld,footprint as wFootprint,floorRect as wFloorRect,insideVolume as wInside,wallSegs as wWallSegs,partAt as wPartAt,isDwelling,WHEELSITE} from "./woodland-progression.js?v=3.28.0";
+import * as WW from "./waterwheel.js?v=3.28.0";
 Object.assign(GEAR_STEPS,SHIP_STEPS);
 /* Fog of Knowledge: The Game — OPEN WORLD mode.
  * Real-time 3D world (three.js r160, vendored, MIT) with simple real physics:
@@ -621,13 +622,13 @@ function place(type,extra={}){
   world.structures.push(s);structMesh(s);AU.place();return s;
 }
 function structuresNear(x,z,r,type){return world.structures.filter(s=>(!type||s.type===type)&&Math.hypot(s.x-x,s.z-z)<r)}
-function shelterLevel(x,z){let lv=0;for(const s of world.structures){if(isWoodland(s.type)){const roofed=(s.stage||0)>=(s.type==="woodhut"?3:5);if(!roofed||Math.abs(s.x-x)>5||Math.abs(s.z-z)>5)continue;const [lx,lz]=wLocal(s,x,z),fp=wFootprint(s.type);if(lx>fp.x0&&lx<fp.x1&&lz>fp.z0&&lz<fp.z1)lv=Math.max(lv,isComplete(s)?3:2);continue}if(s.type!=="house"&&s.type!=="hut"&&s.type!=="leanto")continue;const d=Math.hypot(s.x-x,s.z-z);
+function shelterLevel(x,z){let lv=0;for(const s of world.structures){if(isWoodland(s.type)){if(!isDwelling(s.type))continue;const roofed=(s.stage||0)>=(s.type==="woodhut"?3:5);if(!roofed||Math.abs(s.x-x)>5||Math.abs(s.z-z)>5)continue;const [lx,lz]=wLocal(s,x,z),fp=wFootprint(s.type);if(lx>fp.x0&&lx<fp.x1&&lz>fp.z0&&lz<fp.z1)lv=Math.max(lv,isComplete(s)?3:2);continue}if(s.type!=="house"&&s.type!=="hut"&&s.type!=="leanto")continue;const d=Math.hypot(s.x-x,s.z-z);
   if(s.type==="house"&&d<2.1)lv=Math.max(lv,3);else if(s.type==="hut"&&d<2)lv=Math.max(lv,2);else if(s.type==="leanto"&&d<2.6)lv=Math.max(lv,1)}return lv}
 function sheltered(x,z){return shelterLevel(x,z)>0}
 function structSegs(s){if(isWoodland(s.type))return woodSegs(s);if(s._seg)return s._seg;const c=Math.cos(s.ry||0),sn=Math.sin(s.ry||0),W=(lx,lz)=>[s.x+lx*c+lz*sn,s.z-lx*sn+lz*c];
   const segs=s.type==="wall"?[[-1.65,0,1.65,0]]:s.type==="house"?[[-2.2,-2.2,2.2,-2.2],[-2.2,-2.2,-2.2,2.2],[2.2,-2.2,2.2,2.2],[-2.2,2.2,-.6,2.2],[.6,2.2,2.2,2.2]]:[];
   s._seg=segs.map(([a,b,c2,d])=>[...W(a,b),...W(c2,d)]);return s._seg}
-function collide(pos,rad){let hit=false;for(const s of world.structures){if(s.type!=="wall"&&s.type!=="house"&&!isWoodland(s.type))continue;if(Math.abs(s.x-pos.x)>6||Math.abs(s.z-pos.z)>6)continue;
+function collide(pos,rad){let hit=false;for(const s of world.structures){if(s.type!=="wall"&&s.type!=="house"&&!isWoodland(s.type))continue;const cr=s.type==="waterwheel"?8:6;if(Math.abs(s.x-pos.x)>cr||Math.abs(s.z-pos.z)>cr)continue;
   for(const [ax,az,bx,bz] of structSegs(s)){const dx=bx-ax,dz=bz-az,l2=dx*dx+dz*dz,t=clamp(((pos.x-ax)*dx+(pos.z-az)*dz)/l2,0,1),cx=ax+dx*t,cz=az+dz*t,ex=pos.x-cx,ez=pos.z-cz,d=Math.hypot(ex,ez),r=rad+.18;
     if(d<r){hit=true;if(d<1e-4){pos.x+=r;continue}pos.x=cx+ex/d*r;pos.z=cz+ez/d*r}}}return hit}
 // Discovery mode (default): no hunger, thirst, illness or injuries — setbacks instead of damage. Classic survival is an opt-in setting.
@@ -1012,7 +1013,7 @@ function onAtlas(A){atlas=A;for(const id of world.disc)applyKnowledge(WD.get(id)
 
 /* ---------------- interaction ---------------- */
 function frontPoint(r=1){const f=forward();return {x:player.pos.x+f.x*r,z:player.pos.z+f.z*r}}
-const STRUCT_R={woodhut:2.2,foresthouse:3.4,workbench:1,workbench_bundle:1,pack:.3,kiln:.6,table:.6,hut:1.6,house:2,well:.5,chest:.3,rack:.4,wall:.8,pendulum:.4};
+const STRUCT_R={woodhut:2.2,foresthouse:3.4,waterwheel:3.6,workbench:1,workbench_bundle:1,pack:.3,kiln:.6,table:.6,hut:1.6,house:2,well:.5,chest:.3,rack:.4,wall:.8,pendulum:.4};
 const cursorAim={x:0,y:0,inside:false},hoverRay=new THREE.Raycaster(),hoverNDC=new THREE.Vector2();
 let hoverAt=0,hovered=null,autoPickup=null;
 // Clear route, stale input and horizontal inertia together, before modal handlers.
@@ -1463,7 +1464,7 @@ function stepCuriosity(dt){thoughtT-=dt;thoughtShowT-=dt;const el=$("#wThought")
   const since=(world.counters.lastThought??-1e9),now=world.gameTime;if(now-since<(world.seenQ.length<4?1800:3600))return;
   const c=guideCtx();const q=CURIOSITY.find(q=>!world.seenQ.includes(q.id)&&!hasD(q.ans)&&q.when(c));if(!q)return;
   world.seenQ.push(q.id);world.counters.lastThought=now;if(el){el.innerHTML=`<small>CURIOSITY · press J for your journal</small>${esc(q.q)}`;el.hidden=false;thoughtShowT=11}}
-const ICON={mud:"🟤",moss:"🌿",thatch:"🌾",cordage:"🪢",cob:"🧱",woodhut_site:"🛖",house_site:"🏡",plank:"🪵",rope:"🪢",sailcloth:"🏳",pitch:"⚫",trenail:"📍",mast_spar:"🎋",shipyard:"⚓",bark:"🪵",thread:"🧵",leather:"🟫",hammer_stone:"🔨",tongs:"🗜",needle_iron:"🪡",iron_spike:"📌",leather_gloves:"🧤",climbing_gloves:"🧤",knife_copper:"🔪",knife_bronze:"🔪",knife_iron:"🔪",knife_stone:"🔪",pickaxe_stone:"⛏",hand_drill:"🪵",bench_joint:"🧩",workbench:"🛠",workbench_bundle:"🛠",charcoal:"◼",ash:"◻",berries_dried:"🍇",nuts_roasted:"🌰",jam:"🍯",dough:"🫓",flatbread:"🫓",stew:"🍲",berry_mash:"🍷",stick:"🥢",log:"🪵",stone:"🪨",flint:"🔪",pyrite:"✨",clay:"🟫",fiber:"🌾",berry_red:"🍒",berry_dark:"🫐",seeds:"🌱",grain:"🌾",meat_raw:"🥩",meat_dried:"🥓",meat_cooked:"🍖",hide:"🟤",flake:"🔺",
+const ICON={waterwheel_site:"🎡",mud:"🟤",moss:"🌿",thatch:"🌾",cordage:"🪢",cob:"🧱",woodhut_site:"🛖",house_site:"🏡",plank:"🪵",rope:"🪢",sailcloth:"🏳",pitch:"⚫",trenail:"📍",mast_spar:"🎋",shipyard:"⚓",bark:"🪵",thread:"🧵",leather:"🟫",hammer_stone:"🔨",tongs:"🗜",needle_iron:"🪡",iron_spike:"📌",leather_gloves:"🧤",climbing_gloves:"🧤",knife_copper:"🔪",knife_bronze:"🔪",knife_iron:"🔪",knife_stone:"🔪",pickaxe_stone:"⛏",hand_drill:"🪵",bench_joint:"🧩",workbench:"🛠",workbench_bundle:"🛠",charcoal:"◼",ash:"◻",berries_dried:"🍇",nuts_roasted:"🌰",jam:"🍯",dough:"🫓",flatbread:"🫓",stew:"🍲",berry_mash:"🍷",stick:"🥢",log:"🪵",stone:"🪨",flint:"🔪",pyrite:"✨",clay:"🟫",fiber:"🌾",berry_red:"🍒",berry_dark:"🫐",seeds:"🌱",grain:"🌾",meat_raw:"🥩",meat_dried:"🥓",meat_cooked:"🍖",hide:"🟤",flake:"🔺",
   axe_stone:"🪓",axe_copper:"🪓",axe_bronze:"🪓",axe_iron:"🪓",spear:"🔱",tally:"🧮",clothing:"🧥",pot:"🏺",pot_water:"💧",pot_clean:"♨️",copper_ore:"🟢",tin_ore:"⚪",iron_ore:"🔴",copper:"🟠",tin:"🔘",bronze:"🥉",iron:"⚫",
   quartz:"💎",sand:"⏳",glass:"🔷",lens:"🔍",lodestone:"🧲",tablet:"📜",gnomon:"🕐",bellows:"🪗",wheel:"☸️",telescope:"🔭",compass:"🧭",campfire:"🔥",leanto:"⛺",kiln:"🏭",raft:"🛶",table:"📚",sling:"🪃",bow:"🏹",arrow:"➶",
   prism:"🌈",torch:"🕯️",hut:"🛖",house:"🏠",chest:"🧰",rack:"🪜",well:"🪣",wall:"🧱",pendulum:"⏱️",shell:"🐚",feather:"🪶",leaf:"🍃",snow:"❄️",nuts:"🌰",satchel:"🎒"};
@@ -1878,8 +1879,8 @@ function shipCam(){const c=SHIP_DEBUG._cam,s=world.structures.find(o=>o.type==="
   const y0=s.type==="ship"?s.ship.y:s.y+s.keelH,cs=Math.cos(s.ry),sn=Math.sin(s.ry),W=([x,y,z])=>[s.x+x*cs+z*sn,y0+y,s.z-x*sn+z*cs];
   camera.position.set(...W(c.p));camera.lookAt(...W(c.t));if(player.model)player.model.visible=true;return true}
 /* ---------------- woodland buildings: hand-made hut and forest house, built in stages like the galleon ---------------- */
-const WOOD_CLEAR={woodhut:2.5,foresthouse:4.4};
-const woodName=s=>s.type==="woodhut"?"Woodland hut":"Forest house";
+const WOOD_CLEAR={woodhut:2.5,foresthouse:4.4,waterwheel:5.2};
+const woodName=s=>s.type==="woodhut"?"Woodland hut":s.type==="waterwheel"?"Water wheel":"Forest house";
 function woodSeed(s){return (Math.abs(Math.round(s.x*13.1+s.z*7.7))%100000)+11}
 function woodMesh(s,g){const gAt=(lx,lz)=>{const [x,z]=wWorld(s,lx,lz);return heightAt(x,z)-s.y};
   const root=WOOD.buildWoodland(s.type,{seed:woodSeed(s),ground:gAt});s._wood=root;g.add(root);s._seg=null;
@@ -1887,32 +1888,32 @@ function woodMesh(s,g){const gAt=(lx,lz)=>{const [x,z]=wWorld(s,lx,lz);return he
 function woodPlot(type,x,z,ry){const fp=wFootprint(type),s0={x,z,ry};let hi=-1e9,lo=1e9;
   for(let i=0;i<=6;i++)for(let j=0;j<=6;j++){const [wx,wz]=wWorld(s0,fp.x0+(fp.x1-fp.x0)*i/6,fp.z0+(fp.z1-fp.z0)*j/6),h=heightAt(wx,wz);hi=Math.max(hi,h);lo=Math.min(lo,h)}
   return {hi,lo,fp}}
-function placeWoodland(type,o={}){const f=forward(),ry=o.ry??Math.atan2(-f.x,-f.z),pd=type==="woodhut"?4.4:6.4;
+function placeWoodland(type,o={}){const f=forward(),ry=o.ry??Math.atan2(-f.x,-f.z),pd=type==="woodhut"?4.4:type==="waterwheel"?6.8:6.4;
   const x=o.x??player.pos.x+f.x*pd,z=o.z??player.pos.z+f.z*pd,{hi,lo,fp}=woodPlot(type,x,z,ry),s0={x,z,ry};
   if(!o.force){
     if(lo<.15){toast("Too close to the water for a dry floor — build a little further up the bank.");return null}
-    if(hi-lo>(type==="woodhut"?.9:1.3)){toast(`The ground falls ${(hi-lo).toFixed(1)} m across the plot. Find flatter ground for the ${type==="woodhut"?"hut":"house"}.`);return null}
+    if(hi-lo>(type==="woodhut"?.9:type==="waterwheel"?1.6:1.3)){toast(`The ground falls ${(hi-lo).toFixed(1)} m across the plot. Find flatter ground for the ${type==="woodhut"?"hut":type==="waterwheel"?"water wheel":"house"}.`);return null}
     const inPlot=(px,pz,m)=>{const [lx,lz]=wLocal(s0,px,pz);return lx>fp.x0-m&&lx<fp.x1+m&&lz>fp.z0-m&&lz<fp.z1+m};
     for(const ch of nearbyChunks(x,z,6)){for(const t of ch.obj.trees)if(!t.gone&&inPlot(t.x,t.z,.35)){toast("A tree stands inside the plot. Fell it with an axe first (its logs are building timber), or face a clearer spot.");return null}
       for(const b of ch.obj.boulders)if(inPlot(b.x,b.z,b.s*.8)){toast("A boulder sits in the plot. Face another spot or move along a little.");return null}}
     for(const st of world.structures)if(st.type!=="pack"&&!st.hearth&&inPlot(st.x,st.z,.6)){toast("Something you built is in the way. Pick a clear plot.");return null}
   }
-  const s={type,x,y:hi+(type==="woodhut"?.03:0),z,ry,stage:0,got:{},open:0};world.structures.push(s);structMesh(s);AU.place();clearWoodPlot(s);
-  if(!o.quiet)toast(type==="woodhut"?"Hut plot staked out with a cord line. E at the plot to deliver each stage: frame, wattle walls, thatch roof, then daub.":"House plot laid out: corner pegs, a cord line and a scratched hearth mark. E at the plot to deliver each of the 6 stages.");
+  const s={type,x,y:hi+(type==="woodhut"?.03:0),z,ry,stage:0,got:{},open:0};if(type==="waterwheel")s.gate=1;world.structures.push(s);structMesh(s);AU.place();clearWoodPlot(s);
+  if(!o.quiet)toast(type==="waterwheel"?"Water-wheel site staked: a spring wells from the rock outcrop and spills down its face. E at the site to deliver each stage: footings & tailrace, sluice & flume, axle, spokes & rims, buckets, then the cam and trip-hammer.":type==="woodhut"?"Hut plot staked out with a cord line. E at the plot to deliver each stage: frame, wattle walls, thatch roof, then daub.":"House plot laid out: corner pegs, a cord line and a scratched hearth mark. E at the plot to deliver each of the 6 stages.");
   return s}
 /* loose sticks, stones and flowers inside the plot are swept aside when it is staked out (remembered like pickups) */
 function clearWoodPlot(s){const fp=wFootprint(s.type);for(const ch of nearbyChunks(s.x,s.z,6))for(const r of ch.obj.res){if(r.gone)continue;const [lx,lz]=wLocal(s,r.x,r.z);
   if(lx>fp.x0-.3&&lx<fp.x1+.3&&lz>fp.z0-.3&&lz<fp.z1+.3){r.gone=true;if(r.mesh){r.mesh.setMatrixAt(r.slot,ZERO);r.mesh.instanceMatrix.needsUpdate=true}world.removed.add(ch.key+"|r"+r.i)}}}
 function woodSegs(s){if(s._seg)return s._seg;s._seg=wWallSegs(s.type,s.stage||0,s.open||0).map(([a,b,c,d])=>[...wWorld(s,a,b),...wWorld(s,c,d)]);return s._seg}
 function woodWallHit(ax,az,bx,bz,y){const X=(p,q,r)=>(q[0]-p[0])*(r[1]-p[1])-(q[1]-p[1])*(r[0]-p[0]);
-  for(const s of world.structures){if(!isWoodland(s.type)||(s.stage||0)<2||Math.abs(s.x-bx)>7||Math.abs(s.z-bz)>7||y>s.y+(s.type==="woodhut"?2.2:3.2)||y<s.y-.5)continue;
+  for(const s of world.structures){if(!isWoodland(s.type)||(s.stage||0)<2||Math.abs(s.x-bx)>7||Math.abs(s.z-bz)>7||y>s.y+(s.type==="woodhut"?2.2:s.type==="waterwheel"?4.2:3.2)||y<s.y-.5)continue;
     for(const g of woodSegs(s)){const P=[ax,az],Q=[bx,bz],A=[g[0],g[1]],B=[g[2],g[3]];if(X(P,Q,A)*X(P,Q,B)<=0&&X(A,B,P)*X(A,B,Q)<=0&&(X(A,B,P)!==0||X(A,B,Q)!==0))return true}}return false}
 function segDist(x,z,[ax,az,bx,bz]){const dx=bx-ax,dz=bz-az,l2=dx*dx+dz*dz||1e-9,t=clamp(((x-ax)*dx+(z-az)*dz)/l2,0,1);return Math.hypot(x-ax-dx*t,z-az-dz*t)}
 function woodDist(s,x,z){const segs=woodSegs(s);if(segs.length)return Math.min(...segs.map(g=>segDist(x,z,g)))-.15;
   const fp=wFootprint(s.type),[lx,lz]=wLocal(s,x,z);return Math.hypot(Math.max(0,fp.x0-lx,lx-fp.x1),Math.max(0,fp.z0-lz,lz-fp.z1))}
 /** standing height: terrain, or a woodland building's floor */
 function groundAt(x,z){let g=heightAt(x,z);for(const s of world.structures){if(!isWoodland(s.type)||(s.stage||0)<1||Math.abs(s.x-x)>5||Math.abs(s.z-z)>5)continue;
-  const [lx,lz]=wLocal(s,x,z),r=wFloorRect(s.type);if(lx>r.x0&&lx<r.x1&&lz>r.z0&&lz<r.z1)g=Math.max(g,s.y+r.y)}return g}
+  const [lx,lz]=wLocal(s,x,z),r=wFloorRect(s.type);if(r&&lx>r.x0&&lx<r.x1&&lz>r.z0&&lz<r.z1)g=Math.max(g,s.y+r.y)}return g}
 function woodInside(x,y,z){for(const s of world.structures){if(!isWoodland(s.type)||(s.stage||0)<2||Math.abs(s.x-x)>5||Math.abs(s.z-z)>5)continue;const [lx,lz]=wLocal(s,x,z);if(wInside(s.type,lx,y-s.y,lz,s.stage||0))return s}return null}
 function woodPart(s,t){const pt=t?.point||frontPoint(.9),[lx,lz]=wLocal(s,pt.x,pt.z),ly=(pt.y??player.pos.y+1)-s.y;return wPartAt(s.type,s.stage||0,lx,ly,lz)}
 function woodHearth(s){return s.wid&&world.structures.find(o=>o.hearth&&o.hearthOf===s.wid)}
@@ -1921,11 +1922,14 @@ function makeHearth(s){if(woodHearth(s))return woodHearth(s);s.wid=s.wid||Math.r
   world.structures.push(f);structMesh(f);return f}
 function woodLabel(s,t){const S=WSTAGES[s.type],k0=s.stage||0;
   if(k0<S.length){const st=S[k0],pr=stageProblem(s,inv);return `${woodName(s)} · stage ${k0+1}/${S.length} · ${st.name} · E deliver: ${needText(remainingOf(s))}${pr?" · "+pr:""}`}
+  if(s.type==="waterwheel")return wheelLabel(s,t);
   const part=woodPart(s,t);if(part==="door")return `Plank door on a pole hinge · E ${s.open>.5?"close":"open"} it`;
   if(part==="bed")return `${s.type==="woodhut"?"Grass-and-moss bed":"Mud bench-bed with fur and feathers"} · E sleep until dawn (at night)`;
   return s.type==="woodhut"?"Woodland hut · E sleep inside (at night)":`Forest house · walk in through the door · lay sticks in the hearth and light it`}
 function woodWork(s,t){
+  if(s.type==="waterwheel"&&(s.stage||0)>=2&&woodPart(s,t)==="gate")return wheelGate(s);
   if(isComplete(s)){const part=woodPart(s,t);
+    if(s.type==="waterwheel")return toast(wheelLabel(s,t));
     if(part==="door"){s.doorTarget=s.open>.5?0:1;AU.place();toast(s.doorTarget?"You lift the wooden latch and the plank door swings in on its pole hinge.":"You pull the door shut; the latch bar drops into its wooden catch.");return}
     if(part==="bed"||s.type==="woodhut")return sleep(s);
     return toast("Forest house: E at the door to open it, E at the bed to sleep. Feed the hearth with sticks or logs.")}
@@ -1933,8 +1937,9 @@ function woodWork(s,t){
   const S=WSTAGES[s.type],st=S[s.stage||0],res=deliverStage(s,inv,(k,n)=>take(k,n)),dk=Object.entries(res.delivered);
   if(res.completed){AU.place();GFX.FX.dust(s.x,s.y+1,s.z,20);s._seg=null;const id=res.completed;
     if(s.type==="woodhut"&&id==="daub"){discover("wattle_daub");discover("shelter");world.camp=[s.x,s.z]}
+    if(s.type==="waterwheel"&&res.done)world.camp=world.camp||[s.x,s.z];
     if(s.type==="foresthouse"){if(id==="cob")discover("cob");if(id==="hearth")makeHearth(s);if(res.done){discover("masonry");world.camp=[s.x,s.z]}}
-    toast(`${woodName(s)} · ${st.name} complete.`+(res.done?(s.type==="woodhut"?" The hut is finished: walk in through the doorway; E inside to sleep. This is your camp now.":" The house is finished. Open the door (E), lay a fire in the hearth — the chimney draws the smoke up and out. This is your camp now."):` Next: ${S[s.stage].name} — needs ${needText(remainingOf(s))}.`))}
+    toast(`${woodName(s)} · ${st.name} complete.`+(res.done?(s.type==="waterwheel"?" The wheel turns: water from the flume fills the buckets on the down-going side, their weight drives the axle, and three cam lugs trip the hammer into the mortar. E at the gate pole to open or shut the sluice.":s.type==="woodhut"?" The hut is finished: walk in through the doorway; E inside to sleep. This is your camp now.":" The house is finished. Open the door (E), lay a fire in the hearth — the chimney draws the smoke up and out. This is your camp now."):` Next: ${S[s.stage].name} — needs ${needText(remainingOf(s))}.`))}
   else if(dk.length){AU.pickup();toast(`Delivered ${dk.map(([k,n])=>n+"× "+ITEMS[k].name).join(", ")}. ${st.name} still needs ${needText(remainingOf(s))}.`)}
   else toast(`${woodName(s)} · stage ${(s.stage||0)+1}/${S.length} · ${st.name}: needs ${needText(remainingOf(s))}. ${st.note||""}`);
   WOOD.setWoodStage(s._wood,s.stage,stageFracOf(s));renderHotbar();save()}
@@ -1943,11 +1948,12 @@ let woodDay=null;   // soft sky light spilling in through the doorway and round 
 const WOOD_SPILL={woodhut:[0,1,.6,7],foresthouse:[-.2,2.2,.4,9]};
 function stepWoodland(dt){const cp=camera.position;
   if(!woodDay){woodDay=new THREE.PointLight(0xdbe6ff,0,7,2);scene.add(woodDay)}
-  let best=null,bd=14;for(const s of world.structures){if(!isWoodland(s.type)||!s._wood||(s.stage||0)<(s.type==="woodhut"?3:5))continue;const d=Math.hypot(cp.x-s.x,cp.z-s.z);if(d<bd){bd=d;best=s}}
+  let best=null,bd=14;for(const s of world.structures){if(!isDwelling(s.type)||!s._wood||(s.stage||0)<(s.type==="woodhut"?3:5))continue;const d=Math.hypot(cp.x-s.x,cp.z-s.z);if(d<bd){bd=d;best=s}}
   if(best){const [lx,ly,lz,k]=WOOD_SPILL[best.type],[x,z]=wWorld(best,lx,lz);woodDay.position.set(x,best.y+ly,z);woodDay.intensity=k*GFX.ENV.day*(best.type==="foresthouse"?.55+.45*(best.open||0):1)*clamp((14-bd)/5,0,1)}else woodDay.intensity=0;
   grassThin(cp);
   for(const s of world.structures){if(!isWoodland(s.type)||!s._wood)continue;
   if(s.doorTarget!=null&&Math.abs((s.open||0)-s.doorTarget)>1e-3){const d=s.doorTarget-(s.open||0);s.open=(s.open||0)+Math.sign(d)*Math.min(Math.abs(d),dt*1.4);WOOD.setDoor(s._wood,s.open);s._seg=null}
+  if(s.type==="waterwheel")stepWheelSite(s,dt);
   WOOD.woodLOD(s._wood,Math.hypot(cp.x-s.x,cp.z-s.z))}}
 /* Grass is the largest draw (≈270k blade vertices per chunk). Inside a log house the walls hide almost all of it, and at night it is
    mostly in shadow, so the instance count is thinned (instances are in random order, so a shorter count thins evenly, with no pop of whole patches). */
@@ -1957,9 +1963,28 @@ function grassThin(cp){const hut=woodInside(cp.x,cp.y,cp.z),night=GFX.ENV.night|
   grassF+=(f-grassF)*.25;if(Math.abs(f-grassF)<.01)grassF=f;
   for(const ch of chunks.values())if(ch.grass)for(const m of ch.grass.children)if(m.isInstancedMesh){const full=m.userData.full??(m.userData.full=m.count);m.count=Math.max(1,Math.round(full*grassF))}}
 function woodPlanHtml(){const cur=t=>{let best=null,bd=1e9;for(const s of world.structures)if(s.type===t){const d=Math.hypot(s.x-player.pos.x,s.z-player.pos.z);if(d<bd){bd=d;best=s}}return best};
-  return ["woodhut","foresthouse"].map(type=>{const site=cur(type),k=site?site.stage||0:-1,S=WSTAGES[type],locked=type==="foresthouse"&&!hasD("wattle_daub");
-    return `<div class="shipPlan" style="margin:.2em 0 .6em;padding:.5em .7em;border:1px solid rgba(255,255,255,.14);border-radius:8px;background:rgba(90,110,60,.12);font-size:.92em"><b>${type==="woodhut"?"WOODLAND HUT · lashed A-frame, wattle, thatch & daub, 4 stages":"FOREST HOUSE · notched round logs on fieldstone, cob, hearth & sod roof, 6 stages"}</b> <small class="muted">(${locked?"unlocks with Wattle & daub — finish a hut first":"craft the plot kit, Q on flat clear ground, then E at the plot to deliver each stage"})</small><ol style="margin:.3em 0 0 1.2em;padding:0">${S.map((st,i)=>`<li style="${i<k?"opacity:.55;text-decoration:line-through":i===k?"color:#ffd27a":""}">${esc(st.name)} — ${Object.entries(st.need).map(([kk,n])=>`<em class="${inv(kk)>=n?"have":"miss"}">${n}× ${esc(ITEMS[kk].name)}</em>`).join(" ")}${st.axe?" · axe":""}${i===k&&site?` <b>← now (${esc(needText(remainingOf(site)))} left)</b>`:""}</li>`).join("")}</ol></div>`}).join("")}
+  return ["woodhut","foresthouse","waterwheel"].map(type=>{const site=cur(type),k=site?site.stage||0:-1,S=WSTAGES[type],locked=type!=="woodhut"&&!hasD("wattle_daub");
+    return `<div class="shipPlan" style="margin:.2em 0 .6em;padding:.5em .7em;border:1px solid rgba(255,255,255,.14);border-radius:8px;background:rgba(90,110,60,.12);font-size:.92em"><b>${type==="woodhut"?"WOODLAND HUT · lashed A-frame, wattle, thatch & daub, 4 stages":type==="waterwheel"?"WATER WHEEL · spring-fed overshot wheel in a split-log flume, driving a cam trip-hammer, 6 stages":"FOREST HOUSE · notched round logs on fieldstone, cob, hearth & sod roof, 6 stages"}</b> <small class="muted">(${locked?"unlocks with Wattle & daub — finish a hut first":"craft the plot kit, Q on flat clear ground, then E at the plot to deliver each stage"})</small><ol style="margin:.3em 0 0 1.2em;padding:0">${S.map((st,i)=>`<li style="${i<k?"opacity:.55;text-decoration:line-through":i===k?"color:#ffd27a":""}">${esc(st.name)} — ${Object.entries(st.need).map(([kk,n])=>`<em class="${inv(kk)>=n?"have":"miss"}">${n}× ${esc(ITEMS[kk].name)}</em>`).join(" ")}${st.axe?" · axe":""}${i===k&&site?` <b>← now (${esc(needText(remainingOf(site)))} left)</b>`:""}</li>`).join("")}</ol></div>`}).join("")}
+/* ---- water wheel: flow from the gate (and rain) drives the wheel; its lugs trip the hammer ---- */
+let wheelMute=(()=>{try{return new URLSearchParams(location.search).has("mute")||!!navigator.webdriver}catch(_){return false}})();
+function wheelState(s){return s._ww||(s._ww={angle:0,omega:0,strikes:0})}
+function wheelLabel(s,t){const st=wheelState(s),k=s.stage||0,part=woodPart(s,t);
+  if(part==="gate")return `Sluice gate · ${(s.gate??1)>.5?"open":"shut"} · E ${(s.gate??1)>.5?"drop the board to stop the water":"lift the board to let water into the flume"}`;
+  if(k<6)return null;const q=WW.flowOf(s.gate??1,WW.rainOf(world.weather));
+  return `Water wheel · ${WW.rpm(st.omega).toFixed(1)} rpm · flow ${(q*1000).toFixed(0)} L/s · ${(WW.powerOf(q)/1000).toFixed(2)} kW from ${WW.WHEEL.head} m of head · ${st.strikes} hammer strikes`}
+function wheelGate(s){s.gate=(s.gate??1)>.5?0:1;AU.place();toast(s.gate?"You pull the pole: the gate board slides up and spring water runs down the flume.":"You push the pole down: the gate board drops into its slot and the flume runs dry.");save()}
+function wheelSound(kind,s,big){if(wheelMute||WOOD_DEBUG.mute)return;if(Math.hypot(camera.position.x-s.x,camera.position.z-s.z)>25)return;if(kind==="strike")AU.hit(true);else if(kind==="splash")AU.splash(big)}
+function stepWheelSite(s,dt){const st=wheelState(s),k=s.stage||0,g0=s._gateY??(s.gate??1);s._gateY=g0+((s.gate??1)-g0)*Math.min(1,dt*3);
+  const q=k>=2?WW.flowOf(s._gateY,WW.rainOf(world.weather)):0,a0=st.angle;
+  let n=0;if(k>=5)n=WW.stepWheel(st,dt,q);else st.omega=0;if(k<6){st.strikes=0;n=0}
+  if(n>0){wheelSound("strike",s);if(!s._camLever){s._camLever=1;discover("cam_lever")}}
+  if(k>=5&&st.omega>.2&&!s._turned){s._turned=1;discover("rotational_motion");discover("water_power")}
+  WOOD.animateWaterwheel(s._wood,dt,{angle:st.angle,helve:k>=6?WW.helveAngle(st.angle):0,gate:s._gateY,stage:k,t:performance.now()/1000,flow:q/WW.WHEEL.Q0,omega:st.omega,spray:Math.hypot(camera.position.x-s.x,camera.position.z-s.z)<40})}
 const WOOD_DEBUG={
+  mute:false,
+  wheel(i=0){const s=this.sites().filter(x=>x.type==="waterwheel")[i];if(!s)return null;const st=wheelState(s),q=s.stage>=2?WW.flowOf(s._gateY??s.gate??1,WW.rainOf(world.weather)):0;return {stage:s.stage,gate:s.gate,angle:st.angle,omega:st.omega,rpm:WW.rpm(st.omega),flow:q,power:WW.powerOf(q),strikes:st.strikes,steady:WW.steadyOmega(q)}},
+  wheelSet(i=0,o={}){const s=this.sites().filter(x=>x.type==="waterwheel")[i];if(!s)return null;const st=wheelState(s);if(o.angle!=null)st.angle=o.angle;if(o.omega!=null)st.omega=o.omega;if(o.gate!=null){s.gate=o.gate;s._gateY=o.gate}if(o.steady)st.omega=WW.steadyOmega(WW.flowOf(s.gate??1,WW.rainOf(world.weather)));return this.wheel(i)},
+  gate(i=0){const s=this.sites().filter(x=>x.type==="waterwheel")[i];return s?wheelGate(s):null},
   treeGap(x,z,r=14){const t=nearestTree(x,z,r);return t?+t.d.toFixed(2):r},
   unlock(){for(const d of ["knapping","shelter","fire","wattle_daub","ceramics","clothing"])discover(d,true)},
   materials(type="foresthouse"){const t=stageTotalsOf(type);for(const k in t)world.inv[k]=(world.inv[k]||0)+t[k];world.inv.axe_stone=(world.inv.axe_stone||0)+1;renderHotbar();return t},
