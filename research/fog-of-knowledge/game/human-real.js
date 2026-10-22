@@ -63,15 +63,15 @@ function buildMaterials(){
     let m;
     if(p.kind==="skin"){const detail=tex(p.detail,false);
       m=new THREE.MeshPhysicalMaterial({map:tex(p.map),normalMap:tex(p.normal,false),roughnessMap:tex(p.rough,false),roughness:1,
-        specularIntensity:.55,sheen:.18,sheenRoughness:.55,sheenColor:new THREE.Color(0.8,0.55,0.45)});m.onBeforeCompile=sh=>skinPatch(sh,detail);m.customProgramCacheKey=()=>"fk-skin2"}
+        specularIntensity:.55});m.onBeforeCompile=sh=>skinPatch(sh,detail);m.customProgramCacheKey=()=>"fk-skin2"}
     else if(p.kind==="eye")m=new THREE.MeshPhysicalMaterial({map:tex(p.map),color:new THREE.Color(1.22,1.18,1.16),roughness:.3,clearcoat:1,clearcoatRoughness:.03,specularIntensity:1,envMapIntensity:.6,alphaTest:p.alphaTest}); // wet cornea; its texels are alpha 0
     else if(p.kind==="card")m=new THREE.MeshStandardMaterial({map:tex(p.map),color:p.color,roughness:.85,alphaTest:p.alphaTest,transparent:true,depthWrite:false,side:THREE.DoubleSide}); // soft, blended strands
     else if(p.kind==="hair"){
-      m=new THREE.MeshPhysicalMaterial({map:tex(p.map),normalMap:tex(p.normal,false),color:p.color,roughness:.5,anisotropy:.75,anisotropyRotation:Math.PI/2,specularIntensity:.6,sheen:.3,sheenRoughness:.4,sheenColor:new THREE.Color(.45,.35,.27),alphaTest:p.alphaTest,side:THREE.DoubleSide});
+      m=new THREE.MeshPhysicalMaterial({map:tex(p.map),normalMap:tex(p.normal,false),color:p.color,roughness:.5,anisotropy:.75,anisotropyRotation:Math.PI/2,specularIntensity:.6,alphaTest:p.alphaTest,side:THREE.DoubleSide});
       const fuzz=strandNoise();
       // soft fringe (blended, no depth write) + two fuzzy shells for volume
       m.userData.extra=[new THREE.MeshStandardMaterial({map:m.map,color:p.color,roughness:.55,transparent:true,alphaTest:.06,depthWrite:false,side:THREE.DoubleSide})];
-      for(const [off,a] of [[.0025,.45],[.005,.6]]){const s=new THREE.MeshStandardMaterial({map:m.map,alphaMap:fuzz,color:new THREE.Color(p.color).multiplyScalar(1.08),roughness:.6,alphaTest:a,side:THREE.DoubleSide});
+      for(const [off,a] of [[.004,.5]]){const s=new THREE.MeshStandardMaterial({map:m.map,alphaMap:fuzz,color:new THREE.Color(p.color).multiplyScalar(1.08),roughness:.6,alphaTest:a,side:THREE.DoubleSide});
         s.onBeforeCompile=shellPatch(off);s.customProgramCacheKey=()=>"fk-shell"+off;m.userData.extra.push(s)}}
     else if(p.kind==="beard"){const st=tex(p.map);st.repeat.set(36,36);
       m=new THREE.MeshStandardMaterial({map:st,alphaMap:tex(p.alpha,false),color:p.color,roughness:.7,alphaTest:p.alphaTest})}
@@ -81,9 +81,10 @@ function buildMaterials(){
   }
   return out;
 }
+const NO_SHADOW=new Set(["Beard","Eyes","Eyebrows","Eyelashes"]);
 /** Dress every mesh of a (cloned) realistic human scene; unknown meshes keep a neutral material. */
 export function dressRealHuman(root){mats||=buildMaterials();const add=[];
-  root.traverse(o=>{if(!o.isMesh)return;const m=mats[o.name];if(m)o.material=m;o.castShadow=true;o.receiveShadow=true;o.frustumCulled=false;
+  root.traverse(o=>{if(!o.isMesh)return;const m=mats[o.name];if(m)o.material=m;o.castShadow=!NO_SHADOW.has(o.name);o.receiveShadow=true;o.frustumCulled=false;
     if(m?.userData.extra)m.userData.extra.forEach((x,i)=>add.push([o,x,i]))});
   for(const [o,x,i] of add){const s=o.isSkinnedMesh?new THREE.SkinnedMesh(o.geometry,x):new THREE.Mesh(o.geometry,x);s.name=o.name+"_layer"+(i+1);
     if(o.isSkinnedMesh)s.bind(o.skeleton,o.bindMatrix);s.position.copy(o.position);s.quaternion.copy(o.quaternion);s.scale.copy(o.scale);
@@ -126,10 +127,19 @@ function seatGrip(h,side){const H=HAND_POSES.grip.handle,m=side==="L"?-1:1;
   const c=new THREE.Vector3(H.c[0]*m,H.c[1],H.c[2]),axis=new THREE.Vector3(H.axis[0]*m,H.axis[1],H.axis[2]).normalize();
   const x=new THREE.Vector3(0,1,0).projectOnPlane(axis).normalize(),z=new THREE.Vector3().crossVectors(x,axis);
   h.anchor.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(x,axis,z));
-  h.anchor.position.copy(c).addScaledVector(axis,-H.below);h.gripCentre=c}
+  h.anchor.position.copy(c).addScaledVector(axis,-H.below);h.gripCentre=c;h.axis=axis;h.item=null}
+// Slide the anchor along the handle axis so the fist closes GRIP_FROM_END above the item's lower (-Y) end.
+export const GRIP_FROM_END=.055;
+const _b=new THREE.Box3(),_m=new THREE.Matrix4(),_bb=new THREE.Box3();
+function seatItem(h){const a=h.anchor,it=a.children[0];h.item=it;it.updateMatrixWorld(true);_b.makeEmpty();
+  _m.copy(a.matrixWorld).invert();
+  it.traverse(o=>{if(!o.isMesh||!o.geometry)return;if(!o.geometry.boundingBox)o.geometry.computeBoundingBox();_bb.copy(o.geometry.boundingBox).applyMatrix4(new THREE.Matrix4().multiplyMatrices(_m,o.matrixWorld));_b.union(_bb)});
+  if(_b.isEmpty())return;const lo=_b.min.y,len=_b.max.y-lo,from=Math.min(GRIP_FROM_END,len*.3);
+  a.position.copy(h.gripCentre).addScaledVector(h.axis,-(lo+from))}
 /** Call right after mixer.update(dt). Each hand blends independently to grip while its anchor has an item. */
 export function poseRealHands(u,dt){const rig=u.handRig;if(!rig)return;const k=1-Math.exp(-dt*10);
   for(const s in rig){const h=rig[s],full=h.anchor.children.length>0;
+    if(full&&h.item!==h.anchor.children[0])seatItem(h);
     h.w+=((full?1:0)-h.w)*k;
     // one-shot actions (punch, pick-up...) keep the clip's own fist when the hand is empty
     h.o+=(((u.once>0&&!full)?0:1)-h.o)*k;

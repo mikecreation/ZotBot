@@ -18,10 +18,12 @@ for(const s of ['R','L']){const a=R[s].anchor,ax=new THREE.Vector3(0,1,0).applyQ
   assert.ok(a.position.length()<.13&&a.position.y>.05,'anchor in the hand '+s);assert.ok(ax.z>.85,'handle runs pinky->index '+s)}
 assert.ok(Math.sign(R.R.anchor.position.x)===-Math.sign(R.L.anchor.position.x),'left grip mirrors the right');
 // right hand holds an item, left is empty: they pose independently
-u.held.add(new THREE.Mesh());
+const axe=new THREE.Mesh(new THREE.BoxGeometry(.03,.4,.03).translate(0,.2,0));axe.position.y=.02;u.held.add(axe);
 const ang=(b,rest)=>2*Math.acos(Math.min(1,Math.abs(b.quaternion.dot(rest))))*180/Math.PI;
 for(let i=0;i<60;i++){for(const s in R)for(const k in R[s].bones)R[s].bones[k].quaternion.copy(R[s].rest[k]);poseRealHands(u,1/60)}
 assert.ok(R.R.w>.99&&R.L.w<.01,'grip weight per hand');
+// the fist closes ~5.5 cm above the butt of the handle: anchor slid along the handle axis
+const slide=R.R.anchor.position.clone().sub(R.R.gripCentre);assert.ok(Math.abs(slide.length()-.075)<.002&&slide.dot(R.R.axis)<0,'handle butt below the fist '+slide.length());
 const mid=k=>ang(R[k].bones.f_middle1,R[k].rest.f_middle1);
 assert.ok(Math.abs(mid('R')-HAND_POSES.grip.f_middle[1])<2,'right middle finger wraps '+mid('R'));
 assert.ok(Math.abs(mid('L')-HAND_POSES.relaxed.f_middle[1])<2,'left middle finger relaxed '+mid('L'));
