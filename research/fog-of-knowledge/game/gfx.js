@@ -9,7 +9,7 @@ import {Ocean,OCEAN_QUALITY} from "./ocean.js?v=3.28.0";
 import {GLTFLoader} from "./vendor/addons/loaders/GLTFLoader.js";
 import {mergeGeometries,mergeVertices} from "./vendor/addons/utils/BufferGeometryUtils.js";
 import {clone as cloneSkinned} from "./vendor/addons/utils/SkeletonUtils.js";
-import {loadRealHuman,dressRealHuman,realGrip,wantClassicHuman} from "./human-real.js";
+import {loadRealHuman,dressRealHuman,realGrip,wantClassicHuman,initRealHands,poseRealHands} from "./human-real.js";
 import {EffectComposer} from "./vendor/addons/postprocessing/EffectComposer.js";
 import {RenderPass} from "./vendor/addons/postprocessing/RenderPass.js";
 import {UnrealBloomPass} from "./vendor/addons/postprocessing/UnrealBloomPass.js";
@@ -572,6 +572,7 @@ function attachHuman(g,asset){
   const handL=model.getObjectByName("DEF-handL")||model.getObjectByName("DEF-hand.L");
   if(handL){u.heldL.removeFromParent();handL.add(u.heldL);u.heldL.position.copy(real?realGrip(handL):new THREE.Vector3(0,.09,.04));u.heldL.scale.setScalar(1/sc)}
   u.handBones={R:hand?.name||null,L:handL?.name||null};
+  u.handRig=real?initRealHands(u,model):null; // real hands: per-hand finger pose + grip seat (human-real.js)
   g.remove(u.fb.root);g.add(model);u.inner=model;
   u.mixer=new THREE.AnimationMixer(model);
   for(const c of asset.animations){const a=u.mixer.clipAction(c);if(/Death|Jump_Land|Jump_Start|Shoot|Punch|PickUp|Interact/.test(c.name)){a.setLoop(THREE.LoopOnce,1);a.clampWhenFinished=true}u.actions[c.name]=a}
@@ -591,6 +592,7 @@ export function animateHuman(h,speed,dt,swim,air,dead){
   fade(u,want,want==="Death01"?.3:.2);
   const a=u.actions[want];if(a){a.timeScale=want==="Walk_Loop"?Math.min(1.6,Math.max(.6,speed/1.55)):want==="Jog_Fwd_Loop"?Math.min(1.5,Math.max(.7,speed/3.4)):want==="Sprint_Loop"?Math.min(1.4,Math.max(.8,speed/5.4)):want==="Swim_Fwd_Loop"?Math.max(.6,speed/1.1):1}
   u.mixer.update(dt);
+  if(u.handRig)poseRealHands(u,dt);
 }
 function makeFallbackHuman(){
   const skin=new THREE.MeshStandardMaterial({color:0xc68c64,roughness:.7}),cloth=new THREE.MeshStandardMaterial({color:0x8a6238,roughness:.9}),dark=new THREE.MeshStandardMaterial({color:0x4a3a2a,roughness:.9});

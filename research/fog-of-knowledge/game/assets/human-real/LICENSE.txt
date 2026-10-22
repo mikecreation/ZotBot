@@ -24,3 +24,9 @@ applied as rest pose; the UAL skeleton's joints were moved onto the MakeHuman jo
 UAL bone rotations, weights renamed bone-for-bone (pelvis->DEF-hips, upperarm_l->DEF-upper_arm.L,
 ...), so the classic clips play unchanged. Exported from Blender 4.2 glTF exporter; buffer
 embedded as a data URI (.json extension so the Nemesis atlas proxy serves it).
+
+Pass 2 (hands/face/hair): the body got one Catmull-Clark subdivision level; the stubble shells
+(Beard mesh) are offset copies of the body's beard faces; skin_n.jpg / skin_r.jpg (knuckle wrinkles,
+creases, nails, lips, T-zone), the AO/lip/nail/scalp work in skin.jpg, beard.webp and
+beard_mask.jpg were generated procedurally from the CC0 body (tools/human-build/refine.py,
+textures2.py) and are CC0 too. brow.webp is the CC0 MakeHuman eyebrow009 recoloured.

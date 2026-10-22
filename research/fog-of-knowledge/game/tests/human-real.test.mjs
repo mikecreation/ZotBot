@@ -20,12 +20,12 @@ for(const c of ['Idle_Loop','Walk_Loop','Jog_Fwd_Loop','Sprint_Loop','PickUp_Tab
 // 3. dressed parts, textures present, and kept small (<= 2048 px, < 10 MB per file for the atlas proxy)
 const {REAL_HUMAN_PARTS,wantClassicHuman}=await import('../human-real.js');
 const meshNames=new Set(real.nodes.filter(n=>n.mesh!=null).map(n=>n.name));
-for(const k of ['Body','Eyes','Eyebrows','Eyelashes','Hair','Tunic','Skirt','Fur','Wraps'])assert.ok(meshNames.has(k),'mesh '+k);
+for(const k of ['Body','Eyes','Eyebrows','Eyelashes','Hair','Beard','Tunic','Skirt','Fur','Wraps'])assert.ok(meshNames.has(k),'mesh '+k);
 for(const k of meshNames)assert.ok(REAL_HUMAN_PARTS[k],'material for '+k);
-for(const p of Object.values(REAL_HUMAN_PARTS))for(const f of [p.map,p.normal].filter(Boolean)){const b=readFileSync(dir+'assets/human-real/'+f);assert.ok(b.length<3e6,f)}
+for(const p of Object.values(REAL_HUMAN_PARTS))for(const f of [p.map,p.normal,p.rough,p.detail,p.alpha].filter(x=>typeof x==='string')){const b=readFileSync(dir+'assets/human-real/'+f);assert.ok(b.length<3e6,f)}
 assert.ok(readFileSync(dir+'assets/human-real.gltf.json').length<1e7);
 assert.ok(existsSync(dir+'assets/human-real/LICENSE.txt'));
-const tris=real.meshes.reduce((s,m)=>s+m.primitives.reduce((t,p)=>t+real.accessors[p.indices].count/3,0),0);assert.ok(tris<60000,'triangle budget '+tris);
+const tris=real.meshes.reduce((s,m)=>s+m.primitives.reduce((t,p)=>t+real.accessors[p.indices].count/3,0),0);assert.ok(tris<180000,'triangle budget '+tris); // pass 2: subdivided body (hands/face) + stubble shells, ~110 fps on a GTX 1070
 // 4. fallback switch
 assert.equal(wantClassicHuman('?char=classic'),true);assert.equal(wantClassicHuman('?x=1&char=classic&y=2'),true);
 assert.equal(wantClassicHuman(''),false);assert.equal(wantClassicHuman('?char=classical'),false);
