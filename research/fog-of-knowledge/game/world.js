@@ -4,7 +4,7 @@ import * as GAL from "./galleon.js?v=3.28.0";
 import {HULL,stepShip,newShipState,deckStep,deckY,shipToWorld,worldToShip,pointOfSail,clampDeck,fwdOf,localX} from "./ship-physics.js?v=3.28.0";
 import {SHIP_STAGES,SHIP_STEPS,deliver,remaining,stageFrac,shipProblem} from "./ship-progression.js?v=3.28.0";
 import * as WOOD from "./woodland-buildings.js?v=3.28.0";
-import {HOUSE as WHOUSE,STAGES as WSTAGES,isWoodland,remainingOf,stageFracOf,deliverStage,stageProblem,isComplete,stageTotalsOf,toLocal as wLocal,toWorld as wWorld,footprint as wFootprint,floorRect as wFloorRect,insideVolume as wInside,wallSegs as wWallSegs,partAt as wPartAt,isDwelling,WHEELSITE} from "./woodland-progression.js?v=3.28.0";
+import {HOUSE as WHOUSE,STAGES as WSTAGES,isWoodland,remainingOf,stageFracOf,deliverStage,stageProblem,isComplete,stageTotalsOf,toLocal as wLocal,toWorld as wWorld,footprint as wFootprint,floorRect as wFloorRect,insideVolume as wInside,wallSegs as wWallSegs,partAt as wPartAt,isDwelling,WHEELSITE,MILL_INPUTS} from "./woodland-progression.js?v=3.28.0";
 import * as WW from "./waterwheel.js?v=3.28.0";
 Object.assign(GEAR_STEPS,SHIP_STEPS);
 /* Fog of Knowledge: The Game — OPEN WORLD mode.
@@ -363,7 +363,7 @@ function stepWolf(a,dt,d,night){
 }
 // Discovery mode: wolves are wary wildlife. They keep their distance (closer at night, circling the dark edge of your light),
 // and only a crouched, patient person holding food by a fire will draw one close enough to offer it.
-const WOLF_FOOD=new Set(["meat_raw","meat_cooked","meat_dried","nuts_roasted","flatbread"]);
+const WOLF_FOOD=new Set(["meat_raw","meat_cooked","meat_dried","nuts_roasted","flatbread","bread"]);
 function waryWolf(a,dt,d,night){const P=player.pos,keep=night?11:18;
   const lure=player.crouch&&WOLF_FOOD.has(world.held)&&nearLight(P.x,P.z)&&d<35;
   if(lure&&d>2.3){a.target=P.clone();a.curious=1;return 1.4}if(lure){a.target=a.pos.clone();return 0}a.curious=0;
@@ -1275,6 +1275,7 @@ function useHeld(){
   if(k==="meat_raw"&&s?.type==="rack"){if(s.meat.length>=4)return toast("The rack is full.");take("meat_raw");s.meat.push(world.gameTime);updateRack(s);toast("You hang the meat in strips to dry. It will take about 4 hours.");return}
   if(k==="meat_raw"&&fireNear?.lit&&fireNear.temp>70){take("meat_raw");give("meat_cooked");AU.ignite();if(PETS)PETS.distract("cook");toast("The meat sizzles and cooks through.");discover("cooking");return}
   if(k==="nuts"&&fireNear?.lit&&fireNear.temp>140){take("nuts");give("nuts_roasted");AU.ignite();toast("The hazelnuts crackle and turn golden-brown — a toasty smell rises.");discover("cooking");discover("maillard");return}
+  if(k==="bread_dough"&&fireNear?.lit&&fireNear.temp>180){take("bread_dough");give("bread");AU.ignite();if(PETS)PETS.distract("cook");toast("The loaf rises and crusts over on the hot stones: stone-ground bread!");discover("baking");return}
   if(k==="dough"&&fireNear?.lit&&fireNear.temp>180){take("dough");give("flatbread");AU.ignite();if(PETS)PETS.distract("cook");toast("The dough puffs and browns on the hot stones: flatbread!");discover("cooking");discover("baking");return}
   if(k==="pot_clean"&&fireNear?.lit&&fireNear.temp>120){const main=inv("meat_raw")?"meat_raw":inv("nuts")?"nuts":null,veg=["grain","seeds"].find(v=>inv(v));
     if(main&&veg){take("pot_clean");take(main);take(veg);give("stew");AU.ignite();if(PETS)PETS.distract("cook");toast(`${ITEMS[main].name} and ${ITEMS[veg].name.toLowerCase()} simmer gently in the pot: stew.`);discover("stew");return}
@@ -1464,7 +1465,7 @@ function stepCuriosity(dt){thoughtT-=dt;thoughtShowT-=dt;const el=$("#wThought")
   const since=(world.counters.lastThought??-1e9),now=world.gameTime;if(now-since<(world.seenQ.length<4?1800:3600))return;
   const c=guideCtx();const q=CURIOSITY.find(q=>!world.seenQ.includes(q.id)&&!hasD(q.ans)&&q.when(c));if(!q)return;
   world.seenQ.push(q.id);world.counters.lastThought=now;if(el){el.innerHTML=`<small>CURIOSITY · press J for your journal</small>${esc(q.q)}`;el.hidden=false;thoughtShowT=11}}
-const ICON={waterwheel_site:"🎡",mud:"🟤",moss:"🌿",thatch:"🌾",cordage:"🪢",cob:"🧱",woodhut_site:"🛖",house_site:"🏡",plank:"🪵",rope:"🪢",sailcloth:"🏳",pitch:"⚫",trenail:"📍",mast_spar:"🎋",shipyard:"⚓",bark:"🪵",thread:"🧵",leather:"🟫",hammer_stone:"🔨",tongs:"🗜",needle_iron:"🪡",iron_spike:"📌",leather_gloves:"🧤",climbing_gloves:"🧤",knife_copper:"🔪",knife_bronze:"🔪",knife_iron:"🔪",knife_stone:"🔪",pickaxe_stone:"⛏",hand_drill:"🪵",bench_joint:"🧩",workbench:"🛠",workbench_bundle:"🛠",charcoal:"◼",ash:"◻",berries_dried:"🍇",nuts_roasted:"🌰",jam:"🍯",dough:"🫓",flatbread:"🫓",stew:"🍲",berry_mash:"🍷",stick:"🥢",log:"🪵",stone:"🪨",flint:"🔪",pyrite:"✨",clay:"🟫",fiber:"🌾",berry_red:"🍒",berry_dark:"🫐",seeds:"🌱",grain:"🌾",meat_raw:"🥩",meat_dried:"🥓",meat_cooked:"🍖",hide:"🟤",flake:"🔺",
+const ICON={waterwheel_site:"🎡",millstone:"🪨",flour:"🥣",bread_dough:"🫓",bread:"🍞",mud:"🟤",moss:"🌿",thatch:"🌾",cordage:"🪢",cob:"🧱",woodhut_site:"🛖",house_site:"🏡",plank:"🪵",rope:"🪢",sailcloth:"🏳",pitch:"⚫",trenail:"📍",mast_spar:"🎋",shipyard:"⚓",bark:"🪵",thread:"🧵",leather:"🟫",hammer_stone:"🔨",tongs:"🗜",needle_iron:"🪡",iron_spike:"📌",leather_gloves:"🧤",climbing_gloves:"🧤",knife_copper:"🔪",knife_bronze:"🔪",knife_iron:"🔪",knife_stone:"🔪",pickaxe_stone:"⛏",hand_drill:"🪵",bench_joint:"🧩",workbench:"🛠",workbench_bundle:"🛠",charcoal:"◼",ash:"◻",berries_dried:"🍇",nuts_roasted:"🌰",jam:"🍯",dough:"🫓",flatbread:"🫓",stew:"🍲",berry_mash:"🍷",stick:"🥢",log:"🪵",stone:"🪨",flint:"🔪",pyrite:"✨",clay:"🟫",fiber:"🌾",berry_red:"🍒",berry_dark:"🫐",seeds:"🌱",grain:"🌾",meat_raw:"🥩",meat_dried:"🥓",meat_cooked:"🍖",hide:"🟤",flake:"🔺",
   axe_stone:"🪓",axe_copper:"🪓",axe_bronze:"🪓",axe_iron:"🪓",spear:"🔱",tally:"🧮",clothing:"🧥",pot:"🏺",pot_water:"💧",pot_clean:"♨️",copper_ore:"🟢",tin_ore:"⚪",iron_ore:"🔴",copper:"🟠",tin:"🔘",bronze:"🥉",iron:"⚫",
   quartz:"💎",sand:"⏳",glass:"🔷",lens:"🔍",lodestone:"🧲",tablet:"📜",gnomon:"🕐",bellows:"🪗",wheel:"☸️",telescope:"🔭",compass:"🧭",campfire:"🔥",leanto:"⛺",kiln:"🏭",raft:"🛶",table:"📚",sling:"🪃",bow:"🏹",arrow:"➶",
   prism:"🌈",torch:"🕯️",hut:"🛖",house:"🏠",chest:"🧰",rack:"🪜",well:"🪣",wall:"🧱",pendulum:"⏱️",shell:"🐚",feather:"🪶",leaf:"🍃",snow:"❄️",nuts:"🌰",satchel:"🎒"};
@@ -1514,7 +1515,7 @@ function ctxActions(k,hand){const it=ITEMS[k],n=inv(k),a=[];if(!it)return a;
   if(hand){a.push(["away","Put Away"]);a.push(["swap","Swap Hands"]);a.push(["observe","Observe (F)"]);a.push(["drop1","Drop"]);return a}
   if(world.held!==k)a.push(["right","Place in Right Hand"]);if(world.left!==k)a.push(["left","Place in Left Hand"]);a.push(["observe","Observe (F)"]);
   if(it.food||it.drink)a.push(["use",it.drink||k.startsWith("pot_")?"Drink":"Eat"]);else if(it.place)a.push(["use","Place in world"]);else if(it.tool||it.weapon||["flint","pyrite","lens","log","tally","gnomon","telescope","compass","pot"].includes(k))a.push(["use","Use"]);
-  if(["meat_raw","pot_water","clay","nuts","dough","pot_clean"].includes(k)&&nearLitFire())a.push(["cook",k==="clay"?"Fire in the flames":k==="pot_water"?"Boil on the fire":k==="pot_clean"?"Cook in the pot (stew / jam)":"Cook on the fire"]);
+  if(["meat_raw","pot_water","clay","nuts","dough","bread_dough","pot_clean"].includes(k)&&nearLitFire())a.push(["cook",k==="clay"?"Fire in the flames":k==="pot_water"?"Boil on the fire":k==="pot_clean"?"Cook in the pot (stew / jam)":"Cook on the fire"]);
   if(RECIPES.some(r=>r.in[k]&&(!r.req||hasD(r.req))))a.push(["craftwith","Craft with…"]);
   a.push(["drop1","Drop 1"]);if(n>1){a.push(["dropx","Drop X…"]);a.push(["dropall","Drop All ("+n+")"])}return a}
 function openCtx(k,x,y,hand){const m=$("#wCtx");if(!m||!inv(k))return;const tip=$("#wTip");if(tip)tip.hidden=true;const acts=ctxActions(k,hand);
@@ -1899,7 +1900,7 @@ function placeWoodland(type,o={}){const f=forward(),ry=o.ry??Math.atan2(-f.x,-f.
     for(const st of world.structures)if(st.type!=="pack"&&!st.hearth&&inPlot(st.x,st.z,.6)){toast("Something you built is in the way. Pick a clear plot.");return null}
   }
   const s={type,x,y:hi+(type==="woodhut"?.03:0),z,ry,stage:0,got:{},open:0};if(type==="waterwheel")s.gate=1;world.structures.push(s);structMesh(s);AU.place();clearWoodPlot(s);
-  if(!o.quiet)toast(type==="waterwheel"?"Water-wheel site staked: a spring wells from the rock outcrop and spills down its face. E at the site to deliver each stage: footings & tailrace, sluice & flume, axle, spokes & rims, buckets, then the cam and trip-hammer.":type==="woodhut"?"Hut plot staked out with a cord line. E at the plot to deliver each stage: frame, wattle walls, thatch roof, then daub.":"House plot laid out: corner pegs, a cord line and a scratched hearth mark. E at the plot to deliver each of the 6 stages.");
+  if(!o.quiet)toast(type==="waterwheel"?"Water-wheel site staked: a spring wells from the rock outcrop and spills down its face. E at the site to deliver each stage: footings & tailrace, sluice & flume, axle, spokes & rims, buckets, then the cam and trip-hammer, and finally the pit wheel, lantern gear and millstones (7 stages).":type==="woodhut"?"Hut plot staked out with a cord line. E at the plot to deliver each stage: frame, wattle walls, thatch roof, then daub.":"House plot laid out: corner pegs, a cord line and a scratched hearth mark. E at the plot to deliver each of the 6 stages.");
   return s}
 /* loose sticks, stones and flowers inside the plot are swept aside when it is staked out (remembered like pickups) */
 function clearWoodPlot(s){const fp=wFootprint(s.type);for(const ch of nearbyChunks(s.x,s.z,6))for(const r of ch.obj.res){if(r.gone)continue;const [lx,lz]=wLocal(s,r.x,r.z);
@@ -1929,7 +1930,7 @@ function woodLabel(s,t){const S=WSTAGES[s.type],k0=s.stage||0;
 function woodWork(s,t){
   if(s.type==="waterwheel"&&(s.stage||0)>=2&&woodPart(s,t)==="gate")return wheelGate(s);
   if(isComplete(s)){const part=woodPart(s,t);
-    if(s.type==="waterwheel")return toast(wheelLabel(s,t));
+    if(s.type==="waterwheel"){if(part==="mill")return millWork(s,t);if(part==="hammer"){s.hammerOn=s.hammerOn===false;AU.place();save();return toast(s.hammerOn?"You knock the prop out: the helve drops back onto the cams and the hammer starts pounding.":"You prop the helve up on its rest: the cams pass free and all the power goes to the millstones.")}return toast(wheelLabel(s,t))}
     if(part==="door"){s.doorTarget=s.open>.5?0:1;AU.place();toast(s.doorTarget?"You lift the wooden latch and the plank door swings in on its pole hinge.":"You pull the door shut; the latch bar drops into its wooden catch.");return}
     if(part==="bed"||s.type==="woodhut")return sleep(s);
     return toast("Forest house: E at the door to open it, E at the bed to sleep. Feed the hearth with sticks or logs.")}
@@ -1971,19 +1972,30 @@ function wheelState(s){return s._ww||(s._ww={angle:0,omega:0,strikes:0})}
 function wheelLabel(s,t){const st=wheelState(s),k=s.stage||0,part=woodPart(s,t);
   if(part==="gate")return `Sluice gate · ${(s.gate??1)>.5?"open":"shut"} · E ${(s.gate??1)>.5?"drop the board to stop the water":"lift the board to let water into the flume"}`;
   if(k<6)return null;const q=WW.flowOf(s.gate??1,WW.rainOf(world.weather));
-  return `Water wheel · ${WW.rpm(st.omega).toFixed(1)} rpm · flow ${(q*1000).toFixed(0)} L/s · ${(WW.powerOf(q)/1000).toFixed(2)} kW from ${WW.WHEEL.head} m of head · ${st.strikes} hammer strikes`}
+  if(part==="hammer")return `Trip-hammer · ${s.hammerOn===false?"propped up (off)":"working"} · E ${s.hammerOn===false?"drop the helve back onto the cams":"prop the helve up to free power for the mill"}`;
+  if(part==="mill"&&k>=7)return `Grain mill · runner stone ${WW.stoneRpm(st.omega).toFixed(0)} rpm (${WW.gearRatio()}:1 gearing) · hopper ${s.hopper||0}/4 · flour ${Math.floor(s.flour||0)} · E load grain/seeds or collect flour`;
+  return `Water wheel · ${WW.rpm(st.omega).toFixed(1)} rpm · flow ${(q*1000).toFixed(0)} L/s · ${(WW.powerOf(q)/1000).toFixed(2)} kW from ${WW.WHEEL.head} m of head · ${st.strikes} hammer strikes${k>=7?` · millstone ${WW.stoneRpm(st.omega).toFixed(0)} rpm`:""}`}
 function wheelGate(s){s.gate=(s.gate??1)>.5?0:1;AU.place();toast(s.gate?"You pull the pole: the gate board slides up and spring water runs down the flume.":"You push the pole down: the gate board drops into its slot and the flume runs dry.");save()}
+const wheelLoad=s=>({hammer:s.hammerOn!==false,mill:(s.stage||0)>=7,grinding:(s.hopper||0)>0});
+function millWork(s,t){if((s.flour||0)>=1){const n=Math.floor(s.flour);s.flour-=n;give("flour",n);AU.place();save();return toast(`You sweep ${n} flour from the stone tray. Mix 2 flour with a clean pot of water for bread dough.`)}
+  if((s.hopper||0)<4)for(const [k,per] of Object.entries(MILL_INPUTS))if(inv(k)>=per){let n=0;while((s.hopper||0)<4&&inv(k)>=per){take(k,per);s.hopper=(s.hopper||0)+1;n++}AU.place();save();
+    return toast(`You tip ${n*per} ${k} into the hopper (${s.hopper}/4 loads). ${(s.gate??1)>.5?"The runner stone":"Open the sluice and the runner stone"} grinds each load to flour.`)}
+  if(s.hopper>0)return toast(wheelLabel(s,t));
+  return toast("Mill hopper empty: bring grain (1 per load) or seeds (3 per load), then E here to collect the flour.")}
 function wheelSound(kind,s,big){if(wheelMute||WOOD_DEBUG.mute)return;if(Math.hypot(camera.position.x-s.x,camera.position.z-s.z)>25)return;if(kind==="strike")AU.hit(true);else if(kind==="splash")AU.splash(big)}
 function stepWheelSite(s,dt){const st=wheelState(s),k=s.stage||0,g0=s._gateY??(s.gate??1);s._gateY=g0+((s.gate??1)-g0)*Math.min(1,dt*3);
   const q=k>=2?WW.flowOf(s._gateY,WW.rainOf(world.weather)):0,a0=st.angle;
-  let n=0;if(k>=5)n=WW.stepWheel(st,dt,q);else st.omega=0;if(k<6){st.strikes=0;n=0}
+  const L=wheelLoad(s);let n=0;if(k>=5)n=WW.stepWheel(st,dt,q,WW.WHEEL,L);else st.omega=0;if(k<6){st.strikes=0;n=0}else if(!L.hammer){st.strikes-=n;n=0}
+  if(k>=7){st.stone=(st.stone||0)+WW.gearRatio()*(st.angle-a0);if(st.omega>.2&&!s._geared){s._geared=1;discover("gear_ratio")}
+    if(L.grinding&&st.omega>.05){s._mf=(s._mf||0)+WW.flourRate(st.omega)*dt;while(s._mf>=1&&s.hopper>0){s._mf-=1;s.hopper--;s.flour=(s.flour||0)+1;
+      if(!s._milled){s._milled=1;discover("millstones");toast("Flour dusts the stone tray: the millstones are grinding. E at the mill to collect it.")}}}}
   if(n>0){wheelSound("strike",s);if(!s._camLever){s._camLever=1;discover("cam_lever")}}
   if(k>=5&&st.omega>.2&&!s._turned){s._turned=1;discover("rotational_motion");discover("water_power")}
-  WOOD.animateWaterwheel(s._wood,dt,{angle:st.angle,helve:k>=6?WW.helveAngle(st.angle):0,gate:s._gateY,stage:k,t:performance.now()/1000,flow:q/WW.WHEEL.Q0,omega:st.omega,spray:Math.hypot(camera.position.x-s.x,camera.position.z-s.z)<40})}
+  WOOD.animateWaterwheel(s._wood,dt,{angle:st.angle,stoneAngle:st.stone||0,helve:k>=6&&L.hammer?WW.helveAngle(st.angle):0,gate:s._gateY,stage:k,t:performance.now()/1000,flow:q/WW.WHEEL.Q0,omega:st.omega,spray:Math.hypot(camera.position.x-s.x,camera.position.z-s.z)<40})}
 const WOOD_DEBUG={
   mute:false,
-  wheel(i=0){const s=this.sites().filter(x=>x.type==="waterwheel")[i];if(!s)return null;const st=wheelState(s),q=s.stage>=2?WW.flowOf(s._gateY??s.gate??1,WW.rainOf(world.weather)):0;return {stage:s.stage,gate:s.gate,angle:st.angle,omega:st.omega,rpm:WW.rpm(st.omega),flow:q,power:WW.powerOf(q),strikes:st.strikes,steady:WW.steadyOmega(q)}},
-  wheelSet(i=0,o={}){const s=this.sites().filter(x=>x.type==="waterwheel")[i];if(!s)return null;const st=wheelState(s);if(o.angle!=null)st.angle=o.angle;if(o.omega!=null)st.omega=o.omega;if(o.gate!=null){s.gate=o.gate;s._gateY=o.gate}if(o.steady)st.omega=WW.steadyOmega(WW.flowOf(s.gate??1,WW.rainOf(world.weather)));return this.wheel(i)},
+  wheel(i=0){const s=this.sites().filter(x=>x.type==="waterwheel")[i];if(!s)return null;const st=wheelState(s),q=s.stage>=2?WW.flowOf(s._gateY??s.gate??1,WW.rainOf(world.weather)):0;return {stage:s.stage,gate:s.gate,angle:st.angle,omega:st.omega,rpm:WW.rpm(st.omega),flow:q,power:WW.powerOf(q),strikes:st.strikes,steady:WW.steadyOmega(q,WW.WHEEL,wheelLoad(s)),stoneRpm:WW.stoneRpm(st.omega),hopper:s.hopper||0,flour:s.flour||0,hammerOn:s.hammerOn!==false}},
+  wheelSet(i=0,o={}){const s=this.sites().filter(x=>x.type==="waterwheel")[i];if(!s)return null;const st=wheelState(s);if(o.angle!=null)st.angle=o.angle;if(o.omega!=null)st.omega=o.omega;if(o.gate!=null){s.gate=o.gate;s._gateY=o.gate}if(o.hopper!=null)s.hopper=o.hopper;if(o.hammer!=null)s.hammerOn=!!o.hammer;if(o.steady)st.omega=WW.steadyOmega(WW.flowOf(s.gate??1,WW.rainOf(world.weather)),WW.WHEEL,wheelLoad(s));return this.wheel(i)},
   gate(i=0){const s=this.sites().filter(x=>x.type==="waterwheel")[i];return s?wheelGate(s):null},
   treeGap(x,z,r=14){const t=nearestTree(x,z,r);return t?+t.d.toFixed(2):r},
   unlock(){for(const d of ["knapping","shelter","fire","wattle_daub","ceramics","clothing"])discover(d,true)},
