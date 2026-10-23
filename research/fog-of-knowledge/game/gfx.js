@@ -890,13 +890,70 @@ export function makeAnimalModel(kind,col,s){
   return {g,legs};
 }
 
+/** Spiked vambraces: leather forearm wraps + clear metal/bone grip spikes (third-person readable). */
 export function fitClimbingGloves(h,on){
- const u=h.userData;if(u.gloveInner===u.inner&&u.glovesOn===on)return;
- for(const g of u.gloves||[]){g.removeFromParent();g.traverse(m=>{if(m.isMesh){m.geometry.dispose();m.material.dispose()}})}u.gloves=[];u.gloveInner=u.inner;u.glovesOn=on;if(!on)return;
- for(const anchor of [u.held,u.heldL]){const g=new THREE.Group(),skin=new THREE.MeshStandardMaterial({color:0x805236,roughness:.9});
- const palm=new THREE.Mesh(new THREE.BoxGeometry(.085,.12,.055),skin);g.add(palm);
- for(let i=0;i<3;i++){const spike=new THREE.Mesh(new THREE.ConeGeometry(.012,.055,6),new THREE.MeshStandardMaterial({color:0x9ba0a6,metalness:.8,roughness:.35}));spike.rotation.x=Math.PI/2;spike.position.set((i-1)*.025,0,.045);g.add(spike)}
- g.position.copy(anchor.position);anchor.parent.add(g);u.gloves.push(g);
- }
+  const u=h.userData;if(u.gloveInner===u.inner&&u.glovesOn===on)return;
+  for(const g of u.gloves||[]){g.removeFromParent();g.traverse(m=>{if(m.isMesh){m.geometry.dispose();if(m.material){const mats=Array.isArray(m.material)?m.material:[m.material];for(const mat of mats)mat.dispose()}}})}
+  u.gloves=[];u.gloveInner=u.inner;u.glovesOn=on;if(!on)return;
+  for(const [side,anchor] of [[1,u.held],[-1,u.heldL]]){
+    if(!anchor?.parent)continue;
+    const hand=anchor.parent;
+    const leather=new THREE.MeshStandardMaterial({color:0x5c3a22,roughness:.92,metalness:.05});
+    const strap=new THREE.MeshStandardMaterial({color:0x3a2414,roughness:.88});
+    const steel=new THREE.MeshStandardMaterial({color:0xa8adb4,metalness:.85,roughness:.32});
+    const bone=new THREE.MeshStandardMaterial({color:0xd4c4a0,metalness:.15,roughness:.55});
+    const g=new THREE.Group();g.name=side===1?'vambraceR':'vambraceL';
+    const cuff=new THREE.Mesh(new THREE.CylinderGeometry(.045,.052,.055,10),leather);cuff.castShadow=true;g.add(cuff);
+    const wrap=new THREE.Mesh(new THREE.CylinderGeometry(.055,.07,.22,10),leather);wrap.position.y=-.12;wrap.castShadow=true;g.add(wrap);
+    for(const t of [-.06,.02,.1]){const band=new THREE.Mesh(new THREE.TorusGeometry(.058,.008,6,14),strap);band.rotation.x=Math.PI/2;band.position.y=t-.06;g.add(band)}
+    const palm=new THREE.Mesh(new THREE.BoxGeometry(.09,.04,.07),leather);palm.position.set(0,.02,.04);palm.castShadow=true;g.add(palm);
+    for(let i=0;i<4;i++){const kn=new THREE.Mesh(new THREE.BoxGeometry(.018,.035,.028),leather);kn.position.set((i-1.5)*.022,.05,.055);g.add(kn)}
+    for(let i=0;i<5;i++){
+      const mat=i%2?bone:steel,len=.09+((i%3)*.015),rad=.014+((i%2)*.004);
+      const spike=new THREE.Mesh(new THREE.ConeGeometry(rad,len,7),mat.clone());
+      spike.rotation.x=Math.PI/2;spike.position.set((i-2)*.02,.015,.07+len*.35);spike.castShadow=true;g.add(spike);
+    }
+    for(const [sx,sy] of [[-.03,-.08],[.03,-.14]]){
+      const spike=new THREE.Mesh(new THREE.ConeGeometry(.016,.12,7),steel.clone());
+      spike.rotation.x=Math.PI/2;spike.position.set(sx,sy,.08);spike.castShadow=true;g.add(spike);
+    }
+    hand.add(g);
+    if(u.real){g.position.set(0,.02,.01);g.rotation.set(-.15,side*.1,.2*side)}
+    else{g.position.copy(anchor.position);g.rotation.set(0,0,0)}
+    u.gloves.push(g);
+  }
 }
-export function poseClimbing(h,time){const p=h.position.clone();p.x+=Math.sin(h.rotation.y)*.4;p.z+=Math.cos(h.rotation.y)*.4;poseHandDrill(h,p,time,true)}
+/** Climb pose: lean into the slope and plant both hands on/toward the surface (not upright stroll). */
+export function poseClimbing(h,time,opt={}){
+  const u=h.userData,yaw=h.rotation.y;
+  h.rotation.x=Math.min(.55,Math.max(.28,opt.lean!=null?opt.lean:.42));
+  const base=h.position.clone();
+  const uphillX=opt.gx!=null?opt.gx:Math.sin(yaw),uphillZ=opt.gz!=null?opt.gz:Math.cos(yaw);
+  const ul=Math.hypot(uphillX,uphillZ)||1,ux=uphillX/ul,uz=uphillZ/ul;
+  const plant=(side,phase)=>{
+    const along=.35+.12*Math.sin(time*4.2+phase);
+    const lateral=side*(.18+.04*Math.cos(time*3.6+phase));
+    const px=base.x+ux*along+(-uz)*lateral,pz=base.z+uz*along+ux*lateral;
+    let py=base.y+(.55+.2*Math.sin(time*4.2+phase));
+    if(typeof opt.heightAt==='function'){const hy=opt.heightAt(px,pz);if(Number.isFinite(hy))py=hy+.04}
+    return new THREE.Vector3(px,py,pz);
+  };
+  u.held.visible=u.heldL.visible=false;h.updateMatrixWorld(true);
+  for(const [side,anchor,phase] of [[1,u.held,0],[-1,u.heldL,Math.PI]]){
+    const hand=anchor.parent,lower=hand?.parent,upper=lower?.parent;
+    const target=plant(side,phase);
+    if(!u.mixer||!hand?.isBone||!lower?.isBone||!upper?.isBone){
+      const arm=side===1?u.fb.armR:u.fb.armL;arm.rotation.x=-1.35-Math.sin(time*4+phase)*.2;arm.rotation.z=side*.45;continue;
+    }
+    const a=upper.getWorldPosition(new THREE.Vector3()),b=lower.getWorldPosition(new THREE.Vector3()),c=hand.getWorldPosition(new THREE.Vector3());
+    const l1=a.distanceTo(b),l2=b.distanceTo(c),dir=target.clone().sub(a),d=Math.max(.001,Math.min(dir.length(),(l1+l2)*.98));dir.normalize();
+    const pole=new THREE.Vector3(side,-.55,0).applyAxisAngle(new THREE.Vector3(0,1,0),yaw);pole.addScaledVector(dir,-pole.dot(dir)).normalize();
+    const along=(l1*l1-l2*l2+d*d)/(2*d),elbow=a.clone().addScaledVector(dir,along).addScaledVector(pole,Math.sqrt(Math.max(0,l1*l1-along*along)));
+    for(const [bone,child,dest] of [[upper,lower,elbow],[lower,hand,a.clone().addScaledVector(dir,d)]]){
+      const pos=bone.getWorldPosition(new THREE.Vector3()),v=child.getWorldPosition(new THREE.Vector3()).sub(pos).normalize(),want=dest.clone().sub(pos).normalize();
+      const q=new THREE.Quaternion().setFromUnitVectors(v,want).multiply(bone.getWorldQuaternion(new THREE.Quaternion()));
+      bone.quaternion.copy(bone.parent.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(q));h.updateMatrixWorld(true);
+    }
+    hand.rotateX(-.85);hand.rotateZ(side*.25);
+  }
+}

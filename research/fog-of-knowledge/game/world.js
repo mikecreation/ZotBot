@@ -22,9 +22,9 @@ import * as THREE from "./vendor/three.module.min.js";
 import {ITEMS,WORLD_DISCOVERIES,RECIPES} from "./world-data.js?v=3.35.0";
 import {walkPath} from "./walk-path.js?v=3.33.0";
 import {drillProblem,advanceDrill} from "./friction-fire.js?v=3.33.0";
-import {primitiveItem,workbenchMesh,setBowDraw} from "./primitive-models.js?v=3.35.0";
+import {primitiveItem,workbenchMesh,setBowDraw} from "./primitive-models.js?v=3.36.0";
 import {isWheel,SMASHABLE} from "./wheels.js?v=3.34.0";
-import * as GFX from "./gfx.js?v=3.35.0";
+import * as GFX from "./gfx.js?v=3.36.0";
 import * as AXE from "./axe.js?v=3.29.1";
 import * as AU from "./audio.js?v=3.35.0";
 import {ESSENTIAL_QUICKBAR,quickbarOrder} from "./quickbar.js?v=3.33.0";
@@ -2290,12 +2290,12 @@ function stepWorld(dt){
   world.gameTime+=dtg;
   stepWeather(dtg);stepPlayer(dt);stepSurvival(dt);stepDrill(dt);stepBowDraw(dt);stepBowShockwaves(dt);stepDrops(dt);stepFires(dt,dtg);stepBurning(dt);stepLightning(dt);spawnAnimals(dt);updateAnimals(dt);if(PETS)PETS.update(dt);stepPendulums(dt);stepCuriosity(dt);stepTips(dt);
   bobRafts();stepShips(dt);stepWoodland(dt);
-  const p=player;p.model.position.copy(p.pos);if(p.raft){p.model.position.y=p.raft.obj.position.y+.12;p.model.rotation.x=1.35}else if(p.model.rotation.x)p.model.rotation.x=0;
+  const p=player;p.model.position.copy(p.pos);if(p.raft){p.model.position.y=p.raft.obj.position.y+.12;p.model.rotation.x=1.35}else if(!p.climbing&&p.model.rotation.x)p.model.rotation.x=0;
   p.model.rotation.y=p.yaw;
   const raftSwim=!!p.raft;
   animateHuman(p.model,(p.moveSpeed||0)*(p.crouch?1.6:1)*(raftSwim&&(world.held==="paddle"||world.left==="paddle")?1.35:1),dt,p.swimming||raftSwim,!p.onGround&&!p.swimming&&!p.raft&&p.pos.y>groundAt(p.pos.x,p.pos.z)+.25,p.dead);
   GFX.fitClimbingGloves(p.model,inv("climbing_gloves")>0);
-  if(p.climbing)GFX.poseClimbing(p.model,clock.elapsedTime);
+  if(p.climbing){const gx=heightAt(p.pos.x+.5,p.pos.z)-heightAt(p.pos.x-.5,p.pos.z),gz=heightAt(p.pos.x,p.pos.z+.5)-heightAt(p.pos.x,p.pos.z-.5);GFX.poseClimbing(p.model,clock.elapsedTime,{heightAt,gx,gz,lean:.4});}
   p.model.scale.y=drilling?.72:p.crouch?.72:1;
   if(drilling&&drillProp)GFX.poseHandDrill(p.model,drillProp.position,clock.elapsedTime);
   AXE.update(dt,p.model);
