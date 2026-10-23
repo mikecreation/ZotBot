@@ -433,13 +433,14 @@ export function updateEnvironment(o){
   // softer night fog so terrain doesn't crush to black
   if(day<.35&&!o.under) scene.fog.density*=(.42+.35*day);
   // stars & milky way & meteors
-  if(typeof window!=="undefined"&&window.__trailerHideStars){
+  const nightAmt=(1-day)*(1-amt*.75)*(1-cloudy*.35);
+  const _hideCel=typeof window!=="undefined"&&window.__trailerHideStars;
+  if(_hideCel){
     if(stars){stars.visible=false;if(stars.material.uniforms)stars.material.uniforms.uOpacity.value=0;else stars.material.opacity=0}
     if(milkyWay){milkyWay.visible=false;milkyWay.material.opacity=0}
     if(meteors){meteors.visible=false;meteors.material.opacity=0}
     if(auroraMesh){auroraMesh.visible=false;if(auroraMesh.material.uniforms)auroraMesh.material.uniforms.uOpacity.value=0}
-  } else
-  const nightAmt=(1-day)*(1-amt*.75)*(1-cloudy*.35);
+  } else {
   if(stars.material.uniforms){stars.material.uniforms.uOpacity.value=nightAmt;stars.material.uniforms.uTime.value=(o.gameTime||0)*.15}
   else stars.material.opacity=nightAmt;
   stars.position.copy(o.cam);stars.rotation.y=(o.gameTime||0)/86164*2*Math.PI;stars.visible=nightAmt>.01;
@@ -453,6 +454,7 @@ export function updateEnvironment(o){
   else moonMesh.material.opacity=(1-amt*.85)*(.2+.8*mp.frac);
   // aurora (clear dark nights)
   if(auroraMesh){const ao=nightAmt*(1-amt)*sm(-.1,.05,el)*.55*(.4+.6*mp.frac);auroraMesh.material.uniforms.uOpacity.value=ao;auroraMesh.material.uniforms.uTime.value=(o.gameTime||0)*.2;auroraMesh.visible=ao>.04;auroraMesh.position.set(o.cam.x,o.cam.y+220,o.cam.z)}
+  } // end !_hideCel
   // rainbow after rain when sun is out
   if(rainbowMesh){const ro=day*sm(.05,.35,el)*sm(.15,.55,amt)*(amt>.05?1:0)*.7;rainbowMesh.material.uniforms.uOpacity.value=ro;rainbowMesh.visible=ro>.05;rainbowMesh.position.set(o.cam.x-sunDir.x*200,o.cam.y+40,o.cam.z-sunDir.z*200);rainbowMesh.lookAt(o.cam.x+sunDir.x,o.cam.y,o.cam.z+sunDir.z)}
   // clouds
