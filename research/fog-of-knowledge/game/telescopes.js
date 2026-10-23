@@ -597,11 +597,18 @@ function openSky(view, tierKey){
   let skyTitle, srcLabel, extra;
   let jwstMode = "aladin";
   let jwstTarget = { ra: JWST_DEEP_FIELDS.smacs.ra, dec: JWST_DEEP_FIELDS.smacs.dec, label: JWST_DEEP_FIELDS.smacs.name, id: "smacs" };
+  /** Stellarium FoV deg -- smaller = optical zoom into same real catalogs (not survey HiPS depth). */
+  let galileoFov = 45;
+  const GALILEO_FOV_STEPS = [45, 20, 10, 5, 2];
 
-  // Restore last JWST prefs for this viewpoint if any
+  // Restore last JWST / Galileo FoV prefs for this viewpoint if any
   try{
     const map = readSessionMap();
     const last = map.__last && map[map.__last];
+    if(!jwst && !mid && last && last.tier === "galileo" && last.fov){
+      const f = +last.fov;
+      if(GALILEO_FOV_STEPS.indexOf(f) >= 0) galileoFov = f;
+    }
     if(jwst && last && last.tier === "jwst" && last.mode){
       jwstMode = last.mode;
       if(last.targetId && JWST_DEEP_FIELDS[last.targetId]){
@@ -619,12 +626,12 @@ function openSky(view, tierKey){
       return jwstAladinUrl(view.lat, view.lon, { ra: jwstTarget.ra, dec: jwstTarget.dec, fov: 0.18 });
     }
     if(mid) return aladinUrl(view.lat, view.lon);
-    return stellariumUrl(view.lat, view.lon);
+    return stellariumUrl(view.lat, view.lon, { fov: galileoFov });
   }
   function currentKey(){
     if(jwst) return skyCacheKey("jwst", view, { mode: jwstMode, targetId: jwstTarget.id || "", ra: jwstTarget.ra, dec: jwstTarget.dec });
     if(mid) return skyCacheKey("mid", view, { mode: "aladin-dss2" });
-    return skyCacheKey("galileo", view, { mode: "stellarium" });
+    return skyCacheKey("galileo", view, { mode: "stellarium", targetId: "fov" + galileoFov });
   }
   function labelsFor(){
     if(jwst){
@@ -639,7 +646,7 @@ function openSky(view, tierKey){
       skyTitle = "REAL SKY -- Galileo";
       srcLabel = "Stellarium Web";
       const night = nightUtcIso(view.lon);
-      extra = "local night ~" + night + " UTC - wide FoV ~45 deg (cached)";
+      extra = "local night ~" + night + " UTC - FoV ~" + galileoFov + " deg (optical zoom, cached)";
     }
   }
 
@@ -652,6 +659,9 @@ function openSky(view, tierKey){
     const key = currentKey();
     const url = currentUrl();
     const warmHit = warmFrames.has(key);
+    const galBtns = (!jwst && !mid) ? `
+        <button type="button" data-tel="gal-deeper">Look deeper</button>
+        <button type="button" data-tel="gal-wider">Widen view</button>` : "";
     const jwstBtns = jwst ? `
         <button type="button" data-tel="jwst-smacs">SMACS deep</button>
         <button type="button" data-tel="jwst-ceers">CEERS</button>
@@ -663,7 +673,9 @@ function openSky(view, tierKey){
       : "First open loads survey tiles; reopen of this sky is kept warm until you Dump telescope cache.";
     const note = jwst
       ? ("Sky data: public CDS Aladin JWST HiPS (CDS/P/JWST/OPEN) and ESA ESASky. " + cacheNote)
-      : ("Sky data: public " + srcLabel + " (real catalogs / HiPS). " + cacheNote + " Third-party tiles may still need network on a cold browser cache.");
+      : mid
+      ? ("Sky data: public Aladin Lite DSS2 HiPS. " + cacheNote + " Third-party tiles may still need network on a cold browser cache.")
+      : ("Sky data: public Stellarium Web (real star/planet catalogs). Look deeper = smaller FoV optical zoom into the same catalogs -- not photographic survey depth (use Observatory/JWST for HiPS). " + cacheNote);
     el.innerHTML = `<div class="box telSky" role="dialog" aria-label="Real sky viewer">
     <header class="telHead">
       <div>
@@ -671,7 +683,7 @@ function openSky(view, tierKey){
         <small>Viewpoint: <b>${label}</b> (${src}) - ${esc(srcLabel)} - ${esc(extra)}</small>
       </div>
       <div class="telActs">
-        <button type="button" data-tel="relocate">Switch location</button>${jwstBtns}
+        <button type="button" data-tel="relocate">Switch location</button>${galBtns}${jwstBtns}
         <button type="button" data-tel="dump" class="telDanger">Dump telescope cache</button>
         <button type="button" data-tel="close" class="primary">Exit (Esc)</button>
       </div>
@@ -689,7 +701,7 @@ function openSky(view, tierKey){
       lat: view.lat,
       lon: view.lon,
       url,
-      fov: jwst ? (jwstMode === "esasky" ? 0.4 : 0.18) : (mid ? 2 : 45),
+      fov: jwst ? (jwstMode === "esasky" ? 0.4 : 0.18) : (mid ? 2 : galileoFov),
       survey: jwst ? (jwstMode === "esasky" ? "esasky" : "CDS/P/JWST/OPEN") : (mid ? "P/DSS2/color" : "stellarium-web"),
     });
   }
@@ -712,6 +724,21 @@ function openSky(view, tierKey){
       exitFs(); el.classList.remove("telSkyFs");
       openGlobe(picked => { saveViewpoint(picked); openSky(picked, activeTier) });
       return;
+    }
+    if(v === "gal-deeper"){
+      const i = GALILEO_FOV_STEPS.indexOf(galileoFov);
+      const next = GALILEO_FOV_STEPS[Math.min(GALILEO_FOV_STEPS.length - 1, (i < 0 ? 0 : i) + 1)];
+      if(next === galileoFov){
+        try{ if(lastToast) lastToast("Galileo at FoV " + galileoFov + " deg -- Stellarium optical zoom floor. For survey-image depth use Observatory (Aladin) or James Webb.") }catch(_){}
+        return;
+      }
+      galileoFov = next;
+      render(); enterFs(el); return;
+    }
+    if(v === "gal-wider"){
+      const i = GALILEO_FOV_STEPS.indexOf(galileoFov);
+      galileoFov = GALILEO_FOV_STEPS[Math.max(0, (i < 0 ? 0 : i) - 1)];
+      render(); enterFs(el); return;
     }
     if(!jwst) return;
     parkActiveFromOverlay();

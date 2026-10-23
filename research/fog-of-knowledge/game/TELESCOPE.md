@@ -60,3 +60,8 @@ Telescope skies are kept **warm forever** until you dump them:
 - **Cached by us**: last URLs, targets, FoV, survey id, JWST mode, warm DOM iframes (instant reopen in-session).
 - **Residual network**: Stellarium Web / Aladin / ESASky are third-party. HiPS tiles live on their CDNs; we cannot fully offline-cache cross-origin tiles. After a full browser restart, the first reopen still hits their HTTP cache when possible, then warms again. Dump forces a cold load.
 
+## Galileo: Look deeper (FoV)
+
+Stellarium Web accepts `fov` (degrees). **Look deeper** steps 45 -> 20 -> 10 -> 5 -> 2; **Widen view** goes back.
+This is **optical zoom into the same real star/planet catalogs**, not deeper photographic survey data. For survey-image depth use Observatory (Aladin DSS2) or James Webb (JWST HiPS / ESASky). Each FoV is a separate warm-cache key.
+
