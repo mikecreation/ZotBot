@@ -6,7 +6,8 @@
  *   3) fallback Florence, Italy (Galileo's workshop ~43.77N, 11.25E) -- documented default
  * E on telescope -> "Switch location?"  Yes = interactive globe (countries + ocean).
  * No / default path = current saved or geolocated / Florence sky (no fake stars).
- * Mid-tier and JWST are intentionally out of scope for this commit.
+ * Tier 2 Observatory (mid): Aladin Lite DSS2 HiPS, deep ~2 deg FoV.
+ * Tier 3 JWST: deferred.
  */
 import * as T from "./vendor/three.module.min.js";
 
@@ -67,7 +68,10 @@ const PLACES = [
 ];
 
 export const TELESCOPE_GALILEO = "telescope_galileo";
-export function isTelescope(type){ return type === TELESCOPE_GALILEO }
+export const TELESCOPE_MID = "telescope_mid";
+export function isTelescope(type){ return type === TELESCOPE_GALILEO || type === TELESCOPE_MID }
+export function isMidTelescope(type){ return type === TELESCOPE_MID }
+let activeTier = "galileo";
 
 function woodMat(c){ return new T.MeshStandardMaterial({ color: c, roughness: 0.88, metalness: 0.02 }) }
 function brassMat(c){ return new T.MeshStandardMaterial({ color: c, roughness: 0.35, metalness: 0.75 }) }
@@ -106,6 +110,47 @@ export function buildGalileoMesh(){
   return g;
 }
 
+/** Much larger pier-mounted refractor -- mid / observatory (obviously bigger than Galileo). */
+export function buildMidMesh(){
+  const g = new T.Group(); g.name = TELESCOPE_MID; g.userData.telescope = TELESCOPE_MID;
+  const wood = woodMat(0x6b4a28), dark = woodMat(0x3d2a16), brass = brassMat(0xb8924a);
+  const iron = new T.MeshStandardMaterial({ color: 0x5a5c60, roughness: 0.45, metalness: 0.55 });
+  const paint = woodMat(0x2a3a4a);
+  const base = new T.Mesh(new T.CylinderGeometry(0.55, 0.65, 0.35, 12), dark);
+  base.position.y = 0.175; base.castShadow = base.receiveShadow = true; g.add(base);
+  const pier = new T.Mesh(new T.CylinderGeometry(0.22, 0.28, 1.35, 12), wood);
+  pier.position.y = 1.0; pier.castShadow = true; g.add(pier);
+  const collar = new T.Mesh(new T.CylinderGeometry(0.32, 0.32, 0.12, 12), iron);
+  collar.position.y = 1.7; g.add(collar);
+  const head = new T.Mesh(new T.BoxGeometry(0.55, 0.28, 0.4), iron);
+  head.position.y = 1.95; g.add(head);
+  const axis = new T.Mesh(new T.CylinderGeometry(0.06, 0.06, 0.7, 10), brass);
+  axis.rotation.z = Math.PI / 2; axis.position.set(0, 2.05, 0); g.add(axis);
+  const tube = new T.Mesh(new T.CylinderGeometry(0.13, 0.15, 2.35, 16), paint);
+  tube.rotation.z = Math.PI / 2; tube.rotation.y = 0.4; tube.position.set(0.35, 2.15, 0);
+  tube.castShadow = true; g.add(tube);
+  for(const o of [-0.7, 0, 0.7]){
+    const ring = new T.Mesh(new T.CylinderGeometry(0.16, 0.16, 0.08, 16), brass);
+    ring.rotation.z = Math.PI / 2; ring.rotation.y = 0.4;
+    ring.position.set(0.35 + o * 0.85, 2.15, 0); g.add(ring);
+  }
+  const dew = new T.Mesh(new T.CylinderGeometry(0.17, 0.17, 0.22, 16), brass);
+  dew.rotation.z = Math.PI / 2; dew.rotation.y = 0.4; dew.position.set(1.45, 2.22, 0.08); g.add(dew);
+  const glass = new T.MeshStandardMaterial({ color: 0x88c8e8, roughness: 0.35, metalness: 0.1, transparent: true, opacity: 0.85 });
+  const obj = new T.Mesh(new T.CylinderGeometry(0.12, 0.12, 0.04, 16), glass);
+  obj.rotation.z = Math.PI / 2; obj.rotation.y = 0.4; obj.position.set(1.55, 2.24, 0.1); g.add(obj);
+  const eye = new T.Mesh(new T.CylinderGeometry(0.045, 0.055, 0.28, 10), brass);
+  eye.rotation.z = Math.PI / 2; eye.rotation.y = 0.4; eye.position.set(-0.75, 2.05, -0.08); g.add(eye);
+  const find = new T.Mesh(new T.CylinderGeometry(0.03, 0.035, 0.55, 8), dark);
+  find.rotation.z = Math.PI / 2; find.rotation.y = 0.4; find.position.set(0.4, 2.38, 0); g.add(find);
+  const cwShaft = new T.Mesh(new T.CylinderGeometry(0.025, 0.025, 0.9, 8), iron);
+  cwShaft.rotation.z = Math.PI / 2; cwShaft.position.set(-0.55, 1.85, 0); g.add(cwShaft);
+  const cw = new T.Mesh(new T.CylinderGeometry(0.12, 0.12, 0.1, 12), iron);
+  cw.rotation.z = Math.PI / 2; cw.position.set(-0.95, 1.85, 0); g.add(cw);
+  g.userData.placeY = 0;
+  return g;
+}
+
 export function loadViewpoint(){
   try{
     const s = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
@@ -134,6 +179,28 @@ export function stellariumUrl(lat, lon, opts = {}){
   const az = opts.az ?? 180;
   const date = encodeURIComponent(opts.date || nightUtcIso(lon));
   return `https://stellarium-web.org/?lat=${(+lat).toFixed(5)}&lng=${(+lon).toFixed(5)}&date=${date}&fov=${fov}&alt=${alt}&az=${az}`;
+}
+
+/** Zenith RA/Dec (deg) at local night from observer lat/lon. */
+export function zenithRaDec(lat, lon, when = new Date()){
+  const d = new Date(nightUtcIso(lon, when));
+  const jd = d.getTime() / 86400000 + 2440587.5;
+  const T = (jd - 2451545.0) / 36525;
+  let gmst = 280.46061837 + 360.98564736629 * (jd - 2451545.0) + 0.000387933 * T * T;
+  gmst = ((gmst % 360) + 360) % 360;
+  const lst = ((gmst + (+lon)) % 360 + 360) % 360;
+  let dec = +lat;
+  if(dec > 89) dec = 89; if(dec < -89) dec = -89;
+  return { ra: lst, dec };
+}
+
+/** Aladin Lite DSS2 color -- mid deep FoV (~2 deg). Real public HiPS. */
+export function aladinUrl(lat, lon, opts = {}){
+  const { ra, dec } = zenithRaDec(lat, lon);
+  const fov = opts.fov ?? 2;
+  const survey = encodeURIComponent(opts.survey || "P/DSS2/color");
+  const target = encodeURIComponent(ra.toFixed(4) + " " + dec.toFixed(4));
+  return "https://aladin.cds.unistra.fr/AladinLite/?target=" + target + "&fov=" + fov + "&survey=" + survey;
 }
 
 function ensureOverlay(){
@@ -175,13 +242,14 @@ function closeOverlay(){
   el.onclick = null;
 }
 
-function askSwitch(onYes, onNo){
+function askSwitch(onYes, onNo, title){
   const el = ensureOverlay();
   el.classList.remove("telSkyFs");
   exitFs();
   el.hidden = false;
+  const ttl = title || (activeTier === "mid" ? "OBSERVATORY TELESCOPE" : "GALILEO TELESCOPE");
   el.innerHTML = `<div class="box telAsk" role="dialog" aria-label="Switch telescope location">
-    <h3>GALILEO TELESCOPE</h3>
+    <h3>` + ttl + `</h3>
     <p>Switch location?</p>
     <p class="muted">Yes opens an Earth globe (countries and oceans). No keeps your last viewpoint, or uses your current location.</p>
     <div class="telActs"><button data-tel="yes" class="primary">Yes</button><button data-tel="no">No</button><button data-tel="cancel" class="ghost">Cancel</button></div>
@@ -215,35 +283,42 @@ function resolveDefaultViewpoint(cb){
   cb({ ...FALLBACK });
 }
 
-function openSky(view){
+function openSky(view, tierKey){
+  if(tierKey === "mid" || tierKey === "galileo") activeTier = tierKey;
+  const mid = activeTier === "mid";
   const el = ensureOverlay();
   el.hidden = false;
   el.classList.add("telSkyFs");
-  const url = stellariumUrl(view.lat, view.lon);
+  const url = mid ? aladinUrl(view.lat, view.lon) : stellariumUrl(view.lat, view.lon);
   const label = esc(view.name || `${view.lat.toFixed(2)}, ${view.lon.toFixed(2)}`);
   const src = esc(view.source || "saved");
   const night = nightUtcIso(view.lon);
+  const zd = zenithRaDec(view.lat, view.lon);
+  const skyTitle = mid ? "DEEP SKY -- Observatory" : "REAL SKY -- Galileo";
+  const srcLabel = mid ? "Aladin Lite DSS2" : "Stellarium Web";
+  const extra = mid
+    ? (`zenith RA ${zd.ra.toFixed(1)} Dec ${zd.dec.toFixed(1)} - deep FoV ~2 deg`)
+    : (`local night ~${esc(night)} UTC - wide FoV ~45 deg`);
   el.innerHTML = `<div class="box telSky" role="dialog" aria-label="Real sky viewer">
     <header class="telHead">
       <div>
-        <h3>REAL SKY -- Galileo</h3>
-        <small>Viewpoint: <b>${label}</b> (${src}) &middot; Stellarium Web &middot; local night ~${esc(night)} UTC</small>
+        <h3>${skyTitle}</h3>
+        <small>Viewpoint: <b>${label}</b> (${src}) - ${srcLabel} - ${extra}</small>
       </div>
       <div class="telActs">
         <button data-tel="relocate">Switch location</button>
         <button data-tel="close" class="primary">Exit (Esc)</button>
       </div>
     </header>
-    <iframe class="telFrame" title="Stellarium Web real sky" src="${esc(url)}" allow="fullscreen" referrerpolicy="no-referrer-when-downgrade"></iframe>
-    <p class="telNote muted">Sky data: public Stellarium Web (real catalogs / ephemeris for the chosen lat/lon). Open-world night sky stays stylized; only this telescope mode is 100% real.</p>
+    <iframe class="telFrame" title="${srcLabel} real sky" src="${esc(url)}" allow="fullscreen" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    <p class="telNote muted">Sky data: public ${srcLabel} (real catalogs / HiPS for the chosen lat/lon). Open-world night sky stays stylized; only telescope mode is 100% real. JWST tier not shipped yet.</p>
   </div>`;
   el.onclick = e => {
     const b = e.target.closest("[data-tel]"); if(!b) return;
     const v = b.getAttribute("data-tel");
     if(v === "close"){ closeOverlay(); return }
-    if(v === "relocate"){ exitFs(); el.classList.remove("telSkyFs"); openGlobe(picked => { saveViewpoint(picked); openSky(picked) }); return }
+    if(v === "relocate"){ exitFs(); el.classList.remove("telSkyFs"); openGlobe(picked => { saveViewpoint(picked); openSky(picked, activeTier) }); return }
   };
-  // True fullscreen when allowed; CSS telSkyFs already covers the game viewport.
   enterFs(el);
 }
 
@@ -362,12 +437,22 @@ function openGlobe(onPick){
 }
 
 /** Public entry: E on a placed Galileo telescope. */
-export function useGalileoTelescope(opts = {}){
+function usePlaceableTelescope(tierKey, opts = {}){
+  activeTier = tierKey === "mid" ? "mid" : "galileo";
   const toast = opts.toast || (() => {});
+  const title = activeTier === "mid" ? "OBSERVATORY TELESCOPE" : "GALILEO TELESCOPE";
   askSwitch(
-    () => openGlobe(v => { saveViewpoint(v); toast(`Viewpoint set: ${v.name}`); openSky(v) }),
-    () => resolveDefaultViewpoint(v => { toast(`Sky from ${v.name}`); openSky(v) })
+    () => openGlobe(v => { saveViewpoint(v); toast(`Viewpoint set: ${v.name}`); openSky(v, activeTier) }),
+    () => resolveDefaultViewpoint(v => { toast(`Sky from ${v.name}`); openSky(v, activeTier) }),
+    title
   );
+}
+
+export function useGalileoTelescope(opts = {}){ usePlaceableTelescope("galileo", opts) }
+export function useMidTelescope(opts = {}){ usePlaceableTelescope("mid", opts) }
+export function useTelescopeFor(type, opts = {}){
+  if(type === TELESCOPE_MID) useMidTelescope(opts);
+  else useGalileoTelescope(opts);
 }
 
 export function telescopeKeydown(e){
@@ -382,4 +467,4 @@ export function telescopeIsOpen(){
   return !!(el && !el.hidden);
 }
 
-export { FALLBACK, PLACES, STORE_KEY };
+export { FALLBACK, PLACES, STORE_KEY, activeTier };

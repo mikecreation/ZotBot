@@ -33,3 +33,11 @@ Key: `fog-of-knowledge:game:telescope:viewpoint` (one global last viewpoint, not
 - Ocean clicks: free lat/lon on the map, or snap to named ocean samples when near them.
 - Geolocation needs user permission; denied -> Florence fallback.
 - Country markers are a curated centroid list, not a full GIS boundary dataset.
+
+## Tier 2 -- Observatory telescope (mid)
+
+Craft **Observatory telescope** (`telescope_mid`): 4 lens + 2 bronze + 2 glass + 3 log + 6 stick + 1 iron bloom. Requires optics.
+Place with Q (ghost). Much larger pier-mounted mesh than Galileo.
+E -> Switch location? same UX. Sky: **Aladin Lite** DSS2 color HiPS at ~2 deg FoV aimed at local-night zenith (from lat/lon). Fullscreen on open.
+JWST (tier 3) not shipped.
+
