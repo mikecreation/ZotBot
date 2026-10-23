@@ -19,11 +19,12 @@ Object.assign(GEAR_STEPS,RAFT_STEPS);
  * Discoveries happen by doing things in the world and reveal real atlas nodes.
  */
 import * as THREE from "./vendor/three.module.min.js";
-import {ITEMS,WORLD_DISCOVERIES,RECIPES} from "./world-data.js?v=3.35.0";
+import {ITEMS,WORLD_DISCOVERIES,RECIPES} from "./world-data.js?v=3.37.0";
 import {walkPath} from "./walk-path.js?v=3.33.0";
 import {drillProblem,advanceDrill} from "./friction-fire.js?v=3.33.0";
 import {primitiveItem,workbenchMesh,setBowDraw} from "./primitive-models.js?v=3.36.0";
 import {isWheel,SMASHABLE} from "./wheels.js?v=3.34.0";
+import {isTelescope,buildGalileoMesh,useGalileoTelescope,telescopeKeydown,telescopeIsOpen,TELESCOPE_GALILEO} from "./telescopes.js?v=3.37.0";
 import * as GFX from "./gfx.js?v=3.36.0";
 import * as AXE from "./axe.js?v=3.29.1";
 import * as AU from "./audio.js?v=3.35.0";
@@ -699,10 +700,11 @@ function structMesh(s){
   else if(s.type==="shipyard")shipyardMesh(s,g);
   else if(isWoodland(s.type))woodMesh(s,g);
   else if(s.type==="ship"){const gal=GAL.buildGalleon({});s._gal=gal;g.add(gal)}
+  else if(isTelescope(s.type)){g.add(buildGalileoMesh())}
   else if(s.type==="gnomon"){g.add(box(.05,1,.05,0xa07a4a,.5));const sh=box(.04,.01,1,0x1a1a1a,.01);sh.geometry.translate(0,0,-.5);g.add(sh);s.shadow=sh}
   g.position.set(s.x,s.y,s.z);g.rotation.y=s.ry||0;scene.add(g);s.obj=g;if(s.type==="rack")updateRack(s);return g;
 }
-const PLACE_DIST={hut:3.6,house:4.2,well:2.2,wall:2,chest:1.5,rack:1.8,pendulum:2,torch:1.4};
+const PLACE_DIST={hut:3.6,house:4.2,well:2.2,wall:2,chest:1.5,rack:1.8,pendulum:2,torch:1.4,telescope_galileo:2.2};
 function place(type,extra={}){
   if(type==="shipyard")return placeShipyard(extra);
   if(type==="raft")return placeRaftSite(extra);
@@ -1344,6 +1346,7 @@ function interact(override=null){
   if(s.type==="rack")return rackCollect(s);
   if(s.type==="well"){world.st.thirst=Math.min(100,world.st.thirst+40);AU.drink();toast("Cool, clean water from deep underground.");discover("groundwater");return}
   if(s.type==="pendulum")return pendStart(s);
+  if(isTelescope(s.type)){player.actCd=.3;useGalileoTelescope({toast});return}
 }
 function useHeld(){
   if(player.actCd>0||player.dead)return;
@@ -1762,6 +1765,7 @@ function bindInput(container){
   canvasEl=renderer.domElement;
   window.addEventListener("keydown",e=>{
     if(!started)return;
+    if(telescopeKeydown(e)){e.stopImmediatePropagation();return}
     if(EX?.isOpen&&(e.code==="Escape"||e.code==="KeyL")){EX.close();e.preventDefault();e.stopImmediatePropagation();return}
     if(e.code==="Escape"){stopMovement();if(!$("#wClimbHelp").hidden){closeClimbGuide();e.preventDefault();e.stopImmediatePropagation()}return}
     if(autoPickup&&!e.repeat&&!["ShiftLeft","ShiftRight","ControlLeft","ControlRight","AltLeft","AltRight","MetaLeft","MetaRight"].includes(e.code)){
@@ -2154,6 +2158,7 @@ function confirmPlaceMode(){
   else if(type==="table")toast("Study table ready. E to study.");
   else if(type==="well")toast(`You dig down about ${Math.max(1,Math.round(heightAt(p.x,p.z)))} m and water seeps in from the ground. E to drink, Q with a pot to fill it.`);
   else if(type==="pendulum")toast("Pendulum frame built. E to start timing ten swings; Q to change the length.");
+  else if(isTelescope(type))toast("Galileo telescope placed. E to look at the real sky; you can switch country or ocean viewpoint.");
   else if(type==="chest")toast("Storage chest built. E to open it.");else if(type==="rack")toast("Drying rack built. Hang raw meat on it with Q.");
   else toast(`${ITEMS[itemKey].name} placed.`);
   clearPlaceGhost();player.actCd=.25;renderHotbar();return true;
@@ -2453,6 +2458,7 @@ export function initWorld(){
       for(const k in out)out[k]=Math.round(out[k]);return {res:out,boulder:Math.round(boulder),tree:Math.round(tree),water,relief1km:Math.round(hi-lo),hi:Math.round(hi)}},
     clearStructs:()=>{for(const o of world.structures)o.obj&&scene.remove(o.obj);world.structures.length=0;player.raft=null;player.ship=null;player.helm=false},
     dev:DEV_MODE,ship:SHIP_DEBUG,woodland:WOOD_DEBUG,raft:RAFT_DEBUG,place:{begin:beginPlaceMode,cancel:()=>cancelPlaceMode(),rotate:rotatePlaceMode,confirm:confirmPlaceMode,get active(){return!!placeSess},get yaw(){return placeSess?yawDegrees(placeSess.ry):null},hint:showPlaceHint},
+    telescope:{open:()=>useGalileoTelescope({toast}),isOpen:telescopeIsOpen,id:TELESCOPE_GALILEO},
     clearDrops:()=>{for(const d of world.drops)scene.remove(d.mesh);world.drops.length=0},
     clearAnimals:kind=>{for(let i=animals.length-1;i>=0;i--)if(!kind||animals[i].kind===kind){scene.remove(animals[i].g);animals.splice(i,1)}},
     fireAt:()=>fireHeatAt(player.pos.x,player.pos.z),noise:()=>playerNoiseDb?playerNoiseDb():null};

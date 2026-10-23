@@ -370,3 +370,27 @@ body.titleOn .wHelpBtn{display:none}
 /* Crafting recipe color chip (emoji may tofu; chip always visible) */
 .craftIco{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:5px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.28),0 0 0 1px rgba(0,0,0,.35)}
 .rec b .craftIco{margin-right:6px}
+
+/* Galileo telescope real-sky overlay (Stellarium Web) */
+.telOverlay{z-index:40;background:#02040ae6}
+.telOverlay .box{max-width:min(1100px,96vw);width:96vw;padding:16px 18px;text-align:left}
+.telAsk{max-width:480px!important;text-align:center!important}
+.telAsk p{margin:8px 0;color:#c5d7e8}
+.telActs{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;margin-top:12px}
+.telAsk .telActs{justify-content:center}
+.telHead{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+.telHead h3{margin:0 0 4px;letter-spacing:.08em;color:#ffe6a8}
+.telHead small{color:#9fb6c9}
+.telSky{max-width:min(1200px,98vw)!important}
+.telFrame{display:block;width:100%;height:min(70vh,720px);border:1px solid #2b4a63;border-radius:10px;background:#000}
+.telNote{margin:8px 0 0;font-size:12px;color:#8ea6bb}
+.telGlobe{max-width:min(980px,96vw)!important}
+.telGlobeWrap{position:relative;border:1px solid #2b4a63;border-radius:10px;overflow:hidden;background:#0a2744}
+.telGlobeWrap canvas{display:block;width:100%;height:auto;cursor:crosshair;touch-action:manipulation}
+.telArrow{position:absolute;width:18px;height:18px;margin-left:-9px;margin-top:-22px;pointer-events:none;border-left:9px solid transparent;border-right:9px solid transparent;border-top:16px solid #ff6b4a;filter:drop-shadow(0 2px 4px #000a)}
+.telHint{position:absolute;left:10px;bottom:8px;padding:4px 10px;border-radius:8px;background:#02060ccc;color:#d9e6f2;font:12px system-ui;pointer-events:none}
+.telOverlay button{min-height:44px;padding:8px 14px;border-radius:8px;border:1px solid #2f5670;background:#11283a;color:#dbe8f6;cursor:pointer;font:600 13px system-ui}
+.telOverlay button.primary{background:#d8b77b;color:#13232a;border-color:#eed4a3}
+.telOverlay button.ghost{background:transparent;color:#9fb6c9}
+.telOverlay button:disabled{opacity:.4;cursor:default}
+.muted{color:#8ea6bb}
