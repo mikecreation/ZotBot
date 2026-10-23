@@ -45,7 +45,7 @@ E -> Switch location? same UX. Sky: **Aladin Lite** DSS2 color HiPS at ~2 deg Fo
 Craft **James Webb telescope** (`telescope_jwst`): 8 lens + 4 bronze + 6 glass + 4 iron + 3 quartz + 5 log + 10 stick + 1 prism. Requires optics (late-game cost).
 Place with Q -- huge segmented-mirror + sunshield mesh.
 E -> Switch location? same globe/fullscreen UX.
-Sky: **Aladin Lite** colorful JWST HiPS -- SMACS uses `CDS/P/JWST/Deep-Field-SMAC0723/NIRCam` (~0.04 deg FoV); CEERS/zenith use `CDS/P/JWST/EPO`; **ESASky** toggle for 360 deg. Buttons: SMACS, CEERS, local zenith, Aladin JWST, ESASky 360. Warm JWST cache keys versioned (`jwst2`) so old OPEN sessions auto-bust without Dump.
+Sky: **Aladin Lite** colorful JWST HiPS -- SMACS uses Deep-Field SMACS0723 NIRCam HiPS URL (~0.04 deg FoV, projection=SIN); CEERS/zenith use JWST EPO HiPS URL; **ESASky** toggle for 360 deg. Buttons: SMACS, CEERS, local zenith, Aladin JWST, ESASky 360. Warm JWST cache keys versioned (`jwst3`) so old OPEN sessions auto-bust without Dump.
 Real public survey data only (no fake nebula shaders).
 
 ## Sky cache (persist until Dump)

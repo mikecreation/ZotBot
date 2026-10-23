@@ -16,14 +16,14 @@ const SESSION_KEY = "fog-of-knowledge:game:telescope:sessions";
 const IDB_NAME = "fog-of-knowledge-telescope";
 const IDB_STORE = "skySessions";
 /** Bump to invalidate warm/session JWST keys that used sparse CDS/P/JWST/OPEN (grey empty). */
-const JWST_SKY_CACHE_VER = "jwst2";
-/** Colorful public CDS JWST HiPS per deep-field button (not sparse OPEN science mosaic). */
+const JWST_SKY_CACHE_VER = "jwst3";
+/** Colorful public CDS JWST HiPS as full hips_service_url (forces base; not sparse OPEN). */
 const JWST_HIPS = {
-  smacs: { survey: "CDS/P/JWST/Deep-Field-SMAC0723/NIRCam", fov: 0.04 },
-  ceers: { survey: "CDS/P/JWST/EPO", fov: 0.06 },
+  smacs: { survey: "https://alasky.cds.unistra.fr/JWST/CDS_P_JWST_deep_field_smacs0723-5mb", fov: 0.04 },
+  ceers: { survey: "https://alasky.cds.unistra.fr/JWST-outreach/CDS_P_JWST_EPO", fov: 0.06 },
   stephans: { survey: "CDS/P/JWST/Stephans-Quintet/NIRCam-MIRI", fov: 0.08 },
-  zenith: { survey: "CDS/P/JWST/EPO", fov: 0.07 },
-  default: { survey: "CDS/P/JWST/EPO", fov: 0.07 }
+  zenith: { survey: "https://alasky.cds.unistra.fr/JWST-outreach/CDS_P_JWST_EPO", fov: 0.07 },
+  default: { survey: "https://alasky.cds.unistra.fr/JWST-outreach/CDS_P_JWST_EPO", fov: 0.07 }
 };
 function jwstHipsFor(targetId){
   return JWST_HIPS[targetId] || JWST_HIPS.default;
@@ -286,15 +286,38 @@ function writeSessionMap(map){
   try{ localStorage.setItem(SESSION_KEY, JSON.stringify(map)) }catch(_){}
 }
 
-/** Drop pre-jwst2 warm iframes + session rows so reopen loads colorful HiPS without Dump. */
+/** True if a warm JWST iframe/session is sparse OPEN or all-sky (must not Warm-cache-hit). */
+function jwstWarmIsStale(key, pack){
+  if(!key || key.indexOf("jwst|") !== 0) return false;
+  if(key.indexOf("|" + JWST_SKY_CACHE_VER) < 0) return true;
+  let src = "";
+  try{
+    if(pack && pack.iframe) src = String(pack.iframe.getAttribute("src") || pack.iframe.src || "");
+    else if(pack && pack.meta && pack.meta.url) src = String(pack.meta.url);
+  }catch(_){}
+  if(!src) return false;
+  if(/JWST\/OPEN|P\/JWST\/OPEN/i.test(src)) return true;
+  if(/fov=([0-9.]+)/i.test(src)){
+    const f = parseFloat(RegExp.$1);
+    if(isFinite(f) && f >= 5) return true;
+  }
+  if(/AladinLite/i.test(src) && !/projection=SIN/i.test(src)) return true;
+  if(/AladinLite/i.test(src) && !/(Deep-Field|deep_field_smacs|JWST-outreach|CDS_P_JWST_EPO|Stephans)/i.test(src)) return true;
+  return false;
+}
+
+function destroyWarmPack(key, pack){
+  try{ if(pack && pack.iframe){ pack.iframe.src = "about:blank"; if(pack.iframe.parentNode) pack.iframe.parentNode.removeChild(pack.iframe) } }catch(_){}
+  warmFrames.delete(key);
+}
+
+/** Drop pre-jwst3 / OPEN / all-sky warm iframes + session rows so reopen never Warm-cache-hits OPEN. */
 function migrateJwstWarmCache(){
   try{
     for(const key of Array.from(warmFrames.keys())){
       if(key.indexOf("jwst|") !== 0) continue;
-      if(key.indexOf("|" + JWST_SKY_CACHE_VER) >= 0) continue;
       const pack = warmFrames.get(key);
-      try{ if(pack && pack.iframe){ pack.iframe.src = "about:blank"; if(pack.iframe.parentNode) pack.iframe.parentNode.removeChild(pack.iframe) } }catch(_){}
-      warmFrames.delete(key);
+      if(jwstWarmIsStale(key, pack)) destroyWarmPack(key, pack);
     }
   }catch(_){}
   try{
@@ -302,12 +325,19 @@ function migrateJwstWarmCache(){
     let changed = false;
     for(const k of Object.keys(map)){
       if(k === "__last") continue;
-      if(k.indexOf("jwst|") === 0 && k.indexOf("|" + JWST_SKY_CACHE_VER) < 0){
-        delete map[k]; changed = true;
-      }
+      if(k.indexOf("jwst|") !== 0) continue;
+      const row = map[k] || {};
+      const fake = { meta: { url: row.url || "" } };
+      if(jwstWarmIsStale(k, fake)){ delete map[k]; changed = true; }
     }
-    if(map.__last && String(map.__last).indexOf("jwst|") === 0 && String(map.__last).indexOf("|" + JWST_SKY_CACHE_VER) < 0){
-      delete map.__last; changed = true;
+    if(map.__last){
+      const lk = String(map.__last);
+      if(lk.indexOf("jwst|") === 0){
+        const row = map[lk] || {};
+        if(jwstWarmIsStale(lk, { meta: { url: row.url || "" } }) || !map[lk]){
+          delete map.__last; changed = true;
+        }
+      }
     }
     if(changed) writeSessionMap(map);
   }catch(_){}
@@ -429,6 +459,20 @@ function attachSkyIframe(slot, key, url, title, meta){
   slot.innerHTML = "";
   let pack = takeWarmFrame(key);
   let iframe;
+  // JWST: refuse Warm cache hit when parked src is OPEN / all-sky / missing SIN colorful HiPS.
+  if(pack && pack.iframe && String(key).indexOf("jwst|") === 0){
+    if(jwstWarmIsStale(key, pack) || jwstWarmIsStale(key, { meta: { url: url || "" } })){
+      destroyWarmPack(key, pack);
+      pack = null;
+    } else {
+      let cur = "";
+      try{ cur = String(pack.iframe.getAttribute("src") || pack.iframe.src || "") }catch(_){}
+      if(url && cur && cur !== url && (/OPEN/i.test(cur) || /fov=([0-9.]+)/i.test(cur) && parseFloat(RegExp.$1) >= 5)){
+        destroyWarmPack(key, pack);
+        pack = null;
+      }
+    }
+  }
   if(pack && pack.iframe){
     // WARM HIT: reattach only -- never touch src (keeps Aladin HiPS memory).
     iframe = pack.iframe;
@@ -535,8 +579,11 @@ export function jwstAladinUrl(lat, lon, opts = {}){
   const fov = opts.fov != null ? +opts.fov : hips.fov;
   const survey = encodeURIComponent(opts.survey || hips.survey);
   const target = encodeURIComponent(ra.toFixed(4) + " " + dec.toFixed(4));
-  // survey= sets Aladin base layer (not Fermi overlay). FoV stays deg-scale deep-field, not all-sky.
-  return "https://aladin.cds.unistra.fr/AladinLite/?target=" + target + "&fov=" + fov + "&survey=" + survey;
+  // Full HiPS URL as survey= forces JWST base; projection=SIN kills AIT/MOL all-sky empty oval.
+  return "https://aladin.cds.unistra.fr/AladinLite/?target=" + target
+    + "&fov=" + fov
+    + "&survey=" + survey
+    + "&projection=SIN";
 }
 
 /** ESASky -- full 360 pan/zoom, science mode, real mission HiPS / JWST tools. */
