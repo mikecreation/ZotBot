@@ -25,7 +25,7 @@ import {drillProblem,advanceDrill} from "./friction-fire.js?v=3.33.0";
 import {primitiveItem,workbenchMesh,setBowDraw} from "./primitive-models.js?v=3.36.0";
 import {isWheel,SMASHABLE} from "./wheels.js?v=3.34.0";
 import {isTelescope,isMidTelescope,isJwstTelescope,buildGalileoMesh,buildMidMesh,buildJwstMesh,useGalileoTelescope,useMidTelescope,useJwstTelescope,useTelescopeFor,telescopeKeydown,telescopeIsOpen,dumpTelescopeCache,TELESCOPE_GALILEO,TELESCOPE_MID,TELESCOPE_JWST} from "./telescopes.js?v=3.47.0";
-import {isGiantTv,GIANT_TV,buildGiantTvMesh,stepGiantTv,openTvWatch,closeTvWatch,isTvWatchOpen,applyTvWatchCamera,tvKeydown,setTvHighlight,updateTvAudio,setTvToast,TV_COLOR_PRESETS,watchTvStruct,initTvCss3d,renderTvCss3d} from "./giant-tv.js?v=3.52.1";
+import {isGiantTv,GIANT_TV,buildGiantTvMesh,stepGiantTv,openTvWatch,closeTvWatch,isTvWatchOpen,applyTvWatchCamera,tvKeydown,setTvHighlight,updateTvAudio,setTvToast,TV_COLOR_PRESETS,watchTvStruct,initTvCss3d,renderTvCss3d} from "./giant-tv.js?v=3.52.2";
 import * as GFX from "./gfx.js?v=3.50.0";
 import * as AXE from "./axe.js?v=3.29.1";
 import * as AU from "./audio.js?v=3.36.1";
@@ -1913,7 +1913,7 @@ function updateCamera(dt){
   if(CINE.on&&cineCam())return;
   if(SHIP_DEBUG._cam&&shipCam())return;
   if(WOOD_DEBUG._cam&&woodCam())return;
-  if(isTvWatchOpen()){const s=watchTvStruct();if(s&&applyTvWatchCamera(camera,player,s)){updateTvAudio(s,camera);return}}
+  // TV never locks camera (applyTvWatchCamera disabled). Spatial audio updates in stepWorld.
   const p=player,fp=firstPerson();
   if(p.model)p.model.visible=!fp;
   if(fp){ // first person: look at the sky (drag the view up) or through the telescope
@@ -2382,7 +2382,7 @@ function stepWorld(dt){
   if(spectrum&&spectrum.visible){spectrum.userData.t-=dt;spectrum.children.forEach(m=>m.material.opacity=.8*clamp(spectrum.userData.t/2,0,1));if(spectrum.userData.t<=0)spectrum.visible=false}
   updateArc();
   if(placeSess)updatePlaceMode();
-  for(const s of world.structures)if(isGiantTv(s.type)){stepGiantTv(s,dt,player.pos);if(s.tvOpen||isTvWatchOpen())updateTvAudio(s,camera)}
+  for(const s of world.structures)if(isGiantTv(s.type)){stepGiantTv(s,dt,player.pos);if(s.tvOpen)updateTvAudio(s,camera)}
   chunkT-=dt;if(chunkT<=0){updateChunks(false);chunkT=.15}
   hudT-=dt;if(hudT<=0){renderHUD();hudT=.2}
   saveT-=dt;if(saveT<=0){save();saveT=10}

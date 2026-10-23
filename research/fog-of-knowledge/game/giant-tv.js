@@ -48,7 +48,8 @@ const GOOGLE_ACCOUNTS = "https://accounts.google.com/AccountChooser?continue=htt
 const CSS_PX_W = 960;
 const CSS_PX_H = Math.round(CSS_PX_W * (TV_SCREEN_H / TV_SCREEN_W));
 
-let watchS = null;
+let watchS = null; // HUD / chrome only (NOT camera lock, NOT playback ownership)
+let mediaS = null; // structure that owns glass embed + spatial bed (survives Exit/minimize)
 let overlay = null;
 let iframeEl = null;
 let cssObj = null;
@@ -113,7 +114,7 @@ export function faceTvTowardPlayer(s, playerPos) {
  */
 export function stepTvFacing(s, playerPos, dt) {
   if (!s || !playerPos) return;
-  if (!(s.tvOpen || watchS === s)) return;
+  if (!(s.tvOpen || watchS === s || mediaS === s)) return;
   _toP.set(playerPos.x - s.x, 0, playerPos.z - s.z);
   if (_toP.lengthSq() < 0.25) return;
   _toP.normalize();
@@ -385,40 +386,25 @@ export function screenFacing(s) {
   return new T.Vector3(Math.sin(ry), 0, Math.cos(ry));
 }
 
+/** Disabled: never trap the player in a forced face-on cam. Free roam always.
+ *  TV yaw follow (~90° cone) lives in stepTvFacing; spatial audio in updateTvAudio.
+ *  Kept exported so world.js call sites stay valid; always returns false.
+ */
 export function applyTvWatchCamera(camera, player, s) {
-  if (!camera || !player || !s) return false;
-  const face = screenFacing(s);
-  const center = screenWorldCenter(s);
-  const dist = 7.5;
-  const side = new T.Vector3(-face.z, 0, face.x);
-  const camPos = center.clone().addScaledVector(face, dist).add(new T.Vector3(0, 0.6, 0));
-  const pp = player.pos;
-  const toPlayer = new T.Vector3(pp.x - center.x, 0, pp.z - center.z);
-  if (toPlayer.lengthSq() > 0.01) {
-    toPlayer.normalize();
-    const sideDot = toPlayer.dot(side);
-    camPos.addScaledVector(side, Math.sign(sideDot || 1) * 1.8);
-  } else {
-    camPos.addScaledVector(side, 1.6);
-  }
-  camera.position.lerp(camPos, 0.18);
-  _cam.copy(center);
-  _cam.x = center.x * 0.82 + pp.x * 0.18;
-  _cam.z = center.z * 0.82 + pp.z * 0.18;
-  camera.lookAt(_cam);
-  if (Math.abs(camera.fov - 48) > 0.2) {
-    camera.fov = 48;
-    camera.updateProjectionMatrix();
-  }
-  if (player.model) player.model.visible = true;
-  return true;
+  return false;
 }
 
 export function isTvWatchOpen() {
-  return !!watchS;
+  return !!watchS; // HUD chrome visible (not camera lock)
+}
+export function isTvPlaying() {
+  return !!mediaS && !!(mediaS.tvOpen);
 }
 export function watchTvStruct() {
-  return watchS;
+  return watchS || mediaS;
+}
+export function mediaTvStruct() {
+  return mediaS;
 }
 
 /* ---------------- CSS3D embed on glass ---------------- */
@@ -426,7 +412,7 @@ export function watchTvStruct() {
 function loadCss3dApi() {
   if (CSS3DObject && CSS3DRenderer) return Promise.resolve(true);
   if (cssApiPromise) return cssApiPromise;
-  cssApiPromise = import("./vendor/addons/renderers/CSS3DRenderer.js?v=3.52.1")
+  cssApiPromise = import("./vendor/addons/renderers/CSS3DRenderer.js?v=3.52.2")
     .then(m => {
       CSS3DObject = m.CSS3DObject;
       CSS3DRenderer = m.CSS3DRenderer;
@@ -521,7 +507,8 @@ function syncCssToGlass(root) {
   if (!cssObj || !root?.userData?.glass) return;
   const glass = root.userData.glass;
   const open = root.userData.open || 0;
-  cssObj.visible = !!watchS && open > 0.4 && glass.visible;
+  // Glass stays lit while folded-open + media owned — Exit/minimize must NOT blank it.
+  cssObj.visible = !!mediaS && open > 0.4 && glass.visible;
   if (fillScreen && cssObj.element) {
     cssObj.element.classList.add("tvScreenFill");
   } else if (cssObj.element) {
@@ -552,11 +539,12 @@ function killScreenMedia() {
   if (cssHost) cssHost.style.pointerEvents = "none";
   fillScreen = false;
   pendingVideoId = null;
+  mediaS = null;
 }
 
 export function renderTvCss3d(camera, scene) {
   if (!cssRenderer || !camera || !scene) return;
-  if (!watchS || !cssObj || !cssObj.visible) return;
+  if (!mediaS || !cssObj || !cssObj.visible) return;
   cssRenderer.render(scene, camera);
 }
 
@@ -574,8 +562,8 @@ function ensureOverlay() {
           <small>Controls · video plays on the glass</small>
         </div>
         <div class="tvActs">
-          <button type="button" data-tv="toggleOpen">Open / Close</button>
-          <button type="button" data-tv="close" class="ghost">Exit</button>
+          <button type="button" data-tv="toggleOpen" title="Fold or unfold the physical chassis only">Fold / Unfold</button>
+          <button type="button" data-tv="exit" class="ghost" title="Minimize HUD — keep TV playing, free roam">Exit</button>
         </div>
       </div>
       <div class="tvToolbar">
@@ -595,7 +583,7 @@ function ensureOverlay() {
         <button type="button" data-tv="go" class="primary">Watch</button>
         <button type="button" data-tv="home">Home</button>
       </div>
-      <p class="tvNote">Piped/YouTube render <b>on the TV screen</b> in the world. This panel is chrome only (Open, volume, colors). Esc exits.</p>
+      <p class="tvNote">Piped/YouTube render <b>on the TV screen</b> in the world. <b>Exit / Esc</b> = minimize HUD + free roam (playback stays on). <b>Fold</b> = chassis only.</p>
     </div>`;
   (document.querySelector("#mode-world") || document.body).appendChild(el);
   overlay = el;
@@ -665,21 +653,13 @@ function onOverlayClick(e) {
   const b = e.target.closest("[data-tv]");
   if (!b) return;
   const act = b.dataset.tv;
-  if (act === "close") {
-    closeTvWatch();
+  // Exit = minimize HUD only (never fold, never kill playback)
+  if (act === "exit" || act === "close") {
+    exitWatch();
     return;
   }
   if (act === "toggleOpen" && watchS) {
-    watchS.tvOpen = !watchS.tvOpen;
-    const root = tvRoot(watchS);
-    if (watchS.tvOpen) {
-      startSpatialBed();
-      if (root) attachCssToGlass(root);
-    } else {
-      stopSpatialBed(false);
-      if (iframeEl) iframeEl.src = "about:blank";
-      if (cssObj) cssObj.visible = false;
-    }
+    setTvChassisOpen(watchS, !watchS.tvOpen);
     return;
   }
   if (act === "frontend") {
@@ -775,15 +755,47 @@ function toast(msg) {
   else toastSafe(msg);
 }
 
+/** Fold/unfold physical chassis only. Closing may hide embed; opening restores. Never touches HUD/camera. */
+export function setTvChassisOpen(s, open) {
+  if (!s || !isGiantTv(s.type)) return false;
+  const want = !!open;
+  s.tvOpen = want;
+  const root = tvRoot(s);
+  if (want) {
+    mediaS = s;
+    startSpatialBed();
+    if (root) {
+      attachCssToGlass(root);
+      syncCssToGlass(root);
+    }
+    // Restore prior video if we blanked on fold; else leave whatever is on glass.
+    if (pendingVideoId) loadVideo(pendingVideoId);
+    else if (iframeEl && (!iframeEl.src || iframeEl.src === "about:blank")) loadHome();
+  } else {
+    // Folded away: hide glass + soft-mute spatial bed; keep pendingVideoId for restore.
+    stopSpatialBed(false);
+    if (cssObj) cssObj.visible = false;
+    if (iframeEl) {
+      try { iframeEl.src = "about:blank"; } catch (_) {}
+    }
+    if (mediaS === s) {
+      /* keep mediaS so Exit≠fold ownership stays clear; embed blanked until unfold */
+    }
+  }
+  return s.tvOpen;
+}
+
 export function openTvWatch(s, opts = {}) {
   if (!s || !isGiantTv(s.type)) return false;
   if (opts.toast) toastFn = opts.toast;
-  // Kill any prior media before opening another
-  if (watchS && watchS !== s) {
+  // Switching to a different TV kills prior media; same TV re-entry keeps playback.
+  if (mediaS && mediaS !== s) {
     killScreenMedia();
     stopSpatialBed(true);
+    mediaS = null;
   }
   watchS = s;
+  mediaS = s;
   s.tvOpen = true;
   const pos = opts.playerPos || opts.player?.pos;
   if (pos) faceTvTowardPlayer(s, pos);
@@ -791,6 +803,7 @@ export function openTvWatch(s, opts = {}) {
   if (root) setTvHighlight(root, true);
   const el = ensureOverlay();
   el.hidden = false;
+  // Pointer unlock so HUD is clickable; camera stays free-roam (applyTvWatchCamera disabled).
   try {
     document.exitPointerLock?.();
   } catch (_) {}
@@ -802,28 +815,38 @@ export function openTvWatch(s, opts = {}) {
   if (lbl) lbl.textContent = Math.round(tvVol * 100) + "%";
   el.querySelectorAll("[data-tv=frontend]").forEach(x => x.classList.toggle("primary", x.dataset.mode === frontend));
   startSpatialBed();
-  // Lazy CSS3D: only mount overlay + iframe when watch opens (never at world boot).
+  const alreadyPlaying = !!(iframeEl && iframeEl.src && iframeEl.src !== "about:blank");
   ensureCssRenderer().then(ok => {
-    if (!watchS || watchS !== s) return;
+    if (mediaS !== s) return;
     if (!ok) {
       toastSafe("Glass embed offline - TV still folds open. Hard-refresh if black screen persists.");
       return;
     }
     if (root) attachCssToGlass(root);
-    loadHome();
+    // Re-entering watch must NOT reset an already-playing video.
+    if (!alreadyPlaying && !pendingVideoId) loadHome();
+    else if (!alreadyPlaying && pendingVideoId) loadVideo(pendingVideoId);
+    else syncCssToGlass(root);
   });
-  toast("TV watch — screen faces you. Open unfolds the MicroLED. Video plays on the glass. Esc exits.");
+  toast("TV HUD open — free roam. Exit/Esc minimizes (keeps playing). Fold closes the chassis.");
   return true;
 }
 
-export function closeTvWatch() {
-  if (!watchS) return;
-  const root = tvRoot(watchS);
+/** Exit / Esc = minimize HUD only. Do NOT fold, stop Piped/YT, or blank the glass. */
+export function exitWatch() {
+  if (!watchS && !(overlay && !overlay.hidden)) return;
+  const s = watchS;
+  const root = s ? tvRoot(s) : null;
   if (root) setTvHighlight(root, false);
   watchS = null;
   if (overlay) overlay.hidden = true;
-  killScreenMedia();
-  stopSpatialBed(true);
+  // mediaS, iframe, spatial bed, tvOpen all stay — player walks + crafts with audio.
+  if (cssHost) cssHost.style.pointerEvents = "auto";
+}
+
+/** Back-compat alias used by world.js Esc / debug.tv.close — same as Exit (minimize). */
+export function closeTvWatch() {
+  exitWatch();
 }
 
 export function toggleTvOpen(s) {
@@ -835,12 +858,8 @@ export function toggleTvOpen(s) {
 export function tvKeydown(e) {
   if (!watchS) return false;
   if (e.code === "Escape") {
-    if (fillScreen && pendingVideoId) {
-      loadHome();
-      toastSafe("Back to TV home on glass.");
-      return true;
-    }
-    closeTvWatch();
+    // Esc = minimize HUD + free roam; playback stays on the open glass.
+    exitWatch();
     return true;
   }
   if (e.code === "Equal" || e.code === "NumpadAdd" || (e.key === "+" && !e.ctrlKey)) {
@@ -885,9 +904,10 @@ function startSpatialBed() {
       const panner = ctx.createPanner();
       panner.panningModel = "HRTF";
       panner.distanceModel = "inverse";
-      panner.refDistance = 4;
-      panner.maxDistance = 48;
-      panner.rolloffFactor = 1.1;
+      // Near = loud; walk away = falloff. Tuned so proximity is obvious after Exit/minimize.
+      panner.refDistance = 3;
+      panner.maxDistance = 56;
+      panner.rolloffFactor = 1.35;
       const n = ctx.sampleRate * 2;
       const buf = ctx.createBuffer(1, n, ctx.sampleRate);
       const d = buf.getChannelData(0);
