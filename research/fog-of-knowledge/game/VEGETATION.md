@@ -50,3 +50,10 @@ Implementation notes:
 - **Grass/ground stripes**: removed anisotropic terrain fiber streaks and low-freq `sin(x·a+z·b)` grass density/dry bands that painted diagonal light/dark carpet stripes. Terrain + instance tint now use domain-warped multi-octave noise; near-field instance density raised so meadow carpet cannot read through.
 - **Crown crescent**: after branch leaf cards, a procedural upper-hemisphere crown-cap of leaf clusters closes the empty half-moon void at the top of the foliage mass. Flat cards OK; volume must read solid. Bark unchanged; trunk flare left alone.
 
+## RAE 3.50 — micro-blade gap fill (v3)
+- **Design law**: meadow green = real 3D blade stems only. Never flat green ground albedo as grass.
+- **Micro layer**: many tiny uneven short stems (dark + light green) in `grassGeo`, plus a gap-fill instance pass that floods low-density cells with small-scale clumps so striped dirt cannot show through.
+- **Short stems**: short/micro layers use upright stem heights (not flattened carpet quads); mid/tall unchanged in role.
+- **Bare ground**: terrain under grass/forest verts retuned to soil/dirt/mud/gravel; beach/desert push sand; rock stays gravelly. No-grass biomes read clearly as non-grass.
+- Trees / canopy / trunks / telescopes / rain untouched.
+

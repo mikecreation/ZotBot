@@ -1,4 +1,4 @@
-/* Fog of Knowledge: The Game — vegetation (v2.1 RAE — stripe-kill HyperGrass + crown-cap fill + pine bark).
+/* Fog of Knowledge: The Game — vegetation (v2.1 RAE v3 — micro-blade gap fill + soil under meadow).
  * Procedural trees (recursive branch tubes + bark normal map, alpha leaf cards with back-light translucency,
  * hierarchical wind, baked cross-quad impostors), Ghost-of-Tsushima-style grass clumps (curved Bezier blades,
  * clump lean, scrolling-noise gusts, blade LOD, rounded normals, translucency) and instanced flowers with real petals.
@@ -242,27 +242,38 @@ function shrubGeo(){const R=rng(55),g=new GB(),ctr=new V3(0,.55,0),nm=new V3(),t
     const sh=.6+.4*Math.min(1,c.distanceTo(ctr)/.8);card(g,c,ax,ay,.75,.75,3,nm.clone().add(new V3(0,.3,0)).normalize(),{r:sh,g:sh,b:sh},[.05+c.y*.04,R()*6.28,c.y/1.4],false)}
   return g.geo()}
 
-/* RAE HyperGrass-style clump: individual sprouts in 3 growth layers (short under / mid / tall accents).
+/* RAE HyperGrass v3: micro short stems fill gaps + short/mid/tall. Real vertical blade stems (not flat carpet).
    Blade positions are Bezier-bent in the vertex shader; LOD drops outer blades with distance. */
 function grassGeo(){const R=rng(5),p=[],bl=[],rt=[],col=[],idx=[];
-  const layers=[[14,.0,.14,.04,.12,3,.04],[10,.03,.20,.18,.40,5,.16],[7,.02,.16,.42,.82,7,.32]];
+  /* [n,r0,r1,h0,h1,Lv,dryP] — micro: many tiny uneven stems (dark+light); short stays stem-like */
+  const layers=[[32,.0,.20,.016,.048,2,.015],[18,.0,.16,.045,.11,3,.04],[10,.03,.20,.18,.40,5,.16],[7,.02,.16,.42,.82,7,.32]];
   let bid=0;
   for(const [n,r0,r1,h0,h1,Lv,dryP] of layers){
     for(let i=0;i<n;i++,bid++){
       const r=r0+R()*(r1-r0),a=R()*6.283,bx=Math.cos(a)*r,bz=Math.sin(a)*r;
-      const face=R()*6.283,hm=h0+R()*(h1-h0),rnd=R(),base=p.length/3,lean0=(R()-.5)*.35;
+      const face=R()*6.283,hm=h0+R()*(h1-h0),rnd=R(),base=p.length/3,lean0=(R()-.5)*.28;
+      const micro=bid<32,shortL=bid<50;
+      const halfW=micro?.007:shortL?.011:.015;
       for(let l=0;l<Lv;l++){const t=l/(Lv-1);for(const s of [-1,1]){
-        p.push(bx+s*.015+lean0*t*.04,t*hm*.55,bz);
+        /* keep stems upright: less flatten than *.55 carpet look */
+        p.push(bx+s*halfW+lean0*t*.03,t*hm*(micro?.92:.72),bz);
         bl.push(t,s,bid,rnd);rt.push(bx,bz,face,hm);
         const dry=rnd>1-dryP?1:0,tip=t*t;
-        col.push(...[.14+t*.22+dry*.22+tip*.08,.28+t*.34+dry*.04,.08+t*.08-dry*.03].map(v=>Math.pow(Math.max(.02,v),2.2)*1.65));
+        let cr,cg,cb;
+        if(micro){
+          const lite=rnd>.48?1:0;
+          cr=.08+lite*.10+t*.06+dry*.10; cg=.18+lite*.22+t*.14+dry*.02; cb=.05+lite*.04+t*.03;
+        }else{
+          cr=.14+t*.22+dry*.22+tip*.08; cg=.28+t*.34+dry*.04; cb=.08+t*.08-dry*.03;
+        }
+        col.push(...[cr,cg,cb].map(v=>Math.pow(Math.max(.02,v),2.2)*1.65));
       }}
       for(let l=0;l<Lv-1;l++){const a=base+l*2;idx.push(a,a+1,a+2,a+1,a+3,a+2)}
     }
   }
   const g=new THREE.BufferGeometry();g.setAttribute("position",new THREE.Float32BufferAttribute(p,3));g.setAttribute("normal",new THREE.Float32BufferAttribute(p.map((v,i)=>i%3===1?1:0),3));
   g.setAttribute("aBlade",new THREE.Float32BufferAttribute(bl,4));g.setAttribute("aRoot",new THREE.Float32BufferAttribute(rt,4));g.setAttribute("color",new THREE.Float32BufferAttribute(col,3));
-  g.setIndex(idx);g.boundingSphere=new THREE.Sphere(new V3(0,.45,0),1.35);return g}
+  g.setIndex(idx);g.boundingSphere=new THREE.Sphere(new V3(0,.45,0),1.45);return g}
 
 /* flower: curved stem, two leaves, 6 cupped spoon-shaped petals, domed centre; aPetal tints only petals */
 function flowerGeo(){const R=rng(9),parts=[],stemH=.36;
@@ -342,9 +353,9 @@ function grassMaterial(){const m=new THREE.MeshStandardMaterial({vertexColors:tr
   vec3 pos=mix(mix(P0,P1,t),mix(P1,P2,t),t);
   vec3 tng=normalize(2.*(1.-t)*(P1-P0)+2.*t*(P2-P1));
   vec3 sd=vec3(-f.y,0.,f.x);
-  float wid=.022*(1.-t*.9)*(.75+.5*rnd)*(bid<9.?.7:bid<15.?1.:1.15);
+  float wid=.018*(1.-t*.88)*(.7+.45*rnd)*(bid<32.?.48:bid<50.?.72:bid<60.?1.:1.15);
   float dc=distance(ip.xz,cameraPosition.xz);
-  float keep=bid<9.?1.:bid<15.?1.-smoothstep(uFar*.55,uFar*.75,dc):1.-smoothstep(uFar*.28,uFar*.48,dc);
+  float keep=bid<50.?1.:bid<60.?1.-smoothstep(uFar*.55,uFar*.75,dc):1.-smoothstep(uFar*.28,uFar*.48,dc);
   wid*=1.+smoothstep(uFar*.25,uFar*.7,dc)*1.8;
   pos+=sd*side*wid;
   pos*=keep*(1.-smoothstep(uFar*.65,uFar,dc));
@@ -358,7 +369,7 @@ function grassMaterial(){const m=new THREE.MeshStandardMaterial({vertexColors:tr
     sh.fragmentShader="varying float vTransl;varying float vT;\n"+sh.fragmentShader
      .replace("#include <lights_fragment_begin>",CTX.GRASS_LIGHTS+TRANSL(.8).replace("#include <lights_fragment_begin>",""))
      .replace("#include <aomap_fragment>","#include <aomap_fragment>\n reflectedLight.indirectDiffuse*=.4+.6*vT;")};
-  m.customProgramCacheKey=()=>"vggrass_rae349";return m}
+  m.customProgramCacheKey=()=>"vggrass_rae350";return m}
 
 function flowerMaterial(){const m=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.55,side:THREE.DoubleSide,metalness:0});
   m.onBeforeCompile=sh=>{const U=CTX.U;sh.uniforms.uTime=U.time;sh.uniforms.uWind=U.wind;sh.uniforms.uFar=U.grassFar;

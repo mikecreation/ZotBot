@@ -25,7 +25,7 @@ import {drillProblem,advanceDrill} from "./friction-fire.js?v=3.33.0";
 import {primitiveItem,workbenchMesh,setBowDraw} from "./primitive-models.js?v=3.36.0";
 import {isWheel,SMASHABLE} from "./wheels.js?v=3.34.0";
 import {isTelescope,isMidTelescope,isJwstTelescope,buildGalileoMesh,buildMidMesh,buildJwstMesh,useGalileoTelescope,useMidTelescope,useJwstTelescope,useTelescopeFor,telescopeKeydown,telescopeIsOpen,dumpTelescopeCache,TELESCOPE_GALILEO,TELESCOPE_MID,TELESCOPE_JWST} from "./telescopes.js?v=3.47.0";
-import * as GFX from "./gfx.js?v=3.49.0";
+import * as GFX from "./gfx.js?v=3.50.0";
 import * as AXE from "./axe.js?v=3.29.1";
 import * as AU from "./audio.js?v=3.36.1";
 import {ESSENTIAL_QUICKBAR,quickbarOrder} from "./quickbar.js?v=3.33.0";
@@ -107,7 +107,7 @@ function biomeAt(x,z,h){
   if(m>.04)return "forest";
   return "grass";
 }
-const BIOME_COL={water:0x5a5240,beach:0xdccb8f,desert:0xd2b479,snow:0xeef3f7,rock:0x7c766d,forest:0x3c6a2b,grass:0x6e9f3c};
+const BIOME_COL={water:0x5a5240,beach:0xe0c98a,desert:0xd4b06a,snow:0xeef3f7,rock:0x8a8478,forest:0x4a3e28,grass:0x5c4a2e};
 function slopeAt(x,z){const e=1.5;return Math.hypot(heightAt(x+e,z)-heightAt(x-e,z),heightAt(x,z+e)-heightAt(x,z-e))/(2*e)}
 
 /* ---------------- three.js scene ---------------- */
