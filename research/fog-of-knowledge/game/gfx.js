@@ -253,7 +253,7 @@ function makeStarfield(){
   const mat=new THREE.ShaderMaterial({
     // depthTest off: star sphere (~900) sits behind cloud plane in draw order only —
     // at shallow view angles the plane is farther than stars and would otherwise lose depth.
-    transparent:true,depthWrite:false,depthTest:false,fog:false,blending:THREE.AdditiveBlending,
+    transparent:true,depthWrite:false,depthTest:true,fog:false,blending:THREE.AdditiveBlending,
     uniforms:{uOpacity:{value:0},uTime:{value:0},uSize:{value:4.2}},
     vertexShader:`attribute float aMag; attribute vec3 color; varying vec3 vC; varying float vTw;
       uniform float uSize; uniform float uTime;
