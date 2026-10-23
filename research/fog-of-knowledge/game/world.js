@@ -27,7 +27,7 @@ import {isWheel,SMASHABLE} from "./wheels.js?v=3.34.0";
 import {isTelescope,isMidTelescope,isJwstTelescope,buildGalileoMesh,buildMidMesh,buildJwstMesh,useGalileoTelescope,useMidTelescope,useJwstTelescope,useTelescopeFor,telescopeKeydown,telescopeIsOpen,dumpTelescopeCache,TELESCOPE_GALILEO,TELESCOPE_MID,TELESCOPE_JWST} from "./telescopes.js?v=3.47.0";
 import * as GFX from "./gfx.js?v=3.36.0";
 import * as AXE from "./axe.js?v=3.29.1";
-import * as AU from "./audio.js?v=3.35.0";
+import * as AU from "./audio.js?v=3.36.1";
 import {ESSENTIAL_QUICKBAR,quickbarOrder} from "./quickbar.js?v=3.33.0";
 import {temperature,temperatureDelta} from "./units.js";
 import {createBirds} from "./birds.js";
@@ -1935,7 +1935,7 @@ function tick(){
   if(!simming&&!EX?.isOpen){GFX.render(dt);frames++}
   fpsN++;fpsT+=clock.elapsedTime-fpsLast;fpsLast=clock.elapsedTime;if(fpsT>=1){fps=fpsN/fpsT;fpsN=0;fpsT=0;const fe=$("#wFps");if(fe&&!fe.hidden)fe.textContent=`${Math.round(fps)} fps · ${GFX.Q.label}`}
   ambT-=dt;if(ambT<=0&&started&&world){ambT=.1;const P=player.pos;let wv=0;for(let a=0;a<8;a++)if(heightAt(P.x+Math.cos(a*.785)*22,P.z+Math.sin(a*.785)*22)<0)wv+=.125;
-    AU.ambience({wind:clamp(.2+Math.max(0,P.y)/180+world.weather.amt*.5+(world.weather.kind==="storm"||world.weather.kind==="drystorm"?.3:0)+(snapNow()?.2:0),0,1),waves:wv,rain:isRaining()?world.weather.amt:0,night:isNight(),biome:biomeAt(P.x,P.z,P.y),fire:clamp(fireHeatAt(P.x,P.z)/120,0,1),under:camera.position.y<0,paused:paused||$("#mode-world").hidden,slow:!!(OBS&&OBS.isOpen)})}
+    AU.ambience({wind:clamp(.2+Math.max(0,P.y)/180+world.weather.amt*.5+(world.weather.kind==="storm"||world.weather.kind==="drystorm"?.3:0)+(snapNow()?.2:0),0,1),waves:wv,rain:isRaining()?world.weather.amt:0,storm:world.weather.kind==="storm",night:isNight(),biome:biomeAt(P.x,P.z,P.y),fire:clamp(fireHeatAt(P.x,P.z)/120,0,1),under:camera.position.y<0,paused:paused||$("#mode-world").hidden,slow:!!(OBS&&OBS.isOpen)})}
 }
 const _v1=new THREE.Vector3();
 // rafts ride the FFT ocean: heave from the CPU wave sum (swell + strongest wind waves), pitch/roll from its slope across the deck

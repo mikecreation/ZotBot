@@ -1,10 +1,27 @@
-/* Fog of Knowledge: The Game — procedural sound (WebAudio). Every sound is synthesised at runtime:
- * no audio files are loaded, so there is nothing to license. Ambience: wind, waves, rain, fire crackle.
- * One-shots: footsteps by surface, pickups, crafting, throws, hits, splashes, wolf howls, thunder (delayed by
- * distance / 343 m/s), eureka chime, warnings. Volume is stored in localStorage. */
+/* Fog of Knowledge: The Game - WebAudio. Wind/waves/fire remain procedural. Rain uses CC0 stereo
+ * field recordings (game/audio/rain-light.ogg + rain-storm.ogg; see game/audio/AUDIO.md) with a soft
+ * procedural bandpass fallback until samples decode. Calm rain: soft sparse droplet texture (no
+ * highpass white-noise shower). Storm: heavier bed. Soft near-field "pluq" drips use StereoPanner.
+ * One-shots: footsteps, pickups, crafting, throws, hits, splashes, thunder (delay by dist/343 m/s).
+ * Volume is stored in localStorage. */
 const VKEY="fog-of-knowledge:game:volume";
 let ctx=null,master=null,amb=null,noiseBuf=null,brownBuf=null,ok=false;
 const L={wind:null,waves:null,rain:null,fire:null};
+let rainLightBuf=null,rainStormBuf=null,rainSampleReady=false,rainWantStorm=false;
+const RAIN_ASSET_V="1";
+function rainAssetUrl(name){return "audio/"+name+"?v="+RAIN_ASSET_V}
+function loopStereo(buf,type,freq,q){const s=ctx.createBufferSource();s.buffer=buf;s.loop=true;const f=ctx.createBiquadFilter();f.type=type;f.frequency.value=freq;f.Q.value=q||.7;const g=ctx.createGain();g.gain.value=0;const pan=ctx.createStereoPanner();pan.pan.value=0;s.connect(f);f.connect(g);g.connect(pan);pan.connect(amb);const off=Math.random()*Math.max(.01,buf.duration*.8);s.start(0,off);return {s,f,g,pan,sample:true,buf}}
+function stopRainBed(){if(!L.rain)return;try{L.rain.s.stop()}catch(_){}try{L.rain.s.disconnect();L.rain.f.disconnect();L.rain.g.disconnect();if(L.rain.pan)L.rain.pan.disconnect()}catch(_){}L.rain=null}
+function swapRainBed(storm){if(!ok||!rainSampleReady)return;const buf=storm&&rainStormBuf?rainStormBuf:rainLightBuf;if(!buf)return;if(L.rain&&L.rain.sample&&L.rain.buf===buf){rainWantStorm=!!storm;return}stopRainBed();L.rain=loopStereo(buf,"lowpass",storm?7200:4800,.55);rainWantStorm=!!storm}
+function loadRainSamples(){if(!ctx||!ok||rainSampleReady)return;const dec=ab=>ctx.decodeAudioData(ab.slice?ab.slice(0):ab);Promise.all([
+  fetch(rainAssetUrl("rain-light.ogg")).then(r=>{if(!r.ok)throw new Error("rain-light "+r.status);return r.arrayBuffer()}).then(dec),
+  fetch(rainAssetUrl("rain-storm.ogg")).then(r=>{if(!r.ok)throw new Error("rain-storm "+r.status);return r.arrayBuffer()}).then(dec)
+]).then(([light,storm])=>{rainLightBuf=light;rainStormBuf=storm;rainSampleReady=true;swapRainBed(rainWantStorm)}).catch(()=>{/* keep soft procedural rain bed; do not bump stats.errors */})}
+function softPluq(intensity,storm){const pan=Math.random()*2-1,peak=(.008+Math.random()*.018*intensity)*(storm?1.35:1);
+  // Soft outdoor droplet: short mid bandpass click (not high white hiss) + occasional puddle plink
+  burst({freq:900+Math.random()*(storm?2800:1800),q:2.5+Math.random()*4,peak,a:.002,d:.028+Math.random()*(storm?.09:.06),pan,type:"bandpass"});
+  if(Math.random()<(storm?.35:.55))tone({f:700+Math.random()*1600,f2:320+Math.random()*500,type:"sine",peak:peak*.55,a:.002,d:.05+Math.random()*.09,pan})}
+
 export let volume=(()=>{try{const v=parseFloat(localStorage.getItem(VKEY));return isFinite(v)?Math.min(1,Math.max(0,v)):.7}catch(_){return .7}})();
 export const stats={oneShots:0,natureEvents:0,ambienceChanges:0,started:false,errors:0};
 export function setVolume(v){volume=Math.min(1,Math.max(0,v));try{localStorage.setItem(VKEY,String(volume))}catch(_){}if(master)master.gain.setTargetAtTime(volume,ctx.currentTime,.05)}
@@ -18,8 +35,10 @@ export function init(){
     const comp=ctx.createDynamicsCompressor();comp.threshold.value=-14;comp.ratio.value=4;comp.connect(master);
     amb=ctx.createGain();amb.gain.value=.9;amb.connect(comp);ctx._out=comp;
     noiseBuf=mkNoise(false,19);brownBuf=mkNoise(true,23);
-    L.wind=loop(mkNoise(true,29),"bandpass",420,.5);L.waves=loop(mkNoise(true,31),"lowpass",520,.6);L.rain=loop(mkNoise(false,37),"highpass",1800,.5);L.fire=loop(brownBuf,"lowpass",260,.8);
-    ok=true;stats.started=true;if(ctx.state==="suspended")ctx.resume().catch(()=>{});
+    L.wind=loop(mkNoise(true,29),"bandpass",420,.5);L.waves=loop(mkNoise(true,31),"lowpass",520,.6);
+    // Soft procedural rain fallback (bandpass pink/brown -- NOT highpass white shower hiss). Swapped for CC0 stereo samples when decoded.
+    L.rain=loop(mkNoise(true,37),"bandpass",1100,.4);L.fire=loop(brownBuf,"lowpass",260,.8);
+    ok=true;stats.started=true;if(ctx.state==="suspended")ctx.resume().catch(()=>{});loadRainSamples();
   }catch(e){stats.errors++;ok=false}
   return ok;
 }
@@ -47,11 +66,16 @@ export function ambience(o){
   const set=(l,v,f,speed=1)=>{l.g.gain.setTargetAtTime(v*k,t,1.3);l.s.playbackRate.setTargetAtTime(rate*speed,t,2);l.f.frequency.setTargetAtTime(f*(o.slow?.6:1),t,1.5)};
   set(L.wind,(.20*o.wind+.02)*gust,(250+480*o.wind)*color,.85+gust*.17);
   set(L.waves,.35*o.waves*swell,o.under?180:390+220*color,.7+swell*.25);
-  set(L.rain,.17*o.rain*(.8+.2*gust),1300+1100*color,.85+color*.12);
+  // Calm rain: soft stereo bed (or soft bandpass fallback). Storm: heavier bed. Never highpass white shower.
+  if(o.rain>.05){rainWantStorm=!!o.storm;if(rainSampleReady)swapRainBed(!!o.storm)}
+  if(L.rain){if(L.rain.sample){const base=o.storm?.26:.13;set(L.rain,base*o.rain*(.85+.15*gust),o.storm?7500:4800,.92+color*.06);if(L.rain.pan)L.rain.pan.pan.setTargetAtTime(Math.sin(t*.09)*.18,t,1.8)}
+    else set(L.rain,.11*o.rain*(.8+.2*gust),850+550*color,.85+color*.12)}
   set(L.fire,.22*o.fire,200+100*color,.8+gust*.2);
   if(quiet)return; // no new chirps, drips or crackles scheduled while paused/submerged
   if(o.fire>.05&&Math.random()<dt*o.fire*5)burst({freq:1800+Math.random()*3200,q:2+Math.random()*3,peak:.03+Math.random()*.1*o.fire,d:.02+Math.random()*.06});
-  if(o.rain>.1&&t>=nextDrop){nextDrop=t+.12+Math.random()*1.1;stats.natureEvents++;burst({freq:700+Math.random()*3500,q:.5+Math.random()*3,peak:.012+Math.random()*.026*o.rain,d:.025+Math.random()*.1,pan:Math.random()*2-1})}
+  if(o.rain>.1&&t>=nextDrop){const storm=!!o.storm;nextDrop=t+(storm?.1+Math.random()*.55:.4+Math.random()*1.6);stats.natureEvents++;
+    // Sparse soft pluqs (spatial). Sample bed already has canopy/ground texture -- do not pile hissy noise bursts.
+    if(!rainSampleReady||storm||Math.random()<.6)softPluq(o.rain,storm)}
   if(t>=nextNature){nextNature=t+12+Math.random()*28;
     // Fair weather: varied birds by day, insects by night. Rain: foliage gusts.
     if(o.rain>.3){burst({freq:450+Math.random()*1100,q:.5,peak:.02+o.wind*.03,a:.3,d:.6+Math.random()*1.2,buf:brownBuf});stats.natureEvents++}
