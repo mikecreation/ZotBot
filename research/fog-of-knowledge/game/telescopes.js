@@ -149,9 +149,27 @@ function ensureOverlay(){
   return el;
 }
 
+function exitFs(){
+  try{
+    if(document.fullscreenElement) document.exitFullscreen();
+  }catch(_){}
+}
+
+function enterFs(el){
+  try{
+    const req = el && (el.requestFullscreen || el.webkitRequestFullscreen);
+    if(req){
+      const p = req.call(el);
+      if(p && typeof p.catch === "function") p.catch(() => {});
+    }
+  }catch(_){}
+}
+
 function closeOverlay(){
   const el = document.getElementById("wTelescope");
+  exitFs();
   if(!el) return;
+  el.classList.remove("telSkyFs");
   el.hidden = true;
   el.innerHTML = "";
   el.onclick = null;
@@ -159,6 +177,8 @@ function closeOverlay(){
 
 function askSwitch(onYes, onNo){
   const el = ensureOverlay();
+  el.classList.remove("telSkyFs");
+  exitFs();
   el.hidden = false;
   el.innerHTML = `<div class="box telAsk" role="dialog" aria-label="Switch telescope location">
     <h3>GALILEO TELESCOPE</h3>
@@ -198,6 +218,7 @@ function resolveDefaultViewpoint(cb){
 function openSky(view){
   const el = ensureOverlay();
   el.hidden = false;
+  el.classList.add("telSkyFs");
   const url = stellariumUrl(view.lat, view.lon);
   const label = esc(view.name || `${view.lat.toFixed(2)}, ${view.lon.toFixed(2)}`);
   const src = esc(view.source || "saved");
@@ -220,14 +241,18 @@ function openSky(view){
     const b = e.target.closest("[data-tel]"); if(!b) return;
     const v = b.getAttribute("data-tel");
     if(v === "close"){ closeOverlay(); return }
-    if(v === "relocate"){ openGlobe(picked => { saveViewpoint(picked); openSky(picked) }); return }
+    if(v === "relocate"){ exitFs(); el.classList.remove("telSkyFs"); openGlobe(picked => { saveViewpoint(picked); openSky(picked) }); return }
   };
+  // True fullscreen when allowed; CSS telSkyFs already covers the game viewport.
+  enterFs(el);
 }
 
 function esc(s){ return String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])) }
 
 function openGlobe(onPick){
   const el = ensureOverlay();
+  el.classList.remove("telSkyFs");
+  exitFs();
   el.hidden = false;
   el.innerHTML = `<div class="box telGlobe" role="dialog" aria-label="Choose Earth viewpoint">
     <header class="telHead">

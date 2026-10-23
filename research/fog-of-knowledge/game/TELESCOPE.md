@@ -10,8 +10,8 @@ Placeable **Galileo telescope** only in this change. Mid-tier and JWST are defer
    - Prompt: **Switch location?**
    - **Yes** -> interactive equirectangular globe with labeled countries + ocean points; click then **Use this viewpoint**.
    - **No** -> keep last saved viewpoint, else browser geolocation, else Florence fallback (see below).
-5. Real sky opens in an in-game overlay iframe of **Stellarium Web** for that lat/lon at approximate local night (~22:00 local mean solar, converted to UTC).
-6. **Esc** or Exit closes. **Switch location** inside the viewer reopens the globe.
+5. Real sky opens **fullscreen** immediately (CSS full-viewport cover + Fullscreen API when the browser allows) with an iframe of **Stellarium Web** for that lat/lon at approximate local night (~22:00 local mean solar, converted to UTC). Same when choosing No and reopening the last / geolocated / Florence viewpoint.
+6. **Esc** or Exit leaves fullscreen and closes telescope mode. **Switch location** inside the viewer exits fullscreen and reopens the globe.
 
 Handheld inventory `telescope` (lens zoom for Moon/Jupiter discoveries) is unchanged.
 
