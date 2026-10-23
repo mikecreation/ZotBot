@@ -25,7 +25,7 @@ import {drillProblem,advanceDrill} from "./friction-fire.js?v=3.33.0";
 import {primitiveItem,workbenchMesh,setBowDraw} from "./primitive-models.js?v=3.36.0";
 import {isWheel,SMASHABLE} from "./wheels.js?v=3.34.0";
 import {isTelescope,isMidTelescope,isJwstTelescope,buildGalileoMesh,buildMidMesh,buildJwstMesh,useGalileoTelescope,useMidTelescope,useJwstTelescope,useTelescopeFor,telescopeKeydown,telescopeIsOpen,dumpTelescopeCache,TELESCOPE_GALILEO,TELESCOPE_MID,TELESCOPE_JWST} from "./telescopes.js?v=3.47.0";
-import * as GFX from "./gfx.js?v=3.36.0";
+import * as GFX from "./gfx.js?v=3.48.0";
 import * as AXE from "./axe.js?v=3.29.1";
 import * as AU from "./audio.js?v=3.36.1";
 import {ESSENTIAL_QUICKBAR,quickbarOrder} from "./quickbar.js?v=3.33.0";
@@ -208,7 +208,7 @@ function buildObjects(ch){
   const o=ch.obj,grp=new THREE.Group(),key=ch.key;
   const T=o.trees.length;ch.tr={};ch.cr={};ch.imp={};ch._far=undefined;
   for(const ty of TREE_TYPES){const [tg,cg]=TREE_GEO[ty];
-    const tm=new THREE.InstancedMesh(GEO[tg],MAT.treeBark||MAT.bark,Math.max(1,T));tm.count=T;tm.castShadow=tm.receiveShadow=true;ch.tr[ty]=tm;
+    const barkMat=ty==="conifer"?(MAT.treeBarkPine||MAT.treeBark):ty==="dead"?(MAT.treeBarkDead||MAT.treeBark):(MAT.treeBark||MAT.bark);const tm=new THREE.InstancedMesh(GEO[tg],barkMat,Math.max(1,T));tm.count=T;tm.castShadow=tm.receiveShadow=true;ch.tr[ty]=tm;
     if(cg){const cm=new THREE.InstancedMesh(GEO[cg],MAT.treeLeaf||MAT.leaf,Math.max(1,T));cm.count=T;cm.castShadow=cm.receiveShadow=true;ch.cr[ty]=cm}
     const IM=GFX.impostor&&GFX.impostor(ty);if(IM){const im=new THREE.InstancedMesh(IM.geo,IM.mat,Math.max(1,T));im.count=T;im.visible=false;ch.imp[ty]=im}}
   o.trees.forEach(t=>refreshTree(ch,t,true));

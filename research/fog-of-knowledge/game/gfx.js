@@ -8,7 +8,7 @@ import {Sky} from "./vendor/addons/objects/Sky.js";
 import {Ocean,OCEAN_QUALITY} from "./ocean.js?v=3.29.0";
 import {GLTFLoader} from "./vendor/addons/loaders/GLTFLoader.js";
 import {mergeGeometries,mergeVertices} from "./vendor/addons/utils/BufferGeometryUtils.js";
-import * as VEG from "./vegetation.js?v=3.29.0";
+import * as VEG from "./vegetation.js?v=3.48.0";
 import {clone as cloneSkinned} from "./vendor/addons/utils/SkeletonUtils.js";
 import {loadRealHuman,dressRealHuman,realGrip,wantClassicHuman,initRealHands,poseRealHands} from "./human-real.js";
 import {EffectComposer} from "./vendor/addons/postprocessing/EffectComposer.js";
@@ -641,21 +641,44 @@ function buildGeometries(){
 /* ---------------- grass, flowers & bushes for near chunks ---------------- */
 const BIOME_GRASS={grass:[.95,1.0,.9],forest:[.7,.85,.65],beach:null,desert:null,rock:null,snow:null,water:null};
 export function buildGrass(cx,cz,size,sample,seed){
-  // sample(x,z) → {h, biome, slope}
+  // RAE HyperGrass placement: noise-scattered density (natural clumps), 3 growth layers,
+  // per-instance yaw + slight lean + color variation. GPU InstancedMesh; LOD in shader.
   if(!Q.grass)return null;
   const r=rng(seed),n=Q.grass,m=new THREE.InstancedMesh(GEO.grass,MAT.grass,n),c=new THREE.Color();
-  // Flowers are harvestable resource instances, independent of grass quality.
   let k=0;const x0=cx*size,z0=cz*size;
-  for(let i=0;i<n;i++){const x=x0+r()*size,z=z0+r()*size,s=sample(x,z),t=BIOME_GRASS[s.biome];
+  // cheap value-noise density so meadows clump instead of tiling evenly
+  const dens=(x,z)=>{const a=Math.sin(x*.07+z*.05)*Math.sin(x*.031-z*.043);
+    const b=Math.sin(x*.19+z*.17+1.7)*.55+Math.sin(x*.41-z*.33)*.25;
+    return .5+.5*(a*.55+b);};
+  const tries=Math.floor(n*2.2);
+  for(let i=0;i<tries&&k<n;i++){
+    const x=x0+r()*size,z=z0+r()*size,s=sample(x,z),t=BIOME_GRASS[s.biome];
     if(!t||s.h<.5||s.slope>.7)continue;
-    const pn=.5+.25*Math.sin(x*.11+Math.sin(z*.07)*2)+.25*Math.sin(z*.13+Math.sin(x*.05)*2.3),dry=.5+.5*Math.sin(x*.031+z*.017+Math.sin(z*.05)*1.7);
-    const sc=(.5+.6*pn)*(.8+r()*.35);_m4.compose(_p3.set(x,s.h-.03,z),_q4.identity(),_s3.set(sc,sc,sc));m.setMatrixAt(k,_m4);
-    const v=.85+r()*.3,dr=dry*dry*.35;c.setRGB(t[0]*v*(1+dr*.6),t[1]*v*(1-dr*.1),t[2]*v*(.9+r()*.2)*(1-dr*.5));m.setColorAt(k,c);k++;}
+    const d=dens(x,z);
+    // reject sparse cells → clearings; denser cells get more attempts that succeed
+    if(r()>d*.92+.05)continue;
+    // growth layer by secondary noise: short underlayer common, tall accents rare in dense patches
+    const ln=r();
+    let layer=0; // 0 short 1 mid 2 tall
+    if(d>.55&&ln>.62)layer=1;
+    if(d>.72&&ln>.88)layer=2;
+    if(d<.35)layer=0;
+    const scBase=[.55+r()*.35,.85+r()*.35,1.15+r()*.45][layer];
+    const sc=scBase*(.85+d*.25);
+    const yaw=r()*6.283, leanX=(r()-.5)*.18*(layer*.5+.5), leanZ=(r()-.5)*.18*(layer*.5+.5);
+    _q4.setFromEuler(_e.set(leanX,yaw,leanZ));
+    _m4.compose(_p3.set(x,s.h-.02-layer*.005,z),_q4,_s3.set(sc,sc*(.9+r()*.25),sc));m.setMatrixAt(k,_m4);
+    // greens / dry tips: dry more on tall accents and dry noise bands
+    const dry=.5+.5*Math.sin(x*.031+z*.017+Math.sin(z*.05)*1.7);
+    const v=.82+r()*.35,dr=dry*dry*(.22+layer*.12);
+    c.setRGB(t[0]*v*(1+dr*.7),t[1]*v*(1-dr*.12),t[2]*v*(.88+r()*.22)*(1-dr*.55));
+    m.setColorAt(k,c);k++;
+  }
   m.count=k;m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true;m.receiveShadow=true;m.frustumCulled=true;m.computeBoundingSphere();
   const g=new THREE.Group();g.add(m);MIRROR_HIDE.add(g);
   return g;
 }
-const _m4=new THREE.Matrix4(),_q4=new THREE.Quaternion(),_p3=new THREE.Vector3(),_s3=new THREE.Vector3(),_up=new THREE.Vector3(0,1,0);
+const _m4=new THREE.Matrix4(),_q4=new THREE.Quaternion(),_p3=new THREE.Vector3(),_s3=new THREE.Vector3(),_e=new THREE.Euler(),_up=new THREE.Vector3(0,1,0);
 export function disposeGroup(g){if(!g)return;MIRROR_HIDE.delete(g);g.parent?.remove(g);g.traverse(o=>{if(o.isInstancedMesh)o.dispose()})}
 
 /* ---------------- fire visuals ---------------- */

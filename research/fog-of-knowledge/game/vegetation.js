@@ -1,4 +1,4 @@
-/* Fog of Knowledge: The Game — vegetation (v1).
+/* Fog of Knowledge: The Game — vegetation (v2 RAE — HyperGrass layers + procedural pine bark).
  * Procedural trees (recursive branch tubes + bark normal map, alpha leaf cards with back-light translucency,
  * hierarchical wind, baked cross-quad impostors), Ghost-of-Tsushima-style grass clumps (curved Bezier blades,
  * clump lean, scrolling-noise gusts, blade LOD, rounded normals, translucency) and instanced flowers with real petals.
@@ -36,22 +36,41 @@ const TRANSL=(amt)=>`
 
 /* ---------- procedural textures ---------- */
 function canvas(w,h){const c=document.createElement("canvas");c.width=w;c.height=h;return c}
-function barkTextures(){
-  const N=256,hgt=new Float32Array(N*N),R=rng(77);
-  // vertical furrows (fbm stretched along v) + plates
-  const oct=[];for(let o=0;o<5;o++){const g=new Float32Array(17*17);for(let i=0;i<g.length;i++)g[i]=R();oct.push(g)}
+function barkTextures(seed=77){
+  const N=512,hgt=new Float32Array(N*N),R=rng(seed|0);
+  /* RAE pine bark — original procedural HyperTrees-Pinewood LOOK (not Vertex pack):
+     deep vertical fissures, rugged plates, grey-brown faces, ochre/grey in cracks. */
+  const oct=[];for(let o=0;o<6;o++){const g=new Float32Array(17*17);for(let i=0;i<g.length;i++)g[i]=R();oct.push(g)}
   const smp=(g,x,y,n)=>{x=((x%n)+n)%n;y=((y%n)+n)%n;const xi=Math.floor(x),yi=Math.floor(y),fx=x-xi,fy=y-yi,a=g[yi*17+xi],b=g[yi*17+(xi+1)%n],c=g[((yi+1)%n)*17+xi],d=g[((yi+1)%n)*17+(xi+1)%n],sx=fx*fx*(3-2*fx),sy=fy*fy*(3-2*fy);return a+(b-a)*sx+(c-a)*sy+(a-b-c+d)*sx*sy};
-  for(let y=0;y<N;y++)for(let x=0;x<N;x++){let v=0,amp=1,tot=0;for(let o=0;o<5;o++){const fx=(2<<o),fy=(1<<o);v+=amp*smp(oct[o],x/N*fx*2,y/N*fy,16);tot+=amp;amp*=.55}
-    v/=tot;const furrow=Math.pow(Math.abs(Math.sin((x/N*7+v*1.6)*Math.PI)),.5);hgt[y*N+x]=v*.55+furrow*.45}
-  const cn=canvas(N,N),cc=canvas(N,N),xn=cn.getContext("2d"),xc=cc.getContext("2d"),dn=xn.createImageData(N,N),dc=xc.createImageData(N,N);
+  const fbm=(x,y)=>{let v=0,amp=1,tot=0;for(let o=0;o<6;o++){const fx=2<<o,fy=1<<o;v+=amp*smp(oct[o],x*fx,y*fy,16);tot+=amp;amp*=.52}return v/tot};
+  for(let y=0;y<N;y++)for(let x=0;x<N;x++){
+    const u=x/N,v=y/N,warp=fbm(u*3.2,v*1.1)*1.15;
+    const ridge=Math.pow(Math.abs(Math.sin((u*11.+warp*2.4)*Math.PI)),.28);
+    const ridge2=Math.pow(Math.abs(Math.sin((u*23.+warp*1.1+fbm(u*8,v*.4)*3.)*Math.PI)),.55);
+    const plates=fbm(u*6.5+warp,v*2.8)*.55+fbm(u*18,v*9)*.25;
+    const flake=Math.pow(fbm(u*28+3.,v*7.),1.8);
+    const crack=Math.min(ridge,ridge2*.85+ridge*.15);
+    hgt[y*N+x]=crack*.72+plates*.18+flake*.1;
+  }
+  const cn=canvas(N,N),cc=canvas(N,N),cr=canvas(N,N),xn=cn.getContext("2d"),xc=cc.getContext("2d"),xr=cr.getContext("2d");
+  const dn=xn.createImageData(N,N),dc=xc.createImageData(N,N),dr=xr.createImageData(N,N);
   for(let y=0;y<N;y++)for(let x=0;x<N;x++){const i=y*N+x,hl=hgt[y*N+(x+N-1)%N],hr=hgt[y*N+(x+1)%N],hd=hgt[((y+N-1)%N)*N+x],hu=hgt[((y+1)%N)*N+x];
-    let nx=(hl-hr)*6,ny=(hd-hu)*6,nz=1;const l=Math.hypot(nx,ny,nz);nx/=l;ny/=l;nz/=l;
+    let nx=(hl-hr)*14,ny=(hd-hu)*9,nz=1;const l=Math.hypot(nx,ny,nz);nx/=l;ny/=l;nz/=l;
     dn.data[i*4]=(nx*.5+.5)*255;dn.data[i*4+1]=(ny*.5+.5)*255;dn.data[i*4+2]=(nz*.5+.5)*255;dn.data[i*4+3]=255;
-    const h=hgt[i],c=60+h*150;dc.data[i*4]=c;dc.data[i*4+1]=c*.93;dc.data[i*4+2]=c*.86;dc.data[i*4+3]=255}
-  xn.putImageData(dn,0,0);xc.putImageData(dc,0,0);
-  const nt=new THREE.CanvasTexture(cn),ct=new THREE.CanvasTexture(cc);
-  for(const t of [nt,ct]){t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=4}
-  ct.colorSpace=THREE.SRGBColorSpace;return {normal:nt,color:ct}
+    const h=hgt[i],deep=1-h;
+    const faceR=92+h*78,faceG=72+h*52,faceB=52+h*38;
+    const crackR=48+deep*38,crackG=42+deep*22,crackB=34+deep*14;
+    const ochre=Math.max(0,deep-.45)*1.4;
+    const r=faceR*(1-deep*.85)+crackR*deep*.85+ochre*55;
+    const g=faceG*(1-deep*.85)+crackG*deep*.85+ochre*32;
+    const b=faceB*(1-deep*.85)+crackB*deep*.85+ochre*8;
+    const lichen=Math.max(0,h-.78)*fbm(x/N*40,y/N*12)*.55;
+    dc.data[i*4]=Math.min(255,r+lichen*18);dc.data[i*4+1]=Math.min(255,g+lichen*28);dc.data[i*4+2]=Math.min(255,b+lichen*10);dc.data[i*4+3]=255;
+    const rough=Math.min(255,170+deep*70-h*35);dr.data[i*4]=rough;dr.data[i*4+1]=rough;dr.data[i*4+2]=rough;dr.data[i*4+3]=255}
+  xn.putImageData(dn,0,0);xc.putImageData(dc,0,0);xr.putImageData(dr,0,0);
+  const nt=new THREE.CanvasTexture(cn),ct=new THREE.CanvasTexture(cc),rt=new THREE.CanvasTexture(cr);
+  for(const t of [nt,ct,rt]){t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;t.generateMipmaps=true}
+  ct.colorSpace=THREE.SRGBColorSpace;return {normal:nt,color:ct,roughness:rt}
 }
 /* leaf atlas 1024²: [0] broadleaf cluster, [1] conifer sprig, [2] palm leaflets, [3] small-leaf shrub cluster */
 const TILE=[[0,.5],[.5,.5],[0,0],[.5,0]];
@@ -206,16 +225,27 @@ function shrubGeo(){const R=rng(55),g=new GB(),ctr=new V3(0,.55,0),nm=new V3(),t
     const sh=.6+.4*Math.min(1,c.distanceTo(ctr)/.8);card(g,c,ax,ay,.75,.75,3,nm.clone().add(new V3(0,.3,0)).normalize(),{r:sh,g:sh,b:sh},[.05+c.y*.04,R()*6.28,c.y/1.4],false)}
   return g.geo()}
 
-/* grass clump: 7 blades x 6 levels, positions computed in the vertex shader (Bezier per blade) */
-function grassGeo(){const R=rng(5),B=7,L=6,p=[],bl=[],rt=[],col=[],idx=[];
-  // tall expressive blades + a ring of tiny short under-blades (Tsushima-style dense ground cover)
-  for(let b=0;b<B+5;b++){const short=b>=B,r=b===0?0:(short?.04+R()*.14:.06+R()*.2),a=R()*6.283,bx=Math.cos(a)*r,bz=Math.sin(a)*r,face=R()*6.283,hm=short?.07+R()*.1:.36+R()*.36,rnd=R(),base=p.length/3,Lv=short?3:L;
-    for(let l=0;l<Lv;l++){const t=l/(Lv-1);for(const s of [-1,1]){p.push(bx+s*.02,t*hm*.6,bz);bl.push(t,s,b,rnd);rt.push(bx,bz,face,hm);
-      const dry=rnd>.8?1:0;col.push(...[.20+t*.26+dry*.16,.34+t*.32+dry*.06,.10+t*.10].map(v=>Math.pow(v,2.2)*1.6))}}
-    for(let l=0;l<Lv-1;l++){const a=base+l*2;idx.push(a,a+1,a+2,a+1,a+3,a+2)}}
+/* RAE HyperGrass-style clump: individual sprouts in 3 growth layers (short under / mid / tall accents).
+   Blade positions are Bezier-bent in the vertex shader; LOD drops outer blades with distance. */
+function grassGeo(){const R=rng(5),p=[],bl=[],rt=[],col=[],idx=[];
+  const layers=[[9,.0,.16,.05,.14,3,.05],[6,.04,.22,.22,.42,5,.18],[4,.02,.18,.48,.78,6,.35]];
+  let bid=0;
+  for(const [n,r0,r1,h0,h1,Lv,dryP] of layers){
+    for(let i=0;i<n;i++,bid++){
+      const r=r0+R()*(r1-r0),a=R()*6.283,bx=Math.cos(a)*r,bz=Math.sin(a)*r;
+      const face=R()*6.283,hm=h0+R()*(h1-h0),rnd=R(),base=p.length/3,lean0=(R()-.5)*.35;
+      for(let l=0;l<Lv;l++){const t=l/(Lv-1);for(const s of [-1,1]){
+        p.push(bx+s*.015+lean0*t*.04,t*hm*.55,bz);
+        bl.push(t,s,bid,rnd);rt.push(bx,bz,face,hm);
+        const dry=rnd>1-dryP?1:0,tip=t*t;
+        col.push(...[.14+t*.22+dry*.22+tip*.08,.28+t*.34+dry*.04,.08+t*.08-dry*.03].map(v=>Math.pow(Math.max(.02,v),2.2)*1.65));
+      }}
+      for(let l=0;l<Lv-1;l++){const a=base+l*2;idx.push(a,a+1,a+2,a+1,a+3,a+2)}
+    }
+  }
   const g=new THREE.BufferGeometry();g.setAttribute("position",new THREE.Float32BufferAttribute(p,3));g.setAttribute("normal",new THREE.Float32BufferAttribute(p.map((v,i)=>i%3===1?1:0),3));
   g.setAttribute("aBlade",new THREE.Float32BufferAttribute(bl,4));g.setAttribute("aRoot",new THREE.Float32BufferAttribute(rt,4));g.setAttribute("color",new THREE.Float32BufferAttribute(col,3));
-  g.setIndex(idx);g.boundingSphere=new THREE.Sphere(new V3(0,.4,0),1.2);return g}
+  g.setIndex(idx);g.boundingSphere=new THREE.Sphere(new V3(0,.45,0),1.35);return g}
 
 /* flower: curved stem, two leaves, 6 cupped spoon-shaped petals, domed centre; aPetal tints only petals */
 function flowerGeo(){const R=rng(9),parts=[],stemH=.36;
@@ -260,10 +290,11 @@ function leafMaterial(map){const m=new THREE.MeshStandardMaterial({vertexColors:
   m.customProgramCacheKey=()=>"vgleaf";return m}
 
 export function initVegetation(ctx){CTX=ctx;const {GEO,MAT,U}=ctx;
-  const bark=barkTextures(),atlas=leafAtlas();CTX.atlas=atlas;CTX.bark=bark;
-  MAT.treeBark=new THREE.MeshStandardMaterial({vertexColors:true,map:bark.color,normalMap:bark.normal,normalScale:new THREE.Vector2(1.6,1.6),roughness:.95});
-  MAT.treeBark.onBeforeCompile=sh=>{windVertex(sh,false);   // skylight under the canopy: a trunk in crown shade still reads as brown bark, not a black pole
-    sh.fragmentShader=sh.fragmentShader.replace("#include <aomap_fragment>","#include <aomap_fragment>\n reflectedLight.indirectDiffuse*=1.9;")};MAT.treeBark.customProgramCacheKey=()=>"vgbark";
+  const bark=barkTextures(77),barkPine=barkTextures(191),barkDead=barkTextures(333),atlas=leafAtlas();
+  CTX.atlas=atlas;CTX.bark=bark;
+  const mkBark=(tex,key)=>{const m=new THREE.MeshStandardMaterial({vertexColors:true,map:tex.color,normalMap:tex.normal,normalScale:new THREE.Vector2(2.4,2.4),roughnessMap:tex.roughness,roughness:1,metalness:0});
+    m.onBeforeCompile=sh=>{windVertex(sh,false);sh.fragmentShader=sh.fragmentShader.replace("#include <aomap_fragment>","#include <aomap_fragment>\n reflectedLight.indirectDiffuse*=1.85;")};m.customProgramCacheKey=()=>key;return m};
+  MAT.treeBark=mkBark(bark,"vgbark_rae");MAT.treeBarkPine=mkBark(barkPine,"vgbark_rae_pine");MAT.treeBarkDead=mkBark(barkDead,"vgbark_rae_dead");
   MAT.treeLeaf=leafMaterial(atlas);
   const br=treeGeo("broad"),co=treeGeo("conifer"),de=treeGeo("dead"),pa=palmGeo();
   GEO.broadTrunk=br.trunk;GEO.broadCrown=br.crown;GEO.pineTrunk=co.trunk;GEO.pineCrown=co.crown;GEO.deadTrunk=de.trunk;GEO.palmTrunk=pa.trunk;GEO.palmCrown=pa.crown;
@@ -275,41 +306,42 @@ export function initVegetation(ctx){CTX=ctx;const {GEO,MAT,U}=ctx;
   CTX.stats={broad:tris(br.trunk)+tris(br.crown),conifer:tris(co.trunk)+tris(co.crown),palm:tris(pa.trunk)+tris(pa.crown),dead:tris(de.trunk),grassClump:tris(GEO.grass),flower:tris(GEO.flower)};
   return CTX.stats}
 
-function grassMaterial(){const m=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.62,side:THREE.DoubleSide,metalness:0});
+function grassMaterial(){const m=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.58,side:THREE.DoubleSide,metalness:0});
   m.onBeforeCompile=sh=>{const U=CTX.U;sh.uniforms.uTime=U.time;sh.uniforms.uWind=U.wind;sh.uniforms.uFar=U.grassFar;
     sh.vertexShader=WIND_GLSL+"uniform float uFar;attribute vec4 aBlade;attribute vec4 aRoot;varying float vTransl;varying float vT;\n"+sh.vertexShader
      .replace("#include <beginnormal_vertex>",`
   vec3 ip=vec3(instanceMatrix[3][0],instanceMatrix[3][1],instanceMatrix[3][2]);
   float t=aBlade.x,side=aBlade.y,bid=aBlade.z,rnd=aBlade.w;
-  float ih=vg_h(ip.xz),h=aRoot.w*(.8+.4*rnd);
+  float ih=vg_h(ip.xz),h=aRoot.w*(.78+.45*rnd);
   float face=aRoot.z+ih*6.283;vec2 f=vec2(cos(face),sin(face));
   vec2 root=aRoot.xy;vec2 outw=length(root)>1e-3?normalize(root):vec2(cos(ih*40.),sin(ih*40.));
   float g=vg_gust(ip.xz+root*4.);
-  float wk=uWind*(.12+1.05*g*g);
-  float flick=sin(uTime*(3.+rnd*2.)+rnd*6.283+ip.x*.7+ip.z*.5)*(.05+.12*g)*uWind;
-  vec2 lean=outw*(.18+.32*rnd)+VG_WDIR*wk*.95+f*flick;
-  float ll=length(lean);float ty=h*sqrt(max(.05,1.-min(.9,ll*ll*.55)));
-  vec3 P0=vec3(root.x,0.,root.y),P2=P0+vec3(lean.x*h,ty,lean.y*h),P1=P0+vec3(0.,ty*.72,0.)+vec3(lean.x,0.,lean.y)*h*.22;
+  float wk=uWind*(.10+1.15*g*g);
+  float ph=ip.x*.55+ip.z*.41+rnd*6.283+bid*.37;
+  float flick=sin(uTime*(2.6+rnd*2.4)+ph)*(.04+.14*g)*uWind+sin(uTime*(5.1+rnd)+ph*1.7)*.02*uWind;
+  vec2 lean=outw*(.14+.38*rnd)+VG_WDIR*wk*.9+f*flick;
+  float ll=length(lean);float ty=h*sqrt(max(.05,1.-min(.88,ll*ll*.5)));
+  vec3 P0=vec3(root.x,0.,root.y),P2=P0+vec3(lean.x*h,ty,lean.y*h),P1=P0+vec3(0.,ty*.7,0.)+vec3(lean.x,0.,lean.y)*h*.28;
   vec3 pos=mix(mix(P0,P1,t),mix(P1,P2,t),t);
   vec3 tng=normalize(2.*(1.-t)*(P1-P0)+2.*t*(P2-P1));
   vec3 sd=vec3(-f.y,0.,f.x);
-  float wid=.024*(1.-t*.92)*(.8+.4*rnd);
+  float wid=.022*(1.-t*.9)*(.75+.5*rnd)*(bid<9.?.7:bid<15.?1.:1.15);
   float dc=distance(ip.xz,cameraPosition.xz);
-  float keep=bid<2.?1.:bid<4.?1.-smoothstep(uFar*.5,uFar*.65,dc):1.-smoothstep(uFar*.3,uFar*.45,dc);
-  wid*=1.+smoothstep(uFar*.3,uFar*.7,dc)*1.6;   // far blades get wider to keep coverage
+  float keep=bid<9.?1.:bid<15.?1.-smoothstep(uFar*.55,uFar*.75,dc):1.-smoothstep(uFar*.28,uFar*.48,dc);
+  wid*=1.+smoothstep(uFar*.25,uFar*.7,dc)*1.8;
   pos+=sd*side*wid;
-  pos*=keep*(1.-smoothstep(uFar*.62,uFar,dc));
+  pos*=keep*(1.-smoothstep(uFar*.65,uFar,dc));
   vec3 objectNormal=normalize(cross(sd,tng));
   if(objectNormal.y<0.)objectNormal=-objectNormal;
-  objectNormal=normalize(objectNormal+sd*side*.45+vec3(0.,.35,0.));
+  objectNormal=normalize(objectNormal+sd*side*.5+vec3(0.,.4,0.));
   vT=t;vTransl=1.;
   #ifdef USE_TANGENT
    vec3 objectTangent=vec3(1,0,0);
   #endif`).replace("#include <begin_vertex>","vec3 transformed=pos;");
     sh.fragmentShader="varying float vTransl;varying float vT;\n"+sh.fragmentShader
-     .replace("#include <lights_fragment_begin>",CTX.GRASS_LIGHTS+TRANSL(.75).replace("#include <lights_fragment_begin>",""))
-     .replace("#include <aomap_fragment>","#include <aomap_fragment>\n reflectedLight.indirectDiffuse*=.45+.55*vT;")};
-  m.customProgramCacheKey=()=>"vggrass";return m}
+     .replace("#include <lights_fragment_begin>",CTX.GRASS_LIGHTS+TRANSL(.8).replace("#include <lights_fragment_begin>",""))
+     .replace("#include <aomap_fragment>","#include <aomap_fragment>\n reflectedLight.indirectDiffuse*=.4+.6*vT;")};
+  m.customProgramCacheKey=()=>"vggrass_rae";return m}
 
 function flowerMaterial(){const m=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.55,side:THREE.DoubleSide,metalness:0});
   m.onBeforeCompile=sh=>{const U=CTX.U;sh.uniforms.uTime=U.time;sh.uniforms.uWind=U.wind;sh.uniforms.uFar=U.grassFar;

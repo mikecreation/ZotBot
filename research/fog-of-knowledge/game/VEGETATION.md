@@ -41,3 +41,7 @@ Implementation notes:
 
 ## Tools
 - Durability consumption disabled in play (`useTool` no-op); green durability bars hidden. Tools never break or disappear.
+
+## RAE pass (HyperGrass + pine bark)
+- **Grass**: original layered sprouts (short underlayer + mid + tall accents), noise-clumped density, per-instance yaw/lean, soft per-blade wind phase. Ethos from Greg Zdunek HyperGrass principles — our own geo/shaders, no Gumroad pack.
+- **Bark**: original procedural pine bark (512 color/normal/roughness): deep vertical fissures, rugged plates, grey-brown faces with ochre/grey in cracks. Ethos from HyperTrees Bark Pinewood look — **not** Vertex Library / paid textures. Canopies unchanged.
