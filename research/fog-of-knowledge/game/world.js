@@ -472,6 +472,32 @@ function dropSpawn(k,n,f){f=f||forward();const piles=Math.min(n,8),per=Math.floo
   for(let i=0;i<piles;i++){const c=per+(rest-->0?1:0),a=(i-(piles-1)/2)*.35;const dx=f.x*Math.cos(a)-f.z*Math.sin(a),dz=f.z*Math.cos(a)+f.x*Math.sin(a);
     const d=addDrop(k,player.pos.x+dx*.7,player.pos.y+1.1,player.pos.z+dz*.7,new THREE.Vector3(dx*(1.6+Math.random()*.8),1.2+Math.random()*.6,dz*(1.6+Math.random()*.8)));d.n=c;d.dropped=true}}
 function dropItem(k,n=1){n=Math.min(Math.max(1,Math.floor(n)),inv(k));if(!n)return 0;take(k,n);dropSpawn(k,n);AU.pickup?.();toast(`Dropped ${n}× ${ITEMS[k].name}.`);renderInventory();return n}
+function destroyItem(k,n=1){
+  n=Math.min(Math.max(1,Math.floor(n)),inv(k));if(!n)return 0;
+  take(k,n);
+  if(world.held===k&&!inv(k))world.held=null;
+  if(world.left===k&&!inv(k))world.left=null;
+  toast(`Destroyed ${n}x ${ITEMS[k].name}.`);
+  AU.pickup?.();renderHotbar();renderInventory();return n;
+}
+function destroyNeedsConfirm(k,n){
+  if(n>1)return true;
+  const it=ITEMS[k];if(!it)return true;
+  if(it.place||it.tool||it.weapon||(it.mass||0)>=1)return true;
+  return false;
+}
+function openDestroyConfirm(k,n){
+  const m=$("#wCtx");if(!m)return;
+  m.dataset.k=k;m.dataset.hand="";m.dataset.destroyN=String(n);
+  m.hidden=false;
+  m.innerHTML=`<div class="ctxHead">${icon(k)} Destroy ${n}x ${esc(ITEMS[k].name)}?</div>`+
+    `<p class="ctxWarn">Gone forever -- not dropped on the ground.</p>`+
+    `<button data-ctx="destroyyes" data-n="${n}" class="danger">Destroy</button>`+
+    `<button data-ctx="destroyno">Cancel</button>`;
+  const r=m.parentElement.getBoundingClientRect();
+  const left=Math.min(parseFloat(m.style.left)||20,r.width-220);
+  m.style.left=left+"px";
+}
 function dropEverything(){let n=0;for(const k of ordered().slice()){if(k===world.worn)continue;n+=inv(k);dropItem(k,inv(k))}world.held=world.left=null;renderHotbar();renderInventory();return n}
 function bestAxe(){return inv("axe_iron")?"axe_iron":inv("axe_bronze")?"axe_bronze":inv("axe_copper")?"axe_copper":inv("axe_stone")?"axe_stone":null}
 function bestKnife(){return ["knife_iron","knife_bronze","knife_copper","knife_stone"].find(k=>inv(k))||null}
@@ -1627,12 +1653,12 @@ function moveTo(k,idx){const o=ordered().filter(x=>x!==k);o.splice(Math.max(0,Ma
 /* right-click context menu */
 function nearLitFire(r=3){return world.structures.find(s=>s.lit&&(s.type==="fire"||s.type==="kiln")&&Math.hypot(s.x-player.pos.x,s.z-player.pos.z)<r)||null}
 function ctxActions(k,hand){const it=ITEMS[k],n=inv(k),a=[];if(!it)return a;
-  if(hand){a.push(["away","Put Away"]);a.push(["swap","Swap Hands"]);a.push(["observe","Observe (F)"]);a.push(["drop1","Drop"]);return a}
+  if(hand){a.push(["away","Put Away"]);a.push(["swap","Swap Hands"]);a.push(["observe","Observe (F)"]);a.push(["drop1","Drop"]);a.push(["destroy1","Destroy"]);return a}
   if(world.held!==k)a.push(["right","Place in Right Hand"]);if(world.left!==k)a.push(["left","Place in Left Hand"]);a.push(["observe","Observe (F)"]);
   if(it.food||it.drink)a.push(["use",it.drink||k.startsWith("pot_")?"Drink":"Eat"]);else if(it.place)a.push(["use","Place in world"]);else if(it.tool||it.weapon||["flint","pyrite","lens","log","tally","gnomon","telescope","compass","pot"].includes(k))a.push(["use","Use"]);
   if(["meat_raw","pot_water","clay","nuts","dough","bread_dough","pot_clean"].includes(k)&&nearLitFire())a.push(["cook",k==="clay"?"Fire in the flames":k==="pot_water"?"Boil on the fire":k==="pot_clean"?"Cook in the pot (stew / jam)":"Cook on the fire"]);
   if(RECIPES.some(r=>r.in[k]&&(!r.req||hasD(r.req))))a.push(["craftwith","Craft with…"]);
-  a.push(["drop1","Drop 1"]);if(n>1){a.push(["dropx","Drop X…"]);a.push(["dropall","Drop All ("+n+")"])}return a}
+  a.push(["drop1","Drop 1"]);if(n>1){a.push(["dropx","Drop X…"]);a.push(["dropall","Drop All ("+n+")"])}a.push(["destroy1","Destroy 1"]);if(n>1)a.push(["destroyall","Destroy All ("+n+")"]);return a}
 function openCtx(k,x,y,hand){const m=$("#wCtx");if(!m||!inv(k))return;const tip=$("#wTip");if(tip)tip.hidden=true;const acts=ctxActions(k,hand);
   m.innerHTML=`<div class="ctxHead">${icon(k)} ${esc(ITEMS[k].name)} <b>×${inv(k)}</b></div>`+acts.map(([id,l])=>`<button data-ctx="${id}">${esc(l)}</button>`).join("")+
     `<div class="ctxX" hidden><input type="range" min="1" max="${inv(k)}" value="${Math.max(1,Math.floor(inv(k)/2))}" id="wCtxR"><input type="number" min="1" max="${inv(k)}" value="${Math.max(1,Math.floor(inv(k)/2))}" id="wCtxN"><button data-ctx="dropxgo">Drop</button></div>`;
@@ -1651,7 +1677,11 @@ function ctxDo(id,k,hand,n){const side=hand==="L"?"left":"held";closeCtx();if(!i
     case "drop1":return dropItem(k,1)>0;
     case "dropx":{const x=$("#wCtx");x.hidden=false;x.querySelector(".ctxX").hidden=false;return true}
     case "dropxgo":return dropItem(k,n)>0;
-    case "dropall":return dropItem(k,inv(k))>0}
+    case "dropall":return dropItem(k,inv(k))>0;
+    case "destroy1":{if(destroyNeedsConfirm(k,1)){openDestroyConfirm(k,1);return true}return destroyItem(k,1)>0}
+    case "destroyall":{openDestroyConfirm(k,inv(k));return true}
+    case "destroyyes":return destroyItem(k,n)>0;
+    case "destroyno":return true}
   return false}
 let jTab="disc";
 function renderJournal(){
@@ -1820,7 +1850,7 @@ function bindInput(container){
     const st=e.target.closest("[data-store]");if(st){chestMove(st.dataset.store,true,e.shiftKey);return}
     const tk=e.target.closest("[data-take]");if(tk){chestMove(tk.dataset.take,false,e.shiftKey);return}
     if(e.target.closest("[data-storeall]")){for(const k of Object.keys(world.inv))if(!ITEMS[k].tool&&!ITEMS[k].weapon)chestMove(k,true,true);return}
-    const cx=e.target.closest("[data-ctx]");if(cx){const m=$("#wCtx");ctxDo(cx.dataset.ctx,m.dataset.k,m.dataset.hand,+($("#wCtxN")?.value||1));return}
+    const cx=e.target.closest("[data-ctx]");if(cx){const m=$("#wCtx");const nn=+(cx.dataset.n||m.dataset.destroyN||$("#wCtxN")?.value||1);ctxDo(cx.dataset.ctx,m.dataset.k,m.dataset.hand,nn);return}
     if(!e.target.closest("#wCtx"))closeCtx();
     const so=e.target.closest("[data-isort]");if(so){sortInv(so.dataset.isort);return}
     const da=e.target.closest("[data-dropall]");if(da){const v=da.dataset.dropall;if(v==="arm")dropAllArm=true;else{dropAllArm=false;if(v==="yes")dropEverything()}renderInventory();return}
