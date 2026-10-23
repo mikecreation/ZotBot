@@ -433,6 +433,12 @@ export function updateEnvironment(o){
   // softer night fog so terrain doesn't crush to black
   if(day<.35&&!o.under) scene.fog.density*=(.42+.35*day);
   // stars & milky way & meteors
+  if(typeof window!=="undefined"&&window.__trailerHideStars){
+    if(stars){stars.visible=false;if(stars.material.uniforms)stars.material.uniforms.uOpacity.value=0;else stars.material.opacity=0}
+    if(milkyWay){milkyWay.visible=false;milkyWay.material.opacity=0}
+    if(meteors){meteors.visible=false;meteors.material.opacity=0}
+    if(auroraMesh){auroraMesh.visible=false;if(auroraMesh.material.uniforms)auroraMesh.material.uniforms.uOpacity.value=0}
+  } else
   const nightAmt=(1-day)*(1-amt*.75)*(1-cloudy*.35);
   if(stars.material.uniforms){stars.material.uniforms.uOpacity.value=nightAmt;stars.material.uniforms.uTime.value=(o.gameTime||0)*.15}
   else stars.material.opacity=nightAmt;
