@@ -7,6 +7,7 @@ import {RAFT_STAGES,RAFT_STEPS,deliverRaft,raftRemaining,raftStageFrac} from "./
 import * as WOOD from "./woodland-buildings.js?v=3.29.0";
 import {HOUSE as WHOUSE,STAGES as WSTAGES,isWoodland,remainingOf,stageFracOf,deliverStage,stageProblem,isComplete,stageTotalsOf,toLocal as wLocal,toWorld as wWorld,footprint as wFootprint,floorRect as wFloorRect,insideVolume as wInside,wallSegs as wWallSegs,partAt as wPartAt,isDwelling,WHEELSITE,MILL_INPUTS} from "./woodland-progression.js?v=3.29.0";
 import * as WW from "./waterwheel.js?v=3.29.0";
+import {aimGroundHit,ghostifyGroup,setGhostValid,disposePlaceGhost,rotateYaw,snapYaw,yawDegrees,placeHintHtml} from "./build-place.js?v=3.32.0";
 Object.assign(GEAR_STEPS,SHIP_STEPS);
 Object.assign(GEAR_STEPS,RAFT_STEPS);
 /* Fog of Knowledge: The Game â€” OPEN WORLD mode.
@@ -616,15 +617,17 @@ function structMesh(s){
 }
 const PLACE_DIST={hut:3.6,house:4.2,well:2.2,wall:2,chest:1.5,rack:1.8,pendulum:2,torch:1.4};
 function place(type,extra={}){
-  if(type==="shipyard")return placeShipyard();
-  if(type==="raft")return placeRaftSite();
-  if(isWoodland(type))return placeWoodland(type);
-  const f=forward(),pd=PLACE_DIST[type]||1.8;let x=player.pos.x+f.x*pd,z=player.pos.z+f.z*pd;
-  if(type==="raft"){let ok=false;for(let r=1.5;r<9&&!ok;r+=.5){const tx=player.pos.x+f.x*r,tz=player.pos.z+f.z*r;if(heightAt(tx,tz)<-.4){x=tx;z=tz;ok=true}}if(!ok){toast("Rafts must be launched on water â€” face open water.");return null}}
+  if(type==="shipyard")return placeShipyard(extra);
+  if(type==="raft")return placeRaftSite(extra);
+  if(isWoodland(type))return placeWoodland(type,extra);
+  const f=forward(),pd=PLACE_DIST[type]||1.8;let x=extra.x??player.pos.x+f.x*pd,z=extra.z??player.pos.z+f.z*pd;
+  if(type==="raft"){let ok=false;for(let r=1.5;r<9&&!ok;r+=.5){const tx=player.pos.x+f.x*r,tz=player.pos.z+f.z*r;if(heightAt(tx,tz)<-.4){x=tx;z=tz;ok=true}}if(!ok){toast("Rafts must be launched on water - face open water.");return null}}
   else if(heightAt(x,z)<0){toast("You can't build in the water.");return null}
-  if(type==="well"&&heightAt(x,z)>16){toast(`The ground here is ${Math.round(heightAt(x,z))} m above sea level â€” too far above the water table. Dig lower down, below about 16 m.`);return null}
-  const y=type==="raft"?0:heightAt(x,z);
-  const s={type,x,y,z,ry:type==="hut"||type==="house"?Math.atan2(-f.x,-f.z):Math.atan2(f.x,f.z),...extra};
+  if(type==="well"&&heightAt(x,z)>16){toast(`The ground here is ${Math.round(heightAt(x,z))} m above sea level - too far above the water table. Dig lower down, below about 16 m.`);return null}
+  const y=type==="raft"?0:(extra.y??heightAt(x,z));
+  const defRy=type==="hut"||type==="house"?Math.atan2(-f.x,-f.z):Math.atan2(f.x,f.z);
+  const {x:_ix,y:_iy,z:_iz,ry:_iry,...rest}=extra;
+  const s={type,x,y,z,ry:extra.ry??defRy,...rest};
   if(type==="fire")Object.assign(s,{fuel:1.5,lit:false,heat:0,temp:15});
   if(type==="kiln")Object.assign(s,{fuel:0,lit:false,heat:0,temp:15,bellows:false});
   if(type==="torch")Object.assign(s,{fuel:1,lit:false,heat:0,temp:15});
@@ -1333,15 +1336,7 @@ function useHeld(){
   if(k==="prism")return usePrism();
   const it=ITEMS[k];
   if(it.weapon)return fireWeapon(k);
-  if(it.place){take(k);const p=place(it.place);if(!p){give(k);return}
-    if(it.place==="leanto"||it.place==="hut"||it.place==="house"){world.camp=[p.x,p.z];toast(`${ITEMS[k].name.replace(" kit","")} built. This is your camp now: you'll wake here if you die. E inside to sleep at night.`);if(it.place==="leanto")discover("shelter");if(it.place==="house")discover("masonry")}
-    else if(it.place==="torch"){const src=world.structures.find(o=>o!==p&&o.lit&&Math.hypot(o.x-p.x,o.z-p.z)<8);if(src){p.lit=true;p.heat=.4;AU.ignite();toast("You light the torch from the fire. Wolves avoid its light.")}else toast("Torch placed. Light it with flint + pyrite (Q), or place it near a fire.")}
-    else if(isWoodland(it.place)){}
-    else if(it.place==="raft")toast("Raft site laid on the water. Deliver materials with E to finish it.");else if(it.place==="table")toast("Study table ready. E to study.");
-    else if(it.place==="well")toast(`You dig down about ${Math.max(1,Math.round(heightAt(p.x,p.z)))} m and water seeps in from the ground. E to drink, Q with a pot to fill it.`);
-    else if(it.place==="pendulum")toast("Pendulum frame built. E to start timing ten swings; Q to change the length.");
-    else if(it.place==="chest")toast("Storage chest built. E to open it.");else if(it.place==="rack")toast("Drying rack built. Hang raw meat on it with Q.");
-    else toast(`${it.name} placed.`);return}
+  if(it.place){if(placeSess&&placeSess.itemKey===k){confirmPlaceMode();return}beginPlaceMode(k,it.place);return}
   if(it.food||it.drink)return eat();
   throwHeld();
 }
@@ -1699,14 +1694,14 @@ function bindInput(container){
     if(e.code==="KeyI"){if($("#wInv").hidden)invCraftFor=null;togglePanel("#wInv");return}   // a fresh open clears any old "Craft withâ€¦" filter
     if(e.code==="KeyH"){openHelp();return}
     if(e.code==="KeyG"){player.readout=!player.readout;return}
-    if(e.code==="Escape"){autoPickup=null;if(!$("#wCtx").hidden){closeCtx();return}if(player.zoom){player.zoom=false;return}if($("#wInv").hidden&&$("#wJournal").hidden&&$("#wChest").hidden)window.__openSettings?.();else $("#wInv").hidden=$("#wJournal").hidden=$("#wChest").hidden=true;return}
+    if(e.code==="Escape"){autoPickup=null;if(placeSess){cancelPlaceMode();return}if(!$("#wCtx").hidden){closeCtx();return}if(player.zoom){player.zoom=false;return}if($("#wInv").hidden&&$("#wJournal").hidden&&$("#wChest").hidden)window.__openSettings?.();else $("#wInv").hidden=$("#wJournal").hidden=$("#wChest").hidden=true;return}
     if(paused)return;
     if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.code))e.preventDefault();
     keys.add(e.code);
     if(e.repeat)return;
     if(e.code==="KeyV"){e.preventDefault();toggleHand();return}if(e.code==="KeyX"){swapHands();return}
-    if(e.code==="KeyB")quickCarve();if(e.code==="KeyE")interact();if(e.code==="KeyR")stow(e.shiftKey);if(e.code==="KeyQ")withActiveHand(useHeld);if(e.code==="KeyF")observeHeld(world[activeHand==="L"?"left":"held"]);if(e.code==="KeyP"&&PETS&&!PETS.pet())toast("No companion close enough to pet.");
-    if(e.code==="KeyC"||e.code==="ControlLeft"){player.crouch=!player.crouch&&!player.swimming;toast(player.crouch?"Crouching: slow and quiet. Animals hear you less.":"Standing up.")}
+    if(e.code==="KeyB")quickCarve();if(e.code==="KeyE")interact();if(e.code==="KeyR"){if(placeSess){rotatePlaceMode(e.shiftKey?-1:1,e.ctrlKey||e.metaKey);e.preventDefault()}else stow(e.shiftKey)}if(e.code==="KeyQ")withActiveHand(useHeld);if(e.code==="KeyF")observeHeld(world[activeHand==="L"?"left":"held"]);if(e.code==="KeyP"&&PETS&&!PETS.pet())toast("No companion close enough to pet.");
+    if(e.code==="KeyC"||(e.code==="ControlLeft"&&!placeSess)){player.crouch=!player.crouch&&!player.swimming;toast(player.crouch?"Crouching: slow and quiet. Animals hear you less.":"Standing up.")}
     if(/^Digit[0-9]$/.test(e.code)){const i=(+e.code.slice(5)+9)%10,k=hotbarItems()[i];if(k){setHand(e.shiftKey?"L":activeHand,k)}}
   });
   window.addEventListener("keyup",e=>keys.delete(e.code),true);
@@ -1714,14 +1709,14 @@ function bindInput(container){
   window.addEventListener("focus",()=>stopMovement());
   canvasEl.addEventListener("mousedown",e=>{if(autoPickup){stopMovement();e.preventDefault();return}dragging=true;lastX=e.clientX;lastY=e.clientY;canvasEl._down=[e.clientX,e.clientY,document.pointerLockElement===canvasEl]});
   window.addEventListener("mouseup",e=>{dragging=false;if(!canvasEl._down)return;if(paused){canvasEl._down=null;return;}const moved=Math.hypot(e.clientX-canvasEl._down[0],e.clientY-canvasEl._down[1]);const wasLocked=canvasEl._down[2];canvasEl._down=null;
-    if(e.target!==canvasEl)return;if(document.pointerLockElement===canvasEl){if(e.button===0&&wasLocked)withActiveHand(useHeld)}else if(moved<4&&e.button===0){try{canvasEl.requestPointerLock?.()}catch(_){}}});
+    if(e.target!==canvasEl)return;if(document.pointerLockElement===canvasEl){if(placeSess){if(e.button===0&&wasLocked)confirmPlaceMode();else if(e.button===2)cancelPlaceMode()}else if(e.button===0&&wasLocked)withActiveHand(useHeld)}else if(moved<4&&e.button===0){try{canvasEl.requestPointerLock?.()}catch(_){}}});
   window.addEventListener("mousemove",e=>{if(!player)return;const locked=document.pointerLockElement===canvasEl;if(!locked&&!dragging)return;
     const dx=locked?e.movementX:e.clientX-lastX,dy=locked?e.movementY:e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;const k=player.zoom?.25:1;
     player.camYaw-=dx*.004*k;player.camPitch=clamp(player.camPitch+dy*.003*k,-1.45,1.25)});
   canvasEl.tabIndex=0;canvasEl.addEventListener("pointerenter",()=>canvasEl.focus({preventScroll:true}));
   canvasEl.addEventListener("pointermove",e=>{cursorAim.x=e.clientX;cursorAim.y=e.clientY;cursorAim.inside=true});
   canvasEl.addEventListener("pointerleave",()=>{stopMovement();cursorAim.inside=false;hovered=null;hoverAt=0});
-  canvasEl.addEventListener("wheel",e=>{e.preventDefault();player.camDist=clamp(player.camDist+Math.sign(e.deltaY)*(player.ship?1.5:.6),2.5,player.ship?48:14)},{passive:false});
+  canvasEl.addEventListener("wheel",e=>{e.preventDefault();if(placeSess){rotatePlaceMode(Math.sign(e.deltaY)||1,e.ctrlKey||e.metaKey);return}player.camDist=clamp(player.camDist+Math.sign(e.deltaY)*(player.ship?1.5:.6),2.5,player.ship?48:14)},{passive:false});
   document.addEventListener("click",e=>{
     if(!started||$("#mode-world").hidden)return;
     const hs=e.target.closest("[data-select-hand]");if(hs){selectHand(hs.dataset.selectHand);return}
@@ -1740,7 +1735,7 @@ function bindInput(container){
     const pa=e.target.closest("[data-petact]");if(pa){const p=world.pets.find(x=>x.id===pa.dataset.petact);if(p&&PETS.setActive(p.id,!p.active))renderJournal();return}
     const jt=e.target.closest("[data-jtab]");if(jt){jTab=jt.dataset.jtab;renderJournal()}
   });
-  document.addEventListener("contextmenu",e=>{if(!started||$("#mode-world").hidden)return;const c=e.target.closest?.(".cell,.slot,[data-hand]");if(c&&c.dataset.k){e.preventDefault();openCtx(c.dataset.k,e.clientX,e.clientY,c.dataset.hand||"")}else if(e.target.closest?.("#wInv,#wHotbar,#wHands"))e.preventDefault()});
+  document.addEventListener("contextmenu",e=>{if(!started||$("#mode-world").hidden)return;if(placeSess){e.preventDefault();cancelPlaceMode();return}const c=e.target.closest?.(".cell,.slot,[data-hand]");if(c&&c.dataset.k){e.preventDefault();openCtx(c.dataset.k,e.clientX,e.clientY,c.dataset.hand||"")}else if(e.target.closest?.("#wInv,#wHotbar,#wHands"))e.preventDefault()});
   // drag & drop: rearrange, to the hotbar, onto a hand
   let dragK=null;
   document.addEventListener("dragstart",e=>{const c=e.target.closest?.(".cell,.slot");if(c&&c.dataset.k){dragK=c.dataset.k;e.dataTransfer?.setData("text/plain",dragK);c.classList.add("drag")}});
@@ -1811,11 +1806,11 @@ function raftBuildMesh(s,g){
   if(done||st>=3||(st===2&&frac>.2)){for(let i=0;i<3;i++){const t=new THREE.Mesh(GEO.stick,MAT.bark);t.scale.set(1.1,1.1,5.5);t.rotation.y=Math.PI/2;t.position.set(0,.12,(i-1)*.5);g.add(t)}}
   if(!done&&st===0&&frac>0){for(let i=0;i<2;i++){const l=new THREE.Mesh(GEO.stick,new THREE.MeshStandardMaterial({color:0x8a6a3e,transparent:true,opacity:.35+frac*.4,roughness:.9}));l.scale.set(2.6,4,4);l.position.set(0,.05,(i+1)*.32);g.add(l)}}
 }
-function placeRaftSite(){const f=forward();let x=player.pos.x,z=player.pos.z,ok=false;
-  for(let r=1.5;r<9&&!ok;r+=.5){const tx=player.pos.x+f.x*r,tz=player.pos.z+f.z*r;if(heightAt(tx,tz)<-.4){x=tx;z=tz;ok=true}}
+function placeRaftSite(o={}){const f=forward();let x=o.x,z=o.z,ok=x!=null&&z!=null&&heightAt(x,z)<-.4;
+  if(!ok){x=player.pos.x;z=player.pos.z;for(let r=1.5;r<9&&!ok;r+=.5){const tx=player.pos.x+f.x*r,tz=player.pos.z+f.z*r;if(heightAt(tx,tz)<-.4){x=tx;z=tz;ok=true}}}
   if(!ok){toast("Rafts must be launched on water - face open water.");return null}
-  const s={type:"raft_site",x,y:0,z,ry:Math.atan2(f.x,f.z),stage:0,got:{}};world.structures.push(s);structMesh(s);AU.place();
-  toast("Raft site laid: two starter logs on the water. Bring materials and press E to build it stage by stage.");return s}
+  const s={type:"raft_site",x,y:0,z,ry:o.ry??Math.atan2(f.x,f.z),stage:0,got:{}};world.structures.push(s);structMesh(s);AU.place();
+  if(!o.quiet)toast("Raft site laid: two starter logs on the water. Bring materials and press E to build it stage by stage.");return s}
 function refreshRaftMesh(s){if(s.obj){scene.remove(s.obj);s.obj=null}structMesh(s)}
 function raftSiteWork(s){
   if((s.stage||0)>=RAFT_STAGES.length)return finishRaftSite(s);
@@ -1985,19 +1980,94 @@ function woodMesh(s,g){const gAt=(lx,lz)=>{const [x,z]=wWorld(s,lx,lz);return he
 function woodPlot(type,x,z,ry){const fp=wFootprint(type),s0={x,z,ry};let hi=-1e9,lo=1e9;
   for(let i=0;i<=6;i++)for(let j=0;j<=6;j++){const [wx,wz]=wWorld(s0,fp.x0+(fp.x1-fp.x0)*i/6,fp.z0+(fp.z1-fp.z0)*j/6),h=heightAt(wx,wz);hi=Math.max(hi,h);lo=Math.min(lo,h)}
   return {hi,lo,fp}}
+function checkWoodlandPlot(type,x,z,ry){
+  const {hi,lo,fp}=woodPlot(type,x,z,ry),s0={x,z,ry};
+  if(lo<.15)return {ok:false,reason:"Too close to the water for a dry floor - build a little further up the bank.",hi,lo,fp};
+  if(hi-lo>(type==="woodhut"?.9:type==="waterwheel"?1.6:1.3))return {ok:false,reason:`The ground falls ${(hi-lo).toFixed(1)} m across the plot. Find flatter ground for the ${type==="woodhut"?"hut":type==="waterwheel"?"water wheel":"house"}.`,hi,lo,fp};
+  const inPlot=(px,pz,m)=>{const [lx,lz]=wLocal(s0,px,pz);return lx>fp.x0-m&&lx<fp.x1+m&&lz>fp.z0-m&&lz<fp.z1+m};
+  for(const ch of nearbyChunks(x,z,6)){for(const t of ch.obj.trees)if(!t.gone&&inPlot(t.x,t.z,.35))return {ok:false,reason:"A tree stands inside the plot. Fell it with an axe first (its logs are building timber), or face a clearer spot.",hi,lo,fp};
+    for(const b of ch.obj.boulders)if(inPlot(b.x,b.z,b.s*.8))return {ok:false,reason:"A boulder sits in the plot. Face another spot or move along a little.",hi,lo,fp}}
+  for(const st of world.structures)if(st.type!=="pack"&&!st.hearth&&inPlot(st.x,st.z,.6))return {ok:false,reason:"Something you built is in the way. Pick a clear plot.",hi,lo,fp};
+  return {ok:true,reason:"",hi,lo,fp};
+}
 function placeWoodland(type,o={}){const f=forward(),ry=o.ry??Math.atan2(-f.x,-f.z),pd=type==="woodhut"?4.4:type==="waterwheel"?6.8:6.4;
-  const x=o.x??player.pos.x+f.x*pd,z=o.z??player.pos.z+f.z*pd,{hi,lo,fp}=woodPlot(type,x,z,ry),s0={x,z,ry};
-  if(!o.force){
-    if(lo<.15){toast("Too close to the water for a dry floor â€” build a little further up the bank.");return null}
-    if(hi-lo>(type==="woodhut"?.9:type==="waterwheel"?1.6:1.3)){toast(`The ground falls ${(hi-lo).toFixed(1)} m across the plot. Find flatter ground for the ${type==="woodhut"?"hut":type==="waterwheel"?"water wheel":"house"}.`);return null}
-    const inPlot=(px,pz,m)=>{const [lx,lz]=wLocal(s0,px,pz);return lx>fp.x0-m&&lx<fp.x1+m&&lz>fp.z0-m&&lz<fp.z1+m};
-    for(const ch of nearbyChunks(x,z,6)){for(const t of ch.obj.trees)if(!t.gone&&inPlot(t.x,t.z,.35)){toast("A tree stands inside the plot. Fell it with an axe first (its logs are building timber), or face a clearer spot.");return null}
-      for(const b of ch.obj.boulders)if(inPlot(b.x,b.z,b.s*.8)){toast("A boulder sits in the plot. Face another spot or move along a little.");return null}}
-    for(const st of world.structures)if(st.type!=="pack"&&!st.hearth&&inPlot(st.x,st.z,.6)){toast("Something you built is in the way. Pick a clear plot.");return null}
-  }
+  const x=o.x??player.pos.x+f.x*pd,z=o.z??player.pos.z+f.z*pd,chk=o.force?{ok:true,hi:woodPlot(type,x,z,ry).hi,lo:woodPlot(type,x,z,ry).lo}:checkWoodlandPlot(type,x,z,ry);
+  if(!chk.ok){if(!o.quiet)toast(chk.reason);return null}
+  const hi=chk.hi;
   const s={type,x,y:hi+(type==="woodhut"?.03:0),z,ry,stage:0,got:{},open:0};if(type==="waterwheel")s.gate=1;world.structures.push(s);structMesh(s);AU.place();clearWoodPlot(s);
   if(!o.quiet)toast(type==="waterwheel"?"Water-wheel site staked: a spring wells from the rock outcrop and spills down its face. E at the site to deliver each stage: footings & tailrace, sluice & flume, axle, spokes & rims, buckets, then the cam and trip-hammer, and finally the pit wheel, lantern gear and millstones (7 stages).":type==="woodhut"?"Hut plot staked out with a cord line. E at the plot to deliver each stage: frame, wattle walls, thatch roof, then daub.":"House plot laid out: corner pegs, a cord line and a scratched hearth mark. E at the plot to deliver each of the 6 stages.");
   return s}
+/* ---------------- ghost place mode (Satisfactory-style hologram) ---------------- */
+let placeSess=null; // {itemKey,type,ghost,ry,valid,x,y,z,hint}
+const ghostPool=new Map();
+function placeHintEl(){let el=$("#wPlaceHint");if(!el){el=document.createElement("div");el.id="wPlaceHint";el.className="wPlaceHint";el.hidden=true;($(".wHud")||document.body).appendChild(el)}return el}
+function showPlaceHint(ry){const el=placeHintEl();el.hidden=false;el.innerHTML=placeHintHtml(yawDegrees(ry))}
+function hidePlaceHint(){const el=$("#wPlaceHint");if(el){el.hidden=true;el.innerHTML=""}}
+function buildGhostMesh(type){
+  if(ghostPool.has(type)){const g=ghostPool.get(type);g.visible=true;return g}
+  let root;
+  if(isWoodland(type)){root=WOOD.buildWoodland(type,{seed:4242,ground:()=>0});WOOD.setWoodStage(root,WSTAGES[type].length,0);if(root.userData.site)root.userData.site.visible=false}
+  else{
+    const s={type,x:0,y:-400,z:0,ry:0};
+    if(type==="fire"||type==="kiln"||type==="torch")Object.assign(s,{fuel:1,lit:false,heat:0,temp:15});
+    if(type==="chest")s.items={};if(type==="rack")s.meat=[];if(type==="pendulum")s.L=1;
+    if(type==="raft"){s.type="raft_site";s.stage=0;s.got={}}
+    structMesh(s);root=s.obj;scene.remove(root);if(s.flame){root.remove(s.flame);s.flame=null}
+    root.position.set(0,0,0);
+  }
+  ghostifyGroup(THREE,root,true);root.name="placeGhost_"+type;scene.add(root);ghostPool.set(type,root);return root;
+}
+function clearPlaceGhost(){if(!placeSess)return;if(placeSess.ghost){placeSess.ghost.visible=false}placeSess=null;hidePlaceHint()}
+function cancelPlaceMode(silent){if(!placeSess)return;clearPlaceGhost();if(!silent)toast("Placement cancelled.")}
+function checkSimplePlace(type,x,z){
+  if(type==="raft")return heightAt(x,z)<-.4?{ok:true,reason:"",y:0}:{ok:false,reason:"Rafts must be launched on water - face open water.",y:heightAt(x,z)};
+  const y=heightAt(x,z);
+  if(y<0)return {ok:false,reason:"You can't build in the water.",y};
+  if(type==="well"&&y>16)return {ok:false,reason:`The ground here is ${Math.round(y)} m above sea level - too far above the water table.`,y};
+  return {ok:true,reason:"",y};
+}
+function beginPlaceMode(itemKey,type){
+  if(placeSess)cancelPlaceMode(true);
+  if(type==="shipyard"){toast("Shipyard still places with Q facing the sea.");return false}
+  const f=forward(),ry0=snapYaw(type==="hut"||type==="house"||isWoodland(type)?Math.atan2(-f.x,-f.z):Math.atan2(f.x,f.z),false);
+  const ghost=buildGhostMesh(type==="raft"?"raft":type);
+  placeSess={itemKey,type,ghost,ry:ry0,valid:false,x:player.pos.x,y:player.pos.y,z:player.pos.z};
+  showPlaceHint(ry0);toast("Aim to place. Scroll/R rotate. LMB confirm. Esc cancel.");
+  updatePlaceMode();return true;
+}
+function rotatePlaceMode(dir,fine){if(!placeSess)return;placeSess.ry=rotateYaw(placeSess.ry,dir,fine);showPlaceHint(placeSess.ry);updatePlaceMode()}
+function updatePlaceMode(){
+  if(!placeSess||!player)return;
+  const eye=player.pos.clone().add(new THREE.Vector3(0,player.crouch?1.1:1.55,0));
+  const hit=aimGroundHit(eye,aimDir(),heightAt,{maxDist:isWoodland(placeSess.type)?22:16,minDist:1.6});
+  let x=hit.x,z=hit.z,y=hit.y,valid=true,reason="";
+  if(isWoodland(placeSess.type)){const chk=checkWoodlandPlot(placeSess.type,x,z,placeSess.ry);valid=chk.ok;reason=chk.reason;y=chk.hi+(placeSess.type==="woodhut"?.03:0)}
+  else{const chk=checkSimplePlace(placeSess.type,x,z);valid=chk.ok;reason=chk.reason;y=chk.y}
+  placeSess.x=x;placeSess.y=y;placeSess.z=z;placeSess.valid=valid;placeSess.reason=reason;
+  const g=placeSess.ghost;g.visible=true;g.position.set(x,y,z);g.rotation.y=placeSess.ry;
+  setGhostValid(THREE,g,valid);
+}
+function confirmPlaceMode(){
+  if(!placeSess)return false;
+  updatePlaceMode();
+  if(!placeSess.valid){toast(placeSess.reason||"Can't place here.");return false}
+  const {itemKey,type,x,y,z,ry}=placeSess;
+  if(!inv(itemKey)){cancelPlaceMode(true);toast("You no longer have that kit.");return false}
+  take(itemKey);
+  const p=place(type,{x,y,z,ry});
+  if(!p){give(itemKey);return false}
+  if(type==="leanto"||type==="hut"||type==="house"){world.camp=[p.x,p.z];toast(`${ITEMS[itemKey].name.replace(" kit","")} built. This is your camp now: you'll wake here if you die. E inside to sleep at night.`);if(type==="leanto")discover("shelter");if(type==="house")discover("masonry")}
+  else if(type==="torch"){const src=world.structures.find(o=>o!==p&&o.lit&&Math.hypot(o.x-p.x,o.z-p.z)<8);if(src){p.lit=true;p.heat=.4;AU.ignite();toast("You light the torch from the fire. Wolves avoid its light.")}else toast("Torch placed. Light it with flint + pyrite (Q), or place it near a fire.")}
+  else if(isWoodland(type)){}
+  else if(type==="raft")toast("Raft site laid on the water. Deliver materials with E to finish it.");
+  else if(type==="table")toast("Study table ready. E to study.");
+  else if(type==="well")toast(`You dig down about ${Math.max(1,Math.round(heightAt(p.x,p.z)))} m and water seeps in from the ground. E to drink, Q with a pot to fill it.`);
+  else if(type==="pendulum")toast("Pendulum frame built. E to start timing ten swings; Q to change the length.");
+  else if(type==="chest")toast("Storage chest built. E to open it.");else if(type==="rack")toast("Drying rack built. Hang raw meat on it with Q.");
+  else toast(`${ITEMS[itemKey].name} placed.`);
+  clearPlaceGhost();player.actCd=.25;renderHotbar();return true;
+}
+function isPlaceMode(){return !!placeSess}
 /* loose sticks, stones and flowers inside the plot are swept aside when it is staked out (remembered like pickups) */
 function clearWoodPlot(s){const fp=wFootprint(s.type);for(const ch of nearbyChunks(s.x,s.z,6))for(const r of ch.obj.res){if(r.gone)continue;const [lx,lz]=wLocal(s,r.x,r.z);
   if(lx>fp.x0-.3&&lx<fp.x1+.3&&lz>fp.z0-.3&&lz<fp.z1+.3){r.gone=true;if(r.mesh){r.mesh.setMatrixAt(r.slot,ZERO);r.mesh.instanceMatrix.needsUpdate=true}world.removed.add(ch.key+"|r"+r.i)}}}
@@ -2153,6 +2223,7 @@ function stepWorld(dt){
   }
   if(spectrum&&spectrum.visible){spectrum.userData.t-=dt;spectrum.children.forEach(m=>m.material.opacity=.8*clamp(spectrum.userData.t/2,0,1));if(spectrum.userData.t<=0)spectrum.visible=false}
   updateArc();
+  if(placeSess)updatePlaceMode();
   chunkT-=dt;if(chunkT<=0){updateChunks(false);chunkT=.15}
   hudT-=dt;if(hudT<=0){renderHUD();hudT=.2}
   saveT-=dt;if(saveT<=0){save();saveT=10}
@@ -2162,6 +2233,7 @@ function stepWorld(dt){
 function startWorld(w){
   if(EX?.isOpen)EX.close();
   autoPickup=null;hovered=null;hoverAt=0;cursorAim.inside=false;
+  if(placeSess)cancelPlaceMode(true);
   clearDrill();
   titleMode=false;document.body.classList.remove("titleOn");$("#wTip").hidden=true;
   for(const s of world?.structures||[])if(s.obj)GFX.disposeGroup(s.obj);
@@ -2287,7 +2359,7 @@ export function initWorld(){
       let hi=-1e9,lo=1e9;for(let r=0;r<=1000;r+=25)for(let a=0;a<32;a++){const h=heightAt(x+Math.cos(a/32*6.283)*r,z+Math.sin(a/32*6.283)*r);if(h>0){hi=Math.max(hi,h);lo=Math.min(lo,h)}}
       for(const k in out)out[k]=Math.round(out[k]);return {res:out,boulder:Math.round(boulder),tree:Math.round(tree),water,relief1km:Math.round(hi-lo),hi:Math.round(hi)}},
     clearStructs:()=>{for(const o of world.structures)o.obj&&scene.remove(o.obj);world.structures.length=0;player.raft=null;player.ship=null;player.helm=false},
-    dev:DEV_MODE,ship:SHIP_DEBUG,woodland:WOOD_DEBUG,raft:RAFT_DEBUG,
+    dev:DEV_MODE,ship:SHIP_DEBUG,woodland:WOOD_DEBUG,raft:RAFT_DEBUG,place:{begin:beginPlaceMode,cancel:()=>cancelPlaceMode(),rotate:rotatePlaceMode,confirm:confirmPlaceMode,get active(){return!!placeSess},get yaw(){return placeSess?yawDegrees(placeSess.ry):null},hint:showPlaceHint},
     clearDrops:()=>{for(const d of world.drops)scene.remove(d.mesh);world.drops.length=0},
     clearAnimals:kind=>{for(let i=animals.length-1;i>=0;i--)if(!kind||animals[i].kind===kind){scene.remove(animals[i].g);animals.splice(i,1)}},
     fireAt:()=>fireHeatAt(player.pos.x,player.pos.z),noise:()=>playerNoiseDb?playerNoiseDb():null};

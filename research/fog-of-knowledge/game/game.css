@@ -360,3 +360,10 @@ body.titleOn .wHelpBtn{display:none}
 @keyframes gsIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .gsCtl{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px 14px;margin-top:10px;align-items:end}.gsCtl label{display:flex;flex-direction:column;font-size:12px;color:#9fb6c9;gap:3px}.gsCtl output{color:#fff;font-weight:600}.gsCtl input[type=range]{width:100%;accent-color:#67dcff}.gsCtl select{background:#0d1b28;color:#dbe8f6;border:1px solid #2b4a61;border-radius:6px;padding:5px}.gsBtns{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap}.gsRead{grid-column:1/-1;margin:0;font:12px ui-monospace,Consolas,monospace;color:#a9e9ff}
 @media (prefers-reduced-motion:reduce){.gsPop{animation:none}}
+
+/* Build place-mode key chips (Satisfactory-style ghost UX) */
+.wPlaceHint{position:absolute;left:50%;bottom:118px;transform:translateX(-50%);z-index:18;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;max-width:min(92vw,640px);padding:8px 14px;border-radius:14px;background:#02060ccc;border:1px solid #5ec8b055;box-shadow:0 0 18px #5ec8b022;pointer-events:none;font:12px/1.35 system-ui,Segoe UI,sans-serif;color:#d9e6f2}
+.wPlaceHint[hidden]{display:none!important}
+.wPlaceHint .placeChip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;background:#0a1522ee;border:1px solid #ffffff18;color:#c5d7e8;white-space:nowrap}
+.wPlaceHint .placeChip b{font-weight:700;color:#9fe8d8;letter-spacing:.02em}
+.wPlaceHint .placeYaw{margin-left:4px;padding:3px 8px;border-radius:999px;background:#5ec8b022;border:1px solid #5ec8b055;color:#9fe8d8;font:700 11px/1.2 ui-monospace,Consolas,monospace}
