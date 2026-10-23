@@ -382,7 +382,10 @@ body.titleOn .wHelpBtn{display:none}
 .telHead h3{margin:0 0 4px;letter-spacing:.08em;color:#ffe6a8}
 .telHead small{color:#9fb6c9}
 .telSky{max-width:min(1200px,98vw)!important}
-.telFrame{display:block;width:100%;height:min(70vh,720px);border:1px solid #2b4a63;border-radius:10px;background:#000}
+.telFrame,.telFrameSlot iframe.telFrame{display:block;width:100%;height:min(70vh,720px);border:1px solid #2b4a63;border-radius:10px;background:#000}
+.telFrameSlot{width:100%;min-height:min(70vh,720px);background:#000;border-radius:10px}
+.telOverlay.telSkyFs .telFrameSlot iframe.telFrame{height:calc(100dvh - 110px);min-height:320px;border-radius:0;border-left:none;border-right:none}
+.telDanger{background:#4a1820!important;border-color:#a33!important;color:#fcc!important}
 .telNote{margin:8px 0 0;font-size:12px;color:#8ea6bb}
 /* Sky view: cover game immediately; also used under Fullscreen API */
 .telOverlay.telSkyFs{position:fixed;inset:0;width:100vw;height:100dvh;max-width:none;padding:0;z-index:2000;background:#000;align-items:stretch;justify-content:stretch}

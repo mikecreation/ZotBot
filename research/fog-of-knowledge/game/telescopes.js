@@ -12,6 +12,14 @@
 import * as T from "./vendor/three.module.min.js";
 
 const STORE_KEY = "fog-of-knowledge:game:telescope:viewpoint";
+const SESSION_KEY = "fog-of-knowledge:game:telescope:sessions";
+const IDB_NAME = "fog-of-knowledge-telescope";
+const IDB_STORE = "skySessions";
+/** Warm iframes kept alive across close so Aladin/ESASky/Stellarium do not cold-reload. */
+const warmFrames = new Map(); // cacheKey -> { iframe, meta }
+let activeSkyKey = null;
+let activeSkyMeta = null;
+let lastToast = null;
 const FALLBACK = { lat: 43.7696, lon: 11.2558, name: "Florence, Italy (Galileo default)", source: "fallback" };
 
 /** Major countries + a few ocean sample points for the globe picker (centroids / capitals). */
@@ -232,6 +240,207 @@ export function saveViewpoint(v){
 }
 
 /** Approximate local civil night (~22:00 local mean solar) as UTC ISO for Stellarium. */
+
+/** Stable cache key: tier + rounded viewpoint + JWST target/mode. */
+export function skyCacheKey(tier, view, extra = {}){
+  const lat = view && view.lat != null ? (+view.lat).toFixed(3) : "x";
+  const lon = view && view.lon != null ? (+view.lon).toFixed(3) : "x";
+  const mode = extra.mode || "";
+  const tgt = extra.targetId || "";
+  const ra = extra.ra != null ? (+extra.ra).toFixed(3) : "";
+  const dec = extra.dec != null ? (+extra.dec).toFixed(3) : "";
+  return [tier || "galileo", lat, lon, mode, tgt, ra, dec].join("|");
+}
+
+function ensureWarmHost(){
+  let host = document.getElementById("wTelescopeWarm");
+  if(host) return host;
+  host = document.createElement("div");
+  host.id = "wTelescopeWarm";
+  host.setAttribute("aria-hidden", "true");
+  host.style.cssText = "position:fixed;left:-99999px;top:0;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;";
+  document.body.appendChild(host);
+  return host;
+}
+
+function readSessionMap(){
+  try{ return JSON.parse(localStorage.getItem(SESSION_KEY) || "{}") || {} }catch(_){ return {} }
+}
+function writeSessionMap(map){
+  try{ localStorage.setItem(SESSION_KEY, JSON.stringify(map)) }catch(_){}
+}
+
+function idbOpen(){
+  return new Promise((resolve, reject) => {
+    if(typeof indexedDB === "undefined"){ reject(new Error("no idb")); return }
+    const req = indexedDB.open(IDB_NAME, 1);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if(!db.objectStoreNames.contains(IDB_STORE)) db.createObjectStore(IDB_STORE, { keyPath: "key" });
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error || new Error("idb"));
+  });
+}
+
+async function idbPut(meta){
+  try{
+    const db = await idbOpen();
+    await new Promise((resolve, reject) => {
+      const tx = db.transaction(IDB_STORE, "readwrite");
+      tx.objectStore(IDB_STORE).put(meta);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+    db.close();
+  }catch(_){}
+}
+
+async function idbGet(key){
+  try{
+    const db = await idbOpen();
+    const row = await new Promise((resolve, reject) => {
+      const tx = db.transaction(IDB_STORE, "readonly");
+      const r = tx.objectStore(IDB_STORE).get(key);
+      r.onsuccess = () => resolve(r.result || null);
+      r.onerror = () => reject(r.error);
+    });
+    db.close();
+    return row;
+  }catch(_){ return null }
+}
+
+async function idbClear(){
+  try{
+    const db = await idbOpen();
+    await new Promise((resolve, reject) => {
+      const tx = db.transaction(IDB_STORE, "readwrite");
+      tx.objectStore(IDB_STORE).clear();
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+    db.close();
+  }catch(_){}
+}
+
+function persistSession(meta){
+  if(!meta || !meta.key) return;
+  const map = readSessionMap();
+  map[meta.key] = meta;
+  map.__last = meta.key;
+  writeSessionMap(map);
+  idbPut(meta);
+}
+
+function loadSession(key){
+  const map = readSessionMap();
+  return (key && map[key]) || null;
+}
+
+function parkSkyFrame(key, iframe, meta){
+  if(!iframe || !key) return;
+  const host = ensureWarmHost();
+  iframe.dataset.telCacheKey = key;
+  iframe.classList.add("telFrameWarm");
+  host.appendChild(iframe);
+  const m = Object.assign({}, meta || {}, { key, savedAt: Date.now() });
+  warmFrames.set(key, { iframe, meta: m });
+  activeSkyKey = key;
+  activeSkyMeta = m;
+  persistSession(m);
+}
+
+function takeWarmFrame(key){
+  const hit = warmFrames.get(key);
+  if(hit && hit.iframe && hit.iframe.isConnected !== false){
+    return hit;
+  }
+  // Recover iframe still in warm host after map miss
+  const host = document.getElementById("wTelescopeWarm");
+  if(host){
+    const found = host.querySelector('iframe[data-tel-cache-key="' + key.replace(/"/g, "") + '"]');
+    if(found){
+      const meta = loadSession(key) || { key, url: found.src };
+      const pack = { iframe: found, meta };
+      warmFrames.set(key, pack);
+      return pack;
+    }
+  }
+  return null;
+}
+
+function makeSkyIframe(url, title){
+  const iframe = document.createElement("iframe");
+  iframe.className = "telFrame";
+  iframe.title = title || "Real sky viewer";
+  iframe.allow = "fullscreen; clipboard-read; clipboard-write";
+  iframe.referrerPolicy = "no-referrer-when-downgrade";
+  iframe.src = url;
+  return iframe;
+}
+
+function attachSkyIframe(slot, key, url, title, meta){
+  if(!slot) return null;
+  slot.innerHTML = "";
+  let pack = takeWarmFrame(key);
+  let iframe;
+  if(pack && pack.iframe){
+    // WARM HIT: reattach only -- never touch src (keeps Aladin HiPS memory).
+    iframe = pack.iframe;
+    iframe.classList.remove("telFrameWarm");
+    iframe.classList.add("telFrame");
+    slot.appendChild(iframe);
+  } else {
+    iframe = makeSkyIframe(url, title);
+    slot.appendChild(iframe);
+  }
+  const m = Object.assign({}, meta || {}, { key, url, title: title || "", savedAt: Date.now() });
+  warmFrames.set(key, { iframe, meta: m });
+  activeSkyKey = key;
+  activeSkyMeta = m;
+  persistSession(m);
+  return iframe;
+}
+
+function parkActiveFromOverlay(){
+  const el = document.getElementById("wTelescope");
+  if(!el) return;
+  const iframe = el.querySelector("iframe.telFrame, iframe");
+  if(iframe && activeSkyKey){
+    parkSkyFrame(activeSkyKey, iframe, activeSkyMeta || { key: activeSkyKey, url: iframe.getAttribute("src") || iframe.src });
+  }
+}
+
+/** Wipe viewpoint + session metadata + warm iframes. Forever-cache dump. */
+export async function dumpTelescopeCache(opts = {}){
+  const toast = opts.toast || (() => {});
+  parkActiveFromOverlay();
+  warmFrames.forEach(({ iframe }) => {
+    try{ if(iframe && iframe.parentNode) iframe.parentNode.removeChild(iframe) }catch(_){}
+    try{ iframe.src = "about:blank" }catch(_){}
+  });
+  warmFrames.clear();
+  activeSkyKey = null;
+  activeSkyMeta = null;
+  const host = document.getElementById("wTelescopeWarm");
+  if(host) host.innerHTML = "";
+  try{ localStorage.removeItem(STORE_KEY) }catch(_){}
+  try{ localStorage.removeItem(SESSION_KEY) }catch(_){}
+  await idbClear();
+  // Also try Cache API keys we may have created
+  try{
+    if(typeof caches !== "undefined"){
+      const keys = await caches.keys();
+      for(const k of keys){
+        if(k.indexOf("fog-of-knowledge-telescope") === 0) await caches.delete(k);
+      }
+    }
+  }catch(_){}
+  toast("Telescope cache dumped. Next sky open will reload fresh.");
+  return true;
+}
+
+
 export function nightUtcIso(lon, when = new Date()){
   const localHour = 22;
   const utcH = ((localHour - lon / 15) % 24 + 24) % 24;
@@ -329,6 +538,7 @@ function closeOverlay(){
   const el = document.getElementById("wTelescope");
   exitFs();
   if(!el) return;
+  parkActiveFromOverlay();
   el.classList.remove("telSkyFs");
   el.hidden = true;
   el.innerHTML = "";
@@ -384,74 +594,132 @@ function openSky(view, tierKey){
   el.hidden = false;
   el.classList.add("telSkyFs");
   const zd = zenithRaDec(view.lat, view.lon);
-  let url, skyTitle, srcLabel, extra;
-  let jwstMode = "aladin"; // aladin | esasky
-  let jwstTarget = { ra: JWST_DEEP_FIELDS.smacs.ra, dec: JWST_DEEP_FIELDS.smacs.dec, label: JWST_DEEP_FIELDS.smacs.name };
+  let skyTitle, srcLabel, extra;
+  let jwstMode = "aladin";
+  let jwstTarget = { ra: JWST_DEEP_FIELDS.smacs.ra, dec: JWST_DEEP_FIELDS.smacs.dec, label: JWST_DEEP_FIELDS.smacs.name, id: "smacs" };
 
-  function buildJwstUrl(){
-    if(jwstMode === "esasky"){
-      return esaskyUrl(view.lat, view.lon, { ra: jwstTarget.ra, dec: jwstTarget.dec, fov: 0.4 });
+  // Restore last JWST prefs for this viewpoint if any
+  try{
+    const map = readSessionMap();
+    const last = map.__last && map[map.__last];
+    if(jwst && last && last.tier === "jwst" && last.mode){
+      jwstMode = last.mode;
+      if(last.targetId && JWST_DEEP_FIELDS[last.targetId]){
+        const f = JWST_DEEP_FIELDS[last.targetId];
+        jwstTarget = { ra: f.ra, dec: f.dec, label: f.name, id: last.targetId };
+      } else if(last.ra != null && last.dec != null && last.targetId === "zenith"){
+        jwstTarget = { ra: zd.ra, dec: zd.dec, label: "Local zenith (from viewpoint)", id: "zenith" };
+      }
     }
-    return jwstAladinUrl(view.lat, view.lon, { ra: jwstTarget.ra, dec: jwstTarget.dec, fov: 0.18 });
+  }catch(_){}
+
+  function currentUrl(){
+    if(jwst){
+      if(jwstMode === "esasky") return esaskyUrl(view.lat, view.lon, { ra: jwstTarget.ra, dec: jwstTarget.dec, fov: 0.4 });
+      return jwstAladinUrl(view.lat, view.lon, { ra: jwstTarget.ra, dec: jwstTarget.dec, fov: 0.18 });
+    }
+    if(mid) return aladinUrl(view.lat, view.lon);
+    return stellariumUrl(view.lat, view.lon);
+  }
+  function currentKey(){
+    if(jwst) return skyCacheKey("jwst", view, { mode: jwstMode, targetId: jwstTarget.id || "", ra: jwstTarget.ra, dec: jwstTarget.dec });
+    if(mid) return skyCacheKey("mid", view, { mode: "aladin-dss2" });
+    return skyCacheKey("galileo", view, { mode: "stellarium" });
+  }
+  function labelsFor(){
+    if(jwst){
+      skyTitle = "DEEP UNIVERSE -- James Webb";
+      srcLabel = jwstMode === "esasky" ? "ESASky (360 pan/zoom)" : "Aladin JWST HiPS";
+      extra = (jwstTarget.label || "") + " - FoV deep - pan/zoom in viewer (cached)";
+    } else if(mid){
+      skyTitle = "DEEP SKY -- Observatory";
+      srcLabel = "Aladin Lite DSS2";
+      extra = "zenith RA " + zd.ra.toFixed(1) + " Dec " + zd.dec.toFixed(1) + " - deep FoV ~2 deg (cached)";
+    } else {
+      skyTitle = "REAL SKY -- Galileo";
+      srcLabel = "Stellarium Web";
+      const night = nightUtcIso(view.lon);
+      extra = "local night ~" + night + " UTC - wide FoV ~45 deg (cached)";
+    }
   }
 
-  if(jwst){
-    url = buildJwstUrl();
-    skyTitle = "DEEP UNIVERSE -- James Webb";
-    srcLabel = jwstMode === "esasky" ? "ESASky (360 pan/zoom)" : "Aladin JWST HiPS";
-    extra = `${esc(jwstTarget.label)} - FoV deep - pan/zoom in viewer`;
-  } else if(mid){
-    url = aladinUrl(view.lat, view.lon);
-    skyTitle = "DEEP SKY -- Observatory";
-    srcLabel = "Aladin Lite DSS2";
-    extra = `zenith RA ${zd.ra.toFixed(1)} Dec ${zd.dec.toFixed(1)} - deep FoV ~2 deg`;
-  } else {
-    url = stellariumUrl(view.lat, view.lon);
-    skyTitle = "REAL SKY -- Galileo";
-    srcLabel = "Stellarium Web";
-    const night = nightUtcIso(view.lon);
-    extra = `local night ~${esc(night)} UTC - wide FoV ~45 deg`;
-  }
-  const label = esc(view.name || `${view.lat.toFixed(2)}, ${view.lon.toFixed(2)}`);
+  const label = esc(view.name || ((+view.lat).toFixed(2) + ", " + (+view.lon).toFixed(2)));
   const src = esc(view.source || "saved");
 
   function render(){
+    parkActiveFromOverlay();
+    labelsFor();
+    const key = currentKey();
+    const url = currentUrl();
+    const warmHit = warmFrames.has(key);
     const jwstBtns = jwst ? `
-        <button data-tel="jwst-smacs">SMACS deep</button>
-        <button data-tel="jwst-ceers">CEERS</button>
-        <button data-tel="jwst-zenith">Local zenith</button>
-        <button data-tel="jwst-aladin">Aladin JWST</button>
-        <button data-tel="jwst-esasky">ESASky 360</button>` : "";
+        <button type="button" data-tel="jwst-smacs">SMACS deep</button>
+        <button type="button" data-tel="jwst-ceers">CEERS</button>
+        <button type="button" data-tel="jwst-zenith">Local zenith</button>
+        <button type="button" data-tel="jwst-aladin">Aladin JWST</button>
+        <button type="button" data-tel="jwst-esasky">ESASky 360</button>` : "";
+    const cacheNote = warmHit
+      ? "Warm cache hit -- sky restored without full reload."
+      : "First open loads survey tiles; reopen of this sky is kept warm until you Dump telescope cache.";
     const note = jwst
-      ? "Sky data: public CDS Aladin JWST HiPS (CDS/P/JWST/OPEN) and ESA ESASky. Pan/zoom in the viewer -- real deep fields, not shaders. Coverage is sparse outside JWST pointings; use SMACS/CEERS jumps."
-      : `Sky data: public ${srcLabel} (real catalogs / HiPS for the chosen lat/lon). Open-world night sky stays stylized; only telescope mode is 100% real.`;
+      ? ("Sky data: public CDS Aladin JWST HiPS (CDS/P/JWST/OPEN) and ESA ESASky. " + cacheNote)
+      : ("Sky data: public " + srcLabel + " (real catalogs / HiPS). " + cacheNote + " Third-party tiles may still need network on a cold browser cache.");
     el.innerHTML = `<div class="box telSky" role="dialog" aria-label="Real sky viewer">
     <header class="telHead">
       <div>
         <h3>${skyTitle}</h3>
-        <small>Viewpoint: <b>${label}</b> (${src}) - ${srcLabel} - ${extra}</small>
+        <small>Viewpoint: <b>${label}</b> (${src}) - ${esc(srcLabel)} - ${esc(extra)}</small>
       </div>
       <div class="telActs">
-        <button data-tel="relocate">Switch location</button>${jwstBtns}
-        <button data-tel="close" class="primary">Exit (Esc)</button>
+        <button type="button" data-tel="relocate">Switch location</button>${jwstBtns}
+        <button type="button" data-tel="dump" class="telDanger">Dump telescope cache</button>
+        <button type="button" data-tel="close" class="primary">Exit (Esc)</button>
       </div>
     </header>
-    <iframe class="telFrame" title="${srcLabel} real sky" src="${esc(url)}" allow="fullscreen; clipboard-read; clipboard-write" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    <div id="telFrameSlot" class="telFrameSlot"></div>
     <p class="telNote muted">${note}</p>
   </div>`;
+    const slot = el.querySelector("#telFrameSlot");
+    attachSkyIframe(slot, key, url, srcLabel + " real sky", {
+      tier: activeTier,
+      mode: jwst ? jwstMode : (mid ? "aladin-dss2" : "stellarium"),
+      targetId: jwst ? (jwstTarget.id || "") : "",
+      ra: jwst ? jwstTarget.ra : zd.ra,
+      dec: jwst ? jwstTarget.dec : zd.dec,
+      lat: view.lat,
+      lon: view.lon,
+      url,
+      fov: jwst ? (jwstMode === "esasky" ? 0.4 : 0.18) : (mid ? 2 : 45),
+      survey: jwst ? (jwstMode === "esasky" ? "esasky" : "CDS/P/JWST/OPEN") : (mid ? "P/DSS2/color" : "stellarium-web"),
+    });
   }
+
   render();
   el.onclick = e => {
     const b = e.target.closest("[data-tel]"); if(!b) return;
     const v = b.getAttribute("data-tel");
     if(v === "close"){ closeOverlay(); return }
-    if(v === "relocate"){ exitFs(); el.classList.remove("telSkyFs"); openGlobe(picked => { saveViewpoint(picked); openSky(picked, activeTier) }); return }
+    if(v === "dump"){
+      dumpTelescopeCache({ toast: (msg) => {
+        try{ if(lastToast) lastToast(msg) }catch(_){}
+        const n = el.querySelector(".telNote");
+        if(n) n.textContent = msg;
+      }}).then(() => { render(); enterFs(el) });
+      return;
+    }
+    if(v === "relocate"){
+      parkActiveFromOverlay();
+      exitFs(); el.classList.remove("telSkyFs");
+      openGlobe(picked => { saveViewpoint(picked); openSky(picked, activeTier) });
+      return;
+    }
     if(!jwst) return;
-    if(v === "jwst-smacs"){ jwstTarget = { ra: JWST_DEEP_FIELDS.smacs.ra, dec: JWST_DEEP_FIELDS.smacs.dec, label: JWST_DEEP_FIELDS.smacs.name }; url = buildJwstUrl(); extra = `${esc(jwstTarget.label)} - FoV deep`; srcLabel = jwstMode === "esasky" ? "ESASky (360 pan/zoom)" : "Aladin JWST HiPS"; render(); enterFs(el); return }
-    if(v === "jwst-ceers"){ jwstTarget = { ra: JWST_DEEP_FIELDS.ceers.ra, dec: JWST_DEEP_FIELDS.ceers.dec, label: JWST_DEEP_FIELDS.ceers.name }; url = buildJwstUrl(); extra = `${esc(jwstTarget.label)} - FoV deep`; srcLabel = jwstMode === "esasky" ? "ESASky (360 pan/zoom)" : "Aladin JWST HiPS"; render(); enterFs(el); return }
-    if(v === "jwst-zenith"){ jwstTarget = { ra: zd.ra, dec: zd.dec, label: "Local zenith (from viewpoint)" }; url = buildJwstUrl(); extra = `zenith RA ${zd.ra.toFixed(1)} Dec ${zd.dec.toFixed(1)}`; srcLabel = jwstMode === "esasky" ? "ESASky (360 pan/zoom)" : "Aladin JWST HiPS"; render(); enterFs(el); return }
-    if(v === "jwst-aladin"){ jwstMode = "aladin"; url = buildJwstUrl(); srcLabel = "Aladin JWST HiPS"; extra = `${esc(jwstTarget.label)} - FoV deep`; render(); enterFs(el); return }
-    if(v === "jwst-esasky"){ jwstMode = "esasky"; url = buildJwstUrl(); srcLabel = "ESASky (360 pan/zoom)"; extra = `${esc(jwstTarget.label)} - FoV deep - drag to pan`; render(); enterFs(el); return }
+    parkActiveFromOverlay();
+    if(v === "jwst-smacs"){ jwstTarget = { ra: JWST_DEEP_FIELDS.smacs.ra, dec: JWST_DEEP_FIELDS.smacs.dec, label: JWST_DEEP_FIELDS.smacs.name, id: "smacs" }; render(); enterFs(el); return }
+    if(v === "jwst-ceers"){ jwstTarget = { ra: JWST_DEEP_FIELDS.ceers.ra, dec: JWST_DEEP_FIELDS.ceers.dec, label: JWST_DEEP_FIELDS.ceers.name, id: "ceers" }; render(); enterFs(el); return }
+    if(v === "jwst-zenith"){ jwstTarget = { ra: zd.ra, dec: zd.dec, label: "Local zenith (from viewpoint)", id: "zenith" }; render(); enterFs(el); return }
+    if(v === "jwst-aladin"){ jwstMode = "aladin"; render(); enterFs(el); return }
+    if(v === "jwst-esasky"){ jwstMode = "esasky"; render(); enterFs(el); return }
   };
   enterFs(el);
 }
@@ -574,6 +842,7 @@ function openGlobe(onPick){
 function usePlaceableTelescope(tierKey, opts = {}){
   activeTier = tierKey === "jwst" ? "jwst" : tierKey === "mid" ? "mid" : "galileo";
   const toast = opts.toast || (() => {});
+  lastToast = toast;
   const title = activeTier === "jwst" ? "JAMES WEBB TELESCOPE"
     : activeTier === "mid" ? "OBSERVATORY TELESCOPE" : "GALILEO TELESCOPE";
   askSwitch(
@@ -604,4 +873,4 @@ export function telescopeIsOpen(){
   return !!(el && !el.hidden);
 }
 
-export { FALLBACK, PLACES, STORE_KEY, activeTier };
+export { FALLBACK, PLACES, STORE_KEY, SESSION_KEY, activeTier, warmFrames };

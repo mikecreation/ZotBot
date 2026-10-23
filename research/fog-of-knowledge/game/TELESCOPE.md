@@ -39,7 +39,6 @@ Key: `fog-of-knowledge:game:telescope:viewpoint` (one global last viewpoint, not
 Craft **Observatory telescope** (`telescope_mid`): 4 lens + 2 bronze + 2 glass + 3 log + 6 stick + 1 iron bloom. Requires optics.
 Place with Q (ghost). Much larger pier-mounted mesh than Galileo.
 E -> Switch location? same UX. Sky: **Aladin Lite** DSS2 color HiPS at ~2 deg FoV aimed at local-night zenith (from lat/lon). Fullscreen on open.
-JWST (tier 3) not shipped.
 
 ## Tier 3 -- James Webb telescope (jwst)
 
@@ -48,4 +47,16 @@ Place with Q -- huge segmented-mirror + sunshield mesh.
 E -> Switch location? same globe/fullscreen UX.
 Sky: **Aladin Lite** `CDS/P/JWST/OPEN` HiPS (default SMACS 0723 deep field) with pan/zoom; **ESASky** toggle for 360 deg mission UI. Buttons: SMACS, CEERS, local zenith, Aladin JWST, ESASky 360.
 Real public survey data only (no fake nebula shaders).
+
+## Sky cache (persist until Dump)
+
+Telescope skies are kept **warm forever** until you dump them:
+- **Warm iframe pool**: closing E parks the Aladin/Stellarium/ESASky iframe off-screen; reopening the same tier+viewpoint (and JWST target/mode) reattaches it with **no src reload**.
+- **IndexedDB** (`fog-of-knowledge-telescope` / `skySessions`) + **localStorage** (`fog-of-knowledge:game:telescope:sessions`) store last URL, FoV, survey, RA/Dec, tier prefs.
+- Viewpoint still in `fog-of-knowledge:game:telescope:viewpoint`.
+- **Dump telescope cache** button in the sky overlay (also `window.__fogWorld.telescope.dumpCache()`) clears warm iframes, sessions, viewpoint, and any `fog-of-knowledge-telescope*` Cache API entries.
+
+### What is truly cached vs network
+- **Cached by us**: last URLs, targets, FoV, survey id, JWST mode, warm DOM iframes (instant reopen in-session).
+- **Residual network**: Stellarium Web / Aladin / ESASky are third-party. HiPS tiles live on their CDNs; we cannot fully offline-cache cross-origin tiles. After a full browser restart, the first reopen still hits their HTTP cache when possible, then warms again. Dump forces a cold load.
 
