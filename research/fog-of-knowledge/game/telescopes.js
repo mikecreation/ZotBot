@@ -7,7 +7,7 @@
  * E on telescope -> "Switch location?"  Yes = interactive globe (countries + ocean).
  * No / default path = current saved or geolocated / Florence sky (no fake stars).
  * Tier 2 Observatory (mid): Aladin Lite DSS2 HiPS, deep ~2 deg FoV.
- * Tier 3 JWST: deferred.
+ * Tier 3 James Webb (jwst): Aladin JWST HiPS + ESASky, deep FoV / 360 pan.
  */
 import * as T from "./vendor/three.module.min.js";
 
@@ -69,9 +69,17 @@ const PLACES = [
 
 export const TELESCOPE_GALILEO = "telescope_galileo";
 export const TELESCOPE_MID = "telescope_mid";
-export function isTelescope(type){ return type === TELESCOPE_GALILEO || type === TELESCOPE_MID }
+export const TELESCOPE_JWST = "telescope_jwst";
+export function isTelescope(type){ return type === TELESCOPE_GALILEO || type === TELESCOPE_MID || type === TELESCOPE_JWST }
 export function isMidTelescope(type){ return type === TELESCOPE_MID }
+export function isJwstTelescope(type){ return type === TELESCOPE_JWST }
 let activeTier = "galileo";
+/** Famous JWST deep fields (RA/Dec deg) for early-universe feel. */
+export const JWST_DEEP_FIELDS = {
+  smacs: { ra: 110.8375, dec: -73.4545, name: "SMACS 0723 (JWST First Deep Field)" },
+  ceers: { ra: 214.91, dec: 52.91, name: "CEERS / EGS deep field" },
+  stephans: { ra: 338.23, dec: 33.86, name: "Stephan Quintet (JWST)" },
+};
 
 function woodMat(c){ return new T.MeshStandardMaterial({ color: c, roughness: 0.88, metalness: 0.02 }) }
 function brassMat(c){ return new T.MeshStandardMaterial({ color: c, roughness: 0.35, metalness: 0.75 }) }
@@ -151,6 +159,67 @@ export function buildMidMesh(){
   return g;
 }
 
+/** Huge JWST-class observatory -- segmented gold primary, sunshield, bus (obviously bigger than mid). */
+export function buildJwstMesh(){
+  const g = new T.Group(); g.name = TELESCOPE_JWST; g.userData.telescope = TELESCOPE_JWST;
+  const gold = new T.MeshStandardMaterial({ color: 0xc9a227, roughness: 0.28, metalness: 0.85 });
+  const dark = new T.MeshStandardMaterial({ color: 0x1a1c22, roughness: 0.7, metalness: 0.35 });
+  const silver = new T.MeshStandardMaterial({ color: 0x9aa3ad, roughness: 0.4, metalness: 0.65 });
+  const foil = new T.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.55, metalness: 0.2, side: T.DoubleSide });
+  const bus = new T.Mesh(new T.BoxGeometry(1.1, 0.7, 1.4), dark);
+  bus.position.set(0, 1.1, -0.2); bus.castShadow = true; g.add(bus);
+  const tower = new T.Mesh(new T.CylinderGeometry(0.12, 0.16, 1.6, 10), silver);
+  tower.position.set(0, 2.2, -0.15); g.add(tower);
+  // sunshield stack (5 layers, diamond-ish)
+  for(let i = 0; i < 5; i++){
+    const w = 3.2 + i * 0.15, d = 2.2 + i * 0.1;
+    const layer = new T.Mesh(new T.PlaneGeometry(w, d), foil);
+    layer.rotation.x = -Math.PI / 2;
+    layer.position.set(0, 0.55 - i * 0.06, 0.35);
+    g.add(layer);
+  }
+  // hexagonal primary (18 segments approx as hex ring + center)
+  const mirrorY = 3.15;
+  const hexR = 0.38;
+  const positions = [[0,0]];
+  for(let k = 0; k < 6; k++){
+    const a = (k / 6) * Math.PI * 2;
+    positions.push([Math.cos(a) * hexR * 1.85, Math.sin(a) * hexR * 1.85]);
+  }
+  for(let k = 0; k < 6; k++){
+    const a = (k / 6) * Math.PI * 2 + Math.PI / 6;
+    positions.push([Math.cos(a) * hexR * 3.2, Math.sin(a) * hexR * 3.2]);
+  }
+  for(let k = 0; k < 6; k++){
+    const a = (k / 6) * Math.PI * 2;
+    positions.push([Math.cos(a) * hexR * 3.7, Math.sin(a) * hexR * 3.7]);
+  }
+  for(const [x, z] of positions){
+    const seg = new T.Mesh(new T.CylinderGeometry(hexR * 0.92, hexR * 0.92, 0.06, 6), gold);
+    seg.position.set(x, mirrorY, z - 0.1);
+    seg.castShadow = true; g.add(seg);
+  }
+  // secondary on tripod boom
+  const boom = new T.Mesh(new T.CylinderGeometry(0.04, 0.04, 2.4, 8), silver);
+  boom.rotation.z = 0.55; boom.position.set(1.0, 3.9, -0.1); g.add(boom);
+  const boom2 = new T.Mesh(new T.CylinderGeometry(0.035, 0.035, 2.1, 8), silver);
+  boom2.rotation.z = -0.55; boom2.position.set(-0.95, 3.85, -0.1); g.add(boom2);
+  const boom3 = new T.Mesh(new T.CylinderGeometry(0.035, 0.035, 2.0, 8), silver);
+  boom3.rotation.x = 0.5; boom3.position.set(0, 3.8, 0.9); g.add(boom3);
+  const sec = new T.Mesh(new T.CylinderGeometry(0.22, 0.22, 0.08, 12), gold);
+  sec.position.set(0, 4.55, -0.05); g.add(sec);
+  // ISIM / instrument bay hint
+  const isim = new T.Mesh(new T.BoxGeometry(0.7, 0.45, 0.55), dark);
+  isim.position.set(0, 2.55, -0.55); g.add(isim);
+  // ground pad so placeable sits huge
+  const pad = new T.Mesh(new T.CylinderGeometry(1.6, 1.75, 0.25, 12), dark);
+  pad.position.y = 0.12; pad.receiveShadow = true; g.add(pad);
+  const strut = new T.Mesh(new T.CylinderGeometry(0.18, 0.22, 0.9, 10), silver);
+  strut.position.y = 0.7; g.add(strut);
+  g.userData.placeY = 0;
+  return g;
+}
+
 export function loadViewpoint(){
   try{
     const s = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
@@ -203,6 +272,30 @@ export function aladinUrl(lat, lon, opts = {}){
   return "https://aladin.cds.unistra.fr/AladinLite/?target=" + target + "&fov=" + fov + "&survey=" + survey;
 }
 
+/** Aladin Lite with public JWST HiPS (CDS/P/JWST/OPEN). opts.ra/dec override zenith. Deep FoV default. */
+export function jwstAladinUrl(lat, lon, opts = {}){
+  let ra, dec;
+  if(opts.ra != null && opts.dec != null){ ra = +opts.ra; dec = +opts.dec; }
+  else { const z = zenithRaDec(lat, lon); ra = z.ra; dec = z.dec; }
+  const fov = opts.fov ?? 0.2;
+  const survey = encodeURIComponent(opts.survey || "CDS/P/JWST/OPEN");
+  const target = encodeURIComponent(ra.toFixed(4) + " " + dec.toFixed(4));
+  return "https://aladin.cds.unistra.fr/AladinLite/?target=" + target + "&fov=" + fov + "&survey=" + survey;
+}
+
+/** ESASky -- full 360 pan/zoom, science mode, real mission HiPS / JWST tools. */
+export function esaskyUrl(lat, lon, opts = {}){
+  let ra, dec;
+  if(opts.ra != null && opts.dec != null){ ra = +opts.ra; dec = +opts.dec; }
+  else { const z = zenithRaDec(lat, lon); ra = z.ra; dec = z.dec; }
+  const fov = opts.fov ?? 0.35;
+  const target = encodeURIComponent(ra.toFixed(4) + " " + dec.toFixed(4));
+  let url = "https://sky.esa.int/esasky?hide_welcome=true&hide_banner=true&sci=true&projection=SIN&cooframe=J2000"
+    + "&target=" + target + "&fov=" + fov;
+  if(opts.hips) url += "&hips=" + encodeURIComponent(opts.hips);
+  return url;
+}
+
 function ensureOverlay(){
   let el = document.getElementById("wTelescope");
   if(el) return el;
@@ -247,7 +340,7 @@ function askSwitch(onYes, onNo, title){
   el.classList.remove("telSkyFs");
   exitFs();
   el.hidden = false;
-  const ttl = title || (activeTier === "mid" ? "OBSERVATORY TELESCOPE" : "GALILEO TELESCOPE");
+  const ttl = title || (activeTier === "jwst" ? "JAMES WEBB TELESCOPE" : activeTier === "mid" ? "OBSERVATORY TELESCOPE" : "GALILEO TELESCOPE");
   el.innerHTML = `<div class="box telAsk" role="dialog" aria-label="Switch telescope location">
     <h3>` + ttl + `</h3>
     <p>Switch location?</p>
@@ -284,40 +377,81 @@ function resolveDefaultViewpoint(cb){
 }
 
 function openSky(view, tierKey){
-  if(tierKey === "mid" || tierKey === "galileo") activeTier = tierKey;
+  if(tierKey === "mid" || tierKey === "galileo" || tierKey === "jwst") activeTier = tierKey;
   const mid = activeTier === "mid";
+  const jwst = activeTier === "jwst";
   const el = ensureOverlay();
   el.hidden = false;
   el.classList.add("telSkyFs");
-  const url = mid ? aladinUrl(view.lat, view.lon) : stellariumUrl(view.lat, view.lon);
+  const zd = zenithRaDec(view.lat, view.lon);
+  let url, skyTitle, srcLabel, extra;
+  let jwstMode = "aladin"; // aladin | esasky
+  let jwstTarget = { ra: JWST_DEEP_FIELDS.smacs.ra, dec: JWST_DEEP_FIELDS.smacs.dec, label: JWST_DEEP_FIELDS.smacs.name };
+
+  function buildJwstUrl(){
+    if(jwstMode === "esasky"){
+      return esaskyUrl(view.lat, view.lon, { ra: jwstTarget.ra, dec: jwstTarget.dec, fov: 0.4 });
+    }
+    return jwstAladinUrl(view.lat, view.lon, { ra: jwstTarget.ra, dec: jwstTarget.dec, fov: 0.18 });
+  }
+
+  if(jwst){
+    url = buildJwstUrl();
+    skyTitle = "DEEP UNIVERSE -- James Webb";
+    srcLabel = jwstMode === "esasky" ? "ESASky (360 pan/zoom)" : "Aladin JWST HiPS";
+    extra = `${esc(jwstTarget.label)} - FoV deep - pan/zoom in viewer`;
+  } else if(mid){
+    url = aladinUrl(view.lat, view.lon);
+    skyTitle = "DEEP SKY -- Observatory";
+    srcLabel = "Aladin Lite DSS2";
+    extra = `zenith RA ${zd.ra.toFixed(1)} Dec ${zd.dec.toFixed(1)} - deep FoV ~2 deg`;
+  } else {
+    url = stellariumUrl(view.lat, view.lon);
+    skyTitle = "REAL SKY -- Galileo";
+    srcLabel = "Stellarium Web";
+    const night = nightUtcIso(view.lon);
+    extra = `local night ~${esc(night)} UTC - wide FoV ~45 deg`;
+  }
   const label = esc(view.name || `${view.lat.toFixed(2)}, ${view.lon.toFixed(2)}`);
   const src = esc(view.source || "saved");
-  const night = nightUtcIso(view.lon);
-  const zd = zenithRaDec(view.lat, view.lon);
-  const skyTitle = mid ? "DEEP SKY -- Observatory" : "REAL SKY -- Galileo";
-  const srcLabel = mid ? "Aladin Lite DSS2" : "Stellarium Web";
-  const extra = mid
-    ? (`zenith RA ${zd.ra.toFixed(1)} Dec ${zd.dec.toFixed(1)} - deep FoV ~2 deg`)
-    : (`local night ~${esc(night)} UTC - wide FoV ~45 deg`);
-  el.innerHTML = `<div class="box telSky" role="dialog" aria-label="Real sky viewer">
+
+  function render(){
+    const jwstBtns = jwst ? `
+        <button data-tel="jwst-smacs">SMACS deep</button>
+        <button data-tel="jwst-ceers">CEERS</button>
+        <button data-tel="jwst-zenith">Local zenith</button>
+        <button data-tel="jwst-aladin">Aladin JWST</button>
+        <button data-tel="jwst-esasky">ESASky 360</button>` : "";
+    const note = jwst
+      ? "Sky data: public CDS Aladin JWST HiPS (CDS/P/JWST/OPEN) and ESA ESASky. Pan/zoom in the viewer -- real deep fields, not shaders. Coverage is sparse outside JWST pointings; use SMACS/CEERS jumps."
+      : `Sky data: public ${srcLabel} (real catalogs / HiPS for the chosen lat/lon). Open-world night sky stays stylized; only telescope mode is 100% real.`;
+    el.innerHTML = `<div class="box telSky" role="dialog" aria-label="Real sky viewer">
     <header class="telHead">
       <div>
         <h3>${skyTitle}</h3>
         <small>Viewpoint: <b>${label}</b> (${src}) - ${srcLabel} - ${extra}</small>
       </div>
       <div class="telActs">
-        <button data-tel="relocate">Switch location</button>
+        <button data-tel="relocate">Switch location</button>${jwstBtns}
         <button data-tel="close" class="primary">Exit (Esc)</button>
       </div>
     </header>
-    <iframe class="telFrame" title="${srcLabel} real sky" src="${esc(url)}" allow="fullscreen" referrerpolicy="no-referrer-when-downgrade"></iframe>
-    <p class="telNote muted">Sky data: public ${srcLabel} (real catalogs / HiPS for the chosen lat/lon). Open-world night sky stays stylized; only telescope mode is 100% real. JWST tier not shipped yet.</p>
+    <iframe class="telFrame" title="${srcLabel} real sky" src="${esc(url)}" allow="fullscreen; clipboard-read; clipboard-write" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    <p class="telNote muted">${note}</p>
   </div>`;
+  }
+  render();
   el.onclick = e => {
     const b = e.target.closest("[data-tel]"); if(!b) return;
     const v = b.getAttribute("data-tel");
     if(v === "close"){ closeOverlay(); return }
     if(v === "relocate"){ exitFs(); el.classList.remove("telSkyFs"); openGlobe(picked => { saveViewpoint(picked); openSky(picked, activeTier) }); return }
+    if(!jwst) return;
+    if(v === "jwst-smacs"){ jwstTarget = { ra: JWST_DEEP_FIELDS.smacs.ra, dec: JWST_DEEP_FIELDS.smacs.dec, label: JWST_DEEP_FIELDS.smacs.name }; url = buildJwstUrl(); extra = `${esc(jwstTarget.label)} - FoV deep`; srcLabel = jwstMode === "esasky" ? "ESASky (360 pan/zoom)" : "Aladin JWST HiPS"; render(); enterFs(el); return }
+    if(v === "jwst-ceers"){ jwstTarget = { ra: JWST_DEEP_FIELDS.ceers.ra, dec: JWST_DEEP_FIELDS.ceers.dec, label: JWST_DEEP_FIELDS.ceers.name }; url = buildJwstUrl(); extra = `${esc(jwstTarget.label)} - FoV deep`; srcLabel = jwstMode === "esasky" ? "ESASky (360 pan/zoom)" : "Aladin JWST HiPS"; render(); enterFs(el); return }
+    if(v === "jwst-zenith"){ jwstTarget = { ra: zd.ra, dec: zd.dec, label: "Local zenith (from viewpoint)" }; url = buildJwstUrl(); extra = `zenith RA ${zd.ra.toFixed(1)} Dec ${zd.dec.toFixed(1)}`; srcLabel = jwstMode === "esasky" ? "ESASky (360 pan/zoom)" : "Aladin JWST HiPS"; render(); enterFs(el); return }
+    if(v === "jwst-aladin"){ jwstMode = "aladin"; url = buildJwstUrl(); srcLabel = "Aladin JWST HiPS"; extra = `${esc(jwstTarget.label)} - FoV deep`; render(); enterFs(el); return }
+    if(v === "jwst-esasky"){ jwstMode = "esasky"; url = buildJwstUrl(); srcLabel = "ESASky (360 pan/zoom)"; extra = `${esc(jwstTarget.label)} - FoV deep - drag to pan`; render(); enterFs(el); return }
   };
   enterFs(el);
 }
@@ -438,9 +572,10 @@ function openGlobe(onPick){
 
 /** Public entry: E on a placed Galileo telescope. */
 function usePlaceableTelescope(tierKey, opts = {}){
-  activeTier = tierKey === "mid" ? "mid" : "galileo";
+  activeTier = tierKey === "jwst" ? "jwst" : tierKey === "mid" ? "mid" : "galileo";
   const toast = opts.toast || (() => {});
-  const title = activeTier === "mid" ? "OBSERVATORY TELESCOPE" : "GALILEO TELESCOPE";
+  const title = activeTier === "jwst" ? "JAMES WEBB TELESCOPE"
+    : activeTier === "mid" ? "OBSERVATORY TELESCOPE" : "GALILEO TELESCOPE";
   askSwitch(
     () => openGlobe(v => { saveViewpoint(v); toast(`Viewpoint set: ${v.name}`); openSky(v, activeTier) }),
     () => resolveDefaultViewpoint(v => { toast(`Sky from ${v.name}`); openSky(v, activeTier) }),
@@ -450,8 +585,10 @@ function usePlaceableTelescope(tierKey, opts = {}){
 
 export function useGalileoTelescope(opts = {}){ usePlaceableTelescope("galileo", opts) }
 export function useMidTelescope(opts = {}){ usePlaceableTelescope("mid", opts) }
+export function useJwstTelescope(opts = {}){ usePlaceableTelescope("jwst", opts) }
 export function useTelescopeFor(type, opts = {}){
-  if(type === TELESCOPE_MID) useMidTelescope(opts);
+  if(type === TELESCOPE_JWST) useJwstTelescope(opts);
+  else if(type === TELESCOPE_MID) useMidTelescope(opts);
   else useGalileoTelescope(opts);
 }
 

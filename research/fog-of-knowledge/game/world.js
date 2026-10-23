@@ -24,7 +24,7 @@ import {walkPath} from "./walk-path.js?v=3.33.0";
 import {drillProblem,advanceDrill} from "./friction-fire.js?v=3.33.0";
 import {primitiveItem,workbenchMesh,setBowDraw} from "./primitive-models.js?v=3.36.0";
 import {isWheel,SMASHABLE} from "./wheels.js?v=3.34.0";
-import {isTelescope,isMidTelescope,buildGalileoMesh,buildMidMesh,useGalileoTelescope,useMidTelescope,useTelescopeFor,telescopeKeydown,telescopeIsOpen,TELESCOPE_GALILEO,TELESCOPE_MID} from "./telescopes.js?v=3.40.0";
+import {isTelescope,isMidTelescope,isJwstTelescope,buildGalileoMesh,buildMidMesh,buildJwstMesh,useGalileoTelescope,useMidTelescope,useJwstTelescope,useTelescopeFor,telescopeKeydown,telescopeIsOpen,TELESCOPE_GALILEO,TELESCOPE_MID,TELESCOPE_JWST} from "./telescopes.js?v=3.41.0";
 import * as GFX from "./gfx.js?v=3.36.0";
 import * as AXE from "./axe.js?v=3.29.1";
 import * as AU from "./audio.js?v=3.35.0";
@@ -726,12 +726,13 @@ function structMesh(s){
   else if(s.type==="shipyard")shipyardMesh(s,g);
   else if(isWoodland(s.type))woodMesh(s,g);
   else if(s.type==="ship"){const gal=GAL.buildGalleon({});s._gal=gal;g.add(gal)}
+  else if(isJwstTelescope(s.type)){g.add(buildJwstMesh())}
   else if(isMidTelescope(s.type)){g.add(buildMidMesh())}
   else if(isTelescope(s.type)){g.add(buildGalileoMesh())}
   else if(s.type==="gnomon"){g.add(box(.05,1,.05,0xa07a4a,.5));const sh=box(.04,.01,1,0x1a1a1a,.01);sh.geometry.translate(0,0,-.5);g.add(sh);s.shadow=sh}
   g.position.set(s.x,s.y,s.z);g.rotation.y=s.ry||0;scene.add(g);s.obj=g;if(s.type==="rack")updateRack(s);return g;
 }
-const PLACE_DIST={hut:3.6,house:4.2,well:2.2,wall:2,chest:1.5,rack:1.8,pendulum:2,torch:1.4,telescope_galileo:2.2,telescope_mid:3.4};
+const PLACE_DIST={hut:3.6,house:4.2,well:2.2,wall:2,chest:1.5,rack:1.8,pendulum:2,torch:1.4,telescope_galileo:2.2,telescope_mid:3.4,telescope_jwst:5.2};
 function place(type,extra={}){
   if(type==="shipyard")return placeShipyard(extra);
   if(type==="raft")return placeRaftSite(extra);
@@ -2189,6 +2190,7 @@ function confirmPlaceMode(){
   else if(type==="table")toast("Study table ready. E to study.");
   else if(type==="well")toast(`You dig down about ${Math.max(1,Math.round(heightAt(p.x,p.z)))} m and water seeps in from the ground. E to drink, Q with a pot to fill it.`);
   else if(type==="pendulum")toast("Pendulum frame built. E to start timing ten swings; Q to change the length.");
+  else if(isJwstTelescope(type))toast("James Webb telescope placed. E for deep-universe JWST/ESASky sky; switch location or jump to SMACS/CEERS.");
   else if(isMidTelescope(type))toast("Observatory telescope placed. E for deep Aladin sky; switch country or ocean viewpoint.");
   else if(isTelescope(type))toast("Galileo telescope placed. E to look at the real sky; you can switch country or ocean viewpoint.");
   else if(type==="chest")toast("Storage chest built. E to open it.");else if(type==="rack")toast("Drying rack built. Hang raw meat on it with Q.");
@@ -2490,7 +2492,7 @@ export function initWorld(){
       for(const k in out)out[k]=Math.round(out[k]);return {res:out,boulder:Math.round(boulder),tree:Math.round(tree),water,relief1km:Math.round(hi-lo),hi:Math.round(hi)}},
     clearStructs:()=>{for(const o of world.structures)o.obj&&scene.remove(o.obj);world.structures.length=0;player.raft=null;player.ship=null;player.helm=false},
     dev:DEV_MODE,ship:SHIP_DEBUG,woodland:WOOD_DEBUG,raft:RAFT_DEBUG,place:{begin:beginPlaceMode,cancel:()=>cancelPlaceMode(),rotate:rotatePlaceMode,confirm:confirmPlaceMode,get active(){return!!placeSess},get yaw(){return placeSess?yawDegrees(placeSess.ry):null},hint:showPlaceHint},
-    telescope:{open:(t)=>useTelescopeFor(t||TELESCOPE_GALILEO,{toast}),openGalileo:()=>useGalileoTelescope({toast}),openMid:()=>useMidTelescope({toast}),isOpen:telescopeIsOpen,id:TELESCOPE_GALILEO,mid:TELESCOPE_MID},
+    telescope:{open:(t)=>useTelescopeFor(t||TELESCOPE_GALILEO,{toast}),openGalileo:()=>useGalileoTelescope({toast}),openMid:()=>useMidTelescope({toast}),openJwst:()=>useJwstTelescope({toast}),isOpen:telescopeIsOpen,id:TELESCOPE_GALILEO,mid:TELESCOPE_MID,jwst:TELESCOPE_JWST},
     clearDrops:()=>{for(const d of world.drops)scene.remove(d.mesh);world.drops.length=0},
     clearAnimals:kind=>{for(let i=animals.length-1;i>=0;i--)if(!kind||animals[i].kind===kind){scene.remove(animals[i].g);animals.splice(i,1)}},
     fireAt:()=>fireHeatAt(player.pos.x,player.pos.z),noise:()=>playerNoiseDb?playerNoiseDb():null};

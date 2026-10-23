@@ -41,3 +41,11 @@ Place with Q (ghost). Much larger pier-mounted mesh than Galileo.
 E -> Switch location? same UX. Sky: **Aladin Lite** DSS2 color HiPS at ~2 deg FoV aimed at local-night zenith (from lat/lon). Fullscreen on open.
 JWST (tier 3) not shipped.
 
+## Tier 3 -- James Webb telescope (jwst)
+
+Craft **James Webb telescope** (`telescope_jwst`): 8 lens + 4 bronze + 6 glass + 4 iron + 3 quartz + 5 log + 10 stick + 1 prism. Requires optics (late-game cost).
+Place with Q -- huge segmented-mirror + sunshield mesh.
+E -> Switch location? same globe/fullscreen UX.
+Sky: **Aladin Lite** `CDS/P/JWST/OPEN` HiPS (default SMACS 0723 deep field) with pan/zoom; **ESASky** toggle for 360 deg mission UI. Buttons: SMACS, CEERS, local zenith, Aladin JWST, ESASky 360.
+Real public survey data only (no fake nebula shaders).
+
