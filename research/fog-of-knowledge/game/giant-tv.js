@@ -412,7 +412,7 @@ export function mediaTvStruct() {
 function loadCss3dApi() {
   if (CSS3DObject && CSS3DRenderer) return Promise.resolve(true);
   if (cssApiPromise) return cssApiPromise;
-  cssApiPromise = import("./vendor/addons/renderers/CSS3DRenderer.js?v=3.52.2")
+  cssApiPromise = import("./vendor/addons/renderers/CSS3DRenderer.js?v=3.52.3")
     .then(m => {
       CSS3DObject = m.CSS3DObject;
       CSS3DRenderer = m.CSS3DRenderer;
@@ -469,7 +469,7 @@ function ensureScreenIframe() {
   wrap.style.background = "#000";
   wrap.style.overflow = "hidden";
   wrap.style.borderRadius = "4px";
-  wrap.style.pointerEvents = "auto";
+  wrap.style.pointerEvents = "none";
   const iframe = document.createElement("iframe");
   iframe.className = "tvScreenFrame";
   iframe.title = "House TV";
@@ -499,7 +499,10 @@ function attachCssToGlass(root) {
     glass.add(cssObj);
   }
   cssObj.visible = true;
-  if (cssHost) cssHost.style.pointerEvents = "auto";
+  // Host must stay pointer-events:none -- full-viewport layer would steal mouse-look.
+  // Screen wrap may accept clicks only while HUD (watchS) is open; Exit clears that.
+  if (cssHost) cssHost.style.pointerEvents = "none";
+  if (cssObj.element) cssObj.element.style.pointerEvents = watchS ? "auto" : "none";
   syncCssToGlass(root);
 }
 
@@ -840,8 +843,19 @@ export function exitWatch() {
   if (root) setTvHighlight(root, false);
   watchS = null;
   if (overlay) overlay.hidden = true;
-  // mediaS, iframe, spatial bed, tvOpen all stay — player walks + crafts with audio.
-  if (cssHost) cssHost.style.pointerEvents = "auto";
+  // mediaS, iframe, spatial bed, tvOpen all stay -- player walks + crafts with audio.
+  // Critical: CSS3D host is full-viewport; leaving pointer-events:auto steals mouse-look.
+  if (cssHost) cssHost.style.pointerEvents = "none";
+  if (cssObj && cssObj.element) cssObj.element.style.pointerEvents = "none";
+  if (iframeEl) iframeEl.style.pointerEvents = "none";
+  // Restore normal hero look immediately (same as never having opened the HUD).
+  try {
+    const canvas = document.querySelector("#mode-world canvas") || document.querySelector("canvas");
+    if (canvas && document.pointerLockElement !== canvas) {
+      canvas.focus && canvas.focus({ preventScroll: true });
+      canvas.requestPointerLock && canvas.requestPointerLock();
+    }
+  } catch (_) {}
 }
 
 /** Back-compat alias used by world.js Esc / debug.tv.close — same as Exit (minimize). */
