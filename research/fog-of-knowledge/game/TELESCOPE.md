@@ -38,14 +38,7 @@ Key: `fog-of-knowledge:game:telescope:viewpoint` (one global last viewpoint, not
 
 Craft **Observatory telescope** (`telescope_mid`): 4 lens + 2 bronze + 2 glass + 3 log + 6 stick + 1 iron bloom. Requires optics.
 Place with Q (ghost). Much larger pier-mounted mesh than Galileo.
-E -> Switch location? same UX. Sky: **Aladin Lite** DSS2 color HiPS at ~2 deg FoV aimed at local-night zenith (from lat/lon). Fullscreen on open.
-
-## Tier 3 -- James Webb telescope (jwst)
-
-Craft **James Webb telescope** (`telescope_jwst`): 8 lens + 4 bronze + 6 glass + 4 iron + 3 quartz + 5 log + 10 stick + 1 prism. Requires optics (late-game cost).
-Place with Q -- huge segmented-mirror + sunshield mesh.
-E -> Switch location? same globe/fullscreen UX.
-Sky: **Aladin Lite** colorful JWST HiPS -- SMACS uses Deep-Field SMACS0723 NIRCam HiPS URL (~0.04 deg FoV, projection=SIN); CEERS/zenith use JWST EPO HiPS URL; **ESASky** toggle for 360 deg. Buttons: SMACS, CEERS, local zenith, Aladin JWST, ESASky 360. Warm JWST cache keys versioned (`jwst3`) so old OPEN sessions auto-bust without Dump.
+E -> Switch location? same UX. Sky: **local Aladin embed** (`aladin-jwst.html`) — JWST HiPS only, SIN, tight FoV (no CDS site sidebar / eROSITA / all-sky). Default **SMACS Deep-Field NIRCam** (~0.04 deg). CEERS switches to EPO HiPS at CEERS coords; Local zenith snaps to nearest curated JWST patch (SMACS/CEERS/Stephans/Carina/EPO). FoV clamped ~0.008–0.25 deg so pan/zoom stays on the patch. **ESASky** toggle still available. Warm JWST cache keys versioned (`jwst4`) so old CDS AladinLite / OPEN sessions auto-bust without Dump.
 Real public survey data only (no fake nebula shaders).
 
 ## Sky cache (persist until Dump)

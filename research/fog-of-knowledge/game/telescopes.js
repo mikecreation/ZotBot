@@ -7,7 +7,7 @@
  * E on telescope -> "Switch location?"  Yes = interactive globe (countries + ocean).
  * No / default path = current saved or geolocated / Florence sky (no fake stars).
  * Tier 2 Observatory (mid): Aladin Lite DSS2 HiPS, deep ~2 deg FoV.
- * Tier 3 James Webb (jwst): Aladin colorful JWST HiPS (SMACS Deep-Field / EPO) + ESASky.
+ * Tier 3 James Webb (jwst): local Aladin embed, JWST HiPS only (SMACS default; CEERS/EPO/Stephans patches) + ESASky.
  */
 import * as T from "./vendor/three.module.min.js";
 
@@ -16,14 +16,18 @@ const SESSION_KEY = "fog-of-knowledge:game:telescope:sessions";
 const IDB_NAME = "fog-of-knowledge-telescope";
 const IDB_STORE = "skySessions";
 /** Bump to invalidate warm/session JWST keys that used sparse CDS/P/JWST/OPEN (grey empty). */
-const JWST_SKY_CACHE_VER = "jwst3";
+const JWST_SKY_CACHE_VER = "jwst4";
 /** Colorful public CDS JWST HiPS as full hips_service_url (forces base; not sparse OPEN). */
 const JWST_HIPS = {
+  /* Full CDS HiPS service URLs (same pattern as working SMACS). Tight FoV only. */
   smacs: { survey: "https://alasky.cds.unistra.fr/JWST/CDS_P_JWST_deep_field_smacs0723-5mb", fov: 0.04 },
-  ceers: { survey: "https://alasky.cds.unistra.fr/JWST-outreach/CDS_P_JWST_EPO", fov: 0.06 },
-  stephans: { survey: "CDS/P/JWST/Stephans-Quintet/NIRCam-MIRI", fov: 0.08 },
-  zenith: { survey: "https://alasky.cds.unistra.fr/JWST-outreach/CDS_P_JWST_EPO", fov: 0.07 },
-  default: { survey: "https://alasky.cds.unistra.fr/JWST-outreach/CDS_P_JWST_EPO", fov: 0.07 }
+  ceers: { survey: "https://alasky.cds.unistra.fr/JWST-outreach/CDS_P_JWST_EPO", fov: 0.08 },
+  stephans: { survey: "https://alasky.cds.unistra.fr/JWST/CDS_P_JWST_Stephans-Quintet_NIRCam-MIRI", fov: 0.10 },
+  carina: { survey: "https://alasky.cds.unistra.fr/JWST/CDS_P_JWST_Carina-Nebula_NIRCam", fov: 0.12 },
+  epo: { survey: "https://alasky.cds.unistra.fr/JWST-outreach/CDS_P_JWST_EPO", fov: 0.07 },
+  /* zenith never points EPO at empty sky - snapped to nearest curated patch in useJwst */
+  zenith: { survey: "https://alasky.cds.unistra.fr/JWST/CDS_P_JWST_deep_field_smacs0723-5mb", fov: 0.04 },
+  default: { survey: "https://alasky.cds.unistra.fr/JWST/CDS_P_JWST_deep_field_smacs0723-5mb", fov: 0.04 }
 };
 function jwstHipsFor(targetId){
   return JWST_HIPS[targetId] || JWST_HIPS.default;
@@ -99,8 +103,29 @@ let activeTier = "galileo";
 export const JWST_DEEP_FIELDS = {
   smacs: { ra: 110.8375, dec: -73.4545, name: "SMACS 0723 (JWST First Deep Field)" },
   ceers: { ra: 214.91, dec: 52.91, name: "CEERS / EGS deep field" },
-  stephans: { ra: 338.23, dec: 33.86, name: "Stephan Quintet (JWST)" },
+  stephans: { ra: 338.99754, dec: 33.96049, name: "Stephan Quintet (JWST)" },
+  carina: { ra: 159.21303, dec: -58.62017, name: "Carina Nebula Cosmic Cliffs (JWST)" },
+  epo: { ra: 144.435833, dec: 2.75416667, name: "JWST EPO gallery" },
 };
+/** Curated colorful JWST patches only - never empty sky / all-sky surveys. */
+const JWST_CURATED_IDS = ["smacs", "ceers", "stephans", "carina", "epo"];
+function angDistDeg(ra1, dec1, ra2, dec2){
+  const d2r = Math.PI / 180;
+  const a1 = ra1 * d2r, b1 = dec1 * d2r, a2 = ra2 * d2r, b2 = dec2 * d2r;
+  const c = Math.sin(b1) * Math.sin(b2) + Math.cos(b1) * Math.cos(b2) * Math.cos(a1 - a2);
+  return Math.acos(Math.max(-1, Math.min(1, c))) / d2r;
+}
+/** Snap local zenith to nearest known JWST HiPS patch (never grey empty). */
+function nearestJwstField(ra, dec){
+  let best = null, bestD = 1e9;
+  for(const id of JWST_CURATED_IDS){
+    const f = JWST_DEEP_FIELDS[id];
+    if(!f) continue;
+    const d = angDistDeg(ra, dec, f.ra, f.dec);
+    if(d < bestD){ bestD = d; best = { id, ra: f.ra, dec: f.dec, label: f.name + " (nearest JWST)", distDeg: bestD }; }
+  }
+  return best || { id: "smacs", ra: JWST_DEEP_FIELDS.smacs.ra, dec: JWST_DEEP_FIELDS.smacs.dec, label: JWST_DEEP_FIELDS.smacs.name, distDeg: 0 };
+}
 
 function woodMat(c){ return new T.MeshStandardMaterial({ color: c, roughness: 0.88, metalness: 0.02 }) }
 function brassMat(c){ return new T.MeshStandardMaterial({ color: c, roughness: 0.35, metalness: 0.75 }) }
@@ -301,8 +326,10 @@ function jwstWarmIsStale(key, pack){
     const f = parseFloat(RegExp.$1);
     if(isFinite(f) && f >= 5) return true;
   }
+  if(/aladin\.cds\.unistra\.fr\/AladinLite/i.test(src)) return true; /* CDS site pulls eROSITA/all-sky */
   if(/AladinLite/i.test(src) && !/projection=SIN/i.test(src)) return true;
-  if(/AladinLite/i.test(src) && !/(Deep-Field|deep_field_smacs|JWST-outreach|CDS_P_JWST_EPO|Stephans)/i.test(src)) return true;
+  if(/AladinLite/i.test(src) && !/(Deep-Field|deep_field_smacs|JWST-outreach|CDS_P_JWST_EPO|Stephans|Carina)/i.test(src)) return true;
+  if(!/aladin-jwst\.html/i.test(src) && !/esasky|sky\.esa\.int/i.test(src)) return true;
   return false;
 }
 
@@ -570,20 +597,26 @@ export function aladinUrl(lat, lon, opts = {}){
   return "https://aladin.cds.unistra.fr/AladinLite/?target=" + target + "&fov=" + fov + "&survey=" + survey;
 }
 
-/** Aladin Lite colorful JWST HiPS. Default EPO; SMACS uses Deep-Field NIRCam. Tight FoV (arcmin). */
+/** Local Aladin Lite embed - JWST HiPS only, SIN, tight FoV. Avoids CDS site sidebar (eROSITA/all-sky). */
+function jwstEmbedPageUrl(){
+  try{ return new URL("aladin-jwst.html", import.meta.url).href; }
+  catch(_){ return "aladin-jwst.html"; }
+}
 export function jwstAladinUrl(lat, lon, opts = {}){
   let ra, dec;
   if(opts.ra != null && opts.dec != null){ ra = +opts.ra; dec = +opts.dec; }
   else { const z = zenithRaDec(lat, lon); ra = z.ra; dec = z.dec; }
-  const hips = jwstHipsFor(opts.targetId || "default");
+  const hips = jwstHipsFor(opts.targetId || "smacs");
   const fov = opts.fov != null ? +opts.fov : hips.fov;
-  const survey = encodeURIComponent(opts.survey || hips.survey);
-  const target = encodeURIComponent(ra.toFixed(4) + " " + dec.toFixed(4));
-  // Full HiPS URL as survey= forces JWST base; projection=SIN kills AIT/MOL all-sky empty oval.
-  return "https://aladin.cds.unistra.fr/AladinLite/?target=" + target
-    + "&fov=" + fov
-    + "&survey=" + survey
-    + "&projection=SIN";
+  const survey = opts.survey || hips.survey;
+  const label = opts.label || (opts.targetId || "JWST");
+  const q = new URLSearchParams();
+  q.set("ra", Number(ra).toFixed(4));
+  q.set("dec", Number(dec).toFixed(4));
+  q.set("fov", String(fov));
+  q.set("survey", survey);
+  q.set("label", label);
+  return jwstEmbedPageUrl() + "?" + q.toString();
 }
 
 /** ESASky -- full 360 pan/zoom, science mode, real mission HiPS / JWST tools. */
@@ -710,7 +743,8 @@ function openSky(view, tierKey){
         const f = JWST_DEEP_FIELDS[last.targetId];
         jwstTarget = { ra: f.ra, dec: f.dec, label: f.name, id: last.targetId };
       } else if(last.ra != null && last.dec != null && last.targetId === "zenith"){
-        jwstTarget = { ra: zd.ra, dec: zd.dec, label: "Local zenith (from viewpoint)", id: "zenith" };
+        const n = nearestJwstField(zd.ra, zd.dec);
+        jwstTarget = { ra: n.ra, dec: n.dec, label: n.label, id: n.id };
       }
     }
   }catch(_){}
@@ -722,7 +756,7 @@ function openSky(view, tierKey){
     if(jwst){
       const hips = currentHips();
       if(jwstMode === "esasky") return esaskyUrl(view.lat, view.lon, { ra: jwstTarget.ra, dec: jwstTarget.dec, fov: Math.max(0.15, hips.fov * 4) });
-      return jwstAladinUrl(view.lat, view.lon, { ra: jwstTarget.ra, dec: jwstTarget.dec, fov: hips.fov, survey: hips.survey, targetId: jwstTarget.id });
+      return jwstAladinUrl(view.lat, view.lon, { ra: jwstTarget.ra, dec: jwstTarget.dec, fov: hips.fov, survey: hips.survey, targetId: jwstTarget.id, label: jwstTarget.label || jwstTarget.id });
     }
     if(mid) return aladinUrl(view.lat, view.lon);
     return stellariumUrl(view.lat, view.lon, { fov: galileoFov });
@@ -772,7 +806,7 @@ function openSky(view, tierKey){
       ? "Warm cache hit -- sky restored without full reload."
       : "First open loads survey tiles; reopen of this sky is kept warm until you Dump telescope cache.";
     const note = jwst
-      ? ("Sky data: public CDS Aladin JWST HiPS (SMACS Deep-Field NIRCam / EPO color, not OPEN) and ESA ESASky. " + cacheNote)
+      ? ("Sky data: local Aladin embed + CDS JWST HiPS only (SMACS Deep-Field default; CEERS/Stephans/Carina patches). No all-sky / eROSITA. " + cacheNote)
       : mid
       ? ("Sky data: public Aladin Lite DSS2 HiPS. " + cacheNote + " Third-party tiles may still need network on a cold browser cache.")
       : ("Sky data: public Stellarium Web (real star/planet catalogs). Look deeper = smaller FoV optical zoom into the same catalogs -- not photographic survey depth (use Observatory/JWST for HiPS). " + cacheNote);
@@ -844,7 +878,7 @@ function openSky(view, tierKey){
     parkActiveFromOverlay();
     if(v === "jwst-smacs"){ jwstTarget = { ra: JWST_DEEP_FIELDS.smacs.ra, dec: JWST_DEEP_FIELDS.smacs.dec, label: JWST_DEEP_FIELDS.smacs.name, id: "smacs" }; render(); enterFs(el); return }
     if(v === "jwst-ceers"){ jwstTarget = { ra: JWST_DEEP_FIELDS.ceers.ra, dec: JWST_DEEP_FIELDS.ceers.dec, label: JWST_DEEP_FIELDS.ceers.name, id: "ceers" }; render(); enterFs(el); return }
-    if(v === "jwst-zenith"){ jwstTarget = { ra: zd.ra, dec: zd.dec, label: "Local zenith (from viewpoint)", id: "zenith" }; render(); enterFs(el); return }
+    if(v === "jwst-zenith"){ const n = nearestJwstField(zd.ra, zd.dec); jwstTarget = { ra: n.ra, dec: n.dec, label: n.label, id: n.id }; render(); enterFs(el); return }
     if(v === "jwst-aladin"){ jwstMode = "aladin"; render(); enterFs(el); return }
     if(v === "jwst-esasky"){ jwstMode = "esasky"; render(); enterFs(el); return }
   };
