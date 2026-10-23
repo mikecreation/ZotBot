@@ -1,4 +1,4 @@
-/* Fog of Knowledge: The Game — vegetation (v2 RAE — HyperGrass layers + procedural pine bark).
+/* Fog of Knowledge: The Game — vegetation (v2.1 RAE — stripe-kill HyperGrass + crown-cap fill + pine bark).
  * Procedural trees (recursive branch tubes + bark normal map, alpha leaf cards with back-light translucency,
  * hierarchical wind, baked cross-quad impostors), Ghost-of-Tsushima-style grass clumps (curved Bezier blades,
  * clump lean, scrolling-noise gusts, blade LOD, rounded normals, translucency) and instanced flowers with real petals.
@@ -173,8 +173,8 @@ function card(gb,c,ax,ay,w,h,tile,nrm,col,wind,anchorBottom,nf){const [u0,v0]=TI
 
 const SPECS={
   broad:{H:3.6,R0:.24,depth:3,seg:[14,5,4,3],gnarl:[.08,.32,.48,.55],trop:[0,.1,.1,.05],taper:[.42,.58,.68,.78],kids:[5,4,3],kStart:[.48,.18,.22],angle:[.85,.75,.7],
-    lenR:[.72,.6,.55],lenFall:[.5,.4,.3],radR:[.55,.58,.62],minR:.01,flex0:.0,flex:[.10,.16,.2],leafDepth:2,leafPer:3,leaf:[.85,.85],tile:0,leafAll:true},
-  conifer:{H:6.2,R0:.2,depth:1,seg:[14,4],gnarl:[.02,.14],trop:[0,-.06],taper:[.9,.78],kids:[26],kStart:[.22],angle:[1.45],lenR:[.42],lenFall:[.92],radR:[.32],minR:.012,flex0:.0,flex:[.14],leafDepth:1,leafPer:5,leaf:[1.5,1.1],tile:1},
+    lenR:[.72,.6,.55],lenFall:[.5,.4,.3],radR:[.55,.58,.62],minR:.01,flex0:.0,flex:[.10,.16,.2],leafDepth:2,leafPer:5,leaf:[.78,.78],tile:0,leafAll:true},
+  conifer:{H:6.2,R0:.2,depth:1,seg:[14,4],gnarl:[.02,.14],trop:[0,-.06],taper:[.9,.78],kids:[26],kStart:[.22],angle:[1.45],lenR:[.42],lenFall:[.92],radR:[.32],minR:.012,flex0:.0,flex:[.14],leafDepth:1,leafPer:7,leaf:[1.35,1.0],tile:1},
   dead:{H:3.6,R0:.22,depth:2,seg:[12,5,3],gnarl:[.14,.45,.55],trop:[0,.05,.02],taper:[.55,.65,.75],kids:[5,3],kStart:[.38,.28],angle:[.9,.8],lenR:[.6,.55],lenFall:[.4,.3],radR:[.48,.52],minR:.012,flex0:0,flex:[.06,.1]}
 };
 function treeGeo(type){const sp=SPECS[type],R=rng(type.length*991+7);
@@ -206,6 +206,23 @@ function treeGeo(type){const sp=SPECS[type],R=rng(type.length*991+7);
               ax.crossVectors(base,tmp).normalize();ay.crossVectors(base,ax).normalize();if(ay.y<0)ay.negate();
               const sh=.6+.4*out+R()*.12,col={r:sh,g:sh*(.96+R()*.08),b:sh*.95},sz=sp.leaf[0]*(.5+R()*.25);
               card(cg,cc.clone().addScaledVector(nm,.06*q),ax,ay,sz,sz,sp.tile,nm,col,w,false,nf)}}}}}
+    // Crown-cap fill: close the top hemisphere so the silhouette has no empty half-crescent void.
+    // Flat leaf cards OK — volume must read solid from camera height (RAE; canopies stay procedural).
+    {const N=type==="conifer"?48:72,rad=type==="conifer"?H*.28:H*.38,y0=type==="conifer"?H*.55:H*.58,y1=type==="conifer"?H*.98:H*1.05;
+      for(let i=0;i<N;i++){const u=R(),v=R();
+        const th=u*6.283, ph=.15+Math.pow(v,.55)*1.25;
+        const rr=rad*(.55+R()*.55)*(type==="conifer"?.7+.3*(1-Math.cos(ph)):1);
+        const cc=new V3(Math.sin(ph)*Math.cos(th)*rr, y0+(y1-y0)*Math.cos(Math.min(ph,1.2)/1.2)+R()*.08, Math.sin(ph)*Math.sin(th)*rr);
+        if(cc.y<H*.5)continue;
+        nm.copy(cc).sub(ctr).normalize();if(nm.y<.15){nm.y=.15+R()*.2;nm.normalize()}
+        const fl=R(),w=[.12,fl*6.283,Math.min(1,cc.y/H)];
+        const nf=p=>{const a=p.clone().sub(cc).normalize(),q=p.clone().sub(ctr).normalize();return a.multiplyScalar(.5).addScaledVector(q,.65).add(new V3(0,.22,0)).normalize()};
+        for(let q=0;q<(type==="conifer"?2:3);q++){tmp.set(R()-.5,R()-.5,R()-.5).normalize();
+          const base=q===0?nm:q===1?new V3(0,1,0):tmp.clone().cross(nm).normalize();
+          ax.crossVectors(base,tmp).normalize();ay.crossVectors(base,ax).normalize();if(ay.y<0)ay.negate();
+          const sh=.62+.38*Math.min(1,(cc.y-y0)/Math.max(.2,y1-y0))+R()*.1,col={r:sh,g:sh*(.96+R()*.08),b:sh*.95};
+          const sz=(type==="conifer"?sp.leaf[0]*.55:sp.leaf[0]*.7)*(.55+R()*.45);
+          card(cg,cc.clone().addScaledVector(nm,.05*q),ax,ay,sz,sz*(type==="conifer"?sp.leaf[1]/Math.max(.01,sp.leaf[0]):1),sp.tile,nm,col,w,false,nf)}}}
     crown=cg.geo()}
   return {trunk:tg.geo(),crown,H}}
 
@@ -228,7 +245,7 @@ function shrubGeo(){const R=rng(55),g=new GB(),ctr=new V3(0,.55,0),nm=new V3(),t
 /* RAE HyperGrass-style clump: individual sprouts in 3 growth layers (short under / mid / tall accents).
    Blade positions are Bezier-bent in the vertex shader; LOD drops outer blades with distance. */
 function grassGeo(){const R=rng(5),p=[],bl=[],rt=[],col=[],idx=[];
-  const layers=[[9,.0,.16,.05,.14,3,.05],[6,.04,.22,.22,.42,5,.18],[4,.02,.18,.48,.78,6,.35]];
+  const layers=[[14,.0,.14,.04,.12,3,.04],[10,.03,.20,.18,.40,5,.16],[7,.02,.16,.42,.82,7,.32]];
   let bid=0;
   for(const [n,r0,r1,h0,h1,Lv,dryP] of layers){
     for(let i=0;i<n;i++,bid++){
@@ -341,7 +358,7 @@ function grassMaterial(){const m=new THREE.MeshStandardMaterial({vertexColors:tr
     sh.fragmentShader="varying float vTransl;varying float vT;\n"+sh.fragmentShader
      .replace("#include <lights_fragment_begin>",CTX.GRASS_LIGHTS+TRANSL(.8).replace("#include <lights_fragment_begin>",""))
      .replace("#include <aomap_fragment>","#include <aomap_fragment>\n reflectedLight.indirectDiffuse*=.4+.6*vT;")};
-  m.customProgramCacheKey=()=>"vggrass_rae";return m}
+  m.customProgramCacheKey=()=>"vggrass_rae349";return m}
 
 function flowerMaterial(){const m=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.55,side:THREE.DoubleSide,metalness:0});
   m.onBeforeCompile=sh=>{const U=CTX.U;sh.uniforms.uTime=U.time;sh.uniforms.uWind=U.wind;sh.uniforms.uFar=U.grassFar;

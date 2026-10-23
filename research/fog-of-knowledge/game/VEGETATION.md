@@ -45,3 +45,8 @@ Implementation notes:
 ## RAE pass (HyperGrass + pine bark)
 - **Grass**: original layered sprouts (short underlayer + mid + tall accents), noise-clumped density, per-instance yaw/lean, soft per-blade wind phase. Ethos from Greg Zdunek HyperGrass principles — our own geo/shaders, no Gumroad pack.
 - **Bark**: original procedural pine bark (512 color/normal/roughness): deep vertical fissures, rugged plates, grey-brown faces with ochre/grey in cracks. Ethos from HyperTrees Bark Pinewood look — **not** Vertex Library / paid textures. Canopies unchanged.
+
+## RAE 3.49 — stripe kill + crown-cap
+- **Grass/ground stripes**: removed anisotropic terrain fiber streaks and low-freq `sin(x·a+z·b)` grass density/dry bands that painted diagonal light/dark carpet stripes. Terrain + instance tint now use domain-warped multi-octave noise; near-field instance density raised so meadow carpet cannot read through.
+- **Crown crescent**: after branch leaf cards, a procedural upper-hemisphere crown-cap of leaf clusters closes the empty half-moon void at the top of the foliage mass. Flat cards OK; volume must read solid. Bark unchanged; trunk flare left alone.
+

@@ -8,7 +8,7 @@ import {Sky} from "./vendor/addons/objects/Sky.js";
 import {Ocean,OCEAN_QUALITY} from "./ocean.js?v=3.29.0";
 import {GLTFLoader} from "./vendor/addons/loaders/GLTFLoader.js";
 import {mergeGeometries,mergeVertices} from "./vendor/addons/utils/BufferGeometryUtils.js";
-import * as VEG from "./vegetation.js?v=3.48.0";
+import * as VEG from "./vegetation.js?v=3.49.0";
 import {clone as cloneSkinned} from "./vendor/addons/utils/SkeletonUtils.js";
 import {loadRealHuman,dressRealHuman,realGrip,wantClassicHuman,initRealHands,poseRealHands} from "./human-real.js";
 import {EffectComposer} from "./vendor/addons/postprocessing/EffectComposer.js";
@@ -22,8 +22,8 @@ import {FXAAShader} from "./vendor/addons/shaders/FXAAShader.js";
 /* ---------------- quality presets ---------------- */
 export const QUALITY={
   low:  {label:"Low",  pr:1,   shadows:0,    post:false,bloom:false,aa:"none",ocean:"low",   grass:0,    grassR:0,flowers:0,  impD:1,  clouds:true, fireShadow:false,particles:.5},
-  high: {label:"High", pr:1.25,shadows:2048, post:true, bloom:true, aa:"fxaa",ocean:"med", grass:9000, grassR:1,flowers:140,impD:2,clouds:true, fireShadow:1,fireShadowMap:256,particles:1},
-  ultra:{label:"Ultra",pr:2,   shadows:4096, post:true, bloom:true, aa:"smaa",ocean:"high",grass:18000,grassR:1,flowers:260,impD:3,clouds:true, fireShadow:2,fireShadowMap:512,particles:1.4}
+  high: {label:"High", pr:1.25,shadows:2048, post:true, bloom:true, aa:"fxaa",ocean:"med", grass:14000, grassR:1,flowers:140,impD:2,clouds:true, fireShadow:1,fireShadowMap:256,particles:1},
+  ultra:{label:"Ultra",pr:2,   shadows:4096, post:true, bloom:true, aa:"smaa",ocean:"high",grass:26000,grassR:1,flowers:260,impD:3,clouds:true, fireShadow:2,fireShadowMap:512,particles:1.4}
 };
 const QKEY="fog-of-knowledge:game:quality";
 export function loadQualityPref(){try{const q=localStorage.getItem(QKEY);if(QUALITY[q])return q}catch(_){}return "high"}
@@ -31,7 +31,7 @@ export function saveQualityPref(q){try{localStorage.setItem(QKEY,q)}catch(_){}}
 export let Q=QUALITY.high, qName="high";
 
 /* shared animated uniforms */
-export const U={time:{value:0},wind:{value:1},grassFar:{value:55},wet:{value:0},sunDir:{value:new THREE.Vector3(0,1,0)}};
+export const U={time:{value:0},wind:{value:1},grassFar:{value:85},wet:{value:0},sunDir:{value:new THREE.Vector3(0,1,0)}};
 
 /* ---------------- height + distance fog (patched into every material) ---------------- */
 THREE.ShaderChunk.fog_pars_vertex=`#ifdef USE_FOG
@@ -514,12 +514,17 @@ function terrainPatch(sh){sh.uniforms.uTime=U.time;sh.uniforms.uWet=U.wet;
   sh.fragmentShader="varying vec3 vTW;varying vec3 vTN;uniform float uWet;uniform float uTime;\n"+NOISE_GLSL+sh.fragmentShader
    .replace("#include <color_fragment>",`#include <color_fragment>
     vec2 tp=vTW.xz;
-    float n1=fk_vn(tp*.31),n2=fk_vn(tp*1.9+7.),n3=fk_fbm(tp*.045),n4=fk_vn(tp*6.5);
+    // domain-warped multi-octave noise — breaks diagonal tiling / carpet bands
+    vec2 w1=vec2(fk_vn(tp*.093),fk_vn(tp*.093+19.7));
+    vec2 w2=vec2(fk_vn(tp*.31+w1*3.7),fk_vn(tp*.31+w1.yx*3.7+31.));
+    vec2 tw=tp+w1*8.5+w2*3.1;
+    float n1=fk_fbm(tw*.48),n2=fk_vn(tw*2.15+7.),n3=fk_fbm(tw*.22+w2*1.3),n4=fk_vn(tw*9.1);
     float slope=1.-clamp(vTN.y,0.,1.);
     vec3 base=diffuseColor.rgb*(.78+.34*n1+.12*n2+.08*n4)*(.88+.18*n3);
     // short-grass underlayer (Tsushima-inspired): fine vertical fiber streaks + mixed light blades, not spongy moss
-    float fiber=max(fk_vn(vec2(tp.x*52.,tp.y*2.8)),fk_vn(vec2(tp.x*2.4+9.,tp.y*58.)));
-    float tuft=fk_vn(tp*16.);
+    // isotropic short-grass microdetail (no anisotropic stripe fibers)
+    float fiber=fk_fbm(tw*13.5+n1*2.);
+    float tuft=fk_vn(tw*10.5+w2*2.5);
     vec3 soil=vec3(.20,.16,.09),shortG=vec3(.32,.50,.17),tipG=vec3(.52,.66,.24);
     vec3 gcol=mix(soil,shortG,.58+.32*tuft);gcol=mix(gcol,tipG,smoothstep(.5,.92,fiber)*.5);
     base=mix(base,gcol*(.88+.18*n1),step(0.,base.g-base.r*.75)*.85);
@@ -543,7 +548,7 @@ function terrainPatch(sh){sh.uniforms.uTime=U.time;sh.uniforms.uWet=U.wet;
     float fo=(1.-smoothstep(0.,.2,abs(vTW.y-.06-wave)))*smoothstep(.45,.75,fk_vn(tp*1.3+vec2(uTime*.25,0.)));
     base=mix(base,vec3(.85,.9,.92),fo*.85);
     // Soil flecks, pebbles and weather-driven wetness, stable in world space.
-    float grit=fk_vn(tp*22.0),pebbles=smoothstep(.80,.94,fk_vn(tp*8.0));
+    float grit=fk_vn(tw*18.0),pebbles=smoothstep(.80,.94,fk_vn(tw*7.2+w1));
     base*=.90+.16*grit; base=mix(base,base*vec3(.68,.64,.58),pebbles*.24);
     base*=1.-uWet*.18*(1.-sn);
     diffuseColor.rgb=base;`)
@@ -571,7 +576,7 @@ function surfaceDetail(kind){return sh=>{
     roughnessFactor=mix(roughnessFactor,.42,uWet*.65);`);
 }}
 export function initMaterials(){
-  MAT.terrain=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.93,metalness:0});MAT.terrain.onBeforeCompile=terrainPatch;
+  MAT.terrain=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.93,metalness:0});MAT.terrain.onBeforeCompile=terrainPatch;MAT.terrain.customProgramCacheKey=()=>"fkterr_rae349";
   MAT.bark=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.95});MAT.bark.onBeforeCompile=surfaceDetail("bark");
   MAT.leaf=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.8,side:THREE.DoubleSide});MAT.leaf.onBeforeCompile=windPatch(.035);
   MAT.bush=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.85});MAT.bush.onBeforeCompile=windPatch(.0);
@@ -646,17 +651,20 @@ export function buildGrass(cx,cz,size,sample,seed){
   if(!Q.grass)return null;
   const r=rng(seed),n=Q.grass,m=new THREE.InstancedMesh(GEO.grass,MAT.grass,n),c=new THREE.Color();
   let k=0;const x0=cx*size,z0=cz*size;
-  // cheap value-noise density so meadows clump instead of tiling evenly
-  const dens=(x,z)=>{const a=Math.sin(x*.07+z*.05)*Math.sin(x*.031-z*.043);
-    const b=Math.sin(x*.19+z*.17+1.7)*.55+Math.sin(x*.41-z*.33)*.25;
-    return .5+.5*(a*.55+b);};
-  const tries=Math.floor(n*2.2);
+  // domain-warped hash density — NO low-freq sin(x*a+z*b) diagonal carpet bands
+  const h2=(x,z)=>{const s=Math.sin(x*127.1+z*311.7)*43758.5453;return s-Math.floor(s)};
+  const dens=(x,z)=>{
+    const wx=x+h2(x*.071,z*.067)*11.+h2(x*.19+3.1,z*.17)*3.4;
+    const wz=z+h2(x*.083+1.7,z*.091)*11.+h2(x*.23,z*.21+5.3)*3.4;
+    const a=h2(wx*.14,wz*.13),b=h2(wx*.33+2.2,wz*.29),c=h2(wx*.71,wz*.67+1.4);
+    return .28+a*.42+b*.22+c*.16;};
+  const tries=Math.floor(n*3.6);
   for(let i=0;i<tries&&k<n;i++){
     const x=x0+r()*size,z=z0+r()*size,s=sample(x,z),t=BIOME_GRASS[s.biome];
     if(!t||s.h<.5||s.slope>.7)continue;
     const d=dens(x,z);
     // reject sparse cells → clearings; denser cells get more attempts that succeed
-    if(r()>d*.92+.05)continue;
+    if(r()>d*.78+.08)continue; // denser near fill so striped ground cannot show through
     // growth layer by secondary noise: short underlayer common, tall accents rare in dense patches
     const ln=r();
     let layer=0; // 0 short 1 mid 2 tall
@@ -669,9 +677,10 @@ export function buildGrass(cx,cz,size,sample,seed){
     _q4.setFromEuler(_e.set(leanX,yaw,leanZ));
     _m4.compose(_p3.set(x,s.h-.02-layer*.005,z),_q4,_s3.set(sc,sc*(.9+r()*.25),sc));m.setMatrixAt(k,_m4);
     // greens / dry tips: dry more on tall accents and dry noise bands
-    const dry=.5+.5*Math.sin(x*.031+z*.017+Math.sin(z*.05)*1.7);
-    const v=.82+r()*.35,dr=dry*dry*(.22+layer*.12);
-    c.setRGB(t[0]*v*(1+dr*.7),t[1]*v*(1-dr*.12),t[2]*v*(.88+r()*.22)*(1-dr*.55));
+    // high-freq clumpy dry flecks (not meadow-scale diagonal waves)
+    const dry=h2(x*.27+7.1,z*.23)*h2(x*.61,z*.53+3.9);
+    const v=.78+r()*.42,dr=dry*(.18+layer*.1);
+    c.setRGB(t[0]*v*(1+dr*.55),t[1]*v*(1-dr*.1),t[2]*v*(.85+r()*.28)*(1-dr*.45));
     m.setColorAt(k,c);k++;
   }
   m.count=k;m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true;m.receiveShadow=true;m.frustumCulled=true;m.computeBoundingSphere();
