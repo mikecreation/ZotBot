@@ -68,6 +68,7 @@ export const ITEMS={
   telescope_galileo:{name:"Galileo telescope",mass:8,density:700,r:.35,color:0x8a6238,place:"telescope_galileo"},
   telescope_mid:{name:"Observatory telescope",mass:28,density:720,r:.7,color:0x6b4a28,place:"telescope_mid"},
   telescope_jwst:{name:"James Webb telescope",mass:65,density:800,r:1.2,color:0xc9a227,place:"telescope_jwst"},
+  giant_tv_kit:{name:"House TV kit",mass:40,density:900,r:.9,color:0x1a1a22,place:"giant_tv"},
  compass:{name:"Water compass",mass:3,density:1500,r:.09,color:0x6fa0d0},
  campfire:{name:"Firewood pile",mass:1.5,density:600,r:.1,color:0x8a6a3e,place:"fire"},
  leanto:{name:"Lean-to shelter",mass:5,density:600,r:.2,color:0x7a6a3e,place:"leanto"},
@@ -208,6 +209,7 @@ export const RECIPES=[
   {out:"telescope_galileo",req:"optics",in:{lens:2,bronze:1,log:1,stick:3}},
   {out:"telescope_mid",req:"optics",in:{lens:4,bronze:2,glass:2,log:3,stick:6,iron:1}},
   {out:"telescope_jwst",req:"optics",in:{lens:8,bronze:4,glass:6,iron:4,quartz:3,log:5,stick:10,prism:1}},
+  {out:"giant_tv_kit",req:"optics",in:{iron:6,copper:4,glass:4,lens:2,log:4,stick:8}},
  {out:"axe_copper",req:"smelting",in:{copper:1,stick:1}},
  {out:"sling",req:"hunting",in:{fiber:5}},
  {out:"bow",req:"hunting",in:{stick:2,fiber:3}},
@@ -233,7 +235,7 @@ Object.assign(ITEMS,WOOD_ITEMS);RECIPES.push(...WOOD_RECIPES.map(r=>({...r})));
 const CAT={workbench:"build",workbench_bundle:"build",dough:"cooking",berry_mash:"cooking",satchel:"tools",campfire:"build",leanto:"build",hut:"build",house:"build",wall:"build",chest:"build",rack:"build",well:"build",kiln:"build",raft:"build",table:"science",torch:"build",
  axe_stone:"tools",axe_copper:"tools",axe_bronze:"tools",axe_iron:"tools",wheel_disk:"tools",wheel:"tools",wheel_iron:"tools",wheel_modern:"tools",wheel_bouncy:"tools",wheel_heavy_bouncy:"tools",wheel_heavy:"tools",bellows:"tools",clothing:"tools",
  spear:"weapons",sling:"weapons",bow:"weapons",arrow:"weapons",
- tally:"science",tablet:"science",gnomon:"science",lens:"science",compass:"science",telescope:"science",telescope_galileo:"science",telescope_mid:"science",telescope_jwst:"science",pendulum:"science",prism:"science"};
+ tally:"science",tablet:"science",gnomon:"science",lens:"science",compass:"science",telescope:"science",telescope_galileo:"science",telescope_mid:"science",telescope_jwst:"science",giant_tv_kit:"science",pendulum:"science",prism:"science"};
 for(const r of SHIP_RECIPES)CAT[r.out]="ships";
 for(const r of RAFT_RECIPES)CAT[r.out]="ships";
 for(const r of WOOD_RECIPES)CAT[r.out]=r.cat;

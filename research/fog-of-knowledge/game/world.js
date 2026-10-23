@@ -7,7 +7,7 @@ import {RAFT_STAGES,RAFT_STEPS,deliverRaft,raftRemaining,raftStageFrac} from "./
 import * as WOOD from "./woodland-buildings.js?v=3.33.0";
 import {HOUSE as WHOUSE,STAGES as WSTAGES,isWoodland,remainingOf,stageFracOf,deliverStage,stageProblem,isComplete,stageTotalsOf,toLocal as wLocal,toWorld as wWorld,footprint as wFootprint,floorRect as wFloorRect,insideVolume as wInside,wallSegs as wWallSegs,partAt as wPartAt,isDwelling,WHEELSITE,MILL_INPUTS} from "./woodland-progression.js?v=3.33.0";
 import * as WW from "./waterwheel.js?v=3.33.0";
-import {aimGroundHit,ghostifyGroup,setGhostValid,disposePlaceGhost,rotateYaw,snapYaw,yawDegrees,placeHintHtml} from "./build-place.js?v=3.32.0";
+import {aimGroundHit,ghostifyGroup,setGhostValid,disposePlaceGhost,rotateYaw,snapYaw,yawDegrees,placeHintHtml} from "./build-place.js?v=3.51.0";
 Object.assign(GEAR_STEPS,SHIP_STEPS);
 Object.assign(GEAR_STEPS,RAFT_STEPS);
 /* Fog of Knowledge: The Game — OPEN WORLD mode.
@@ -19,12 +19,13 @@ Object.assign(GEAR_STEPS,RAFT_STEPS);
  * Discoveries happen by doing things in the world and reveal real atlas nodes.
  */
 import * as THREE from "./vendor/three.module.min.js";
-import {ITEMS,WORLD_DISCOVERIES,RECIPES} from "./world-data.js?v=3.37.0";
+import {ITEMS,WORLD_DISCOVERIES,RECIPES} from "./world-data.js?v=3.51.0";
 import {walkPath} from "./walk-path.js?v=3.33.0";
 import {drillProblem,advanceDrill} from "./friction-fire.js?v=3.33.0";
 import {primitiveItem,workbenchMesh,setBowDraw} from "./primitive-models.js?v=3.36.0";
 import {isWheel,SMASHABLE} from "./wheels.js?v=3.34.0";
 import {isTelescope,isMidTelescope,isJwstTelescope,buildGalileoMesh,buildMidMesh,buildJwstMesh,useGalileoTelescope,useMidTelescope,useJwstTelescope,useTelescopeFor,telescopeKeydown,telescopeIsOpen,dumpTelescopeCache,TELESCOPE_GALILEO,TELESCOPE_MID,TELESCOPE_JWST} from "./telescopes.js?v=3.47.0";
+import {isGiantTv,GIANT_TV,buildGiantTvMesh,stepGiantTv,openTvWatch,closeTvWatch,isTvWatchOpen,applyTvWatchCamera,tvKeydown,setTvHighlight,updateTvAudio,setTvToast,TV_COLOR_PRESETS,watchTvStruct} from "./giant-tv.js?v=3.51.0";
 import * as GFX from "./gfx.js?v=3.50.0";
 import * as AXE from "./axe.js?v=3.29.1";
 import * as AU from "./audio.js?v=3.36.1";
@@ -468,7 +469,7 @@ function stowMsg(k,n){toast(`+${n} ${ITEMS[k].name} → Backpack (I)`);const C=w
 function stow(both){const field=activeHand==="L"?"left":"held",had=(both?[world.held,world.left]:[world[field]]).filter(Boolean);if(!had.length)return toast("Your hands are already empty.");world[field]=null;if(both)world.held=world.left=null;renderHotbar();renderInventory();AU.pickup?.();toast(`Stowed ${had.map(k=>ITEMS[k].name).join(" and ")} in your Backpack.`);return true}
 const DEMOLISH_RANGE=8;
 function canDemolish(s){if(!s||s.type==="pack"||s.hearth)return false;if(player&&(player.raft===s||player.ship===s))return false;return true}
-function demolishName(s){if(isWoodland(s.type))return woodName(s);if(s.type==="fire")return "Firewood pile";if(s.type==="raft_site")return "Raft site";if(s.type==="shipyard")return "Shipyard";if(s.type==="ship")return "Galleon";if(s.type==="gnomon")return "Shadow stick";if(s.type==="crop")return "Crop";const it=Object.values(ITEMS).find(i=>i.place===s.type);return it?.name||s.type}
+function demolishName(s){if(isWoodland(s.type))return woodName(s);if(isGiantTv(s.type))return "House TV";if(s.type==="fire")return "Firewood pile";if(s.type==="raft_site")return "Raft site";if(s.type==="shipyard")return "Shipyard";if(s.type==="ship")return "Galleon";if(s.type==="gnomon")return "Shadow stick";if(s.type==="crop")return "Crop";const it=Object.values(ITEMS).find(i=>i.place===s.type);return it?.name||s.type}
 function demolishTarget(){if(!player||player.dead)return null;
   const cursor=cursorTarget(true);
   if(cursor?.kind==="struct"){let s=cursor.obj;if(s?.hearth&&s.hearthOf){const parent=world.structures.find(o=>o.wid===s.hearthOf);if(parent)s=parent}
@@ -748,10 +749,11 @@ function structMesh(s){
   else if(isJwstTelescope(s.type)){g.add(buildJwstMesh())}
   else if(isMidTelescope(s.type)){g.add(buildMidMesh())}
   else if(isTelescope(s.type)){g.add(buildGalileoMesh())}
+  else if(isGiantTv(s.type)){const tv=buildGiantTvMesh(s);g.add(tv);s._tv=tv}
   else if(s.type==="gnomon"){g.add(box(.05,1,.05,0xa07a4a,.5));const sh=box(.04,.01,1,0x1a1a1a,.01);sh.geometry.translate(0,0,-.5);g.add(sh);s.shadow=sh}
   g.position.set(s.x,s.y,s.z);g.rotation.y=s.ry||0;scene.add(g);s.obj=g;if(s.type==="rack")updateRack(s);return g;
 }
-const PLACE_DIST={hut:3.6,house:4.2,well:2.2,wall:2,chest:1.5,rack:1.8,pendulum:2,torch:1.4,telescope_galileo:2.2,telescope_mid:3.4,telescope_jwst:5.2};
+const PLACE_DIST={hut:3.6,house:4.2,well:2.2,wall:2,chest:1.5,rack:1.8,pendulum:2,torch:1.4,telescope_galileo:2.2,telescope_mid:3.4,telescope_jwst:5.2,giant_tv:5.5};
 function place(type,extra={}){
   if(type==="shipyard")return placeShipyard(extra);
   if(type==="raft")return placeRaftSite(extra);
@@ -767,7 +769,7 @@ function place(type,extra={}){
   if(type==="fire")Object.assign(s,{fuel:1.5,lit:false,heat:0,temp:15});
   if(type==="kiln")Object.assign(s,{fuel:0,lit:false,heat:0,temp:15,bellows:false});
   if(type==="torch")Object.assign(s,{fuel:1,lit:false,heat:0,temp:15});
-  if(type==="chest")s.items={};if(type==="rack")s.meat=[];if(type==="pendulum")s.L=1;
+  if(type==="chest")s.items={};if(type==="rack")s.meat=[];if(type==="pendulum")s.L=1;if(isGiantTv(type))Object.assign(s,{tvOpen:false,tvColor:TV_COLOR_PRESETS[0].hex,rainproof:true});
   world.structures.push(s);structMesh(s);AU.place();return s;
 }
 function structuresNear(x,z,r,type){return world.structures.filter(s=>(!type||s.type===type)&&Math.hypot(s.x-x,s.z-z)<r)}
@@ -1166,7 +1168,7 @@ function onAtlas(A){atlas=A;for(const id of world.disc)applyKnowledge(WD.get(id)
 
 /* ---------------- interaction ---------------- */
 function frontPoint(r=1){const f=forward();return {x:player.pos.x+f.x*r,z:player.pos.z+f.z*r}}
-const STRUCT_R={woodhut:2.2,foresthouse:3.4,waterwheel:3.6,workbench:1,workbench_bundle:1,pack:.3,kiln:.6,table:.6,hut:1.6,house:2,well:.5,chest:.3,rack:.4,wall:.8,pendulum:.4};
+const STRUCT_R={woodhut:2.2,foresthouse:3.4,waterwheel:3.6,workbench:1,workbench_bundle:1,pack:.3,kiln:.6,table:.6,hut:1.6,house:2,well:.5,chest:.3,rack:.4,wall:.8,pendulum:.4,giant_tv:2.8,telescope_galileo:1.2,telescope_mid:1.8,telescope_jwst:2.4};
 const cursorAim={x:0,y:0,inside:false},hoverRay=new THREE.Raycaster(),hoverNDC=new THREE.Vector2();
 let hoverAt=0,hovered=null,autoPickup=null;
 // Clear route, stale input and horizontal inertia together, before modal handlers.
@@ -1357,7 +1359,7 @@ function chopTest(n=3,freeze=true){let best=null,bd=1e9;for(const ch of nearbyCh
 function interact(override=null){
   if(player.actCd>0||player.dead)return;
   if(player.ship){player.actCd=.25;return shipE()}const aim=override||cursorTarget(true);
-  if(aim&&!override){const p=pickupPoint(aim)||aim.point;if(Math.hypot(p.x-player.pos.x,p.z-player.pos.z)>2.6){queuePickup(aim);return}}
+  if(aim&&!override){const p=pickupPoint(aim)||aim.point;if(Math.hypot(p.x-player.pos.x,p.z-player.pos.z)>2.6){if(aim.kind==="struct"&&isGiantTv(aim.obj?.type)){player.actCd=.25;setTvToast(toast);openTvWatch(aim.obj,{toast});return}queuePickup(aim);return}}
   const t=override||aim||findTarget();if(!t)return;
   if(t.kind==="drop"||t.kind==="res"){GFX.playOnce(player.model,"PickUp_Table",.6);AU.pickup()}
   if(t.kind==="pet"){PETS.pet(t.obj);return}
@@ -1394,6 +1396,7 @@ function interact(override=null){
   if(s.type==="well"){world.st.thirst=Math.min(100,world.st.thirst+40);AU.drink();toast("Cool, clean water from deep underground.");discover("groundwater");return}
   if(s.type==="pendulum")return pendStart(s);
   if(isTelescope(s.type)){player.actCd=.3;useTelescopeFor(s.type,{toast});return}
+if(isGiantTv(s.type)){player.actCd=.25;setTvToast(toast);openTvWatch(s,{toast});return}
 }
 function useHeld(){
   if(player.actCd>0||player.dead)return;
@@ -1816,6 +1819,7 @@ function bindInput(container){
   canvasEl=renderer.domElement;
   window.addEventListener("keydown",e=>{
     if(!started)return;
+    if(tvKeydown(e)){e.stopImmediatePropagation();return}
     if(telescopeKeydown(e)){e.stopImmediatePropagation();return}
     if(EX?.isOpen&&(e.code==="Escape"||e.code==="KeyL")){EX.close();e.preventDefault();e.stopImmediatePropagation();return}
     if(e.code==="Escape"){stopMovement();if(!$("#wClimbHelp").hidden){closeClimbGuide();e.preventDefault();e.stopImmediatePropagation()}return}
@@ -1839,7 +1843,7 @@ function bindInput(container){
     if(e.code==="KeyI"){if($("#wInv").hidden)invCraftFor=null;togglePanel("#wInv");return}   // a fresh open clears any old "Craft with…" filter
     if(e.code==="KeyH"){openHelp();return}
     if(e.code==="KeyG"){player.readout=!player.readout;return}
-    if(e.code==="Escape"){autoPickup=null;if(placeSess){cancelPlaceMode();return}if(!$("#wCtx").hidden){closeCtx();return}if(player.zoom){player.zoom=false;return}if($("#wInv").hidden&&$("#wJournal").hidden&&$("#wChest").hidden)window.__openSettings?.();else $("#wInv").hidden=$("#wJournal").hidden=$("#wChest").hidden=true;return}
+    if(e.code==="Escape"){autoPickup=null;if(isTvWatchOpen()){closeTvWatch();return}if(placeSess){cancelPlaceMode();return}if(!$("#wCtx").hidden){closeCtx();return}if(player.zoom){player.zoom=false;return}if($("#wInv").hidden&&$("#wJournal").hidden&&$("#wChest").hidden)window.__openSettings?.();else $("#wInv").hidden=$("#wJournal").hidden=$("#wChest").hidden=true;return}
     if(paused)return;
     if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.code))e.preventDefault();
     keys.add(e.code);
@@ -1908,6 +1912,7 @@ function updateCamera(dt){
   if(CINE.on&&cineCam())return;
   if(SHIP_DEBUG._cam&&shipCam())return;
   if(WOOD_DEBUG._cam&&woodCam())return;
+  if(isTvWatchOpen()){const s=watchTvStruct();if(s&&applyTvWatchCamera(camera,player,s)){updateTvAudio(s,camera);return}}
   const p=player,fp=firstPerson();
   if(p.model)p.model.visible=!fp;
   if(fp){ // first person: look at the sky (drag the view up) or through the telescope
@@ -2156,7 +2161,7 @@ function buildGhostMesh(type){
   else{
     const s={type,x:0,y:-400,z:0,ry:0};
     if(type==="fire"||type==="kiln"||type==="torch")Object.assign(s,{fuel:1,lit:false,heat:0,temp:15});
-    if(type==="chest")s.items={};if(type==="rack")s.meat=[];if(type==="pendulum")s.L=1;
+    if(type==="chest")s.items={};if(type==="rack")s.meat=[];if(type==="pendulum")s.L=1;if(isGiantTv(type))Object.assign(s,{tvOpen:false,tvColor:TV_COLOR_PRESETS[0].hex,rainproof:true});
     if(type==="raft"){s.type="raft_site";s.stage=0;s.got={}}
     structMesh(s);root=s.obj;scene.remove(root);if(s.flame){root.remove(s.flame);s.flame=null}
     root.position.set(0,0,0);
@@ -2212,6 +2217,7 @@ function confirmPlaceMode(){
   else if(isJwstTelescope(type))toast("James Webb telescope placed. E for deep-universe JWST/ESASky sky; switch location or jump to SMACS/CEERS.");
   else if(isMidTelescope(type))toast("Observatory telescope placed. E for deep Aladin sky; switch country or ocean viewpoint.");
   else if(isTelescope(type))toast("Galileo telescope placed. E to look at the real sky; you can switch country or ocean viewpoint.");
+  else if(isGiantTv(type))toast("House TV placed. E or click from afar to watch — telescopic fold-out, Piped no-ads.");
   else if(type==="chest")toast("Storage chest built. E to open it.");else if(type==="rack")toast("Drying rack built. Hang raw meat on it with Q.");
   else toast(`${ITEMS[itemKey].name} placed.`);
   clearPlaceGhost();player.actCd=.25;renderHotbar();return true;
@@ -2375,6 +2381,7 @@ function stepWorld(dt){
   if(spectrum&&spectrum.visible){spectrum.userData.t-=dt;spectrum.children.forEach(m=>m.material.opacity=.8*clamp(spectrum.userData.t/2,0,1));if(spectrum.userData.t<=0)spectrum.visible=false}
   updateArc();
   if(placeSess)updatePlaceMode();
+  for(const s of world.structures)if(isGiantTv(s.type)){stepGiantTv(s,dt);if(s.tvOpen||isTvWatchOpen())updateTvAudio(s,camera)}
   chunkT-=dt;if(chunkT<=0){updateChunks(false);chunkT=.15}
   hudT-=dt;if(hudT<=0){renderHUD();hudT=.2}
   saveT-=dt;if(saveT<=0){save();saveT=10}
@@ -2512,6 +2519,7 @@ export function initWorld(){
     clearStructs:()=>{for(const o of world.structures)o.obj&&scene.remove(o.obj);world.structures.length=0;player.raft=null;player.ship=null;player.helm=false},
     dev:DEV_MODE,ship:SHIP_DEBUG,woodland:WOOD_DEBUG,raft:RAFT_DEBUG,place:{begin:beginPlaceMode,cancel:()=>cancelPlaceMode(),rotate:rotatePlaceMode,confirm:confirmPlaceMode,get active(){return!!placeSess},get yaw(){return placeSess?yawDegrees(placeSess.ry):null},hint:showPlaceHint},
     telescope:{open:(t)=>useTelescopeFor(t||TELESCOPE_GALILEO,{toast}),openGalileo:()=>useGalileoTelescope({toast}),openMid:()=>useMidTelescope({toast}),openJwst:()=>useJwstTelescope({toast}),dumpCache:()=>dumpTelescopeCache({toast}),isOpen:telescopeIsOpen,id:TELESCOPE_GALILEO,mid:TELESCOPE_MID,jwst:TELESCOPE_JWST},
+    tv:{open:s=>{const t=s||world.structures.find(o=>isGiantTv(o.type));return t?openTvWatch(t,{toast}):false},close:closeTvWatch,isOpen:isTvWatchOpen,place:()=>{if(!inv("giant_tv_kit"))give("giant_tv_kit");beginPlaceMode("giant_tv_kit",GIANT_TV)},spawn:()=>{const f=forward();const p=place(GIANT_TV,{x:player.pos.x+f.x*6,z:player.pos.z+f.z*6,tvOpen:false});return p},},
     clearDrops:()=>{for(const d of world.drops)scene.remove(d.mesh);world.drops.length=0},
     clearAnimals:kind=>{for(let i=animals.length-1;i>=0;i--)if(!kind||animals[i].kind===kind){scene.remove(animals[i].g);animals.splice(i,1)}},
     fireAt:()=>fireHeatAt(player.pos.x,player.pos.z),noise:()=>playerNoiseDb?playerNoiseDb():null};
