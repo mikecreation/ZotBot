@@ -71,7 +71,26 @@ export function pickup(){if(!ok||T()-lastPickup<1.5)return;lastPickup=T();burst(
 export function craft(){burst({freq:900,q:2,peak:.15,d:.06});burst({freq:1400,q:3,peak:.12,d:.05,delay:.09});tone({f:660,f2:990,type:"triangle",peak:.07,d:.12,delay:.15})}
 export function place(){burst({freq:300,q:.8,peak:.25,d:.18,type:"lowpass",buf:brownBuf})}
 export function whoosh(fast){burst({freq:fast?1600:900,q:.9,peak:.12,a:.04,d:fast?.12:.22})}
-export function twang(){tone({f:180,f2:120,type:"sawtooth",peak:.08,d:.18});whoosh(true)}
+export function twang(){bowRelease()}
+export function bowRelease(){if(!ok)return;
+  // orgasmic release: crisp string crack + descending thwip + air tear
+  burst({freq:3200,q:10,peak:.32,a:.001,d:.045,type:"bandpass"});
+  burst({freq:2100,q:6,peak:.22,a:.001,d:.07,type:"bandpass",delay:.008});
+  burst({freq:1400,q:3,peak:.14,a:.002,d:.1,type:"bandpass",delay:.02,buf:brownBuf});
+  tone({f:520,f2:95,type:"sawtooth",peak:.16,a:.001,d:.26});
+  tone({f:980,f2:180,type:"triangle",peak:.1,a:.001,d:.14,delay:.004});
+  tone({f:220,f2:70,type:"sine",peak:.08,a:.002,d:.2,delay:.01});
+  whoosh(true)}
+export function arrowThump(){if(!ok)return;
+  // deep body THUMP + mid punch + high air-crack on pierce
+  burst({freq:70,q:.6,peak:.62,a:.001,d:.22,type:"lowpass",buf:brownBuf});
+  burst({freq:140,q:1.1,peak:.45,a:.001,d:.14,type:"lowpass",buf:brownBuf,delay:.012});
+  burst({freq:280,q:1.4,peak:.28,a:.001,d:.1,type:"lowpass",buf:brownBuf,delay:.02});
+  tone({f:48,f2:22,type:"sine",peak:.42,a:.001,d:.32});
+  tone({f:96,f2:40,type:"triangle",peak:.22,a:.001,d:.18,delay:.006});
+  burst({freq:3800,q:7,peak:.28,a:.001,d:.035,type:"bandpass",delay:.004});
+  burst({freq:5600,q:9,peak:.16,a:.001,d:.028,type:"highpass",delay:.014});
+  burst({freq:2400,q:4,peak:.12,a:.001,d:.05,type:"bandpass",delay:.022})}
 export function hit(heavy){burst({freq:heavy?280:600,q:1.2,peak:heavy?.35:.22,d:.1,type:"lowpass",buf:brownBuf});tone({f:heavy?90:140,f2:50,peak:.15,d:.12})}
 export function chop(){burst({freq:420,q:2,peak:.3,d:.07});tone({f:180,f2:110,type:"triangle",peak:.1,d:.08})}
 export function strike(){burst({freq:4200,q:4,peak:.2,d:.03});burst({freq:3000,q:6,peak:.1,d:.06,delay:.03})}

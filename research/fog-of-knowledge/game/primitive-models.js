@@ -14,6 +14,8 @@ function wrap(g,x,y,z,axis='x',radius=.085){
 export function primitiveItem(k,notches=0){
   // hand tools: realistic knapped / hafted / lashed models (stone-tools.js), shared geometry per kind
   if(TOOL_KINDS.includes(k))return buildTool(k);
+  if(k==='bow')return buildBow();
+  if(k==='arrow')return buildArrow();
   if(k==='spear'||k==='tally'){
     const g=new T.Group(),w=wood();g.name=k;
     if(k==='spear'){
@@ -57,6 +59,67 @@ export function primitiveItem(k,notches=0){
   }
   return g;
 }
+
+export function buildArrow(){
+  const g=new T.Group(),w=wood(),flint=new T.MeshStandardMaterial({color:0x8a929c,roughness:.55,metalness:.15,flatShading:true}),feather=new T.MeshStandardMaterial({color:0xc9b48a,roughness:.95,side:T.DoubleSide});
+  g.name="arrow";g.userData.trueScale=true;g.userData.lieFlat=true;
+  const shaft=new T.Mesh(new T.CylinderGeometry(.0065,.008,.92,8),w);shaft.position.y=.02;g.add(shaft);
+  const tip=new T.Mesh(new T.ConeGeometry(.018,.11,4),flint);tip.scale.z=.42;tip.position.y=.52;g.add(tip);
+  wrap(g,0,.455,0,"y",.01);
+  for(let i=0;i<3;i++){
+    const a=i*2.094,fin=new T.Mesh(new T.PlaneGeometry(.055,.14),feather);
+    fin.position.set(Math.cos(a)*.012,-.38,Math.sin(a)*.012);fin.rotation.y=a;fin.rotation.z=.18;g.add(fin);
+  }
+  const nock=new T.Mesh(new T.BoxGeometry(.014,.02,.01),w);nock.position.y=-.45;g.add(nock);
+  g.traverse(m=>{if(m.isMesh)m.castShadow=true});return g;
+}
+export function buildBow(){
+  const g=new T.Group(),w=wood(),bark=new T.MeshStandardMaterial({color:0x5c3a22,roughness:.92}),strMat=new T.MeshStandardMaterial({color:0xd8c9a0,roughness:.85});
+  g.name="bow";g.userData.trueScale=true;
+  const grip=new T.Mesh(new T.CylinderGeometry(.022,.024,.16,10),bark);g.add(grip);
+  wrap(g,0,.02,0,"y",.028);wrap(g,0,-.02,0,"y",.028);
+  // limb groups pivot at grip for flex
+  const upper=new T.Group();upper.position.y=.08;g.add(upper);
+  const lower=new T.Group();lower.position.y=-.08;g.add(lower);
+  function limb(parent,dir){
+    const segs=7;for(let i=0;i<segs;i++){
+      const t=i/(segs-1),y=dir*(.08+t*.52),x=.02+Math.sin(t*Math.PI)*.07,r=.018-t*.008;
+      const m=new T.Mesh(new T.CylinderGeometry(r,r+.003,.095,8),w);
+      m.position.set(x,y,0);m.rotation.z=dir*(-.55+t*.35);parent.add(m);
+    }
+    const tip=new T.Mesh(new T.SphereGeometry(.012,6,6),bark);tip.position.set(.09,dir*.62,0);parent.add(tip);return tip;
+  }
+  const uTip=limb(upper,1),lTip=limb(lower,-1);
+  // two-segment string: upper/lower halves meet at nock (V when drawn)
+  const strTop=new T.Mesh(new T.CylinderGeometry(.0028,.0028,1,6),strMat);
+  const strBot=new T.Mesh(new T.CylinderGeometry(.0028,.0028,1,6),strMat);
+  g.add(strTop,strBot);
+  const nockPoint=new T.Group();nockPoint.position.set(.09,0,0);g.add(nockPoint);
+  const nocked=buildArrow();nocked.visible=false;nocked.scale.setScalar(.95);nocked.rotation.z=-Math.PI/2;nockPoint.add(nocked);
+  g.userData.bow={upper,lower,strTop,strBot,nockPoint,nocked,uTip,lTip,draw:0};
+  g.traverse(m=>{if(m.isMesh)m.castShadow=true});
+  setBowDraw(g,0);return g;
+}
+export function setBowDraw(g,t){
+  const b=g&&g.userData&&g.userData.bow;if(!b)return;
+  const d=Math.max(0,Math.min(1,t));b.draw=d;
+  // limbs flex hard at full draw
+  const flex=d*d*.72;b.upper.rotation.x=-flex*.35;b.lower.rotation.x=flex*.35;
+  b.upper.rotation.z=d*.22;b.lower.rotation.z=-d*.22;
+  // nock pulls back (toward shooter, -Z); string halves form taut V
+  const pull=d*.42;const nx=.09-pull*.05,ny=0,nz=-pull;
+  b.nockPoint.position.set(nx,ny,nz);
+  function placeSeg(mesh,ax,ay,az,bx,by,bz){
+    const dx=bx-ax,dy=by-ay,dz=bz-az,len=Math.hypot(dx,dy,dz)||.001;
+    mesh.scale.set(1,len,1);mesh.position.set((ax+bx)/2,(ay+by)/2,(az+bz)/2);
+    mesh.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),new T.Vector3(dx/len,dy/len,dz/len));
+  }
+  // tip anchors roughly at limb ends (local), nudged by flex
+  const uy=.62+d*.02,ly=-.62-d*.02,ux=.09+d*.04,lx=.09+d*.04;
+  placeSeg(b.strTop,ux,uy,0,nx,ny,nz);placeSeg(b.strBot,lx,ly,0,nx,ny,nz);
+  b.nocked.visible=d>.04;if(b.nocked.visible){b.nocked.rotation.set(0,0,-Math.PI/2);b.nocked.position.set(.45+d*.08,0,0)}
+}
+
 export function workbenchMesh(bundled=false){
   const g=new T.Group(),w=wood();g.userData.joinery='housed shoulders, wooden wedges and plant-fiber lashings';
   // Four corner supports. The alternate recipe bundles three poles at each corner.

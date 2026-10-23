@@ -720,6 +720,14 @@ export const FX={
   sparks(x,y,z,n=24){for(let i=0;i<n*Q.particles;i++){const a=Math.random()*6.283,u=Math.random()*2-1,sp=2+Math.random()*4,q=Math.sqrt(1-u*u);this.emit(this.add,{t:"spark",x,y,z,vx:Math.cos(a)*q*sp,vy:Math.abs(u)*sp+1,vz:Math.sin(a)*q*sp,life:.25+Math.random()*.45,s:.05,g:1})}},
   dust(x,y,z,n=12){for(let i=0;i<n*Q.particles;i++){const a=Math.random()*6.283,sp=.5+Math.random()*1.2;this.emit(this.alpha,{t:"dust",x,y:y+.05,z,vx:Math.cos(a)*sp,vy:.2+Math.random()*.4,vz:Math.sin(a)*sp,life:.7+Math.random()*.6,s:.35})}},
   splash(x,z,n=40){for(let i=0;i<n*Q.particles;i++){const a=Math.random()*6.283,sp=.6+Math.random()*1.8;this.emit(this.alpha,{t:"splash",x,y:.05,z,vx:Math.cos(a)*sp,vy:2+Math.random()*3,vz:Math.sin(a)*sp,life:.6+Math.random()*.5,s:.14,g:1})}},
+  // wind-pierce impact ring: expanding radial blast (no smoke)
+  shockwave(x,y,z,power=1){
+    const n=Math.floor(72*Q.particles*Math.min(1.6,power)),spd=9+6*power;
+    for(let i=0;i<n;i++){const a=(i/n)*6.283+(Math.random()-.5)*.05,sp=spd*(.75+Math.random()*.45);
+      this.emit(this.add,{t:"shock",x,y:y+.08,z,vx:Math.cos(a)*sp,vy:(Math.random()-.3)*1.2,vz:Math.sin(a)*sp,life:.35+Math.random()*.25,s:.22+Math.random()*.18})}
+    for(let i=0;i<18*Q.particles;i++){const a=Math.random()*6.283,u=Math.random(),sp=3+Math.random()*5;
+      this.emit(this.add,{t:"spark",x,y:y+.1,z,vx:Math.cos(a)*u*sp,vy:1+Math.random()*3,vz:Math.sin(a)*u*sp,life:.2+Math.random()*.25,s:.07,g:1})}
+  },
   update(dt){
     for(const s of this.sys){const {pos,col,size}=s;
       for(let j=s.live.length-1;j>=0;j--){const p=s.live[j];p.age+=dt;const i=p.i;
@@ -732,6 +740,7 @@ export const FX={
         else if(p.t==="ember"){r=3;g=1.1*(1-t);b=.2;a=1-t;sz=p.s}
         else if(p.t==="spark"){r=4;g=2.6*(1-t)+.6;b=1*(1-t);a=1-t;sz=p.s}
         else if(p.t==="smoke"){const v=.28-.08*t;r=v;g=v;b=v*1.04;a=.32*Math.sin(Math.PI*Math.min(1,t*1.4))*(1-t);sz=p.s*(1+3.2*t)}
+        else if(p.t==="shock"){const f=1-t;r=1.6*f+.5;g=1.35*f+.55;b=1.2*f+.7;a=.95*f*f;sz=p.s*(1+4.5*t)}
         else if(p.t==="dust"){r=.5;g=.45;b=.37;a=.45*(1-t);sz=p.s*(1+1.8*t)}
         else {r=.8;g=.9;b=.95;a=.85*(1-t);sz=p.s}
         col[i*4]=r;col[i*4+1]=g;col[i*4+2]=b;col[i*4+3]=a;size[i]=sz}

@@ -19,14 +19,14 @@ Object.assign(GEAR_STEPS,RAFT_STEPS);
  * Discoveries happen by doing things in the world and reveal real atlas nodes.
  */
 import * as THREE from "./vendor/three.module.min.js";
-import {ITEMS,WORLD_DISCOVERIES,RECIPES} from "./world-data.js?v=3.34.0";
+import {ITEMS,WORLD_DISCOVERIES,RECIPES} from "./world-data.js?v=3.35.0";
 import {walkPath} from "./walk-path.js?v=3.33.0";
 import {drillProblem,advanceDrill} from "./friction-fire.js?v=3.33.0";
-import {primitiveItem,workbenchMesh} from "./primitive-models.js?v=3.34.0";
+import {primitiveItem,workbenchMesh,setBowDraw} from "./primitive-models.js?v=3.35.0";
 import {isWheel,SMASHABLE} from "./wheels.js?v=3.34.0";
-import * as GFX from "./gfx.js?v=3.31.2";
+import * as GFX from "./gfx.js?v=3.35.0";
 import * as AXE from "./axe.js?v=3.29.1";
-import * as AU from "./audio.js";
+import * as AU from "./audio.js?v=3.35.0";
 import {ESSENTIAL_QUICKBAR,quickbarOrder} from "./quickbar.js?v=3.33.0";
 import {temperature,temperatureDelta} from "./units.js";
 import {createBirds} from "./birds.js";
@@ -503,13 +503,56 @@ function launchItem(k,v){
 function throwHeld(){
   const k=world.held;if(!k||!inv(k))return toast("Nothing in hand to throw.");
   const it=ITEMS[k];if(it.place)return toast(`${it.name} is placed, not thrown.`);
-  if(it.weapon)return fireWeapon(k);
+  if(it.weapon){if(k==="bow"){if(bowDraw.on)return releaseBow();return startBowDraw()||fireWeapon(k,1)}return fireWeapon(k)}
   take(k);launchItem(k,throwSpeed(k));GFX.playOnce(player.model,"Spell_Simple_Shoot",.45);AU.whoosh(false);
 }
-function fireWeapon(k){const it=ITEMS[k];if(!inv(it.ammo))return toast(`You need ${it.ammo==="stone"?"stones":"arrows"} to use the ${it.name.toLowerCase()}.`);
-  take(it.ammo);launchItem(it.ammo,it.launch).shot=k;GFX.playOnce(player.model,"Spell_Simple_Shoot",.4);if(k==="bow")AU.twang();else AU.whoosh(true);
+function fireWeapon(k,drawPower=1){const it=ITEMS[k];if(!inv(it.ammo))return toast(`You need ${it.ammo==="stone"?"stones":"arrows"} to use the ${it.name.toLowerCase()}.`);
+  take(it.ammo);
+  const p=k==="bow"?Math.max(.35,Math.min(1.15,.35+drawPower*.8)):1;
+  const v=(it.launch||20)*p*(k==="bow"?1.12:1);
+  const d=launchItem(it.ammo,v);d.shot=k;if(k==="bow"){d.pierce=true;d.bowShot=true;orientArrowMesh(d);AU.bowRelease();applyBowPose(0);
+    const o=d.launch;if(o)GFX.FX.sparks(o.x,o.y,o.z,10)}
+  else AU.whoosh(true);
+  GFX.playOnce(player.model,"Spell_Simple_Shoot",.4);
   world.counters.shots=(world.counters.shots||0)+1;discover("elastic")}
 function aimDir(){const p=clamp(-player.camPitch+(player.camPitch<-.35?0:.32),-1.2,1.5),y=player.camYaw;return new THREE.Vector3(-Math.sin(y)*Math.cos(p),Math.sin(p),-Math.cos(y)*Math.cos(p)).normalize()}
+/* -------- epic bow draw / release / pierce -------- */
+let bowDraw={on:false,t:0,power:0};
+const bowShockwaves=[];
+function activeWeaponKey(){return activeHand==="L"?world.left:world.held}
+function holdingBow(){return activeWeaponKey()==="bow"}
+function startBowDraw(){if(!holdingBow()||player.dead||player.raft||paused)return false;if(!inv("arrow")){toast("You need arrows to draw the bow.");return false}bowDraw.on=true;bowDraw.t=0;bowDraw.power=0;return true}
+function cancelBowDraw(){bowDraw.on=false;bowDraw.t=0;bowDraw.power=0;applyBowPose(0)}
+function applyBowPose(t){const u=player?.model?.userData;if(!u)return;for(const anchor of [u.held,u.heldL]){const m=anchor?.children?.[0];if(m&&m.userData?.bow)setBowDraw(m,t)}}
+function stepBowDraw(dt){
+  if(!bowDraw.on){if(bowDraw.t>0){bowDraw.t=Math.max(0,bowDraw.t-dt*4);bowDraw.power=bowDraw.t;applyBowPose(bowDraw.t)}return}
+  if(!holdingBow()||!inv("arrow")){cancelBowDraw();return}
+  bowDraw.t=Math.min(1,bowDraw.t+dt/0.55);bowDraw.power=bowDraw.t*bowDraw.t*(3-2*bowDraw.t);applyBowPose(bowDraw.power);
+}
+function releaseBow(){
+  if(!bowDraw.on&&bowDraw.power<.08){cancelBowDraw();return false}
+  const power=Math.max(bowDraw.power,bowDraw.t);cancelBowDraw();
+  if(power<.12){toast("Draw further before releasing.");return true}
+  fireWeapon("bow",power);return true;
+}
+function spawnShockwave(x,y,z,power=1){
+  GFX.FX.shockwave(x,y,z,power);
+  const ring=new THREE.Mesh(new THREE.RingGeometry(.12,.28,48),new THREE.MeshBasicMaterial({color:0xdce9ff,transparent:true,opacity:.85,side:THREE.DoubleSide,depthWrite:false}));
+  ring.rotation.x=-Math.PI/2;ring.position.set(x,y+.06,z);ring.renderOrder=8;scene.add(ring);if(GFX.MIRROR_HIDE)GFX.MIRROR_HIDE.add(ring);
+  const ring2=new THREE.Mesh(new THREE.RingGeometry(.05,.14,40),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.7,side:THREE.DoubleSide,depthWrite:false}));
+  ring2.rotation.x=-Math.PI/2;ring2.position.set(x,y+.08,z);ring2.renderOrder=9;scene.add(ring2);
+  bowShockwaves.push({ring,ring2,t:0,life:.55,power,y});
+}
+function stepBowShockwaves(dt){
+  for(let i=bowShockwaves.length-1;i>=0;i--){const sw=bowShockwaves[i];sw.t+=dt;const u=sw.t/sw.life;
+    if(u>=1){scene.remove(sw.ring,sw.ring2);sw.ring.geometry.dispose();sw.ring.material.dispose();sw.ring2.geometry.dispose();sw.ring2.material.dispose();bowShockwaves.splice(i,1);continue}
+    const sc=1+u*u*18*sw.power;sw.ring.scale.set(sc,sc,1);sw.ring2.scale.set(sc*1.15,sc*1.15,1);
+    sw.ring.material.opacity=.85*(1-u)*(1-u);sw.ring2.material.opacity=.55*(1-u);
+    sw.ring.position.y=sw.y+.06+u*.15;sw.ring2.position.y=sw.y+.08+u*.2}
+}
+function arrowPierceFX(d,sp){if(!d||d._pierced)return;d._pierced=true;const p=d.pos,pow=Math.min(1.8,.7+(sp||20)/40);spawnShockwave(p.x,p.y,p.z,pow);AU.arrowThump()}
+function orientArrowMesh(d){const sp=d.vel.length();if(sp<.4||!d.mesh)return;d.mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.vel.clone().normalize())}
+
 
 function seatWheel(d){const it=ITEMS[d.item],R=it.r,g=groundAt(d.pos.x,d.pos.z);d.pos.y=g+R;d.mesh.position.copy(d.pos);
   const yaw=Math.atan2(d.vel.x||0,d.vel.z||Math.cos(((d.pos.x*12.9898+d.pos.z*78.233)%6.283)));
@@ -570,17 +613,17 @@ function stepDrops(dt){
       if(d.pos.y<=ground+.05){d.flying=false;d.pos.y=ground+.05;if(it.density>RHO_WATER&&d.thrown)toast(`${it.name} sank (${it.density} kg/m³ > 1000 kg/m³).`)}}
     const px=d.pos.x,pz=d.pos.z;d.pos.addScaledVector(d.vel,dt);
     if(woodWallHit(px,pz,d.pos.x,d.pos.z,d.pos.y)){d.pos.x=px;d.pos.z=pz;d.vel.x*=-.25;d.vel.z*=-.25}   // log walls stop thrown and dropped items
-    if(d.thrown&&d.launch){const tt=nearestTree(d.pos.x,d.pos.z,.75);if(tt&&d.pos.y<tt.t.y+2.6*tt.t.s&&d.pos.y>tt.t.y-.2){const ke=.5*it.mass*sp*sp,dist=Math.hypot(d.pos.x-d.launch.x,d.pos.z-d.launch.z);d.vel.multiplyScalar(-.15);d.thrown=false;AU.hit(false);
+    if(d.thrown&&d.launch){const tt=nearestTree(d.pos.x,d.pos.z,.75);if(tt&&d.pos.y<tt.t.y+2.6*tt.t.s&&d.pos.y>tt.t.y-.2){const ke=.5*it.mass*sp*sp,dist=Math.hypot(d.pos.x-d.launch.x,d.pos.z-d.launch.z);d.vel.multiplyScalar(-.15);d.thrown=false;if(d.bowShot)arrowPierceFX(d,sp);else AU.hit(false);
         toast(`Thunk! The ${it.name.toLowerCase()} strikes the trunk ${dist.toFixed(1)} m away with ${Math.round(ke)} J (½mv², v ≈ ${sp.toFixed(1)} m/s).`);if(dist>=8)discover("hunting");else toast("A hit! Try again from at least 8 m.")}}
     if(d.thrown&&SURV())for(const a of animals){if(a.dead||a.kind==="dog")continue;if(d.pos.distanceTo(a.pos.clone().setY(a.pos.y+.7*a.sp.size))<.55+a.sp.size*.4){
-      const ke=.5*it.mass*sp*sp*(it.dmg||1);a.hp-=ke;a.flee=a.sp.predator?6:6;d.vel.multiplyScalar(-.2);AU.hit(false);toast(`Hit! ${Math.round(ke)} J delivered.`);if(a.hp<=0)killAnimal(a);d.thrown=false;break}}
+      const ke=.5*it.mass*sp*sp*(it.dmg||1)*(d.bowShot?1.25:1);a.hp-=ke;a.flee=a.sp.predator?6:6;d.vel.multiplyScalar(-.2);if(d.bowShot)arrowPierceFX(d,sp);else AU.hit(false);toast(`Hit! ${Math.round(ke)} J delivered.`);if(a.hp<=0)killAnimal(a);d.thrown=false;break}}
     const t2=heightAt(d.pos.x,d.pos.z),g2=groundAt(d.pos.x,d.pos.z),onFloor=g2>t2+.01;   // a building floor counts as ground
     if(d.pos.y<=g2+.03&&(onFloor||!(d.pos.y<0&&g2<0))){d.pos.y=g2+.03;
       if(d.dropped&&(d.bounces||0)<4&&(Math.abs(d.vel.y)>1.1||(!onFloor&&!STICKY.has(d.item)&&slopeAt(d.pos.x,d.pos.z)>.3))){d.bounces=(d.bounces||0)+1;const _br=ITEMS[d.item]?.rest??.32;d.vel.y=Math.abs(d.vel.y)*_br;d.vel.x*=isWheel(d.item)?.75:.55;d.vel.z*=isWheel(d.item)?.75:.55;
         const e=.6,gx=onFloor?0:(heightAt(d.pos.x+e,d.pos.z)-heightAt(d.pos.x-e,d.pos.z))/(2*e),gz=onFloor?0:(heightAt(d.pos.x,d.pos.z+e)-heightAt(d.pos.x,d.pos.z-e))/(2*e);if(!STICKY.has(d.item)){d.vel.x-=gx*1.4;d.vel.z-=gz*1.4}d.pos.y=g2+.05}
       else if(isWheel(d.item)){d.flying=false;d.vel.y=0;d.rolling=true;d.wobble=(ITEMS[d.item].rest||0)>.5?.06:.02;onLanded(d);d.dropped=false}
-      else{d.flying=false;d.vel.set(0,0,0);onLanded(d);d.dropped=false}}
-    d.mesh.position.copy(d.pos);if(d.flying){if(isWheel(d.item)){const sp=Math.hypot(d.vel.x,d.vel.z);d.roll=(d.roll||0)+sp/Math.max(.15,ITEMS[d.item].r)*dt;if(sp>.05)d.axleYaw=Math.atan2(d.vel.x,d.vel.z);d.mesh.rotation.set(d.roll||0,d.axleYaw||0,0)}else d.mesh.rotation.x+=dt*4;}
+      else{if(d.bowShot)arrowPierceFX(d,sp);d.flying=false;d.vel.set(0,0,0);onLanded(d);d.dropped=false}}
+    d.mesh.position.copy(d.pos);if(d.flying){if(isWheel(d.item)){const wsp=Math.hypot(d.vel.x,d.vel.z);d.roll=(d.roll||0)+wsp/Math.max(.15,ITEMS[d.item].r)*dt;if(wsp>.05)d.axleYaw=Math.atan2(d.vel.x,d.vel.z);d.mesh.rotation.set(d.roll||0,d.axleYaw||0,0)}else if(d.item==="arrow"||d.item==="spear")orientArrowMesh(d);else d.mesh.rotation.x+=dt*4;}
   }
 }
 function onLanded(d){
@@ -601,7 +644,7 @@ function onLanded(d){
 let arc=null;const ARC_N=48;
 function updateArc(){
   const k=world.held,it=k&&ITEMS[k];let v=0,item=k;
-  if(it&&it.weapon){if(inv(it.ammo)){v=it.launch;item=it.ammo}}else if(it&&!it.place&&!it.tool&&(k==="spear"||k==="stone"||k==="flint"||k==="arrow"))v=throwSpeed(k);
+  if(it&&it.weapon){if(inv(it.ammo)){v=it.launch*(k==="bow"?(bowDraw.on||bowDraw.power>0?Math.max(.35,.35+(bowDraw.power||bowDraw.t)*.8)*1.12:1):1);item=it.ammo}}else if(it&&!it.place&&!it.tool&&(k==="spear"||k==="stone"||k==="flint"||k==="arrow"))v=throwSpeed(k);
   if(!arc){const g=new THREE.BufferGeometry();g.setAttribute("position",new THREE.BufferAttribute(new Float32Array(ARC_N*3),3));arc=new THREE.Points(g,new THREE.PointsMaterial({color:0xfff2c8,size:.09,transparent:true,opacity:.75,depthWrite:false}));arc.frustumCulled=false;scene.add(arc);GFX.MIRROR_HIDE.add(arc)}
   arc.visible=v>0&&!player.dead&&!player.raft&&!paused;if(!arc.visible)return;
   const dir=aimDir(),p=player.pos.clone().add(new THREE.Vector3(0,player.crouch?1.1:1.55,0)).addScaledVector(new THREE.Vector3(dir.x,0,dir.z).normalize(),.4),vel=dir.multiplyScalar(v),a=arc.geometry.attributes.position.array,itm=ITEMS[item];
@@ -1754,9 +1797,10 @@ function bindInput(container){
   window.addEventListener("keyup",e=>keys.delete(e.code),true);
   window.addEventListener("blur",()=>stopMovement());
   window.addEventListener("focus",()=>stopMovement());
-  canvasEl.addEventListener("mousedown",e=>{if(autoPickup){stopMovement();e.preventDefault();return}dragging=true;lastX=e.clientX;lastY=e.clientY;canvasEl._down=[e.clientX,e.clientY,document.pointerLockElement===canvasEl]});
+  canvasEl.addEventListener("mousedown",e=>{if(autoPickup){stopMovement();e.preventDefault();return}dragging=true;lastX=e.clientX;lastY=e.clientY;canvasEl._down=[e.clientX,e.clientY,document.pointerLockElement===canvasEl];
+    if(e.button===0&&document.pointerLockElement===canvasEl&&!placeSess&&holdingBow())startBowDraw()});
   window.addEventListener("mouseup",e=>{dragging=false;if(!canvasEl._down)return;if(paused){canvasEl._down=null;return;}const moved=Math.hypot(e.clientX-canvasEl._down[0],e.clientY-canvasEl._down[1]);const wasLocked=canvasEl._down[2];canvasEl._down=null;
-    if(e.target!==canvasEl)return;if(document.pointerLockElement===canvasEl){if(placeSess){if(e.button===0&&wasLocked)confirmPlaceMode();else if(e.button===2)cancelPlaceMode()}else if(e.button===0&&wasLocked)withActiveHand(useHeld)}else if(moved<4&&e.button===0){try{canvasEl.requestPointerLock?.()}catch(_){}}});
+    if(e.target!==canvasEl)return;if(document.pointerLockElement===canvasEl){if(placeSess){if(e.button===0&&wasLocked)confirmPlaceMode();else if(e.button===2)cancelPlaceMode()}else{if(e.button===0&&wasLocked){if(holdingBow()||bowDraw.on||bowDraw.power>.05){if(!releaseBow())withActiveHand(useHeld)}else withActiveHand(useHeld)}else if(e.button===2&&bowDraw.on)cancelBowDraw()}}else if(moved<4&&e.button===0){try{canvasEl.requestPointerLock?.()}catch(_){}}});
   window.addEventListener("mousemove",e=>{if(!player)return;const locked=document.pointerLockElement===canvasEl;if(!locked&&!dragging)return;
     const dx=locked?e.movementX:e.clientX-lastX,dy=locked?e.movementY:e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;const k=player.zoom?.25:1;
     player.camYaw-=dx*.004*k;player.camPitch=clamp(player.camPitch+dy*.003*k,-1.45,1.25)});
@@ -2244,7 +2288,7 @@ function woodCam(){const c=WOOD_DEBUG._cam,s=WOOD_DEBUG.site(c.i||0);if(!s)retur
 function stepWorld(dt){
   const dtg=dt*gameSpeed();
   world.gameTime+=dtg;
-  stepWeather(dtg);stepPlayer(dt);stepSurvival(dt);stepDrill(dt);stepDrops(dt);stepFires(dt,dtg);stepBurning(dt);stepLightning(dt);spawnAnimals(dt);updateAnimals(dt);if(PETS)PETS.update(dt);stepPendulums(dt);stepCuriosity(dt);stepTips(dt);
+  stepWeather(dtg);stepPlayer(dt);stepSurvival(dt);stepDrill(dt);stepBowDraw(dt);stepBowShockwaves(dt);stepDrops(dt);stepFires(dt,dtg);stepBurning(dt);stepLightning(dt);spawnAnimals(dt);updateAnimals(dt);if(PETS)PETS.update(dt);stepPendulums(dt);stepCuriosity(dt);stepTips(dt);
   bobRafts();stepShips(dt);stepWoodland(dt);
   const p=player;p.model.position.copy(p.pos);if(p.raft){p.model.position.y=p.raft.obj.position.y+.12;p.model.rotation.x=1.35}else if(p.model.rotation.x)p.model.rotation.x=0;
   p.model.rotation.y=p.yaw;
