@@ -25,7 +25,7 @@ import {drillProblem,advanceDrill} from "./friction-fire.js?v=3.33.0";
 import {primitiveItem,workbenchMesh,setBowDraw} from "./primitive-models.js?v=3.36.0";
 import {isWheel,SMASHABLE} from "./wheels.js?v=3.34.0";
 import {isTelescope,isMidTelescope,isJwstTelescope,buildGalileoMesh,buildMidMesh,buildJwstMesh,useGalileoTelescope,useMidTelescope,useJwstTelescope,useTelescopeFor,telescopeKeydown,telescopeIsOpen,dumpTelescopeCache,TELESCOPE_GALILEO,TELESCOPE_MID,TELESCOPE_JWST} from "./telescopes.js?v=3.47.0";
-import {isGiantTv,GIANT_TV,buildGiantTvMesh,stepGiantTv,openTvWatch,closeTvWatch,isTvWatchOpen,applyTvWatchCamera,tvKeydown,setTvHighlight,updateTvAudio,setTvToast,TV_COLOR_PRESETS,watchTvStruct} from "./giant-tv.js?v=3.51.0";
+import {isGiantTv,GIANT_TV,buildGiantTvMesh,stepGiantTv,openTvWatch,closeTvWatch,isTvWatchOpen,applyTvWatchCamera,tvKeydown,setTvHighlight,updateTvAudio,setTvToast,TV_COLOR_PRESETS,watchTvStruct,initTvCss3d,renderTvCss3d} from "./giant-tv.js?v=3.52.0";
 import * as GFX from "./gfx.js?v=3.50.0";
 import * as AXE from "./axe.js?v=3.29.1";
 import * as AU from "./audio.js?v=3.36.1";
@@ -119,6 +119,7 @@ function initScene(container){
   GFX.initGfx(container,GFX.loadQualityPref());GFX.initMaterials();AXE.initAxe({scene:GFX.scene,renderer:GFX.renderer,MAT:GFX.MAT,heightAt:(x,z)=>heightAt(x,z),FX:GFX.FX,thud:()=>AU.chop()});
   renderer=GFX.renderer;scene=GFX.scene;camera=GFX.camera;moonMesh=GFX.moonMesh;
   clock=new THREE.Clock();GFX.loadHuman();birds=createBirds(scene,heightAt);
+  initTvCss3d(container);
 }
 
 /* ---------------- chunks: terrain + instanced objects ---------------- */
@@ -1359,7 +1360,7 @@ function chopTest(n=3,freeze=true){let best=null,bd=1e9;for(const ch of nearbyCh
 function interact(override=null){
   if(player.actCd>0||player.dead)return;
   if(player.ship){player.actCd=.25;return shipE()}const aim=override||cursorTarget(true);
-  if(aim&&!override){const p=pickupPoint(aim)||aim.point;if(Math.hypot(p.x-player.pos.x,p.z-player.pos.z)>2.6){if(aim.kind==="struct"&&isGiantTv(aim.obj?.type)){player.actCd=.25;setTvToast(toast);openTvWatch(aim.obj,{toast});return}queuePickup(aim);return}}
+  if(aim&&!override){const p=pickupPoint(aim)||aim.point;if(Math.hypot(p.x-player.pos.x,p.z-player.pos.z)>2.6){if(aim.kind==="struct"&&isGiantTv(aim.obj?.type)){player.actCd=.25;setTvToast(toast);openTvWatch(aim.obj,{toast,playerPos:player.pos});return}queuePickup(aim);return}}
   const t=override||aim||findTarget();if(!t)return;
   if(t.kind==="drop"||t.kind==="res"){GFX.playOnce(player.model,"PickUp_Table",.6);AU.pickup()}
   if(t.kind==="pet"){PETS.pet(t.obj);return}
@@ -1396,7 +1397,7 @@ function interact(override=null){
   if(s.type==="well"){world.st.thirst=Math.min(100,world.st.thirst+40);AU.drink();toast("Cool, clean water from deep underground.");discover("groundwater");return}
   if(s.type==="pendulum")return pendStart(s);
   if(isTelescope(s.type)){player.actCd=.3;useTelescopeFor(s.type,{toast});return}
-if(isGiantTv(s.type)){player.actCd=.25;setTvToast(toast);openTvWatch(s,{toast});return}
+if(isGiantTv(s.type)){player.actCd=.25;setTvToast(toast);openTvWatch(s,{toast,playerPos:player.pos});return}
 }
 function useHeld(){
   if(player.actCd>0||player.dead)return;
@@ -1937,7 +1938,7 @@ function tick(){
   if(started&&!paused&&!$("#mode-world").hidden&&!simming)stepWorld(dt);
   if(started){updateCamera(dt);updateSky(dt);birds.update(clock.elapsedTime,player.pos,GFX.ENV.day,world.weather.amt);updateHover()}
   else if(titleMode)stepTitle(dt);
-  if(!simming&&!EX?.isOpen){GFX.render(dt);frames++}
+  if(!simming&&!EX?.isOpen){GFX.render(dt);renderTvCss3d(camera,scene);frames++}
   fpsN++;fpsT+=clock.elapsedTime-fpsLast;fpsLast=clock.elapsedTime;if(fpsT>=1){fps=fpsN/fpsT;fpsN=0;fpsT=0;const fe=$("#wFps");if(fe&&!fe.hidden)fe.textContent=`${Math.round(fps)} fps · ${GFX.Q.label}`}
   ambT-=dt;if(ambT<=0&&started&&world){ambT=.1;const P=player.pos;let wv=0;for(let a=0;a<8;a++)if(heightAt(P.x+Math.cos(a*.785)*22,P.z+Math.sin(a*.785)*22)<0)wv+=.125;
     AU.ambience({wind:clamp(.2+Math.max(0,P.y)/180+world.weather.amt*.5+(world.weather.kind==="storm"||world.weather.kind==="drystorm"?.3:0)+(snapNow()?.2:0),0,1),waves:wv,rain:isRaining()?world.weather.amt:0,storm:world.weather.kind==="storm",night:isNight(),biome:biomeAt(P.x,P.z,P.y),fire:clamp(fireHeatAt(P.x,P.z)/120,0,1),under:camera.position.y<0,paused:paused||$("#mode-world").hidden,slow:!!(OBS&&OBS.isOpen)})}
@@ -2381,7 +2382,7 @@ function stepWorld(dt){
   if(spectrum&&spectrum.visible){spectrum.userData.t-=dt;spectrum.children.forEach(m=>m.material.opacity=.8*clamp(spectrum.userData.t/2,0,1));if(spectrum.userData.t<=0)spectrum.visible=false}
   updateArc();
   if(placeSess)updatePlaceMode();
-  for(const s of world.structures)if(isGiantTv(s.type)){stepGiantTv(s,dt);if(s.tvOpen||isTvWatchOpen())updateTvAudio(s,camera)}
+  for(const s of world.structures)if(isGiantTv(s.type)){stepGiantTv(s,dt,player.pos);if(s.tvOpen||isTvWatchOpen())updateTvAudio(s,camera)}
   chunkT-=dt;if(chunkT<=0){updateChunks(false);chunkT=.15}
   hudT-=dt;if(hudT<=0){renderHUD();hudT=.2}
   saveT-=dt;if(saveT<=0){save();saveT=10}
@@ -2519,7 +2520,7 @@ export function initWorld(){
     clearStructs:()=>{for(const o of world.structures)o.obj&&scene.remove(o.obj);world.structures.length=0;player.raft=null;player.ship=null;player.helm=false},
     dev:DEV_MODE,ship:SHIP_DEBUG,woodland:WOOD_DEBUG,raft:RAFT_DEBUG,place:{begin:beginPlaceMode,cancel:()=>cancelPlaceMode(),rotate:rotatePlaceMode,confirm:confirmPlaceMode,get active(){return!!placeSess},get yaw(){return placeSess?yawDegrees(placeSess.ry):null},hint:showPlaceHint},
     telescope:{open:(t)=>useTelescopeFor(t||TELESCOPE_GALILEO,{toast}),openGalileo:()=>useGalileoTelescope({toast}),openMid:()=>useMidTelescope({toast}),openJwst:()=>useJwstTelescope({toast}),dumpCache:()=>dumpTelescopeCache({toast}),isOpen:telescopeIsOpen,id:TELESCOPE_GALILEO,mid:TELESCOPE_MID,jwst:TELESCOPE_JWST},
-    tv:{open:s=>{const t=s||world.structures.find(o=>isGiantTv(o.type));return t?openTvWatch(t,{toast}):false},close:closeTvWatch,isOpen:isTvWatchOpen,place:()=>{if(!inv("giant_tv_kit"))give("giant_tv_kit");beginPlaceMode("giant_tv_kit",GIANT_TV)},spawn:()=>{const f=forward();const p=place(GIANT_TV,{x:player.pos.x+f.x*6,z:player.pos.z+f.z*6,tvOpen:false});return p},},
+    tv:{open:s=>{const t=s||world.structures.find(o=>isGiantTv(o.type));return t?openTvWatch(t,{toast,playerPos:player.pos}):false},close:closeTvWatch,isOpen:isTvWatchOpen,place:()=>{if(!inv("giant_tv_kit"))give("giant_tv_kit");beginPlaceMode("giant_tv_kit",GIANT_TV)},spawn:()=>{const f=forward();const p=place(GIANT_TV,{x:player.pos.x+f.x*6,z:player.pos.z+f.z*6,tvOpen:false});return p},},
     clearDrops:()=>{for(const d of world.drops)scene.remove(d.mesh);world.drops.length=0},
     clearAnimals:kind=>{for(let i=animals.length-1;i>=0;i--)if(!kind||animals[i].kind===kind){scene.remove(animals[i].g);animals.splice(i,1)}},
     fireAt:()=>fireHeatAt(player.pos.x,player.pos.z),noise:()=>playerNoiseDb?playerNoiseDb():null};

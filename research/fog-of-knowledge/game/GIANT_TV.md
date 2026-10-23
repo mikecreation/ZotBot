@@ -19,6 +19,12 @@ Open height matches the woodland **foresthouse chimney top**: `HOUSE.chimney.top
 - **Open / Close** in the watch UI toggles the rise/unfold animation.
 - Esc exits watch mode (TV can stay risen).
 
+## On-glass embed
+
+Piped/YouTube render via **CSS3DObject** parented to the open MicroLED glass mesh (moves/scales with the TV). The side HUD is chrome only (Open/Close, volume, colors, paste URL) — no video panel.
+
+Click / E: chassis **yaws to face the player**. While open/watching, re-yaw only when the hero leaves a ~**90° frontal cone** of the screen (no constant spin). Yaw persists on `s.ry`.
+
 ## YouTube / no-ads
 
 **Primary watch path: [Piped](https://piped.video/)** - open-source YouTube frontend, no ads, embed support.
@@ -51,4 +57,4 @@ Outdoor OK in rain - no water damage, no deactivate-in-rain logic. Sealed chassi
 
 ## Cache
 
-Bump `index.html` / `world.js` imports to **3.51.0+** when shipping.
+Bump `index.html` / `world.js` imports to **3.52.0+** when shipping.

@@ -411,9 +411,9 @@ body.titleOn .wHelpBtn{display:none}
 .wCtx button.danger{background:#5a1e1e;border-color:#a85848;color:#ffd8d0}
 .wCtx button.danger:hover{background:#7a2828}
 
-/* ---- Giant house-TV watch overlay ---- */
-.tvOverlay{position:fixed;inset:auto 12px 12px auto;z-index:45;max-width:min(520px,46vw);pointer-events:auto}
-.tvOverlay .tvBox{background:#0a121ae8;border:1px solid #2b4a63;border-radius:12px;padding:12px 14px;color:#d9e6f2;box-shadow:0 12px 40px #000a}
+/* ---- Giant house-TV: thin HUD chrome (video is CSS3D on the glass) ---- */
+.tvOverlay{position:fixed;inset:auto 12px 12px auto;z-index:45;max-width:min(420px,40vw);pointer-events:auto}
+.tvOverlayThin .tvBox,.tvOverlay .tvBox{background:#0a121af2;border:1px solid #2b4a63;border-radius:12px;padding:10px 12px;color:#d9e6f2;box-shadow:0 12px 40px #000a}
 .tvHead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:8px}
 .tvHead h3{margin:0;color:#ffe6a8;letter-spacing:.06em}
 .tvHead small{color:#9fb6c9}
@@ -422,8 +422,11 @@ body.titleOn .wHelpBtn{display:none}
 .tvOverlay button.primary{background:#d8b77b;color:#13232a;border-color:#eed4a3}
 .tvOverlay button.ghost{background:transparent;color:#9fb6c9}
 .tvColors button[data-tv=preset]{width:28px;height:28px;min-height:28px;padding:0;border-radius:50%;border:2px solid #9fb6c9}
-.tvFrameSlot{width:100%;aspect-ratio:16/9;background:#000;border-radius:8px;overflow:hidden;border:1px solid #2b4a63}
-.tvFrame{display:block;width:100%;height:100%;border:0;background:#000}
+.tvFrameSlot,.tvFrame{display:none}
 .tvNote{margin:8px 0 0;font-size:11px;color:#8ea6bb}
 .tvVolLab{display:flex;align-items:center;gap:6px;font-size:12px;color:#9fb6c9}
 .tvSearch input[type=search]{flex:1;min-width:140px;padding:6px 8px;border-radius:8px;border:1px solid #2f5670;background:#0a1620;color:#e8f2fa}
+.tvCss3d{z-index:8;pointer-events:none}
+.tvCss3d .tvScreenWrap{box-shadow:0 0 24px #6aa8ff44;pointer-events:auto}
+.tvCss3d .tvScreenWrap.tvScreenFill{outline:1px solid #6aa8ff88}
+.tvScreenFrame{display:block;width:100%;height:100%;border:0;background:#000}

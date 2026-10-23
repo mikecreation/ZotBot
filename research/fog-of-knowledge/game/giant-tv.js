@@ -2,10 +2,12 @@
  * House-tall when open (= foresthouse chimney top 4.75 m). Closed = recessed floor track + folded column.
  * Opens by rising + unfolding N vertical MicroLED-style panels into one seamless wide screen.
  * Watch UI: Piped (no-ads) primary; optional Official YouTube; Google sign-in via window.open popup.
+ * Video/home render ON the 3D glass via CSS3DObject (not a side HUD panel). Thin HUD = chrome only.
  * Chassis color presets + color wheel (persisted per structure). 3D spatial TV audio mixes ON TOP of
  * world ambience (never mutes wind/rain/birds). Rainproof - outdoor OK in rain.
  */
 import * as T from "./vendor/three.module.min.js";
+import { CSS3DObject, CSS3DRenderer } from "./vendor/addons/renderers/CSS3DRenderer.js";
 
 export const GIANT_TV = "giant_tv";
 export const isGiantTv = t => t === GIANT_TV;
@@ -21,6 +23,9 @@ export const TV_FRAME = 0.08;
 export const TV_TRACK_L = 3.4;
 export const TV_TRACK_W = 1.15;
 
+/** ~90° frontal viewing cone (half-angle 45°) — re-yaw only when hero leaves this cone. */
+const FACE_CONE_COS = Math.cos(Math.PI / 4);
+
 export const TV_COLOR_PRESETS = [
   { id: "black", name: "Black", hex: 0x0a0a0c },
   { id: "red", name: "Red", hex: 0x8b1218 },
@@ -30,20 +35,28 @@ export const TV_COLOR_PRESETS = [
 
 const PIPED_HOME = "https://piped.video/";
 const PIPED_EMBED = id => `https://piped.video/embed/${id}`;
-const YT_NOCOOKIE = id => `https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1`;
+const YT_NOCOOKIE = id => `https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1&autoplay=1`;
 const YT_HOME = "https://www.youtube.com/";
 const GOOGLE_ACCOUNTS = "https://accounts.google.com/AccountChooser?continue=https%3A%2F%2Fwww.youtube.com%2F";
+
+const CSS_PX_W = 960;
+const CSS_PX_H = Math.round(CSS_PX_W * (TV_SCREEN_H / TV_SCREEN_W));
 
 let watchS = null;
 let overlay = null;
 let iframeEl = null;
-let audioApi = null; // { ctx, panner, gain, src, analyser? }
+let cssObj = null;
+let cssRenderer = null;
+let cssHost = null;
+let audioApi = null;
 let tvVol = 0.55;
 let tvMuted = false;
-let frontend = "piped"; // "piped" | "youtube"
+let frontend = "piped";
 let pendingVideoId = null;
+let fillScreen = false;
 const _v = new T.Vector3();
 const _cam = new T.Vector3();
+const _toP = new T.Vector3();
 
 function hexCss(h) {
   const n = (h >>> 0) & 0xffffff;
@@ -64,6 +77,47 @@ function chassisMat(hex, metal = 0.55, rough = 0.32) {
   });
 }
 
+/** Mesh root with fold userData — structMesh wraps this in s.obj and stores s._tv. */
+export function tvRoot(s) {
+  if (!s) return null;
+  if (s._tv?.userData?.type === GIANT_TV) return s._tv;
+  if (s.obj?.userData?.type === GIANT_TV) return s.obj;
+  return s.obj?.getObjectByName?.("giant_tv") || null;
+}
+
+function lerpAngle(a, b, t) {
+  let d = ((b - a + Math.PI) % (Math.PI * 2)) - Math.PI;
+  if (d < -Math.PI) d += Math.PI * 2;
+  return a + d * t;
+}
+
+/** Yaw so screen +Z faces the player (hero looks at the glass front). Persist on s.ry. */
+export function faceTvTowardPlayer(s, playerPos) {
+  if (!s || !playerPos) return;
+  const dx = playerPos.x - s.x;
+  const dz = playerPos.z - s.z;
+  if (dx * dx + dz * dz < 1e-6) return;
+  s.ry = Math.atan2(dx, dz);
+  if (s.obj) s.obj.rotation.y = s.ry;
+}
+
+/**
+ * While open/watching: only re-yaw when hero leaves the ~90° frontal cone of the screen.
+ * Does not constantly spin while still in front view.
+ */
+export function stepTvFacing(s, playerPos, dt) {
+  if (!s || !playerPos) return;
+  if (!(s.tvOpen || watchS === s)) return;
+  _toP.set(playerPos.x - s.x, 0, playerPos.z - s.z);
+  if (_toP.lengthSq() < 0.25) return;
+  _toP.normalize();
+  const face = screenFacing(s);
+  if (face.dot(_toP) >= FACE_CONE_COS) return;
+  const tgt = Math.atan2(_toP.x, _toP.z);
+  s.ry = lerpAngle(s.ry || 0, tgt, Math.min(1, 3.2 * (dt || 0.016)));
+  if (s.obj) s.obj.rotation.y = s.ry;
+}
+
 /** Build placeable mesh: floor track + pedestal + telescopic column of N fold panels. */
 export function buildGiantTvMesh(s = {}) {
   const root = new T.Group();
@@ -80,7 +134,6 @@ export function buildGiantTvMesh(s = {}) {
     roughness: 0.55
   });
 
-  // Floor track / recessed base (metallic pedestal on a track)
   const track = new T.Group();
   track.name = "tvTrack";
   const rail = new T.Mesh(new T.BoxGeometry(TV_TRACK_L, 0.06, TV_TRACK_W), metal);
@@ -102,19 +155,21 @@ export function buildGiantTvMesh(s = {}) {
   track.add(pedestal);
   root.add(track);
 
-  // Rising column that holds folded panels
   const column = new T.Group();
   column.name = "tvColumn";
   column.position.y = 0.28;
-  const mast = new T.Mesh(new T.BoxGeometry(0.55, TV_OPEN_H - 0.4, 0.42), mat);
-  mast.geometry.translate(0, (TV_OPEN_H - 0.4) / 2, 0);
+
+  // Short telescopic mast — scales up on open (was always house-tall = fake monolith).
+  const mastH = TV_OPEN_H - 0.55;
+  const mast = new T.Mesh(new T.BoxGeometry(0.42, mastH, 0.28), mat);
+  mast.geometry.translate(0, mastH / 2, 0);
   mast.castShadow = true;
   mast.name = "tvMast";
   column.add(mast);
 
   const panels = new T.Group();
   panels.name = "tvPanels";
-  panels.position.set(0, 0.35, 0.28);
+  panels.position.set(0, 0.2, 0.22);
   const panelMeshes = [];
   for (let i = 0; i < TV_PANEL_N; i++) {
     const g = new T.Group();
@@ -123,8 +178,10 @@ export function buildGiantTvMesh(s = {}) {
       new T.BoxGeometry(TV_PANEL_W + TV_FRAME * 2, TV_SCREEN_H + TV_FRAME * 2, 0.07),
       mat
     );
+    frame.geometry.translate(0, (TV_SCREEN_H + TV_FRAME * 2) / 2, 0);
     frame.castShadow = true;
     const screen = new T.Mesh(new T.BoxGeometry(TV_PANEL_W, TV_SCREEN_H, 0.02), screenMat.clone());
+    screen.geometry.translate(0, TV_SCREEN_H / 2, 0);
     screen.position.z = 0.04;
     screen.name = "tvScreenFace";
     g.add(frame, screen);
@@ -133,7 +190,20 @@ export function buildGiantTvMesh(s = {}) {
   }
   column.add(panels);
 
-  // Soft emissive glow strip behind screens when open
+  // Single glass plane spanning the open MicroLED — CSS3D iframe parents here.
+  const glassMat = new T.MeshBasicMaterial({
+    color: 0x000000,
+    transparent: true,
+    opacity: 0.04,
+    depthWrite: false,
+    side: T.DoubleSide
+  });
+  const glass = new T.Mesh(new T.PlaneGeometry(TV_SCREEN_W, TV_SCREEN_H), glassMat);
+  glass.name = "tvGlass";
+  glass.position.set(0, TV_SCREEN_H / 2, 0.09);
+  glass.visible = false;
+  panels.add(glass);
+
   const glow = new T.PointLight(0x6aa8ff, 0, 14, 2);
   glow.position.set(0, TV_SCREEN_H * 0.55, 0.6);
   glow.name = "tvGlow";
@@ -148,6 +218,7 @@ export function buildGiantTvMesh(s = {}) {
     panelMeshes,
     mast,
     pedestal,
+    glass,
     glow,
     chassisMats: [],
     screenMats: [],
@@ -156,21 +227,15 @@ export function buildGiantTvMesh(s = {}) {
     highlight: false,
     color
   };
+  root.userData.screenMats = [];
   root.traverse(o => {
-    if (!o.isMesh || !o.material) return;
-    if (o.name === "tvScreenFace") root.userData.screenMats.push(o.material);
-    else if (o.material === mat || (o.material.color && o.parent === pedestal) || o === pedestal || o === mast)
-      root.userData.chassisMats.push(o.material);
+    if (o.isMesh && o.name === "tvScreenFace") root.userData.screenMats.push(o.material);
   });
-  // Collect chassis materials by matching color reference
   root.userData.chassisMats = [];
   root.traverse(o => {
-    if (o.isMesh && o.material && o.material !== metal && o.material !== dark && o.name !== "tvScreenFace") {
-      if (o.material.color && !root.userData.screenMats.includes(o.material)) {
-        // pedestal, mast, frames share mat clones - re-tint via applyTvColor
-        if (o === pedestal || o === mast || (o.parent && String(o.parent.name || "").startsWith("tvPanel"))) {
-          root.userData.chassisMats.push(o.material);
-        }
+    if (o.isMesh && o.material && o.material !== metal && o.material !== dark && o.name !== "tvScreenFace" && o.name !== "tvGlass") {
+      if (o === pedestal || o === mast || (o.parent && String(o.parent.name || "").startsWith("tvPanel"))) {
+        root.userData.chassisMats.push(o.material);
       }
     }
   });
@@ -185,17 +250,16 @@ export function applyTvColor(root, hex) {
   const c = parseHex(hex);
   root.userData.color = c;
   root.traverse(o => {
-    if (!o.isMesh || !o.material || o.name === "tvScreenFace") return;
+    if (!o.isMesh || !o.material || o.name === "tvScreenFace" || o.name === "tvGlass") return;
     const n = o.name || "";
     const pn = o.parent?.name || "";
-    // Keep track rails metallic grey; tint chassis (pedestal, mast, panel frames)
     if (n === "tvPedestal" || n === "tvMast" || pn.startsWith("tvPanel")) {
       if (o.material.color) o.material.color.setHex(c);
     }
   });
 }
 
-/** openFrac 0 = folded column near ground; 1 = fully risen + panels fanned into wide screen. */
+/** openFrac 0 = low folded cassette; 1 = risen + panels fanned into wide T screen. */
 export function setTvOpenFrac(root, t) {
   if (!root?.userData) return;
   const u = root.userData;
@@ -203,42 +267,52 @@ export function setTvOpenFrac(root, t) {
   u.open = k;
   const col = u.column;
   if (col) {
-    // Rise: column lifts so screen center reaches house height
-    const yClosed = 0.12;
-    const yOpen = TV_OPEN_H - TV_SCREEN_H - 0.15;
+    const yClosed = 0.1;
+    const yOpen = 0.35;
     col.position.y = yClosed + (yOpen - yClosed) * easeInOut(k);
+  }
+  if (u.mast) {
+    // Closed: stub; open: full telescopic mast behind panels (thin, not a slab).
+    u.mast.scale.set(1, 0.1 + 0.9 * easeInOut(k), 1);
+    u.mast.visible = k < 0.92;
   }
   const panels = u.panelMeshes || [];
   const n = panels.length || TV_PANEL_N;
-  // Fold phase: first half rises as stacked column; second half fans panels horizontally
-  const rise = Math.min(1, k * 1.35);
-  const fold = Math.max(0, (k - 0.28) / 0.72);
+  const rise = Math.min(1, k * 1.45);
+  const fold = Math.max(0, (k - 0.22) / 0.78);
   const mid = (n - 1) / 2;
+  const hScale = 0.07 + 0.93 * easeInOut(rise);
   for (let i = 0; i < n; i++) {
     const p = panels[i];
     if (!p) continue;
-    // Closed: stacked as thick monolithic T/column (slight depth stagger)
     const closedX = 0;
-    const closedZ = (i - mid) * 0.055;
-    const closedRy = 0;
-    // Open: side-by-side seamless wide screen
+    const closedZ = (i - mid) * 0.048;
     const openX = (i - mid) * TV_PANEL_W;
     const openZ = 0;
-    const openRy = 0;
-    // Mid-unfold: slight accordion fan
-    const fan = Math.sin(fold * Math.PI) * 0.18 * (i - mid);
+    const fan = Math.sin(fold * Math.PI) * 0.22 * (i - mid);
     const x = closedX + (openX - closedX) * fold;
-    const z = closedZ + (openZ - closedZ) * fold + fan * 0.15;
-    const ry = closedRy + (openRy - closedRy) * fold + fan * 0.08;
+    const z = closedZ + (openZ - closedZ) * fold + fan * 0.12;
+    const ry = fan * 0.1 * (1 - fold);
     p.position.set(x, 0, z);
-    p.rotation.y = ry;
-    p.rotation.x = (1 - rise) * 0.02;
+    p.rotation.set(0, ry, 0);
+    p.scale.set(1, hScale, 1);
     p.visible = true;
+    // Dim individual LED faces once glass/CSS3D takes over
+    p.traverse(o => {
+      if (o.name === "tvScreenFace") o.visible = fold < 0.85 || !cssObj;
+    });
+  }
+  if (u.glass) {
+    const gw = (TV_PANEL_W + (TV_SCREEN_W - TV_PANEL_W) * fold) / TV_SCREEN_W;
+    u.glass.scale.set(Math.max(0.15, gw), hScale, 1);
+    u.glass.position.set(0, (TV_SCREEN_H * hScale) / 2, 0.09);
+    u.glass.visible = k > 0.35;
   }
   if (u.glow) u.glow.intensity = 0.15 + 1.4 * k * k;
   for (const m of u.screenMats || []) {
     if (m) m.emissiveIntensity = 0.12 + 0.85 * k;
   }
+  syncCssToGlass(root);
 }
 
 function easeInOut(t) {
@@ -246,12 +320,12 @@ function easeInOut(t) {
 }
 
 export function setTvHighlight(root, on) {
-  if (!root?.userData) return;
-  root.userData.highlight = !!on;
-  const pulse = on ? 0x3ec8ff : null;
-  root.traverse(o => {
+  const mesh = root?.userData?.type === GIANT_TV ? root : root;
+  if (!mesh?.userData) return;
+  mesh.userData.highlight = !!on;
+  mesh.traverse(o => {
     if (!o.isMesh || !o.material || !o.material.emissive) return;
-    if (o.name === "tvScreenFace") return;
+    if (o.name === "tvScreenFace" || o.name === "tvGlass") return;
     if (on) {
       o.userData._emi = o.material.emissive.getHex();
       o.userData._emiI = o.material.emissiveIntensity;
@@ -264,31 +338,37 @@ export function setTvHighlight(root, on) {
       delete o.userData._emiI;
     }
   });
-  void pulse;
 }
 
-export function stepGiantTv(s, dt) {
-  if (!s?.obj?.userData) return;
-  const u = s.obj.userData;
+export function stepGiantTv(s, dt, playerPos) {
+  const root = tvRoot(s);
+  if (!root?.userData) return;
+  const u = root.userData;
   const tgt = s.tvOpen ? 1 : 0;
   u.targetOpen = tgt;
-  if (Math.abs(u.open - tgt) < 0.001) {
-    if (u.open !== tgt) setTvOpenFrac(s.obj, tgt);
-    return;
+  if (Math.abs(u.open - tgt) >= 0.001) {
+    const spd = 0.62;
+    const next = u.open + Math.sign(tgt - u.open) * Math.min(Math.abs(tgt - u.open), spd * dt);
+    setTvOpenFrac(root, next);
+  } else if (u.open !== tgt) {
+    setTvOpenFrac(root, tgt);
   }
-  const spd = 0.55; // ~1.8s full open
-  const next = u.open + Math.sign(tgt - u.open) * Math.min(Math.abs(tgt - u.open), spd * dt);
-  setTvOpenFrac(s.obj, next);
+  if (playerPos) stepTvFacing(s, playerPos, dt);
 }
 
 export function screenWorldCenter(s) {
-  const o = s?.obj;
-  if (!o) return new T.Vector3(s.x, s.y + TV_OPEN_H * 0.55, s.z);
+  const root = tvRoot(s);
+  if (!root) return new T.Vector3(s.x, s.y + TV_OPEN_H * 0.55, s.z);
+  const glass = root.userData?.glass;
+  if (glass && glass.visible) {
+    glass.getWorldPosition(_v);
+    return _v.clone();
+  }
   const mid = Math.floor(TV_PANEL_N / 2);
-  const panel = o.userData?.panelMeshes?.[mid];
+  const panel = root.userData?.panelMeshes?.[mid];
   if (panel) {
     panel.getWorldPosition(_v);
-    _v.y += TV_SCREEN_H * 0.45;
+    _v.y += TV_SCREEN_H * 0.45 * (panel.scale?.y || 1);
     return _v.clone();
   }
   return new T.Vector3(s.x, s.y + (s.tvOpen ? TV_OPEN_H * 0.55 : 1.2), s.z);
@@ -296,20 +376,16 @@ export function screenWorldCenter(s) {
 
 export function screenFacing(s) {
   const ry = s.ry || 0;
-  // Local +z is screen face (panels sit at +z on column)
   return new T.Vector3(Math.sin(ry), 0, Math.cos(ry));
 }
 
-/** Face-on camera: look at screen, keep player visible in frame (offset to the side/back). */
 export function applyTvWatchCamera(camera, player, s) {
   if (!camera || !player || !s) return false;
   const face = screenFacing(s);
   const center = screenWorldCenter(s);
   const dist = 7.5;
-  const side = new T.Vector3(-face.z, 0, face.x); // perpendicular
-  // Camera stands in front of screen, slightly elevated, nudged so player stays in view
+  const side = new T.Vector3(-face.z, 0, face.x);
   const camPos = center.clone().addScaledVector(face, dist).add(new T.Vector3(0, 0.6, 0));
-  // Bias toward player's side so character remains visible
   const pp = player.pos;
   const toPlayer = new T.Vector3(pp.x - center.x, 0, pp.z - center.z);
   if (toPlayer.lengthSq() > 0.01) {
@@ -321,7 +397,6 @@ export function applyTvWatchCamera(camera, player, s) {
   }
   camera.position.lerp(camPos, 0.18);
   _cam.copy(center);
-  // Look slightly toward player so both screen and character frame
   _cam.x = center.x * 0.82 + pp.x * 0.18;
   _cam.z = center.z * 0.82 + pp.z * 0.18;
   camera.lookAt(_cam);
@@ -340,18 +415,127 @@ export function watchTvStruct() {
   return watchS;
 }
 
+/* ---------------- CSS3D embed on glass ---------------- */
+
+export function initTvCss3d(container) {
+  if (cssRenderer || !container) return cssRenderer;
+  cssRenderer = new CSS3DRenderer();
+  cssRenderer.setSize(container.clientWidth, container.clientHeight);
+  const el = cssRenderer.domElement;
+  el.id = "tvCss3d";
+  el.className = "tvCss3d";
+  el.style.position = "absolute";
+  el.style.inset = "0";
+  el.style.pointerEvents = "none";
+  el.style.overflow = "hidden";
+  container.style.position = container.style.position || "relative";
+  container.appendChild(el);
+  cssHost = el;
+  window.addEventListener("resize", () => {
+    if (!cssRenderer || !container) return;
+    cssRenderer.setSize(container.clientWidth, container.clientHeight);
+  });
+  return cssRenderer;
+}
+
+function ensureScreenIframe() {
+  if (iframeEl && cssObj) return iframeEl;
+  killScreenMedia();
+  const wrap = document.createElement("div");
+  wrap.className = "tvScreenWrap";
+  wrap.style.width = CSS_PX_W + "px";
+  wrap.style.height = CSS_PX_H + "px";
+  wrap.style.background = "#000";
+  wrap.style.overflow = "hidden";
+  wrap.style.borderRadius = "4px";
+  wrap.style.pointerEvents = "auto";
+  const iframe = document.createElement("iframe");
+  iframe.className = "tvScreenFrame";
+  iframe.title = "House TV";
+  iframe.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+  iframe.referrerPolicy = "no-referrer-when-downgrade";
+  iframe.style.width = "100%";
+  iframe.style.height = "100%";
+  iframe.style.border = "0";
+  iframe.style.background = "#000";
+  wrap.appendChild(iframe);
+  cssObj = new CSS3DObject(wrap);
+  cssObj.scale.set(TV_SCREEN_W / CSS_PX_W, TV_SCREEN_H / CSS_PX_H, 1);
+  iframeEl = iframe;
+  return iframe;
+}
+
+function attachCssToGlass(root) {
+  ensureScreenIframe();
+  const glass = root?.userData?.glass;
+  if (!glass || !cssObj) return;
+  if (cssObj.parent !== glass) {
+    if (cssObj.parent) cssObj.parent.remove(cssObj);
+    // PlaneGeometry faces +Z; sit just in front of glass
+    cssObj.position.set(0, 0, 0.02);
+    cssObj.rotation.set(0, 0, 0);
+    glass.add(cssObj);
+  }
+  cssObj.visible = true;
+  if (cssHost) cssHost.style.pointerEvents = "auto";
+  syncCssToGlass(root);
+}
+
+function syncCssToGlass(root) {
+  if (!cssObj || !root?.userData?.glass) return;
+  const glass = root.userData.glass;
+  const open = root.userData.open || 0;
+  cssObj.visible = !!watchS && open > 0.4 && glass.visible;
+  if (fillScreen && cssObj.element) {
+    cssObj.element.classList.add("tvScreenFill");
+  } else if (cssObj.element) {
+    cssObj.element.classList.remove("tvScreenFill");
+  }
+}
+
+/** Tear down the single active media element (no orphan iframes / audio). */
+function killScreenMedia() {
+  if (iframeEl) {
+    try {
+      iframeEl.src = "about:blank";
+    } catch (_) {}
+    try {
+      iframeEl.remove();
+    } catch (_) {}
+    iframeEl = null;
+  }
+  if (cssObj) {
+    try {
+      if (cssObj.parent) cssObj.parent.remove(cssObj);
+    } catch (_) {}
+    try {
+      cssObj.element?.remove();
+    } catch (_) {}
+    cssObj = null;
+  }
+  if (cssHost) cssHost.style.pointerEvents = "none";
+  fillScreen = false;
+  pendingVideoId = null;
+}
+
+export function renderTvCss3d(camera, scene) {
+  if (!cssRenderer || !camera || !scene) return;
+  if (!watchS && !cssObj) return;
+  cssRenderer.render(scene, camera);
+}
+
 function ensureOverlay() {
   if (overlay) return overlay;
   const el = document.createElement("div");
   el.id = "tvOverlay";
-  el.className = "tvOverlay";
+  el.className = "tvOverlay tvOverlayThin";
   el.hidden = true;
   el.innerHTML = `
     <div class="tvBox">
       <div class="tvHead">
         <div>
           <h3>House TV</h3>
-          <small>C SEED-style fold-out MicroLED · Piped no-ads by default</small>
+          <small>Controls · video plays on the glass</small>
         </div>
         <div class="tvActs">
           <button type="button" data-tv="toggleOpen">Open / Close</button>
@@ -375,12 +559,10 @@ function ensureOverlay() {
         <button type="button" data-tv="go" class="primary">Watch</button>
         <button type="button" data-tv="home">Home</button>
       </div>
-      <div class="tvFrameSlot"><iframe class="tvFrame" title="House TV" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
-      <p class="tvNote">Default watch path is <b>Piped</b> (open-source YT frontend, no ads). Google sign-in opens an account-picker popup (user gesture) - not iframe OAuth. TV audio is spatial and mixes with world ambience; rainproof chassis.</p>
+      <p class="tvNote">Piped/YouTube render <b>on the TV screen</b> in the world. This panel is chrome only (Open, volume, colors). Esc exits.</p>
     </div>`;
   (document.querySelector("#mode-world") || document.body).appendChild(el);
   overlay = el;
-  iframeEl = el.querySelector("iframe.tvFrame");
   el.addEventListener("click", onOverlayClick);
   el.addEventListener("input", onOverlayInput);
   el.addEventListener("keydown", e => e.stopPropagation());
@@ -406,17 +588,39 @@ function extractVideoId(raw) {
 
 function loadHome() {
   pendingVideoId = null;
+  fillScreen = false;
+  ensureScreenIframe();
   if (!iframeEl) return;
-  if (frontend === "piped") iframeEl.src = PIPED_HOME;
-  else iframeEl.src = YT_HOME;
+  // Replace src via blank first to kill prior media
+  iframeEl.src = "about:blank";
+  requestAnimationFrame(() => {
+    if (!iframeEl) return;
+    iframeEl.src = frontend === "piped" ? PIPED_HOME : YT_HOME;
+  });
+  syncCssToGlass(tvRoot(watchS));
 }
 
 function loadVideo(id) {
   pendingVideoId = id;
-  if (!iframeEl || !id) return loadHome();
-  if (frontend === "piped") iframeEl.src = PIPED_EMBED(id);
-  else iframeEl.src = YT_NOCOOKIE(id);
+  if (!id) return loadHome();
+  ensureScreenIframe();
+  fillScreen = true;
+  if (!iframeEl) return;
+  iframeEl.src = "about:blank";
+  requestAnimationFrame(() => {
+    if (!iframeEl) return;
+    iframeEl.src = frontend === "piped" ? PIPED_EMBED(id) : YT_NOCOOKIE(id);
+  });
   startSpatialBed();
+  const root = tvRoot(watchS);
+  if (root) {
+    root.userData.panelMeshes?.forEach(p => {
+      p.traverse(o => {
+        if (o.name === "tvScreenFace") o.visible = false;
+      });
+    });
+  }
+  syncCssToGlass(root);
 }
 
 function onOverlayClick(e) {
@@ -429,19 +633,29 @@ function onOverlayClick(e) {
   }
   if (act === "toggleOpen" && watchS) {
     watchS.tvOpen = !watchS.tvOpen;
-    if (watchS.tvOpen) startSpatialBed();
-    else stopSpatialBed(false);
+    const root = tvRoot(watchS);
+    if (watchS.tvOpen) {
+      startSpatialBed();
+      if (root) attachCssToGlass(root);
+    } else {
+      stopSpatialBed(false);
+      if (iframeEl) iframeEl.src = "about:blank";
+      if (cssObj) cssObj.visible = false;
+    }
     return;
   }
   if (act === "frontend") {
     frontend = b.dataset.mode === "youtube" ? "youtube" : "piped";
     overlay.querySelectorAll("[data-tv=frontend]").forEach(x => x.classList.toggle("primary", x.dataset.mode === frontend));
-    if (pendingVideoId) loadVideo(pendingVideoId);
+    const keepId = pendingVideoId;
+    killScreenMedia();
+    pendingVideoId = keepId;
+    if (watchS) attachCssToGlass(tvRoot(watchS));
+    if (keepId) loadVideo(keepId);
     else loadHome();
     return;
   }
   if (act === "google") {
-    // User-gesture popup - browsers allow this; not trapped in iframe OAuth
     const w = window.open(GOOGLE_ACCOUNTS, "fogGoogleLogin", "popup=yes,width=520,height=640");
     if (!w) toastSafe("Popup blocked - allow popups for Google sign-in.");
     else toastSafe("Complete Google / YouTube sign-in in the popup, then return here.");
@@ -458,6 +672,7 @@ function onOverlayClick(e) {
     return;
   }
   if (act === "home") {
+    fillScreen = false;
     loadHome();
     return;
   }
@@ -465,9 +680,13 @@ function onOverlayClick(e) {
     const q = overlay.querySelector("[data-tv=q]")?.value;
     const id = extractVideoId(q);
     if (!id) {
-      // Piped search home with query
-      if (frontend === "piped" && q) iframeEl.src = PIPED_HOME + "results?search_query=" + encodeURIComponent(q);
-      else toastSafe("Paste a YouTube URL or 11-char video ID.");
+      if (frontend === "piped" && q) {
+        ensureScreenIframe();
+        iframeEl.src = PIPED_HOME + "results?search_query=" + encodeURIComponent(q);
+        fillScreen = false;
+        return;
+      }
+      toastSafe("Paste a YouTube URL or 11-char video ID.");
       return;
     }
     loadVideo(id);
@@ -491,14 +710,22 @@ function onOverlayInput(e) {
 function setWatchColor(hex) {
   if (!watchS) return;
   watchS.tvColor = hex;
-  if (watchS.obj) applyTvColor(watchS.obj, hex);
+  const root = tvRoot(watchS);
+  if (root) applyTvColor(root, hex);
   const wheel = overlay?.querySelector("[data-tv=wheel]");
   if (wheel) wheel.value = hexCss(hex);
 }
 
 function toastSafe(msg) {
-  if (toastFn) { try { toastFn(msg); return } catch (_) {} }
-  try { console.info("[TV]", msg) } catch (_) {}
+  if (toastFn) {
+    try {
+      toastFn(msg);
+      return;
+    } catch (_) {}
+  }
+  try {
+    console.info("[TV]", msg);
+  } catch (_) {}
 }
 
 let toastFn = null;
@@ -513,9 +740,17 @@ function toast(msg) {
 export function openTvWatch(s, opts = {}) {
   if (!s || !isGiantTv(s.type)) return false;
   if (opts.toast) toastFn = opts.toast;
+  // Kill any prior media before opening another
+  if (watchS && watchS !== s) {
+    killScreenMedia();
+    stopSpatialBed(true);
+  }
   watchS = s;
   s.tvOpen = true;
-  setTvHighlight(s.obj, true);
+  const pos = opts.playerPos || opts.player?.pos;
+  if (pos) faceTvTowardPlayer(s, pos);
+  const root = tvRoot(s);
+  if (root) setTvHighlight(root, true);
   const el = ensureOverlay();
   el.hidden = false;
   try {
@@ -528,19 +763,20 @@ export function openTvWatch(s, opts = {}) {
   const lbl = el.querySelector("[data-tv=volLbl]");
   if (lbl) lbl.textContent = Math.round(tvVol * 100) + "%";
   el.querySelectorAll("[data-tv=frontend]").forEach(x => x.classList.toggle("primary", x.dataset.mode === frontend));
+  if (root) attachCssToGlass(root);
   loadHome();
   startSpatialBed();
-  toast("TV watch mode - face-on camera. Piped (no ads) home. Esc exits.");
+  toast("TV watch — screen faces you. Open unfolds the MicroLED. Video plays on the glass. Esc exits.");
   return true;
 }
 
 export function closeTvWatch() {
   if (!watchS) return;
-  setTvHighlight(watchS.obj, false);
-  // leave open state as user left it (risen or closed via toggle)
+  const root = tvRoot(watchS);
+  if (root) setTvHighlight(root, false);
   watchS = null;
   if (overlay) overlay.hidden = true;
-  if (iframeEl) iframeEl.src = "about:blank";
+  killScreenMedia();
   stopSpatialBed(true);
 }
 
@@ -553,6 +789,11 @@ export function toggleTvOpen(s) {
 export function tvKeydown(e) {
   if (!watchS) return false;
   if (e.code === "Escape") {
+    if (fillScreen && pendingVideoId) {
+      loadHome();
+      toastSafe("Back to TV home on glass.");
+      return true;
+    }
     closeTvWatch();
     return true;
   }
@@ -587,7 +828,6 @@ function syncVolUi() {
   if (lbl) lbl.textContent = Math.round(tvVol * 100) + "%";
 }
 
-/** Soft procedural bed under the embed - spatialized; does NOT touch world ambience graph. */
 function startSpatialBed() {
   try {
     const AC = window.AudioContext || window.webkitAudioContext;
@@ -602,7 +842,6 @@ function startSpatialBed() {
       panner.refDistance = 4;
       panner.maxDistance = 48;
       panner.rolloffFactor = 1.1;
-      // Soft noise bed (TV "presence"); real video audio stays in iframe - this is positional cue
       const n = ctx.sampleRate * 2;
       const buf = ctx.createBuffer(1, n, ctx.sampleRate);
       const d = buf.getChannelData(0);
@@ -648,13 +887,12 @@ function stopSpatialBed(hard) {
 
 function applyTvGain() {
   if (!audioApi) return;
-  const v = tvMuted ? 0 : tvVol * 0.22; // quiet presence bed; iframe carries program
+  const v = tvMuted ? 0 : tvVol * 0.22;
   try {
     audioApi.gain.gain.setTargetAtTime(v, audioApi.ctx.currentTime, 0.08);
   } catch (_) {}
 }
 
-/** Update HRTF panner from screen world pos vs camera - call each frame while watching/open. */
 export function updateTvAudio(s, camera) {
   if (!audioApi || !s || !camera) return;
   const c = screenWorldCenter(s);
@@ -673,7 +911,6 @@ export function updateTvAudio(s, camera) {
       p.orientationY.setValueAtTime(0, now);
       p.orientationZ.setValueAtTime(face.z, now);
     } else p.setOrientation(face.x, 0, face.z);
-    // Listener follows camera (separate from Fog ambience AudioContext - mix at OS/speaker level)
     const L = ctx.listener;
     const cp = camera.position;
     if (L.positionX) {
