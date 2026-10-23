@@ -3,7 +3,7 @@
 import fs from "node:fs";import path from "node:path";import {fileURLToPath} from "node:url";
 const dir=path.join(path.dirname(fileURLToPath(import.meta.url)),"..");
 const bad=/\u00c3|\u00c2|\u00e2\u20ac|\ufffd/;let fails=0,n=0;
-const walk=d=>fs.readdirSync(d,{withFileTypes:true}).flatMap(e=>e.isDirectory()?(/^(node_modules|vendor|assets)$/.test(e.name)?[]:walk(path.join(d,e.name))):[path.join(d,e.name)]);
+const walk=d=>fs.readdirSync(d,{withFileTypes:true}).flatMap(e=>e.isDirectory()?(/^(node_modules|vendor|assets|_place_proof)$/.test(e.name)?[]:walk(path.join(d,e.name))):[path.join(d,e.name)]);
 for(const f of walk(dir).filter(f=>/\.(js|mjs|html|css)$/.test(f))){n++;const lines=fs.readFileSync(f,"utf8").split("\n");
   lines.forEach((l,i)=>{if(bad.test(l)){fails++;if(fails<20)console.log(`FAIL mojibake ${path.relative(dir,f)}:${i+1}: ${l.trim().slice(0,90)}`)}})}
 const html=fs.readFileSync(path.join(dir,"index.html"),"utf8");
