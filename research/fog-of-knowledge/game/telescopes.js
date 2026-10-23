@@ -7,7 +7,7 @@
  * E on telescope -> "Switch location?"  Yes = interactive globe (countries + ocean).
  * No / default path = current saved or geolocated / Florence sky (no fake stars).
  * Tier 2 Observatory (mid): Aladin Lite DSS2 HiPS, deep ~2 deg FoV.
- * Tier 3 James Webb (jwst): Aladin JWST HiPS + ESASky, deep FoV / 360 pan.
+ * Tier 3 James Webb (jwst): Aladin colorful JWST HiPS (SMACS Deep-Field / EPO) + ESASky.
  */
 import * as T from "./vendor/three.module.min.js";
 
@@ -15,6 +15,19 @@ const STORE_KEY = "fog-of-knowledge:game:telescope:viewpoint";
 const SESSION_KEY = "fog-of-knowledge:game:telescope:sessions";
 const IDB_NAME = "fog-of-knowledge-telescope";
 const IDB_STORE = "skySessions";
+/** Bump to invalidate warm/session JWST keys that used sparse CDS/P/JWST/OPEN (grey empty). */
+const JWST_SKY_CACHE_VER = "jwst2";
+/** Colorful public CDS JWST HiPS per deep-field button (not sparse OPEN science mosaic). */
+const JWST_HIPS = {
+  smacs: { survey: "CDS/P/JWST/Deep-Field-SMAC0723/NIRCam", fov: 0.04 },
+  ceers: { survey: "CDS/P/JWST/EPO", fov: 0.06 },
+  stephans: { survey: "CDS/P/JWST/Stephans-Quintet/NIRCam-MIRI", fov: 0.08 },
+  zenith: { survey: "CDS/P/JWST/EPO", fov: 0.07 },
+  default: { survey: "CDS/P/JWST/EPO", fov: 0.07 }
+};
+function jwstHipsFor(targetId){
+  return JWST_HIPS[targetId] || JWST_HIPS.default;
+}
 /** Warm iframes kept alive across close so Aladin/ESASky/Stellarium do not cold-reload. */
 const warmFrames = new Map(); // cacheKey -> { iframe, meta }
 let activeSkyKey = null;
@@ -249,7 +262,10 @@ export function skyCacheKey(tier, view, extra = {}){
   const tgt = extra.targetId || "";
   const ra = extra.ra != null ? (+extra.ra).toFixed(3) : "";
   const dec = extra.dec != null ? (+extra.dec).toFixed(3) : "";
-  return [tier || "galileo", lat, lon, mode, tgt, ra, dec].join("|");
+  const parts = [tier || "galileo", lat, lon, mode, tgt, ra, dec];
+  // Version JWST keys so old OPEN warm iframes never reattach after HiPS fix.
+  if((tier || "") === "jwst") parts.push(JWST_SKY_CACHE_VER);
+  return parts.join("|");
 }
 
 function ensureWarmHost(){
@@ -269,6 +285,35 @@ function readSessionMap(){
 function writeSessionMap(map){
   try{ localStorage.setItem(SESSION_KEY, JSON.stringify(map)) }catch(_){}
 }
+
+/** Drop pre-jwst2 warm iframes + session rows so reopen loads colorful HiPS without Dump. */
+function migrateJwstWarmCache(){
+  try{
+    for(const key of Array.from(warmFrames.keys())){
+      if(key.indexOf("jwst|") !== 0) continue;
+      if(key.indexOf("|" + JWST_SKY_CACHE_VER) >= 0) continue;
+      const pack = warmFrames.get(key);
+      try{ if(pack && pack.iframe){ pack.iframe.src = "about:blank"; if(pack.iframe.parentNode) pack.iframe.parentNode.removeChild(pack.iframe) } }catch(_){}
+      warmFrames.delete(key);
+    }
+  }catch(_){}
+  try{
+    const map = readSessionMap();
+    let changed = false;
+    for(const k of Object.keys(map)){
+      if(k === "__last") continue;
+      if(k.indexOf("jwst|") === 0 && k.indexOf("|" + JWST_SKY_CACHE_VER) < 0){
+        delete map[k]; changed = true;
+      }
+    }
+    if(map.__last && String(map.__last).indexOf("jwst|") === 0 && String(map.__last).indexOf("|" + JWST_SKY_CACHE_VER) < 0){
+      delete map.__last; changed = true;
+    }
+    if(changed) writeSessionMap(map);
+  }catch(_){}
+}
+migrateJwstWarmCache();
+
 
 function idbOpen(){
   return new Promise((resolve, reject) => {
@@ -481,14 +526,16 @@ export function aladinUrl(lat, lon, opts = {}){
   return "https://aladin.cds.unistra.fr/AladinLite/?target=" + target + "&fov=" + fov + "&survey=" + survey;
 }
 
-/** Aladin Lite with public JWST HiPS (CDS/P/JWST/OPEN). opts.ra/dec override zenith. Deep FoV default. */
+/** Aladin Lite colorful JWST HiPS. Default EPO; SMACS uses Deep-Field NIRCam. Tight FoV (arcmin). */
 export function jwstAladinUrl(lat, lon, opts = {}){
   let ra, dec;
   if(opts.ra != null && opts.dec != null){ ra = +opts.ra; dec = +opts.dec; }
   else { const z = zenithRaDec(lat, lon); ra = z.ra; dec = z.dec; }
-  const fov = opts.fov ?? 0.2;
-  const survey = encodeURIComponent(opts.survey || "CDS/P/JWST/OPEN");
+  const hips = jwstHipsFor(opts.targetId || "default");
+  const fov = opts.fov != null ? +opts.fov : hips.fov;
+  const survey = encodeURIComponent(opts.survey || hips.survey);
   const target = encodeURIComponent(ra.toFixed(4) + " " + dec.toFixed(4));
+  // survey= sets Aladin base layer (not Fermi overlay). FoV stays deg-scale deep-field, not all-sky.
   return "https://aladin.cds.unistra.fr/AladinLite/?target=" + target + "&fov=" + fov + "&survey=" + survey;
 }
 
@@ -590,6 +637,7 @@ function openSky(view, tierKey){
   if(tierKey === "mid" || tierKey === "galileo" || tierKey === "jwst") activeTier = tierKey;
   const mid = activeTier === "mid";
   const jwst = activeTier === "jwst";
+  if(jwst) migrateJwstWarmCache();
   const el = ensureOverlay();
   el.hidden = false;
   el.classList.add("telSkyFs");
@@ -620,10 +668,14 @@ function openSky(view, tierKey){
     }
   }catch(_){}
 
+  function currentHips(){
+    return jwstHipsFor(jwstTarget.id || "smacs");
+  }
   function currentUrl(){
     if(jwst){
-      if(jwstMode === "esasky") return esaskyUrl(view.lat, view.lon, { ra: jwstTarget.ra, dec: jwstTarget.dec, fov: 0.4 });
-      return jwstAladinUrl(view.lat, view.lon, { ra: jwstTarget.ra, dec: jwstTarget.dec, fov: 0.18 });
+      const hips = currentHips();
+      if(jwstMode === "esasky") return esaskyUrl(view.lat, view.lon, { ra: jwstTarget.ra, dec: jwstTarget.dec, fov: Math.max(0.15, hips.fov * 4) });
+      return jwstAladinUrl(view.lat, view.lon, { ra: jwstTarget.ra, dec: jwstTarget.dec, fov: hips.fov, survey: hips.survey, targetId: jwstTarget.id });
     }
     if(mid) return aladinUrl(view.lat, view.lon);
     return stellariumUrl(view.lat, view.lon, { fov: galileoFov });
@@ -637,7 +689,8 @@ function openSky(view, tierKey){
     if(jwst){
       skyTitle = "DEEP UNIVERSE -- James Webb";
       srcLabel = jwstMode === "esasky" ? "ESASky (360 pan/zoom)" : "Aladin JWST HiPS";
-      extra = (jwstTarget.label || "") + " - FoV deep - pan/zoom in viewer (cached)";
+      const hipsL = currentHips();
+      extra = (jwstTarget.label || "") + " - FoV " + hipsL.fov + " deg - " + hipsL.survey + " (cached)";
     } else if(mid){
       skyTitle = "DEEP SKY -- Observatory";
       srcLabel = "Aladin Lite DSS2";
@@ -672,7 +725,7 @@ function openSky(view, tierKey){
       ? "Warm cache hit -- sky restored without full reload."
       : "First open loads survey tiles; reopen of this sky is kept warm until you Dump telescope cache.";
     const note = jwst
-      ? ("Sky data: public CDS Aladin JWST HiPS (CDS/P/JWST/OPEN) and ESA ESASky. " + cacheNote)
+      ? ("Sky data: public CDS Aladin JWST HiPS (SMACS Deep-Field NIRCam / EPO color, not OPEN) and ESA ESASky. " + cacheNote)
       : mid
       ? ("Sky data: public Aladin Lite DSS2 HiPS. " + cacheNote + " Third-party tiles may still need network on a cold browser cache.")
       : ("Sky data: public Stellarium Web (real star/planet catalogs). Look deeper = smaller FoV optical zoom into the same catalogs -- not photographic survey depth (use Observatory/JWST for HiPS). " + cacheNote);
@@ -701,8 +754,8 @@ function openSky(view, tierKey){
       lat: view.lat,
       lon: view.lon,
       url,
-      fov: jwst ? (jwstMode === "esasky" ? 0.4 : 0.18) : (mid ? 2 : galileoFov),
-      survey: jwst ? (jwstMode === "esasky" ? "esasky" : "CDS/P/JWST/OPEN") : (mid ? "P/DSS2/color" : "stellarium-web"),
+      fov: jwst ? (jwstMode === "esasky" ? Math.max(0.15, currentHips().fov * 4) : currentHips().fov) : (mid ? 2 : galileoFov),
+      survey: jwst ? (jwstMode === "esasky" ? "esasky" : currentHips().survey) : (mid ? "P/DSS2/color" : "stellarium-web"),
     });
   }
 
