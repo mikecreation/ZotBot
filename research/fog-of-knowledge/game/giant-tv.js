@@ -7,7 +7,13 @@
  * world ambience (never mutes wind/rain/birds). Rainproof - outdoor OK in rain.
  */
 import * as T from "./vendor/three.module.min.js";
-import { CSS3DObject, CSS3DRenderer } from "./vendor/addons/renderers/CSS3DRenderer.js";
+
+/* CSS3D is OPTIONAL/LAZY: static import of CSS3DRenderer used to 404 its three.js path and
+ * broke the whole world.js module graph (black Open World). Load only when TV watch opens. */
+let CSS3DObject = null;
+let CSS3DRenderer = null;
+let cssApiPromise = null;
+let cssContainer = null;
 
 export const GIANT_TV = "giant_tv";
 export const isGiantTv = t => t === GIANT_TV;
@@ -417,10 +423,37 @@ export function watchTvStruct() {
 
 /* ---------------- CSS3D embed on glass ---------------- */
 
+function loadCss3dApi() {
+  if (CSS3DObject && CSS3DRenderer) return Promise.resolve(true);
+  if (cssApiPromise) return cssApiPromise;
+  cssApiPromise = import("./vendor/addons/renderers/CSS3DRenderer.js?v=3.52.1")
+    .then(m => {
+      CSS3DObject = m.CSS3DObject;
+      CSS3DRenderer = m.CSS3DRenderer;
+      return true;
+    })
+    .catch(err => {
+      console.warn("[TV] CSS3D unavailable; fold-open still works without glass embed", err);
+      cssApiPromise = null;
+      return false;
+    });
+  return cssApiPromise;
+}
+
+/** Stash the world canvas container at boot. Does NOT mount CSS3D (avoids black overlay / boot crash). */
 export function initTvCss3d(container) {
-  if (cssRenderer || !container) return cssRenderer;
+  if (container) cssContainer = container;
+  return cssRenderer;
+}
+
+async function ensureCssRenderer() {
+  if (cssRenderer) return cssRenderer;
+  if (!cssContainer) return null;
+  const ok = await loadCss3dApi();
+  if (!ok || !CSS3DRenderer) return null;
+  if (cssRenderer) return cssRenderer;
   cssRenderer = new CSS3DRenderer();
-  cssRenderer.setSize(container.clientWidth, container.clientHeight);
+  cssRenderer.setSize(cssContainer.clientWidth, cssContainer.clientHeight);
   const el = cssRenderer.domElement;
   el.id = "tvCss3d";
   el.className = "tvCss3d";
@@ -428,17 +461,19 @@ export function initTvCss3d(container) {
   el.style.inset = "0";
   el.style.pointerEvents = "none";
   el.style.overflow = "hidden";
-  container.style.position = container.style.position || "relative";
-  container.appendChild(el);
+  el.style.background = "transparent";
+  cssContainer.style.position = cssContainer.style.position || "relative";
+  cssContainer.appendChild(el);
   cssHost = el;
   window.addEventListener("resize", () => {
-    if (!cssRenderer || !container) return;
-    cssRenderer.setSize(container.clientWidth, container.clientHeight);
+    if (!cssRenderer || !cssContainer) return;
+    cssRenderer.setSize(cssContainer.clientWidth, cssContainer.clientHeight);
   });
   return cssRenderer;
 }
 
 function ensureScreenIframe() {
+  if (!CSS3DObject) return null;
   if (iframeEl && cssObj) return iframeEl;
   killScreenMedia();
   const wrap = document.createElement("div");
@@ -466,6 +501,7 @@ function ensureScreenIframe() {
 }
 
 function attachCssToGlass(root) {
+  if (!CSS3DObject || !cssRenderer) return;
   ensureScreenIframe();
   const glass = root?.userData?.glass;
   if (!glass || !cssObj) return;
@@ -520,7 +556,7 @@ function killScreenMedia() {
 
 export function renderTvCss3d(camera, scene) {
   if (!cssRenderer || !camera || !scene) return;
-  if (!watchS && !cssObj) return;
+  if (!watchS || !cssObj || !cssObj.visible) return;
   cssRenderer.render(scene, camera);
 }
 
@@ -589,6 +625,7 @@ function extractVideoId(raw) {
 function loadHome() {
   pendingVideoId = null;
   fillScreen = false;
+  if (!CSS3DObject || !cssRenderer) return;
   ensureScreenIframe();
   if (!iframeEl) return;
   // Replace src via blank first to kill prior media
@@ -603,6 +640,7 @@ function loadHome() {
 function loadVideo(id) {
   pendingVideoId = id;
   if (!id) return loadHome();
+  if (!CSS3DObject || !cssRenderer) return;
   ensureScreenIframe();
   fillScreen = true;
   if (!iframeEl) return;
@@ -763,9 +801,17 @@ export function openTvWatch(s, opts = {}) {
   const lbl = el.querySelector("[data-tv=volLbl]");
   if (lbl) lbl.textContent = Math.round(tvVol * 100) + "%";
   el.querySelectorAll("[data-tv=frontend]").forEach(x => x.classList.toggle("primary", x.dataset.mode === frontend));
-  if (root) attachCssToGlass(root);
-  loadHome();
   startSpatialBed();
+  // Lazy CSS3D: only mount overlay + iframe when watch opens (never at world boot).
+  ensureCssRenderer().then(ok => {
+    if (!watchS || watchS !== s) return;
+    if (!ok) {
+      toastSafe("Glass embed offline - TV still folds open. Hard-refresh if black screen persists.");
+      return;
+    }
+    if (root) attachCssToGlass(root);
+    loadHome();
+  });
   toast("TV watch — screen faces you. Open unfolds the MicroLED. Video plays on the glass. Esc exits.");
   return true;
 }
