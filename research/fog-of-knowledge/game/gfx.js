@@ -101,7 +101,7 @@ export function initGfx(el,q){
       retColor += vec3(.62,.75,1.) * flash * .75;
       gl_FragColor = vec4( retColor, 1.0 );`);
   scene.add(sky);
-  // stars + milky way + moon (JOB 2 SKY) — spectral colours, magnitudes, twinkle; MW band; phased moon
+  // stars + milky way + moon (JOB 2 SKY) — drawn behind clouds (depthTest:false + lower renderOrder); clouds alpha-composite over them
   stars=makeStarfield();scene.add(stars);
   milkyWay=makeMilkyWay();scene.add(milkyWay);
   meteors=makeMeteors();scene.add(meteors);
@@ -182,7 +182,7 @@ const sm=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t
 
 /* ---------------- clouds ---------------- */
 function makeClouds(){
-  const m=new THREE.ShaderMaterial({transparent:true,depthWrite:false,side:THREE.DoubleSide,fog:false,
+  const m=new THREE.ShaderMaterial({transparent:true,depthWrite:false,depthTest:false,side:THREE.DoubleSide,fog:false,
     uniforms:{uTime:{value:0},uCover:{value:.4},uLit:{value:new THREE.Color(1,1,1)},uShade:{value:new THREE.Color(.5,.55,.62)},uFog:{value:new THREE.Color()},uSun:U.sunDir,uOpacity:{value:1}},
     vertexShader:`varying vec3 vW;void main(){vec4 w=modelMatrix*vec4(position,1.);vW=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}`,
     fragmentShader:NOISE_GLSL+`uniform float uTime,uCover,uOpacity;uniform vec3 uLit,uShade,uFog,uSun;varying vec3 vW;
@@ -199,7 +199,7 @@ function makeClouds(){
       #include <tonemapping_fragment>
       #include <colorspace_fragment>
     }`});
-  const c=new THREE.Mesh(new THREE.PlaneGeometry(3000,3000),m);c.rotation.x=-Math.PI/2;c.position.y=270;c.renderOrder=-5;c.frustumCulled=false;return c;
+  const c=new THREE.Mesh(new THREE.PlaneGeometry(3000,3000),m);c.rotation.x=-Math.PI/2;c.position.y=270;c.renderOrder=-4;c.frustumCulled=false;return c; // after stars/MW (-9/-9.5): clouds occlude; thin alpha softens stars under
 }
 /* ---------------- precipitation ---------------- */
 function makeRain(){const n=2600,p=new Float32Array(n*6),r=rng(3);for(let i=0;i<n;i++){const x=(r()-.5)*60,y=r()*36-12,z=(r()-.5)*60;p.set([x,y,z,x+.04,y-.55,z+.02],i*6)}
@@ -250,7 +250,9 @@ function makeStarfield(){
   sg.setAttribute("color",new THREE.BufferAttribute(sc,3));
   sg.setAttribute("aMag",new THREE.BufferAttribute(sm,1));
   const mat=new THREE.ShaderMaterial({
-    transparent:true,depthWrite:false,fog:false,blending:THREE.AdditiveBlending,
+    // depthTest off: star sphere (~900) sits behind cloud plane in draw order only —
+    // at shallow view angles the plane is farther than stars and would otherwise lose depth.
+    transparent:true,depthWrite:false,depthTest:false,fog:false,blending:THREE.AdditiveBlending,
     uniforms:{uOpacity:{value:0},uTime:{value:0},uSize:{value:4.2}},
     vertexShader:`attribute float aMag; attribute vec3 color; varying vec3 vC; varying float vTw;
       uniform float uSize; uniform float uTime;
@@ -262,7 +264,7 @@ function makeStarfield(){
       void main(){vec2 p=gl_PointCoord-.5; float d=dot(p,p); if(d>.25)discard;
         float a=smoothstep(.45,.0,d); gl_FragColor=vec4(vC*vTw*1.35, a*uOpacity); }`
   });
-  const pts=new THREE.Points(sg,mat); pts.renderOrder=-9; return pts;
+  const pts=new THREE.Points(sg,mat); pts.renderOrder=-9; pts.frustumCulled=false; return pts;
 }
 function makeMilkyWay(){
   // dense star-cloud band + soft dust glow as additive points along a great-circle plane
@@ -286,8 +288,8 @@ function makeMilkyWay(){
   const sg=new THREE.BufferGeometry();
   sg.setAttribute("position",new THREE.BufferAttribute(sp,3));
   sg.setAttribute("color",new THREE.BufferAttribute(sc,3));
-  const mat=new THREE.PointsMaterial({size:1.35,sizeAttenuation:false,vertexColors:true,transparent:true,opacity:0,fog:false,depthWrite:false,blending:THREE.AdditiveBlending});
-  const pts=new THREE.Points(sg,mat); pts.renderOrder=-9.5; return pts;
+  const mat=new THREE.PointsMaterial({size:1.35,sizeAttenuation:false,vertexColors:true,transparent:true,opacity:0,fog:false,depthWrite:false,depthTest:false,blending:THREE.AdditiveBlending});
+  const pts=new THREE.Points(sg,mat); pts.renderOrder=-9.5; pts.frustumCulled=false; return pts;
 }
 function makeMeteors(){
   const M=6, pos=new Float32Array(M*2*3), col=new Float32Array(M*2*3);
