@@ -108,7 +108,7 @@ export function initGfx(el,q){
   auroraMesh=makeAurora();scene.add(auroraMesh);
   rainbowMesh=makeRainbow();scene.add(rainbowMesh);
   moonMesh=makeMoon();scene.add(moonMesh);
-  moonGlow=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTexture(),color:0xc8d6ff,transparent:true,opacity:.55,depthWrite:false,fog:false,blending:THREE.AdditiveBlending}));moonGlow.scale.setScalar(160);moonGlow.renderOrder=-8;scene.add(moonGlow);
+  moonGlow=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTexture(),color:0xc8d6ff,transparent:true,opacity:.55,depthWrite:false,depthTest:true,fog:false,blending:THREE.AdditiveBlending}));moonGlow.scale.setScalar(160);moonGlow.renderOrder=-8;scene.add(moonGlow);
   // clouds layer
   clouds=makeClouds();scene.add(clouds);
   // water: FFT ocean (ocean.js). Sky, stars, moon and clouds also live on layer 1 so the ocean's cube camera reflects them.
@@ -251,7 +251,7 @@ function makeStarfield(){
   sg.setAttribute("color",new THREE.BufferAttribute(sc,3));
   sg.setAttribute("aMag",new THREE.BufferAttribute(sm,1));
   const mat=new THREE.ShaderMaterial({
-    // depthTest off: star sphere (~900) sits behind cloud plane in draw order only —
+    // depthTest on: opaque interiors + cloud depthWrite occlude stars; soft peek where clouds discard —
     // at shallow view angles the plane is farther than stars and would otherwise lose depth.
     transparent:true,depthWrite:false,depthTest:true,fog:false,blending:THREE.AdditiveBlending,
     uniforms:{uOpacity:{value:0},uTime:{value:0},uSize:{value:4.2}},
@@ -297,7 +297,7 @@ function makeMeteors(){
   const sg=new THREE.BufferGeometry();
   sg.setAttribute("position",new THREE.BufferAttribute(pos,3));
   sg.setAttribute("color",new THREE.BufferAttribute(col,3));
-  const mat=new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:0,fog:false,depthWrite:false,blending:THREE.AdditiveBlending});
+  const mat=new THREE.LineBasicMaterial({vertexColors:true,transparent:true,opacity:0,fog:false,depthWrite:false,depthTest:true,blending:THREE.AdditiveBlending});
   const lines=new THREE.LineSegments(sg,mat); lines.renderOrder=-8; lines.userData={slots:Array.from({length:M},()=>({t:-1,life:0}))}; return lines;
 }
 function stepMeteors(dt,cam,nightAmt){
@@ -328,7 +328,7 @@ function stepMeteors(dt,cam,nightAmt){
 }
 function makeMoon(){
   const mat=new THREE.ShaderMaterial({
-    fog:false,transparent:true,depthWrite:false,
+    fog:false,transparent:true,depthWrite:false,depthTest:true,
     uniforms:{uPhase:{value:0},uOpacity:{value:1},uSunDir:{value:new THREE.Vector3(1,0,0)}},
     vertexShader:`varying vec3 vN; varying vec3 vP; void main(){vN=normalize(normalMatrix*normal); vP=position; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
     fragmentShader:`uniform float uPhase; uniform float uOpacity; uniform vec3 uSunDir; varying vec3 vN; varying vec3 vP;
@@ -355,7 +355,7 @@ function makeMoon(){
 function makeAurora(){
   const g=new THREE.PlaneGeometry(900,220,64,16);
   const mat=new THREE.ShaderMaterial({
-    transparent:true,depthWrite:false,fog:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,
+    transparent:true,depthWrite:false,depthTest:true,fog:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,
     uniforms:{uOpacity:{value:0},uTime:{value:0}},
     vertexShader:`varying vec2 vUv; uniform float uTime;
       void main(){vUv=uv; vec3 p=position; p.y+=sin(uv.x*6.28+uTime*.4)*18.+sin(uv.x*14.+uTime*.7)*8.;
@@ -372,7 +372,7 @@ function makeRainbow(){
   // half-torus arc
   const g=new THREE.TorusGeometry(280,14,8,64,Math.PI);
   const mat=new THREE.ShaderMaterial({
-    transparent:true,depthWrite:false,fog:false,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,
+    transparent:true,depthWrite:false,depthTest:true,fog:false,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,
     uniforms:{uOpacity:{value:0}},
     vertexShader:`varying float vV; void main(){vV=uv.y; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
     fragmentShader:`varying float vV; uniform float uOpacity;

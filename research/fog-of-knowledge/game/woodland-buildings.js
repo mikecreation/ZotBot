@@ -111,7 +111,7 @@ export function woodTextures(){if(TEX)return TEX;
 
 /* ---------------- materials (shared) ---------------- */
 // indirect-only ambient occlusion from the per-vertex `ao` attribute
-function aoPatch(m){m.onBeforeCompile=sh=>{
+function aoPatch(m){m.depthWrite=true;m.depthTest=true;m.onBeforeCompile=sh=>{
  sh.vertexShader=sh.vertexShader.replace("#include <common>","#include <common>\nattribute float ao;\nvarying float vWAO;").replace("#include <begin_vertex>","#include <begin_vertex>\n\tvWAO=ao;");
  sh.fragmentShader=sh.fragmentShader.replace("#include <common>","#include <common>\nvarying float vWAO;").replace("#include <aomap_fragment>","#include <aomap_fragment>\n\treflectedLight.indirectDiffuse*=vWAO;\n\treflectedLight.indirectSpecular*=vWAO;")};
  m.customProgramCacheKey=()=>"fk-wood-ao"+(m.alphaTest?"-a":"");return m}
