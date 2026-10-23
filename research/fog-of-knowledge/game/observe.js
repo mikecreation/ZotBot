@@ -59,7 +59,13 @@ export const NOTES={
   snow:["Look closely: every flake has six arms, and no two are quite alike.","Water molecules lock together at 120° angles as they freeze.",""],
   leaf:["Veins branch and branch again, carrying water out and sugar back.","Held to the light, it glows green.",""],
   nuts:["Hard shell, rich oily kernel — a squirrel's winter store.","",""],
-  wheel:["Round, with a hole at the centre: rolling beats dragging.","",""]
+  wheel_disk:["A thick wooden slab with a hole for an axle - the earliest wheels were solid disks.","Heavy, and it rumbles.","Roll it downhill?"],
+ wheel:["Rim, hub and spokes: rolling beats dragging.","Lighter than a solid disk.","Find a slope."],
+ wheel_iron:["A wooden wheel with a metal tire shrunk onto the rim.","Harder wearing surface.",""],
+ wheel_modern:["A thin spoked rim with a soft dark tire - stylized later tech.","Rolls freer than wood.",""],
+ wheel_bouncy:["Light and springy. It wants to hop.","High bounce, low mass.","Hills become trampolines."],
+ wheel_heavy_bouncy:["Absurdly heavy, still springy - hilarious physics.","Hard to start, wild in the air.",""],
+ wheel_heavy:["A crushing mass of wood, iron and stone. Low bounce, terrifying momentum.","Once it goes, little stands in the way.","Keep clear downhill."]
 };
 export const COMBOS=[
   {a:["flint"],b:["pyrite"],disc:"sparks",title:"Sparks from stone!",text:"Striking flint against pyrite shaves off tiny hot fragments that glow — sparks. A way to make fire on purpose?"},

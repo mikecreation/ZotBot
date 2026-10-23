@@ -1,5 +1,6 @@
 import * as T from './vendor/three.module.min.js';
 import {buildTool,TOOL_KINDS} from './stone-tools.js';
+import {buildWheelMesh,isWheel} from './wheels.js?v=3.34.0';
 let grain;
 const wood=()=>{
   if(!grain){const data=new Uint8Array(64*64*4);for(let y=0;y<64;y++)for(let x=0;x<64;x++){const i=(x+y*64)*4,v=185+Math.sin(x*.8+Math.sin(y*.12)*1.8)*25+Math.sin(x*2.3+y*.04)*12;data[i]=v;data[i+1]=v*.92;data[i+2]=v*.78;data[i+3]=255}grain=new T.DataTexture(data,64,64);grain.wrapS=grain.wrapT=T.RepeatWrapping;grain.magFilter=T.LinearFilter;grain.needsUpdate=true}

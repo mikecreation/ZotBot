@@ -19,10 +19,11 @@ Object.assign(GEAR_STEPS,RAFT_STEPS);
  * Discoveries happen by doing things in the world and reveal real atlas nodes.
  */
 import * as THREE from "./vendor/three.module.min.js";
-import {ITEMS,WORLD_DISCOVERIES,RECIPES} from "./world-data.js?v=3.33.0";
+import {ITEMS,WORLD_DISCOVERIES,RECIPES} from "./world-data.js?v=3.34.0";
 import {walkPath} from "./walk-path.js?v=3.33.0";
 import {drillProblem,advanceDrill} from "./friction-fire.js?v=3.33.0";
-import {primitiveItem,workbenchMesh} from "./primitive-models.js?v=3.33.0";
+import {primitiveItem,workbenchMesh} from "./primitive-models.js?v=3.34.0";
+import {isWheel,SMASHABLE} from "./wheels.js?v=3.34.0";
 import * as GFX from "./gfx.js?v=3.31.2";
 import * as AXE from "./axe.js?v=3.29.1";
 import * as AU from "./audio.js";
@@ -34,7 +35,7 @@ import {ensureFuelBed,recordFuelPiece,stepFuelBed,fuelLayout} from "./fuel-bed.j
 import {createFireBed,updateFireBed} from "./fire-visuals.js?v=3.33.0";
 import {CURIOSITY,OBJECTIVES} from "./content.js?v=3.8.3";
 import {createPets,PET_INFO,MAX_ACTIVE} from "./pets.js";
-import {createObserve,NOTES} from "./observe.js?v=3.33.0";
+import {createObserve,NOTES} from "./observe.js?v=3.34.0";
 let PETS=null,OBS=null,EX=null;
 const E=window.FogGameEngine,TREE=E.G;
 const $=s=>document.querySelector(s);
@@ -483,7 +484,7 @@ function itemMesh(k){const detailed=primitiveItem(k,k==="tally"?world?.counters.
 function addDrop(item,x,y,z,vel){const d={item,pos:new THREE.Vector3(x,y,z),vel:vel?vel.clone():new THREE.Vector3(),mesh:itemMesh(item),flying:!!vel,t:0};d.mesh.position.copy(d.pos);scene.add(d.mesh);world.drops.push(d);if(!vel)layFlat(d);return d}
 // hafted tools rest on a flat face of the head with the handle on the ground (instead of standing on their butt)
 const _lfB=new THREE.Box3(),_lfQ=new THREE.Quaternion(),_lfY=new THREE.Vector3(0,1,0);
-function layFlat(d){const m=d.mesh;if(!m.userData.lieFlat||d.floating)return;const g=groundAt(d.pos.x,d.pos.z);if(d.pos.y<0&&g<0)return;
+function layFlat(d){const m=d.mesh;if(isWheel(d.item)){seatWheel(d);return}if(!m.userData.lieFlat||d.floating)return;const g=groundAt(d.pos.x,d.pos.z);if(d.pos.y<0&&g<0)return;
   const yaw=((d.pos.x*12.9898+d.pos.z*78.233)%6.283);m.quaternion.setFromAxisAngle(_lfY,yaw).multiply(_lfQ.setFromAxisAngle(new THREE.Vector3(1,0,0),-Math.PI/2));
   m.position.set(d.pos.x,0,d.pos.z);m.updateMatrixWorld(true);_lfB.setFromObject(m);
   // rest on the rendered (2 m triangle-grid) ground under the whole footprint, not only the analytic height at the centre, so thin tools never sink
@@ -509,8 +510,50 @@ function fireWeapon(k){const it=ITEMS[k];if(!inv(it.ammo))return toast(`You need
   take(it.ammo);launchItem(it.ammo,it.launch).shot=k;GFX.playOnce(player.model,"Spell_Simple_Shoot",.4);if(k==="bow")AU.twang();else AU.whoosh(true);
   world.counters.shots=(world.counters.shots||0)+1;discover("elastic")}
 function aimDir(){const p=clamp(-player.camPitch+(player.camPitch<-.35?0:.32),-1.2,1.5),y=player.camYaw;return new THREE.Vector3(-Math.sin(y)*Math.cos(p),Math.sin(p),-Math.cos(y)*Math.cos(p)).normalize()}
+
+function seatWheel(d){const it=ITEMS[d.item],R=it.r,g=groundAt(d.pos.x,d.pos.z);d.pos.y=g+R;d.mesh.position.copy(d.pos);
+  const yaw=Math.atan2(d.vel.x||0,d.vel.z||Math.cos(((d.pos.x*12.9898+d.pos.z*78.233)%6.283)));
+  d.mesh.rotation.set(d.roll||0,yaw,Math.sin((d.t||0)*6)*(d.wobble||0));d.axleYaw=yaw}
+function kickWheels(dt){if(!player)return;const sp=Math.hypot(player.vel.x,player.vel.z);if(sp<.4)return;
+  for(const d of world.drops){if(!isWheel(d.item)||d.flying||d.floating)continue;const dx=d.pos.x-player.pos.x,dz=d.pos.z-player.pos.z,dist=Math.hypot(dx,dz);if(dist>.95||dist<.05)continue;
+    const it=ITEMS[d.item],push=Math.min(6,sp*1.4)*(1/(1+it.mass*.08));d.vel.x+=player.vel.x*push*.15+dx/dist*push*.35;d.vel.z+=player.vel.z*push*.15+dz/dist*push*.35;d.rolling=true;d.wobble=.04}}
+function smashWheelHit(d,sp){const it=ITEMS[d.item];if(!it.smash||sp<it.smash)return;
+  if(SURV())for(const a of animals){if(a.dead||a.kind==="dog")continue;const hitR=.55+a.sp.size*.45+it.r;if(d.pos.distanceTo(a.pos.clone().setY(a.pos.y+.5*a.sp.size))>hitR)continue;
+    const ke=.5*it.mass*sp*sp;a.hp-=ke*.08;a.flee=8;AU.hit(false);
+    if(a.hp<=0){killAnimal(a);toast("The "+it.name.toLowerCase()+" flattens a "+a.kind+"!");}else toast("The "+it.name.toLowerCase()+" bowls into a "+a.kind+" - it flees!");d.vel.multiplyScalar(.82);return}
+  for(let i=world.structures.length-1;i>=0;i--){const s=world.structures[i];if(!SMASHABLE.has(s.type))continue;if(Math.hypot(s.x-d.pos.x,s.z-d.pos.z)>(STRUCT_R[s.type]??.4)+it.r+.2)continue;
+    if(s.type==="chest"&&s.items){for(const k in s.items)for(let n=0;n<s.items[k];n++)addDrop(k,s.x+(Math.random()-.5),s.y+.4,s.z+(Math.random()-.5))}
+    if(s.obj)scene.remove(s.obj);world.structures.splice(i,1);AU.hit(true);toast("CRUNCH! The "+it.name.toLowerCase()+" smashes the "+(ITEMS[s.type]?.name||s.type).toLowerCase()+".");d.vel.multiplyScalar(.7);discover("rolling");return}}
+function stepWheelRoll(d,dt){const it=ITEMS[d.item],R=it.r,rest=it.rest??.2,mu=it.rollMu??.04,If=it.Ifactor??.5;
+  d.t=(d.t||0)+dt;const e=.55;const gx=(heightAt(d.pos.x+e,d.pos.z)-heightAt(d.pos.x-e,d.pos.z))/(2*e),gz=(heightAt(d.pos.x,d.pos.z+e)-heightAt(d.pos.x,d.pos.z-e))/(2*e);
+  const gLen=Math.hypot(gx,gz),sinT=gLen/Math.sqrt(1+gLen*gLen),cosT=1/Math.sqrt(1+gLen*gLen);
+  const aFactor=1/(1+If); // rolling without slip
+  if(gLen>1e-4){const ax=-gx/gLen*G_ACC*sinT*aFactor,az=-gz/gLen*G_ACC*sinT*aFactor;d.vel.x+=ax*dt;d.vel.z+=az*dt}
+  // rolling resistance opposite horizontal velocity
+  const hsp=Math.hypot(d.vel.x,d.vel.z);if(hsp>1e-4){const drag=Math.min(hsp,mu*G_ACC*cosT*dt);d.vel.x-=d.vel.x/hsp*drag;d.vel.z-=d.vel.z/hsp*drag}
+  d.vel.y-=G_ACC*dt;d.pos.addScaledVector(d.vel,dt);
+  if(woodWallHit(d.pos.x-d.vel.x*dt,d.pos.z-d.vel.z*dt,d.pos.x,d.pos.z,d.pos.y)){d.pos.x-=d.vel.x*dt;d.pos.z-=d.vel.z*dt;d.vel.x*=-.3;d.vel.z*=-.3}
+  const g2=groundAt(d.pos.x,d.pos.z),target=g2+R;
+  if(d.pos.y<=target){const impact=-d.vel.y;d.pos.y=target;
+    if(impact>0.8){d.vel.y=impact*rest;if(rest>.5&&impact>1.5)d.wobble=Math.min(.12,.04+impact*.02)}else{d.vel.y=0;
+      // settle on flats
+      if(hsp<0.25&&sinT<.04){d.vel.set(0,0,0);d.rolling=false;seatWheel(d);return}}}
+  else if(d.pos.y>target+0.02){/* airborne hop */}
+  const sp=Math.hypot(d.vel.x,d.vel.z,d.vel.y);smashWheelHit(d,Math.hypot(d.vel.x,d.vel.z));
+  // angular velocity matches travel: omega = v/R
+  const travel=Math.hypot(d.vel.x,d.vel.z);d.roll=(d.roll||0)+ (travel/R)*dt*(d.vel.z!==0||d.vel.x!==0?1:0);
+  // axle yaw faces perpendicular to velocity (axle along X in mesh local; yaw aligns roll direction)
+  if(travel>.05)d.axleYaw=Math.atan2(d.vel.x,d.vel.z);
+  d.mesh.position.copy(d.pos);
+  const wob=(d.wobble||0)*Math.sin(d.t*9);
+  d.mesh.rotation.set(d.roll||0,d.axleYaw||0,wob);
+  if(travel>1.2&&sinT>.08)discover("rolling");
+}
+
 function stepDrops(dt){
+  kickWheels(dt);
   for(const d of world.drops){
+    if(d.rolling&&!d.flying&&!d.floating){stepWheelRoll(d,dt);continue}
     if(!d.flying){if(d.floating){d.t+=dt;d.gy??=heightAt(d.pos.x,d.pos.z);d.pos.y=GFX.waveHeight(d.pos.x,d.pos.z,d.gy)+Math.sin(d.t*2)*.015-.02;d.mesh.position.copy(d.pos);d.mesh.rotation.y+=dt*.2}continue}
     const it=ITEMS[d.item];d.t+=dt;
     const ground=heightAt(d.pos.x,d.pos.z),inWater=d.pos.y<0&&ground<0;if(inWater&&!d.splashed){d.splashed=true;GFX.FX.splash(d.pos.x,d.pos.z,14);if(d.pos.distanceTo(player.pos)<40)AU.splash(false)}
@@ -533,10 +576,11 @@ function stepDrops(dt){
       const ke=.5*it.mass*sp*sp*(it.dmg||1);a.hp-=ke;a.flee=a.sp.predator?6:6;d.vel.multiplyScalar(-.2);AU.hit(false);toast(`Hit! ${Math.round(ke)} J delivered.`);if(a.hp<=0)killAnimal(a);d.thrown=false;break}}
     const t2=heightAt(d.pos.x,d.pos.z),g2=groundAt(d.pos.x,d.pos.z),onFloor=g2>t2+.01;   // a building floor counts as ground
     if(d.pos.y<=g2+.03&&(onFloor||!(d.pos.y<0&&g2<0))){d.pos.y=g2+.03;
-      if(d.dropped&&(d.bounces||0)<4&&(Math.abs(d.vel.y)>1.1||(!onFloor&&!STICKY.has(d.item)&&slopeAt(d.pos.x,d.pos.z)>.3))){d.bounces=(d.bounces||0)+1;d.vel.y=Math.abs(d.vel.y)*.32;d.vel.x*=.55;d.vel.z*=.55;
+      if(d.dropped&&(d.bounces||0)<4&&(Math.abs(d.vel.y)>1.1||(!onFloor&&!STICKY.has(d.item)&&slopeAt(d.pos.x,d.pos.z)>.3))){d.bounces=(d.bounces||0)+1;const _br=ITEMS[d.item]?.rest??.32;d.vel.y=Math.abs(d.vel.y)*_br;d.vel.x*=isWheel(d.item)?.75:.55;d.vel.z*=isWheel(d.item)?.75:.55;
         const e=.6,gx=onFloor?0:(heightAt(d.pos.x+e,d.pos.z)-heightAt(d.pos.x-e,d.pos.z))/(2*e),gz=onFloor?0:(heightAt(d.pos.x,d.pos.z+e)-heightAt(d.pos.x,d.pos.z-e))/(2*e);if(!STICKY.has(d.item)){d.vel.x-=gx*1.4;d.vel.z-=gz*1.4}d.pos.y=g2+.05}
+      else if(isWheel(d.item)){d.flying=false;d.vel.y=0;d.rolling=true;d.wobble=(ITEMS[d.item].rest||0)>.5?.06:.02;onLanded(d);d.dropped=false}
       else{d.flying=false;d.vel.set(0,0,0);onLanded(d);d.dropped=false}}
-    d.mesh.position.copy(d.pos);if(d.flying)d.mesh.rotation.x+=dt*4;
+    d.mesh.position.copy(d.pos);if(d.flying){if(isWheel(d.item)){const sp=Math.hypot(d.vel.x,d.vel.z);d.roll=(d.roll||0)+sp/Math.max(.15,ITEMS[d.item].r)*dt;if(sp>.05)d.axleYaw=Math.atan2(d.vel.x,d.vel.z);d.mesh.rotation.set(d.roll||0,d.axleYaw||0,0)}else d.mesh.rotation.x+=dt*4;}
   }
 }
 function onLanded(d){
@@ -1492,7 +1536,7 @@ function stepCuriosity(dt){thoughtT-=dt;thoughtShowT-=dt;const el=$("#wThought")
   world.seenQ.push(q.id);world.counters.lastThought=now;if(el){el.innerHTML=`<small>CURIOSITY · press J for your journal</small>${esc(q.q)}`;el.hidden=false;thoughtShowT=11}}
 const ICON={waterwheel_site:"🎡",millstone:"🪨",flour:"🥣",bread_dough:"🫓",bread:"🍞",mud:"🟤",moss:"🌿",thatch:"🌾",cordage:"🪢",cob:"🧱",woodhut_site:"🛖",house_site:"🏡",plank:"🪵",rope:"🪢",sailcloth:"🏳",pitch:"⚫",trenail:"📍",mast_spar:"🎋",shipyard:"⚓",bark:"🪵",thread:"🧵",leather:"🟫",hammer_stone:"🔨",tongs:"🗜",needle_iron:"🪡",iron_spike:"📌",leather_gloves:"🧤",climbing_gloves:"🧤",knife_copper:"🔪",knife_bronze:"🔪",knife_iron:"🔪",knife_stone:"🔪",pickaxe_stone:"⛏",hand_drill:"🪵",bench_joint:"🧩",workbench:"🛠",workbench_bundle:"🛠",charcoal:"◼",ash:"◻",berries_dried:"🍇",nuts_roasted:"🌰",jam:"🍯",dough:"🫓",flatbread:"🫓",stew:"🍲",berry_mash:"🍷",stick:"🥢",log:"🪵",stone:"🪨",flint:"🔪",pyrite:"✨",clay:"🟫",fiber:"🌾",berry_red:"🍒",berry_dark:"🫐",seeds:"🌱",grain:"🌾",meat_raw:"🥩",meat_dried:"🥓",meat_cooked:"🍖",hide:"🟤",flake:"🔺",
   axe_stone:"🪓",axe_copper:"🪓",axe_bronze:"🪓",axe_iron:"🪓",spear:"🔱",tally:"🧮",clothing:"🧥",pot:"🏺",pot_water:"💧",pot_clean:"♨️",copper_ore:"🟢",tin_ore:"⚪",iron_ore:"🔴",copper:"🟠",tin:"🔘",bronze:"🥉",iron:"⚫",
-  quartz:"💎",sand:"⏳",glass:"🔷",lens:"🔍",lodestone:"🧲",tablet:"📜",gnomon:"🕐",bellows:"🪗",wheel:"☸️",telescope:"🔭",compass:"🧭",campfire:"🔥",leanto:"⛺",kiln:"🏭",raft:"🛶",table:"📚",sling:"🪃",bow:"🏹",arrow:"➶",
+  quartz:"💎",sand:"⏳",glass:"🔷",lens:"🔍",lodestone:"🧲",tablet:"📜",gnomon:"🕐",bellows:"🪗",wheel_disk:"🛞",wheel:"☸️",wheel_iron:"🛞",wheel_modern:"🚲",wheel_bouncy:"🟣",wheel_heavy_bouncy:"🟣",wheel_heavy:"⚙️",telescope:"🔭",compass:"🧭",campfire:"🔥",leanto:"⛺",kiln:"🏭",raft:"🛶",table:"📚",sling:"🪃",bow:"🏹",arrow:"➶",
   prism:"🌈",torch:"🕯️",hut:"🛖",house:"🏠",chest:"🧰",rack:"🪜",well:"🪣",wall:"🧱",pendulum:"⏱️",shell:"🐚",feather:"🪶",leaf:"🍃",snow:"❄️",nuts:"🌰",satchel:"🎒"};
 const icon=k=>{const c=ITEMS[k]?hex(k):"#666";const em=ICON[k]||"";return `<i class="craftIco" style="background:${c}"></i>${em}`};
 const hex=k=>"#"+ITEMS[k].color.toString(16).padStart(6,"0");

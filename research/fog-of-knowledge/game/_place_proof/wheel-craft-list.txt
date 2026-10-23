@@ -1,0 +1,19 @@
+FOG OF KNOWLEDGE - PORTABLE WHEEL TYPES
+========================================
+id                   req      tool/inputs                      physics
+-------------------- -------- -------------------------------- ----------------------------------
+wheel_disk           knapping axe_stone + log:1                mass 10 rest .12 rollMu .085
+wheel                bronze   axe_bronze + log:1               mass 6  rest .2  rollMu .045
+wheel_iron           iron     axe_iron + log:1 iron:1          mass 9  rest .18 rollMu .028
+wheel_modern         iron     log:1 hide:1 fiber:4             mass 4  rest .35 rollMu .012
+wheel_bouncy         bronze   log:1 hide:2 fiber:4             mass 3  rest .82 BOUNCY
+wheel_heavy_bouncy   iron     log:2 iron:2 hide:2              mass 22 rest .78 BOUNCY (no smash)
+wheel_heavy          iron     axe_iron + log:2 iron:4 stone:4  mass 48 rest .08 SMASH@speed18
+
+SMASH (wheel_heavy ONLY): horizontal speed >= 18
+  animals: knock flee OR flatten+toast (dogs skipped)
+  fragile props: torch, rack, crop, wall, leanto, chest, pendulum
+SAFE forever: waterwheel / mill, houses, wells, woodland buildings
+Distinct: wheel_heavy_bouncy = heavy AND bouncy, NO smash.
+         wheel_heavy       = super-heavy ONLY, low bounce, YES smash.
+Discovery: rolling (on smash or roll). DEV grant includes all WHEEL_IDS.
