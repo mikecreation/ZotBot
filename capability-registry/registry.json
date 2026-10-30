@@ -1,4 +1,146 @@
 {
   "schema_version": "1.0",
-  "items": []
+  "items": [
+    {
+      "id": "cap-39fbe373f8cc44cf",
+      "title": "Immutable research batch validation and compilation",
+      "project": "Fog of Knowledge",
+      "category": "workflow",
+      "enables": "Validate immutable research-batch records before compiling them into a knowledge graph",
+      "reuse_context": "Research agent output ingestion and independently auditable graph updates",
+      "source": {
+        "type": "repository",
+        "locator": "mikecreation/ZotBot:research/fog-of-knowledge/scripts/nemesis_apply.py@defe5ec0640f3c3bb5f60d84f6bc5c31ee0a53f8"
+      },
+      "evidence": "Public Python implementation documents --check and --apply modes, ID/type validation, and JSONL batch handling; execution was not rerun during inventory.",
+      "requirements": [
+        "Python and the Fog research data contract"
+      ],
+      "limitations": [
+        "Project-specific schema; adapt before reuse"
+      ],
+      "status": "candidate",
+      "observed_on": "2026-10-30",
+      "verified_on": null,
+      "t21_serial": null
+    },
+    {
+      "id": "cap-1dfd806a47984c93",
+      "title": "Compact agent research context packet",
+      "project": "Fog of Knowledge",
+      "category": "code",
+      "enables": "Generate a compact machine-readable research context packet from graph state",
+      "reuse_context": "LLM agent handoffs and bounded context delivery",
+      "source": {
+        "type": "repository",
+        "locator": "mikecreation/ZotBot:research/fog-of-knowledge/scripts/nemesis_context.py@defe5ec0640f3c3bb5f60d84f6bc5c31ee0a53f8"
+      },
+      "evidence": "Public script builds an agent-readable state from graph, taxonomy, and dependency statuses; not executed during inventory.",
+      "requirements": [
+        "Fog graph data and Python"
+      ],
+      "limitations": [
+        "Requires schema adaptation for other projects"
+      ],
+      "status": "candidate",
+      "observed_on": "2026-10-30",
+      "verified_on": null,
+      "t21_serial": null
+    },
+    {
+      "id": "cap-fb4517de1c1bb02e",
+      "title": "Dependency-aware knowledge graph validator",
+      "project": "Fog of Knowledge",
+      "category": "workflow",
+      "enables": "Check graph relationships, evidence indexes, status propagation, and compiled navigation consistency",
+      "reuse_context": "Scientific dependency graphs and provenance reviews",
+      "source": {
+        "type": "repository",
+        "locator": "mikecreation/ZotBot:research/fog-of-knowledge/scripts/validate.py@defe5ec0640f3c3bb5f60d84f6bc5c31ee0a53f8"
+      },
+      "evidence": "Source checks duplicate node IDs, invalid references, self-loops, evidence/nav consistency, and hard-dependency links; not executed during inventory.",
+      "requirements": [
+        "Fog graph artifacts and Python"
+      ],
+      "limitations": [
+        "Validator depends on this project schema and generated artifacts"
+      ],
+      "status": "candidate",
+      "observed_on": "2026-10-30",
+      "verified_on": null,
+      "t21_serial": null
+    },
+    {
+      "id": "cap-94355a66f77998b4",
+      "title": "Pinned formal proof reproduction and axiom audit",
+      "project": "Navier-Stokes SPC",
+      "category": "workflow",
+      "enables": "Rebuild a Lean theorem against a pinned upstream commit and audit proof holes, axioms, and SHA-256",
+      "reuse_context": "Formal verification projects requiring auditable, reproducible evidence",
+      "source": {
+        "type": "repository",
+        "locator": "mikecreation/ZotBot:research/navier-stokes-spc/temporal-closure/scripts/reproduce.sh@defe5ec0640f3c3bb5f60d84f6bc5c31ee0a53f8"
+      },
+      "evidence": "Public reproducibility script pins baseline commit and proof hash, runs lake build, checks sorry/admit/custom axiom, and prints theorem axioms; project README reports successful public CI, but no fresh run performed during this scan.",
+      "requirements": [
+        "Git, Lean/elan, Lake, network, Linux shell"
+      ],
+      "limitations": [
+        "Runs a destructive rm -rf of configured working directory; use isolated scratch path",
+        "Certifies the narrow temporal closure result only, not full Navier-Stokes blowup"
+      ],
+      "status": "candidate",
+      "observed_on": "2026-10-30",
+      "verified_on": null,
+      "t21_serial": null
+    },
+    {
+      "id": "cap-e3b02660253a179e",
+      "title": "Recursive prompt-only symbolic planning benchmark harness",
+      "project": "No Collapse N25",
+      "category": "workflow",
+      "enables": "Run graded symbolic-planning puzzles with per-run histories and correction prompts",
+      "reuse_context": "Benchmark harnesses for structured reasoning and solver recovery",
+      "source": {
+        "type": "repository",
+        "locator": "mikecreation/no-collapse-n25:simulate_mode.py@619212611837f1ae291046fce1881b45d491aa1e"
+      },
+      "evidence": "Source iterates graded puzzle rounds, accumulates token counts, and injects a failure-correction prompt after consecutive failures; README claims results but no benchmark was rerun.",
+      "requirements": [
+        "OpenAI API access, puzzle grader modules, API cost approval"
+      ],
+      "limitations": [
+        "README outcome claims unverified in this inventory",
+        "Model/API behavior and costs may change"
+      ],
+      "status": "candidate",
+      "observed_on": "2026-10-30",
+      "verified_on": null,
+      "t21_serial": null
+    },
+    {
+      "id": "cap-67c68cb74a37a37e",
+      "title": "Percolation and graph reachability correlation experiment",
+      "project": "Concrescence Stack",
+      "category": "research-method",
+      "enables": "Sweep random graph edge-retention values and compare reachable-node fraction with betweenness centrality",
+      "reuse_context": "Network fragility simulations and graph-analysis prototypes",
+      "source": {
+        "type": "repository",
+        "locator": "mikecreation/concrescence-stack:noetic_stack_demo.py@225911242b98eb9f6c525d4c553e169bb8ccd7b1"
+      },
+      "evidence": "Public script implements event_gravity_index, percolation_experiment, and CSV output; study metrics are author-reported and were not independently reproduced.",
+      "requirements": [
+        "Python, numpy, networkx, scipy"
+      ],
+      "limitations": [
+        "No independent replication",
+        "No real-world deployment claimed"
+      ],
+      "status": "candidate",
+      "observed_on": "2026-10-30",
+      "verified_on": null,
+      "t21_serial": null
+    }
+  ]
 }
