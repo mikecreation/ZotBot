@@ -141,6 +141,56 @@
       "observed_on": "2026-10-30",
       "verified_on": null,
       "t21_serial": null
+    },
+    {
+      "id": "cap-949d31f474dce599",
+      "title": "Single-fit symbolic residual Monte Carlo ROC benchmark",
+      "project": "Symbolic Step Detection",
+      "category": "research-method",
+      "enables": "Compare change-point detection scores across simulated step magnitudes using a fixed symbolic-regression baseline, Monte Carlo samples, ROC curves, and power at a specified false-positive rate",
+      "reuse_context": "Prototype benchmarking of noisy time-series change detectors",
+      "source": {
+        "type": "repository",
+        "locator": "mikecreation/Symbolic-step-detection:roc_curve_single_fit_flipped.py@fb7e01d695ad89c880e7aea1a9a2abf60db11f0b"
+      },
+      "evidence": "Public source fixes RNG seed, fits PySR once on null data, simulates null/step series, computes residual scores and ROC/AUC, and exports plots. No execution or CI result was verified during this inventory.",
+      "requirements": [
+        "Python, numpy, matplotlib, scipy, scikit-learn, PySR and its runtime dependencies"
+      ],
+      "limitations": [
+        "Synthetic Gaussian series only; real-world detection validity not established",
+        "Score normalizer multiplies median_abs_deviation(scale='normal') by 1.4826 again; review calibration before relying on scores",
+        "Uses a shared null-fitted model; assess evaluation leakage and repeated-sample independence before reuse"
+      ],
+      "status": "candidate",
+      "observed_on": "2026-11-01",
+      "verified_on": null,
+      "t21_serial": null
+    },
+    {
+      "id": "cap-70c75c12b0793df6",
+      "title": "Seeded synthetic sliding-window event-rate visualization",
+      "project": "LIGO O3 Infrastructure Correlation",
+      "category": "research-method",
+      "enables": "Generate reproducible synthetic sliding-window rate deviations with an injected time-localized signal and export annotated plots",
+      "reuse_context": "Teaching, plot prototyping, and synthetic event-rate visualization",
+      "source": {
+        "type": "repository",
+        "locator": "mikecreation/ligo-o3-infra-correlation:rate_scan.py@05bae933f81e7d66f33e43c5b6e93cfdd2573e4e"
+      },
+      "evidence": "Public Python source sets numpy seed 42, creates 39-day window-center dates, samples Gaussian baseline deviations, injects a Gaussian-shaped time-localized enhancement, and saves PDF/PNG plots. Not executed during scan.",
+      "requirements": [
+        "Python, numpy, matplotlib"
+      ],
+      "limitations": [
+        "Data are explicitly synthetic, not actual LIGO detection-rate observations",
+        "Overlapping window labels do not establish an empirical 39-day event-count calculation",
+        "No physical correlation or causal inference is supported by this generator"
+      ],
+      "status": "candidate",
+      "observed_on": "2026-11-01",
+      "verified_on": null,
+      "t21_serial": null
     }
   ]
 }
