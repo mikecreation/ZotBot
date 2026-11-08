@@ -141,6 +141,32 @@
       "observed_on": "2026-10-30",
       "verified_on": null,
       "t21_serial": null
+    },
+    {
+      "id": "cap-6f584392ec3f41c8",
+      "title": "Entropy-triggered adaptive decision threshold",
+      "project": "MiNA Noetic",
+      "category": "research-method",
+      "enables": "Track binary-state entropy and adjust an agent decision threshold when a measured entropy drop crosses configured thresholds",
+      "reuse_context": "Prototype adaptive rule changes and event-triggered decision systems in synthetic experiments",
+      "source": {
+        "type": "repository",
+        "locator": "mikecreation/mina-noetic:code/mina_agent.py@bddbc959e52948adabc37083ed63c00e4dada7b5"
+      },
+      "evidence": "Public Python source computes binary entropy, compares consecutive entropy values, and updates comparator_theta by alpha times entropy drop when thresholds are met; no reproducible test or CI evidence established.",
+      "requirements": [
+        "Python, numpy, pandas",
+        "Writable output directory if running the bundled experiment"
+      ],
+      "limitations": [
+        "Experimental heuristic; no evidence of validated cognition or robust decision quality",
+        "Random experiment lacks a fixed seed; script writes a relative CSV path whose parent directory may not exist",
+        "Run_experiment.py duplicates the same implementation; no automated tests found in inspected tree"
+      ],
+      "status": "candidate",
+      "observed_on": "2026-11-08",
+      "verified_on": null,
+      "t21_serial": null
     }
   ]
 }
