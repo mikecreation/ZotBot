@@ -1,0 +1,20 @@
+Fog of Knowledge: The Game — third-party assets
+
+1. three.js r160 (vendor/three.module.min.js) and examples addons (vendor/addons/**:
+   Sky, Water, GLTFLoader, BufferGeometryUtils, SkeletonUtils, EffectComposer, RenderPass,
+   ShaderPass, MaskPass, UnrealBloomPass, OutputPass, SMAAPass, FXAA/Copy/LuminosityHighPass/
+   Output/SMAA shaders) and vendor/waternormals.jpg (three.js examples texture).
+   Copyright 2010-2023 Three.js Authors. MIT License — see vendor/LICENSE-three.txt.
+   Only change: the bare 'three' import specifier was rewritten to the local relative path.
+
+2. assets/human.gltf.json — human mannequin mesh, skeleton and animations from
+   "Universal Animation Library" (free/standard version) by Quaternius (https://quaternius.com).
+   License: CC0 1.0 Universal (public domain) — see assets/LICENSE-Quaternius-UAL-CC0.txt.
+   Source used: https://github.com/J-Ponzo/gltf-universal-animation-library (glTF mirror of the
+   itch.io release). Trimmed to 14 clips (idle, walk, jog, sprint, jump start/loop/land,
+   swim forward/idle, spell shoot, punch cross, pick up, interact, death), second UV set
+   removed, buffer embedded as a data URI; saved with a .json extension so the Nemesis
+   atlas proxy can serve it. Clothing colours are applied procedurally in gfx.js.
+
+Everything else (terrain, trees, grass, rocks, animals, clouds, particles, UI) is procedural
+and original to this project.
