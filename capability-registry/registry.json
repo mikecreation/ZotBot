@@ -141,6 +141,32 @@
       "observed_on": "2026-10-30",
       "verified_on": null,
       "t21_serial": null
+    },
+    {
+      "id": "cap-cb2d306630778bf4",
+      "title": "Multi-coder agreement and ordinal marker reliability audit",
+      "project": "Detection Rule Leakage Trust Camouflage",
+      "category": "research-method",
+      "enables": "Summarize independent coder agreement on total scores and ordinal markers using ICC and Krippendorff alpha, with condition summaries and optional Wilson confidence intervals",
+      "reuse_context": "Quality assurance for human-coded research datasets and evaluation rubrics",
+      "source": {
+        "type": "repository",
+        "locator": "mikecreation/Detection-Rule-leakage-Trust-Camouflage:TCFS/TCFS IRR Analysis Script.R@16b362a8157f51c5d3d9d62a70c56ada5f41e84e"
+      },
+      "evidence": "Public R source contains two-way agreement ICC for total ratings, per-marker ordinal Krippendorff alpha, condition summaries, optional Wilson intervals, and mixed-effects modeling. No execution or independently validated output observed.",
+      "requirements": [
+        "R with tidyverse, irr, psych, lme4, lmerTest, binom",
+        "A correctly paired multi-coder CSV with item_id, coder_id, marker and score fields"
+      ],
+      "limitations": [
+        "Expected input 'TCFS Coder Sheet Filled.csv' is not included in inspected tree; execution was not reproduced",
+        "Script installs missing R packages at runtime; review dependencies before execution",
+        "Paired-coder structure and missing-data assumptions need checking before adapting; study instrument is pre-validation"
+      ],
+      "status": "candidate",
+      "observed_on": "2026-11-15",
+      "verified_on": null,
+      "t21_serial": null
     }
   ]
 }
